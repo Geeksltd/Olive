@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.Entities.Data.SqlServer</id>
+    <version>1.0.3</version>
+    <title>Olive Entities Data SqlServer</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <description>Olive Framework</description>
+  </metadata>
+  <files>
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.dll" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.pdb" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.xml" target="lib\netcoreapp2.0\" />
+  </files>
+</package>

@@ -1,0 +1,59 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+
+namespace Olive.Entities
+{
+    public interface IDatabaseQuery
+    {
+        Type EntityType { get; }
+        Dictionary<string, object> Parameters { get; }
+        int PageStartIndex { get; set; }
+        int? PageSize { get; set; }
+        int? TakeTop { get; set; }
+
+        IDatabaseQuery Include(string associationProperty);
+        IDatabaseQuery Include(IEnumerable<string> associationProperties);
+        IDatabaseQuery Where(params ICriterion[] criteria);
+        IDatabaseQuery OrderBy(string property, bool descending);
+        IDatabaseQuery ThenBy(string property, bool descending);
+        IDatabaseQuery Top(int rows);
+        IDatabaseQuery OrderBy(string property);
+
+        Task<int> Count();
+        Task<IEnumerable<IEntity>> GetList();
+        Task<IEntity> FirstOrDefault();
+    }
+
+    public interface IDatabaseQuery<TEntity> : IDatabaseQuery
+        where TEntity : IEntity
+    {
+        IDatabaseQuery<TEntity> Where(Expression<Func<TEntity, bool>> criteria);
+        new Task<IEnumerable<TEntity>> GetList();
+        new Task<TEntity> FirstOrDefault();
+        new IDatabaseQuery<TEntity> OrderBy(string property);
+        new IDatabaseQuery<TEntity> Top(int rows);
+        new IDatabaseQuery<TEntity> Where(params ICriterion[] criteria);
+
+        IDatabaseQuery<TEntity> ThenBy(Expression<Func<TEntity, object>> property, bool descending = false);
+        IDatabaseQuery<TEntity> OrderByDescending(Expression<Func<TEntity, object>> property);
+        IDatabaseQuery<TEntity> OrderBy(Expression<Func<TEntity, object>> property, bool descending = false);
+        IDatabaseQuery<TEntity> ThenByDescending(Expression<Func<TEntity, object>> property);
+        IDatabaseQuery<TEntity> Include(Expression<Func<TEntity, object>> property);
+
+        /// <summary>
+        /// Gets a list of entities of the given type from the database with the specified type matching the specified criteria.
+        /// If no criteria is specified, the count of all instances will be returned.
+        /// </summary>        
+        Task<TOutput?> Aggregate<TProperty, TOutput>(AggregateFunction function, Expression<Func<TEntity, TProperty>> property)
+            where TOutput : struct;
+
+        Task<TProperty?> Max<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
+        Task<TProperty?> Min<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
+        Task<TProperty?> Sum<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
+        Task<TProperty?> Average<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
+        Task<decimal?> Average<TProperty>(Expression<Func<TEntity, int>> property) where TProperty : struct;
+        Task<decimal?> Average(Expression<Func<TEntity, int>> property);
+    }
+}

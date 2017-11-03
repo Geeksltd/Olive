@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\..\@Assemblies\netcoreapp2.0\Olive.Services.ImpersonationSession.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Olive.Entities\Olive.Entities.csproj" />
+    <ProjectReference Include="..\..\Olive.Web\Olive.Web.csproj" />
+    <ProjectReference Include="..\..\Olive\Olive.csproj" />
+    <ProjectReference Include="..\..\Services\Olive.Services.Globalization\Olive.Services.Globalization.csproj" />
+  </ItemGroup>
+
+</Project>
