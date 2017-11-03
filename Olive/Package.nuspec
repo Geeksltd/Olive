@@ -2,11 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive</id>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <title>Olive</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
-    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</iconUrl>
     <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
   </metadata>
