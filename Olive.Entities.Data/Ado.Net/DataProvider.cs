@@ -58,7 +58,11 @@ namespace Olive.Entities.Data
                 await Entity.Database.Save(item, SaveBehaviour.BypassAll);
         }
 
-        public abstract Task<int> Count(IDatabaseQuery query);
+        public async Task<Int64> CountAsync(IDatabaseQuery query)
+        {
+            var command = GenerateCountCommand(query);
+            return (Int64)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+        }
 
         public static List<string> ExtractIds(string idsXml) =>
             idsXml.Split(ExtractIdsSeparator, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -139,7 +143,7 @@ namespace Olive.Entities.Data
                         continue;
                     }
                 }
-                else if (propertyType.IsGenericType && !propertyType.IsNullable())
+                else if (propertyType.IsGenericType)
                 {
                     try
                     {
@@ -202,18 +206,31 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Gets the specified record by its type and ID.
         /// </summary>
-        public abstract Task<IEntity> Get(object objectID);
+        public async Task<IEntity> Get(object objectID)
+        {
+            var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("Id")} = @ID";
+
+            using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", objectID)))
+            {
+                var result = new List<IEntity>();
+
+                if (reader.Read()) return Parse(reader);
+                else throw new DataException($"There is no record with the the ID of '{objectID}'.");
+            }
+        }
 
         /// <summary>
         /// Gets the list of specified records.
         /// </summary>        
-        public abstract Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query);
-
-        /// <summary>
-        /// Returns a direct database criterion used to eager load associated objects.
-        /// </summary>
-        public abstract DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query,
-     PropertyInfo association);
+        public virtual async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
+        {
+            using (var reader = await ExecuteGetListReader(query))
+            {
+                var result = new List<IEntity>();
+                while (reader.Read()) result.Add(Parse(reader));
+                return result;
+            }
+        }
 
         /// <summary>
         /// Reads the many to many relation.
@@ -237,7 +254,11 @@ namespace Olive.Entities.Data
         public virtual IDataParameter GenerateParameter(KeyValuePair<string, object> data) =>
             new TDataParameter { Value = data.Value, ParameterName = data.Key.Remove(" ") };
 
-        public abstract Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName);
+        public Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName)
+        {
+            var command = GenerateAggregateQuery(query, function, propertyName);
+            return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+        }
 
         #region Connection String
 
@@ -277,6 +298,72 @@ namespace Olive.Entities.Data
             }
         }
 
+        #endregion
+
+        #region Common things in DataProvider classes
+        public abstract string GetFields();
+
+        public abstract string GetTables();
+
+        public abstract string GetSelectCommand();
+
+        public abstract IEntity Parse(IDataReader reader);
+
+        public abstract string GenerateSelectCommand(IDatabaseQuery iquery);
+
+        public async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
+        {
+            var command = GenerateSelectCommand(query);
+            return await ExecuteReader(command, CommandType.Text, GenerateParameters(query.Parameters));
+        }
+
+        public string GenerateAggregateQuery(IDatabaseQuery query, AggregateFunction function, string propertyName)
+        {
+            var sqlFunction = function.ToString();
+
+            var columnValueExpression = MapColumn(propertyName);
+
+            if (function == AggregateFunction.Average)
+            {
+                sqlFunction = "AVG";
+
+                var propertyType = query.EntityType.GetProperty(propertyName).PropertyType;
+
+                if (propertyType == typeof(int) || propertyType == typeof(int?))
+                    columnValueExpression = $"CAST({columnValueExpression} AS decimal)";
+            }
+
+            return $"SELECT {sqlFunction}({columnValueExpression}) FROM {GetTables()}" +
+                GenerateWhere((DatabaseQuery)query);
+        }
+
+        public string GenerateCountCommand(IDatabaseQuery iquery)
+        {
+            var query = (DatabaseQuery)iquery;
+
+            if (query.PageSize.HasValue)
+                throw new ArgumentException("PageSize cannot be used for Count().");
+
+            if (query.TakeTop.HasValue)
+                throw new ArgumentException("TakeTop cannot be used for Count().");
+
+            return $"SELECT Count(*) FROM {GetTables()} {GenerateWhere(query)}";
+        }
+
+        public abstract string GenerateWhere(DatabaseQuery query);
+
+        public string GenerateSort(DatabaseQuery query)
+        {
+            var parts = new List<string>();
+
+            parts.AddRange(query.OrderByParts.Select(p => query.Column(p.Property) + " DESC".OnlyWhen(p.Descending)));
+
+            var offset = string.Empty;
+            if (query.PageSize > 0)
+                offset = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
+
+            return parts.ToString(", ") + offset;
+        }
         #endregion
     }
 }

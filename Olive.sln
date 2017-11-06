@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SqlServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.MySql", "Olive.Entities.Data.MySql\Olive.Entities.Data.MySql.csproj", "{8614E659-EA39-4D64-B014-A4ED525EE045}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OliveVSIX", "OliveVSIX\OliveVSIX.csproj", "{83FFCB26-B836-4E43-8F16-3FC0B29A7572}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Entities.Data.PostgreSQL", "Olive.Entities.Data.PostgreSQL\Olive.Entities.Data.PostgreSQL.csproj", "{33375385-4384-4BBF-9955-B2927FB1AA74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -148,10 +148,10 @@ Global
 		{8614E659-EA39-4D64-B014-A4ED525EE045}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8614E659-EA39-4D64-B014-A4ED525EE045}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8614E659-EA39-4D64-B014-A4ED525EE045}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83FFCB26-B836-4E43-8F16-3FC0B29A7572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83FFCB26-B836-4E43-8F16-3FC0B29A7572}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83FFCB26-B836-4E43-8F16-3FC0B29A7572}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83FFCB26-B836-4E43-8F16-3FC0B29A7572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33375385-4384-4BBF-9955-B2927FB1AA74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33375385-4384-4BBF-9955-B2927FB1AA74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33375385-4384-4BBF-9955-B2927FB1AA74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33375385-4384-4BBF-9955-B2927FB1AA74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

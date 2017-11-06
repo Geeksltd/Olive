@@ -4,9 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
 
     public abstract partial class MySqlDataProvider : DataProvider<MySqlConnection, MySqlParameter>
     {
@@ -25,74 +23,76 @@
             return result;
         }
 
-        public abstract string GetFields();
+        //public abstract string GetFields();
 
-        public abstract string GetTables();
+        //public abstract string GetTables();
 
-        public abstract IEntity Parse(IDataReader reader);
+        //public abstract string GetSelectCommand();
 
-        public override async Task<IEntity> Get(object id)
-        {
-            var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("ID")} = @ID";
+        //public abstract IEntity Parse(IDataReader reader);
 
-            using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", id)))
-            {
-                var result = new List<IEntity>();
+        //public override async Task<IEntity> Get(object id)
+        //{
+        //    var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("ID")} = @ID";
 
-                if (reader.Read()) return Parse(reader);
-                else throw new DataException($"There is no record with the the ID of '{id}'.");
-            }
-        }
+        //    using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", id)))
+        //    {
+        //        var result = new List<IEntity>();
 
-        protected async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
-        {
-            var command = GenerateSelectCommand(query);
-            return await ExecuteReader(command, CommandType.Text, GenerateParameters(query.Parameters));
-        }
+        //        if (reader.Read()) return Parse(reader);
+        //        else throw new DataException($"There is no record with the the ID of '{id}'.");
+        //    }
+        //}
 
-        public override async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
-        {
-            using (var reader = await ExecuteGetListReader(query))
-            {
-                var result = new List<IEntity>();
-                while (reader.Read()) result.Add(Parse(reader));
-                return result;
-            }
-        }
+        //protected async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
+        //{
+        //    var command = GenerateSelectCommand(query);
+        //    return await ExecuteReader(command, CommandType.Text, GenerateParameters(query.Parameters));
+        //}
 
-        public override async Task<int> Count(IDatabaseQuery query)
-        {
-            var command = GenerateCountCommand(query);
-            return (int)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
-        }
+        //public override async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
+        //{
+        //    using (var reader = await ExecuteGetListReader(query))
+        //    {
+        //        var result = new List<IEntity>();
+        //        while (reader.Read()) result.Add(Parse(reader));
+        //        return result;
+        //    }
+        //}
 
-        public override Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName)
-        {
-            var command = GenerateAggregateQuery(query, function, propertyName);
-            return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
-        }
+        //public override async Task<Int64> Count(IDatabaseQuery query)
+        //{
+        //    var command = GenerateCountCommand(query);
+        //    return (Int64)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+        //}
 
-        public string GenerateAggregateQuery(IDatabaseQuery query, AggregateFunction function, string propertyName)
-        {
-            var sqlFunction = function.ToString();
+        //public override Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName)
+        //{
+        //    var command = GenerateAggregateQuery(query, function, propertyName);
+        //    return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+        //}
 
-            var columnValueExpression = MapColumn(propertyName);
+        //public string GenerateAggregateQuery(IDatabaseQuery query, AggregateFunction function, string propertyName)
+        //{
+        //    var sqlFunction = function.ToString();
 
-            if (function == AggregateFunction.Average)
-            {
-                sqlFunction = "AVG";
+        //    var columnValueExpression = MapColumn(propertyName);
 
-                var propertyType = query.EntityType.GetProperty(propertyName).PropertyType;
+        //    if (function == AggregateFunction.Average)
+        //    {
+        //        sqlFunction = "AVG";
 
-                if (propertyType == typeof(int) || propertyType == typeof(int?))
-                    columnValueExpression = $"CAST({columnValueExpression} AS decimal)";
-            }
+        //        var propertyType = query.EntityType.GetProperty(propertyName).PropertyType;
 
-            return $"SELECT {sqlFunction}({columnValueExpression}) FROM {GetTables()}" +
-                GenerateWhere((DatabaseQuery)query);
-        }
+        //        if (propertyType == typeof(int) || propertyType == typeof(int?))
+        //            columnValueExpression = $"CAST({columnValueExpression} AS decimal)";
+        //    }
 
-        public string GenerateSelectCommand(IDatabaseQuery iquery)
+        //    return $"SELECT {sqlFunction}({columnValueExpression}) FROM {GetTables()}" +
+        //        GenerateWhere((DatabaseQuery)query);
+        //}
+
+        public override string GenerateSelectCommand(IDatabaseQuery iquery)
         {
             var query = (DatabaseQuery)iquery;
 
@@ -101,7 +101,6 @@
 
             var r = new StringBuilder("SELECT");
 
-            //r.Append(query.TakeTop.ToStringOrEmpty().WithPrefix(" TOP "));
             r.AppendLine($" {GetFields()} FROM {GetTables()}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
@@ -110,20 +109,20 @@
             return r.ToString();
         }
 
-        public string GenerateCountCommand(IDatabaseQuery iquery)
-        {
-            var query = (DatabaseQuery)iquery;
+        //public string GenerateCountCommand(IDatabaseQuery iquery)
+        //{
+        //    var query = (DatabaseQuery)iquery;
 
-            if (query.PageSize.HasValue)
-                throw new ArgumentException("PageSize cannot be used for Count().");
+        //    if (query.PageSize.HasValue)
+        //        throw new ArgumentException("PageSize cannot be used for Count().");
 
-            if (query.TakeTop.HasValue)
-                throw new ArgumentException("TakeTop cannot be used for Count().");
+        //    if (query.TakeTop.HasValue)
+        //        throw new ArgumentException("TakeTop cannot be used for Count().");
 
-            return $"SELECT Count(*) FROM {GetTables()} {GenerateWhere(query)}";
-        }
+        //    return $"SELECT Count(*) FROM {GetTables()} {GenerateWhere(query)}";
+        //}
 
-        string GenerateWhere(DatabaseQuery query)
+        public override string GenerateWhere(DatabaseQuery query)
         {
             var r = new StringBuilder();
 
@@ -139,17 +138,17 @@
             return r.ToString();
         }
 
-        string GenerateSort(DatabaseQuery query)
-        {
-            var parts = new List<string>();
+        //string GenerateSort(DatabaseQuery query)
+        //{
+        //    var parts = new List<string>();
 
-            parts.AddRange(query.OrderByParts.Select(p => query.Column(p.Property) + " DESC".OnlyWhen(p.Descending)));
+        //    parts.AddRange(query.OrderByParts.Select(p => query.Column(p.Property) + " DESC".OnlyWhen(p.Descending)));
 
-            var offset = string.Empty;
-            if (query.PageSize > 0)
-                offset = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
+        //    var offset = string.Empty;
+        //    if (query.PageSize > 0)
+        //        offset = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
 
-            return parts.ToString(", ") + offset;
-        }
+        //    return parts.ToString(", ") + offset;
+        //}
     }
 }

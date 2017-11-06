@@ -1,26 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text;
-
-namespace Olive.Entities.Data
+﻿namespace Olive.Entities.Data
 {
-    /// <summary>
-    /// Provides a DataProvider for accessing data from the database using ADO.NET based on the SqlClient provider.
-    /// </summary>
-    public abstract partial class SqlDataProvider : DataProvider<SqlConnection, SqlParameter>
+    using Npgsql;
+    using NpgsqlTypes;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Text;
+
+    public abstract partial class PostgreSqlDataProvider : DataProvider<NpgsqlConnection, NpgsqlParameter>
     {
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
         {
             var value = data.Value;
 
-            var result = new SqlParameter { Value = value, ParameterName = data.Key.Remove(" ") };
+            var result = new NpgsqlParameter { Value = value, ParameterName = data.Key.Remove(" ") };
 
             if (value is DateTime)
             {
                 result.DbType = DbType.DateTime2;
-                result.SqlDbType = SqlDbType.DateTime2;
+                result.NpgsqlDbType = NpgsqlDbType.Date;
             }
 
             return result;
@@ -36,7 +34,7 @@ namespace Olive.Entities.Data
 
         //public override async Task<IEntity> Get(object id)
         //{
-        //    var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("ID")} = @ID";
+        //    var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("Id")} = @ID";
 
         //    using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", id)))
         //    {
@@ -66,7 +64,7 @@ namespace Olive.Entities.Data
         //public override async Task<Int64> Count(IDatabaseQuery query)
         //{
         //    var command = GenerateCountCommand(query);
-        //    return (int)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+        //    return (Int64)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
         //}
 
         //public override Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName)
@@ -104,10 +102,10 @@ namespace Olive.Entities.Data
 
             var r = new StringBuilder("SELECT");
 
-            r.Append(query.TakeTop.ToStringOrEmpty().WithPrefix(" TOP "));
             r.AppendLine($" {GetFields()} FROM {GetTables()}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
+            r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
 
             return r.ToString();
         }
@@ -132,9 +130,24 @@ namespace Olive.Entities.Data
             if (SoftDeleteAttribute.RequiresSoftdeleteQuery(query.EntityType))
                 query.Criteria.Add(new Criterion("IsMarkedSoftDeleted", false));
 
-            r.Append($" WHERE { query.Column("ID")} IS NOT NULL");
+            r.Append($" WHERE { query.Column("Id")} IS NOT NULL");
 
-            var whereGenerator = new SqlCriterionGenerator(query);
+            var whereGenerator = new PostgreSqlCriterionGenerator(query);
+            var temp = new List<ICriterion>();
+            foreach (var c in query.Criteria)
+            {
+                if (c.PropertyName == "ID")
+                {
+                    temp.Add(c);
+                }
+            }
+            query.Criteria.RemoveAll(x => x.PropertyName == "ID");
+
+            foreach (var c in temp)
+            {
+                query.Criteria.Add(new Criterion("Id", c.FilterFunction, c.Value));
+            }
+
             foreach (var c in query.Criteria)
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
 
