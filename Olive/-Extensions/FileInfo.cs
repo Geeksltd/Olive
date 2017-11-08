@@ -280,9 +280,7 @@ namespace Olive
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
-                {
-                    throw new Exception($"Error running '{exeFile.FullName}':{output}");
-                }
+                    throw new Exception($"External command failed: '{exeFile.FullName}':\r\n{output}");
             }
 
             return output.ToString();

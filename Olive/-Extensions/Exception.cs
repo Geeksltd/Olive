@@ -18,8 +18,8 @@ namespace Olive
         /// </summary>
 		public static string ToFullMessage(this Exception error, string additionalMessage, bool includeStackTrace, bool includeSource, bool includeData)
         {
-            if (error == null)
-                throw new NullReferenceException("This exception object is null");
+            if (error == null) throw new NullReferenceException("This exception object is null");
+
             var resultBuilder = new StringBuilder();
             resultBuilder.AppendLineIf(additionalMessage, additionalMessage.HasValue());
             var err = error;
@@ -40,6 +40,9 @@ namespace Olive
                     foreach (var loaderEx in (err as ReflectionTypeLoadException).LoaderExceptions)
                         resultBuilder.AppendLine("Type load exception: " + loaderEx.ToFullMessage());
                 }
+
+                if (err is TargetInvocationException)
+                    err = err.InnerException;
 
                 err = err.InnerException;
                 if (err != null)
