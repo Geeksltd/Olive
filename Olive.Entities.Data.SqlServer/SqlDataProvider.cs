@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 using System.Text;
 
 namespace Olive.Entities.Data
@@ -25,76 +26,7 @@ namespace Olive.Entities.Data
 
             return result;
         }
-
-        //public abstract string GetFields();
-
-        //public abstract string GetTables();
-
-        //public abstract string GetSelectCommand();
-
-        //public abstract IEntity Parse(IDataReader reader);
-
-        //public override async Task<IEntity> Get(object id)
-        //{
-        //    var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("ID")} = @ID";
-
-        //    using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", id)))
-        //    {
-        //        var result = new List<IEntity>();
-
-        //        if (reader.Read()) return Parse(reader);
-        //        else throw new DataException($"There is no record with the the ID of '{id}'.");
-        //    }
-        //}
-
-        //protected async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
-        //{
-        //    var command = GenerateSelectCommand(query);
-        //    return await ExecuteReader(command, CommandType.Text, GenerateParameters(query.Parameters));
-        //}
-
-        //public override async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
-        //{
-        //    using (var reader = await ExecuteGetListReader(query))
-        //    {
-        //        var result = new List<IEntity>();
-        //        while (reader.Read()) result.Add(Parse(reader));
-        //        return result;
-        //    }
-        //}
-
-        //public override async Task<Int64> Count(IDatabaseQuery query)
-        //{
-        //    var command = GenerateCountCommand(query);
-        //    return (int)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
-        //}
-
-        //public override Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName)
-        //{
-        //    var command = GenerateAggregateQuery(query, function, propertyName);
-        //    return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
-        //}
-
-        //public string GenerateAggregateQuery(IDatabaseQuery query, AggregateFunction function, string propertyName)
-        //{
-        //    var sqlFunction = function.ToString();
-
-        //    var columnValueExpression = MapColumn(propertyName);
-
-        //    if (function == AggregateFunction.Average)
-        //    {
-        //        sqlFunction = "AVG";
-
-        //        var propertyType = query.EntityType.GetProperty(propertyName).PropertyType;
-
-        //        if (propertyType == typeof(int) || propertyType == typeof(int?))
-        //            columnValueExpression = $"CAST({columnValueExpression} AS decimal)";
-        //    }
-
-        //    return $"SELECT {sqlFunction}({columnValueExpression}) FROM {GetTables()}" +
-        //        GenerateWhere((DatabaseQuery)query);
-        //}
-
+        
         public override string GenerateSelectCommand(IDatabaseQuery iquery)
         {
             var query = (DatabaseQuery)iquery;
@@ -111,20 +43,7 @@ namespace Olive.Entities.Data
 
             return r.ToString();
         }
-
-        //public string GenerateCountCommand(IDatabaseQuery iquery)
-        //{
-        //    var query = (DatabaseQuery)iquery;
-
-        //    if (query.PageSize.HasValue)
-        //        throw new ArgumentException("PageSize cannot be used for Count().");
-
-        //    if (query.TakeTop.HasValue)
-        //        throw new ArgumentException("TakeTop cannot be used for Count().");
-
-        //    return $"SELECT Count(*) FROM {GetTables()} {GenerateWhere(query)}";
-        //}
-
+        
         public override string GenerateWhere(DatabaseQuery query)
         {
             var r = new StringBuilder();
@@ -140,18 +59,31 @@ namespace Olive.Entities.Data
 
             return r.ToString();
         }
+        
+        public override DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association)
+        {
+            var whereClause = GenerateAssociationLoadingCriteria(query, association);
+            return new DirectDatabaseCriterion(whereClause) { Parameters = query.Parameters };
+        }
 
-        //string GenerateSort(DatabaseQuery query)
-        //{
-        //    var parts = new List<string>();
+        string GenerateAssociationLoadingCriteria(IDatabaseQuery iquery, PropertyInfo association)
+        {
+            var query = (DatabaseQuery)iquery;
 
-        //    parts.AddRange(query.OrderByParts.Select(p => query.Column(p.Property) + " DESC".OnlyWhen(p.Descending)));
+            if (query.PageSize.HasValue && query.OrderByParts.None())
+                throw new ArgumentException("PageSize cannot be used without OrderBy.");
 
-        //    var offset = string.Empty;
-        //    if (query.PageSize > 0)
-        //        offset = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
+            var r = new StringBuilder();
 
-        //    return parts.ToString(", ") + offset;
-        //}
+            r.Append($"ID IN (");
+            r.Append("SELECT ");
+            r.Append(query.TakeTop.ToStringOrEmpty().WithPrefix(" TOP "));
+            r.AppendLine($" {association.Name} FROM {GetTables()}");
+            r.AppendLine(GenerateWhere(query));
+            r.AppendLine((query.PageSize.HasValue ? GenerateSort(query) : string.Empty).WithPrefix(" ORDER BY "));
+            r.Append(")");
+
+            return r.ToString();
+        }
     }
 }

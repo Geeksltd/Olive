@@ -24,75 +24,6 @@
             return result;
         }
 
-        //public abstract string GetFields();
-
-        //public abstract string GetTables();
-
-        //public abstract string GetSelectCommand();
-
-        //public abstract IEntity Parse(IDataReader reader);
-
-        //public override async Task<IEntity> Get(object id)
-        //{
-        //    var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("Id")} = @ID";
-
-        //    using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", id)))
-        //    {
-        //        var result = new List<IEntity>();
-
-        //        if (reader.Read()) return Parse(reader);
-        //        else throw new DataException($"There is no record with the the ID of '{id}'.");
-        //    }
-        //}
-
-        //protected async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
-        //{
-        //    var command = GenerateSelectCommand(query);
-        //    return await ExecuteReader(command, CommandType.Text, GenerateParameters(query.Parameters));
-        //}
-
-        //public override async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
-        //{
-        //    using (var reader = await ExecuteGetListReader(query))
-        //    {
-        //        var result = new List<IEntity>();
-        //        while (reader.Read()) result.Add(Parse(reader));
-        //        return result;
-        //    }
-        //}
-
-        //public override async Task<Int64> Count(IDatabaseQuery query)
-        //{
-        //    var command = GenerateCountCommand(query);
-        //    return (Int64)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
-        //}
-
-        //public override Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName)
-        //{
-        //    var command = GenerateAggregateQuery(query, function, propertyName);
-        //    return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
-        //}
-
-        //public string GenerateAggregateQuery(IDatabaseQuery query, AggregateFunction function, string propertyName)
-        //{
-        //    var sqlFunction = function.ToString();
-
-        //    var columnValueExpression = MapColumn(propertyName);
-
-        //    if (function == AggregateFunction.Average)
-        //    {
-        //        sqlFunction = "AVG";
-
-        //        var propertyType = query.EntityType.GetProperty(propertyName).PropertyType;
-
-        //        if (propertyType == typeof(int) || propertyType == typeof(int?))
-        //            columnValueExpression = $"CAST({columnValueExpression} AS decimal)";
-        //    }
-
-        //    return $"SELECT {sqlFunction}({columnValueExpression}) FROM {GetTables()}" +
-        //        GenerateWhere((DatabaseQuery)query);
-        //}
-
         public override string GenerateSelectCommand(IDatabaseQuery iquery)
         {
             var query = (DatabaseQuery)iquery;
@@ -110,19 +41,6 @@
             return r.ToString();
         }
 
-        //public string GenerateCountCommand(IDatabaseQuery iquery)
-        //{
-        //    var query = (DatabaseQuery)iquery;
-
-        //    if (query.PageSize.HasValue)
-        //        throw new ArgumentException("PageSize cannot be used for Count().");
-
-        //    if (query.TakeTop.HasValue)
-        //        throw new ArgumentException("TakeTop cannot be used for Count().");
-
-        //    return $"SELECT Count(*) FROM {GetTables()} {GenerateWhere(query)}";
-        //}
-
         public override string GenerateWhere(DatabaseQuery query)
         {
             var r = new StringBuilder();
@@ -135,36 +53,17 @@
             var whereGenerator = new PostgreSqlCriterionGenerator(query);
             var temp = new List<ICriterion>();
             foreach (var c in query.Criteria)
-            {
-                if (c.PropertyName == "ID")
-                {
-                    temp.Add(c);
-                }
-            }
+                if (c.PropertyName == "ID") temp.Add(c);
+
             query.Criteria.RemoveAll(x => x.PropertyName == "ID");
 
             foreach (var c in temp)
-            {
                 query.Criteria.Add(new Criterion("Id", c.FilterFunction, c.Value));
-            }
 
             foreach (var c in query.Criteria)
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
 
             return r.ToString();
         }
-
-        //string GenerateSort(DatabaseQuery query)
-        //{
-        //    var parts = new List<string>();
-
-        //    parts.AddRange(query.OrderByParts.Select(p => query.Column(p.Property) + " DESC".OnlyWhen(p.Descending)));
-
-        //    var offset = string.Empty;
-        //    if (query.PageSize > 0)
-        //        offset = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
-
-        //    return parts.ToString(", ") + offset;
-        //}
     }
 }

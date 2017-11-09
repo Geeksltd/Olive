@@ -45,7 +45,7 @@ namespace Olive.Entities.Data
 
         public async Task DetachDatabase(string databaseName)
         {
-            string script = @"
+            var script = @"
 ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 ALTER DATABASE [{0}] SET MULTI_USER;
 exec sp_detach_db '{0}'".FormatWith(databaseName);
@@ -63,7 +63,7 @@ exec sp_detach_db '{0}'".FormatWith(databaseName);
 
         public async Task DeleteDatabase(string databaseName)
         {
-            string script = @"
+            var script = @"
 IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'{0}')
 BEGIN
     ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;

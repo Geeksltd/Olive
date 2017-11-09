@@ -64,6 +64,8 @@ namespace Olive.Entities.Data
             return (Int64)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
         }
 
+        public abstract Task<int> Count(IDatabaseQuery query);
+
         public static List<string> ExtractIds(string idsXml) =>
             idsXml.Split(ExtractIdsSeparator, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -259,6 +261,12 @@ namespace Olive.Entities.Data
             var command = GenerateAggregateQuery(query, function, propertyName);
             return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
         }
+
+        /// <summary>
+        /// Returns a direct database criterion used to eager load associated objects.
+        /// Gets the list of specified records.
+        /// </summary>        
+        public abstract DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association);
 
         #region Connection String
 
