@@ -44,13 +44,11 @@ namespace Olive.Entities.Data
                 await Entity.Database.Save(item, SaveBehaviour.BypassAll);
         }
 
-        public async Task<Int64> CountAsync(IDatabaseQuery query)
+        public async Task<int> Count(IDatabaseQuery query)
         {
             var command = GenerateCountCommand(query);
-            return (Int64)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+            return (int)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
         }
-
-        public abstract Task<int> Count(IDatabaseQuery query);
 
         public static List<string> ExtractIds(string idsXml) =>
             idsXml.Split(ExtractIdsSeparator, StringSplitOptions.RemoveEmptyEntries).ToList();
