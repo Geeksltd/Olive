@@ -105,19 +105,24 @@ namespace Olive.Entities.Data
 
         public IDataProvider GetProvider(IEntity item) => GetProvider(item.GetType());
 
+        IDataProviderFactory GetProviderFactory(Type type)
+        {
+            if (TypeProviderFactories.TryGetValue(type, out var factory)) return factory;
+
+            if (AssemblyProviderFactories.TryGetValue(type.Assembly, out var result)) return result;
+
+            return null;
+        }
+
         public IDataProvider GetProvider(Type type)
         {
-            if (TypeProviderFactories.ContainsKey(type))
-                return TypeProviderFactories[type].GetProvider(type);
+            var factory = GetProviderFactory(type);
+            if (factory != null) return factory.GetProvider(type);
 
-            // Strange bug:
-            if (AssemblyProviderFactories.Any(x => x.Key == null))
-                AssemblyProviderFactories = new Dictionary<Assembly, IDataProviderFactory>();
-
-            if (!AssemblyProviderFactories.ContainsKey(type.GetTypeInfo().Assembly))
-                throw new InvalidOperationException("There is no registered 'data provider' for the assembly: " + type.GetTypeInfo().Assembly.FullName);
-
-            return AssemblyProviderFactories[type.GetTypeInfo().Assembly].GetProvider(type);
+            if (type.IsInterface) return new InterfaceDataProvider(type);
+            else
+                throw new InvalidOperationException("There is no registered 'data provider' for the assembly: " +
+                    type.GetTypeInfo().Assembly.FullName);
         }
 
         /// <summary>

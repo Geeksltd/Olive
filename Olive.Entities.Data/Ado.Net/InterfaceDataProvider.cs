@@ -10,8 +10,7 @@ namespace Olive.Entities.Data
     /// <summary>
     /// Provides data access for Interface types.
     /// </summary>
-    public class InterfaceDataProvider<TImplementationDataProvider> : IDataProvider
-        where TImplementationDataProvider : IDataProvider
+    public class InterfaceDataProvider : IDataProvider
     {
         Type InterfaceType;
         static ConcurrentDictionary<Type, List<Type>> ImplementationsCache = new ConcurrentDictionary<Type, List<Type>>();

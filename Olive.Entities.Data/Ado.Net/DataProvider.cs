@@ -8,20 +8,6 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
-    //#region Standard Providers
-
-    ///// <summary>
-    ///// Provides a DataProvider for accessing data from the database using ADO.NET based on the OleDb provider.
-    ///// </summary>
-    //public abstract class OleDbDataProvider : DataProvider<System.Data.OleDb.OleDbConnection, System.Data.OleDb.OleDbDataAdapter, System.Data.OleDb.OleDbParameter> { }
-
-    ///// <summary>
-    ///// Provides a DataProvider for accessing data from the database using ADO.NET based on the ODBC provider.
-    ///// </summary>
-    //public abstract class OdbcDataProvider : DataProvider<System.Data.Odbc.OdbcConnection, System.Data.Odbc.OdbcDataAdapter, System.Data.Odbc.OdbcParameter> { }
-
-    //#endregion
-
     /// <summary>
     /// Provides a DataProvider for accessing data from the database using ADO.NET.
     /// </summary>
@@ -312,8 +298,6 @@ namespace Olive.Entities.Data
         public abstract string GetFields();
 
         public abstract string GetTables();
-
-        public abstract string GetSelectCommand();
 
         public abstract IEntity Parse(IDataReader reader);
 
