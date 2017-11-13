@@ -10,9 +10,8 @@ namespace Olive.Services.Excel
     // The following piece of code is copied here due to compile error in data project. I will decide about it later.
     public static class ExtensionMethods
     {
-        public static async Task<FileInfo> GenerateReport(this DataAccessProfiler profiler, bool snapshot = false)
+        public static async Task<FileInfo> ToCsvFile(this DataAccessProfiler.ReportRow[] lines)
         {
-            var lines = DataAccessProfiler.GenerateReport(snapshot);
             var exporter = new ExcelExporter("Sql.Profile.Report");
 
             exporter.AddColumn("Command");

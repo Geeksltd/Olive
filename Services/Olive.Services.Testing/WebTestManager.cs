@@ -129,7 +129,7 @@ namespace Olive.Services.Testing
             }
             else if (command == "testEmail")
             {
-                await new EmailTestService(request, response).Process();
+                await (await new EmailTestService(request, response).Initialize()).Process();
             }
             else if (command == "dbChanges")
             {

@@ -97,7 +97,7 @@ namespace Olive.Web
         /// </summary>
         public static string GetValue(this HttpRequest request, string key, bool ignoreRouteData = true)
         {
-            if (Context.ActionContextAccessor.ActionContext.HttpContext.Request != request)
+            if (Context.Request != request)
                 throw new Exception("The given request is not match with ActionContext`s request.");
 
             return

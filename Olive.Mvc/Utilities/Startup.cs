@@ -56,6 +56,9 @@ namespace Olive.Mvc
 
             ConfigureExceptionPage(app, env);
 
+            if (WebTestManager.IsTddExecutionMode())
+                app.UseWebTestMiddleware();
+
             app.UseAuthentication()
                 .UseStaticFiles()
                 .UseRequestLocalization(RequestLocalizationOptions)

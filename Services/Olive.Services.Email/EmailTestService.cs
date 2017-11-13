@@ -29,7 +29,7 @@ namespace Olive.Services.Email
             Response = response;
         }
 
-        public async Task Initialize()
+        public async Task<EmailTestService> Initialize()
         {
             To = Request.GetValue("to").ToStringOrEmpty().ToLower();
             ReturnUrl = Request.GetReturnUrl();
@@ -40,6 +40,8 @@ namespace Olive.Services.Email
                 Email = await Request.GetOrDefault<IEmailQueueItem>("id");
 
             IsInitialized = true;
+
+            return this;
         }
 
         public void ThrowIfItIsNotInitialized()
