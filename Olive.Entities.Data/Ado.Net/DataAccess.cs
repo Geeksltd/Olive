@@ -133,8 +133,15 @@ namespace Olive.Entities.Data
 
             try
             {
-                if (DbTransactionScope.Root != null) return await dbCommand.ExecuteReaderAsync();
-                else return await dbCommand.ExecuteReaderAsync(CommandBehavior.CloseConnection);
+                var openTransaction = DbTransactionScope.Root;
+                if (openTransaction == null)
+                    return await dbCommand.ExecuteReaderAsync(CommandBehavior.CloseConnection);
+                else
+                {
+                    var result = await dbCommand.ExecuteReaderAsync();
+                    openTransaction.Register(result);
+                    return result;
+                }
             }
             catch (Exception ex)
             {

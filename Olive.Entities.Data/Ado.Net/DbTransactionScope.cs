@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Olive.Entities.Data
 {
@@ -14,6 +16,22 @@ namespace Olive.Entities.Data
     {
         IsolationLevel IsolationLevel;
         DbTransactionScopeOption ScopeOption;
+        bool IsCompleted, IsAborted;
+        List<WeakReference<IDataReader>> PotentiallyUnclosedReaders = new List<WeakReference<IDataReader>>();
+
+        public DbTransactionScope() : this(GetDefaultIsolationLevel()) { }
+
+        public DbTransactionScope(DbTransactionScopeOption scopeOption) : this(GetDefaultIsolationLevel(), scopeOption) { }
+
+        public DbTransactionScope(IsolationLevel isolationLevel, DbTransactionScopeOption scopeOption = DbTransactionScopeOption.Required)
+        {
+            IsolationLevel = isolationLevel;
+            ScopeOption = scopeOption;
+            Parent = Root;
+            Current = this;
+
+            if (Root == null) Root = this;
+        }
 
         public static DbTransactionScope Root
         {
@@ -36,23 +54,6 @@ namespace Olive.Entities.Data
         // Per unique connection string, one record is added to this.
         Dictionary<string, Tuple<DbConnection, DbTransaction>> Connections = new Dictionary<string, Tuple<DbConnection, DbTransaction>>();
 
-        bool IsCompleted, IsAborted;
-
-        public DbTransactionScope() : this(GetDefaultIsolationLevel()) { }
-
-        public DbTransactionScope(DbTransactionScopeOption scopeOption) : this(GetDefaultIsolationLevel(), scopeOption) { }
-
-        public DbTransactionScope(IsolationLevel isolationLevel, DbTransactionScopeOption scopeOption = DbTransactionScopeOption.Required)
-        {
-            IsolationLevel = isolationLevel;
-            ScopeOption = scopeOption;
-
-            Parent = Root;
-            Current = this;
-
-            if (Root == null) Root = this;
-        }
-
         public Guid ID { get; } = Guid.NewGuid();
 
         #region TransactionCompletedEvent
@@ -72,18 +73,14 @@ namespace Olive.Entities.Data
         internal async Task<DbTransaction> GetDbTransaction()
         {
             var connectionString = DataAccess.GetCurrentConnectionString();
-
             await Setup(connectionString);
-
             return Connections[connectionString].Item2;
         }
 
         internal async Task<IDbConnection> GetDbConnection()
         {
             var connectionString = DataAccess.GetCurrentConnectionString();
-
             await Setup(connectionString);
-
             return Connections[connectionString].Item1;
         }
 
@@ -92,7 +89,6 @@ namespace Olive.Entities.Data
             if (Connections.LacksKey(connectionString))
             {
                 var access = Database.Instance.GetAccess(connectionString);
-
                 var connection = (DbConnection)await access.CreateConnection();
                 var transaction = connection.BeginTransaction(IsolationLevel);
 
@@ -146,18 +142,43 @@ namespace Olive.Entities.Data
 
             IsCompleted = true;
 
-            if (Root == this)
-            {
-                // I'm the root:
-                foreach (var item in Connections)
-                    item.Value.Item2.Commit();
+            if (Root != this) return; // Ignore, and wait for the parent Completion.
 
-                TransactionCompleted?.Invoke(this, EventArgs.Empty);
-            }
-            else
+            foreach (var reader in PotentiallyUnclosedReaders.Select(x => x.GetTargetOrDefault()).ExceptNull())
+                if (!reader.IsClosed)
+                {
+                    reader.Close();
+                    reader.Dispose();
+                }
+
+            foreach (var item in Connections)
             {
-                // Ignore, and wait for the parent Completion.
+                var retries = 1;
+                while (AsyncCommandInProgress(item.Value.Item1))
+                {
+                    Thread.Sleep(retries * 10);
+                    if (retries++ > 10)
+                        throw new Exception("Async command is in progress in this transaction.");
+                }
+
+                item.Value.Item2.Commit();
             }
+
+            TransactionCompleted?.Invoke(this, EventArgs.Empty);
         }
+
+        static bool AsyncCommandInProgress(IDbConnection connection)
+        {
+            var property =
+            connection.GetType().GetProperty("AsyncCommandInProgress", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+            if (property == null) return false;
+
+            return (bool)property.GetValue(connection);
+        }
+
+
+        internal void Register(DbDataReader reader)
+            => PotentiallyUnclosedReaders.Add(new WeakReference<IDataReader>(reader));
     }
 }

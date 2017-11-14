@@ -60,8 +60,7 @@ namespace Olive.Entities.Data
             if (Transaction.Current != null)
                 Transaction.Current.TransactionCompleted += (s, e) => { Cache.Current.Remove(entity); };
 
-            if (DbTransactionScope.Root != null)
-                DbTransactionScope.Root.OnTransactionCompleted(() => Cache.Current.Remove(entity));
+            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassLogging))
                 if (!(entity is IApplicationEvent) && Config.Get("Log.Record:Application:Events", defaultValue: true))

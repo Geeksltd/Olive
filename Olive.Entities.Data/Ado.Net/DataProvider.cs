@@ -76,7 +76,6 @@ namespace Olive.Entities.Data
         public async Task<IDataReader> ExecuteReader(string command, CommandType commandType, params IDataParameter[] @params)
         {
             using (new DatabaseContext(ConnectionString))
-                // System.Diagnostics.Trace.WriteLine(command);
                 return await Access.ExecuteReader(command, commandType, @params);
         }
 

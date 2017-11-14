@@ -114,9 +114,8 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             if (Transaction.Current != null)
                 Transaction.Current.TransactionCompleted += (s, e) => { Cache.Current.Remove(entity); };
-
-            if (DbTransactionScope.Root != null)
-                DbTransactionScope.Root.OnTransactionCompleted(() => Cache.Current.Remove(entity));
+            
+                DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
 
             if (!(entity is IApplicationEvent))
                 await OnUpdated(entity);
