@@ -17,6 +17,8 @@ namespace Olive.Entities.Data
 
         public InterfaceDataProvider(Type interfaceType) => InterfaceType = interfaceType;
 
+        Type IDataProvider.EntityType => InterfaceType;
+
         List<Type> GetImplementers() => ImplementationsCache.GetOrAdd(InterfaceType, FindImplementers);
 
         static List<Type> FindImplementers(Type interfaceType)
@@ -61,7 +63,7 @@ namespace Olive.Entities.Data
         public async Task<int> Count(IDatabaseQuery query)
         {
             var providers = FindProviders();
-            var results = await providers.Select(x => x.Count(query)).AwaitAll();
+            var results = await providers.Select(x => x.Count(query.CloneFor(x.EntityType))).AwaitAll();
             return results.Sum();
         }
 
@@ -74,7 +76,7 @@ namespace Olive.Entities.Data
                 throw new Exception("OrderBy() is not allowed when querying based on Interfaces.");
 
             var providers = FindProviders();
-            var results = await providers.Select(x => x.GetList(query)).AwaitAll();
+            var results = await providers.Select(x => x.GetList(query.CloneFor(x.EntityType))).AwaitAll();
             return results.SelectMany(x => x);
         }
 
@@ -111,31 +113,31 @@ namespace Olive.Entities.Data
             throw new NotSupportedException("IDataProvider.Delete() is irrelevant to Interfaces");
 
         public string MapColumn(string propertyName) =>
-            throw new NotSupportedException("IDataProvider.Delete() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.MapColumn() is irrelevant to Interfaces");
 
         public IDictionary<string, Tuple<string, string>> GetUpdatedValues(IEntity original, IEntity updated) =>
-            throw new NotSupportedException("GetUpdatedValues() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.GetUpdatedValues() is irrelevant to Interfaces");
 
         public Task<int> ExecuteNonQuery(string command) =>
-            throw new NotSupportedException("ExecuteNonQuery() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.ExecuteNonQuery() is irrelevant to Interfaces");
 
         public Task<object> ExecuteScalar(string command) =>
-            throw new NotSupportedException("ExecuteScalar() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.ExecuteScalar() is irrelevant to Interfaces");
 
         public bool SupportValidationBypassing() =>
-            throw new NotSupportedException("SupportValidationBypassing() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.SupportValidationBypassing() is irrelevant to Interfaces");
 
         public Task BulkInsert(IEntity[] entities, int batchSize) =>
-            throw new NotSupportedException("BulkInsert() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.BulkInsert() is irrelevant to Interfaces");
 
         public Task BulkUpdate(IEntity[] entities, int batchSize) =>
-            throw new NotSupportedException("BulkInsert() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.BulkUpdate() is irrelevant to Interfaces");
 
         public IDataAccess Access =>
-            throw new NotSupportedException("Access is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.Access is irrelevant to Interfaces");
 
         public string MapSubquery(string path) =>
-            throw new NotSupportedException("MapSubquery() is irrelevant to Interfaces");
+            throw new NotSupportedException("IDataProvider.MapSubquery() is irrelevant to Interfaces");
 
         public string ConnectionString { get; set; }
 

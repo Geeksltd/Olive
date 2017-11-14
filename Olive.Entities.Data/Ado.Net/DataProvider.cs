@@ -293,6 +293,8 @@ namespace Olive.Entities.Data
         #endregion
 
         #region Common things in DataProvider classes
+        public abstract Type EntityType { get; }
+
         public abstract string GetFields();
 
         public abstract string GetTables();

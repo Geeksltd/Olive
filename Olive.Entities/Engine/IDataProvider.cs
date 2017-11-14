@@ -24,6 +24,8 @@ namespace Olive.Entities
 
         Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName);
 
+        Type EntityType { get; }
+
         string MapColumn(string propertyName);
         string MapSubquery(string path);
 

@@ -7,6 +7,11 @@
     using System.Data;
     using System.Text;
 
+    public abstract class PostgreSqlDataProvider<TTargetEntity> : PostgreSqlDataProvider where TTargetEntity : IEntity
+    {
+        public override Type EntityType => typeof(TTargetEntity);
+    }
+
     public abstract partial class PostgreSqlDataProvider : DataProvider<NpgsqlConnection, NpgsqlParameter>
     {
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)

@@ -7,6 +7,11 @@ using System.Text;
 
 namespace Olive.Entities.Data
 {
+    public abstract class SqlDataProvider<TTargetEntity> : SqlDataProvider where TTargetEntity : IEntity
+    {
+        public override Type EntityType => typeof(TTargetEntity);
+    }
+
     /// <summary>
     /// Provides a DataProvider for accessing data from the database using ADO.NET based on the SqlClient provider.
     /// </summary>
@@ -26,7 +31,7 @@ namespace Olive.Entities.Data
 
             return result;
         }
-        
+
         public override string GenerateSelectCommand(IDatabaseQuery iquery)
         {
             var query = (DatabaseQuery)iquery;
@@ -43,7 +48,7 @@ namespace Olive.Entities.Data
 
             return r.ToString();
         }
-        
+
         public override string GenerateWhere(DatabaseQuery query)
         {
             var r = new StringBuilder();
@@ -59,7 +64,7 @@ namespace Olive.Entities.Data
 
             return r.ToString();
         }
-        
+
         public override DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association)
         {
             var whereClause = GenerateAssociationLoadingCriteria(query, association);

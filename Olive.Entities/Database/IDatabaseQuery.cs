@@ -21,6 +21,11 @@ namespace Olive.Entities
         IDatabaseQuery Top(int rows);
         IDatabaseQuery OrderBy(string property);
 
+        /// <summary>
+        /// Transforms this query to be usable for a specified data provider. 
+        /// </summary> 
+        IDatabaseQuery CloneFor(Type entityType);
+
         Task<int> Count();
         Task<IEnumerable<IEntity>> GetList();
         Task<IEntity> FirstOrDefault();

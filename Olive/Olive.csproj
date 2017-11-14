@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetDir)*.* C:\Projects\MvcCoreTemplate\Template\Domain\bin\Debug\netcoreapp2.0&#xD;&#xA;copy /y $(TargetDir)*.* C:\Projects\MvcCoreTemplate\Template\Website\bin\Debug\netcoreapp2.0" />
+    <Exec Command="dotnet $(TargetDir)PushForLocalTesting.dll" />
   </Target>
 
 </Project>

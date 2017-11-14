@@ -20,8 +20,7 @@
         public IDataProvider Provider { get; }
         public Type EntityType { get; private set; }
         public List<ICriterion> Criteria { get; } = new List<ICriterion>();
-        public IEnumerable<AssociationInclusion> Include =>
-                include.Values.ToArray();
+        public IEnumerable<AssociationInclusion> Include => include.Values.ToArray();
         public Dictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
 
         public int PageStartIndex { get; set; }
@@ -83,5 +82,21 @@
         }
 
         IDatabaseQuery IDatabaseQuery.OrderBy(string property) => this.OrderBy(property, descending: false);
+
+        public IDatabaseQuery CloneFor(Type type)
+        {
+            var result = new DatabaseQuery(type)
+            {
+                PageStartIndex = PageStartIndex,
+                TakeTop = TakeTop,
+                PageSize = PageSize
+            };
+
+            result.Criteria.AddRange(Criteria);
+            result.include.Add(include);
+            result.Parameters.Add(Parameters);
+
+            return result;
+        }
     }
 }

@@ -6,6 +6,11 @@
     using System.Text;
     using MySql.Data.MySqlClient;
 
+    public abstract class MySqlDataProvider<TTargetEntity> : MySqlDataProvider where TTargetEntity : IEntity
+    {
+        public override Type EntityType => typeof(TTargetEntity);
+    }
+
     public abstract partial class MySqlDataProvider : DataProvider<MySqlConnection, MySqlParameter>
     {
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
