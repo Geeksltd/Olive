@@ -169,6 +169,7 @@ namespace Olive.Entities.Data
         public IDataParameter CreateParameter(string parameterName, object value)
         {
             if (value == null) value = DBNull.Value;
+            else if (value is Blob blob) value = blob.FileName;
 
             return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value };
         }
