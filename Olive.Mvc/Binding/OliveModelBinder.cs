@@ -39,12 +39,18 @@ namespace Olive.Mvc
         {
             Task result;
 
-            var attribute = ((DefaultModelMetadata)bindingContext.ModelMetadata).Attributes.Attributes.OfType<MasterDetailsAttribute>().FirstOrDefault();
-            if (attribute != null)
-                result = BindMasterDetailsProperty(bindingContext, attribute);
+            var masterDetailAttribute = bindingContext.ModelMetadata.GetAttribute<MasterDetailsAttribute>();
+            var fromRequestAttribute = bindingContext.ModelMetadata.GetAttribute<FromRequestAttribute>();
 
+            if (masterDetailAttribute != null)
+                result = BindMasterDetailsProperty(bindingContext, masterDetailAttribute);
             else
+            {
+                if (fromRequestAttribute != null)
+                    bindingContext.ValueProvider = fromRequestAttribute.CreateValueProvider(bindingContext);
+
                 result = base.BindProperty(bindingContext);
+            }
 
             return result;
         }

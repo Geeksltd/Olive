@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Olive.Entities.Data;
 using Olive.Entities;
 using Olive;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 
 namespace Olive.Mvc
 {
@@ -112,6 +113,11 @@ namespace Olive.Mvc
         {
             query.Page(paging.CurrentPage, paging.PageSize ?? 100000);
             return query;
+        }
+
+        public static TAttribute GetAttribute<TAttribute>(this ModelMetadata metadata) where TAttribute : System.Attribute
+        {
+            return (metadata as DefaultModelMetadata)?.Attributes.Attributes.OfType<TAttribute>().FirstOrDefault();
         }
     }
 }
