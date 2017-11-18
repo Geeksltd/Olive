@@ -17,7 +17,19 @@ namespace Olive.Entities.Data
             TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
 
             // Load from configuration:
-            var configSection = Config.Bind<DataProviderModelConfigurationSection>("DataProviderModel");
+            var bindResult = Config.Bind<DataProviderModelConfigurationSection>("DataProviderModel");
+            var oliveData = (Olive.DataProviderModelConfigurationSection)bindResult;
+            var configSection = new DataProviderModelConfigurationSection
+            {
+                Providers = new List<DataProviderFactoryInfo>(),
+                FileDependancyPath = oliveData.FileDependancyPath,
+                SyncFilePath = oliveData.SyncFilePath
+            };
+            foreach (var item in oliveData.Providers)
+            {
+                configSection.Providers.Add(new DataProviderFactoryInfo { Assembly = item.Assembly, AssemblyName = item.AssemblyName, ConnectionString = item.ConnectionString, ConnectionStringKey = item.ConnectionStringKey, MappingDirectory = item.MappingDirectory, MappingResource = item.MappingResource, ProviderFactoryType = item.ProviderFactoryType, Type = item.Type, TypeName = item.TypeName });
+            }
+
 
             if (configSection != null)
             {
@@ -105,24 +117,19 @@ namespace Olive.Entities.Data
 
         public IDataProvider GetProvider(IEntity item) => GetProvider(item.GetType());
 
-        IDataProviderFactory GetProviderFactory(Type type)
-        {
-            if (TypeProviderFactories.TryGetValue(type, out var factory)) return factory;
-
-            if (AssemblyProviderFactories.TryGetValue(type.Assembly, out var result)) return result;
-
-            return null;
-        }
-
         public IDataProvider GetProvider(Type type)
         {
-            var factory = GetProviderFactory(type);
-            if (factory != null) return factory.GetProvider(type);
+            if (TypeProviderFactories.ContainsKey(type))
+                return TypeProviderFactories[type].GetProvider(type);
 
-            if (type.IsInterface) return new InterfaceDataProvider(type);
-            else
-                throw new InvalidOperationException("There is no registered 'data provider' for the assembly: " +
-                    type.GetTypeInfo().Assembly.FullName);
+            // Strange bug:
+            if (AssemblyProviderFactories.Any(x => x.Key == null))
+                AssemblyProviderFactories = new Dictionary<Assembly, IDataProviderFactory>();
+
+            if (!AssemblyProviderFactories.ContainsKey(type.GetTypeInfo().Assembly))
+                throw new InvalidOperationException("There is no registered 'data provider' for the assembly: " + type.GetTypeInfo().Assembly.FullName);
+
+            return AssemblyProviderFactories[type.GetTypeInfo().Assembly].GetProvider(type);
         }
 
         /// <summary>

@@ -11,14 +11,15 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        static readonly Encoding DefaultEncoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
+        static readonly Encoding DefaultEncoding = Encoding.UTF8;
+         //CodePagesEncodingProvider.Instance.GetEncoding(1252);
 
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
         public static Task<byte[]> ReadAllBytes(this FileInfo file)
         {
-            return TryHard(file, async () => await File.ReadAllBytesAsync(file.FullName), "The system cannot read the file: {0}");
+            return TryHard(file, async () => File.ReadAllBytes(file.FullName), "The system cannot read the file: {0}");
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace Olive
 
             if (encoding is UTF8Encoding) encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
-            await File.WriteAllTextAsync(file.FullName, content, encoding);
+            File.WriteAllText(file.FullName, content, encoding);
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace Olive
 
             file.Directory.EnsureExists();
 
-            await File.AppendAllTextAsync(file.FullName, content, encoding);
+            File.AppendAllText(file.FullName, content, encoding);
         }
 
         /// <summary>
@@ -280,7 +281,9 @@ namespace Olive
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
-                    throw new Exception($"External command failed: '{exeFile.FullName}':\r\n{output}");
+                {
+                    throw new Exception($"Error running '{exeFile.FullName}':{output}");
+                }
             }
 
             return output.ToString();
