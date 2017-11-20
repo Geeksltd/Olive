@@ -66,7 +66,8 @@ namespace Olive.Mvc
                 .UseMvc(ConfigureRoutes);
 
             WebTestManager.CreateReferenceDataBy(CreateReferenceData);
-            WebTestManager.InitiateTempDatabase(enforceRestart: false, mustRenew: false).GetAwaiter().GetResult();
+
+            Task.Factory.StartNew(() => WebTestManager.InitiateTempDatabase(enforceRestart: false, mustRenew: false), TaskCreationOptions.LongRunning /* different thread */).Wait();
         }
 
         protected virtual void InitializeDatabase(IApplicationBuilder app, IHostingEnvironment env)
