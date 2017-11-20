@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace PushForLocalTesting
 {
@@ -9,7 +10,7 @@ namespace PushForLocalTesting
     {
         static DirectoryInfo Root;
 
-        static void Main(string[] args)
+        public static void Main()
         {
             Root = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -67,7 +68,9 @@ namespace PushForLocalTesting
                 if (!source.Exists())
                     Error("Skipped missing file: " + source.FullName);
                 else
-                    source.CopyTo(target, overwrite: true).Wait();
+                {
+                    File.Copy(source.FullName, target.GetFile(source.Name).FullName, overwrite: true);
+                }
             }
 
             Console.WriteLine("Done.");
