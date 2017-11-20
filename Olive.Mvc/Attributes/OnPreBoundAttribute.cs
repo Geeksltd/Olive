@@ -12,8 +12,8 @@ namespace Olive.Mvc
     {
         static ConcurrentDictionary<Type, List<MethodInfo>> CustomBindMethods = new ConcurrentDictionary<Type, List<MethodInfo>>();
 
-        const string ROOT = "_MSharp.CustomPreBindActions.RootBinder";
-        const string ACTIONS = "_MSharp.CustomPreBindActions";
+        const string ROOT = "_Olive.CustomPreBindActions.RootBinder";
+        const string ACTIONS = "_Olive.CustomPreBindActions";
 
         internal static void Enqueue(ControllerContext cContext, object model) =>
             Enqueue(cContext, model, ACTIONS, typeof(OnPreBoundAttribute), CustomBindMethods);

@@ -1,9 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Routing;
-using Olive.Web;
 using Microsoft.Extensions.Primitives;
-using System.Collections.Generic;
 
 namespace Olive.Mvc
 {
@@ -37,19 +34,18 @@ namespace Olive.Mvc
             {
                 var request = BindingContext.HttpContext.Request;
                 var actionContext = BindingContext.ActionContext;
-                
+
                 if (request.HasFormContentType && request.Form.ContainsKey(Name))
                     return new ValueProviderResult(request.Form[Name]);
 
-                else if(actionContext.RouteData.Values.ContainsKey(Name))
+                else if (actionContext.RouteData.Values.ContainsKey(Name))
                     return new ValueProviderResult(new StringValues(actionContext.RouteData.Values[Name].ToString()));
 
-                else if(request.Query.ContainsKey(Name))
+                else if (request.Query.ContainsKey(Name))
                     return new ValueProviderResult(request.Query[Name]);
 
                 return new ValueProviderResult();
             }
         }
-
     }
 }

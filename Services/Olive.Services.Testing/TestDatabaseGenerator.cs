@@ -45,7 +45,7 @@ namespace Olive.Services.Testing
         FileInfo[] GetCreateDbFiles()
         {
             if (DbDirectory == null)
-                LoadMSharpMetaDirectory();
+                LoadMetaDirectory();
 
             var potentialSources = new List<FileInfo>();
 
@@ -216,7 +216,7 @@ namespace Olive.Services.Testing
             MasterDatabaseAgent = new SqlServerManager(builder.ToString());
 
             LoadTempDatabaseLocation();
-            LoadMSharpMetaDirectory();
+            LoadMetaDirectory();
 
             if (!IsTempDatabaseOptional)
             {
@@ -288,7 +288,7 @@ namespace Olive.Services.Testing
             ProjectTempRoot = TempBackupsRoot.GetOrCreateSubDirectory(TempDatabaseName);
         }
 
-        void LoadMSharpMetaDirectory()
+        void LoadMetaDirectory()
         {
             // Not explicitly specified. Take a guess:
             var folder = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent;

@@ -190,37 +190,6 @@ namespace Olive.Mvc
             return $"The {propertyName} field is required.";
         }
 
-        public static HtmlString CollapsibleCheckBoxesFor<TModel, TProperty>(this IHtmlHelper<TModel> html,
-            Expression<Func<TModel, TProperty>> property,
-            IEnumerable<SelectListItem> selectList,
-            object htmlAttributes = null)
-        {
-            var name = property.GetProperty().Name;
-
-            var itemsHtml = html.GenerateCheckBoxesFor(property, selectList, htmlAttributes: null, setContainerId: false).ToString();
-            var attributes = ToHtmlAttributes(htmlAttributes);
-
-            var result = $@"<div id=""{name}"" {attributes} class='form-control'>
-                                    <div class='options-container'>
-		                                <div class='toolbox'>
-			                                <a class='select-all'>Select all</a> | <a class='remove-all'>Remove all</a>
-		                                </div>
-                                        <div class='items-list'>{itemsHtml}</div>
-		                                <div class='selection-container'></div>
-		                            </div>
-                                    <div class='search-container'>
-                                        <span class='fa fa-search'></span>
-                                        <input class='form-control textbox' id=""{name}_Search""/>                                        
-                                    </div>
-                                    <div class='caption-container'>
-                                        <span class='fa fa-chevron-down'></span>                                        
-                                        <input class='form-control textbox' id=""{name}_Caption"">                                        
-                                    </div>
-                                </div>";
-
-            return new HtmlString(result);
-        }
-
         internal static string ToHtmlAttributes(object htmlAttributes)
         {
             if (htmlAttributes == null) return string.Empty;
