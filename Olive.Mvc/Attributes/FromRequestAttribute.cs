@@ -1,5 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Routing;
+using Olive.Web;
+using Microsoft.Extensions.Primitives;
+using System.Collections.Generic;
 
 namespace Olive.Mvc
 {
@@ -13,25 +17,36 @@ namespace Olive.Mvc
         public string Name { get; }
         public FromRequestAttribute(string name) => Name = name;
 
-        internal IValueProvider CreateValueProvider(ModelBindingContext bindingContext)
-        {
-            return new FromRequestValueProvider(Name, bindingContext);
-        }
+        internal IValueProvider CreateValueProvider(ModelBindingContext bindingContext) => new FromRequestValueProvider(Name, bindingContext);
 
         class FromRequestValueProvider : IValueProvider
         {
             public string Name { get; }
+
+            ModelBindingContext BindingContext;
+
             public FromRequestValueProvider(string name, ModelBindingContext bindingContext)
             {
-                // TODO ...
+                Name = name;
+                BindingContext = bindingContext;
             }
-            public bool ContainsPrefix(string prefix)
-            {
-                return false; // ??
-            }
+
+            public bool ContainsPrefix(string prefix) => ModelStateDictionary.StartsWithPrefix(prefix, Name);
+
             public ValueProviderResult GetValue(string key)
             {
-                // TODO: Find the value in the order...
+                var request = BindingContext.HttpContext.Request;
+                var actionContext = BindingContext.ActionContext;
+                
+                if (request.HasFormContentType && request.Form.ContainsKey(Name))
+                    return new ValueProviderResult(request.Form[Name]);
+
+                else if(actionContext.RouteData.Values.ContainsKey(Name))
+                    return new ValueProviderResult(new StringValues(actionContext.RouteData.Values[Name].ToString()));
+
+                else if(request.Query.ContainsKey(Name))
+                    return new ValueProviderResult(request.Query[Name]);
+
                 return new ValueProviderResult();
             }
         }

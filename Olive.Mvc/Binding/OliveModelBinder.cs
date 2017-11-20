@@ -14,26 +14,8 @@ namespace Olive.Mvc
     {
         readonly IDictionary<ModelMetadata, IModelBinder> PropertyBinders;
 
-        public OliveModelBinder(IDictionary<ModelMetadata, IModelBinder> propertyBinders) : base(propertyBinders)
-        {
+        public OliveModelBinder(IDictionary<ModelMetadata, IModelBinder> propertyBinders) : base(propertyBinders) => 
             PropertyBinders = propertyBinders;
-        }
-
-        // /// <summary> Sets the specified property by using the specified controller context, binding context, and property value.</summary>
-        // protected override void SetProperty(ModelBindingContext bindingContext, string modelName, ModelMetadata propertyMetadata, ModelBindingResult result)
-        // {
-        // 	if(result.IsModelSet && propertyMetadata.ModelType == typeof(string))
-        // 	{
-        // 		var stringValue = (string)result.Model;
-        // 		if (stringValue.HasValue())
-        // 		{
-        // 			if(propertyMetadata.ModelType.CustomAttributes.OfType<KeepWhiteSpaceAttribute>().None())
-        // 				result = ModelBindingResult.Success(stringValue);
-        // 		}
-        // 	}
-
-        // 	base.SetProperty(bindingContext, modelName, propertyMetadata, result);
-        // }
 
         protected override Task BindProperty(ModelBindingContext bindingContext)
         {
@@ -54,7 +36,7 @@ namespace Olive.Mvc
 
             return result;
         }
-
+        
         async Task BindMasterDetailsProperty(ModelBindingContext bindingContext, MasterDetailsAttribute attribute)
         {
             if (Context.Request.IsGet()) return;
