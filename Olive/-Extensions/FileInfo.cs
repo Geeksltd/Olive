@@ -12,20 +12,19 @@ namespace Olive
     partial class OliveExtensions
     {
         static readonly Encoding DefaultEncoding = Encoding.UTF8;
-         //CodePagesEncodingProvider.Instance.GetEncoding(1252);
 
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
         public static Task<byte[]> ReadAllBytes(this FileInfo file)
         {
-            return TryHard(file, async () => File.ReadAllBytes(file.FullName), "The system cannot read the file: {0}");
+            return TryHard(file, () => Task.Run(file.ReadAllBytes), "The system cannot read the file: {0}");
         }
 
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
-        public static async Task<string> ReadAllText(this FileInfo file) => await ReadAllText(file, DefaultEncoding);
+        public static Task<string> ReadAllText(this FileInfo file) => ReadAllText(file, DefaultEncoding);
 
         public static string NameWithoutExtension(this FileInfo file) => Path.GetFileNameWithoutExtension(file.FullName);
 
@@ -63,7 +62,8 @@ namespace Olive
                 return;
             }
 
-            await TryHard(file, async () => await Task.Factory.StartNew(file.Delete), "The system cannot delete the file, even after several attempts. Path: {0}");
+            await TryHard(file, () => Task.Run(() => file.Delete(harshly)),
+                "The system cannot delete the file, even after several attempts. Path: {0}");
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Olive
             if (!file.Directory.Exists())
                 file.Directory.Create();
 
-            await TryHard(file, async () => await File.WriteAllBytesAsync(file.FullName, content), "The system cannot write the specified content on the file: {0}");
+            await TryHard(file, () => File.WriteAllBytesAsync(file.FullName, content), "The system cannot write the specified content on the file: {0}");
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Olive
         /// Saves the specified content on this file. 
         /// Note: For backward compatibility, for UTF-8 encoding, it will always add the BOM signature.
         /// </summary>
-        public static async Task WriteAllText(this FileInfo file, string content, Encoding encoding)
+        public static Task WriteAllText(this FileInfo file, string content, Encoding encoding)
         {
             if (encoding == null) encoding = DefaultEncoding;
 
@@ -94,7 +94,7 @@ namespace Olive
 
             if (encoding is UTF8Encoding) encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
-            File.WriteAllText(file.FullName, content, encoding);
+            return File.WriteAllTextAsync(file.FullName, content, encoding);
         }
 
         /// <summary>
@@ -111,13 +111,13 @@ namespace Olive
         /// <summary>
         /// Saves the specified content to the end of this file.
         /// </summary>
-        public static async Task AppendAllText(this FileInfo file, string content, Encoding encoding)
+        public static Task AppendAllText(this FileInfo file, string content, Encoding encoding)
         {
             if (encoding == null) encoding = DefaultEncoding;
 
             file.Directory.EnsureExists();
 
-            File.AppendAllText(file.FullName, content, encoding);
+            return Task.Run(() => File.AppendAllText(file.FullName, content, encoding));
         }
 
         /// <summary>
