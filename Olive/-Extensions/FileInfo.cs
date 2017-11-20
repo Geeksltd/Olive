@@ -74,7 +74,8 @@ namespace Olive
             if (!file.Directory.Exists())
                 file.Directory.Create();
 
-            await TryHard(file, () => File.WriteAllBytesAsync(file.FullName, content), "The system cannot write the specified content on the file: {0}");
+            await TryHard(file, () => Task.Run(() => File.WriteAllBytes(file.FullName, content)),
+                "The system cannot write the specified content on the file: {0}");
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace Olive
 
             if (encoding is UTF8Encoding) encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
-            return File.WriteAllTextAsync(file.FullName, content, encoding);
+            return Task.Run(() => File.WriteAllText(file.FullName, content, encoding));
         }
 
         /// <summary>
@@ -342,40 +343,5 @@ namespace Olive
 
             return folder.GetFiles(searchPattern);
         }
-
-        //     public static async Task<string> ReadAllTextAsync(this FileInfo file)
-        //     {
-        //         using (var reader = File.OpenText(file.FullName))
-        //         {
-        //             return await reader.ReadToEndAsync();
-        //         }
-        //     }
-
-        //     public static async Task<byte[]> ReadAllBytesAsync(this FileInfo file)
-        //     {
-        //         using (var reader = File.OpenRead(file.FullName))
-        //         {
-        //             var result = new byte[file.Length];
-        //             await reader.ReadAsync(result, 0, result.Length);
-        //             return result;
-        //         }
-        //     }
-
-        //     /// <param name="encoding">By default it will be UTF-8</param>
-        //     public static async Task WriteAllTextAsync(this FileInfo file, string content, Encoding encoding = null)
-        //     {
-        //         if (encoding == null)
-        //             encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
-
-        // await file.WriteAllBytesAsync(encoding.GetBytes(content));
-        //     }
-
-        //     public static async Task WriteAllBytesAsync(this FileInfo file, byte[] data)
-        //     {
-        //         using (var writer = File.Create(file.FullName))
-        //         {
-        //             await writer.WriteAsync(data, 0, data.Length);
-        //         }
-        //     }
     }
 }
