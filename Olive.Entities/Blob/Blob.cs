@@ -11,7 +11,6 @@ namespace Olive.Entities
     /// <summary> 
     /// Provides an utility for handling Binary property types.
     /// </summary>
-    [JsonConverter(typeof(PessimisticJsonConverter))]
     public class Blob : IComparable<Blob>, IComparable
     {
         /// <summary>
@@ -73,8 +72,7 @@ namespace Olive.Entities
         string fileName, folderName;
 
         bool hasValue; // For performance, cache it
-
-        [JsonExposed]
+        
         public string FileName
         {
             get { return fileName.Or(EMPTY_FILE); }

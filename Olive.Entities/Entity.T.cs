@@ -8,7 +8,6 @@
         /// <summary>
         /// Gets or sets the ID of this object.
         /// </summary>
-        [JsonExposed]
         public virtual T ID { get; set; }
 
         /// <summary>

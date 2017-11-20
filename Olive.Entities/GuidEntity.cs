@@ -15,7 +15,6 @@ namespace Olive.Entities
         /// <summary>
         /// Gets a unique Identifier for this instance. In the database, this will be the primary key of this object.
         /// </summary>
-        [JsonExposed]
         public override Guid ID
         {
             get
