@@ -7,12 +7,9 @@ namespace Olive.Mvc
 {
     [HtmlTargetElement("select", Attributes = "asp-for")]
     [HtmlTargetElement("select", Attributes = "asp-items")]
-    //[HtmlTargetElement("select")]
     public class SelectTagHelper : Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHelper
     {
-        public SelectTagHelper(IHtmlGenerator generator) : base(generator)
-        {
-        }
+        public SelectTagHelper(IHtmlGenerator generator) : base(generator) { }
 
         public override int Order => 0;
 

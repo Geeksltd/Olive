@@ -346,7 +346,7 @@ namespace Olive.Services.Globalization
             }
         }
 
-        /// <summary>
+ /// <summary>
         /// Detect the language of a phrase.
         /// The API can translate multiple piece of text in the same time, if needed create a function with parameter "params string phrase" and return a list of GoogleAutoDetectLanguage.
         /// </summary>

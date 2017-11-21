@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-
-namespace Olive.Mvc
+﻿namespace Olive.Mvc
 {
+    using Microsoft.AspNetCore.Razor.TagHelpers;
+
     [HtmlTargetElement(Attributes = PREFIX_ATTRIBUTE_NAME)]
     public class PrefixIdentificationsTagHelper : TagHelper
     {
@@ -13,12 +12,11 @@ namespace Olive.Mvc
 
         public override int Order => 0;
 
-        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            await base.ProcessAsync(context, output);
+            base.Process(context, output);
 
             var newName = $"{Prefix}.{output.Attributes.FirstOrDefault(att => att.Name == "name").Value}";
-
             output.ReplaceIdentificationAttributes(newName);
         }
     }
