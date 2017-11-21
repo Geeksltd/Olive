@@ -68,7 +68,7 @@ namespace Olive
             if (number < 0)
                 return "minus " + ToWordString(Math.Abs(number));
 
-            string words = "";
+            var words = "";
 
             if ((number / ONE_MILLION) > 0)
             {

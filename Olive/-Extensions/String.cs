@@ -605,7 +605,7 @@ namespace Olive
 
             var result = new List<int>();
 
-            int index = -1;
+            var index = -1;
 
             do
             {

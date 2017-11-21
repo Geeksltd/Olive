@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet $(TargetDir)PushForLocalTesting.dll" />
+    <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;" />
   </Target>
 
 </Project>

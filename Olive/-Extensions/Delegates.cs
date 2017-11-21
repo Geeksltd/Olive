@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -53,33 +52,6 @@ namespace Olive
 
                     Thread.Sleep(waitBeforeRetries);
                 }
-            }
-        }
-
-        public static async Task WithTimeout(this Task task, TimeSpan timeout, Action success = null, Action timeoutAction = null)
-        {
-            if (await Task.WhenAny(task, Task.Delay(timeout)) == task) success?.Invoke();
-
-            else
-            {
-                if (timeoutAction == null) throw new TimeoutException("The task didn't complete within " + timeout + "ms");
-                else timeoutAction();
-            }
-        }
-
-        public static async Task<T> WithTimeout<T>(this Task<T> task, TimeSpan timeout, Action success = null, Func<T> timeoutAction = null)
-        {
-            if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
-            {
-                success?.Invoke();
-                await task;
-                return task.GetAwaiter().GetResult();
-            }
-
-            else
-            {
-                if (timeoutAction == null) throw new TimeoutException("The task didn't complete within " + timeout + "ms");
-                else { return timeoutAction(); }
             }
         }
     }

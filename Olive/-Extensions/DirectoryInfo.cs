@@ -49,7 +49,7 @@ namespace Olive
         {
             if (!directory.Exists()) return;
 
-            await TryHard(directory, async () =>
+            await DoTryHard(directory, async () =>
             {
                 await directory.GetFiles().Do(async (f) => await f.Delete(harshly: true));
                 await directory.GetDirectories().Do(async (d) => await HarshDelete(d));
@@ -97,6 +97,20 @@ namespace Olive
 
             foreach (var sub in source.GetDirectories())
                 await sub.CopyTo(Path.Combine(destination, sub.Name), overwrite);
+        }
+
+        /// <summary>
+        /// Copies the entire content of a directory to a specified destination.
+        /// </summary>
+        public static void CopyToSync(this DirectoryInfo source, string destination, bool overwrite = false)
+        {
+            destination.AsDirectory().EnsureExists();
+
+            foreach (var file in source.GetFiles())
+                file.CopyToSync(Path.Combine(destination, file.Name).AsFile(), overwrite);
+
+            foreach (var sub in source.GetDirectories())
+                sub.CopyToSync(Path.Combine(destination, sub.Name), overwrite);
         }
 
         /// <summary>
@@ -173,16 +187,6 @@ namespace Olive
             // if (!folder.Exists) folder.Create(); This has caching bug in the core .NET code :-(
 
             return folder;
-        }
-
-        /// <summary>
-        /// Clears the specified folder by deleting all its sub-directories and files.
-        /// </summary>
-        public static async Task Clear(this DirectoryInfo folder, bool harshly = true)
-        {
-            if (!folder.Exists()) throw new Exception("The specified directory does not exist: " + folder.FullName);
-            await folder.GetFiles().Do(async (f) => await f.Delete(harshly));
-            await folder.GetDirectories().Do(async (f) => await f.Delete(recursive: true, harshly: harshly));
         }
 
         /// <summary>

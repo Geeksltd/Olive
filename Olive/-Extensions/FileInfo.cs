@@ -18,7 +18,8 @@ namespace Olive
         /// </summary>
         public static Task<byte[]> ReadAllBytes(this FileInfo file)
         {
-            return TryHard(file, () => Task.Run(file.ReadAllBytes), "The system cannot read the file: {0}");
+            return TryHard(file, () => Task.Run(() => File.ReadAllBytes(file.FullName)),
+                "The system cannot read the file: {0}");
         }
 
         /// <summary>
@@ -51,9 +52,6 @@ namespace Olive
         /// <param name="harshly">If set to true, then it will try multiple times, in case the file is temporarily locked.</param>
         public static async Task Delete(this FileInfo file, bool harshly)
         {
-            if (file == null)
-                throw new ArgumentNullException(nameof(file));
-
             if (!file.Exists()) return;
 
             if (!harshly)
@@ -62,7 +60,7 @@ namespace Olive
                 return;
             }
 
-            await TryHard(file, () => Task.Run(() => file.Delete(harshly)),
+            await DoTryHard(file, () => Task.Run(() => file.Delete(harshly)),
                 "The system cannot delete the file, even after several attempts. Path: {0}");
         }
 
@@ -74,7 +72,7 @@ namespace Olive
             if (!file.Directory.Exists())
                 file.Directory.Create();
 
-            await TryHard(file, () => Task.Run(() => File.WriteAllBytes(file.FullName, content)),
+            await DoTryHard(file, () => Task.Run(() => File.WriteAllBytes(file.FullName, content)),
                 "The system cannot write the specified content on the file: {0}");
         }
 
@@ -127,9 +125,21 @@ namespace Olive
         public static async Task CopyTo(this FileInfo file, FileInfo destinationPath, bool overwrite = true)
         {
             if (!overwrite && destinationPath.Exists()) return;
+            if (!file.Exists()) throw new Exception("File does not exist: " + file.FullName);
 
             var content = await file.ReadAllBytes();
             await destinationPath.WriteAllBytes(content);
+        }
+
+        /// <summary>
+        /// Copies this file onto the specified desination path.
+        /// </summary>
+        public static void CopyToSync(this FileInfo file, FileInfo destinationPath, bool overwrite = true)
+        {
+            if (!overwrite && destinationPath.Exists()) return;
+            if (!file.Exists()) throw new Exception("File does not exist: " + file.FullName);
+
+            File.Copy(file.FullName, destinationPath.FullName, overwrite);
         }
 
         /// <summary>

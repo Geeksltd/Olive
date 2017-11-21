@@ -70,7 +70,7 @@ namespace Olive.Services.Testing
                 if (TempDatabaseInitiated.HasValue) return;
 
                 var generator = new TestDatabaseGenerator(isTempDatabaseOptional: true, mustRenew: mustRenew);
-                TempDatabaseInitiated = await generator.Process();
+                TempDatabaseInitiated = generator.Process();
                 createdNew = generator.CreatedNewDatabase;
 
                 await Entity.Database.Refresh();

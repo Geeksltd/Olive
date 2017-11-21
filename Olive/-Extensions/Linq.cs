@@ -65,7 +65,7 @@ namespace Olive
 
             if (list.Contains(element) == false) return -1;
 
-            int result = 0;
+            var result = 0;
             foreach (var el in list)
             {
                 if (el == null)
@@ -792,7 +792,7 @@ namespace Olive
         /// </summary>
         public static IEnumerable<int> AllIndicesOf<T>(IEnumerable<T> list, Func<T, bool> criteria)
         {
-            int index = 0;
+            var index = 0;
 
             foreach (var item in list)
             {
@@ -1262,27 +1262,6 @@ namespace Olive
             await Task.WhenAll(tasks);
 
             return tasks.Select(x => x.Result);
-        }
-
-        public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> list) => await Task.WhenAll(list);
-
-        public static async Task<List<T>> ToList<T>(this Task<IEnumerable<T>> list) => (await list).ToList();
-
-        public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
-            this Task<IEnumerable<TSource>> list,
-            Func<TSource, TResult> func)
-        {
-            var awaited = await list;
-            return awaited.Select(func);
-        }
-
-        public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
-          this Task<IEnumerable<TSource>> list,
-          Func<TSource, Task<TResult>> func)
-        {
-            var awaited = await list;
-            var resultTasks = awaited.Select(func);
-            return await Task.WhenAll(resultTasks);
         }
     }
 }

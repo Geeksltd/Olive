@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -65,7 +64,7 @@ namespace Olive
 
         public static string GetDisplayName(this Type input)
         {
-            string displayName = input.Name;
+            var displayName = input.Name;
 
             for (int i = displayName.Length - 1; i >= 0; i--)
             {
@@ -420,11 +419,6 @@ namespace Olive
         /// Determine whether this property is static.
         /// </summary>
         public static bool IsStatic(this PropertyInfo property) => (property.GetGetMethod() ?? property.GetSetMethod()).IsStatic;
-
-        /// <summary>
-        /// It works similar to calling .Result property, but it forces a context switch to prevent deadlocks in UI and ASP.NET context.
-        /// </summary>
-        public static TResult AwaitResult<TResult>(this Task<TResult> task) => Task.Run(async () => await task).Result;
 
         public static TTArget GetTargetOrDefault<TTArget>(this WeakReference<TTArget> reference)
             where TTArget : class

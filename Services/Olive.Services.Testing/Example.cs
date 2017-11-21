@@ -104,7 +104,7 @@ namespace Olive.Services.Testing
 
     class UnitTest
     {
-        public void UnitTest_For_Business_Logic_Layer()
+        public Task UnitTest_For_Business_Logic_Layer()
         {
             // When the service consumer unit (business logic layer) is invoked, it will in turn insert its IntegrationQueueItem and wait for its response.
             // So instead of directly calling the method in your Unit Test, you should invoke that in a Task.
@@ -114,12 +114,11 @@ namespace Olive.Services.Testing
 
             // At this stage the logic unit is waiting for the response. So here we just inject a response, so the unit will continue then.
             var assumedResponse = new MyServiceResponse { Ourcome1 = "Something", Ourcome2 = "anything" };
-            MyService.InjectResponse(assumedResponse);
+            return MyService.InjectResponse(assumedResponse);
 
             // At this stage, the MyService.Request() called inside the logic unit, will come out of freezing and return the injected
             // response to the consumer unit.
 
-            task.Wait();
 
             // Note: This way, the dependency to the external service is bypassed by manually injecting the response.
         }

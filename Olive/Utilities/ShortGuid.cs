@@ -131,7 +131,7 @@ namespace Olive
         /// <param name="guid">The Guid to encode</param>
         public static string Encode(Guid guid)
         {
-            string encoded = Convert.ToBase64String(guid.ToByteArray());
+            var encoded = Convert.ToBase64String(guid.ToByteArray());
             encoded = encoded
                 .Replace("/", "_")
                 .Replace("+", "-");

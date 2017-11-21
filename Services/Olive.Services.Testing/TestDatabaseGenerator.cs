@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Olive.Entities.Data;
 
 namespace Olive.Services.Testing
@@ -12,8 +11,8 @@ namespace Olive.Services.Testing
     {
         const string TEMP_DATABASES_LOCATION_KEY = "Temp.Databases.Location";
 
-        static AsyncLock AsyncLock = new AsyncLock();
-        static AsyncLock ProcessAsyncLock = new AsyncLock();
+        static object SyncLock = new object();
+        static object ProcessSyncLock = new object();
 
         readonly string ConnectionString;
         SqlServerManager MasterDatabaseAgent;
@@ -72,7 +71,7 @@ namespace Olive.Services.Testing
             return sources;
         }
 
-        async Task<Dictionary<FileInfo, string>> GetExecutableCreateDbScripts()
+        Dictionary<FileInfo, string> GetExecutableCreateDbScripts()
         {
             var sources = GetCreateDbFiles();
 
@@ -80,7 +79,7 @@ namespace Olive.Services.Testing
 
             foreach (var file in sources)
             {
-                var script = await file.ReadAllText();
+                var script = File.ReadAllText(file.FullName);
 
                 // The first few lines contain #DATABASE.NAME# which should be replaced.
                 script = script.ToLines().Select((line, index) =>
@@ -106,24 +105,24 @@ namespace Olive.Services.Testing
             return result;
         }
 
-        internal async Task<string> GetCurrentDatabaseCreationHash()
+        internal string GetCurrentDatabaseCreationHash()
         {
-            var createScript = (await GetCreateDbFiles().Select(async x => await x.ReadAllText()).AwaitAll()).ToLinesString();
+            var createScript = GetCreateDbFiles().Select(f => File.ReadAllText(f.FullName)).ToLinesString();
 
             return createScript.ToSimplifiedSHA1Hash();
         }
 
-        async Task CreateDatabaseFromScripts()
+        void CreateDatabaseFromScripts()
         {
-            await MasterDatabaseAgent.DeleteDatabase(ReferenceDatabaseName);
+            MasterDatabaseAgent.DeleteDatabase(ReferenceDatabaseName);
 
             var newDatabaseAgent = MasterDatabaseAgent.CloneFor(ReferenceDatabaseName);
 
-            foreach (var file in await GetExecutableCreateDbScripts())
+            foreach (var file in GetExecutableCreateDbScripts())
             {
                 try
                 {
-                    await MasterDatabaseAgent.ExecuteSql(file.Value);
+                    MasterDatabaseAgent.ExecuteSql(file.Value);
                 }
                 catch (Exception ex)
                 {
@@ -132,10 +131,10 @@ namespace Olive.Services.Testing
             }
         }
 
-        public async Task CloneReferenceDatabaseToTemp()
+        void CloneReferenceDatabaseToTemp()
         {
             // Make sure if it exists in database already, it's deleted first.
-            await MasterDatabaseAgent.DeleteDatabase(TempDatabaseName);
+            MasterDatabaseAgent.DeleteDatabase(TempDatabaseName);
 
             var directory = ProjectTempRoot.GetOrCreateSubDirectory("Current");
 
@@ -144,8 +143,8 @@ namespace Olive.Services.Testing
 
             try
             {
-                await ReferenceMDFFile.CopyTo(newMDFPath);
-                await ReferenceLDFFile.CopyTo(newLDFPath);
+                File.Copy(ReferenceMDFFile.FullName, newMDFPath.FullName, overwrite: true);
+                File.Copy(ReferenceLDFFile.FullName, newLDFPath.FullName, overwrite: true);
             }
             catch (IOException ex)
             {
@@ -160,7 +159,7 @@ namespace Olive.Services.Testing
 
             try
             {
-                await MasterDatabaseAgent.ExecuteSql(script);
+                MasterDatabaseAgent.ExecuteSql(script);
             }
             catch (SqlException ex)
             {
@@ -170,14 +169,15 @@ namespace Olive.Services.Testing
             }
         }
 
-        internal async Task TryAccessNewTempDatabase()
+        internal void TryAccessNewTempDatabase()
         {
             Exception error = null;
             for (var i = 0; i < 10; i++)
             {
                 try
                 {
-                    await Database.Instance.GetAccess().ExecuteQuery("SELECT TABLE_NAME FROM [{0}].INFORMATION_SCHEMA.TABLES".FormatWith(TempDatabaseName));
+                    System.Threading.Tasks.Task.Factory.RunSync(() => Database.Instance.GetAccess()
+                    .ExecuteQuery($"SELECT TABLE_NAME FROM [{TempDatabaseName}].INFORMATION_SCHEMA.TABLES"));
                     return;
                 }
                 catch (Exception ex)
@@ -191,7 +191,7 @@ namespace Olive.Services.Testing
             throw new Exception("Could not access the new database:" + error.Message, error);
         }
 
-        public async Task<bool> Process()
+        public bool Process()
         {
             if (ConnectionString.IsEmpty()) return false;
 
@@ -232,7 +232,7 @@ namespace Olive.Services.Testing
                 return false;
             }
 
-            return await DoProcess();
+            return DoProcess();
         }
 
         /// <summary>
@@ -303,11 +303,11 @@ namespace Olive.Services.Testing
             throw new Exception("Failed to find the DB folder from which to create the temp database.");
         }
 
-        async Task<bool> DoProcess()
+        bool DoProcess()
         {
-            var hash = (await GetCurrentDatabaseCreationHash()).Replace("/", "-").Replace("\\", "-");
+            var hash = (GetCurrentDatabaseCreationHash()).Replace("/", "-").Replace("\\", "-");
 
-            using (await AsyncLock.Lock())
+            lock (SyncLock)
             {
                 ReferenceDatabaseName = TempDatabaseName + ".Ref";
 
@@ -315,15 +315,15 @@ namespace Olive.Services.Testing
                 ReferenceMDFFile = CurrentHashDirectory.GetFile(ReferenceDatabaseName + ".mdf");
                 ReferenceLDFFile = CurrentHashDirectory.GetFile(ReferenceDatabaseName + "_log.ldf");
 
-                using (await ProcessAsyncLock.Lock())
+                lock (ProcessSyncLock)
                 {
-                    var createdNewReference = await CreateReferenceDatabase();
+                    var createdNewReference = CreateReferenceDatabase();
 
-                    var tempDatabaseDoesntExist = !await MasterDatabaseAgent.DatabaseExists(TempDatabaseName);
+                    var tempDatabaseDoesntExist = !MasterDatabaseAgent.DatabaseExists(TempDatabaseName);
 
                     if (MustRenew || createdNewReference || tempDatabaseDoesntExist)
                     {
-                        await RefreshTempDataWorld();
+                        RefreshTempDataWorld();
                     }
                 }
 
@@ -331,21 +331,21 @@ namespace Olive.Services.Testing
             }
         }
 
-        async Task RefreshTempDataWorld()
+        void RefreshTempDataWorld()
         {
-            await CloneReferenceDatabaseToTemp();
+            CloneReferenceDatabaseToTemp();
 
             SqlConnection.ClearAllPools();
 
-            await CopyFiles();
+            CopyFiles();
 
             // Do we really need this?
-            await TryAccessNewTempDatabase();
+            TryAccessNewTempDatabase();
 
             CreatedNewDatabase = true;
         }
 
-        async Task<bool> CreateReferenceDatabase()
+        bool CreateReferenceDatabase()
         {
             if (ReferenceMDFFile.Exists() && ReferenceLDFFile.Exists())
             {
@@ -357,7 +357,7 @@ namespace Olive.Services.Testing
             // create database + data
             try
             {
-                await CreateDatabaseFromScripts();
+                CreateDatabaseFromScripts();
             }
             catch
             {
@@ -367,12 +367,12 @@ namespace Olive.Services.Testing
             finally
             {
                 // Detach it
-                await MasterDatabaseAgent.DetachDatabase(ReferenceDatabaseName);
+                MasterDatabaseAgent.DetachDatabase(ReferenceDatabaseName);
 
                 if (error)
                 {
-                    await ReferenceMDFFile.Delete(harshly: true);
-                    await ReferenceLDFFile.Delete(harshly: true);
+                    ReferenceMDFFile.Delete();
+                    ReferenceLDFFile.Delete();
                 }
             }
 
@@ -381,12 +381,8 @@ namespace Olive.Services.Testing
 
         bool IsExplicitlyTempDatabase() => TempDatabaseName.ToLower().EndsWith(".temp");
 
-        public async Task CleanUp() => await MasterDatabaseAgent.DeleteDatabase(TempDatabaseName);
-
-        async Task CopyFiles()
+        void CopyFiles()
         {
-            var copyTasks = new List<Task>();
-
             foreach (
                 var key in
                     new[]
@@ -416,12 +412,10 @@ namespace Olive.Services.Testing
                     Directory.CreateDirectory(destination);
                 }
 
-                await new DirectoryInfo(destination).Clear();
+                new DirectoryInfo(destination).Delete(recursive: true);
 
-                copyTasks.Add(new DirectoryInfo(source).CopyTo(destination, overwrite: true));
+                new DirectoryInfo(source).CopyToSync(destination, overwrite: true);
             }
-
-            await Task.WhenAll(copyTasks);
         }
     }
 }

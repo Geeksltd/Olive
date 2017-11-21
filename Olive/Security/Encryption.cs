@@ -128,7 +128,7 @@ namespace Olive
                                 // The size of decrypted data is unknown, so we allocate a buffer big enough to store encrypted data.
                                 // decrypted data is always the same or smaller than encrypted data.
                                 var plainText = new byte[encryptedData.Length];
-                                int decryptedSize = cryptoStream.Read(plainText, 0, plainText.Length);
+                                var decryptedSize = cryptoStream.Read(plainText, 0, plainText.Length);
 
                                 return Encoding.Unicode.GetString(plainText, 0, decryptedSize);
                             }

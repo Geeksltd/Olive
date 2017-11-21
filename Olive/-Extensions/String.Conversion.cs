@@ -167,7 +167,7 @@ namespace Olive
         {
             var actualTargetType = targetType;
 
-            bool isNullable = targetType.IsNullable();
+            var isNullable = targetType.IsNullable();
 
             if (isNullable)
                 targetType = targetType.GetGenericArguments().Single();

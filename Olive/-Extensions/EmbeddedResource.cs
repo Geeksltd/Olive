@@ -1,9 +1,9 @@
 namespace Olive
 {
     using System;
-    using System.Text;
     using System.Diagnostics;
     using System.Reflection;
+    using System.Text;
     using System.Threading.Tasks;
 
     partial class OliveExtensions

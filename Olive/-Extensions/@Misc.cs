@@ -20,14 +20,14 @@ namespace Olive
         /// </summary>
         public static ShortGuid Shorten(this Guid guid) => new ShortGuid(guid);
 
-        static async Task<T> TryHard<T>(FileSystemInfo fileOrFolder, Func<Task<T>> func, string error)
+        static Task<T> TryHard<T>(FileSystemInfo fileOrFolder, Func<Task<T>> func, string error)
         {
-            var result = default(T);
-            await TryHard(fileOrFolder, async () => { result = await func(); }, error);
-            return result;
+            var resultTask = new TaskCompletionSource<T>();
+            DoTryHard(fileOrFolder, async () => resultTask.TrySetResult(await func()), error).GetAwaiter();
+            return resultTask.Task;
         }
 
-        static async Task TryHard(FileSystemInfo fileOrFolder, Func<Task> func, string error)
+        static async Task DoTryHard(FileSystemInfo fileOrFolder, Func<Task> func, string error)
         {
             var attempt = 0;
 

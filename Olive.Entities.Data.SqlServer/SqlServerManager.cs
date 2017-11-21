@@ -2,7 +2,6 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
@@ -17,13 +16,20 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Executes a specified SQL command.
         /// </summary>
-        public async Task ExecuteSql(string sql)
+        public void ExecuteSql(string sql)
         {
             var lines = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
 
             using (var connection = new SqlConnection(ConnectionString))
             {
-                await connection.OpenAsync();
+                try
+                {
+                    connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to open a DB connection.", ex);
+                }
 
                 using (var cmd = connection.CreateCommand())
                 {
@@ -33,7 +39,7 @@ namespace Olive.Entities.Data
                     {
                         cmd.CommandText = line;
 
-                        try { await cmd.ExecuteNonQueryAsync(); }
+                        try { cmd.ExecuteNonQuery(); }
                         catch (Exception ex) { throw EnrichError(ex, line); }
                     }
                 }
@@ -43,7 +49,7 @@ namespace Olive.Entities.Data
         Exception EnrichError(Exception ex, string command) =>
             throw new Exception($"Could not execute SQL command: \r\n-----------------------\r\n{command.Trim()}\r\n-----------------------\r\n Because:\r\n\r\n{ex.Message}");
 
-        public async Task DetachDatabase(string databaseName)
+        public void DetachDatabase(string databaseName)
         {
             var script = @"
 ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
@@ -52,7 +58,7 @@ exec sp_detach_db '{0}'".FormatWith(databaseName);
 
             try
             {
-                await ExecuteSql(script);
+                ExecuteSql(script);
             }
             catch (Exception ex)
             {
@@ -61,7 +67,7 @@ exec sp_detach_db '{0}'".FormatWith(databaseName);
             }
         }
 
-        public async Task DeleteDatabase(string databaseName)
+        public void DeleteDatabase(string databaseName)
         {
             var script = @"
 IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'{0}')
@@ -73,7 +79,7 @@ END".FormatWith(databaseName);
 
             try
             {
-                await ExecuteSql(script);
+                ExecuteSql(script);
             }
             catch (Exception ex)
             {
@@ -91,20 +97,20 @@ END".FormatWith(databaseName);
             return new SqlServerManager(builder.ToString());
         }
 
-        public async Task<bool> DatabaseExists(string databaseName)
+        public bool DatabaseExists(string databaseName)
         {
             var script = $"SELECT count(name) FROM master.dbo.sysdatabases WHERE name = N'{databaseName}'";
 
             using (var connection = new SqlConnection(ConnectionString))
             {
-                await connection.OpenAsync();
+                connection.Open();
 
                 using (var cmd = connection.CreateCommand())
                 {
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = script;
 
-                    try { return (int)await cmd.ExecuteScalarAsync() > 0; }
+                    try { return (int)cmd.ExecuteScalar() > 0; }
                     catch (Exception ex) { throw EnrichError(ex, script); }
                 }
             }

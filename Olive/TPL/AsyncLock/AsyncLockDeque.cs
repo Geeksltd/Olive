@@ -22,7 +22,7 @@ namespace Olive
 
         public IEnumerator<T> GetEnumerator()
         {
-            int count = Count;
+            var count = Count;
             for (int i = 0; i != count; ++i)
                 yield return Buffer[(i + Offset) % Capacity];
         }
@@ -33,7 +33,7 @@ namespace Olive
 
             if (Offset > (Capacity - Count))
             {
-                int length = Capacity - Offset;
+                var length = Capacity - Offset;
                 Array.Copy(Buffer, Offset, newBuffer, 0, length);
                 Array.Copy(Buffer, 0, newBuffer, length, Count - length);
             }
