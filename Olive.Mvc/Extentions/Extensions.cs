@@ -40,16 +40,13 @@ namespace Olive.Mvc
 
         internal static void ReplaceIdentificationAttributes(this Microsoft.AspNetCore.Razor.TagHelpers.TagHelperOutput output, string newValue)
         {
-            output.Attributes.Remove(output.Attributes.First(att => att.Name == "name"));
-            output.Attributes.Add("name", newValue);
-
-            output.Attributes.Remove(output.Attributes.First(att => att.Name == "id"));
-            output.Attributes.Add("id", newValue);
-
-            if (output.Attributes.Any(att => att.Name == "for"))
+            foreach (var att in new[] { "name", "id", "for" })
             {
-                output.Attributes.Remove(output.Attributes.First(att => att.Name == "for"));
-                output.Attributes.Add("for", newValue);
+                var declared = output.Attributes.FirstOrDefault(a => a.Name == att);
+                if (declared == null) continue;
+
+                output.Attributes.Remove(declared);
+                output.Attributes.Add(att, newValue);
             }
         }
 

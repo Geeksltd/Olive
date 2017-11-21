@@ -14,7 +14,7 @@ namespace Olive.Mvc
     {
         readonly IDictionary<ModelMetadata, IModelBinder> PropertyBinders;
 
-        public OliveModelBinder(IDictionary<ModelMetadata, IModelBinder> propertyBinders) : base(propertyBinders) => 
+        public OliveModelBinder(IDictionary<ModelMetadata, IModelBinder> propertyBinders) : base(propertyBinders) =>
             PropertyBinders = propertyBinders;
 
         protected override Task BindProperty(ModelBindingContext bindingContext)
@@ -36,36 +36,34 @@ namespace Olive.Mvc
 
             return result;
         }
-        
+
         async Task BindMasterDetailsProperty(ModelBindingContext bindingContext, MasterDetailsAttribute attribute)
         {
             if (Context.Request.IsGet()) return;
 
             var prefix = attribute.Prefix + "-";
             var listObject = Activator.CreateInstance(bindingContext.ModelType) as IList;
-            // var formData = cContext.RequestContext.HttpContext.Request.Form;
 
-            var childItemIds = bindingContext.ValueProvider.GetValue(prefix + ".Item").FirstValue?.Split("|")?.ToArray() ?? new string[0];
+            var childItemIds = bindingContext.HttpContext.Request.Form.Select(x => x.Key).Trim()
+                  .Where(k => k.StartsWith(prefix) && k.EndsWith(".Item"))
+                  .Select(x => x.TrimStart(prefix).TrimEnd(".Item")).ToList();
 
             foreach (var id in childItemIds)
             {
                 var formControlsPrefix = prefix + id + ".";
 
-                var instanceType = bindingContext.ModelMetadata.ElementType;
-                var instance = Activator.CreateInstance(instanceType);
-                listObject.Add(instance);
-
-                // Set the instance properties
+                var viewModel = Activator.CreateInstance(bindingContext.ModelMetadata.ElementType);
+                listObject.Add(viewModel);
+                
                 foreach (var property in bindingContext.ModelMetadata.ElementMetadata.Properties)
                 {
                     var key = formControlsPrefix + property.PropertyName;
-
-                    await SetPropertyValue(bindingContext, instance, key, property);
+                    await SetPropertyValue(bindingContext, viewModel, key, property);
                 }
 
                 // All properties are written to ViewModel. Now also write them on the model (Item property):
-                var item = instance.GetType().GetProperty("Item").GetValue(instance);
-                await ViewModelServices.CopyData(instance, item);
+                var item = viewModel.GetType().GetProperty("Item").GetValue(viewModel);
+                await ViewModelServices.CopyData(viewModel, item);
             }
 
             bindingContext.Result = ModelBindingResult.Success(listObject);
