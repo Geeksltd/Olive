@@ -23,7 +23,6 @@
     <ProjectReference Include="..\Olive.Services.Email\Olive.Services.Email.csproj" />
     <ProjectReference Include="..\Olive.Services.Excel\Olive.Services.Excel.csproj" />
     <ProjectReference Include="..\Olive.Services.Integration\Olive.Services.Integration.csproj" />
-    <ProjectReference Include="..\Olive.Services.TaskAutomation\Olive.Services.TaskAutomation.csproj" />
   </ItemGroup>
 
 </Project>

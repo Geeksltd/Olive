@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive", "Olive\Olive.csproj", "{EF844D85-7C45-4725-B033-DBC6111C5F7F}"
 EndProject
@@ -43,8 +43,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.Impersonatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.Testing", "Services\Olive.Services.Testing\Olive.Services.Testing.csproj", "{4C446033-19E3-4D88-B4A2-AE2D5190AF41}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.TaskAutomation", "Services\Olive.Services.TaskAutomation\Olive.Services.TaskAutomation.csproj", "{4EA5F66A-38DD-4CA8-B797-18A5CE083BFA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc", "Olive.Mvc\Olive.Mvc.csproj", "{08ADF968-0FFF-4E3C-88EC-E04E2FA94D13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mvc.RemovalCandidates", "Mvc.RemovalCandidates\Mvc.RemovalCandidates.csproj", "{D6CB3117-1CB6-4263-AE89-37483A0379B9}"
@@ -57,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Postgre
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushForLocalTesting", "Utils\PushForLocalTesting\PushForLocalTesting.csproj", "{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PushForLocalTesting", "Utils\PushForLocalTesting\PushForLocalTesting.csproj", "{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,10 +131,6 @@ Global
 		{4C446033-19E3-4D88-B4A2-AE2D5190AF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C446033-19E3-4D88-B4A2-AE2D5190AF41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C446033-19E3-4D88-B4A2-AE2D5190AF41}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4EA5F66A-38DD-4CA8-B797-18A5CE083BFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4EA5F66A-38DD-4CA8-B797-18A5CE083BFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4EA5F66A-38DD-4CA8-B797-18A5CE083BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4EA5F66A-38DD-4CA8-B797-18A5CE083BFA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08ADF968-0FFF-4E3C-88EC-E04E2FA94D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08ADF968-0FFF-4E3C-88EC-E04E2FA94D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08ADF968-0FFF-4E3C-88EC-E04E2FA94D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -178,7 +172,6 @@ Global
 		{816FFC81-38E0-442C-8236-742551AC8AFC} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{E66479DB-792B-4A2F-AA03-DEAAB128CE94} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{4C446033-19E3-4D88-B4A2-AE2D5190AF41} = {943E7871-2EEA-4C97-857B-16443CB240E6}
-		{4EA5F66A-38DD-4CA8-B797-18A5CE083BFA} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{D6CB3117-1CB6-4263-AE89-37483A0379B9} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
 		{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
 	EndGlobalSection

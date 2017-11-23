@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using Olive.Entities;
 using Olive.Services.Email;
 using Olive.Services.Integration;
-using Olive.Services.TaskAutomation;
 using Olive.Web;
 
 namespace Olive.Services.Testing
@@ -65,7 +64,6 @@ namespace Olive.Services.Testing
             try
             {
                 SqlConnection.ClearAllPools();
-                await AutomatedTask.DeleteExecutionStatusHistory();
                 if (enforceRestart) TempDatabaseInitiated = null;
                 if (TempDatabaseInitiated.HasValue) return;
 
@@ -188,48 +186,22 @@ namespace Olive.Services.Testing
         /// </summary>
         public static async Task DispatchTasksList()
         {
-            var response = Context.Http.Response;
-            var request = Context.Http.Request;
+            throw new NotImplementedException("Hangfire?");
 
-            response.ContentType = "text/html";
+            //var response = Context.Http.Response;
+            //var request = Context.Http.Request;
 
-            response.WriteAsync("<html>").RunSynchronously();
+            //response.ContentType = "text/html";
 
-            response.WriteAsync("<body>").RunSynchronously();
+            //response.WriteAsync("<html>").RunSynchronously();
 
-            if (request.Has("t"))
-            {
-                await AutomatedTask.GetAllTasks().Single(t => t.Name == request.GetValue("t")).Execute();
-                response.WriteAsync($"Done: {request.GetValue("t")}<br/><br/>").RunSynchronously();
-            }
+            //response.WriteAsync("<body>").RunSynchronously();
 
-            // Render a list of tasks
-            response.WriteAsync(AutomatedTask.GetAllTasks().Select(t => "<a href='/?web.test.command=tasks&t={0}'>{0}</a>".FormatWith(t.Name)).ToString("<br/>") +
-                "<br/><br/><a href='/Web.Test.Command=restart' style='display:none;'>Restart Temp Database</a>").RunSynchronously();
+            //response.WriteAsync("<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>").RunSynchronously();
 
-            response.WriteAsync("<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>").RunSynchronously();
+            //response.WriteAsync("</body>").RunSynchronously();
 
-            response.WriteAsync("</body>").RunSynchronously();
-
-            response.WriteAsync("</html>").RunSynchronously();
-        }
-
-        internal static string GetSanityAdaptorScript()
-        {
-            return string.Empty; // 24 Oct 2016 - See if Sanity still needs it.
-
-            // var r = new StringBuilder();
-
-            // r.AppendLine("window.OpenBrowserWindow = function(url, target) { if (target && target != '_parent' && target != 'parent') target='_self'; window.open(url, target); }");
-
-            // r.AppendLine("$(function() { ");
-
-            // r.AppendLine("$(window).off('click.SanityAdapter').on('click.SanityAdapter', function(e) {");
-            // r.AppendLine("var link = $(e.target).filter('a').removeAttr('target'); } );");
-
-            // r.AppendLine("});");
-
-            // return r.ToString();
+            //response.WriteAsync("</html>").RunSynchronously();
         }
 
         public static string GetWebTestWidgetHtml(HttpRequest request)
