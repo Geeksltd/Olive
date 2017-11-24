@@ -7,7 +7,7 @@ namespace Olive.Entities
         Task Save(Blob blob);
         Task Delete(Blob blob);
         Task<byte[]> Load(Blob blob);
-        bool FileExists(Blob blob);
+        Task<bool> FileExists(Blob blob);
         bool CostsToCheckExistence();
     }
 }

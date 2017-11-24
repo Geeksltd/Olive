@@ -16,28 +16,30 @@ namespace Olive.Services.BlobAws
     {
         const string FILE_NOT_FOUND = "NotFound";
 
+        static AmazonS3Client CreateClient() => new AmazonS3Client();
+
         /// <summary>
         /// Uploads a document to the Amazon S3 Client.
         /// </summary>
         internal static async Task Upload(Blob document)
         {
-            using (var client = AWSClientFactory.CreateS3Client())
+            using (var client = CreateClient())
             {
                 var request = await CreateUploadRequest(document);
                 await client.PutObjectAsync(request);
             }
         }
 
-        internal static bool FileExists(Blob document)
+        internal static async Task<bool> FileExists(Blob document)
         {
             try
             {
-                using (var client = AWSClientFactory.CreateS3Client())
+                using (var client = CreateClient())
                 {
-                    return client.GetObjectMetadata(AWSInfo.DocumentsS3BucketName, GetKey(document)) != null;
+                    return await client.GetObjectMetadataAsync(AWSInfo.DocumentsS3BucketName, GetKey(document)) != null;
                 }
             }
-            catch (Amazon.S3.AmazonS3Exception ex)
+            catch (AmazonS3Exception ex)
             {
                 if (ex.ErrorCode == FILE_NOT_FOUND) return false;
 
@@ -49,7 +51,7 @@ namespace Olive.Services.BlobAws
 
         internal static async Task<byte[]> Load(string documentKey)
         {
-            using (var client = AWSClientFactory.CreateS3Client())
+            using (var client = CreateClient())
             {
                 var request = CreateGetObjectRequest(documentKey);
 
@@ -75,24 +77,25 @@ namespace Olive.Services.BlobAws
 
         internal static async Task DeleteOlds(Blob document)
         {
-            var oldVersionKeys = GetOldVersionKeys(document);
+            var oldVersionKeys = await GetOldVersionKeys(document);
 
             if (oldVersionKeys.Any())
-                using (var client = AWSClientFactory.CreateS3Client())
+                using (var client = CreateClient())
                 {
                     var request = CreateDeleteOldsRequest(oldVersionKeys);
                     await client.DeleteObjectsAsync(request);
                 }
         }
 
-        static IEnumerable<KeyVersion> GetOldVersionKeys(Blob document) => GetOldKeys(document).Select(s => new KeyVersion { Key = s });
+        static async Task<IEnumerable<KeyVersion>> GetOldVersionKeys(Blob document)
+            => await GetOldKeys(document).Select(s => new KeyVersion { Key = s });
 
         /// <summary>
         /// Deletes a document with the specified key name on the Amazon S3 server.
         /// </summary>
         internal static async Task Delete(Blob document)
         {
-            using (var client = AWSClientFactory.CreateS3Client())
+            using (var client = CreateClient())
             {
                 var response = await client.DeleteObjectAsync(AWSInfo.DocumentsS3BucketName, GetKey(document));
 
@@ -114,14 +117,15 @@ namespace Olive.Services.BlobAws
             };
         }
 
-        static IEnumerable<string> GetOldKeys(Blob document)
+        static async Task<IEnumerable<string>> GetOldKeys(Blob document)
         {
             var key = GetKey(document);
 
-            using (var client = AWSClientFactory.CreateS3Client())
+            using (var client = CreateClient())
             {
                 var request = CreateGetObjectsRequest(document);
-                return client.ListObjects(request).S3Objects.Select(s => s.Key);
+                return (await client.ListObjectsAsync(request))
+                    .S3Objects.Select(s => s.Key);
             }
         }
 

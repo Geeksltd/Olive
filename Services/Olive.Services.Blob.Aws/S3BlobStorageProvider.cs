@@ -11,7 +11,7 @@ namespace Olive.Services.BlobAws
 
         public Task<byte[]> Load(Blob document) => S3Proxy.Load(document);
 
-        public bool FileExists(Blob document) => S3Proxy.FileExists(document);
+        public Task<bool> FileExists(Blob document) => S3Proxy.FileExists(document);
 
         public bool CostsToCheckExistence() => true;
     }

@@ -219,7 +219,12 @@ namespace Olive.Entities
 
             if (FileName == EMPTY_FILE) return true;
 
-            if (GetStorageProvider().FileExists(this)) { hasValue = true; return false; }
+            if (GetStorageProvider().CostsToCheckExistence() ||
+                GetStorageProvider().FileExists(this).AwaitResult())
+            {
+                hasValue = true;
+                return false;
+            }
 
             if (FileData == null) return true;
 

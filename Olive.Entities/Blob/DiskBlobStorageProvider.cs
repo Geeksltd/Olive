@@ -66,10 +66,10 @@ namespace Olive.Entities
             return new byte[0];
         }
 
-        public virtual bool FileExists(Blob blob)
+        public virtual Task<bool> FileExists(Blob blob)
         {
-            if (blob.LocalPath.HasValue() && File.Exists(blob.LocalPath)) return true;
-            return false;
+            var exists = blob.LocalPath.HasValue() && File.Exists(blob.LocalPath);
+            return Task.FromResult(exists);
         }
 
         public virtual bool CostsToCheckExistence() => false;

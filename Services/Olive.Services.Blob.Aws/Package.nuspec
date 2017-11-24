@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.BlobAws</id>
+    <version>1.0.2</version>
+    <title>Olive Blob AWS (S3) Storage Provider</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <description>A plugin for Olive Framework</description>
+  </metadata>
+  <files>
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Services.BlobAws.dll" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Services.BlobAws.pdb" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Services.BlobAws.xml" target="lib\netcoreapp2.0\" />
+  </files>
+</package>
