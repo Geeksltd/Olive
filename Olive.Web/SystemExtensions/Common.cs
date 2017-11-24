@@ -96,7 +96,7 @@ namespace Olive.Web
             if (request.Query.ContainsKey(key))
                 return request.Query[key].ToStringOrEmpty();
 
-            return request.GetRouteValues()[key].ToStringOrEmpty();
+            return (request.GetRouteValues()?[key]).ToStringOrEmpty();
         }
 
         /// <summary>
@@ -350,12 +350,12 @@ namespace Olive.Web
         {
             if (request.HasFormContentType && request.Form.ContainsKey(argument)) return true;
             else if (request.Query.ContainsKey(argument)) return true;
-            else return request.GetRouteValues()[argument].ToStringOrEmpty().HasValue();
+            else return (request.GetRouteValues()?[argument]).ToStringOrEmpty().HasValue();
         }
 
         public static RouteValueDictionary GetRouteValues(this HttpRequest request)
         {
-            return Context.ActionContextAccessor.ActionContext.RouteData.Values;
+            return Context.ActionContextAccessor?.ActionContext?.RouteData?.Values;
         }
 
         /// <summary>

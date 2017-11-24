@@ -87,5 +87,7 @@ namespace Olive.Entities
 
             return false;
         }
+
+        public bool CostsToCheckExistence() => false;
     }
 }
