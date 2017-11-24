@@ -179,7 +179,7 @@ namespace Olive.Entities
         {
             var getSiblingsMethod = item.GetType().GetMethod("GetSiblings", BindingFlags.Public | BindingFlags.Instance);
 
-            bool isAcceptable = true;
+            var isAcceptable = true;
 
             if (getSiblingsMethod == null) isAcceptable = false;
             else if (getSiblingsMethod.GetParameters().Any()) isAcceptable = false;

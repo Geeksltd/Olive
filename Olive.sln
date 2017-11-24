@@ -57,6 +57,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{E51A8EF6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PushForLocalTesting", "Utils\PushForLocalTesting\PushForLocalTesting.csproj", "{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Services.BlobAws", "Services\Olive.Services.Blob.Aws\Olive.Services.BlobAws.csproj", "{52AF0D90-E65E-450C-877B-95B831B35694}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,6 +156,10 @@ Global
 		{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52AF0D90-E65E-450C-877B-95B831B35694}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52AF0D90-E65E-450C-877B-95B831B35694}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52AF0D90-E65E-450C-877B-95B831B35694}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52AF0D90-E65E-450C-877B-95B831B35694}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,6 +180,7 @@ Global
 		{4C446033-19E3-4D88-B4A2-AE2D5190AF41} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{D6CB3117-1CB6-4263-AE89-37483A0379B9} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
 		{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
+		{52AF0D90-E65E-450C-877B-95B831B35694} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

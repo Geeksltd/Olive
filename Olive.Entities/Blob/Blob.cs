@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Olive.Entities
 {
@@ -129,10 +127,7 @@ namespace Olive.Entities
 
                 return folderName;
             }
-            set
-            {
-                folderName = value;
-            }
+            set => folderName = value;
         }
 
         IBlobStorageProvider GetStorageProvider() => BlobStorageProviderFactory.GetProvider(FolderName);
@@ -141,12 +136,6 @@ namespace Olive.Entities
         /// Gets an empty blob object.
         /// </summary>
         public static Blob Empty() => new Blob(null, EMPTY_FILE) { IsEmptyBlob = true };
-
-        /// <summary>
-        /// Gets all fall-back paths for this Blob
-        /// </summary>
-        public IEnumerable<string> FallbackPaths =>
-            (ownerEntity as IPickyBlobContainer)?.GetFallbackPaths(this) ?? Enumerable.Empty<string>();
 
         /// <summary>
         /// Gets the Url of this blob.
@@ -182,9 +171,6 @@ namespace Olive.Entities
         {
             if (ownerEntity == null) return null;
 
-            if (ownerEntity is IPickyBlobUrlContainer)
-                return (ownerEntity as IPickyBlobUrlContainer).GetUrl(this);
-
             return GetVirtualFolderUrl(mode) + GetFileNameWithoutExtension() + FileExtension +
                    ("?" + FileName).OnlyWhen(mode == AccessMode.Open);
         }
@@ -217,16 +203,8 @@ namespace Olive.Entities
 
         public string GetVirtualFolderUrl(AccessMode accessMode)
         {
-            if (ownerEntity is IPickyBlobContainer)
-            {
-                var result = (ownerEntity as IPickyBlobContainer).GetVirtualFolderPath(this);
-                if (result.HasValue()) return result.TrimEnd('/') + "/";
-            }
-
             var root = Config.Get("UploadFolder.VirtualRoot").Or("/Documents/");
-
             if (accessMode == AccessMode.Secure) root = Config.Get("UploadFolder.VirtualRoot.Secure").Or(SecureVirtualRoot);
-
             return root + FolderName + "/";
         }
 
@@ -396,12 +374,6 @@ namespace Olive.Entities
             {
                 if (ownerEntity == null) return null;
 
-                if (ownerEntity is IPickyBlobContainer)
-                {
-                    var result = (ownerEntity as IPickyBlobContainer).GetPhysicalFolderPath(this);
-                    if (result.HasValue()) return result;
-                }
-
                 var docsFolder = Path.Combine(GetFilesRoot(), FolderName + "\\");
 
                 return docsFolder;
@@ -457,13 +429,6 @@ namespace Olive.Entities
         {
             if (ownerEntity == null) return null;
             if (ownerEntity is IntEntity && ownerEntity.IsNew) return null;
-
-            if (ownerEntity is IPickyBlobContainer)
-            {
-                var result = (ownerEntity as IPickyBlobContainer).GetFileNameWithoutExtension(this);
-
-                if (result.HasValue()) return result;
-            }
 
             if (StoreWithFileName)
                 return FileName.TrimEnd(FileExtension);
@@ -532,34 +497,23 @@ namespace Olive.Entities
             else return this;
         }
 
-        #region IComparable<Blob> Members
-
         /// <summary>
         /// Compares this blob versus a specified other blob.
         /// </summary>
         public int CompareTo(Blob other)
         {
-            if (other == null)
-                return 1;
+            if (other == null) return 1;
 
-            if (IsEmpty())
-            {
-                if (other.IsEmpty())
-                    return 0;
-                else return -1;
-            }
+            if (IsEmpty()) return other.IsEmpty() ? 0 : -1;
+
+            if (other.IsEmpty()) return 1;
             else
             {
-                if (other.IsEmpty())
-                    return 1;
-                else
-                {
-                    var me = FileData?.Length;
-                    var him = other.FileData?.Length;
-                    if (me == him) return 0;
-                    if (me > him) return 1;
-                    else return -1;
-                }
+                var me = FileData?.Length;
+                var him = other.FileData?.Length;
+                if (me == him) return 0;
+                if (me > him) return 1;
+                else return -1;
             }
         }
 
@@ -567,7 +521,5 @@ namespace Olive.Entities
         /// Compares this blob versus a specified other blob.
         /// </summary>
         public int CompareTo(object obj) => CompareTo(obj as Blob);
-
-        #endregion
     }
 }

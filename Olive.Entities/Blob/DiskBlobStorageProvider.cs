@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities
 {
-    class DiskBlobStorageProvider : IBlobStorageProvider
+    public class DiskBlobStorageProvider : IBlobStorageProvider
     {
         // TODO: It is a quick workaround for Intern which seems to be back in .Net Core 2
-        ConcurrentDictionary<string, AsyncLock> StringKeyAsyncLock = new ConcurrentDictionary<string, AsyncLock>();
+        protected readonly ConcurrentDictionary<string, AsyncLock> StringKeyAsyncLock = new ConcurrentDictionary<string, AsyncLock>();
 
-        AsyncLock GetAsyncLock(string key) => StringKeyAsyncLock.GetOrAdd(key, x => new AsyncLock());
+        protected virtual AsyncLock GetAsyncLock(string key) => StringKeyAsyncLock.GetOrAdd(key, x => new AsyncLock());
 
-        public async Task Save(Blob blob)
+        public virtual async Task Save(Blob blob)
         {
             var fileDataToSave = await blob.GetFileData(); // Because file data will be lost in delete.
 
@@ -35,7 +35,7 @@ namespace Olive.Entities
             }
         }
 
-        public async Task Delete(Blob blob)
+        public virtual async Task Delete(Blob blob)
         {
             if (!Directory.Exists(blob.LocalFolder)) Directory.CreateDirectory(blob.LocalFolder);
 
@@ -55,7 +55,7 @@ namespace Olive.Entities
             await Task.WhenAll(tasks);
         }
 
-        public async Task<byte[]> Load(Blob blob)
+        public virtual async Task<byte[]> Load(Blob blob)
         {
             using (await GetAsyncLock(blob.LocalPath).Lock())
             {
@@ -63,31 +63,15 @@ namespace Olive.Entities
                     return await File.ReadAllBytesAsync(blob.LocalPath);
             }
 
-            // Look in fall-back paths for file
-            foreach (var fallbackPath in blob.FallbackPaths)
-            {
-                using (await GetAsyncLock(blob.LocalPath).Lock())
-                {
-                    if (File.Exists(fallbackPath))
-                        return await File.ReadAllBytesAsync(fallbackPath);
-                }
-            }
-
             return new byte[0];
         }
 
-        public bool FileExists(Blob blob)
+        public virtual bool FileExists(Blob blob)
         {
-            if (blob.LocalPath.HasValue() && File.Exists(blob.LocalPath))
-                return true;
-
-            // Check for file in fall-back paths
-            if (blob.FallbackPaths.Any(File.Exists))
-                return true;
-
+            if (blob.LocalPath.HasValue() && File.Exists(blob.LocalPath)) return true;
             return false;
         }
 
-        public bool CostsToCheckExistence() => false;
+        public virtual bool CostsToCheckExistence() => false;
     }
 }

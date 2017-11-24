@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+    <OutputPath>..\..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\..\@Assemblies\netcoreapp2.0\Olive.Services.BlobAws.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
+    <ProjectReference Include="..\..\Olive.Entities\Olive.Entities.csproj" />
+    <ProjectReference Include="..\..\Olive.Web\Olive.Web.csproj" />
+    <ProjectReference Include="..\..\Olive\Olive.csproj" />
+  </ItemGroup>
+
+</Project>
