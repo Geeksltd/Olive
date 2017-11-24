@@ -12,17 +12,37 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
+    <PackageReference Include="System.Security.Principal" Version="4.3.0" />
+    <PackageReference Include="System.Security.Principal.Windows" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Olive.Entities.Data.SqlServer\Olive.Entities.Data.SqlServer.csproj" />
-    <ProjectReference Include="..\..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
-    <ProjectReference Include="..\..\Olive.Entities\Olive.Entities.csproj" />
-    <ProjectReference Include="..\..\Olive.Web\Olive.Web.csproj" />
-    <ProjectReference Include="..\..\Olive\Olive.csproj" />
-    <ProjectReference Include="..\Olive.Services.Email\Olive.Services.Email.csproj" />
-    <ProjectReference Include="..\Olive.Services.Excel\Olive.Services.Excel.csproj" />
-    <ProjectReference Include="..\Olive.Services.Integration\Olive.Services.Integration.csproj" />
+    <Reference Include="Olive">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities.Data">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities.Data.SqlServer">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Services.Email">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Services.Email.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Services.Excel">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Services.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Services.Integration">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Services.Integration.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Web">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

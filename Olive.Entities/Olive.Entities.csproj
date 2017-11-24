@@ -13,7 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Olive\Olive.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

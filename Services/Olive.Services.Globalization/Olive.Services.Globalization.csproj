@@ -13,11 +13,21 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.5.2-beta6" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Olive.Entities\Olive.Entities.csproj" />
-    <ProjectReference Include="..\..\Olive.Web\Olive.Web.csproj" />
+    <Reference Include="Olive">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Web">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

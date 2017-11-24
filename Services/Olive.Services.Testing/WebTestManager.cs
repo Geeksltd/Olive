@@ -156,8 +156,7 @@ namespace Olive.Services.Testing
 
                 var trueOrigin = DateTime.Now;
 
-                LocalTime.RedefineNow(() => { return date.Add(DateTime.Now.Subtract(trueOrigin)); });
-                response.Clear();
+                LocalTime.RedefineNow(() => { return date.Add(DateTime.Now.Subtract(trueOrigin)); });                
                 response.EndWith(date.ToString("yyyy-MM-dd @ HH:mm:ss"));
             }
             else if (command == "remove_snapshot")

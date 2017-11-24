@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Olive;
 using Olive.Entities;
-using Olive.Services.Globalization;
 
 namespace Olive.Mvc
 {

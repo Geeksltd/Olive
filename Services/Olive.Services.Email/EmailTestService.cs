@@ -84,7 +84,6 @@ namespace Olive.Services.Email
 
         async Task Dispatch(string response)
         {
-            Response.Clear();
             Response.ContentType = "text/html";
             await Response.WriteAsync("<html>");
 

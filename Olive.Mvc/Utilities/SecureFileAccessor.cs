@@ -57,10 +57,6 @@ namespace Olive.Mvc
         {
             var file = Blob.LocalPath;
 
-            // Fall-back logic
-            if (!File.Exists(file))
-                file = Blob.FallbackPaths.FirstOrDefault(File.Exists);
-
             return file.AsFile();
         }
 

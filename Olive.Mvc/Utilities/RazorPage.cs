@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Olive.Services.Globalization;
 
 namespace Olive.Mvc
 {
@@ -15,21 +14,6 @@ namespace Olive.Mvc
         protected virtual TModel info => Model;
 
         public HttpRequest Request => Context.Request;
-
-        /// <summary>
-        /// Will return the translation of the specified phrase in the language specified in user's cookie (or default language).
-        /// </summary>
-        public static Task<string> Translate(string phrase) => Translator.Translate(phrase);
-
-        /// <summary>
-        /// Will return the translation of the specified markup in the language specified in user's cookie (or default language).
-        /// </summary>
-        public static async Task<HtmlString> TranslateHtml(string markup)
-        {
-            if (markup.IsEmpty()) return HtmlString.Empty;
-
-            return new HtmlString(await Translator.TranslateHtml(markup));
-        }
 
         /// <summary>
         /// Gets a file from its relative path.
