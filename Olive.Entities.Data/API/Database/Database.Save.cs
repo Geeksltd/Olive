@@ -114,8 +114,8 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             if (Transaction.Current != null)
                 Transaction.Current.TransactionCompleted += (s, e) => { Cache.Current.Remove(entity); };
-            
-                DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
+
+            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
 
             if (!(entity is IApplicationEvent))
                 await OnUpdated(entity);
@@ -132,7 +132,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
         /// Saves the specified records in the data repository.
         /// The operation will run in a Transaction.
         /// </summary>
-        public async Task<IEnumerable<T>> Save<T>(List<T> records) where T : IEntity => await Save(records as IEnumerable<T>);
+        public Task<IEnumerable<T>> Save<T>(List<T> records) where T : IEntity => Save(records as IEnumerable<T>);
 
         /* ===================== Update ========================*/
 
@@ -169,7 +169,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
         /// </summary>
         /// <param name="item">The object to be updated in database.</param>
         /// <param name="action">Update action. For example: o=>o.Property = "Value"</param>
-        public async Task<T> Update<T>(T item, Action<T> action) where T : IEntity => await Update<T>(item, action, SaveBehaviour.Default);
+        public Task<T> Update<T>(T item, Action<T> action) where T : IEntity => Update<T>(item, action, SaveBehaviour.Default);
 
         /// <summary>
         /// Runs an update command on a given object's clone and persists the updated object in database. It returns the updated instance.

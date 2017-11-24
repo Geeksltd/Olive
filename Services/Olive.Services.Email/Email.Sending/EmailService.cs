@@ -92,19 +92,19 @@ namespace Olive.Services.Email
         /// <summary>
         /// Tries to sends all emails.
         /// </summary>
-        public static async Task SendAll() => await SendAll(ALL_CATEGORIES, TimeSpan.Zero);
+        public static Task SendAll() => SendAll(ALL_CATEGORIES, TimeSpan.Zero);
 
         /// <summary>
         /// Tries to sends all emails.
         /// </summary>
         /// <param name="category">The category of the emails to send. Use "*" to indicate "all emails".</param>
-        public static async Task SendAll(string category) => await SendAll(category, TimeSpan.Zero);
+        public static Task SendAll(string category) => SendAll(category, TimeSpan.Zero);
 
         /// <summary>
         /// Tries to sends all emails.
         /// </summary>
         /// <param name="delay">The time to wait in between sending each outstanding email.</param>
-        public static async Task SendAll(TimeSpan delay) => await SendAll(ALL_CATEGORIES, delay);
+        public static Task SendAll(TimeSpan delay) => SendAll(ALL_CATEGORIES, delay);
 
         /// <summary>
         /// Tries to sends all emails.

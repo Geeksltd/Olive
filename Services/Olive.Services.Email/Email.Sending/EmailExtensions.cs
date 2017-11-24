@@ -119,7 +119,7 @@ namespace Olive.Services.Email
         /// <summary>
         /// Will send an email and returns true for successful sending.
         /// </summary>
-        public static async Task<bool> Send(this IEmailQueueItem mailItem) => await EmailService.Send(mailItem);
+        public static Task<bool> Send(this IEmailQueueItem mailItem) => EmailService.Send(mailItem);
 
         /// <summary>
         /// Records an unsuccessful attempt to send this email.

@@ -72,7 +72,7 @@ namespace Olive.Entities
         string fileName, folderName;
 
         bool hasValue; // For performance, cache it
-        
+
         public string FileName
         {
             get { return fileName.Or(EMPTY_FILE); }
@@ -256,7 +256,7 @@ namespace Olive.Entities
         /// <summary>
         /// Creates a clone of this blob.
         /// </summary>
-        public async Task<Blob> Clone() => await Clone(attach: false, @readonly: false);
+        public Task<Blob> Clone() => Clone(attach: false, @readonly: false);
 
         public async Task<Blob> Clone(bool attach, bool @readonly)
         {

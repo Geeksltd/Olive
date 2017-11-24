@@ -58,7 +58,7 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Executes the specified command text as nonquery.
         /// </summary>
-        public async Task<int> ExecuteNonQuery(string command) => await ExecuteNonQuery(command, CommandType.Text);
+        public Task<int> ExecuteNonQuery(string command) => ExecuteNonQuery(command, CommandType.Text);
 
         /// <summary>
         /// Executes the specified command text as nonquery.
@@ -82,7 +82,7 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Executes the specified command text against the database connection of the context and returns the single value.
         /// </summary>
-        public async Task<object> ExecuteScalar(string command) => await ExecuteScalar(command, CommandType.Text);
+        public Task<object> ExecuteScalar(string command) => ExecuteScalar(command, CommandType.Text);
 
         /// <summary>
         /// Executes the specified command text against the database connection of the context and returns the single value.

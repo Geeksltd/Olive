@@ -71,6 +71,7 @@ namespace Olive
             return await Task.WhenAll(resultTasks);
         }
 
-        public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> list) => await Task.WhenAll(list);
+        public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> list)
+            => await Task.WhenAll(list);
     }
 }

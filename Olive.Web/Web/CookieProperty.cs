@@ -17,22 +17,22 @@
         /// <summary>
         /// Gets the value of the property sent from the client browser as a cookie.
         /// </summary>
-        public static async Task<T> Get<T>() => await Get<T>(null, default(T));
+        public static Task<T> Get<T>() => Get<T>(null, default(T));
 
         /// <summary>
         /// Gets the value of a string property sent from the client browser as a cookie.
         /// </summary>
-        public static async Task<string> Get(string key) => await Get<string>(key, null);
+        public static Task<string> Get(string key) => Get<string>(key, null);
 
         /// <summary>
         /// Gets the value of the property sent from the client browser as a cookie.
         /// </summary>
-        public static async Task<T> Get<T>(T defaultValue) => await Get<T>(null, defaultValue);
+        public static Task<T> Get<T>(T defaultValue) => Get<T>(null, defaultValue);
 
         /// <summary>
         /// Gets the value of the property sent from the client browser as a cookie.
         /// </summary>
-        public static async Task<T> Get<T>(string propertyName) => await Get<T>(propertyName, default(T));
+        public static Task<T> Get<T>(string propertyName) => Get<T>(propertyName, default(T));
 
         public static async Task<IEnumerable<string>> GetStrings(string propertyName) =>
             await Get<IEnumerable<string>>(propertyName, null);

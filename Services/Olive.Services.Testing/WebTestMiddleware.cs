@@ -19,14 +19,14 @@ namespace Olive.Services.Testing
             var terminateRequest = false;
 
             WebTestManager.AwaitReadiness();
-            if (context?.Request?.GetValue("Web.Test.Command") == "Sql.Profile")
+            if (context?.Request?.Param("Web.Test.Command") == "Sql.Profile")
             {
-                var file = await Entities.Data.DataAccessProfiler.GenerateReport(context.Request.GetValue("Mode") == "Snapshot").ToCsvFile();
+                var file = await Entities.Data.DataAccessProfiler.GenerateReport(context.Request.Param("Mode") == "Snapshot").ToCsvFile();
                 await context.Response.WriteAsync("Report generated: " + file.FullName);
                 terminateRequest = true;
             }
             else
-                await WebTestManager.ProcessCommand(context?.Request?.GetValue("Web.Test.Command"));
+                await WebTestManager.ProcessCommand(context?.Request?.Param("Web.Test.Command"));
             
             if (!terminateRequest)
                 await Next.Invoke(context);

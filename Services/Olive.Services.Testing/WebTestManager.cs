@@ -90,15 +90,15 @@ namespace Olive.Services.Testing
             var request = Context.Http.Request;
             var response = Context.Http.Response;
 
-            var isShared = request.GetValue("mode") == "shared";
+            var isShared = request.Param("mode") == "shared";
 
             if (command == "snap")
             {
-                await new Snapshot(request.GetValue("name"), isShared).Create(Context.Http);
+                await new Snapshot(request.Param("name"), isShared).Create(Context.Http);
             }
             else if (command == "restore")
             {
-                await new Snapshot(request.GetValue("name"), isShared).Restore(Context.Http);
+                await new Snapshot(request.Param("name"), isShared).Restore(Context.Http);
             }
             else if (command == "remove_snapshots")
             {
@@ -110,7 +110,7 @@ namespace Olive.Services.Testing
             }
             else if (command == "snapExists")
             {
-                if (new Snapshot(request.GetValue("name"), isShared).Exists())
+                if (new Snapshot(request.Param("name"), isShared).Exists())
                 {
                     response.EndWith("true");
                 }
@@ -123,7 +123,7 @@ namespace Olive.Services.Testing
             {
                 await InitiateTempDatabase(enforceRestart: true, mustRenew: true);
                 DatabaseChangeWatcher.Restart();
-                if (request.Has("runner")) CurrentRunner = request.GetValue("runner");
+                if (request.Has("runner")) CurrentRunner = request.Param("runner");
             }
             else if (command == "testEmail")
             {
@@ -139,7 +139,7 @@ namespace Olive.Services.Testing
             }
             else if (command == "setLocalDate")
             {
-                if (request.GetValue("date") == "now")
+                if (request.Param("date") == "now")
                 {
                     // reset to normal
                     LocalTime.RedefineNow(overriddenNow: null);
@@ -147,10 +147,10 @@ namespace Olive.Services.Testing
                 }
 
                 var time = LocalTime.Now.TimeOfDay;
-                if (request.Has("time")) time = TimeSpan.Parse(request.GetValue("time"));
+                if (request.Has("time")) time = TimeSpan.Parse(request.Param("time"));
 
                 var date = LocalTime.Today;
-                if (request.Has("date")) date = request.GetValue("date").To<DateTime>();
+                if (request.Has("date")) date = request.Param("date").To<DateTime>();
 
                 date = date.Add(time);
 
@@ -162,20 +162,20 @@ namespace Olive.Services.Testing
             }
             else if (command == "remove_snapshot")
             {
-                Snapshot.RemoveSnapshot(request.GetValue("name"));
+                Snapshot.RemoveSnapshot(request.Param("name"));
             }
             else if (command == "inject.service.response")
             {
                 var serviceType = AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany(a => a.GetTypes())
                     .Where(x => x.InhritsFrom(typeof(IntegrationService)))
-                    .SingleOrDefault(x => x.Name == request.GetValue("service"));
+                    .SingleOrDefault(x => x.Name == request.Param("service"));
 
                 if (serviceType == null)
-                    throw new Exception("Cannot find a class named " + request.GetValue("service") + " in the currently loaded assemblies, which inherits from IntegrationService<,>.");
+                    throw new Exception("Cannot find a class named " + request.Param("service") + " in the currently loaded assemblies, which inherits from IntegrationService<,>.");
 
                 new Thread(new ThreadStart(async () =>
-                await IntegrationTestInjector.Inject(serviceType, request.GetValue("request"), request.GetValue("response"))))
+                await IntegrationTestInjector.Inject(serviceType, request.Param("request"), request.Param("response"))))
                 { IsBackground = true }
                .Start();
             }

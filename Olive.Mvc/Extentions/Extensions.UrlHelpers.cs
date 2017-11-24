@@ -18,9 +18,9 @@ namespace Olive.Mvc
 
         public static string Current(this IUrlHelper url)
         {
-            var result = url.ActionContext?.HttpContext.Request.GetValue("current.request.url");
+            var result = url.ActionContext?.HttpContext.Request.Param("current.request.url");
 
-            if (result.IsEmpty()) result = Context.Http?.Request.GetValue("current.request.url");
+            if (result.IsEmpty()) result = Context.Http?.Request.Param("current.request.url");
 
             if (result.HasValue())
             {
@@ -69,7 +69,7 @@ namespace Olive.Mvc
 
         public static string ReturnUrl(this IUrlHelper urlHelper)
         {
-            var url = urlHelper.ActionContext.HttpContext.Request.GetValue("ReturnUrl");
+            var url = urlHelper.ActionContext.HttpContext.Request.Param("ReturnUrl");
             if (url.IsEmpty()) return string.Empty;
 
             if (urlHelper.IsLocalUrl(url)) return url;
@@ -130,7 +130,7 @@ namespace Olive.Mvc
 
         public static Task<IEnumerable<T>> GetList<T>(this HttpRequest request, string key, char separator = ',') where T : IEntity
         {
-            return request.GetValue(key).OrEmpty().Split(separator).Trim().Select(x => Entity.Database.Get<T>(x)).AwaitAll();
+            return request.Param(key).OrEmpty().Split(separator).Trim().Select(x => Entity.Database.Get<T>(x)).AwaitAll();
         }
 
         public static Dictionary<string, string> GetRequestParameters(this ActionContext actionContext)

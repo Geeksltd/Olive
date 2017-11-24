@@ -98,7 +98,7 @@ namespace Olive.Web
         /// </summary>
         public static string GetReturnUrl(this HttpRequest request)
         {
-            var result = request.GetValue("ReturnUrl");
+            var result = request.Param("ReturnUrl");
 
             if (result.IsEmpty()) return string.Empty;
 

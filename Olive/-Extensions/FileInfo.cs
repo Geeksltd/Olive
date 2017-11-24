@@ -79,7 +79,7 @@ namespace Olive
         /// <summary>
         /// Saves the specified content on this file using the Western European Windows Encoding 1252.
         /// </summary>
-        public static async Task WriteAllText(this FileInfo file, string content) => await WriteAllText(file, content, DefaultEncoding);
+        public static Task WriteAllText(this FileInfo file, string content) => WriteAllText(file, content, DefaultEncoding);
 
         /// <summary>
         /// Saves the specified content on this file. 
@@ -99,7 +99,7 @@ namespace Olive
         /// <summary>
         /// Saves the specified content to the end of this file.
         /// </summary>
-        public static async Task AppendAllText(this FileInfo file, string content) => await AppendAllText(file, content, DefaultEncoding);
+        public static Task AppendAllText(this FileInfo file, string content) => AppendAllText(file, content, DefaultEncoding);
 
         /// <summary>
         /// Saves the specified content to the end of this file.
@@ -196,12 +196,12 @@ namespace Olive
         /// <summary>
         /// Compresses this string into Gzip. By default it will use UTF8 encoding.
         /// </summary>
-        public static async Task<byte[]> GZip(this string data) => await GZip(data, Encoding.UTF8);
+        public static Task<byte[]> GZip(this string data) => GZip(data, Encoding.UTF8);
 
         /// <summary>
         /// Compresses this string into Gzip.
         /// </summary>
-        public static async Task<byte[]> GZip(this string data, Encoding encoding) => await encoding.GetBytes(data).GZip();
+        public static Task<byte[]> GZip(this string data, Encoding encoding) => encoding.GetBytes(data).GZip();
 
         /// <summary>
         /// Gets the total size of all files in this directory.

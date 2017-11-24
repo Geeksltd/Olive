@@ -93,7 +93,8 @@ namespace Olive.Entities.Data
         /// If it can't find the object, an exception will be thrown.
         /// </summary>
         /// <param name="entityID">The primary key value of the object to load.</param>
-        public async Task<IEntity<Guid>> Get(Guid entityID, Type objectType) => await Get((object)entityID, objectType) as IEntity<Guid>;
+        public async Task<IEntity<Guid>> Get(Guid entityID, Type objectType)
+            => await Get((object)entityID, objectType) as IEntity<Guid>;
 
         /// <summary>
         /// Get an entity with the given type and ID from the database.

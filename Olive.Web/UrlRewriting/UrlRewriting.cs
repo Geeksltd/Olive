@@ -90,7 +90,7 @@ namespace Olive.Web
         /// <summary>
         /// Gets the Currently requested resource.
         /// </summary>
-        public static async Task<IWebResource> FindRequestedResource() => await FindRequestedResource(ignoreDomain: true);
+        public static Task<IWebResource> FindRequestedResource() => FindRequestedResource(ignoreDomain: true);
 
         /// <summary>
         /// Gets the Currently requested resource.

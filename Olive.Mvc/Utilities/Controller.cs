@@ -228,7 +228,7 @@ namespace Olive.Mvc
         /// <summary>
         /// Will return the translation of the specified phrase in the language specified in user's cookie (or default language).
         /// </summary>
-        public static async Task<string> Translate(string phrase) => await Translator.Translate(phrase);
+        public static Task<string> Translate(string phrase) => Translator.Translate(phrase);
 
         /// <summary>
         /// Will return the translation of the specified validation exception's message in the language specified in user's cookie (or default language).
@@ -243,7 +243,7 @@ namespace Olive.Mvc
         /// <summary>
         /// Will return the translation of the specified markup in the language specified in user's cookie (or default language).
         /// </summary>
-        public static async Task<string> TranslateHtml(string markup) => await Translator.TranslateHtml(markup);
+        public static Task<string> TranslateHtml(string markup) => Translator.TranslateHtml(markup);
 
         /// <summary>
         ///  Creates a System.Web.Mvc.PartialViewResult object that renders a partial view,

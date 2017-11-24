@@ -140,8 +140,7 @@ namespace Olive
         {
             if (targetType == typeof(string)) return text;
 
-            if (text.IsEmpty())
-                return targetType.IsValueType ? Activator.CreateInstance(targetType) : null;
+            if (text.IsEmpty()) return targetType.GetDefaultValue();
 
             // Check common types first, for performance:
             if (TryParseToCommonTypes(text, targetType, out object result))

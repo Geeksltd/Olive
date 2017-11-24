@@ -10,13 +10,14 @@ namespace Olive.Entities.Data
         /// Saves the specified records in the data repository.
         /// The operation will run in a Transaction.
         /// </summary>
-        public async Task<IEnumerable<T>> Save<T>(T[] records) where T : IEntity => await Save(records as IEnumerable<T>);
+        public Task<IEnumerable<T>> Save<T>(T[] records) where T : IEntity => Save(records as IEnumerable<T>);
 
         /// <summary>
         /// Saves the specified records in the data repository.
         /// The operation will run in a Transaction.
         /// </summary>
-        public async Task<IEnumerable<T>> Save<T>(IEnumerable<T> records) where T : IEntity => await Save<T>(records, SaveBehaviour.Default);
+        public Task<IEnumerable<T>> Save<T>(IEnumerable<T> records) where T : IEntity
+            => Save<T>(records, SaveBehaviour.Default);
 
         /// <summary>
         /// Saves the specified records in the data repository.

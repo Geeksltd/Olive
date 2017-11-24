@@ -12,7 +12,7 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Deletes the specified record from the data repository.
         /// </summary>
-        public async Task Delete(IEntity instance) => await Delete(instance, DeleteBehaviour.Default);
+        public Task Delete(IEntity instance) => Delete(instance, DeleteBehaviour.Default);
 
         async Task DoDelete(Entity entity, DeleteBehaviour behaviour)
         {
@@ -92,7 +92,6 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Deletes all objects of the specified type.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         public async Task DeleteAll<T>() where T : IEntity => await Delete(await GetList<T>());
 
         /// <summary>

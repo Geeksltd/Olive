@@ -31,10 +31,10 @@ namespace Olive.Services.Email
 
         public async Task<EmailTestService> Initialize()
         {
-            To = Request.GetValue("to").ToStringOrEmpty().ToLower();
+            To = Request.Param("to").ToStringOrEmpty().ToLower();
             ReturnUrl = Request.GetReturnUrl();
             if (Request.Has("attachmentInfo"))
-                AttachmentFile = await EmailService.ParseAttachment(Request.GetValue("attachmentInfo"));
+                AttachmentFile = await EmailService.ParseAttachment(Request.Param("attachmentInfo"));
 
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
                 Email = await Request.GetOrDefault<IEmailQueueItem>("id");

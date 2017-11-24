@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Olive.Entities;
 
 namespace Olive.Web
@@ -51,16 +52,11 @@ namespace Olive.Web
         /// </summary>
         public static Dictionary<string, string> GetQueryString(this Uri url)
         {
-            var entries = System.Web.HttpUtility.ParseQueryString(url.Query);
+            var entries = HttpUtility.ParseQueryString(url.Query);
             return entries.AllKeys.ExceptNull().ToDictionary(a => a.ToLower(), a => entries[a]);
         }
 
         #region Request.Get
-
-        /// <summary>
-        /// Returns an object whose ID is given in query string with the key of "id".
-        /// </summary>
-        public static async Task<T> Get<T>(this HttpRequest request) where T : class, IEntity => await Get<T>(request, "id");
 
         /// <summary>
         /// Gets the cookies sent by the client.
@@ -68,64 +64,43 @@ namespace Olive.Web
         public static IEnumerable<KeyValuePair<string, string>> GetCookies(this HttpRequest request)
         {
             if (request.Cookies == null) return Enumerable.Empty<KeyValuePair<string, string>>();
-
             return request.Cookies.AsEnumerable();
         }
 
         /// <summary>
-        /// Gets the data with the specified type from QueryString[key].
-        /// If the specified type is an entity, then the ID of that record will be read from query string and then fetched from database.
+        /// Gets the data with the specified type from form, query string or route with the specified key.
+        /// If the specified type is an entity, then the ID of that record will be read from the request and then fetched from database.
         /// </summary>
-        public static async Task<T> Get<T>(this HttpRequest request, string key) => await DoGet<T>(request, key, throwIfNotFound: true);
+        public static Task<T> Get<T>(this HttpRequest request, string key)
+            => DoGet<T>(request, key, throwIfNotFound: true);
 
         static async Task<T> DoGet<T>(this HttpRequest request, string key, bool throwIfNotFound)
         {
             if (typeof(T).Implements<IEntity>())
                 return await GetEntity<T>(request, key, throwIfNotFound);
 
-            else if (typeof(T) == typeof(string))
-                return (T)(object)GetValue(request, key, ignoreRouteData: false);
-
-            else if (typeof(T).IsValueType)
-                return GetValue<T>(request, key);
-
-            else throw new Exception("Request.Get<T>() does not recognize the type of " + typeof(T).FullName);
+            return (T)Param(request, key).To(typeof(T));
         }
 
         /// <summary>
-        /// Returns a string value specified in the request context.
+        /// Returns a string value specified in the request context (form, query string or route).
         /// </summary>
-        public static string GetValue(this HttpRequest request, string key, bool ignoreRouteData = true)
+        public static string Param(this HttpRequest request, string key)
         {
             if (Context.Request != request)
                 throw new Exception("The given request is not match with ActionContext`s request.");
 
-            return
-                request.Cookies[key].OrNullIfEmpty() ??
-                (request.HasFormContentType ? request.Form[key].ToString().OrNullIfEmpty() : null) ??
-                request.Query[key].ToString().OrNullIfEmpty() ??
-                request.Headers[key].ToString().OrNullIfEmpty() ??
-                (ignoreRouteData ? null : Context.ActionContextAccessor.ActionContext.RouteData.Values[key].ToStringOrEmpty());
+            if (request.HasFormContentType && request.Form.ContainsKey(key))
+                return request.Form[key].ToStringOrEmpty();
+
+            if (request.Query.ContainsKey(key))
+                return request.Query[key].ToStringOrEmpty();
+
+            return request.GetRouteValues()[key].ToStringOrEmpty();
         }
 
         /// <summary>
-        /// Returns a value specified in the request context.
-        /// </summary>
-        static T GetValue<T>(this HttpRequest request, string key)
-        {
-            var data = GetValue(request, key, ignoreRouteData: false);
-
-            if (data.IsEmpty())
-            {
-                if (typeof(T).IsNullable() || typeof(T) == typeof(string)) return default(T);
-                else throw new Exception($"Request does not contain a value for '{key}'");
-            }
-
-            return data.To<T>();
-        }
-
-        /// <summary>
-        /// Gets the record with the specified type. The ID of the record will be read from QueryString[key].
+        /// Gets the record with the specified type. The ID of the record will be read from form, query string or route with the specified key.
         /// </summary>
         static async Task<T> GetEntity<T>(this HttpRequest request, string key, bool throwIfNotFound = true)
         {
@@ -139,7 +114,7 @@ namespace Olive.Web
 
             if (key == ".") key = "." + typeof(T).Name;
 
-            var value = request.GetValue(key);
+            var value = request.Param(key);
             if (value.IsEmpty()) return default(T);
 
             try { return (T)await Entity.Database.Get(value, typeof(T)); }
@@ -157,22 +132,12 @@ namespace Olive.Web
         #region Request.GetOrDefault
 
         /// <summary>
-        /// Gets the record with the specified type. The ID of the record will be read from QueryString["id"].
-        /// </summary>
-        public static async Task<T> GetOrDefault<T>(this HttpRequest request) => await GetOrDefault<T>(request, "id");
-
-        /// <summary>
         /// Gets the record with the specified type. The ID of the record will be read from QueryString[key].
         /// </summary>
         public static async Task<T> GetOrDefault<T>(this HttpRequest request, string key)
         {
-            if (request == null)
-            {
-                if (Context.Http != null)
-                    request = Context.Request;
-                else
+            request = request ?? Context.Request ??
                     throw new InvalidOperationException("Request.GetOrDefault<T>() can only be called inside an Http context.");
-            }
 
             if (key == ".") key = "." + typeof(T).Name;
 
@@ -197,7 +162,7 @@ namespace Olive.Web
         /// <param name="seperator">The sepeerator of Ids in the query string value. The default will be comma (",").</param>
         public static IEnumerable<Task<T>> GetList<T>(this HttpRequest request, string key, char seperator) where T : class, IEntity
         {
-            var ids = request.GetValue(key);
+            var ids = request.Param(key);
             if (ids.IsEmpty())
                 yield break;
             else
@@ -379,11 +344,18 @@ namespace Olive.Web
         }
 
         /// <summary>
-        /// Determines if the specified argument exists in the request (query string or form).
+        /// Determines if the specified argument exists in the request (form, query string or route).
         /// </summary>
         public static bool Has(this HttpRequest request, string argument)
         {
-            return request.Query.Keys.Contains(argument) || (request.HasFormContentType && request.Form.Keys.Contains(argument));
+            if (request.HasFormContentType && request.Form.ContainsKey(argument)) return true;
+            else if (request.Query.ContainsKey(argument)) return true;
+            else return request.GetRouteValues()[argument].ToStringOrEmpty().HasValue();
+        }
+
+        public static RouteValueDictionary GetRouteValues(this HttpRequest request)
+        {
+            return Context.ActionContextAccessor.ActionContext.RouteData.Values;
         }
 
         /// <summary>

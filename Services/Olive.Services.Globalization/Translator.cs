@@ -63,7 +63,8 @@ namespace Olive.Services.Globalization
 
         #region Translate Html
 
-        public static async Task<string> TranslateHtml(string htmlInDefaultLanguage) => await TranslateHtml(htmlInDefaultLanguage, null);
+        public static Task<string> TranslateHtml(string htmlInDefaultLanguage)
+            => TranslateHtml(htmlInDefaultLanguage, null);
 
         public static async Task<string> TranslateHtml(string htmlInDefaultLanguage, ILanguage language)
         {
@@ -346,7 +347,7 @@ namespace Olive.Services.Globalization
             }
         }
 
- /// <summary>
+        /// <summary>
         /// Detect the language of a phrase.
         /// The API can translate multiple piece of text in the same time, if needed create a function with parameter "params string phrase" and return a list of GoogleAutoDetectLanguage.
         /// </summary>
