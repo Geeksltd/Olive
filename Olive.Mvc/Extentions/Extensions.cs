@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Olive.Entities.Data;
-using Olive.Entities;
-using Olive;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Olive;
+using Olive.Entities;
+using Olive.Entities.Data;
+using Olive.Web;
 
 namespace Olive.Mvc
 {
@@ -115,6 +118,17 @@ namespace Olive.Mvc
         public static TAttribute GetAttribute<TAttribute>(this ModelMetadata metadata) where TAttribute : System.Attribute
         {
             return (metadata as DefaultModelMetadata)?.Attributes.Attributes.OfType<TAttribute>().FirstOrDefault();
+        }
+
+        public static TUser Extract<TUser>(this IIdentity identity)
+            where TUser : IEntity
+        {
+            return HttpContextCache.GetOrAdd("Olive.IPrincipal.ExtractedUser", () =>
+            {
+                var id = identity?.Name;
+                if (id == null) return default(TUser);
+                return Task.Factory.RunSync(() => Database.Instance.GetOrDefault<TUser>(id));
+            });
         }
     }
 }
