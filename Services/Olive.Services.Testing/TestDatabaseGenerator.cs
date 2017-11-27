@@ -291,7 +291,7 @@ namespace Olive.Services.Testing
         void LoadMetaDirectory()
         {
             // Not explicitly specified. Take a guess:
-            DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory("DB");
+            DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().Parent.GetSubDirectory("DB");
             if (!DbDirectory.Exists())
                 throw new Exception("Failed to find the DB folder from which to create the temp database.");
         }

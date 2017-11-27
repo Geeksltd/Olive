@@ -40,6 +40,11 @@ namespace Olive.Entities
         public Blob() { }
 
         /// <summary>
+        /// Initializes a new Document instance with the specified file name.
+        /// </summary>
+        public Blob(string fileName) : this(null, fileName) { }
+
+        /// <summary>
         /// Initializes a new Blob instance with the specified data and file name.
         /// </summary>
         public Blob(byte[] data, string fileName)
@@ -245,10 +250,12 @@ namespace Olive.Entities
         {
             if (!attach && @readonly) throw new ArgumentException("readonly can be set to true only when attaching.");
 
-            var result = new Blob(await GetFileData(), FileName);
+            Blob result;
 
             if (ownerEntity != null && attach)
             {
+                result = new Blob(await GetFileData(), FileName);
+
                 if (!@readonly) Attach(ownerEntity, OwnerProperty, FileAccessMode);
                 else
                 {
@@ -256,6 +263,11 @@ namespace Olive.Entities
                     result.OwnerProperty = OwnerProperty;
                     result.FileAccessMode = FileAccessMode;
                 }
+            }
+            else
+            {
+                if (FileData != null && FileData.Any()) result = new Blob(FileData, FileName);
+                else result = new Blob(FileName);
             }
 
             return result;
