@@ -16,18 +16,6 @@ namespace Olive.Entities.Data
             value < SqlDateTime.MinValue.Value ? SqlDateTime.MinValue.Value : value;
 
         /// <summary>
-        /// Gets a virtual URL to this file. If the file is not in the current website folder it throws an exception.
-        /// </summary>
-        public static string ToVirtualPath(this FileInfo file)
-        {
-            if (!file.FullName.StartsWith(AppDomain.CurrentDomain.BaseDirectory, StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException($"The file {file.FullName} is not in the current website folder.");
-
-            var path = "/" + file.FullName.Substring(AppDomain.CurrentDomain.BaseDirectory.Length).TrimStart("\\").TrimStart("/");
-            return path.Replace("\\", "/");
-        }
-
-        /// <summary>
         /// Returns a DataTable with columns based on the public properties of type T and the rows
         /// populated with the values in those properties for each item in this IEnumerable.
         /// </summary>

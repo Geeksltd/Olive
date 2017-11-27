@@ -291,16 +291,9 @@ namespace Olive.Services.Testing
         void LoadMetaDirectory()
         {
             // Not explicitly specified. Take a guess:
-            var folder = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent;
-            while (folder.Parent != null)
-            {
-                DbDirectory = folder.GetSubDirectory("DB");
-                if (DbDirectory.Exists()) return;
-
-                folder = folder.Parent;
-            }
-
-            throw new Exception("Failed to find the DB folder from which to create the temp database.");
+            DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory("DB");
+            if (!DbDirectory.Exists())
+                throw new Exception("Failed to find the DB folder from which to create the temp database.");
         }
 
         bool DoProcess()
@@ -393,7 +386,7 @@ namespace Olive.Services.Testing
             {
                 var source = Config.Get(key.Item1);
                 if (source.IsEmpty()) continue;
-                else source = AppDomain.CurrentDomain.GetPath(source);
+                else source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(source).FullName;
                 if (!Directory.Exists(source) || source.AsDirectory().GetDirectories().None())
                 {
                     // No files to copy
@@ -403,17 +396,15 @@ namespace Olive.Services.Testing
                 var destination = Config.Get(key.Item2);
                 if (destination.IsEmpty())
                     throw new Exception("Destination directory not configured in App.Config for key: " + key.Item2);
-                else destination = AppDomain.CurrentDomain.GetPath(destination);
+                else destination = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(destination).FullName;
 
                 if (!Directory.Exists(destination))
                 {
                     if (new DirectoryInfo(source).IsEmpty()) continue;
-
                     Directory.CreateDirectory(destination);
                 }
 
                 new DirectoryInfo(destination).Delete(recursive: true);
-
                 new DirectoryInfo(source).CopyToSync(destination, overwrite: true);
             }
         }

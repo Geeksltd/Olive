@@ -92,18 +92,20 @@ namespace Olive.Services.Testing
                     continue;
                 }
 
-                string folder = Config.Get(key);
+                var folder = Config.Get(key);
                 if (folder.ToCharArray()[0] == '/') folder = folder.Substring(1);
 
                 if (process == CopyProcess.Restore)
                 {
                     source = Path.Combine(SnapshotsDirectory.ToString(), folder);
                     if (!Directory.Exists(source)) continue;
-                    copyTasks.Add(new DirectoryInfo(source).CopyTo(AppDomain.CurrentDomain.GetPath(Config.Get(key)), overwrite: true));
+
+                    var dest = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(Config.Get(key));
+                    copyTasks.Add(new DirectoryInfo(source).CopyTo(dest, overwrite: true));
                 }
                 else if (process == CopyProcess.Backup)
                 {
-                    source = AppDomain.CurrentDomain.GetPath(source);
+                    source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(source).FullName;
                     if (!Directory.Exists(source)) continue;
                     copyTasks.Add(new DirectoryInfo(source).CopyTo(Path.Combine(SnapshotsDirectory.ToString(), folder), overwrite: true));
                 }

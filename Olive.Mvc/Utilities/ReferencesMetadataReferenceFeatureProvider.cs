@@ -25,9 +25,7 @@ namespace Olive.Mvc
                         if (string.Equals("reference", library.Type, StringComparison.OrdinalIgnoreCase))
                         {
                             foreach (var libraryAssembly in library.Assemblies)
-                            {
-                                libraryPaths.Add(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, libraryAssembly));
-                            }
+                                libraryPaths.Add(AppDomain.CurrentDomain.GetBaseDirectory().GetFile(libraryAssembly).FullName);
                         }
                         else
                         {

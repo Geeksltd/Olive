@@ -12,7 +12,7 @@ namespace Olive
     /// </summary>
     public class TemporaryFile : IDisposable
     {
-        static string TemporaryFileFolder = GetTemporaryFileFolder();
+        static string TemporaryFileFolder = Path.GetTempPath();
 
         Guid ID;
 
@@ -47,19 +47,6 @@ namespace Olive
         {
             ID = Guid.NewGuid();
             Extension = extension;
-        }
-
-        /// <summary>
-        /// Finds a proper folder path for temporary files
-        /// </summary>
-        static string GetTemporaryFileFolder()
-        {
-            var relativePath = Config.Get<string>("Application.TemporaryFilesPath", "");
-
-            if (relativePath.HasValue())
-                return AppDomain.CurrentDomain.BaseDirectory + relativePath.Replace("/", "\\").Replace("\\\\", "\\").Trim('\\');
-
-            return Path.GetTempPath();
         }
 
         /// <summary>

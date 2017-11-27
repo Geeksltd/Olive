@@ -123,7 +123,7 @@
         {
             if (source == null) return null;
 
-            if (source is Blob) return (source as Blob).Clone(attach: true, @readonly: true);
+            if (source is Blob) return await (source as Blob).Clone(attach: true, @readonly: true);
 
             if (source.GetType().IsA(target)) return source;
 

@@ -95,7 +95,7 @@ namespace Olive.Services.Email
         {
             if (filePath.IsEmpty()) throw new ArgumentNullException(nameof(filePath));
 
-            var basePath = AppDomain.CurrentDomain.BaseDirectory.ToLower();
+            var basePath = AppDomain.CurrentDomain.WebsiteRoot().FullName.ToLower();
 
             if (filePath.ToLower().StartsWith(basePath)) // Relative:
                 filePath = filePath.Substring(basePath.Length).TrimStart("\\");

@@ -365,7 +365,7 @@ namespace Olive.Entities
                     var folder = Config.Get(folderConfigKey).Or(defaultFolder).TrimEnd('\\') + "\\";
 
                     if (!folder.StartsWith("\\\\") && folder[1] != ':') // Relative address:
-                        folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, folder);
+                        folder = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(folder).FullName;
 
                     return folder;
                 });

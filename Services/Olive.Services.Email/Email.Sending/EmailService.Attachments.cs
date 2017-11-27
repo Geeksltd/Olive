@@ -35,11 +35,10 @@ namespace Olive.Services.Email
             }
             else
             {
-                if (attachmentInfo.StartsWith("\\\\") || Path.IsPathRooted(attachmentInfo) /*(attachment[1] == ':' && attachment[2] == '\\')*/)
-                    // absolute path:
-                    return new Attachment(attachmentInfo);
+                if (attachmentInfo.StartsWith("\\\\") || Path.IsPathRooted(attachmentInfo))
+                    return new Attachment(attachmentInfo); // absolute path
                 else
-                    return new Attachment(AppDomain.CurrentDomain.GetPath(attachmentInfo));
+                    return new Attachment(Path.Combine(AppDomain.CurrentDomain.WebsiteRoot().FullName, attachmentInfo));
             }
         }
 

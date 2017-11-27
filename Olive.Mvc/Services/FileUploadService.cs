@@ -27,14 +27,8 @@ namespace Olive.Mvc
         }
 
         public static DirectoryInfo GetFolder(string key = null)
-        {
-            var folder = Blob.GetPhysicalFilesRoot(Blob.AccessMode.Secure)
-                .GetOrCreateSubDirectory("@Temp.File.Uploads").FullName;
-
-            if (key.HasValue()) folder = Path.Combine(folder, key);
-
-            return folder.AsDirectory();
-        }
+            => AppDomain.CurrentDomain.WebsiteRoot().GetOrCreateSubDirectory("@Temp.File.Uploads" +
+                key.WithPrefix("\\"));
 
         internal async Task<Blob> Bind(string fileKey)
         {

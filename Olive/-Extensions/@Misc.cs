@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Olive
 {
@@ -84,19 +85,14 @@ namespace Olive
             return @value;
         }
 
-        /// <summary>
-        /// Gets the full path of a file or directory from a specified relative path.
-        /// </summary>
-        public static string GetPath(this AppDomain applicationDomain, params string[] relativePathSections)
+        public static DirectoryInfo WebsiteRoot(this AppDomain applicationDomain)
         {
-            var result = applicationDomain.BaseDirectory;
-
-            foreach (var path in relativePathSections)
-                if (path.HasValue())
-                    result = Path.Combine(result, path.Replace('/', Path.DirectorySeparatorChar));
-
-            return result;
+            var root = applicationDomain.BaseDirectory.AsDirectory();
+            if (root.Name.StartsWith("netcoreapp")) return root.Parent.Parent.Parent;
+            else return root;
         }
+        
+        public static DirectoryInfo GetBaseDirectory(this AppDomain domain) => domain.BaseDirectory.AsDirectory();
 
         public static Assembly LoadAssembly(this AppDomain domain, string assemblyName)
         {
@@ -106,7 +102,7 @@ namespace Olive
             // Nothing found with exact name. Try with file name.
             var fileName = assemblyName.EnsureEndsWith(".dll", caseSensitive: false);
 
-            var file = domain.GetPath(fileName).AsFile();
+            var file = domain.GetBaseDirectory().GetFile(fileName);
             if (file.Exists())
                 return Assembly.Load(AssemblyName.GetAssemblyName(file.FullName));
 
