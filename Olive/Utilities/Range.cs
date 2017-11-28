@@ -48,21 +48,12 @@ namespace Olive
             var toValue = (object)To;
             object result;
 
-            if (typeof(T) == typeof(int))
-                result = (int)toValue - (int)fromValue;
-
-            else if (typeof(T) == typeof(double))
-                result = (double)toValue - (double)fromValue;
-
-            else if (typeof(T) == typeof(long))
-                result = (long)toValue - (long)fromValue;
-
-            else if (typeof(T) == typeof(decimal))
-                result = (decimal)toValue - (decimal)fromValue;
-
+            if (typeof(T) == typeof(int)) result = (int)toValue - (int)fromValue;
+            else if (typeof(T) == typeof(double)) result = (double)toValue - (double)fromValue;
+            else if (typeof(T) == typeof(long)) result = (long)toValue - (long)fromValue;
+            else if (typeof(T) == typeof(decimal)) result = (decimal)toValue - (decimal)fromValue;
             else if (typeof(T) == typeof(DateTime))
                 result = new DateTime(NINETEEN_HUNDRED, 1, 1).Add((DateTime)toValue - (DateTime)fromValue);
-
             else
                 throw new NotSupportedException("GetLength() is not supported on type: " + typeof(T).FullName);
 

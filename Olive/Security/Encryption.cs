@@ -29,11 +29,9 @@ namespace Olive
 		/// <param name="padding">The default padding value is OaepSHA512.</param>
         public static string EncryptAsymmetric(string text, string publicKeyXml, RSAEncryptionPadding padding = null)
         {
-            if (text.IsEmpty())
-                throw new ArgumentNullException(nameof(text));
+            if (text.IsEmpty()) throw new ArgumentNullException(nameof(text));
 
-            if (publicKeyXml.IsEmpty())
-                throw new ArgumentNullException(nameof(publicKeyXml));
+            if (publicKeyXml.IsEmpty()) throw new ArgumentNullException(nameof(publicKeyXml));
 
             if (text.Length > MAX_ENCRYPTION_PART_LENGTH)
             {
@@ -42,9 +40,7 @@ namespace Olive
             else
             {
                 var rsa = CreateRSACryptoServiceProvider();
-
                 rsa.FromXmlString(publicKeyXml);
-
                 return rsa.Encrypt(text.ToBytes(Encoding.UTF8), padding ?? RSAEncryptionPadding.OaepSHA512).ToBase64String();
             }
         }
@@ -55,11 +51,9 @@ namespace Olive
 		/// <param name="padding">The default padding value is OaepSHA512.</param>
         public static string DecryptAsymmetric(string encodedText, string publicPrivateKeyXml, RSAEncryptionPadding padding = null)
         {
-            if (encodedText.IsEmpty())
-                throw new ArgumentNullException(nameof(encodedText));
+            if (encodedText.IsEmpty()) throw new ArgumentNullException(nameof(encodedText));
 
-            if (publicPrivateKeyXml.IsEmpty())
-                throw new ArgumentNullException(nameof(publicPrivateKeyXml));
+            if (publicPrivateKeyXml.IsEmpty()) throw new ArgumentNullException(nameof(publicPrivateKeyXml));
 
             if (encodedText.Contains("|"))
             {
@@ -68,9 +62,7 @@ namespace Olive
             else
             {
                 var rsa = CreateRSACryptoServiceProvider();
-
                 rsa.FromXmlString(publicPrivateKeyXml);
-
                 return rsa.Decrypt(encodedText.ToBytes(), padding ?? RSAEncryptionPadding.OaepSHA512).ToString(Encoding.UTF8);
             }
         }
@@ -94,14 +86,12 @@ namespace Olive
 
                 var textData = Encoding.Unicode.GetBytes(text);
                 using (var encrypted = new MemoryStream())
+                using (var cryptoStream = new CryptoStream(encrypted, encryptor, CryptoStreamMode.Write))
                 {
-                    using (var cryptoStream = new CryptoStream(encrypted, encryptor, CryptoStreamMode.Write))
-                    {
-                        cryptoStream.Write(textData, 0, textData.Length);
-                        cryptoStream.FlushFinalBlock();
+                    cryptoStream.Write(textData, 0, textData.Length);
+                    cryptoStream.FlushFinalBlock();
 
-                        return Convert.ToBase64String(encrypted.ToArray());
-                    }
+                    return Convert.ToBase64String(encrypted.ToArray());
                 }
             }
         }
@@ -120,19 +110,14 @@ namespace Olive
                     aes.Padding = PaddingMode.PKCS7;
 
                     using (var decryptor = aes.CreateDecryptor(key.GetBytes(THIRTY_TWO), key.GetBytes(SIXTEEN)))
+                    using (var memoryStream = new MemoryStream(encryptedData))
+                    using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
                     {
-                        using (var memoryStream = new MemoryStream(encryptedData))
-                        {
-                            using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-                            {
-                                // The size of decrypted data is unknown, so we allocate a buffer big enough to store encrypted data.
-                                // decrypted data is always the same or smaller than encrypted data.
-                                var plainText = new byte[encryptedData.Length];
-                                var decryptedSize = cryptoStream.Read(plainText, 0, plainText.Length);
-
-                                return Encoding.Unicode.GetString(plainText, 0, decryptedSize);
-                            }
-                        }
+                        // The size of decrypted data is unknown, so we allocate a buffer big enough to store encrypted data.
+                        // decrypted data is always the same or smaller than encrypted data.
+                        var plainText = new byte[encryptedData.Length];
+                        var decryptedSize = cryptoStream.Read(plainText, 0, plainText.Length);
+                        return Encoding.Unicode.GetString(plainText, 0, decryptedSize);
                     }
                 }
             }
