@@ -1061,6 +1061,34 @@ namespace Olive
         {
             return Convert.ToBase64String(SHA1.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(clearText))).TrimEnd('=');
         }
+        /// <summary>
+        /// Creates SHA256 hash of this text
+        /// </summary>
+        public static string CreateSHA256Hash(this string inputString)
+        {
+            using (SHA256 hash = SHA256Managed.Create())
+            {
+                return String.Concat(
+                    hash
+                    .ComputeHash(Encoding.UTF8.GetBytes(inputString))
+                    .Select(item => item.ToString("x2").ToLower())
+                );
+            }
+        }
+        /// <summary>
+        /// Creates SHA512 hash of this text
+        /// </summary>
+        public static string CreateSHA512Hash(this string inputString)
+        {
+            using (SHA512 hash = SHA512Managed.Create())
+            {
+                return String.Concat(
+                    hash
+                    .ComputeHash(Encoding.UTF8.GetBytes(inputString))
+                    .Select(item => item.ToString("x2").ToLower())
+                );
+            }
+        }
 
         public static IEnumerable<string> Split(this string text, int chunkSize)
         {

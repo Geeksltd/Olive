@@ -403,6 +403,12 @@ new DateTime(2099,04,13)};
         public static bool IsAfterOrEqualTo(this DateTime date, DateTime otherDate) => date >= otherDate;
 
         public static bool IsBeforeOrEqualTo(this DateTime date, DateTime otherDate) => date <= otherDate;
+        /// <summary>
+        /// This method converts a DateTime to a pretty UnixTime
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static long ToUnixTime(this DateTime dateTime) => (int)(dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 
         /// <summary>
         /// Determines whether this day is in the same week (Monday to Sunday) as the specified other date.
