@@ -222,7 +222,7 @@ namespace Olive.Mvc
         }
 
         protected virtual ActionResult RedirectToLogin() =>
-            Redirect("/login?ReturnUrl=" + HttpContext.GetUrlHelper().Current().UrlEncode());       
+            Redirect("/login?ReturnUrl=" + HttpContext.GetUrlHelper().Current().UrlEncode());
     }
 
     public enum WindowAction

@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Olive;
 using Olive.Entities;
@@ -75,14 +74,14 @@ namespace Olive.Mvc
             }
         }
 
-        //public static async Task Add(this IList<SelectListItem> items, IEntity entity, ILanguage language)
-        //{
+        // public static async Task Add(this IList<SelectListItem> items, IEntity entity, ILanguage language)
+        // {
         //    items.Add(new SelectListItem
         //    {
         //        Text = await entity.ToString(language),
         //        Value = entity.GetId().ToString()
         //    });
-        //}
+        // }
 
         public static void Add(this IList<SelectListItem> items, IEntity entity) =>
             items.Add(new SelectListItem { Text = entity.ToString(), Value = entity.GetId().ToString() });

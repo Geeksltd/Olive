@@ -1,7 +1,5 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 
 namespace Olive.Mvc

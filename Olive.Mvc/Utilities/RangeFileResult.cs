@@ -79,7 +79,7 @@ namespace Olive.Mvc
             }
             else
             {
-                string boundary = "---------------------------" + LocalTime.Now.Ticks.ToString("x");
+                var boundary = "---------------------------" + LocalTime.Now.Ticks.ToString("x");
 
                 context.HttpContext.Response.Headers.Add("Content-Length", GetContentLength(boundary).ToString());
                 if (!MultipartRequest)
@@ -124,9 +124,9 @@ namespace Olive.Mvc
 
         void FillRanges(HttpRequest request)
         {
-            string rangesHeader = GetHeader(request, "Range");
-            string ifRangeHeader = GetHeader(request, "If-Range", EntityTag);
-            bool isIfRangeHeaderDate = DateTime.TryParseExact(ifRangeHeader, DateFormats, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime ifRangeHeaderDate);
+            var rangesHeader = GetHeader(request, "Range");
+            var ifRangeHeader = GetHeader(request, "If-Range", EntityTag);
+            var isIfRangeHeaderDate = DateTime.TryParseExact(ifRangeHeader, DateFormats, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime ifRangeHeaderDate);
 
             if (rangesHeader.IsEmpty() || (!isIfRangeHeaderDate && ifRangeHeader != EntityTag) || (isIfRangeHeaderDate && HttpModificationDate > ifRangeHeaderDate))
             {
@@ -166,7 +166,7 @@ namespace Olive.Mvc
 
         int GetContentLength(string boundary)
         {
-            int contentLength = 0;
+            var contentLength = 0;
 
             for (int i = 0; i < RangesStartIndexes.Length; i++)
             {
@@ -205,7 +205,7 @@ namespace Olive.Mvc
 
         bool IsModificationDateValid(HttpRequest request, HttpResponse response)
         {
-            string modifiedSinceHeader = GetHeader(request, "If-Modified-Since");
+            var modifiedSinceHeader = GetHeader(request, "If-Modified-Since");
             if (modifiedSinceHeader.HasValue())
             {
                 DateTime.TryParseExact(modifiedSinceHeader, DateFormats, null,
@@ -218,10 +218,10 @@ namespace Olive.Mvc
                 }
             }
 
-            string unmodifiedSinceHeader = GetHeader(request, "If-Unmodified-Since", GetHeader(request, "Unless-Modified-Since"));
+            var unmodifiedSinceHeader = GetHeader(request, "If-Unmodified-Since", GetHeader(request, "Unless-Modified-Since"));
             if (unmodifiedSinceHeader.HasValue())
             {
-                bool unmodifiedSinceDateParsed = DateTime.TryParseExact(unmodifiedSinceHeader, DateFormats, null,
+                var unmodifiedSinceDateParsed = DateTime.TryParseExact(unmodifiedSinceHeader, DateFormats, null,
                     DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime unmodifiedSinceDate);
 
                 if (HttpModificationDate > unmodifiedSinceDate)
@@ -236,7 +236,7 @@ namespace Olive.Mvc
 
         bool IsEntityTagValid(HttpRequest request, HttpResponse response)
         {
-            string matchHeader = GetHeader(request, "If-Match");
+            var matchHeader = GetHeader(request, "If-Match");
             if (matchHeader.HasValue() && matchHeader != "*")
             {
                 var entitiesTags = matchHeader.Split(',');
@@ -254,7 +254,7 @@ namespace Olive.Mvc
                 }
             }
 
-            string noneMatchHeader = GetHeader(request, "If-None-Match");
+            var noneMatchHeader = GetHeader(request, "If-None-Match");
             if (noneMatchHeader.HasValue())
             {
                 if (noneMatchHeader == "*")

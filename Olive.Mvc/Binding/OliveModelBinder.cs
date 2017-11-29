@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Olive.Web;
 
 namespace Olive.Mvc
@@ -54,7 +53,7 @@ namespace Olive.Mvc
 
                 var viewModel = Activator.CreateInstance(bindingContext.ModelMetadata.ElementType);
                 listObject.Add(viewModel);
-                
+
                 foreach (var property in bindingContext.ModelMetadata.ElementMetadata.Properties)
                 {
                     var key = formControlsPrefix + property.PropertyName;
