@@ -6,7 +6,7 @@ Base32Integer is a class which is used for declaring and encoding binary data. A
 
 #### When to use it?
 
-####Example:
+#### Example:
 
 Base32Integer myTestInteger=12345;
 
