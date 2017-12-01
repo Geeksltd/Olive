@@ -49,7 +49,10 @@ namespace Olive.Mvc
                 throw new InvalidOperationException("Request has no ReturnUrl.");
             }
 
-            await Context.Http.ChallengeAsync(provider, new AuthenticationProperties { RedirectUri = "/ExternalLoginCallback" });
+            await Context.Http.ChallengeAsync(provider, new AuthenticationProperties {
+                RedirectUri = "/ExternalLoginCallback",
+                Items = { new KeyValuePair<string, string>("LoginProvider", provider) }
+            });
         }
 
         IUser IAuthenticationProvider.LoadUser(IPrincipal principal)

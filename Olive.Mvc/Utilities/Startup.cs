@@ -13,11 +13,14 @@ using Newtonsoft.Json.Serialization;
 using Olive.Entities;
 using Olive.Services.Testing;
 using Olive.Web;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Olive.Mvc
 {
     public abstract class Startup
     {
+        protected AuthenticationBuilder AuthenticationBuilder;
+
         protected virtual IViewLocationExpander GetViewLocationExpander() => new ViewLocationExpander();
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -39,7 +42,7 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(options =>
                 options.ViewLocationExpanders.Add(GetViewLocationExpander()));
 
-            AddIdentityAndStores(services).AddAuthentication(IdentityConstants.ApplicationScheme);
+            AuthenticationBuilder = AddIdentityAndStores(services).AddAuthentication(IdentityConstants.ApplicationScheme);
 
             services.ConfigureApplicationCookie(ConfigureApplicationCookie)
                 .AddDistributedMemoryCache() // Adds a default in-memory implementation of IDistributedCache.
