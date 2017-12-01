@@ -13,7 +13,7 @@ Base32Integer myTestInteger=12345;
 ---
 
 ## CachedValue
-CachedValue is a static class that is use for store value types in cache.
+CachedValue is a static class that is used for storing value types in cache.
 
 ## Config
 Config is a class for changing connection string in app.config . 
