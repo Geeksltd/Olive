@@ -5,7 +5,6 @@ The following utility classes are helpful in a diverse range of applications.
 ...Base32Integer is a class which is used for declaring and encoding binary data. And is able to encode binary text like ASCII. it basically is a base32-k...
 
 #### When to use it?
-....
 
 ####Example:
 ...Base32Integer myTestInteger=12345;
