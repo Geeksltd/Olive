@@ -1,4 +1,4 @@
-﻿namespace Olive.WebApi
+﻿namespace Olive.Mvc
 {
     using Microsoft.AspNetCore.Mvc.Filters;
     using System;
@@ -16,10 +16,11 @@
     public class RespectClientETagCacheAttribute : ActionFilterAttribute
     {
         string[] ClientETags;
-        
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            ClientETags = (context.HttpContext.Request.Headers.IfNoneMatch?.Select(t => t.Tag.Trim('"'))).Trim().ToArray();
+            ClientETags = (context.HttpContext.Request.Headers.IfNoneMatch?.Select(t => t.Tag.Trim('"')))
+                .Trim().ToArray();
         }
 
         public override void OnActionExecuted(ActionExecutedContext context)

@@ -223,6 +223,10 @@ namespace Olive.Mvc
 
         protected virtual ActionResult RedirectToLogin() =>
             Redirect("/login?ReturnUrl=" + HttpContext.GetUrlHelper().Current().UrlEncode());
+
+        public NotFoundTextActionResult NotFound(string message) => new NotFoundTextActionResult(message);
+
+        public UnauthorizedTextActionResult Unauthorized(string message) => new UnauthorizedTextActionResult(message);
     }
 
     public enum WindowAction

@@ -77,34 +77,16 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Olive.MvcJs", "Olive.MvcJs\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "61844"
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_61844"
-		Debug.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_61844"
-		Release.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "61844"
 		SlnRelativePath = "Olive.MvcJs\"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Services.PushNotification", "Services\Olive.Services.PushNotification\Olive.Services.PushNotification.csproj", "{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.PushNotification", "Services\Olive.Services.PushNotification\Olive.Services.PushNotification.csproj", "{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.WebApi", "Olive.WebApi\Olive.WebApi.csproj", "{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security", "Olive.Security\Olive.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Security", "Olive.Security\Olive.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Olive.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Security.Auth0", "Olive.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Jwt", "Olive.Security.Jwt\Olive.Security.Jwt.csproj", "{BA1D055C-2E37-4B06-8887-49A253EDE423}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -215,9 +197,6 @@ Global
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A273AE2-5D6A-491A-809B-71764F35281E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2A273AE2-5D6A-491A-809B-71764F35281E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A273AE2-5D6A-491A-809B-71764F35281E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -226,6 +205,10 @@ Global
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

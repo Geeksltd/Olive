@@ -17,4 +17,10 @@
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Olive.Security">
+      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.Security.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

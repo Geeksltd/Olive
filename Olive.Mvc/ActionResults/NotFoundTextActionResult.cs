@@ -1,4 +1,4 @@
-﻿namespace Olive.WebApi
+﻿namespace Olive.Mvc
 {
     using Microsoft.AspNetCore.Mvc;
     using System.Net;

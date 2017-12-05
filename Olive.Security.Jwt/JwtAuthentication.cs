@@ -1,4 +1,4 @@
-﻿namespace Olive.WebApi
+﻿namespace Olive.Security
 {
     using JWT;
     using JWT.Serializers;
@@ -10,6 +10,7 @@
     using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
 
     public static class JwtAuthentication
     {

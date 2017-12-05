@@ -1,4 +1,4 @@
-﻿namespace Olive.WebApi
+﻿namespace Olive.Mvc
 {
     using System.Net;
 
