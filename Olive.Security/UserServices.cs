@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Olive.Web;
+using System;
 using System.ComponentModel;
 
-namespace Olive.Web
+namespace Olive.Security
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class UserServices

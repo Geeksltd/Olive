@@ -1,4 +1,4 @@
-﻿namespace Olive
+﻿namespace Olive.Security
 {
     using System;
     using System.Security.Cryptography;

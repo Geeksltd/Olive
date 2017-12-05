@@ -102,6 +102,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Services.PushNotifica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.WebApi", "Olive.WebApi\Olive.WebApi.csproj", "{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Security", "Olive.Security\Olive.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Security.Auth0", "Olive.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -214,6 +218,14 @@ Global
 		{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E24EF5A5-0BE8-41A2-A3D2-40589D8A9473}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

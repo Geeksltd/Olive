@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.Security.Auth0</id>
+    <version>1.0.0</version>
+    <title>Olive Security Auth0</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <description>Olive Framework</description>
+    <dependencies>
+      <dependency id="Auth0" version="3.6.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Security.Auth0.dll" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Security.Auth0.pdb" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Security.Auth0.xml" target="lib\netcoreapp2.0\" />
+  </files>
+</package>

@@ -2,7 +2,7 @@
 using System.Linq;
 using Olive.Entities;
 
-namespace Olive.Web
+namespace Olive.Security
 {
     public interface IUser : IEntity
     {

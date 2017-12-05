@@ -2,7 +2,7 @@
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace Olive.Web
+namespace Olive.Security
 {
     public interface IAuthenticationProvider
     {

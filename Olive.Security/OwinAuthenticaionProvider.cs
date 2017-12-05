@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Olive.Web;
 
-namespace Olive.Mvc
+namespace Olive.Security
 {
     public class OwinAuthenticaionProvider : IAuthenticationProvider
     {

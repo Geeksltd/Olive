@@ -5,8 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Entities;
+using Olive.Web;
 
-namespace Olive.Web
+namespace Olive.Security
 {
     public class SecureFileDispatcher
     {
