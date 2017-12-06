@@ -1,5 +1,9 @@
 ﻿namespace Olive.Entities
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Provides direct data access to the underlying data source.
     /// </summary>

@@ -1,4 +1,9 @@
-﻿namespace Olive.Entities
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+
+namespace Olive.Entities
 {
     public interface IDatabase
     {

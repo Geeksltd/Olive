@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace Olive.Entities
 {
     /// <summary> 
@@ -343,7 +349,8 @@ namespace Olive.Entities
             if (FileData != null && FileData.Length > 0)
                 await GetStorageProvider().Save(this);
 
-            else if (IsEmptyBlob) DeleteFromDisk();
+            else if (IsEmptyBlob)
+                DeleteFromDisk();
         }
 
         /// <summary>
@@ -484,11 +491,14 @@ namespace Olive.Entities
 
         public static bool operator ==(Blob left, Blob right)
         {
-            if (ReferenceEquals(left, right)) return true;
+            if (ReferenceEquals(left, right))
+                return true;
 
-            else if (ReferenceEquals(left, null)) return false;
+            else if (ReferenceEquals(left, null))
+                return false;
 
-            else return left.Equals(right);
+            else
+                return left.Equals(right);
         }
 
         public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(FileName);

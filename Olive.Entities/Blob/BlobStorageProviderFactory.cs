@@ -1,4 +1,6 @@
-﻿namespace Olive.Entities
+﻿using System.Collections.Generic;
+
+namespace Olive.Entities
 {
     public class BlobStorageProviderFactory
     {

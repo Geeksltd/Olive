@@ -1,4 +1,9 @@
-﻿namespace Olive.Entities
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Olive.Entities
 {
     /// <summary>
     /// Finds an entity with unknown type from its given id.

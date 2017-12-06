@@ -1,4 +1,9 @@
-﻿namespace Olive.Entities
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+
+namespace Olive.Entities
 {
     /// <summary>
     /// Enables adding a direct SQL WHERE criteria to the database query.

@@ -1,4 +1,6 @@
-﻿namespace Olive.Entities
+﻿using System.Linq.Expressions;
+
+namespace Olive.Entities
 {
     public enum BinaryOperator { OR, AND }
 

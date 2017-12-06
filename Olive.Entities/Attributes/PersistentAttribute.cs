@@ -1,4 +1,6 @@
-﻿namespace Olive.Entities
+﻿using System;
+
+namespace Olive.Entities
 {
     /// <summary>
     /// When applied to a class, defines its Application data accessor type.
@@ -19,8 +21,10 @@
             if (type.IsDefined(typeof(PersistentAttribute), inherit: true))
             {
                 foreach (PersistentAttribute attribute in type.GetCustomAttributes(typeof(PersistentAttribute), inherit: true))
-                    if (attribute.IsPersistent == false) return false;
-
+                {
+                    if (attribute.IsPersistent == false)
+                        return false;
+                }
             }
 
             // Default unconfigured value is true:

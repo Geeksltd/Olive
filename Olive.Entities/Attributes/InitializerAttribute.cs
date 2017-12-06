@@ -1,4 +1,8 @@
-﻿namespace Olive.Entities
+﻿using System;
+using System.Linq;
+using System.Reflection;
+
+namespace Olive.Entities
 {
     /// <summary>
     /// 
