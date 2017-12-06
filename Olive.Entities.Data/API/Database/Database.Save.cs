@@ -33,7 +33,7 @@ namespace Olive.Entities.Data
 
             Func<Task> save = async () => await DoSave(entity, behaviour);
 
-            Func<Task> doSave = async () =>
+            var doSave = async () =>
             {
                 if (entity.IsNew) await save();
                 else using (await GetSyncLock(entity.GetType().FullName + entity.GetId()).Lock()) await save();
@@ -202,8 +202,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
                 await Save(clone as Entity, behaviour);
 
-                if (!AnyOpenTransaction())
-                    action(item);
+                if (!AnyOpenTransaction()) action(item);
 
                 return clone;
             }

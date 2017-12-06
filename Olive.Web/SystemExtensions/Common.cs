@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Olive.Entities;
-
-namespace Olive.Web
+﻿namespace Olive.Web
 {
     public static partial class OliveExtensions
     {
@@ -163,8 +151,7 @@ namespace Olive.Web
         public static IEnumerable<Task<T>> GetList<T>(this HttpRequest request, string key, char seperator) where T : class, IEntity
         {
             var ids = request.Param(key);
-            if (ids.IsEmpty())
-                yield break;
+            if (ids.IsEmpty()) yield break;
             else
                 foreach (var id in ids.Split(seperator))
                     yield return Entity.Database.Get<T>(id);
@@ -451,7 +438,7 @@ namespace Olive.Web
         /// </summary>
         public static async Task<string> ReadAllText(this Stream response)
         {
-            string result = "";
+            var result = "";
 
             // Pipes the stream to a higher level stream reader with the required encoding format.
             using (var readStream = new StreamReader(response, Encoding.UTF8))

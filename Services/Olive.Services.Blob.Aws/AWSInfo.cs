@@ -1,7 +1,4 @@
-﻿using System;
-using Amazon;
-
-namespace Olive.Services.BlobAws
+﻿namespace Olive.Services.BlobAws
 {
     /// <summary>This class is to help the AWS Bucket</summary>
     static class AWSInfo

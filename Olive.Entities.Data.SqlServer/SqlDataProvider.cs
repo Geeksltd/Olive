@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Reflection;
-using System.Text;
-
-namespace Olive.Entities.Data
+﻿namespace Olive.Entities.Data
 {
     public abstract class SqlDataProvider<TTargetEntity> : SqlDataProvider where TTargetEntity : IEntity
     {

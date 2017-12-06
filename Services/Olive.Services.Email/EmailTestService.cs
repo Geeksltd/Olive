@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Olive.Entities;
-using Olive.Web;
-
-namespace Olive.Services.Email
+﻿namespace Olive.Services.Email
 {
     public class EmailTestService
     {

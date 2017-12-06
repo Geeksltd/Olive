@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNetCore.Http;
-using Olive.Entities;
-
 namespace Olive.Web
 {
     /// <summary>
@@ -123,8 +115,7 @@ namespace Olive.Web
         {
             var query = new Uri(log.Url).Query?.TrimStart("?").Split('&').FirstOrDefault(p => p.StartsWith(key + "="));
 
-            if (query.IsEmpty())
-                return null;
+            if (query.IsEmpty()) return null;
             else
                 return HttpUtility.UrlDecode(query.Substring(1 + key.Length));
         }

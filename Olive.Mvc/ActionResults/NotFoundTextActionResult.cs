@@ -1,9 +1,6 @@
 ﻿namespace Olive.Mvc
 {
-    using Microsoft.AspNetCore.Mvc;
     using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
 
     public class NotFoundTextActionResult : TextActionResult
     {

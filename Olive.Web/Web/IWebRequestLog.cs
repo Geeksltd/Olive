@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Olive.Entities;
-
-namespace Olive.Web
+﻿namespace Olive.Web
 {
     [LogEvents(false), CacheObjects(false)]
     public interface IWebRequestLog : IEntity

@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Olive.Services.Globalization
+﻿namespace Olive.Services.Globalization
 {
     [DataContract]
     internal class GoogleTranslateJsonResponseRootObject

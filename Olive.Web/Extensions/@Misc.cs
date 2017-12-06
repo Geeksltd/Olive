@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Newtonsoft.Json;
-using Olive.Entities;
-
-namespace Olive.Web
+﻿namespace Olive.Web
 {
     public static partial class OliveExtensions
     {

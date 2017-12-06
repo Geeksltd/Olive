@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     partial class OliveExtensions
     {

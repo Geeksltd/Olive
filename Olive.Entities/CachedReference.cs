@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     internal interface ICachedReference { void Invalidate(); }
 

@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using static Olive.Web.WebRequestLogService;
+﻿using static Olive.Web.WebRequestLogService;
 
 namespace Olive.Web
 {

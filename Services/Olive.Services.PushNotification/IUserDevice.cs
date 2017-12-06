@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Olive.Services.PushNotification
+﻿namespace Olive.Services.PushNotification
 {
     public interface IUserDevice
     {

@@ -103,7 +103,7 @@ namespace Olive.Entities.Data
             var type = original.GetType();
             var propertyNames = type.GetProperties().Distinct().Select(p => p.Name.Trim()).ToArray();
 
-            Func<string, PropertyInfo> getProperty = name => type.GetProperties().Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic).Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic).OrderByDescending(x => x.DeclaringType == type).FirstOrDefault(p => p.Name == name);
+            var getProperty = name => type.GetProperties().Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic).Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic).OrderByDescending(x => x.DeclaringType == type).FirstOrDefault(p => p.Name == name);
 
             var dataProperties = propertyNames.Select(getProperty).ExceptNull()
                 .Except(CalculatedAttribute.IsCalculated)

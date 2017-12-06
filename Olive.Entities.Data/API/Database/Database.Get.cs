@@ -130,8 +130,7 @@ namespace Olive.Entities.Data
                 result = await GetConcrete(entityID, objectType);
             }
 
-            if (result != null)
-                return result;
+            if (result != null) return result;
             else
                 throw new ArgumentException($"Could not load the {objectType.FullName} instance with the ID of {entityID}.");
         }

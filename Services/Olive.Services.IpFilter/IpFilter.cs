@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Olive.Entities;
-using Olive.Services.CSV;
-
-namespace Olive.Web
+﻿namespace Olive.Web
 {
     public class IpFilter
     {

@@ -1,6 +1,4 @@
-﻿using Olive.Entities;
-
-namespace Olive.Web
+﻿namespace Olive.Web
 {
     public interface IWebResource : IEntity
     {

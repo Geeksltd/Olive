@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Olive.Web;
-using System.Net.Http.Headers;
-
-namespace Olive.Security
+﻿namespace Olive.Security
 {
     public class JwtAuthenticateAttribute : ActionFilterAttribute
     {
@@ -23,7 +14,7 @@ namespace Olive.Security
 
         protected async Task JwtAuthenticate(ActionExecutingContext context)
         {
-            HttpRequestHeaders headers =  null; // TODO:...
+            HttpRequestHeaders headers = null; // TODO:...
             var user = await JwtAuthentication.ExtractUser(headers);
 
             if (user != null)

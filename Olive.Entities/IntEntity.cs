@@ -1,11 +1,5 @@
 ﻿namespace Olive.Entities
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.ComponentModel;
-    using System.Linq;
-    using System.Threading.Tasks;
-
     public class IntEntity : Entity<int>
     {
         // bool IsIdLoaded = false;

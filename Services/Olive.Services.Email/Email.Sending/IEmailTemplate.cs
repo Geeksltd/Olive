@@ -1,5 +1,3 @@
-using Olive.Entities;
-
 namespace Olive.Services.Email
 {
     /// <summary>

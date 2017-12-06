@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Olive.Entities;
-
-namespace Olive.Services.Email
+﻿namespace Olive.Services.Email
 {
     partial class EmailService
     {

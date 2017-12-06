@@ -1,8 +1,5 @@
 ﻿namespace Olive.Services.Email
 {
-    using System;
-    using System.Net.Mail;
-
     public class EmailSendingEventArgs
     {
         public MailMessage MailMessage { get; }

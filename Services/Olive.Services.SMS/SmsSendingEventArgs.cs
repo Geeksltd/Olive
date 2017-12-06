@@ -1,7 +1,5 @@
 ﻿namespace Olive.Services.SMS
 {
-    using System;
-
     public class SmsSendingEventArgs
     {
         public ISmsQueueItem Item { get; }

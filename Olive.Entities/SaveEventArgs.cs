@@ -1,5 +1,3 @@
-using System;
-
 namespace Olive.Entities
 {
     public class SaveEventArgs : EventArgs

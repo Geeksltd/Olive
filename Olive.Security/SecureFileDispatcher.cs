@@ -1,13 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Olive.Entities;
-using Olive.Web;
-
-namespace Olive.Security
+﻿namespace Olive.Security
 {
     public class SecureFileDispatcher
     {
@@ -51,7 +42,7 @@ namespace Olive.Security
             await EnsureSecurity();
 
             var file = Blob.LocalPath;
-            
+
             return file.AsFile();
         }
 

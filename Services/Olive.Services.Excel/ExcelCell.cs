@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive.Services.Excel
+﻿namespace Olive.Services.Excel
 {
     public class ExcelCell
     {
