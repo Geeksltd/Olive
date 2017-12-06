@@ -45,7 +45,7 @@ namespace Olive.Entities.Data.SQLite
 
             r.Append($" WHERE { query.Column("ID")} IS NOT NULL");
 
-            var whereGenerator = new SqlCriterionGenerator(query);
+            var whereGenerator = new SqliteCriterionGenerator(query);
             foreach (var c in query.Criteria)
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
 
