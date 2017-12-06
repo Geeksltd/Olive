@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Olive
+﻿namespace Olive
 {
     partial class OliveExtensions
     {
@@ -150,8 +141,7 @@ namespace Olive
             if (file.Exists())
             {
                 var oldContent = await file.ReadAllText();
-                if (newContent == oldContent)
-                    return false;
+                if (newContent == oldContent) return false;
             }
 
             await file.WriteAllText(newContent, encoding);
@@ -274,13 +264,13 @@ namespace Olive
 
             configuration?.Invoke(process);
 
-            process.ErrorDataReceived += (sender, e) => { if (e.Data.HasValue()) { output.AppendLine(e.Data); } };
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (e.Data.HasValue()) output.AppendLine(e.Data);
+            };
             process.OutputDataReceived += (sender, e) =>
             {
-                if (e.Data != null)
-                {
-                    output.AppendLine(e.Data);
-                }
+                if (e.Data != null) output.AppendLine(e.Data);
             };
 
             process.Start();

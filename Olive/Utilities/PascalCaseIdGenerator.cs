@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Olive
+﻿namespace Olive
 {
     /// <summary>
     /// Generates an identifier for a given string value.

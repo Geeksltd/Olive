@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive
+﻿namespace Olive
 {
     /// <summary>
     /// Represents a globally unique identifier (GUID) with a  shorter string value.
@@ -96,8 +94,7 @@ namespace Olive
         {
             if (obj is ShortGuid)
                 return _guid.Equals(((ShortGuid)obj)._guid);
-            if (obj is Guid)
-                return _guid.Equals((Guid)obj);
+            if (obj is Guid) return _guid.Equals((Guid)obj);
             if (obj is string)
                 return _guid.Equals(((ShortGuid)obj)._guid);
             return false;

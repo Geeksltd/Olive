@@ -1,8 +1,5 @@
 ﻿namespace Olive
 {
-    using System;
-    using System.Text;
-
     public sealed class Base32Integer
     {
         // the valid chars for the encoding

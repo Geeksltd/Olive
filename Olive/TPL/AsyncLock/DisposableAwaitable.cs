@@ -1,9 +1,5 @@
 namespace Olive
 {
-    using System;
-    using System.Runtime.CompilerServices;
-    using System.Threading.Tasks;
-
     public struct DisposableAwaitable<T> where T : IDisposable
     {
         public readonly Task<T> Task;

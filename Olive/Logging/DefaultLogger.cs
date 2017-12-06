@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive
+﻿namespace Olive
 {
     public class DefaultLogger : ILogger
     {

@@ -1,7 +1,5 @@
 ﻿namespace Olive
 {
-    using System;
-
     public interface ILogger
     {
         void RecordException(Exception ex);

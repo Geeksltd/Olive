@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-
-namespace Olive
+﻿namespace Olive
 {
     internal class PropertyComparer : IComparer
     {

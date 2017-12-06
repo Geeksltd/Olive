@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-
-namespace Olive
+﻿namespace Olive
 {
     partial class OliveExtensions
     {

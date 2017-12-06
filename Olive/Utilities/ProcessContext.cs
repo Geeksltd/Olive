@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive
+﻿namespace Olive
 {
     /// <summary>
     /// Provides process context data sharing mechanism to pass arguments and data around execution in a shared pipeline.

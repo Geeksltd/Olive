@@ -1,9 +1,5 @@
 namespace Olive
 {
-    using System.Diagnostics;
-    using System.Runtime.CompilerServices;
-    using System.Threading.Tasks;
-
     public class AsyncEvent : AbstractAsyncEvent
     {
         public AsyncEvent([CallerMemberName] string eventName = "", [CallerFilePath] string declaringFile = "") : base(eventName, declaringFile) { }

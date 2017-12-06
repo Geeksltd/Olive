@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Olive
+﻿namespace Olive
 {
 #pragma warning disable GCop112 // This class is too large. Break its responsibilities down into more classes.
     partial class OliveExtensions
@@ -513,14 +505,12 @@ namespace Olive
             if (countList == null || countOther == null || countOther < countList)
             {
                 foreach (var item in otherList)
-                    if (list.Contains(item))
-                        return true;
+                    if (list.Contains(item)) return true;
             }
             else
             {
                 foreach (var item in list)
-                    if (otherList.Contains(item))
-                        return true;
+                    if (otherList.Contains(item)) return true;
             }
 
             return false;
@@ -604,8 +594,7 @@ namespace Olive
             if (itemsToRemove != null)
             {
                 foreach (var item in itemsToRemove)
-                    if (list.Contains(item))
-                        list.Remove(item);
+                    if (list.Contains(item)) list.Remove(item);
             }
         }
 

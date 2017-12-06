@@ -1,11 +1,5 @@
 ﻿namespace Olive
 {
-    using System;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
-    using System.Threading.Tasks;
-
     public interface IAsyncEvent { bool IsHandled(); }
 
     public abstract partial class AbstractAsyncEvent : IAsyncEvent, IDisposable

@@ -1,10 +1,5 @@
 namespace Olive
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
-
     public interface IAsyncEventHandler : IDisposable { object Action { get; } }
 
     /// <summary>

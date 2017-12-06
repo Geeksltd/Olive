@@ -1,9 +1,5 @@
 namespace Olive
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-
     internal sealed class AsyncLockDeque<T> : IEnumerable<T>
     {
         T[] Buffer;

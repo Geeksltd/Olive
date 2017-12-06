@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Microsoft.Extensions.Configuration;
-
-namespace Olive
+﻿namespace Olive
 {
     /// <summary>
     /// Provides shortcut access to the value specified in web.config (or App.config) under AppSettings or ConnectionStrings.
