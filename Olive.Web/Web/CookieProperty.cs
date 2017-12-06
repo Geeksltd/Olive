@@ -1,5 +1,12 @@
 ﻿namespace Olive.Web
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
+    using Olive.Entities;
+
     /// <summary>
     /// Provides easy access to HTTP cookie data.
     /// </summary>

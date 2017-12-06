@@ -1,4 +1,12 @@
-﻿namespace Olive.Services.GeoLocation
+﻿using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using Olive.Web;
+
+namespace Olive.Services.GeoLocation
 {
     /// <summary>
     /// Provides location services.

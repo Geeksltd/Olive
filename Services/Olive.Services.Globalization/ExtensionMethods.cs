@@ -1,4 +1,8 @@
-﻿namespace Olive.Services.Globalization
+﻿using System;
+using System.Threading.Tasks;
+using Olive.Entities;
+
+namespace Olive.Services.Globalization
 {
     public static class ExtensionMethods
     {

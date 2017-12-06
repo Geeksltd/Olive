@@ -1,4 +1,8 @@
-﻿namespace Olive.Services.Globalization
+﻿using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using Olive.Entities;
+
+namespace Olive.Services.Globalization
 {
     [DataContract]
     internal class GoogleAutoDetectJsonResponseRootObject

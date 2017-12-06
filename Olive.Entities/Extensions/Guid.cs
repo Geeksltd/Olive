@@ -1,4 +1,7 @@
-﻿namespace Olive.Entities
+﻿using System;
+using System.Threading.Tasks;
+
+namespace Olive.Entities
 {
     partial class OliveExtensions
     {

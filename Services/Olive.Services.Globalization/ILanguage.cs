@@ -1,4 +1,6 @@
-﻿namespace Olive.Services.Globalization
+﻿using Olive.Entities;
+
+namespace Olive.Services.Globalization
 {
     public interface ILanguage : IEntity
     {

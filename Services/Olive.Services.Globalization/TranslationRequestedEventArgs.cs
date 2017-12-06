@@ -1,5 +1,8 @@
 ﻿namespace Olive.Services.Globalization
 {
+    using System;
+    using System.ComponentModel;
+
     public class TranslationRequestedEventArgs : CancelEventArgs
     {
         public string PhraseInDefaultLanguage { get; internal set; }

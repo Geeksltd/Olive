@@ -632,7 +632,7 @@ namespace LumenWorks.Framework.IO.Csv
                 if (!hasHeaders)
                     throw new InvalidOperationException(ExceptionMessage.NoHeaders);
 
-                var index = GetFieldIndex(field);
+                int index = GetFieldIndex(field);
 
                 if (index < 0)
                     throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, ExceptionMessage.FieldHeaderNotFound, field), "field");
@@ -750,8 +750,10 @@ namespace LumenWorks.Framework.IO.Csv
 
             for (int i = 0; i < fieldCount; i++)
             {
-                if (parseErrorFlag) array[index + i] = null;
-                else array[index + i] = this[i];
+                if (parseErrorFlag)
+                    array[index + i] = null;
+                else
+                    array[index + i] = this[i];
             }
         }
 
@@ -811,7 +813,7 @@ namespace LumenWorks.Framework.IO.Csv
             if (record < currentRecordIndex) return false;
 
             // Get number of record to read
-            var offset = record - currentRecordIndex;
+            long offset = record - currentRecordIndex;
 
             while (offset > 0)
             {
@@ -865,8 +867,10 @@ namespace LumenWorks.Framework.IO.Csv
                 {
                     if (ReadBuffer())
                     {
-                        if (buffer[0] == '\n') pos = 1;
-                        else pos = 0;
+                        if (buffer[0] == '\n')
+                            pos = 1;
+                        else
+                            pos = 0;
                     }
                 }
 
@@ -908,8 +912,10 @@ namespace LumenWorks.Framework.IO.Csv
             var c = buffer[pos];
 
             if (c == '\n') return true;
-            else if (c == '\r' && delimiter != '\r') return true;
-            else return false;
+            else if (c == '\r' && delimiter != '\r')
+                return true;
+            else
+                return false;
         }
 
         #endregion
@@ -990,7 +996,7 @@ namespace LumenWorks.Framework.IO.Csv
 
             CheckDisposed();
 
-            var index = nextFieldIndex;
+            int index = nextFieldIndex;
 
             while (index < field + 1)
             {
@@ -1047,8 +1053,8 @@ namespace LumenWorks.Framework.IO.Csv
                     {
                         // Non-quoted field
 
-                        var start = nextFieldStart;
-                        var pos = nextFieldStart;
+                        int start = nextFieldStart;
+                        int pos = nextFieldStart;
 
                         for (; ; )
                         {
@@ -1083,7 +1089,8 @@ namespace LumenWorks.Framework.IO.Csv
                                 pos = 0;
                                 nextFieldStart = 0;
 
-                                if (!ReadBuffer()) break;
+                                if (!ReadBuffer())
+                                    break;
                             }
                         }
 
@@ -1151,11 +1158,11 @@ namespace LumenWorks.Framework.IO.Csv
                         // Quoted field
 
                         // Skip quote
-                        var start = nextFieldStart + 1;
-                        var pos = start;
+                        int start = nextFieldStart + 1;
+                        int pos = start;
 
-                        var quoted = true;
-                        var escaped = false;
+                        bool quoted = true;
+                        bool escaped = false;
 
                         if ((trimmingOptions & ValueTrimmingOptions.QuotedOnly) != 0)
                         {
@@ -1217,7 +1224,7 @@ namespace LumenWorks.Framework.IO.Csv
 
                             if (!discardValue && value != null && (trimmingOptions & ValueTrimmingOptions.QuotedOnly) != 0)
                             {
-                                var newLength = value.Length;
+                                int newLength = value.Length;
                                 while (newLength > 0 && IsWhiteSpace(value[newLength - 1]))
                                     newLength--;
 
@@ -1256,7 +1263,8 @@ namespace LumenWorks.Framework.IO.Csv
 
                         if (!discardValue)
                         {
-                            if (value == null) value = string.Empty;
+                            if (value == null)
+                                value = string.Empty;
 
                             fields[index] = value;
                         }
@@ -1271,7 +1279,8 @@ namespace LumenWorks.Framework.IO.Csv
 
                     if (initializing)
                     {
-                        if (eol || eof) return null;
+                        if (eol || eof)
+                            return null;
                         else
                             return string.IsNullOrEmpty(value) ? string.Empty : value;
                     }
@@ -1390,7 +1399,7 @@ namespace LumenWorks.Framework.IO.Csv
 
                     for (int i = 0; i < fields.Length; i++)
                     {
-                        var headerName = fields[i];
+                        string headerName = fields[i];
                         if (string.IsNullOrEmpty(headerName) || headerName.Trim().Length == 0)
                             headerName = DefaultHeaderName + i.ToString();
 
@@ -1562,7 +1571,8 @@ namespace LumenWorks.Framework.IO.Csv
                 {
                     pos = 0;
 
-                    if (!ReadBuffer()) return false;
+                    if (!ReadBuffer())
+                        return false;
                 }
             }
 
@@ -1898,7 +1908,7 @@ namespace LumenWorks.Framework.IO.Csv
         {
             ValidateDataReader(DataReaderValidations.IsInitialized | DataReaderValidations.IsNotClosed);
 
-            var value = this[i];
+            string value = this[i];
 
             return int.Parse(value == null ? string.Empty : value, CultureInfo.CurrentCulture);
         }
@@ -1987,7 +1997,8 @@ namespace LumenWorks.Framework.IO.Csv
             if (i < 0 || i >= fieldCount)
                 throw new ArgumentOutOfRangeException("i", i, string.Format(CultureInfo.InvariantCulture, ExceptionMessage.FieldIndexOutOfRange, i));
 
-            if (hasHeaders) return fieldHeaders[i];
+            if (hasHeaders)
+                return fieldHeaders[i];
             else
                 return "Column" + i.ToString(CultureInfo.InvariantCulture);
         }
@@ -2008,7 +2019,7 @@ namespace LumenWorks.Framework.IO.Csv
         {
             ValidateDataReader(DataReaderValidations.IsInitialized | DataReaderValidations.IsNotClosed);
 
-            var value = this[i];
+            string value = this[i];
 
             int result;
 
@@ -2059,8 +2070,10 @@ namespace LumenWorks.Framework.IO.Csv
         {
             ValidateDataReader(DataReaderValidations.IsInitialized | DataReaderValidations.IsNotClosed);
 
-            if (i == 0) return this;
-            else return null;
+            if (i == 0)
+                return this;
+            else
+                return null;
         }
 
         long IDataRecord.GetChars(int field, long fieldoffset, char[] buffer, int bufferoffset, int length)

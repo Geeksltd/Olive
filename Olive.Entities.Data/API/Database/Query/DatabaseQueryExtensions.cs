@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Olive.Entities.Data;
+using System.Linq;
 
 namespace Olive.Entities
 {

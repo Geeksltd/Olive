@@ -1,4 +1,7 @@
-﻿namespace Olive.Entities
+﻿using System;
+using System.ComponentModel;
+
+namespace Olive.Entities
 {
     /// <summary>Represents a base Entity with ID of type Guid.</summary>
     public abstract class GuidEntity : Entity<Guid>, IEntity<Guid>

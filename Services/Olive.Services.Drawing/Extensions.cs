@@ -1,4 +1,7 @@
-﻿namespace Olive.Services.Drawing
+﻿using System.Threading.Tasks;
+using Olive.Entities;
+
+namespace Olive.Services.Drawing
 {
     public static class Extensions
     {

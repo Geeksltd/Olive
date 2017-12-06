@@ -1,4 +1,7 @@
-﻿namespace Olive.Entities
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Olive.Entities
 {
     partial class OliveExtensions
     { /// <summary>

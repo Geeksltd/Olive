@@ -1,3 +1,7 @@
+using System;
+using System.Threading.Tasks;
+using Olive.Entities;
+
 namespace Olive.Services.SMS
 {
     public static class SmsExtensions

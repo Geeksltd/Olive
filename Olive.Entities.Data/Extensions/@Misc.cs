@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
+using System.IO;
 using System.Linq;
 
 namespace Olive.Entities.Data

@@ -1,4 +1,10 @@
-﻿namespace Olive.Services.Excel
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Olive.Web;
+
+namespace Olive.Services.Excel
 {
     /// <summary>
     /// Provides styles for excel cells.

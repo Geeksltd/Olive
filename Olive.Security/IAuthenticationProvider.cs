@@ -1,4 +1,8 @@
-﻿namespace Olive.Security
+﻿using System;
+using System.Security.Principal;
+using System.Threading.Tasks;
+
+namespace Olive.Security
 {
     public interface IAuthenticationProvider
     {

@@ -1,4 +1,7 @@
-﻿namespace Olive.Services.Email
+﻿using System;
+using Olive.Entities;
+
+namespace Olive.Services.Email
 {
     public interface ICustomReplyToEmailQueueItem : IEmailQueueItem
     {

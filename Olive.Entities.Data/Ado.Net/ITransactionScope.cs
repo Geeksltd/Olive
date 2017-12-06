@@ -4,12 +4,12 @@ using System.Transactions;
 
 namespace Olive.Entities.Data
 {
-    // public interface ITransactionScope : IDisposable
-    // {
+    //public interface ITransactionScope : IDisposable
+    //{
     //    void Complete();
 
     //    Guid ID { get; }
-    // }
+    //}
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class TransactionScopeWrapper : ITransactionScope

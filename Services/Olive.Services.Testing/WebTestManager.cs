@@ -156,7 +156,7 @@ namespace Olive.Services.Testing
 
                 var trueOrigin = DateTime.Now;
 
-                LocalTime.RedefineNow(() => { return date.Add(DateTime.Now.Subtract(trueOrigin)); });
+                LocalTime.RedefineNow(() => { return date.Add(DateTime.Now.Subtract(trueOrigin)); });                
                 response.EndWith(date.ToString("yyyy-MM-dd @ HH:mm:ss"));
             }
             else if (command == "remove_snapshot")
@@ -187,28 +187,27 @@ namespace Olive.Services.Testing
         {
             throw new NotImplementedException("Hangfire?");
 
-            // var response = Context.Http.Response;
-            // var request = Context.Http.Request;
+            //var response = Context.Http.Response;
+            //var request = Context.Http.Request;
 
-            // response.ContentType = "text/html";
+            //response.ContentType = "text/html";
 
-            // response.WriteAsync("<html>").RunSynchronously();
+            //response.WriteAsync("<html>").RunSynchronously();
 
-            // response.WriteAsync("<body>").RunSynchronously();
+            //response.WriteAsync("<body>").RunSynchronously();
 
-            // response.WriteAsync("<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>").RunSynchronously();
+            //response.WriteAsync("<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>").RunSynchronously();
 
-            // response.WriteAsync("</body>").RunSynchronously();
+            //response.WriteAsync("</body>").RunSynchronously();
 
-            // response.WriteAsync("</html>").RunSynchronously();
+            //response.WriteAsync("</html>").RunSynchronously();
         }
 
         public static string GetWebTestWidgetHtml(HttpRequest request)
         {
             var uri = new Uri(request.ToAbsoluteUri());
             var url = uri.RemoveQueryString("Web.Test.Command").ToString();
-            if (url.Contains("?")) url += "&";
-            else url += "?";
+            if (url.Contains("?")) url += "&"; else url += "?";
 
             return @"<div class='webtest-commands'
 style='position: fixed; left: 49%; bottom: 0; margin-bottom: -96px; text-align: center; width: 130px; transition: margin-bottom 0.25s ease; background: #2ea8eb; color: #fff; font-size: 12px; font-family:Arial;'

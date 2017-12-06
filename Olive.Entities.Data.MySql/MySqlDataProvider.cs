@@ -1,5 +1,11 @@
 ﻿namespace Olive.Entities.Data
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Text;
+    using MySql.Data.MySqlClient;
+
     public abstract class MySqlDataProvider<TTargetEntity> : MySqlDataProvider where TTargetEntity : IEntity
     {
         public override Type EntityType => typeof(TTargetEntity);

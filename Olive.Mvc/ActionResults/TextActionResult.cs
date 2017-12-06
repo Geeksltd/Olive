@@ -1,8 +1,10 @@
 ﻿namespace Olive.Mvc
 {
-    using System.Net;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public abstract class TextActionResult : IActionResult
     {
@@ -13,7 +15,7 @@
         {
             Message = message;
             StatusCode = statusCode;
-        }
+        }        
 
         public virtual async Task ExecuteResultAsync(ActionContext context)
         {

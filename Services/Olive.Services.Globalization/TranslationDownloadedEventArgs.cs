@@ -1,4 +1,6 @@
-﻿namespace Olive.Services.Globalization
+﻿using System;
+
+namespace Olive.Services.Globalization
 {
     public class TranslationDownloadedEventArgs : EventArgs
     {

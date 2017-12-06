@@ -1,5 +1,8 @@
 ﻿namespace Olive.Security
 {
+    using System;
+    using System.Security.Cryptography;
+
     /// <summary>
     /// Provides secure password hashing service based on PBKDF2. 
     /// </summary>

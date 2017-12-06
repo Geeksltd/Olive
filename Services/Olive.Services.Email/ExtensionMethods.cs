@@ -1,4 +1,9 @@
-﻿namespace Olive.Services.Email
+﻿using System;
+using System.Threading.Tasks;
+using Olive.Entities;
+using Olive.Web;
+
+namespace Olive.Services.Email
 {
     public static class ExtensionMethods
     {
@@ -15,7 +20,8 @@
         {
             var context = Context.HttpContextAccessor.HttpContext;
 
-            if (toNotify.IsEmpty()) return null;
+            if (toNotify.IsEmpty())
+                return null;
             var email = EmailService.EmailQueueItemFactory();
             email.To = toNotify;
             email.Subject = "Error In Application";

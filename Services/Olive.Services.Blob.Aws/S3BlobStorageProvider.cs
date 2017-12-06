@@ -1,4 +1,7 @@
-﻿namespace Olive.Services.BlobAws
+﻿using System.Threading.Tasks;
+using Olive.Entities;
+
+namespace Olive.Services.BlobAws
 {
     public class S3BlobStorageProvider : IBlobStorageProvider
     {

@@ -1,4 +1,11 @@
-﻿namespace Olive.Web
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Olive.Entities;
+
+namespace Olive.Web
 {
     public static class UrlRewriting
     {

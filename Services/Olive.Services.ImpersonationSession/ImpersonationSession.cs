@@ -1,4 +1,13 @@
-﻿namespace Olive.Services.ImpersonationSession
+﻿using System;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Olive.Entities;
+using Olive.Services.Globalization;
+using Olive.Web;
+using Olive.Security;
+
+namespace Olive.Services.ImpersonationSession
 {
     /// <summary>
     /// Defines an admin user who can impersonate other users.

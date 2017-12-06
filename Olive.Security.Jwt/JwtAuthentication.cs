@@ -1,5 +1,17 @@
 ﻿namespace Olive.Security
 {
+    using JWT;
+    using JWT.Serializers;
+    using JWT.Algorithms;
+    using Olive.Web;
+    using Olive.Entities.Data;
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http.Headers;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
+
     public static class JwtAuthentication
     {
         static JwtEncoder JwtEncoder;

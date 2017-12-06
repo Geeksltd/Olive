@@ -1,4 +1,6 @@
-﻿namespace Olive.Services.Excel
+﻿using System;
+
+namespace Olive.Services.Excel
 {
     partial class ExcelExporter<T>
     {
