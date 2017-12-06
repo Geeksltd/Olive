@@ -43,8 +43,7 @@ namespace Olive.Services.Testing
 
         FileInfo[] GetCreateDbFiles()
         {
-            if (DbDirectory == null)
-                LoadMetaDirectory();
+            if (DbDirectory == null) LoadMetaDirectory();
 
             var potentialSources = new List<FileInfo>();
 

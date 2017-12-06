@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Olive.Entities;
 using Olive.Web;
 
 namespace Olive.Security
@@ -16,9 +13,6 @@ namespace Olive.Security
         public readonly static OAuth Instance = new OAuth();
 
         public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
-        // public string AuthenticationScheme { get; }
-
-        // public OwinAuthenticaionProvider(string authenticationScheme) => AuthenticationScheme = authenticationScheme;
 
         public async Task LogOn(IIdentity user, IEnumerable<string> roles, TimeSpan timeout, bool remember, string domain = null)
         {

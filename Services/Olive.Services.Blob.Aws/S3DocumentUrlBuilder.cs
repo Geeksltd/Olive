@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive.Services.BlobAws
+﻿namespace Olive.Services.BlobAws
 {
     /// <summary>
     /// Builds the S3 Bucket url.

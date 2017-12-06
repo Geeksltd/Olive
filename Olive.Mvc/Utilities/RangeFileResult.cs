@@ -266,8 +266,7 @@ namespace Olive.Mvc
                 var entitiesTags = noneMatchHeader.Split(',');
                 foreach (string entityTag in entitiesTags)
                 {
-                    if (EntityTag != entityTag)
-                        continue;
+                    if (EntityTag != entityTag) continue;
 
                     response.Headers.Add("ETag", $"\"{entityTag}\"");
                     response.StatusCode = HTTP_STATUS_CODE_NOT_MODIFIED;

@@ -213,10 +213,7 @@ namespace Olive.Services.Globalization
                 // First try: Exact match:
                 var translation = await GetLocalTranslation(phraseInDefaultLanguage, language);
 
-                if (translation.HasValue())
-                {
-                    return translation;
-                }
+                if (translation.HasValue()) return translation;
 
                 // special characters aren't translated:
                 if (phraseInDefaultLanguage.ToCharArray().None(c => char.IsLetter(c)))
@@ -305,8 +302,7 @@ namespace Olive.Services.Globalization
         /// </summary>
         public static async Task<string> GoogleTranslate(string phrase, string languageIsoCodeTo, string languageIsoCodeFrom = "en")
         {
-            if (IsGoogleTranslateMisconfigured)
-                return null;
+            if (IsGoogleTranslateMisconfigured) return null;
 
             if (Config.Get("Enable.Google.Translate", defaultValue: false) == false) return null;
 
@@ -353,8 +349,7 @@ namespace Olive.Services.Globalization
         /// </summary>
         public static async Task<GoogleAutodetectResponse> GoogleAutodetectLanguage(string phrase)
         {
-            if (IsGoogleTranslateMisconfigured)
-                return null;
+            if (IsGoogleTranslateMisconfigured) return null;
 
             if (!Config.Get<bool>("Enable.Google.Autodetect", defaultValue: false))
                 return null;

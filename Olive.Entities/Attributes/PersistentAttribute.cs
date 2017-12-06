@@ -22,7 +22,6 @@ namespace Olive.Entities
             {
                 foreach (PersistentAttribute attribute in type.GetCustomAttributes(typeof(PersistentAttribute), inherit: true))
                     if (attribute.IsPersistent == false) return false;
-
             }
 
             // Default unconfigured value is true:

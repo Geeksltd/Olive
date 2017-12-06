@@ -163,8 +163,7 @@ namespace Olive.Web
         public static IEnumerable<Task<T>> GetList<T>(this HttpRequest request, string key, char seperator) where T : class, IEntity
         {
             var ids = request.Param(key);
-            if (ids.IsEmpty())
-                yield break;
+            if (ids.IsEmpty()) yield break;
             else
                 foreach (var id in ids.Split(seperator))
                     yield return Entity.Database.Get<T>(id);
@@ -451,14 +450,14 @@ namespace Olive.Web
         /// </summary>
         public static async Task<string> ReadAllText(this Stream response)
         {
-            string result = "";
+            var result = "";
 
             // Pipes the stream to a higher level stream reader with the required encoding format.
             using (var readStream = new StreamReader(response, Encoding.UTF8))
             {
                 var read = new char[256];
                 // Reads 256 characters at a time.
-                int count = await readStream.ReadAsync(read, 0, read.Length);
+                var count = await readStream.ReadAsync(read, 0, read.Length);
 
                 while (count > 0)
                 {

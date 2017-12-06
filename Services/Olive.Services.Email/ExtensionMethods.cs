@@ -20,8 +20,7 @@ namespace Olive.Services.Email
         {
             var context = Context.HttpContextAccessor.HttpContext;
 
-            if (toNotify.IsEmpty())
-                return null;
+            if (toNotify.IsEmpty()) return null;
             var email = EmailService.EmailQueueItemFactory();
             email.To = toNotify;
             email.Subject = "Error In Application";

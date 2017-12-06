@@ -28,10 +28,8 @@ namespace Olive.Services.GeoLocation
 
             var result = EARTH_RADIUS * c1;
 
-            if (result > 100)
-                return result.Round(0);
-            else
-                return result.Round(1);
+            if (result > 100) return result.Round(0);
+            else return result.Round(1);
         }
 
         /// <summary>

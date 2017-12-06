@@ -92,7 +92,6 @@
             foreach (var associationHeirarchy in Include)
                 await associationHeirarchy.LoadAssociations(this, mainResult);
             // await new AssociationEagerLoadService(mainResult, associationHeirarchy.Association, associationHeirarchy.SubAssociations, this).Run();
-
         }
 
         async Task<List<IEntity>> LoadFromDatabaseAndCache()

@@ -57,10 +57,8 @@ namespace Olive.Mvc
             foreach (var p in Parameters)
             {
                 var routeKey = routeData.Keys.FirstOrDefault(x => x.ToLower() == p.Key.ToLower());
-                if (routeKey == null)
-                    continue;
-                if (!p.MatchesType(routeData[routeKey]))
-                    continue;
+                if (routeKey == null) continue;
+                if (!p.MatchesType(routeData[routeKey])) continue;
                 yield return p;
             }
         }

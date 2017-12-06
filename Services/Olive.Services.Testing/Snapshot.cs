@@ -272,7 +272,7 @@ namespace Olive.Services.Testing
         async Task RestoreDatabase()
         {
             SnapshotRestoreLock = new Mutex(false, "SnapshotRestore");
-            bool lockTaken = false;
+            var lockTaken = false;
 
             try
             {
