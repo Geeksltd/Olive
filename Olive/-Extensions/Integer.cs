@@ -90,8 +90,7 @@ namespace Olive
 
             if (number > 0)
             {
-                if (words != "")
-                    words += "and ";
+                if (words != "") words += "and ";
 
                 if (number < TWENTY)
                     words += NumberWordsUnits[number];

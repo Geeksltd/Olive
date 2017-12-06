@@ -491,14 +491,11 @@ namespace Olive.Entities
 
         public static bool operator ==(Blob left, Blob right)
         {
-            if (ReferenceEquals(left, right))
-                return true;
+            if (ReferenceEquals(left, right)) return true;
 
-            else if (ReferenceEquals(left, null))
-                return false;
+            else if (ReferenceEquals(left, null)) return false;
 
-            else
-                return left.Equals(right);
+            else return left.Equals(right);
         }
 
         public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(FileName);

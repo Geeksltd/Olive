@@ -100,14 +100,10 @@ namespace Olive
             if (text.IsEmpty()) return string.Empty;
 
             if (caseSensitive)
-                if (text.StartsWith(startText))
-                    return text;
+                if (text.StartsWith(startText)) return text;
 
-                else
-                {
-                    if (text.ToLower().StartsWith(startText.ToLower()))
-                        return text;
-                }
+                else if (text.ToLower().StartsWith(startText.ToLower()))
+                    return text;
 
             return startText + text;
         }
@@ -610,8 +606,7 @@ namespace Olive
             do
             {
                 index = text.IndexOf(pattern, index + 1);
-                if (index > -1)
-                    result.Add(index);
+                if (index > -1) result.Add(index);
             }
             while (index > -1);
 
@@ -641,8 +636,7 @@ namespace Olive
         /// </summary>
         public static string WithWrappers(this string text, string left, string right)
         {
-            if (text.IsEmpty())
-                return string.Empty;
+            if (text.IsEmpty()) return string.Empty;
 
             return left + text + right;
         }
@@ -742,10 +736,8 @@ namespace Olive
         /// </summary>
         public static string OnlyWhen(this string text, bool condition)
         {
-            if (condition)
-                return text;
-            else
-                return string.Empty;
+            if (condition) return text;
+            else return string.Empty;
         }
 
         /// <summary>
@@ -753,10 +745,8 @@ namespace Olive
         /// </summary>
         public static string Unless(this string text, bool condition)
         {
-            if (condition)
-                return string.Empty;
-            else
-                return text;
+            if (condition) return string.Empty;
+            else return text;
         }
 
         /// <summary>
@@ -816,10 +806,8 @@ namespace Olive
         /// </summary>
         public static string ToStringOrEmpty(this object @object)
         {
-            if (@object == null)
-                return string.Empty;
-            else
-                return @object.ToString().Or(string.Empty);
+            if (@object == null) return string.Empty;
+            else return @object.ToString().Or(string.Empty);
         }
 
         /// <summary>
@@ -827,8 +815,7 @@ namespace Olive
         /// </summary>
         public static bool Lacks(this string text, string phrase, bool caseSensitive = false)
         {
-            if (text.IsEmpty())
-                return phrase.HasValue();
+            if (text.IsEmpty()) return phrase.HasValue();
 
             return !text.Contains(phrase, caseSensitive);
         }
@@ -1099,14 +1086,11 @@ namespace Olive
             var fromIndex = text.IndexOf(from, comparison);
             var toIndex = text.IndexOf(to, fromIndex + from.Length + 1, comparison);
 
-            if (fromIndex == -1)
-                return string.Empty;
+            if (fromIndex == -1) return string.Empty;
 
-            if (toIndex == -1)
-                return string.Empty;
+            if (toIndex == -1) return string.Empty;
 
-            if (toIndex < fromIndex)
-                return string.Empty;
+            if (toIndex < fromIndex) return string.Empty;
 
             if (inclusive) toIndex += to.Length;
             else fromIndex += from.Length;

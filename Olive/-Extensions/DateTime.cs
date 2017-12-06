@@ -529,10 +529,8 @@ new DateTime(2099,04,13)};
 
             if (now == date)
             {
-                if (longForm)
-                    return "Just now";
-                else
-                    return "Now";
+                if (longForm) return "Just now";
+                else return "Now";
             }
 
             if (now > date)
@@ -583,10 +581,8 @@ new DateTime(2099,04,13)};
 
             var result = numbers.Select(i => from.AddDays(i));
 
-            if (day > other)
-                return result.Reverse();
-            else
-                return result;
+            if (day > other) return result.Reverse();
+            else return result;
         }
 
         /// <summary>
@@ -764,10 +760,8 @@ new DateTime(2099,04,13)};
         /// </summary>
         public static DateTime Min(this DateTime date, DateTime other)
         {
-            if (other < date)
-                return other;
-            else
-                return date;
+            if (other < date) return other;
+            else return date;
         }
 
         /// <summary>
@@ -775,10 +769,8 @@ new DateTime(2099,04,13)};
         /// </summary>
         public static DateTime Max(this DateTime date, DateTime other)
         {
-            if (other > date)
-                return other;
-            else
-                return date;
+            if (other > date) return other;
+            else return date;
         }
 
         /// <summary>
@@ -793,14 +785,8 @@ new DateTime(2099,04,13)};
         {
             var result = date.GetLast(day).Add(timeOfDay);
 
-            if (result > date)
-            {
-                return result.AddWeeks(-1);
-            }
-            else
-            {
-                return result;
-            }
+            if (result > date) return result.AddWeeks(-1);
+            else return result;
         }
 
         /// <summary>
