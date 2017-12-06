@@ -1,4 +1,6 @@
-﻿namespace Olive
+﻿using System;
+
+namespace Olive
 {
     /// <summary>
     /// Provides a range of values.

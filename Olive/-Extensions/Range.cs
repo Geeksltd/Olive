@@ -1,4 +1,7 @@
-﻿namespace Olive
+﻿using System;
+using System.Collections.Generic;
+
+namespace Olive
 {
     partial class OliveExtensions
     {

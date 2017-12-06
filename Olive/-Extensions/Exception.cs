@@ -1,4 +1,10 @@
-﻿namespace Olive
+﻿using System;
+using System.Collections;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+
+namespace Olive
 {
     partial class OliveExtensions
     {

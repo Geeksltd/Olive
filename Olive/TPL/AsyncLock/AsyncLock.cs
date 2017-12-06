@@ -1,5 +1,8 @@
 namespace Olive
 {
+    using System;
+    using System.Threading.Tasks;
+
     /// <summary> A recursive mutual exclusion lock that to use with async code.</summary>
     public sealed class AsyncLock
     {

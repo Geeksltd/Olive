@@ -1,4 +1,7 @@
-﻿namespace Olive
+﻿using System;
+using System.IO;
+
+namespace Olive
 {
     /// <summary>
     /// This class provides a unique file path in a temporary folder (i.e. in the application temp folder

@@ -1,4 +1,7 @@
-﻿namespace Olive
+﻿using System;
+using System.Runtime.CompilerServices;
+
+namespace Olive
 {
     partial class OliveExtensions
     {
@@ -87,7 +90,8 @@
 
             if (number > 0)
             {
-                if (words != "") words += "and ";
+                if (words != "")
+                    words += "and ";
 
                 if (number < TWENTY)
                     words += NumberWordsUnits[number];

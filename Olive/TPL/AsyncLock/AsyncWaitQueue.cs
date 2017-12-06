@@ -1,5 +1,8 @@
 namespace Olive
 {
+    using System;
+    using System.Threading.Tasks;
+
     internal sealed class AsyncWaitQueue<T>
     {
         readonly AsyncLockDeque<TaskCompletionSource<T>> Queue = new AsyncLockDeque<TaskCompletionSource<T>>();

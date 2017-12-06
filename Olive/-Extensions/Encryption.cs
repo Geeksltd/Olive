@@ -1,4 +1,7 @@
-﻿namespace Olive
+﻿using System;
+using System.Security.Cryptography;
+
+namespace Olive
 {
     partial class OliveExtensions
     {

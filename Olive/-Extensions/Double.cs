@@ -1,4 +1,6 @@
-﻿namespace Olive
+﻿using System;
+
+namespace Olive
 {
     partial class OliveExtensions
     {
