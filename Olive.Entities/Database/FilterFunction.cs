@@ -1,5 +1,3 @@
-using System;
-
 namespace Olive.Entities
 {
     /// <summary>

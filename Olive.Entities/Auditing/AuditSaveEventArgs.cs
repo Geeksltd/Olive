@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     public class AuditSaveEventArgs : CancelEventArgs
     {

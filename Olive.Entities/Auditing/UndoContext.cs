@@ -1,10 +1,5 @@
 ﻿namespace Olive.Entities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Xml.Linq;
-
     public class UndoContext
     {
         public readonly List<KeyValuePair<IApplicationEvent, string>> Operations = new List<KeyValuePair<IApplicationEvent, string>>();

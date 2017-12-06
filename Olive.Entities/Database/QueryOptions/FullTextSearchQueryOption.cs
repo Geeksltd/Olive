@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     public class FullTextSearchQueryOption : QueryOption
     {

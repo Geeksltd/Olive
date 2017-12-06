@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     public interface IBlobStorageProvider
     {

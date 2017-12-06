@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     /// <summary>
     /// Specifies if a type is cacheable.

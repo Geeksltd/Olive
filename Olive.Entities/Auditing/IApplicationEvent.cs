@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     [LogEvents(false)]
     [CacheObjects(false)]

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     /// <summary>
     /// When applied to a property, indicates that such property does not exist in the database.

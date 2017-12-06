@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class SecureFileAttribute : Attribute

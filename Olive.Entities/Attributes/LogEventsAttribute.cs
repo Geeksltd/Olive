@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     /// <summary>
     /// When applied to a class, indicates whether data access events should be logged for instances of that type.

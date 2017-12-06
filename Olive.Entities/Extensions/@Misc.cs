@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     public static partial class OliveExtensions
     {

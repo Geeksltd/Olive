@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     public class CriteriaExtractor<T> where T : IEntity
     {
@@ -84,10 +78,8 @@ namespace Olive.Entities
                 // The expression is itself a member of something.
 
                 var parentProperty = GetPropertyExpression(memberInfo.Expression as MemberExpression);
-                if (parentProperty == null)
-                    return null;
-                else
-                    return $"{parentProperty}.{property.Name}";
+                if (parentProperty == null) return null;
+                else return $"{parentProperty}.{property.Name}";
             }
             else return null;
         }

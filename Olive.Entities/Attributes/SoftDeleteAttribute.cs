@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class SoftDeleteAttribute : Attribute

@@ -1,10 +1,5 @@
 namespace Olive.Entities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Reflection;
-    using System.Threading.Tasks;
-
     public interface IDataProvider
     {
         Task<IEntity> Get(object objectID);

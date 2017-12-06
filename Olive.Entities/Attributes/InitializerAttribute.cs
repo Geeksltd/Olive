@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     /// <summary>
     /// 
