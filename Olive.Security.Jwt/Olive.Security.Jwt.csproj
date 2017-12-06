@@ -4,6 +4,11 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\@Assemblies\netcoreapp2.0\Olive.Security.Jwt.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="JWT" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
