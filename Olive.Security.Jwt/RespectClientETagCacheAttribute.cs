@@ -1,6 +1,9 @@
 ﻿namespace Olive.Mvc
 {
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
+    using Microsoft.Extensions.Primitives;
     using System;
     using System.IO;
     using System.Linq;
@@ -19,7 +22,7 @@
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            ClientETags = (context.HttpContext.Request.Headers.IfNoneMatch?.Select(t => t.Tag.Trim('"')))
+            ClientETags = (GetIfNoneMatch(context.HttpContext.Request.Headers)?.Select(t => t.Trim('"')))
                 .Trim().ToArray();
         }
 
@@ -27,14 +30,11 @@
         {
             if (context.HttpContext.Request.Method != HttpMethod.Get.ToString()) return;
 
-            var content = context.HttpContext.Response.Content as ObjectContent;
+            var content = context.Result;
             if (content == null) return;
 
-            if (ClientETags.Contains(Hash(content.Value)))
-            {
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotModified;
-                context.HttpContext.Response.Content = null;
-            }
+            if (ClientETags.Contains(Hash(content)))
+                context.Result = new StatusCodeResult((int)HttpStatusCode.NotModified);
         }
 
         static string Hash(object instance)
@@ -45,10 +45,13 @@
                 {
                     new DataContractSerializer(instance.GetType()).WriteObject(stream, instance);
                     sha1.ComputeHash(stream.ToArray());
-
+                    
                     return sha1.Hash.Select(c => c.ToString("x2")).ToString("");
                 }
             }
         }
+
+        StringValues? GetIfNoneMatch(IHeaderDictionary headers) 
+            => headers.Keys.Contains("If-None-Match") ? headers["If-None-Match"] : (StringValues?)null; // HttpRequestHeader.IfNoneMatch
     }
 }

@@ -4,6 +4,8 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Olive.Web;
+using System.Net.Http.Headers;
 
 namespace Olive.Security
 {
@@ -12,12 +14,12 @@ namespace Olive.Security
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             await base.OnActionExecutionAsync(context, next);
-
-            if (User == null || User is WindowsPrincipal || User.IsInRole("Anonymous"))
-                await JwtAuthenticate();
+            
+            if (context.HttpContext.User == null || context.HttpContext.User is WindowsPrincipal || context.HttpContext.User.IsInRole("Anonymous"))
+                await JwtAuthenticate(context);
         }
 
-        protected async Task JwtAuthenticate()
+        protected async Task JwtAuthenticate(ActionExecutingContext context)
         {
             HttpRequestHeaders headers = null; // TODO:...
             var user = await JwtAuthentication.ExtractUser(headers);
