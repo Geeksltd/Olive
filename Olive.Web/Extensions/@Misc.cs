@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -207,6 +209,18 @@ namespace Olive.Web
             }
 
             return applicationEvent.Data.OrEmpty().HtmlEncode();
+        }
+
+        public static ClaimsPrincipal CreateClaimsPrincipal(this IIdentity user, IEnumerable<string> roles, string authType)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, (user is IEntity ent) ? ent.GetId().ToString() : user.Name)
+            };
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
+
+            return new ClaimsPrincipal(new ClaimsIdentity(claims, authType));
         }
     }
 }

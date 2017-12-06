@@ -202,8 +202,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
                 await Save(clone as Entity, behaviour);
 
-                if (!AnyOpenTransaction())
-                    action(item);
+                if (!AnyOpenTransaction()) action(item);
 
                 return clone;
             }

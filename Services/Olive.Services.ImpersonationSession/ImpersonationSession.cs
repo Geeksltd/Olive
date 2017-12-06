@@ -3,16 +3,14 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Entities;
-using Olive.Services.Globalization;
 using Olive.Web;
-using Olive.Security;
 
 namespace Olive.Services.ImpersonationSession
 {
     /// <summary>
     /// Defines an admin user who can impersonate other users.
     /// </summary>
-    public interface IImpersonator : IUser, IIdentity, IPrincipal
+    public interface IImpersonator : IEntity, IIdentity
     {
         /// <summary>
         /// A unique single-use-only cookie-based token to specify the currently impersonated user session.
@@ -22,7 +20,9 @@ namespace Olive.Services.ImpersonationSession
         /// <summary>
         /// Determines if this user can impersonate the specified other user.
         /// </summary>
-        bool CanImpersonate(IUser user);
+        bool CanImpersonate(IIdentity user);
+
+        Task LogOnAs(IIdentity user);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ namespace Olive.Services.ImpersonationSession
         /// <summary>
         /// Provides the current user. 
         /// </summary>
-        public static Func<IUser> CurrentUserProvider = GetCurrentUser;
+        public static Func<IPrincipal> CurrentUserProvider = GetCurrentUser;
 
         static HttpContext Context => Web.Context.Http;
 
@@ -46,14 +46,12 @@ namespace Olive.Services.ImpersonationSession
         /// Impersonates the specified user by the current admin user.
         /// </summary>
         /// <param name="originalUrl">If not specified, the current HTTP request's URL will be used.</param>
-        public static async Task Impersonate(IUser user, bool redirectToHome = true, string originalUrl = null)
+        public static async Task Impersonate(IIdentity user, bool redirectToHome = true, string originalUrl = null)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            var admin = CurrentUserProvider?.Invoke() as IImpersonator;
-
-            if (admin == null)
-                throw new InvalidOperationException("The current user is not an IImpersonator.");
+            var admin = CurrentUserProvider?.Invoke() as IImpersonator
+                ?? throw new InvalidOperationException("The current user is not an IImpersonator.");
 
             if (!admin.CanImpersonate(user))
                 throw new InvalidOperationException("The current user is not allowed to impersonate the specified user.");
@@ -66,7 +64,7 @@ namespace Olive.Services.ImpersonationSession
 
             SetOriginalUrl(originalUrl.Or(Context.Request.ToRawUrl()));
 
-            user.LogOn();
+            await admin.LogOnAs(user);
 
             if (redirectToHome && !Context.Request.IsAjaxCall())
                 Context.Response.Redirect("~/");
@@ -83,7 +81,7 @@ namespace Olive.Services.ImpersonationSession
 
             await Entity.Database.Update(admin, o => o.ImpersonationToken = null);
 
-            admin.LogOn();
+            await admin.LogOnAs(admin);
 
             var returnUrl = await GetOriginalUrl();
             SetOriginalUrl(null);
@@ -93,12 +91,12 @@ namespace Olive.Services.ImpersonationSession
                 Context.Response.Redirect(returnUrl);
         }
 
-        static IUser GetCurrentUser()
+        static IPrincipal GetCurrentUser()
         {
-            var result = Context.User as IIdentity;
-            if (result == null || !result.IsAuthenticated) return null;
+            var result = Context.User as IPrincipal;
+            if (result == null || !result.Identity.IsAuthenticated) return null;
 
-            return result as IUser;
+            return result;
         }
 
         /// <summary>

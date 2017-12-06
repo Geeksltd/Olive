@@ -6,32 +6,26 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Olive.Entities;
 using Olive.Web;
 
 namespace Olive.Security
 {
-    public class OwinAuthenticaionProvider : IAuthenticationProvider
+    public class OwinAuthenticaionProvider
     {
         public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
         // public string AuthenticationScheme { get; }
 
         // public OwinAuthenticaionProvider(string authenticationScheme) => AuthenticationScheme = authenticationScheme;
 
-        public async Task LogOn(IUser user, string domain, TimeSpan timeout, bool remember)
+        public async Task LogOn(IIdentity user, IEnumerable<string> roles, TimeSpan timeout, bool remember, string domain = null)
         {
             var context = Context.Http;
 
             await context.SignOutAsync(IdentityConstants.ApplicationScheme);
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.GetId().ToString())
-            };
-
-            claims.AddRange(user.GetRoles().Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
-
             await context.SignInAsync(IdentityConstants.ApplicationScheme,
-                new ClaimsPrincipal(new ClaimsIdentity(claims, "AuthenticationType")), // AuthenticationType is just a text and I do not know what is its usage.
+                user.CreateClaimsPrincipal(roles, "OAuth"),
                 new AuthenticationProperties
                 {
                     IsPersistent = remember,
@@ -39,7 +33,11 @@ namespace Olive.Security
                 });
         }
 
-        public Task LogOff(IUser user) => Context.Http.SignOutAsync(IdentityConstants.ApplicationScheme);
+        public async Task LogOff(IIdentity user)
+        {
+            await Context.Http.SignOutAsync(IdentityConstants.ApplicationScheme);
+            Context.Http.Session.Perform(s => s.Clear());
+        }
 
         public async Task LoginBy(string provider)
         {
@@ -54,11 +52,6 @@ namespace Olive.Security
                 RedirectUri = "/ExternalLoginCallback",
                 Items = { new KeyValuePair<string, string>("LoginProvider", provider) }
             });
-        }
-
-        IUser IAuthenticationProvider.LoadUser(IPrincipal principal)
-        {
-            throw new NotSupportedException("IAuthenticationProvider.LoadUser() is deprecated in M# MVC.");
         }
 
         public void PreRequestHandler(string path)

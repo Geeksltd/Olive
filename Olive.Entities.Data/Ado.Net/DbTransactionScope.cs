@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
@@ -176,7 +176,6 @@ namespace Olive.Entities.Data
 
             return (bool)property.GetValue(connection);
         }
-
 
         internal void Register(DbDataReader reader)
             => PotentiallyUnclosedReaders.Add(new WeakReference<IDataReader>(reader));
