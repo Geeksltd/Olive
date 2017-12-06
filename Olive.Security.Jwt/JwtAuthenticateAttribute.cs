@@ -23,8 +23,7 @@ namespace Olive.Security
 
         protected async Task JwtAuthenticate(ActionExecutingContext context)
         {
-            HttpRequestHeaders headers =  null; // TODO:...
-            var user = await JwtAuthentication.ExtractUser(headers);
+            var user = await JwtAuthentication.ExtractUser(context.HttpContext.Request.Headers);
 
             if (user != null)
             {

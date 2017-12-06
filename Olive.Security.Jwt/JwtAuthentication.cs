@@ -3,11 +3,9 @@
     using JWT;
     using JWT.Serializers;
     using JWT.Algorithms;
-    using Olive.Web;
     using Olive.Entities.Data;
     using System;
     using System.Collections.Generic;
-    using System.Net.Http.Headers;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -30,13 +28,15 @@
             return JwtEncoder.Encode(token, Config.Get("JWT.Token.Secret"));
         }
 
-        public static string ExtractUserId(HttpRequestHeaders headers)
+        public static string ExtractUserId(IHeaderDictionary headers)
         {
-            if (headers.Authorization?.Scheme != "Bearer") return null;
+            var headerVlaue = headers["Authorization"].ToString();
+            // Checking the scheme
+            if (!headerVlaue.StartsWith("Bearer")) return null;
 
             try
             {
-                var jwt = headers.Authorization.Parameter;
+                var jwt = headerVlaue.TrimStart("Bearer").TrimStart();
 
                 if (jwt.IsEmpty()) return null;
 
@@ -64,7 +64,7 @@
             }
         }
 
-        public static Task<IUser> ExtractUser(HttpRequestHeaders headers)
+        public static Task<IUser> ExtractUser(IHeaderDictionary headers)
         {
             var userId = ExtractUserId(headers);
 
