@@ -65,7 +65,20 @@ namespace Olive
         /// <summary>
         /// Will set the Position to zero, and then copy all bytes to a memory stream's buffer.
         /// </summary>
-        public static async Task<byte[]> ReadAllBytes(this Stream stream)
+        public static byte[] ReadAllBytes(this Stream stream)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.Position = 0;
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Will set the Position to zero, and then copy all bytes to a memory stream's buffer.
+        /// </summary>
+        public static async Task<byte[]> ReadAllBytesAsync(this Stream stream)
         {
             using (var memoryStream = new MemoryStream())
             {

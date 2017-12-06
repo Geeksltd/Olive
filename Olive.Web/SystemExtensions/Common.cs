@@ -429,7 +429,7 @@ namespace Olive.Web
             using (var response = await request.GetResponseAsync())
             {
                 using (var stream = response.GetResponseStream())
-                    return await stream.ReadAllBytes();
+                    return await stream.ReadAllBytesAsync();
             }
         }
 

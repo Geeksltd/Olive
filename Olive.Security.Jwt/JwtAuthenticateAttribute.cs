@@ -14,14 +14,16 @@ namespace Olive.Security
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             await base.OnActionExecutionAsync(context, next);
-            
-            if (context.HttpContext.User == null || context.HttpContext.User is WindowsPrincipal || context.HttpContext.User.IsInRole("Anonymous"))
+
+            var user = context.HttpContext.User;
+
+            if (user == null || user is WindowsPrincipal || user.IsInRole("Anonymous"))
                 await JwtAuthenticate(context);
         }
 
         protected async Task JwtAuthenticate(ActionExecutingContext context)
         {
-            HttpRequestHeaders headers = null; // TODO:...
+            HttpRequestHeaders headers =  null; // TODO:...
             var user = await JwtAuthentication.ExtractUser(headers);
 
             if (user != null)

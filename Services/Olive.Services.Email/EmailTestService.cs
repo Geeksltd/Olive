@@ -66,7 +66,7 @@ namespace Olive.Services.Email
                     response = "<a href='/?Web.Test.Command=testEmail&to=" + To + "'>&lt;&lt; Back to emails</a><pre>" + (await AttachmentFile.ContentStream.ReadAllText()).HtmlEncode() + "</pre>";
                 else
                 {
-                    await Response.Dispatch(await AttachmentFile.ContentStream.ReadAllBytes(), AttachmentFile.Name);
+                    await Response.Dispatch(await AttachmentFile.ContentStream.ReadAllBytesAsync(), AttachmentFile.Name);
                     return;
                 }
             }
