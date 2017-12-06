@@ -7,7 +7,7 @@
     {
         static ConcurrentDictionary<string, AsyncLocal<T>> state = new ConcurrentDictionary<string, AsyncLocal<T>>();
 
-        /// <summary>
+        /// <summary> 
         /// Stores a given object and associates it with the specified name.
         /// </summary>
         /// <param name="name">The name with which to associate the new item in the call context.</param>

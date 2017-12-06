@@ -11,8 +11,10 @@ using Olive.Web;
 
 namespace Olive.Security
 {
-    public class OwinAuthenticaionProvider
+    public class OAuth
     {
+        public readonly static OAuth Instance = new OAuth();
+
         public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
         // public string AuthenticationScheme { get; }
 
