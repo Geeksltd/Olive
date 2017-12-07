@@ -19,18 +19,9 @@ The user will then be redirected back to your website to the following URL:
 So you need a controller action to handle this and log the user in.
 In the olive MVC project template there already is [a file to do this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/Controllers/OAuthController.cs).
 
-#### appsettings.json 
-You will need to register your app with each 3rd party provider and configure your app with the secret tokens:
-```json
-"Authentication": {
-   ...
-
-    "Google": {
-      "ClientId": "...",
-      "ClientSecret": "...."
-    }
- },
- ```
+#### Registeration and config
+You will need to register your app with each 3rd party provider and configure your app with the secret tokens.
+[Learn how](Config.md)
 
 ## Custom login page (via Auth0)
 If you don't want to redirect the users to a 3rd party website, you can capture the username and password directly in your website.
