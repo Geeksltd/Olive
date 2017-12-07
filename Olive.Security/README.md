@@ -142,3 +142,19 @@ using (var client = new CreateApiClient())
 #### Impersonated user identity
 In this scenario, the user will have first logged on to the client service. Then as part of the process, the client service invokes an API function in your service ***on behalf of the user*** by just passing the user's authentication cookie.
 To your service, it appears as if the user is directly sending a HTTP request.
+
+
+## Single Sign On
+For using SSO you need to provide a login service, which is basically a simple Olive MVC app.
+
+Multiple apps should be set up as sub-domains of one main domain.
+
+When authenticating, you should set the domain of the authentication cookie to the main domain. 
+
+```csharp
+protected override void ConfigureApplicationCookie(CookieAuthenticationOptions options)
+{
+     base.ConfigureApplicationCookie(options);
+     options.Cookie.Domain = "mainDomain.com";
+}
+```
