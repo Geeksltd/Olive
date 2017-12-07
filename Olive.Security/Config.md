@@ -23,7 +23,7 @@
  ```
 7. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableGoogle()**
 
-# Login with Facebook
+## Login with Facebook
 1. Go to https://developers.facebook.com/ and create a new app.
 2. Inside your app, go to **Settings** and set **App Domains** and **Site URL** to the root of your website e.g. http://myproject.uat.co
 3. From **Apps Dashboard**, copy *App ID* and *App Secret*
@@ -39,3 +39,18 @@
  ```  
  5. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableFacebook()**
 
+## Login with Microsoft
+1. Go to https://apps.dev.microsoft.com, and create a new app.
+2. Add a web platform and set *Redirect URLs* as *http://YOURDOMAIN/signin-microsoft*.
+3. Generate a password and use in the next step.
+4. Open *appsettings.json* in your website folder and set the following:
+```javascript
+"Authentication": {
+   ...
+   "Microsoft": {
+      "ApplicationId": "",
+      "Password": ""
+    }
+ }
+ ```  
+5. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableMicrosoft()**
