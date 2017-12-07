@@ -78,4 +78,15 @@ The above two methods use browser cookies to carry the user identity in subseque
 
 In those cases the preferred method of authentication is via HTTP Header. One popular approach is through [JSON Web Token (aka JWT)](https://jwt.io/introduction/) which uses the standard HTTP HEADER authentication mechanism.
 
-Once the user is logged in, each subsequent request will include the JWT, allowing the user to access routes, services, and resources that are permitted with that token. Single Sign On is a feature that widely uses JWT nowadays, because of its small overhead and its ability to be easily used across different domains.
+To make use of it, in your BaseController class, enable the \[JwtAuthenticate\] attribute.
+```csharp
+
+namespace Controllers
+{
+    [JwtAuthenticate]
+    public class BaseController : Olive.Mvc.Controller
+    {
+        ...
+    }
+}
+```
