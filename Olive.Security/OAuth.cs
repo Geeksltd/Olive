@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Olive.Web;
 
@@ -14,14 +16,23 @@ namespace Olive.Security
 
         public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
 
-        public async Task LogOn(IIdentity user, IEnumerable<string> roles, TimeSpan timeout, bool remember, string domain = null)
+        public async Task LogOn(string displayName, string userId, string email, IEnumerable<string> roles, TimeSpan timeout, bool remember)
         {
             var context = Context.Http;
 
-            await context.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await context.SignOutAsync();
 
-            await context.SignInAsync(IdentityConstants.ApplicationScheme,
-                user.CreateClaimsPrincipal(roles, "OAuth"),
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, displayName) };
+
+            if (userId.HasValue()) claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
+            if (email.HasValue()) claims.Add(new Claim(ClaimTypes.Email, userId));
+
+            foreach (var role in roles.OrEmpty())
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var claimsId = new ClaimsIdentity(new GenericIdentity(displayName), claims);
+
+            await context.SignInAsync(new ClaimsPrincipal(claimsId),
                 new AuthenticationProperties
                 {
                     IsPersistent = remember,
@@ -31,7 +42,7 @@ namespace Olive.Security
 
         public async Task LogOff(IIdentity user)
         {
-            await Context.Http.SignOutAsync(IdentityConstants.ApplicationScheme);
+            await Context.Http.SignOutAsync();
             Context.Http.Session.Perform(s => s.Clear());
         }
 

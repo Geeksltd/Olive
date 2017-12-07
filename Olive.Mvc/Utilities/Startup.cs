@@ -102,8 +102,12 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureApplicationCookie(CookieAuthenticationOptions options)
         {
-            options.AccessDeniedPath = "/Login";
-            options.LoginPath = "/Login";
+            options.AccessDeniedPath = options.LoginPath = "/login";
+            options.LogoutPath = "/lLogout";
+            options.SlidingExpiration = true;
+            options.Cookie.HttpOnly = true;
+            options.Cookie.Name = ".myAuth";
+
         }
 
         protected abstract IServiceCollection AddIdentityAndStores(IServiceCollection services);

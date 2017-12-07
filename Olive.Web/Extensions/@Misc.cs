@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 using Olive.Entities;
 
@@ -211,16 +212,16 @@ namespace Olive.Web
             return applicationEvent.Data.OrEmpty().HtmlEncode();
         }
 
-        public static ClaimsPrincipal CreateClaimsPrincipal(this IIdentity user, IEnumerable<string> roles, string authType)
+        public static string GetEmail(this ClaimsPrincipal principal) => principal.FindFirstValue(ClaimTypes.Email);
+
+        public static string GetId(this ClaimsPrincipal principal) => principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        public static IEnumerable<string> GetRoles(this ClaimsPrincipal principal)
+        => principal.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).Trim();
+
+        public static string GetFirstIssuer(this ClaimsPrincipal principal)
         {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, (user is IEntity ent) ? ent.GetId().ToString() : user.Name)
-            };
-
-            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
-
-            return new ClaimsPrincipal(new ClaimsIdentity(claims, authType));
+            return principal?.Claims?.Select(x => x.Issuer).Trim().FirstOrDefault();
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
     using System.Security.Cryptography.X509Certificates;
     using System.Security.Principal;
@@ -9,6 +10,7 @@
     using JWT.Algorithms;
     using JWT.Serializers;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.IdentityModel.Tokens;
     using Olive.Web;
 
     public class JwtAuthentication
@@ -46,12 +48,14 @@
 
         public static string CreateTicket(IIdentity user, IEnumerable<string> roles, DateTime? expiryDate = null)
         {
-            var token = new
-            {
-                Name = user.Name,
-                Roles = roles.ToString("|"),
-                Expiry = expiryDate?.ToString()
-            };
+            MAKE It the same API as the OAuth.Logon!!!!!!!!!!!!
+
+           var token = new
+           {
+               Name = user.Name,
+               Roles = roles.ToString("|"),
+               Expiry = expiryDate?.ToString()
+           };
 
             return Encoder.Encode(token, Config.Get("JWT.Token.Secret"));
         }
@@ -67,14 +71,9 @@
                 var jwt = headerVlaue.TrimStart("Bearer").TrimStart();
                 if (jwt.IsEmpty()) return null;
 
-                var values = Decoder.DecodeToObject(jwt, Config.Get("JWT.Token.Secret"), verify: true)
-                    as IDictionary<string, object>;
+                var result = new JwtSecurityTokenHandler().ValidateToken(jwt, new TokenValidationParameters(), out var token);
+                return result;
 
-                var expiry = values["Expiry"].ToStringOrEmpty().TryParseAs<DateTime>();
-                if (expiry <= LocalTime.Now) return null;
-
-                var id = new GenericIdentity(values["Name"].ToStringOrEmpty(), "JWT");
-                return id.CreateClaimsPrincipal(values["Roles"].ToStringOrEmpty().Split('|'), "JWT");
             }
             catch (ArgumentException)
             {
