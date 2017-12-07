@@ -114,6 +114,7 @@ public class UserController : BaseController
 In this scenario, you provide a secret key to the client service through which it can be authenticated. When it then calls a web api it will be authenticated as its own identity, and not that of a user. This is usuaful when invokation of the API in your service is not related to any particular end user.
 
 ***Client service:***
+In the client service application, you need the following code to enable you to create authenticated HttpClient instances which you can then use to invoke any actual Web API:
 ```csharp
 static FileInfo CachedTokenFile => AppDomain.CurrentDomain.GetPath("App_Data\\Temp\\...txt").AsFile();
 
@@ -135,16 +136,16 @@ HttpClient CreateApiClient()
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetToken());
     return result;
 }
-
-...
-// Now to call an actual API function:
- using (var client = new CreateApiClient())
- {
-     await client.GetStringAsync(".../something");
-     ...
- }
-
 ````
+Then to call an actual API function, simply use:
+```csharp
+...
+using (var client = new CreateApiClient())
+{
+    await client.GetStringAsync(".../something");
+    ...
+}
+```
 
 
 #### Impersonated user identity
