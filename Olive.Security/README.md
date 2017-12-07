@@ -17,14 +17,27 @@ The user will then be redirected back to your website to the following URL:
 >yourwebsite.com/ExternalLoginCallback
 
 So you need a controller action to handle this and log the user in.
-In the olive MVC project template there already is [a file to do this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/Controllers/OAuthController.cs)
+In the olive MVC project template there already is [a file to do this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/Controllers/OAuthController.cs).
 
-### Auth0 - Custom login page
+### appsettings.json 
+You will need to register your app with each 3rd party provider and configure your app with the secret tokens:
+```json
+"Authentication": {
+   ...
+
+    "Google": {
+      "ClientId": "...",
+      "ClientSecret": "...."
+    }
+ },
+ ```
+
+### Custom login page (via Auth0)
 If you don't want to redirect the users to a 3rd party website, you can capture the username and password directly in your website.
 The user will then click your Login button where you should handle the authentication. 
 
-You can of course create your own internal database of usernames and passwords. But it's not recommended as you would be then responsible for security, encryption, etc.
-Instead you can rely on a third party user store service such as [Auth0](https://auth0.com/) which is free for up to 7,000 active monthly users, which should be enough for most websites and business application. 
+You can of course create your own internal database of usernames and passwords. But it's not recommended as you would be then responsible for security, encryption, etc. Instead you can rely on a third party user store service such as [Auth0](https://auth0.com/) which is free for up to 7,000 active monthly users, which should be enough for most websites and business application. 
+
 To use Auth0, your Login button handler action should do something like:
 ```csharp
 [HttpPost, Route("LoginForm/Login")]
@@ -46,5 +59,16 @@ public async Task<ActionResult> Login(vm.LoginForm info)
 }
 ```
 
+### appsettings.json 
+You will need to register your app with Auth0 and configure your app with the secret tokens:
+```json
+"Authentication": {
+    ...
 
-In this model you simply need to register your app 
+    "Auth0": {        
+        "Domain": "samples.auth0.com",
+        "ClientId": "....",
+        "ClientSecret": "...."
+    }
+ },
+ ```
