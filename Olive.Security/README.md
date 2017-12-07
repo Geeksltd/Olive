@@ -90,3 +90,13 @@ namespace Controllers
     }
 }
 ```
+### API client sign-in
+An API client, such as another service (in a Micro-services architecture) or a mobile app, should first log in to your login service in order to obtain a valid JWT token.
+
+The log in service can be a controller action in the same application or a completely seperate application (e.g. for signle-sign-on). Once the token is obtained it should then be added to the HTTP Client header in every subsequent calls.
+
+In mobile apps, usually the user will log on using a username/password, or via a third party authentication provider.
+
+But in server-to-server scenarios, you will have two scenarios:
+>- Server identity: In this scenario, you provide a secret key to the client service through which it can be authenticated. When it then calls a web api it will be authenticated as its own identity, and not that of a user. This is usuaful when invokation of the API in your service is not related to any particular end user.
+>- Impersonated user identity: In this scenario, the user will have first logged on to the client service. Then as part of the process, the client service invokes an API function in your service ***on behalf of the user*** by just passing the user's authentication cookie.
