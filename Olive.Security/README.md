@@ -2,7 +2,7 @@
 
 Olive uses the standard built-in security model of ASP.NET and comes with 3 built-in mechanisms to authenticate the users:
 
-### OAuth + OpenID (Social Media login)
+## OAuth + OpenID (Social Media login)
 In this model you effectively trust a third party such as Google, Facebook or Microsoft, for user authentication.
 This is the preferred way to authenticate your users because you are relying on the giants to ensure that users are who they claim to be.
 
@@ -19,7 +19,7 @@ The user will then be redirected back to your website to the following URL:
 So you need a controller action to handle this and log the user in.
 In the olive MVC project template there already is [a file to do this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/Controllers/OAuthController.cs).
 
-### appsettings.json 
+#### appsettings.json 
 You will need to register your app with each 3rd party provider and configure your app with the secret tokens:
 ```json
 "Authentication": {
@@ -32,7 +32,7 @@ You will need to register your app with each 3rd party provider and configure yo
  },
  ```
 
-### Custom login page (via Auth0)
+## Custom login page (via Auth0)
 If you don't want to redirect the users to a 3rd party website, you can capture the username and password directly in your website.
 The user will then click your Login button where you should handle the authentication. 
 
@@ -59,7 +59,7 @@ public async Task<ActionResult> Login(vm.LoginForm info)
 }
 ```
 
-### appsettings.json 
+#### appsettings.json 
 You will need to register your app with Auth0 and configure your app with the secret tokens:
 ```json
 "Authentication": {
