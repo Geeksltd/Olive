@@ -11,7 +11,17 @@
    1.2. Select **Web application** and give it a name
    1.3. Set *Authorised redirect URIs* to *http://YOURDOMAIN/signin-google*.
    1.4. Click **Create** and make a note of the generated *Client ID* and *Client secret*
-1. Add the following lines to your 
+1. Open *appsettings.json* in your website folder and set the following:
+```javascript
+"Authentication": {
+   ...
+
+    "Google": {
+      "ClientId": "...",
+      "ClientSecret": "...."
+    }
+ }
+ ```
 1. Add the following to your Uncomment the following.
 
         //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions
