@@ -21,11 +21,21 @@
     }
  }
  ```
-7. Open *Website\app_start\Startup.cs* and add the following to **Configure()** method:
-```java
-app.UseGoogleAuthentication(new GoogleOptions
-{
-    ClientId = Config.Get("Authentication.Google:ClientId"),
-    ClientSecret = Config.Get("Authentication.Google:ClientSecret")
-});
-```
+7. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableGoogle()**
+
+# Login with Facebook
+1. Go to https://developers.facebook.com/ and create a new app.
+2. Inside your app, go to **Settings** and set **App Domains** and **Site URL** to the root of your website e.g. http://myproject.uat.co
+3. From **Apps Dashboard**, copy *App ID* and *App Secret*
+4. Open *appsettings.json* in your website folder and set the following:
+```javascript
+"Authentication": {
+   ...
+   "Facebook": {
+      "AppID": "",
+      "AppSecret": ""
+    }
+ }
+ ```  
+ 5. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableFacebook()**
+
