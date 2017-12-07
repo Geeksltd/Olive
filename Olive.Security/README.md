@@ -80,7 +80,6 @@ In those cases the preferred method of authentication is via HTTP Header. One po
 
 To make use of it, in your BaseController class, enable the \[JwtAuthenticate\] attribute.
 ```csharp
-
 namespace Controllers
 {
     [JwtAuthenticate]
@@ -95,8 +94,24 @@ An API client, such as another service (in a Micro-services architecture) or a m
 
 The log in service can be a controller action in the same application or a completely seperate application (e.g. for signle-sign-on). Once the token is obtained it should then be added to the HTTP Client header in every subsequent calls.
 
-In mobile apps, usually the user will log on using a username/password, or via a third party authentication provider.
+#### Mobile apps
+In this scenario, the user will log on via the app using a username/password, or via a third party authentication provider.
+Your logon web api function will generate a JWT token and send back to the client, which will then send it back (via HTTP HEADER) in all subsequent calls.
 
-But in server-to-server scenarios, you will have two scenarios:
->- Server identity: In this scenario, you provide a secret key to the client service through which it can be authenticated. When it then calls a web api it will be authenticated as its own identity, and not that of a user. This is usuaful when invokation of the API in your service is not related to any particular end user.
->- Impersonated user identity: In this scenario, the user will have first logged on to the client service. Then as part of the process, the client service invokes an API function in your service ***on behalf of the user*** by just passing the user's authentication cookie.
+```csharp
+public class UserController : BaseController
+{
+	[HttpPost, Route("users/login")]
+	public object Login(LoginViewModel info)
+	{
+      // check the username / password, etc and if successful, then:		
+		return Olive.Security.JwtAuthentication.CreateTicket(user);
+	}
+}
+
+#### Server identity
+In this scenario, you provide a secret key to the client service through which it can be authenticated. When it then calls a web api it will be authenticated as its own identity, and not that of a user. This is usuaful when invokation of the API in your service is not related to any particular end user.
+
+#### Impersonated user identity
+In this scenario, the user will have first logged on to the client service. Then as part of the process, the client service invokes an API function in your service ***on behalf of the user*** by just passing the user's authentication cookie.
+To your service, it appears as if the user is directly sending a HTTP request.
