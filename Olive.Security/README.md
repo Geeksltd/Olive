@@ -104,13 +104,48 @@ public class UserController : BaseController
 	[HttpPost, Route("users/login")]
 	public object Login(LoginViewModel info)
 	{
-      // check the username / password, etc and if successful, then:		
-		return Olive.Security.JwtAuthentication.CreateTicket(user);
+              // Check the username / password, etc and if successful, then:
+	      return Olive.Security.JwtAuthentication.CreateTicket(user);
 	}
 }
+````
 
 #### Server identity
 In this scenario, you provide a secret key to the client service through which it can be authenticated. When it then calls a web api it will be authenticated as its own identity, and not that of a user. This is usuaful when invokation of the API in your service is not related to any particular end user.
+
+***Client service:***
+```csharp
+static FileInfo CachedTokenFile => AppDomain.CurrentDomain.GetPath("App_Data\\Temp\\...txt").AsFile();
+
+static async Task<string> GetToken()
+{
+    if (CachedTokenFile.Exists()) return CachedTokenFile.ReadAllText();
+    
+    using (var client = new HttpClient())
+    {
+        var result = await client.GetStringAsync(".../login?secret=" + Config.Get("ApiSecret"));
+	await CachedTokenFile.WriteAllText(result);
+	return result;
+    }    
+}
+
+HttpClient CreateApiClient()
+{
+    var result = new HttpClient();
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", GetToken());
+    return result;
+}
+
+...
+// Now to call an actual API function:
+ using (var client = new CreateApiClient())
+ {
+     await client.GetStringAsync(".../something");
+     ...
+ }
+
+````
+
 
 #### Impersonated user identity
 In this scenario, the user will have first logged on to the client service. Then as part of the process, the client service invokes an API function in your service ***on behalf of the user*** by just passing the user's authentication cookie.
