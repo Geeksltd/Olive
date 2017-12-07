@@ -2,7 +2,6 @@
 
 ## Login with Google
 
-1. Add Nuget package **Microsoft.Owin.Security.Google** to **Website** project.
 2. Go to https://console.developers.google.com/
 3. Create a project. Then click on that project.
 4. Under *Dashboard* enable **Google+ API** and **Google+ Domains API** 
