@@ -42,7 +42,7 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(options =>
                 options.ViewLocationExpanders.Add(GetViewLocationExpander()));
 
-            AuthenticationBuilder = AddIdentityAndStores(services).AddAuthentication(IdentityConstants.ApplicationScheme);
+            AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies").AddCookie();
 
             services.ConfigureApplicationCookie(ConfigureApplicationCookie)
                 .AddDistributedMemoryCache() // Adds a default in-memory implementation of IDistributedCache.
@@ -109,8 +109,6 @@ namespace Olive.Mvc
             options.Cookie.Name = ".myAuth";
 
         }
-
-        protected abstract IServiceCollection AddIdentityAndStores(IServiceCollection services);
 
         /// <summary>Invoked by the WebTestManager right after creating a new database.</summary>
         protected abstract Task CreateReferenceData();

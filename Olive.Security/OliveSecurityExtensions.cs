@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using Olive.Security;
 using Olive.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 
 namespace Olive
 {
@@ -68,5 +68,16 @@ namespace Olive
 
             await Context.Http.SignInAsync(new ClaimsPrincipal(loginInfo.ToClaimsIdentity()), prop);
         }
+
+        /// <summary>
+        /// Determines whether the ID of this user is the same as a specified loggin-in user.
+        /// </summary>
+        public static bool Is(this ILoginInfo loginInfo, ClaimsPrincipal loggedInUser)
+            => loggedInUser.GetId() == loginInfo.ID;
+
+        /// <summary>
+        /// Determines whether the ID of this logged-in user is the same as a specified user.
+        /// </summary>
+        public static bool Is(this ClaimsPrincipal loggedInUser, ILoginInfo loginInfo) => loginInfo.Is(loggedInUser);
     }
 }
