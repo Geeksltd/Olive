@@ -15,7 +15,7 @@ namespace Olive.Mvc
             ListType = listType;
         }
 
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
             var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
@@ -30,7 +30,7 @@ namespace Olive.Mvc
                 {
                     foreach (var id in idOrIds.OrEmpty().Split('|').Trim().Except("{NULL}", "-", Guid.Empty.ToString()))
                     {
-                        var item = Entity.Database.GetOrDefault(id, EntityType);
+                        var item = await Entity.Database.GetOrDefault(id, EntityType);
 
                         if (item != null) result.Add(item);
                     }
@@ -38,8 +38,6 @@ namespace Olive.Mvc
             }
 
             bindingContext.Result = ModelBindingResult.Success(result);
-
-            return Task.CompletedTask;
         }
     }
 }
