@@ -22,8 +22,6 @@ namespace Olive.Services.ImpersonationSession
         /// Determines if this user can impersonate the specified other user.
         /// </summary>
         bool CanImpersonate(ILoginInfo user);
-
-        Task LogOnAs(ILoginInfo user);
     }
 
     /// <summary>
@@ -65,7 +63,7 @@ namespace Olive.Services.ImpersonationSession
 
             SetOriginalUrl(originalUrl.Or(Context.Request.ToRawUrl()));
 
-            await admin.LogOnAs(user);
+            await user.LogOn();
 
             if (redirectToHome && !Context.Request.IsAjaxCall())
                 Context.Response.Redirect("~/");
@@ -82,7 +80,7 @@ namespace Olive.Services.ImpersonationSession
 
             await Entity.Database.Update(admin, o => o.ImpersonationToken = null);
 
-            await admin.LogOnAs(admin);
+            await admin.LogOn();
 
             var returnUrl = await GetOriginalUrl();
             SetOriginalUrl(null);

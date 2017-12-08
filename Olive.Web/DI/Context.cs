@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,8 @@ namespace Olive.Web
         public static HttpRequest Request => Http?.Request;
 
         public static HttpResponse Response => Http?.Response;
+
+        public static ClaimsPrincipal User => Http.User;
 
         static Exception GetNotInitializedException() =>
             new InvalidOperationException("HttpContextAccessorHelper is not initialized");
