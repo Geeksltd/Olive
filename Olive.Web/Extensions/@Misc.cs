@@ -211,17 +211,5 @@ namespace Olive.Web
 
             return applicationEvent.Data.OrEmpty().HtmlEncode();
         }
-
-        public static string GetEmail(this ClaimsPrincipal principal) => principal.FindFirstValue(ClaimTypes.Email);
-
-        public static string GetId(this ClaimsPrincipal principal) => principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        public static IEnumerable<string> GetRoles(this ClaimsPrincipal principal)
-        => principal.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).Trim();
-
-        public static string GetFirstIssuer(this ClaimsPrincipal principal)
-        {
-            return principal?.Claims?.Select(x => x.Issuer).Trim().FirstOrDefault();
-        }
     }
 }
