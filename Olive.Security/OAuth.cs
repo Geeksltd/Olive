@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Olive.Web;
 
 namespace Olive.Security
@@ -16,12 +18,8 @@ namespace Olive.Security
 
         public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
 
-        public async Task LogOn(string displayName, string userId, string email, IEnumerable<string> roles, TimeSpan timeout, bool remember)
+        static ClaimsIdentity CreateIdentity(string displayName, string userId, string email, IEnumerable<string> roles, TimeSpan timeout)
         {
-            var context = Context.Http;
-
-            await context.SignOutAsync();
-
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, displayName) };
 
             if (userId.HasValue()) claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
@@ -30,14 +28,23 @@ namespace Olive.Security
             foreach (var role in roles.OrEmpty())
                 claims.Add(new Claim(ClaimTypes.Role, role));
 
-            var claimsId = new ClaimsIdentity(new GenericIdentity(displayName), claims);
+            return new ClaimsIdentity(new GenericIdentity(displayName), claims);
+        }
 
-            await context.SignInAsync(new ClaimsPrincipal(claimsId),
-                new AuthenticationProperties
-                {
-                    IsPersistent = remember,
-                    ExpiresUtc = DateTimeOffset.UtcNow.Add(timeout)
-                });
+        public async Task LogOn(string displayName, string userId, string email,
+            IEnumerable<string> roles, TimeSpan timeout, bool remember)
+        {
+            await Context.Http.SignOutAsync();
+
+            var identity = CreateIdentity(displayName, userId, email, roles, timeout);
+
+            var prop = new AuthenticationProperties
+            {
+                IsPersistent = remember,
+                ExpiresUtc = DateTimeOffset.UtcNow.Add(timeout)
+            };
+
+            await Context.Http.SignInAsync(new ClaimsPrincipal(identity), prop);
         }
 
         public async Task LogOff(IIdentity user)
@@ -98,6 +105,30 @@ namespace Olive.Security
                 throw new InvalidOperationException("ExternalLogin requested but no handler found for ExternalLoginAuthenticated event");
 
             await ExternalLoginAuthenticated.Raise(info);
+        }
+
+        public static string CreateJwtToken(string displayName, string userId, string email, IEnumerable<string> roles, TimeSpan timeout)
+        {
+            var securityKey = Config.Get("JWT.Token.Secret").ToBytes();
+
+            var descriptor = new SecurityTokenDescriptor
+            {
+                Subject = OAuth.CreateIdentity(displayName, userId, email, roles, timeout),
+                Issuer = Context.Request.GetWebsiteRoot(),
+                Audience = Context.Request.GetWebsiteRoot(),
+                Expires = DateTime.UtcNow.Add(timeout),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(securityKey), SecurityAlgorithms.HmacSha256),
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(descriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public static ClaimsPrincipal DecodeJwt(string jwt)
+        {
+            if (jwt.IsEmpty()) return null;
+            return new JwtSecurityTokenHandler().ValidateToken(jwt, new TokenValidationParameters(), out var token);
         }
     }
 }

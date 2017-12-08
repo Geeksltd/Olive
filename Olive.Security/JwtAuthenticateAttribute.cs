@@ -15,9 +15,20 @@ namespace Olive.Security
 
             if (user == null || user is WindowsPrincipal || user.IsInRole("Anonymous"))
             {
-                // No user from Cookie. Use the header:
-                var jwtUser = JwtAuthentication.ExtractUser(context.HttpContext.Request.Headers);
-                if (jwtUser != null) Context.Http.User = jwtUser;
+                var headerVlaue = context.HttpContext.Request.Headers["Authorization"].ToString();
+                if (!headerVlaue.StartsWith("Bearer")) return;
+                var jwt = headerVlaue.TrimStart("Bearer").TrimStart();
+                if (jwt.IsEmpty()) return;
+
+                try
+                {
+                    user = OAuth.DecodeJwt(jwt);
+                    if (user != null) Context.Http.User = user;
+                }
+                catch
+                {
+                    // Ignore
+                }
             }
         }
     }

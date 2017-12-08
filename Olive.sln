@@ -86,8 +86,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security", "Olive.Sec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Olive.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Jwt", "Olive.Security.Jwt\Olive.Security.Jwt.csproj", "{BA1D055C-2E37-4B06-8887-49A253EDE423}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,10 +203,6 @@ Global
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA1D055C-2E37-4B06-8887-49A253EDE423}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
