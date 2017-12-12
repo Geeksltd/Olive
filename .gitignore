@@ -261,6 +261,7 @@ __pycache__/
 *.pyc
 
 # GCop files
+GCop.json
 GCopLog.txt
 /GCopReport.json
 /GCopReport.json
