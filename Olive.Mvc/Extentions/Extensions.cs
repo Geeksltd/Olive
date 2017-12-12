@@ -70,7 +70,10 @@ namespace Olive.Mvc
         {
             foreach (var item in modelState)
                 if (viewModel.IsInvisible(item.Key))
+                {
                     item.Value.Errors.Clear();
+                    item.Value.ValidationState = ModelValidationState.Skipped;
+                }
 
             return modelState.IsValid;
         }
