@@ -36,7 +36,13 @@
             Provider = Database.Instance.GetProvider(entityType);
         }
 
-        public string Column(string propertyName) => Provider.MapColumn(propertyName);
+        public string Column(string propertyName, string alias = null)
+        {
+            var result = Provider.MapColumn(propertyName);
+
+            if (alias.HasValue()) return alias + "." + result.Split('.').Last();
+            else return Provider.MapColumn(propertyName);
+        }
 
         IDatabaseQuery IDatabaseQuery.Where(params ICriterion[] criteria)
         {

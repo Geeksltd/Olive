@@ -21,7 +21,7 @@ namespace Olive.Entities.Data
 
         public abstract string MapColumn(string propertyName);
 
-        public virtual string MapSubquery(string path)
+        public virtual string MapSubquery(string path, string parent)
         {
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }

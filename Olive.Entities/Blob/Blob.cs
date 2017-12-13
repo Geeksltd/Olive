@@ -349,8 +349,7 @@ namespace Olive.Entities
             if (FileData != null && FileData.Length > 0)
                 await GetStorageProvider().Save(this);
 
-            else if (IsEmptyBlob)
-                DeleteFromDisk();
+            else if (IsEmptyBlob) DeleteFromDisk();
         }
 
         /// <summary>
