@@ -36,7 +36,6 @@ namespace Olive.Mvc
             }
             else if (ModelType?.IsGenericOf(typeof(IEnumerable<>), typeof(IEntity)) ?? false)
             {
-
             }
         }
     }

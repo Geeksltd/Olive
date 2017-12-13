@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Olive.Entities.Data</id>
-    <version>1.0.20</version>
-    <title>Olive Entities Data</title>
+    <id>Olive.Entities.Data.SQLite</id>
+    <version>1.0.7</version>
+    <title>Olive Entities Data Sqlite provider</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
@@ -11,8 +11,8 @@
     <description>Olive Framework</description>
   </metadata>
   <files>
-    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.dll" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.pdb" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.xml" target="lib\netcoreapp2.0\" />
   </files>
 </package>

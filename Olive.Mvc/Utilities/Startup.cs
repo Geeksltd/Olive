@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Routing;
@@ -107,7 +106,6 @@ namespace Olive.Mvc
             options.SlidingExpiration = true;
             options.Cookie.HttpOnly = true;
             options.Cookie.Name = ".myAuth";
-
         }
 
         /// <summary>Invoked by the WebTestManager right after creating a new database.</summary>
