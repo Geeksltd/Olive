@@ -43,7 +43,7 @@ namespace Olive
                         throw new Exception("There is no embedded resource named '" + resourceName +
                        "' in the assembly: " + assembly.FullName);
 
-                    return await stream.ReadAllBytes();
+                    return await stream.ReadAllBytesAsync();
                 }
             }
             catch (Exception ex)

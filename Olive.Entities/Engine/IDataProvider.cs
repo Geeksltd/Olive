@@ -27,7 +27,7 @@ namespace Olive.Entities
         Type EntityType { get; }
 
         string MapColumn(string propertyName);
-        string MapSubquery(string path);
+        string MapSubquery(string path, string parent);
 
         /// <summary>
         /// Reads the many to many relation and returns the IDs of the associated objects.

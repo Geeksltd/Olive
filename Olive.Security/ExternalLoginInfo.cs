@@ -1,4 +1,4 @@
-﻿namespace Olive.Mvc
+﻿namespace Olive.Security
 {
     public class ExternalLoginInfo
     {

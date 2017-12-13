@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -70,7 +70,10 @@ namespace Olive.Mvc
         {
             foreach (var item in modelState)
                 if (viewModel.IsInvisible(item.Key))
+                {
                     item.Value.Errors.Clear();
+                    item.Value.ValidationState = ModelValidationState.Skipped;
+                }
 
             return modelState.IsValid;
         }
@@ -120,12 +123,12 @@ namespace Olive.Mvc
             return (metadata as DefaultModelMetadata)?.Attributes.Attributes.OfType<TAttribute>().FirstOrDefault();
         }
 
-        public static TUser Extract<TUser>(this IIdentity identity)
-            where TUser : IEntity
+        public static TUser Extract<TUser>(this ClaimsPrincipal user)
+           where TUser : IEntity
         {
-            return HttpContextCache.GetOrAdd("Olive.IPrincipal.ExtractedUser", () =>
+            return HttpContextCache.GetOrAdd("Olive.Principal.ExtractedUser", () =>
             {
-                var id = identity?.Name;
+                var id = user.GetId();
                 if (id == null) return default(TUser);
                 return Task.Factory.RunSync(() => Database.Instance.GetOrDefault<TUser>(id));
             });

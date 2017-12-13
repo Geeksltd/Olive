@@ -2,11 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Entities;
+using Olive.Web;
 
-namespace Olive.Web
+namespace Olive.Security
 {
     public class SecureFileDispatcher
     {
@@ -20,12 +22,12 @@ namespace Olive.Web
         string Property;
         HttpResponse Response;
         Blob Blob;
-        IUser CurrentUser;
+        IPrincipal CurrentUser;
 
         /// <summary>
         /// Creates a new SecureFileDispatcher instance.
         /// </summary>
-        public SecureFileDispatcher(string path, IUser currentUser)
+        public SecureFileDispatcher(string path, IPrincipal currentUser)
         {
             CurrentUser = currentUser;
 
@@ -50,7 +52,7 @@ namespace Olive.Web
             await EnsureSecurity();
 
             var file = Blob.LocalPath;
-            
+
             return file.AsFile();
         }
 
@@ -90,8 +92,9 @@ namespace Olive.Web
                     throw new Exception(Type.FullName + ".Is" + Property + "VisibleTo() method is not defined.");
                 }
 
-                if (method.GetParameters().Count() != 1 || !method.GetParameters().Single().ParameterType.Implements<IUser>())
-                    throw new Exception(Type.FullName + "." + method.Name + "() doesn't accept a single argument that implements IUser");
+                if (method.GetParameters().Count() != 1 || !method.GetParameters().Single().ParameterType.Implements<IPrincipal>())
+                    throw new Exception(Type.FullName + "." + method.Name +
+                        "() doesn't accept a single argument that implements IPrincipal");
 
                 var result = (Task<bool>)method.Invoke(Instance, new object[] { CurrentUser });
                 if (!await result)

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>Olive.Security</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\@Assemblies\netcoreapp2.0\Olive.Security.Auth0.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Auth0" Version="3.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Security">
+      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.Security.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

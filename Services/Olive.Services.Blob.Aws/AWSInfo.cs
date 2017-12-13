@@ -1,5 +1,4 @@
-﻿using System;
-using Amazon;
+﻿using Amazon;
 
 namespace Olive.Services.BlobAws
 {

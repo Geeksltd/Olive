@@ -136,7 +136,7 @@ namespace Olive.Entities.Data
         public IDataAccess Access =>
             throw new NotSupportedException("IDataProvider.Access is irrelevant to Interfaces");
 
-        public string MapSubquery(string path) =>
+        public string MapSubquery(string path, string parent) =>
             throw new NotSupportedException("IDataProvider.MapSubquery() is irrelevant to Interfaces");
 
         public string ConnectionString { get; set; }

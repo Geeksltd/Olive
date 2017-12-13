@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Olive
 {
@@ -65,7 +64,20 @@ namespace Olive
         /// <summary>
         /// Will set the Position to zero, and then copy all bytes to a memory stream's buffer.
         /// </summary>
-        public static async Task<byte[]> ReadAllBytes(this Stream stream)
+        public static byte[] ReadAllBytes(this Stream stream)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.Position = 0;
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Will set the Position to zero, and then copy all bytes to a memory stream's buffer.
+        /// </summary>
+        public static async Task<byte[]> ReadAllBytesAsync(this Stream stream)
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -91,7 +103,23 @@ namespace Olive
             if (root.Name.StartsWith("netcoreapp")) return root.Parent.Parent.Parent;
             else return root;
         }
-        
+
+        /// <summary>
+        /// Gets the full path of a file or directory from a specified relative path.
+        /// </summary>
+        public static string GetPath(this AppDomain applicationDomain, params string[] relativePathSections)
+        {
+            var result = applicationDomain.BaseDirectory;
+
+            foreach (var path in relativePathSections)
+            {
+                if (path.HasValue())
+                    result = Path.Combine(result, path.Replace('/', Path.DirectorySeparatorChar));
+            }
+
+            return result;
+        }
+
         public static DirectoryInfo GetBaseDirectory(this AppDomain domain) => domain.BaseDirectory.AsDirectory();
 
         public static Assembly LoadAssembly(this AppDomain domain, string assemblyName)

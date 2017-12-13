@@ -1,9 +1,7 @@
 ﻿namespace Olive.Entities.Data
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq.Expressions;
-    using System.Reflection;
 
     public partial class DatabaseQuery<TEntity> : DatabaseQuery, IDatabaseQuery<TEntity>
     where TEntity : IEntity

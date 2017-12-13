@@ -162,7 +162,7 @@
             if (source is IEnumerable)
             {
                 if (target.IsA<IEnumerable<Blob>>())
-                    return await new DocumentModelBinder().BindDocuments(source.ToStringOrEmpty());
+                    return await new BlobModelBinder().BindDocuments(source.ToStringOrEmpty());
 
                 var result = await ConvertCollection(source as IEnumerable, target);
                 if (result != null) return result;
@@ -175,7 +175,7 @@
             }
 
             if (target.IsA<Blob>())
-                return await new DocumentModelBinder().BindDocuments(source.ToStringOrEmpty());
+                return await new BlobModelBinder().BindDocuments(source.ToStringOrEmpty());
 
             try
             {

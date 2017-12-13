@@ -123,8 +123,7 @@ namespace Olive.Web
         {
             var query = new Uri(log.Url).Query?.TrimStart("?").Split('&').FirstOrDefault(p => p.StartsWith(key + "="));
 
-            if (query.IsEmpty())
-                return null;
+            if (query.IsEmpty()) return null;
             else
                 return HttpUtility.UrlDecode(query.Substring(1 + key.Length));
         }

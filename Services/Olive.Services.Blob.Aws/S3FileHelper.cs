@@ -61,7 +61,7 @@ namespace Olive.Services.BlobAws
                 {
                     responseStream.CopyTo(memoryStream);
 
-                    return await memoryStream.ReadAllBytes();
+                    return await memoryStream.ReadAllBytesAsync();
                 }
             }
         }

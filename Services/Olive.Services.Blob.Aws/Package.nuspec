@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.BlobAws</id>
-    <version>1.0.2</version>
+    <version>1.0.4</version>
     <title>Olive Blob AWS (S3) Storage Provider</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>

@@ -513,14 +513,12 @@ namespace Olive
             if (countList == null || countOther == null || countOther < countList)
             {
                 foreach (var item in otherList)
-                    if (list.Contains(item))
-                        return true;
+                    if (list.Contains(item)) return true;
             }
             else
             {
                 foreach (var item in list)
-                    if (otherList.Contains(item))
-                        return true;
+                    if (otherList.Contains(item)) return true;
             }
 
             return false;
@@ -604,8 +602,7 @@ namespace Olive
             if (itemsToRemove != null)
             {
                 foreach (var item in itemsToRemove)
-                    if (list.Contains(item))
-                        list.Remove(item);
+                    if (list.Contains(item)) list.Remove(item);
             }
         }
 

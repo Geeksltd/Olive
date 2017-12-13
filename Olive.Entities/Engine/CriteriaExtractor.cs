@@ -84,10 +84,8 @@ namespace Olive.Entities
                 // The expression is itself a member of something.
 
                 var parentProperty = GetPropertyExpression(memberInfo.Expression as MemberExpression);
-                if (parentProperty == null)
-                    return null;
-                else
-                    return $"{parentProperty}.{property.Name}";
+                if (parentProperty == null) return null;
+                else return $"{parentProperty}.{property.Name}";
             }
             else return null;
         }

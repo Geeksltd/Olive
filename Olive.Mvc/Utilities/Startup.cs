@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +19,8 @@ namespace Olive.Mvc
 {
     public abstract class Startup
     {
+        protected AuthenticationBuilder AuthenticationBuilder;
+
         protected virtual IViewLocationExpander GetViewLocationExpander() => new ViewLocationExpander();
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -40,7 +42,7 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(options =>
                 options.ViewLocationExpanders.Add(GetViewLocationExpander()));
 
-            AddIdentityAndStores(services).AddAuthentication(IdentityConstants.ApplicationScheme);
+            AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies").AddCookie();
 
             services.ConfigureApplicationCookie(ConfigureApplicationCookie)
                 .AddDistributedMemoryCache() // Adds a default in-memory implementation of IDistributedCache.
@@ -100,11 +102,13 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureApplicationCookie(CookieAuthenticationOptions options)
         {
-            options.AccessDeniedPath = "/Login";
-            options.LoginPath = "/Login";
-        }
+            options.AccessDeniedPath = options.LoginPath = "/login";
+            options.LogoutPath = "/lLogout";
+            options.SlidingExpiration = true;
+            options.Cookie.HttpOnly = true;
+            options.Cookie.Name = ".myAuth";
 
-        protected abstract IServiceCollection AddIdentityAndStores(IServiceCollection services);
+        }
 
         /// <summary>Invoked by the WebTestManager right after creating a new database.</summary>
         protected abstract Task CreateReferenceData();

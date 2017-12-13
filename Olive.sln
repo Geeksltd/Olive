@@ -116,7 +116,14 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Olive.MvcJs", "Olive.MvcJs\
 		SlnRelativePath = "Olive.MvcJs\"
 	EndProjectSection
 EndProject
+
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Entities.Data.SQLite", "Olive.Entities.Data.SQLite\Olive.Entities.Data.SQLite.csproj", "{EE70F844-B284-42D1-8565-45B153727A1B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.PushNotification", "Services\Olive.Services.PushNotification\Olive.Services.PushNotification.csproj", "{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security", "Olive.Security\Olive.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Olive.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -223,10 +230,25 @@ Global
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F}.Release|Any CPU.Build.0 = Debug|Any CPU
+
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Release|Any CPU.Build.0 = Release|Any CPU
+
+		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A273AE2-5D6A-491A-809B-71764F35281E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.Build.0 = Release|Any CPU
+
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -249,6 +271,7 @@ Global
 		{FCF09748-CB0C-49EE-AAC2-A1C7BAD14602} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
 		{52AF0D90-E65E-450C-877B-95B831B35694} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F} = {EB802F83-E581-4C4B-9B16-7D00D66C9329}
+		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

@@ -12,12 +12,12 @@ namespace Olive
 
         /// <summary>
         /// If set, it will provide the "Now" value.
-        /// Note: This has lower priority than thread-level overrides.
+        /// Note: This has lower priority than thread-level overrides. 
         /// </summary>
         static Func<DateTime> GlobalNowGetter;
 
         /// <summary>
-		/// Gets the local current date/time of the application.
+        /// Gets the local current date/time of the application.
         /// <para>By default it equals to System.DateTime.Now.</para>
         /// <para>To override its value, you should wrap the calling code inside "using (LocalTime.SetNow(some date)) { ... }"</para>
         /// <para>&#160;</para>

@@ -11,7 +11,7 @@ namespace Olive.Services.Testing
     public class WebTestMiddleware
     {
         readonly RequestDelegate Next;
-        
+
         public WebTestMiddleware(RequestDelegate next) => Next = next;
 
         public async Task Invoke(HttpContext context)
@@ -27,7 +27,7 @@ namespace Olive.Services.Testing
             }
             else
                 await WebTestManager.ProcessCommand(context?.Request?.Param("Web.Test.Command"));
-            
+
             if (!terminateRequest)
                 await Next.Invoke(context);
         }

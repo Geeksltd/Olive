@@ -1,9 +1,7 @@
 ﻿namespace Olive.Entities.Data
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -92,10 +90,8 @@
         async Task LoadIncludedAssociations(IEnumerable<IEntity> mainResult)
         {
             foreach (var associationHeirarchy in Include)
-            {
                 await associationHeirarchy.LoadAssociations(this, mainResult);
-                //await new AssociationEagerLoadService(mainResult, associationHeirarchy.Association, associationHeirarchy.SubAssociations, this).Run();
-            }
+            // await new AssociationEagerLoadService(mainResult, associationHeirarchy.Association, associationHeirarchy.SubAssociations, this).Run();
         }
 
         async Task<List<IEntity>> LoadFromDatabaseAndCache()

@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Olive.Entities;
-using Olive.Web;
 
 namespace Olive.Mvc
 {
@@ -15,7 +15,7 @@ namespace Olive.Mvc
         Type Type;
         string Property;
         PropertyInfo PropertyInfo;
-        IUser CurrentUser;
+        IPrincipal CurrentUser;
 
         public IEntity Instance { get; private set; }
 
@@ -31,7 +31,7 @@ namespace Olive.Mvc
         /// <summary>
         /// Creates a new SecureFileAccessor instance.
         /// </summary>
-        public static async Task<FileAccessor> Create(string path, IUser currentUser)
+        public static async Task<FileAccessor> Create(string path, IPrincipal currentUser)
         {
             var result = new FileAccessor
             {
@@ -99,7 +99,8 @@ namespace Olive.Mvc
             if (method == null)
                 return $"{Type.FullName}.Is{Property}VisibleTo() method is not defined.";
 
-            if (method.GetParameters().Count() != 1 || !method.GetParameters().Single().ParameterType.Implements<IUser>())
+            if (!method.GetParameters().IsSingle() ||
+                !method.GetParameters().Single().ParameterType.Implements<IPrincipal>())
                 return $"{Type.FullName}.{method.Name}() doesn't accept a single argument that implements IUser";
 
             if (!(bool)method.Invoke(Instance, new object[] { CurrentUser }))

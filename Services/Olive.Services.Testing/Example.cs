@@ -6,7 +6,6 @@ namespace Olive.Services.Testing
     // Note: This is a service implementation example.
     // MyService can be replaced by a proper name depending on your project's requirements.
 
-
     /// <summary>
     /// This simple class will not have any implementation body. It's used to invoke the service.
     /// </summary>
@@ -118,7 +117,6 @@ namespace Olive.Services.Testing
 
             // At this stage, the MyService.Request() called inside the logic unit, will come out of freezing and return the injected
             // response to the consumer unit.
-
 
             // Note: This way, the dependency to the external service is bypassed by manually injecting the response.
         }

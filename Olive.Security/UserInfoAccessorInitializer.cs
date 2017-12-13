@@ -1,7 +1,8 @@
 ﻿using System.Security.Principal;
 using Olive.Entities;
+using Olive.Web;
 
-namespace Olive.Web
+namespace Olive.Security
 {
     [UserInfoAccessorInitializer]
     public class UserInfoAccessorInitializer

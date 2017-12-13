@@ -99,8 +99,7 @@ namespace Olive.Entities.Data
 
             foreach (var property in targetType.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
             {
-                if (!property.CanWrite)
-                    continue;
+                if (!property.CanWrite) continue;
 
                 if (result.ContainsKey(property.Name) && result[property.Name] != null)
                     continue; // Already added in explicit mappings.
