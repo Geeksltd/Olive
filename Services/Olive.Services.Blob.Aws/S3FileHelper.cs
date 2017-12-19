@@ -26,7 +26,14 @@ namespace Olive.Services.BlobAws
             using (var client = CreateClient())
             {
                 var request = await CreateUploadRequest(document);
-                await client.PutObjectAsync(request);
+                var response = await client.PutObjectAsync(request);
+
+                switch (response.HttpStatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                    case System.Net.HttpStatusCode.Accepted: return;
+                    default: throw new Exception($"AWS Upload for key {request.Key} returned: " + response.HttpStatusCode);
+                }
             }
         }
 
@@ -83,7 +90,14 @@ namespace Olive.Services.BlobAws
                 using (var client = CreateClient())
                 {
                     var request = CreateDeleteOldsRequest(oldVersionKeys);
-                    await client.DeleteObjectsAsync(request);
+                    var response = await client.DeleteObjectsAsync(request);
+
+                    switch (response.HttpStatusCode)
+                    {
+                        case System.Net.HttpStatusCode.OK:
+                        case System.Net.HttpStatusCode.Accepted: return;
+                        default: throw new Exception("AWS DeleteObjects returned: " + response.HttpStatusCode);
+                    }
                 }
         }
 
@@ -95,11 +109,17 @@ namespace Olive.Services.BlobAws
         /// </summary>
         internal static async Task Delete(Blob document)
         {
+            var key = GetKey(document);
             using (var client = CreateClient())
             {
-                var response = await client.DeleteObjectAsync(AWSInfo.DocumentsS3BucketName, GetKey(document));
+                var response = await client.DeleteObjectAsync(AWSInfo.DocumentsS3BucketName, key);
 
-                Log.Info("S3 Delete Object with key {0} response : httpStatusCode : {1} , responsemetadata : {2}".FormatWith(GetKey(document), response.HttpStatusCode, response.ResponseMetadata.Metadata.Select(i => i.Key + " : " + i.Value).ToString(Environment.NewLine)));
+                switch (response.HttpStatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                    case System.Net.HttpStatusCode.Accepted: return;
+                    default: throw new Exception("AWS DeleteObject for key " + key + " returned: " + response.HttpStatusCode);
+                }
             }
         }
 
