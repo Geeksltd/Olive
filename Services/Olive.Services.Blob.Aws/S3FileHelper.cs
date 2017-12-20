@@ -95,6 +95,7 @@ namespace Olive.Services.BlobAws
                     switch (response.HttpStatusCode)
                     {
                         case System.Net.HttpStatusCode.OK:
+                        case System.Net.HttpStatusCode.NoContent:
                         case System.Net.HttpStatusCode.Accepted: return;
                         default: throw new Exception("AWS DeleteObjects returned: " + response.HttpStatusCode);
                     }
@@ -117,6 +118,7 @@ namespace Olive.Services.BlobAws
                 switch (response.HttpStatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
+                    case System.Net.HttpStatusCode.NoContent:
                     case System.Net.HttpStatusCode.Accepted: return;
                     default: throw new Exception("AWS DeleteObject for key " + key + " returned: " + response.HttpStatusCode);
                 }

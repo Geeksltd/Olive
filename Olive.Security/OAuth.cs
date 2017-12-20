@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
@@ -47,7 +48,25 @@ namespace Olive.Security
         public ClaimsPrincipal DecodeJwt(string jwt)
         {
             if (jwt.IsEmpty()) return null;
-            return new JwtSecurityTokenHandler().ValidateToken(jwt, new TokenValidationParameters(), out var token);
+
+            var validationParams = new TokenValidationParameters()
+            {
+                IssuerSigningKey = GetJwtSecurityKey(),
+                ValidateAudience = false,
+                ValidateIssuer = false
+            };
+
+            return new JwtSecurityTokenHandler().ValidateToken(jwt, validationParams, out var token);
+        }
+
+        internal static SymmetricSecurityKey GetJwtSecurityKey()
+        {
+            var configKey = Config.Get("Authentication:JWT:Secret");
+            if (configKey.OrEmpty().Length != 21)
+                throw new ArgumentException("Your config setting of 'Authentication:JWT:Secret' needs to be 21 characters.");
+
+            var securityKey = configKey.ToBytes(encoding: Encoding.UTF8);
+            return new SymmetricSecurityKey(securityKey);
         }
     }
 }
