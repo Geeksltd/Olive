@@ -117,6 +117,10 @@
 
         public Task<int> Count() => Provider.Count(this);
 
+        public async Task<bool> Any() => await Count() > 0;
+
+        public async Task<bool> None() => !await Any();
+
         public async Task<IEntity> FirstOrDefault()
         {
             TakeTop = 1;

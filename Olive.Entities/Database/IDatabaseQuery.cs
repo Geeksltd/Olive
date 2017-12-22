@@ -27,6 +27,8 @@ namespace Olive.Entities
         IDatabaseQuery CloneFor(Type entityType);
 
         Task<int> Count();
+        Task<bool> Any();
+        Task<bool> None();
         Task<IEnumerable<IEntity>> GetList();
         Task<IEntity> FirstOrDefault();
     }
