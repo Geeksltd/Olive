@@ -18,7 +18,7 @@
 
         public ActionResult Redirect(string url) => new RedirectResult(url);
 
-        protected TViewModel Bind<TViewModel>(dynamic settings) where TViewModel : IViewModel, new()
+        protected TViewModel Bind<TViewModel>(object settings) where TViewModel : IViewModel, new()
         {
             var result = new TViewModel();
             if (settings != null) ViewModelServices.CopyData(settings, result);
