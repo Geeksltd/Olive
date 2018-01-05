@@ -113,10 +113,10 @@ namespace Olive.Web
         /// <summary>
         /// Writes the specified message in the response and then ends the response.
         /// </summary>
-        public static void EndWith(this HttpResponse response, string message, string mimeType = "text/html")
+        public static async Task EndWith(this HttpResponse response, string message, string mimeType = "text/html")
         {
             response.ContentType = mimeType;
-            response.WriteAsync(message).RunSynchronously();
+            await response.WriteAsync(message);
         }
 
         /// <summary>
