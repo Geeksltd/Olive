@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Olive
 {
-    /// <summary>
+    /// <summary> 
     /// Provides shortcut access to the value specified in web.config (or App.config) under AppSettings or ConnectionStrings.
     /// </summary>
     public static class Config

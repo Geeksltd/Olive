@@ -1,5 +1,5 @@
-﻿using System.Security.Principal;
-using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Olive.Web;
 
@@ -7,13 +7,12 @@ namespace Olive.Security
 {
     public class JwtAuthenticateAttribute : ActionFilterAttribute
     {
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-            await base.OnActionExecutionAsync(context, next);
+            base.OnActionExecuting(context);
 
             var user = context.HttpContext.User;
-
-            if (user == null || user is WindowsPrincipal || user.IsInRole("Anonymous"))
+            if (user == null || user.IsInRole("Anonymous") || user.Claims.None())
             {
                 var headerVlaue = context.HttpContext.Request.Headers["Authorization"].ToString();
                 if (!headerVlaue.StartsWith("Bearer")) return;
@@ -25,11 +24,12 @@ namespace Olive.Security
                     user = OAuth.Instance.DecodeJwt(jwt);
                     if (user != null) Context.Http.User = user;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Ignore
+                    Debug.WriteLine("Failed to decode JWT token: " + ex.Message);
                 }
             }
         }
+
     }
 }

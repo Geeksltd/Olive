@@ -15,8 +15,6 @@ namespace Olive.Mvc
 
         public override int Order => 0;
 
-        Type ModelType => For?.Model?.GetType();
-
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             // It should clear the original tag helper effects because it will call the base method again.
@@ -26,17 +24,33 @@ namespace Olive.Mvc
 
             await base.ProcessAsync(context, output);
 
-            if (ModelType?.IsA<IEntity>() ?? false)
+            if (For.Model is IEntity ent)
             {
-                var postContent = output.PostContent.GetContent();
-                var stringId = ((IEntity)For.Model).GetId().ToString();
-                postContent = postContent.Replace($"\"{stringId}\"", $"\"{stringId}\" selected=\"selected\"");
-                output.PostContent.Clear();
-                output.PostContent.SetHtmlContent(postContent);
+                SetSelected(output.PostContent, ent);
             }
-            else if (ModelType?.IsGenericOf(typeof(IEnumerable<>), typeof(IEntity)) ?? false)
+            else if (For.Model is IEnumerable<IEntity> entities)
             {
+                SetSelected(output.PostContent, entities);
             }
+        }
+
+        void SetSelected(TagHelperContent content, IEntity entity)
+        {
+            var postContent = content.GetContent();
+            postContent = postContent.Replace($"\"{entity.GetId()}\"", $"\"{entity.GetId()}\" selected=\"selected\"");
+            content.Clear();
+            content.SetHtmlContent(postContent);
+        }
+
+        void SetSelected(TagHelperContent content, IEnumerable<IEntity> entities)
+        {
+            var postContent = content.GetContent();
+
+            foreach (var entity in entities)
+                postContent = postContent.Replace($"\"{entity.GetId()}\"", $"\"{entity.GetId()}\" selected=\"selected\"");
+
+            content.Clear();
+            content.SetHtmlContent(postContent);
         }
     }
 }

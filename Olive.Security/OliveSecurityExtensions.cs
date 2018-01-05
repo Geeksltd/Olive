@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using Olive.Security;
 using Olive.Web;
-using System.Text;
 
 namespace Olive
 {
@@ -29,11 +28,7 @@ namespace Olive
 
         public static string CreateJwtToken(this ILoginInfo info)
         {
-            var configKey = Config.Get("Authentication:JWT:Secret");
-            if (configKey.IsEmpty() || configKey.Count() != 21)
-                throw new ArgumentException("Your Authentication:JWT:Secret key needs to be 21 characters.");
-
-            var securityKey = Config.Get("Authentication:JWT:Secret").ToBytes(encoding: Encoding.UTF8);
+            var securityKey = OAuth.GetJwtSecurityKey();
 
             var descriptor = new SecurityTokenDescriptor
             {
@@ -41,7 +36,7 @@ namespace Olive
                 Issuer = Context.Request.GetWebsiteRoot(),
                 Audience = Context.Request.GetWebsiteRoot(),
                 Expires = DateTime.UtcNow.Add(info.Timeout),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(securityKey), SecurityAlgorithms.HmacSha256),
+                SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256),
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
