@@ -81,14 +81,18 @@ namespace Olive.Services.Testing
                 await ReferenceDataCreator();
         }
 
-        public static async Task ProcessCommand(string command)
+        /// <summary>
+        /// It processes the command and returns true if the response is ready to be sent to the client.
+        /// </summary>
+        public static async Task<bool> ProcessCommand(string command)
         {
-            if (command.IsEmpty()) return;
+            if (command.IsEmpty()) return false;
 
             if (!IsTddExecutionMode()) throw new Exception("Invalid command in non TDD mode.");
 
             var request = Context.Http.Request;
             var response = Context.Http.Response;
+            var result = false;
 
             var isShared = request.Param("mode") == "shared";
 
@@ -106,18 +110,20 @@ namespace Olive.Services.Testing
             }
             else if (command == "snapshots_list")
             {
-                response.EndWith(JsonConvert.SerializeObject(Snapshot.GetList(isShared)));
+                await response.EndWith(JsonConvert.SerializeObject(Snapshot.GetList(isShared)));
+                result = true;
             }
             else if (command == "snapExists")
             {
                 if (new Snapshot(request.Param("name"), isShared).Exists())
                 {
-                    response.EndWith("true");
+                    await response.EndWith("true");
                 }
                 else
                 {
-                    response.EndWith("false");
+                    await response.EndWith("false");
                 }
+                result = true;
             }
             else if (command.IsAnyOf("start", "run", "ran", "cancel", "restart"))
             {
@@ -128,6 +134,7 @@ namespace Olive.Services.Testing
             else if (command == "testEmail")
             {
                 await (await new EmailTestService(request, response).Initialize()).Process();
+                result = true;
             }
             else if (command == "dbChanges")
             {
@@ -143,21 +150,24 @@ namespace Olive.Services.Testing
                 {
                     // reset to normal
                     LocalTime.RedefineNow(overriddenNow: null);
-                    response.EndWith(LocalTime.Now.ToString("yyyy-MM-dd @ HH:mm:ss"));
+                    await response.EndWith(LocalTime.Now.ToString("yyyy-MM-dd @ HH:mm:ss"));
                 }
+                else
+                {
+                    var time = LocalTime.Now.TimeOfDay;
+                    if (request.Has("time")) time = TimeSpan.Parse(request.Param("time"));
 
-                var time = LocalTime.Now.TimeOfDay;
-                if (request.Has("time")) time = TimeSpan.Parse(request.Param("time"));
+                    var date = LocalTime.Today;
+                    if (request.Has("date")) date = request.Param("date").To<DateTime>();
 
-                var date = LocalTime.Today;
-                if (request.Has("date")) date = request.Param("date").To<DateTime>();
+                    date = date.Add(time);
 
-                date = date.Add(time);
+                    var trueOrigin = DateTime.Now;
 
-                var trueOrigin = DateTime.Now;
-
-                LocalTime.RedefineNow(() => { return date.Add(DateTime.Now.Subtract(trueOrigin)); });
-                response.EndWith(date.ToString("yyyy-MM-dd @ HH:mm:ss"));
+                    LocalTime.RedefineNow(() => { return date.Add(DateTime.Now.Subtract(trueOrigin)); });
+                    await response.EndWith(date.ToString("yyyy-MM-dd @ HH:mm:ss"));
+                }
+                result = true;
             }
             else if (command == "remove_snapshot")
             {
@@ -178,6 +188,8 @@ namespace Olive.Services.Testing
                 { IsBackground = true }
                .Start();
             }
+
+            return result;
         }
 
         /// <summary>

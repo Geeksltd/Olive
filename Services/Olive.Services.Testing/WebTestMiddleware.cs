@@ -26,7 +26,7 @@ namespace Olive.Services.Testing
                 terminateRequest = true;
             }
             else
-                await WebTestManager.ProcessCommand(context?.Request?.Param("Web.Test.Command"));
+                terminateRequest = await WebTestManager.ProcessCommand(context?.Request?.Param("Web.Test.Command"));
 
             if (!terminateRequest)
                 await Next.Invoke(context);
