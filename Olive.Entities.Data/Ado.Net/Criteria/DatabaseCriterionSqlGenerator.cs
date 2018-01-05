@@ -68,16 +68,7 @@ namespace Olive.Entities.Data
         string ToSubQuerySql(ICriterion criterion)
         {
             var parts = criterion.PropertyName.Split('.');
-
-            // if (parts.Count() > 2)
             return ToNestedSubQuerySql(criterion, parts);
-
-            // var type = EntityType.GetProperty(parts[0])?.PropertyType;
-            // if (type == null) throw new Exception($"{EntityType.Name} does not have a public property named {parts[0]}.");
-
-            // var subquery = Query.Provider.MapSubquery(parts[0] + ".*");
-            // var subCriterion = new Criterion(parts[1], criterion.FilterFunction, criterion.Value);
-            // return "EXISTS ({0}{1})".FormatWith(subquery, ToSqlOn(subCriterion, type).WithPrefix(" AND "));
         }
 
         string ToSqlOn(ICriterion criterion, Type type, string alias = null)
