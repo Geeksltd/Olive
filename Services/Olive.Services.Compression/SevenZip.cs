@@ -119,7 +119,7 @@ namespace Olive.Services.Compression
             try
             {
                 await Compress(tempFile, sourceFiles, compressionMode, customParameters);
-                return await tempFile.ReadAllBytes();
+                return await tempFile.ReadAllBytesAsync();
             }
             finally
             {

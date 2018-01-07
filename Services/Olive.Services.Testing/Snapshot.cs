@@ -101,13 +101,13 @@ namespace Olive.Services.Testing
                     if (!Directory.Exists(source)) continue;
 
                     var dest = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(Config.Get(key));
-                    copyTasks.Add(new DirectoryInfo(source).CopyTo(dest, overwrite: true));
+                    copyTasks.Add(new DirectoryInfo(source).CopyToAsync(dest, overwrite: true));
                 }
                 else if (process == CopyProcess.Backup)
                 {
                     source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(source).FullName;
                     if (!Directory.Exists(source)) continue;
-                    copyTasks.Add(new DirectoryInfo(source).CopyTo(Path.Combine(SnapshotsDirectory.ToString(), folder), overwrite: true));
+                    copyTasks.Add(new DirectoryInfo(source).CopyToAsync(Path.Combine(SnapshotsDirectory.ToString(), folder), overwrite: true));
                 }
             }
 
@@ -127,7 +127,7 @@ namespace Olive.Services.Testing
             var dateFile = SnapshotsDirectory.GetFile(DATE_FILE_NAME);
             if (dateFile.Exists())
             {
-                var dateTime = Convert.ToDateTime(await dateFile.ReadAllText());
+                var dateTime = Convert.ToDateTime(await dateFile.ReadAllTextAsync());
                 LocalTime.RedefineNow(() => dateTime);
             }
         }
@@ -202,7 +202,7 @@ namespace Olive.Services.Testing
         {
             var urlFile = SnapshotsDirectory.GetFile(URL_FILE_NAME);
             if (urlFile.Exists())
-                context.Response.Redirect(context.Request.GetWebsiteRoot() + (await urlFile.ReadAllText()).TrimStart("/"));
+                context.Response.Redirect(context.Request.GetWebsiteRoot() + (await urlFile.ReadAllTextAsync()).TrimStart("/"));
         }
 
         #endregion
@@ -212,7 +212,7 @@ namespace Olive.Services.Testing
         {
             var json = JsonConvert.SerializeObject(context.Request.GetCookies().ToArray());
 
-            await GetCookiesFile().WriteAllText(json);
+            await GetCookiesFile().WriteAllTextAsync(json);
         }
 
         async Task RestoreCookies(HttpContext context)
@@ -221,7 +221,7 @@ namespace Olive.Services.Testing
 
             if (!cookiesFile.Exists()) return;
 
-            var cookies = JsonConvert.DeserializeObject<KeyValuePair<string, string>[]>(await cookiesFile.ReadAllText());
+            var cookies = JsonConvert.DeserializeObject<KeyValuePair<string, string>[]>(await cookiesFile.ReadAllTextAsync());
 
             foreach (var cookie in cookies)
                 context.Response.Cookies.Append(cookie.Key, cookie.Value);
@@ -248,7 +248,7 @@ namespace Olive.Services.Testing
                 {
                     if (IsInShareSnapshotMode)
                     {
-                        await f.CopyTo(Path.Combine(SnapshotsDirectory.FullName, GetSnapshotFileName(f) + f.Extension).AsFile());
+                        await f.CopyToAsync(Path.Combine(SnapshotsDirectory.FullName, GetSnapshotFileName(f) + f.Extension).AsFile());
 
                         // keep the snashptname of the database in a .origin file
                         await File.WriteAllTextAsync(SnapshotsDirectory.GetFile(
@@ -308,7 +308,7 @@ namespace Olive.Services.Testing
                         if (destination.ToLower().EndsWith(".ldf"))
                             ldfFile = destination.AsFile();
 
-                        await source.CopyTo(destination.AsFile(), overwrite: true);
+                        await source.CopyToAsync(destination.AsFile(), overwrite: true);
                         // shall we backup the existing one and in case of any error restore it?
                     }
 

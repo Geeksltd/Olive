@@ -21,6 +21,6 @@ namespace Olive.Mvc
             NonobstructiveFile(await file.GetFileData(), downloadFileName.Or(file.FileName));
 
         protected async Task<JsonResult> NonobstructiveFile(FileInfo file) =>
-            NonobstructiveFile(await file.ReadAllBytes(), file.Name);
+            NonobstructiveFile(await file.ReadAllBytesAsync(), file.Name);
     }
 }

@@ -49,9 +49,9 @@ namespace Olive
         {
             if (!directory.Exists()) return;
 
-            await DoTryHard(directory, async () =>
+            await DoTryHardAsync(directory, async () =>
             {
-                await directory.GetFiles().Do(async (f) => await f.Delete(harshly: true));
+                await directory.GetFiles().Do(async (f) => await f.DeleteAsync(harshly: true));
                 await directory.GetDirectories().Do(async (d) => await HarshDelete(d));
                 await Task.Factory.StartNew(directory.Delete);
             }, "The system cannot delete the directory, even after several attempts. Directory: {0}");
@@ -60,8 +60,10 @@ namespace Olive
         /// <summary>
         /// Copies the entire content of a directory to a specified destination.
         /// </summary>
-        public static async Task CopyTo(this DirectoryInfo source, DirectoryInfo destination, bool overwrite = false) =>
-            await CopyTo(source, destination.FullName, overwrite);
+        public static Task CopyToAsync(this DirectoryInfo source, DirectoryInfo destination, bool overwrite = false)
+        {
+            return CopyToAsync(source, destination.FullName, overwrite);
+        }
 
         /// <summary>
         /// Determines whether the file's contents start with MZ which is the signature for EXE files.
@@ -88,15 +90,15 @@ namespace Olive
         /// <summary>
         /// Copies the entire content of a directory to a specified destination.
         /// </summary>
-        public static async Task CopyTo(this DirectoryInfo source, string destination, bool overwrite = false)
+        public static async Task CopyToAsync(this DirectoryInfo source, string destination, bool overwrite = false)
         {
             destination.AsDirectory().EnsureExists();
 
             foreach (var file in source.GetFiles())
-                await file.CopyTo(Path.Combine(destination, file.Name).AsFile(), overwrite);
+                await file.CopyToAsync(Path.Combine(destination, file.Name).AsFile(), overwrite);
 
             foreach (var sub in source.GetDirectories())
-                await sub.CopyTo(Path.Combine(destination, sub.Name), overwrite);
+                await sub.CopyToAsync(Path.Combine(destination, sub.Name), overwrite);
         }
 
         /// <summary>
@@ -107,7 +109,7 @@ namespace Olive
             destination.AsDirectory().EnsureExists();
 
             foreach (var file in source.GetFiles())
-                file.CopyToSync(Path.Combine(destination, file.Name).AsFile(), overwrite);
+                file.CopyTo(Path.Combine(destination, file.Name).AsFile(), overwrite);
 
             foreach (var sub in source.GetDirectories())
                 sub.CopyToSync(Path.Combine(destination, sub.Name), overwrite);
@@ -117,7 +119,7 @@ namespace Olive
         /// Copies this file to a specified destination directiry with the original file name.
         /// </summary>
         public static async Task CopyTo(this FileInfo file, DirectoryInfo destinationDirectory, bool overwrite = false) =>
-            await file.CopyTo(destinationDirectory.GetFile(file.Name), overwrite);
+            await file.CopyToAsync(destinationDirectory.GetFile(file.Name), overwrite);
 
         public static string[] GetFiles(this DirectoryInfo folder, bool includeSubDirectories)
         {

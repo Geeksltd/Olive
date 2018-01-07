@@ -72,7 +72,7 @@ namespace Olive.Web
             if (fileName.IsEmpty())
                 fileName = responseFile.Name;
 
-            await Dispatch(response, await responseFile.ReadAllBytes(), fileName, contentType);
+            await Dispatch(response, await responseFile.ReadAllBytesAsync(), fileName, contentType);
         }
 
         /// <summary>

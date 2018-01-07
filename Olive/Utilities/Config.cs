@@ -151,7 +151,7 @@ namespace Olive
 
             var result = new Dictionary<string, string>();
 
-            var config = XDocument.Parse(await configFile.ReadAllText());
+            var config = XDocument.Parse(await configFile.ReadAllTextAsync());
 
             var appSettings = config.Root.Elements().SingleOrDefault(a => a.Name.LocalName == "appSettings");
 

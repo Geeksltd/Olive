@@ -66,7 +66,7 @@ namespace Olive.Mvc
 
             if (fileName.IsEmpty()) fileName = responseFile.Name;
 
-            var data = await responseFile.ReadAllBytes();
+            var data = await responseFile.ReadAllBytesAsync();
 
             await response.Dispatch(data, fileName, contentType);
         }

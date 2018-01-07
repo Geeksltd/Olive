@@ -185,5 +185,17 @@ namespace Olive
         /// Gets the rows of this data table in a LINQ-able format..
         /// </summary>
         public static IEnumerable<DataRow> GetRows(this DataTable dataTable) => dataTable.Rows.Cast<DataRow>();
+
+        public static int FieldIndex(this IDataReader reader, string name)
+        {
+            try
+            {
+                return reader.GetOrdinal(name);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return -1;
+            }
+        }
     }
 }

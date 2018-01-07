@@ -21,7 +21,7 @@ namespace Olive.Mvc
 
             var file = files.Single();
 
-            return new FileContentResult(await file.ReadAllBytes(), "application/octet-stream") { FileDownloadName = file.Name };
+            return new FileContentResult(await file.ReadAllBytesAsync(), "application/octet-stream") { FileDownloadName = file.Name };
         }
 
         static FileContentResult CreateError(string errorText)
@@ -35,7 +35,7 @@ namespace Olive.Mvc
         {
             var key = Guid.NewGuid().ToString();
             var folder = FileUploadService.GetFolder(key).EnsureExists();
-            await folder.GetFile(filename).WriteAllBytes(data);
+            await folder.GetFile(filename).WriteAllBytesAsync(data);
 
             var url = "/temp-file/" + key;
 

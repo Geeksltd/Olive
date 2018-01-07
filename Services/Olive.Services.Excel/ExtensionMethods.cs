@@ -28,7 +28,7 @@ namespace Olive.Services.Excel
 
             var file = Blob.GetPhysicalFilesRoot(Blob.AccessMode.Secure).EnsureExists().GetFile("Sql.Profile." + DateTime.Now.ToOADate() + ".csv");
 
-            await file.WriteAllText(result);
+            await file.WriteAllTextAsync(result);
 
             return file;
         }

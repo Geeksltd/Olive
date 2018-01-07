@@ -135,7 +135,7 @@ namespace Olive.Security
             var fileName = Blob.FileName.Or(file.Name);
             var contentType = file.Extension.OrEmpty().TrimStart(".").ToLower().Or("Application/octet-stream");
 
-            await Response.Dispatch(await file.ReadAllBytes(), fileName, contentType);
+            await Response.Dispatch(await file.ReadAllBytesAsync(), fileName, contentType);
         }
 
         public class UnauthorisedRequestEventArgs : EventArgs

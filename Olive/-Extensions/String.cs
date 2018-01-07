@@ -1055,7 +1055,7 @@ namespace Olive
         {
             using (SHA256 hash = SHA256Managed.Create())
             {
-                return String.Concat(
+                return string.Concat(
                     hash
                     .ComputeHash(Encoding.UTF8.GetBytes(inputString))
                     .Select(item => item.ToString("x2").ToLower())
@@ -1069,7 +1069,7 @@ namespace Olive
         {
             using (SHA512 hash = SHA512Managed.Create())
             {
-                return String.Concat(
+                return string.Concat(
                     hash
                     .ComputeHash(Encoding.UTF8.GetBytes(inputString))
                     .Select(item => item.ToString("x2").ToLower())
