@@ -30,6 +30,5 @@ namespace Olive.Security
                 }
             }
         }
-
     }
 }

@@ -16,7 +16,7 @@ namespace Olive.Services.CSV
         /// Reads a CSV blob into a data table. Note use the CastTo() method on the returned DataTable to gain fully-typed objects.
         /// </summary>
         public static async Task<DataTable> Read(Blob csv, bool isFirstRowHeaders, int minimumFieldCount = 0) =>
-            Read(await csv.GetContentText(), isFirstRowHeaders, minimumFieldCount);
+            Read(await csv.GetContentTextAsync(), isFirstRowHeaders, minimumFieldCount);
 
         /// <summary>
         /// Reads a CSV file into a data table. Note use the CastTo() method on the returned DataTable to gain fully-typed objects.
@@ -59,7 +59,7 @@ namespace Olive.Services.CSV
         /// <summary>
         /// Gets the column names on the specified CSV blob.
         /// </summary>
-        public static async Task<string[]> GetColumns(Blob blob) => GetColumns(await blob.GetContentText());
+        public static async Task<string[]> GetColumns(Blob blob) => GetColumns(await blob.GetContentTextAsync());
 
         /// <summary>
         /// Gets the column names on the specified CSV content.

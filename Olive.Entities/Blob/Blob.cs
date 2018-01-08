@@ -100,14 +100,14 @@ namespace Olive.Entities
         /// <summary>
         /// Gets the data of this blob.
         /// </summary>
-        public async Task<byte[]> GetFileData()
+        public async Task<byte[]> GetFileDataAsync()
         {
             if (IsEmpty()) return new byte[0];
 
             if (FileData != null && FileData.Length > 0)
                 return FileData;
 
-            FileData = await GetStorageProvider().Load(this);
+            FileData = await GetStorageProvider().LoadAsync(this);
 
             return FileData;
         }
@@ -151,13 +151,13 @@ namespace Olive.Entities
         /// Gets the content
         /// </summary>
         /// <returns></returns>
-        public async Task<string> GetContentText()
+        public async Task<string> GetContentTextAsync()
         {
             if (IsEmpty()) return string.Empty;
 
             try
             {
-                using (var mem = new MemoryStream(await GetFileData()))
+                using (var mem = new MemoryStream(await GetFileDataAsync()))
                 {
                     using (var reader = new StreamReader(mem))
                         return await reader.ReadToEndAsync();
@@ -225,7 +225,7 @@ namespace Olive.Entities
             if (FileName == EMPTY_FILE) return true;
 
             if (GetStorageProvider().CostsToCheckExistence() ||
-                GetStorageProvider().FileExists(this).AwaitResult())
+                GetStorageProvider().FileExistsAsync(this).AwaitResult())
             {
                 hasValue = true;
                 return false;
@@ -244,9 +244,9 @@ namespace Olive.Entities
         /// <summary>
         /// Creates a clone of this blob.
         /// </summary>
-        public Task<Blob> Clone() => Clone(attach: false, @readonly: false);
+        public Task<Blob> CloneAsync() => CloneAsync(attach: false, @readonly: false);
 
-        public async Task<Blob> Clone(bool attach, bool @readonly)
+        public async Task<Blob> CloneAsync(bool attach, bool @readonly)
         {
             if (!attach && @readonly) throw new ArgumentException("readonly can be set to true only when attaching.");
 
@@ -254,7 +254,7 @@ namespace Olive.Entities
 
             if (ownerEntity != null && attach)
             {
-                result = new Blob(await GetFileData(), FileName);
+                result = new Blob(await GetFileDataAsync(), FileName);
 
                 if (!@readonly) Attach(ownerEntity, OwnerProperty, FileAccessMode);
                 else
@@ -326,7 +326,7 @@ namespace Olive.Entities
         {
             if (ownerEntity == null) throw new InvalidOperationException();
 
-            GetStorageProvider().Delete(this);
+            GetStorageProvider().DeleteAsync(this);
 
             FileData = null;
         }
@@ -347,7 +347,7 @@ namespace Olive.Entities
         public async Task SaveOnDisk()
         {
             if (FileData != null && FileData.Length > 0)
-                await GetStorageProvider().Save(this);
+                await GetStorageProvider().SaveAsync(this);
 
             else if (IsEmptyBlob) DeleteFromDisk();
         }

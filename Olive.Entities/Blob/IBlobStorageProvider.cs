@@ -4,10 +4,10 @@ namespace Olive.Entities
 {
     public interface IBlobStorageProvider
     {
-        Task Save(Blob blob);
-        Task Delete(Blob blob);
-        Task<byte[]> Load(Blob blob);
-        Task<bool> FileExists(Blob blob);
+        Task SaveAsync(Blob blob);
+        Task DeleteAsync(Blob blob);
+        Task<byte[]> LoadAsync(Blob blob);
+        Task<bool> FileExistsAsync(Blob blob);
         bool CostsToCheckExistence();
     }
 }

@@ -143,7 +143,7 @@ namespace Olive
         /// Reads the app settings from a specified configuration file.
         /// </summary>
 		[Obsolete("The XML settings are outdated.")]
-        public static async Task<Dictionary<string, string>> ReadAppSettings(FileInfo configFile)
+        public static async Task<Dictionary<string, string>> ReadAppSettingsAsync(FileInfo configFile)
         {
             if (configFile == null) throw new ArgumentNullException(nameof(configFile));
 

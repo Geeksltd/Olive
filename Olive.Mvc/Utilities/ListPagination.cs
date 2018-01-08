@@ -15,10 +15,10 @@ namespace Olive.Mvc
         public static string DefaultNextText = "&rsaquo;";
         public static string DefaultLastText = "&raquo;";
 
-        public static bool DisplayForSinglePage = false;
+        public static bool DisplayForSinglePage;
         public static string WrapperCssClass;
         public static bool DefaultShowFirstLastLinks = true;
-        public static bool DefaultShowPreviousNextLinks = false;
+        public static bool DefaultShowPreviousNextLinks;
 
         public bool ShowFirstLastLinks = DefaultShowFirstLastLinks;
         public bool ShowPreviousNextLinks = DefaultShowPreviousNextLinks;

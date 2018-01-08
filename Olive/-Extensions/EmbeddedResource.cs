@@ -27,13 +27,13 @@ namespace Olive
 
         /// <param name="rootNamespace">The default namespace of your Visual Studio project.</param>
         /// <param name="fileRelativePath">For example MyRootFolder\MySubFolder\MyFile.cs (this is case sensitive).</param>
-        public static Task<byte[]> ReadEmbeddedResource(this Assembly assembly, string rootNamespace, string fileRelativePath)
+        public static Task<byte[]> ReadEmbeddedResourceAsync(this Assembly assembly, string rootNamespace, string fileRelativePath)
         {
             var resourceName = assembly.GetEmbeddedResourceName(rootNamespace, fileRelativePath);
-            return assembly.ReadEmbeddedResource(resourceName);
+            return assembly.ReadEmbeddedResourceAsync(resourceName);
         }
 
-        public static async Task<byte[]> ReadEmbeddedResource(this Assembly assembly, string resourceName)
+        public static async Task<byte[]> ReadEmbeddedResourceAsync(this Assembly assembly, string resourceName)
         {
             try
             {
@@ -56,21 +56,69 @@ namespace Olive
 
         /// <param name="rootNamespace">The default namespace of your Visual Studio project.</param>
         /// <param name="fileRelativePath">For example MyRootFolder\MySubFolder\MyFile.cs (this is case sensitive).</param>
-        public static Task<string> ReadEmbeddedTextFile(this Assembly assembly, string rootNamespace, string fileRelativePath)
+        public static Task<string> ReadEmbeddedTextFileAsync(this Assembly assembly, string rootNamespace, string fileRelativePath)
+        {
+            var resourceName = assembly.GetEmbeddedResourceName(rootNamespace, fileRelativePath);
+            return assembly.ReadEmbeddedTextFileAsync(resourceName);
+        }
+
+        public static Task<string> ReadEmbeddedTextFileAsync(this Assembly assembly, string resourceName)
+        {
+            return assembly.ReadEmbeddedTextFileAsync(resourceName, Encoding.UTF8);
+        }
+
+        public static async Task<string> ReadEmbeddedTextFileAsync(this Assembly assembly, string resourceName,
+           Encoding encoding)
+        {
+            return encoding.GetString(await assembly.ReadEmbeddedResourceAsync(resourceName));
+        }
+
+        /// <param name="rootNamespace">The default namespace of your Visual Studio project.</param>
+        /// <param name="fileRelativePath">For example MyRootFolder\MySubFolder\MyFile.cs (this is case sensitive).</param>
+        public static byte[] ReadEmbeddedResource(this Assembly assembly, string rootNamespace, string fileRelativePath)
+        {
+            var resourceName = assembly.GetEmbeddedResourceName(rootNamespace, fileRelativePath);
+            return assembly.ReadEmbeddedResource(resourceName);
+        }
+
+        public static byte[] ReadEmbeddedResource(this Assembly assembly, string resourceName)
+        {
+            try
+            {
+                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream == null)
+                        throw new Exception("There is no embedded resource named '" + resourceName +
+                       "' in the assembly: " + assembly.FullName);
+
+                    return stream.ReadAllBytes();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Reading embedded resource failed: " + resourceName + Environment.NewLine + ex);
+                Debug.WriteLine("Available resources:\r\n" + assembly.GetManifestResourceNames().ToLinesString());
+                throw;
+            }
+        }
+
+        /// <param name="rootNamespace">The default namespace of your Visual Studio project.</param>
+        /// <param name="fileRelativePath">For example MyRootFolder\MySubFolder\MyFile.cs (this is case sensitive).</param>
+        public static string ReadEmbeddedTextFile(this Assembly assembly, string rootNamespace, string fileRelativePath)
         {
             var resourceName = assembly.GetEmbeddedResourceName(rootNamespace, fileRelativePath);
             return assembly.ReadEmbeddedTextFile(resourceName);
         }
 
-        public static Task<string> ReadEmbeddedTextFile(this Assembly assembly, string resourceName)
+        public static string ReadEmbeddedTextFile(this Assembly assembly, string resourceName)
         {
             return assembly.ReadEmbeddedTextFile(resourceName, Encoding.UTF8);
         }
 
-        public static async Task<string> ReadEmbeddedTextFile(this Assembly assembly, string resourceName,
+        public static string ReadEmbeddedTextFile(this Assembly assembly, string resourceName,
            Encoding encoding)
         {
-            return encoding.GetString(await assembly.ReadEmbeddedResource(resourceName));
+            return encoding.GetString(assembly.ReadEmbeddedResource(resourceName));
         }
     }
 }

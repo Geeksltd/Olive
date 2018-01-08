@@ -15,7 +15,7 @@
 
         public static async Task<RangeFileContentResult> From(Blob blob)
         {
-            var data = await blob.GetFileData();
+            var data = await blob.GetFileDataAsync();
             var mime = blob.GetMimeType();
             return new RangeFileContentResult(data, mime, blob.FileName, LocalTime.Now);
         }

@@ -2140,7 +2140,7 @@ namespace LumenWorks.Framework.IO.Csv
         /// <summary>
         /// Contains the disposed status flag.
         /// </summary>
-        bool isDisposed = false;
+        bool isDisposed;
 
         /// <summary>
         /// Contains the locking object for multi-threading purpose.

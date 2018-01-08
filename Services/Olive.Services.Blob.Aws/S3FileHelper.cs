@@ -172,7 +172,7 @@ namespace Olive.Services.BlobAws
             {
                 BucketName = AWSInfo.DocumentsS3BucketName,
                 Key = GetKey(document),
-                InputStream = new MemoryStream(await document.GetFileData())
+                InputStream = new MemoryStream(await document.GetFileDataAsync())
             };
         }
     }

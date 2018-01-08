@@ -123,6 +123,7 @@ namespace Olive.Services.Testing
                 {
                     await response.EndWith("false");
                 }
+
                 result = true;
             }
             else if (command.IsAnyOf("start", "run", "ran", "cancel", "restart"))
@@ -167,6 +168,7 @@ namespace Olive.Services.Testing
                     LocalTime.RedefineNow(() => { return date.Add(DateTime.Now.Subtract(trueOrigin)); });
                     await response.EndWith(date.ToString("yyyy-MM-dd @ HH:mm:ss"));
                 }
+
                 result = true;
             }
             else if (command == "remove_snapshot")

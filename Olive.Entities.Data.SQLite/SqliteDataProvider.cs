@@ -1,9 +1,9 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text;
+using Microsoft.Data.Sqlite;
 
 namespace Olive.Entities.Data.SQLite
 {
@@ -78,6 +78,4 @@ namespace Olive.Entities.Data.SQLite
             return r.ToString();
         }
     }
-
-
 }

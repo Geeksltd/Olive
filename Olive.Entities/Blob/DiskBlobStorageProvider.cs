@@ -14,18 +14,18 @@ namespace Olive.Entities
 
         protected virtual AsyncLock GetAsyncLock(string key) => StringKeyAsyncLock.GetOrAdd(key, x => new AsyncLock());
 
-        public virtual async Task Save(Blob blob)
+        public virtual async Task SaveAsync(Blob blob)
         {
-            var fileDataToSave = await blob.GetFileData(); // Because file data will be lost in delete.
+            var fileDataToSave = await blob.GetFileDataAsync(); // Because file data will be lost in delete.
 
             if (File.Exists(blob.LocalPath))
             {
                 using (await GetAsyncLock(blob.LocalPath).Lock())
                 {
                     var data = await File.ReadAllBytesAsync(blob.LocalPath);
-                    if (data == null) await Delete(blob);
-                    else if (data.SequenceEqual(await blob.GetFileData())) return; // Nothing changed.
-                    else await Delete(blob);
+                    if (data == null) await DeleteAsync(blob);
+                    else if (data.SequenceEqual(await blob.GetFileDataAsync())) return; // Nothing changed.
+                    else await DeleteAsync(blob);
                 }
             }
 
@@ -35,7 +35,7 @@ namespace Olive.Entities
             }
         }
 
-        public virtual async Task Delete(Blob blob)
+        public virtual async Task DeleteAsync(Blob blob)
         {
             if (!Directory.Exists(blob.LocalFolder)) Directory.CreateDirectory(blob.LocalFolder);
 
@@ -55,7 +55,7 @@ namespace Olive.Entities
             await Task.WhenAll(tasks);
         }
 
-        public virtual async Task<byte[]> Load(Blob blob)
+        public virtual async Task<byte[]> LoadAsync(Blob blob)
         {
             using (await GetAsyncLock(blob.LocalPath).Lock())
             {
@@ -66,7 +66,7 @@ namespace Olive.Entities
             return new byte[0];
         }
 
-        public virtual Task<bool> FileExists(Blob blob)
+        public virtual Task<bool> FileExistsAsync(Blob blob)
         {
             var exists = blob.LocalPath.HasValue() && File.Exists(blob.LocalPath);
             return Task.FromResult(exists);
