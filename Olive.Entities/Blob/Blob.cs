@@ -246,6 +246,11 @@ namespace Olive.Entities
         /// </summary>
         public Task<Blob> CloneAsync() => CloneAsync(attach: false, @readonly: false);
 
+        /// <summary>
+        /// Creates a clone of this blob.
+        /// </summary>
+        public Blob Clone() => Task.Factory.RunSync(() => CloneAsync(attach: false, @readonly: false));
+
         public async Task<Blob> CloneAsync(bool attach, bool @readonly)
         {
             if (!attach && @readonly) throw new ArgumentException("readonly can be set to true only when attaching.");
