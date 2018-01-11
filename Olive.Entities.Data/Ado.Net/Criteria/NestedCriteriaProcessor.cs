@@ -16,17 +16,39 @@ namespace Olive.Entities.Data
             {
                 var part = parts[i];
                 Property = declaringType.GetProperty(part);
-                if (i == parts.Length - 1) break;
+                if (i == parts.Length - 1)
+                {
+                    // Last one is the actual end property.
+                    FixId();
+                    break;
+                }
+                else
+                {
+                    var provider = Database.Instance.GetProvider(declaringType);
 
-                var provider = Database.Instance.GetProvider(declaringType);
+                    var mappedSubquery = provider.MapSubquery(part + ".*", TableAlias);
 
-                var mappedSubquery = provider.MapSubquery(part + ".*", TableAlias);
+                    Queries.Add(new AssociationSubQuery(Property, mappedSubquery));
 
-                Queries.Add(new AssociationSubQuery(Property, mappedSubquery));
+                    declaringType = Property.PropertyType;
 
-                declaringType = Property.PropertyType;
-                TableAlias += "." + part;
+                    var propertyTableType = declaringType.GetProperty(parts[i + 1]).DeclaringType.Name;
+
+                    TableAlias += "." + part + "_" + propertyTableType;
+                }
             }
+        }
+
+        void FixId()
+        {
+            if (!Property.Name.EndsWith("Id")) return;
+            if (Property.PropertyType != typeof(Guid) && Property.PropertyType != typeof(Guid?)) return;
+
+            var entityProperty = Property.DeclaringType.GetProperty(Property.Name.TrimEnd(2));
+            if (entityProperty != null &&
+                entityProperty.PropertyType.IsA<IEntity>() &&
+                !entityProperty.Defines<CalculatedAttribute>())
+                Property = entityProperty;
         }
     }
 }

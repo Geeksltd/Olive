@@ -66,7 +66,6 @@ namespace Olive.Entities.Data
         public async Task<int> ExecuteNonQuery(string command, CommandType commandType, params IDataParameter[] @params)
         {
             using (new DatabaseContext(ConnectionString))
-                // System.Diagnostics.Trace.WriteLine(command);
                 return await Access.ExecuteNonQuery(command, commandType, @params);
         }
 
@@ -90,7 +89,6 @@ namespace Olive.Entities.Data
         public async Task<object> ExecuteScalar(string command, CommandType commandType, params IDataParameter[] @params)
         {
             using (new DatabaseContext(ConnectionString))
-                // System.Diagnostics.Trace.WriteLine(command);
                 return await Access.ExecuteScalar(command, commandType, @params);
         }
 
