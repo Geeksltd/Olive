@@ -54,23 +54,6 @@ namespace Olive
 
         public static async Task<List<T>> ToList<T>(this Task<IEnumerable<T>> list) => (await list).ToList();
 
-        public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
-        this Task<IEnumerable<TSource>> list,
-        Func<TSource, TResult> func)
-        {
-            var awaited = await list;
-            return awaited.Select(func);
-        }
-
-        public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
-          this Task<IEnumerable<TSource>> list,
-          Func<TSource, Task<TResult>> func)
-        {
-            var awaited = await list;
-            var resultTasks = awaited.Select(func);
-            return await Task.WhenAll(resultTasks);
-        }
-
         public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> list)
             => await Task.WhenAll(list);
     }
