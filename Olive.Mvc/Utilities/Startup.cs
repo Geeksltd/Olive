@@ -23,7 +23,8 @@ namespace Olive.Mvc
         protected virtual IViewLocationExpander GetViewLocationExpander() => new ViewLocationExpander();
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        // For more information on how to configure your application,
+        // visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
             services.InjectOliveDependencies();
@@ -41,11 +42,12 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(options =>
                 options.ViewLocationExpanders.Add(GetViewLocationExpander()));
 
-            AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies").AddCookie();
-
             services.ConfigureApplicationCookie(ConfigureApplicationCookie)
                 .AddDistributedMemoryCache() // Adds a default in-memory implementation of IDistributedCache.
                 .AddSession();
+
+            AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies")
+                .AddCookie(ConfigureApplicationCookie);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
