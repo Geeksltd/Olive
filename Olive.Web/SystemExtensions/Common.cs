@@ -329,7 +329,7 @@ namespace Olive.Web
             if (ids == null)
                 throw new TimeoutException($"The list with the key {key} is expired and removed from the session.");
 
-            return (await ids.Split('|').Select(async i => await Entity.Database.GetOrDefault<T>(i)).AwaitAll()).ExceptNull();
+            return (await ids.Split('|').SelectAsync(i => Entity.Database.GetOrDefault<T>(i))).ExceptNull();
         }
 
         /// <summary>

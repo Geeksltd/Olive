@@ -130,7 +130,7 @@ namespace Olive.Mvc
 
         public static Task<IEnumerable<T>> GetList<T>(this HttpRequest request, string key, char separator = ',') where T : IEntity
         {
-            return request.Param(key).OrEmpty().Split(separator).Trim().Select(x => Entity.Database.Get<T>(x)).AwaitAll();
+            return request.Param(key).OrEmpty().Split(separator).Trim().SelectAsync(x => Entity.Database.Get<T>(x));
         }
 
         public static Dictionary<string, string> GetRequestParameters(this ActionContext actionContext)

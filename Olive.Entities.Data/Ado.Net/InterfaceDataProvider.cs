@@ -63,7 +63,7 @@ namespace Olive.Entities.Data
         public async Task<int> Count(IDatabaseQuery query)
         {
             var providers = FindProviders();
-            var results = await providers.Select(x => x.Count(query.CloneFor(x.EntityType))).AwaitAll();
+            var results = await providers.SelectAsync(x => x.Count(query.CloneFor(x.EntityType)));
             return results.Sum();
         }
 
@@ -76,7 +76,7 @@ namespace Olive.Entities.Data
                 throw new Exception("OrderBy() is not allowed when querying based on Interfaces.");
 
             var providers = FindProviders();
-            var results = await providers.Select(x => x.GetList(query.CloneFor(x.EntityType))).AwaitAll();
+            var results = await providers.SelectAsync(x => x.GetList(query.CloneFor(x.EntityType)));
             return results.SelectMany(x => x);
         }
 

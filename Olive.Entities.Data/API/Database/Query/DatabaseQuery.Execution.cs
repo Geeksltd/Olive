@@ -71,10 +71,10 @@
             if (NeedsTypeResolution())
             {
                 var queries = ResolveDataProviders().Select(p => p.GetList(this));
-                result = (await queries.AwaitAll()).SelectMany(x => x).ToList();
+                result = await queries.SelectManyAsync(x => x).ToList();
             }
             else
-                result = (await Provider.GetList(this)).ToList();
+                result = await Provider.GetList(this).ToList();
 
             if (OrderByParts.None())
             {

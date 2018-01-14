@@ -14,8 +14,41 @@
         public RequiredUnlessDeletingAttribute(string deletingProperty = "MustBeDeleted") =>
             DeletingProperty = deletingProperty;
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext) =>
-            UnlessDeletingAttributeChecker.IsValid(base.IsValid, value, validationContext, DeletingProperty);
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            return UnlessDeleting.IsValid(base.IsValid, value, validationContext, DeletingProperty);
+        }
+    }
+
+    public class RangeUnlessDeletingAttribute : RangeAttribute
+    {
+        string DeletingProperty;
+
+        /// <summary>
+        /// Check if the object is going to be deleted skip the validation.
+        /// </summary>
+        /// <param name="deletingProperty">The boolean property`s name which shows the object will be deleted.</param>
+        public RangeUnlessDeletingAttribute(double minimum, double maximum, string deletingProperty = "MustBeDeleted")
+            : base(minimum, maximum) => DeletingProperty = deletingProperty;
+
+        /// <summary>
+        /// Check if the object is going to be deleted skip the validation.
+        /// </summary>
+        /// <param name="deletingProperty">The boolean property`s name which shows the object will be deleted.</param>
+        public RangeUnlessDeletingAttribute(int minimum, int maximum, string deletingProperty = "MustBeDeleted")
+            : base(minimum, maximum) => DeletingProperty = deletingProperty;
+
+        /// <summary>
+        /// Check if the object is going to be deleted skip the validation.
+        /// </summary>
+        /// <param name="deletingProperty">The boolean property`s name which shows the object will be deleted.</param>
+        public RangeUnlessDeletingAttribute(Type type, string minimum, string maximum, string deletingProperty = "MustBeDeleted")
+            : base(type, minimum, maximum) => DeletingProperty = deletingProperty;
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            return UnlessDeleting.IsValid(base.IsValid, value, validationContext, DeletingProperty);
+        }
     }
 
     public class StringLengthUnlessDeletingAttribute : StringLengthAttribute
@@ -30,24 +63,23 @@
             DeletingProperty = deletingProperty;
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext) =>
-            UnlessDeletingAttributeChecker.IsValid(base.IsValid, value, validationContext, DeletingProperty);
+            UnlessDeleting.IsValid(base.IsValid, value, validationContext, DeletingProperty);
     }
 
-    internal static class UnlessDeletingAttributeChecker
+    internal static class UnlessDeleting
     {
         public static ValidationResult IsValid(
-            Func<object, ValidationContext, ValidationResult> func,
+            Func<object, ValidationContext, ValidationResult> isValid,
             object value,
             ValidationContext validationContext,
-            string deletingProperty
-            )
+            string deletingProperty)
         {
             var property = validationContext.ObjectType.GetProperty(deletingProperty);
 
             if ((bool)property.GetValue(validationContext.ObjectInstance))
                 return ValidationResult.Success;
 
-            return func(value, validationContext);
+            return isValid(value, validationContext);
         }
     }
 }

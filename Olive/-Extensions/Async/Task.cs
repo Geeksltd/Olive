@@ -54,6 +54,8 @@ namespace Olive
 
         public static async Task<List<T>> ToList<T>(this Task<IEnumerable<T>> list) => (await list).ToList();
 
+        public static async Task<T[]> ToArray<T>(this Task<IEnumerable<T>> list) => (await list).ToArray();
+
         public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> list)
             => await Task.WhenAll(list);
     }

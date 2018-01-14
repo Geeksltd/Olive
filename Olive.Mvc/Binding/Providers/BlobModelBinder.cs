@@ -36,8 +36,7 @@ namespace Olive.Mvc
             else
                 return await value.Split('|').Trim()
                     .Where(x => x.StartsWith("file:"))
-                    .Select(async id => await new FileUploadService().Bind(id))
-                    .AwaitAll();
+                    .SelectAsync(id => new FileUploadService().Bind(id));
         }
     }
 }
