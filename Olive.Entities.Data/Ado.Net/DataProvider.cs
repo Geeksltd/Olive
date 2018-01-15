@@ -192,7 +192,7 @@ namespace Olive.Entities.Data
         /// </summary>
         public async Task<IEntity> Get(object objectID)
         {
-            var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("Id")} = @ID";
+            var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("ID")} = @ID";
 
             using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", objectID)))
             {
