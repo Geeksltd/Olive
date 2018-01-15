@@ -16,88 +16,46 @@ namespace Olive
     partial class OliveExtensions
     {
         public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
-        this Task<IEnumerable<TSource>> list, Func<TSource, TResult> func)
-        {
-            var awaited = await list;
-            return awaited.Select(func);
-        }
+          this Task<IEnumerable<TSource>> list, Func<TSource, TResult> func)
+            => (await list).Select(func);
 
         public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IEnumerable<TSource>> list, Func<TSource, Task<TResult>> func)
-        {
-            var awaited = await list;
-            var resultTasks = awaited.Select(func);
-            return await Task.WhenAll(resultTasks);
-        }
+            => await (await list).Select(func).AwaitAll();
 
         public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> list, Func<TSource, IEnumerable<TResult>> func)
-        {
-            var awaited = await list;
-            return awaited.SelectMany(func);
-        }
+            => (await list).SelectMany(func);
 
         public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> list, Func<TSource, IEnumerable<Task<TResult>>> func)
-        {
-            var awaited = await list;
-            var resultTasks = awaited.SelectMany(func);
-            return await Task.WhenAll(resultTasks);
-        }
+            => await (await list).SelectMany(func).AwaitAll();
 
         public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
-         this Task<IEnumerable<TSource>> list, Func<TSource, Task<IEnumerable<TResult>>> func)
-        {
-            var awaited = await list;
-            var resultTasks = awaited.Select(func);
-            var awaitedResults = await Task.WhenAll(resultTasks);
-            return awaitedResults.SelectMany(x => x);
-        }
+          this Task<IEnumerable<TSource>> list, Func<TSource, Task<IEnumerable<TResult>>> func)
+            => await (await list).Select(func).AwaitAll().SelectMany(x => x);
 
         public static async Task<IEnumerable<TSource>> Except<TSource, TResult>(
           this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
-        {
-            var awaited = await list;
-            return awaited.Except(func);
-        }
+            => (await list).Except(func);
 
-        public static async Task<IEnumerable<TResult>> Cast<TSource, TResult>(
-        this Task<IEnumerable<TSource>> list)
-        {
-            var awaited = await list;
-            return awaited.Cast<TResult>();
-        }
+        public static async Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IEnumerable<TSource>> list)
+            => (await list).Cast<TResult>();
 
         public static async Task<IEnumerable<TSource>> Concat<TSource, TResult>(
-        this Task<IEnumerable<TSource>> list,
-        IEnumerable<TSource> second)
-        {
-            var awaited = await list;
-            return awaited.Concat(second);
-        }
+          this Task<IEnumerable<TSource>> list, IEnumerable<TSource> second)
+            => (await list).Concat(second);
 
         public static async Task<IEnumerable<TSource>> Distinct<TSource, TResult>(
-        this Task<IEnumerable<TSource>> list,
-        Func<TSource, TResult> func)
-        {
-            var awaited = await list;
-            return awaited.Distinct(func);
-        }
+          this Task<IEnumerable<TSource>> list, Func<TSource, TResult> func)
+            => (await list).Distinct(func);
 
         public static async Task<TSource> First<TSource, TResult>(
-        this Task<IEnumerable<TSource>> list,
-        Func<TSource, bool> func)
-        {
-            var awaited = await list;
-            return awaited.First(func);
-        }
+          this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
+            => (await list).First(func);
 
         public static async Task<TSource> FirstOrDefault<TSource, TResult>(
-        this Task<IEnumerable<TSource>> list,
-        Func<TSource, bool> func)
-        {
-            var awaited = await list;
-            return awaited.FirstOrDefault(func);
-        }
+          this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
+            => (await list).FirstOrDefault(func);
     }
 }
