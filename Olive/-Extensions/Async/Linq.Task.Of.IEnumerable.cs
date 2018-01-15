@@ -60,5 +60,44 @@ namespace Olive
             var awaited = await list;
             return awaited.Except(func);
         }
+
+        public static async Task<IEnumerable<TResult>> Cast<TSource, TResult>(
+        this Task<IEnumerable<TSource>> list)
+        {
+            var awaited = await list;
+            return awaited.Cast<TResult>();
+        }
+
+        public static async Task<IEnumerable<TSource>> Concat<TSource, TResult>(
+        this Task<IEnumerable<TSource>> list,
+        IEnumerable<TSource> second)
+        {
+            var awaited = await list;
+            return awaited.Concat(second);
+        }
+
+        public static async Task<IEnumerable<TSource>> Distinct<TSource, TResult>(
+        this Task<IEnumerable<TSource>> list,
+        Func<TSource, TResult> func)
+        {
+            var awaited = await list;
+            return awaited.Distinct(func);
+        }
+
+        public static async Task<TSource> First<TSource, TResult>(
+        this Task<IEnumerable<TSource>> list,
+        Func<TSource, bool> func)
+        {
+            var awaited = await list;
+            return awaited.First(func);
+        }
+
+        public static async Task<TSource> FirstOrDefault<TSource, TResult>(
+        this Task<IEnumerable<TSource>> list,
+        Func<TSource, bool> func)
+        {
+            var awaited = await list;
+            return awaited.FirstOrDefault(func);
+        }
     }
 }
