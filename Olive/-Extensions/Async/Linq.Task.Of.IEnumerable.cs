@@ -54,6 +54,11 @@ namespace Olive
             return awaitedResults.SelectMany(x => x);
         }
 
-      
+        public static async Task<IEnumerable<TSource>> Except<TSource, TResult>(
+          this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
+        {
+            var awaited = await list;
+            return awaited.Except(func);
+        }
     }
 }
