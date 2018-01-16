@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -19,8 +18,6 @@ namespace Olive.Web
         const int HTTPS_PORT_NUMBER = 443;
 
         const int MOVED_PERMANENTLY_STATUS_CODE = 301;
-
-        const int DEFAULT_DOWNLOAD_TIMEOUT = 60000;
 
         static readonly Range<uint>[] PrivateIpRanges = new[] {
              //new Range<uint>(0u, 50331647u),              // 0.0.0.0 to 2.255.255.255
@@ -387,89 +384,6 @@ namespace Olive.Web
         /// </summary>
         public static string GetAbsoluteUrl(this HttpRequest request, string relativeUrl) =>
             request.GetWebsiteRoot() + relativeUrl.TrimStart("/");
-
-        /// <summary>
-        /// Downloads the text in this URL.
-        /// </summary>
-        public static async Task<string> Download(this Uri url, string cookieValue = null, int timeOut = DEFAULT_DOWNLOAD_TIMEOUT)
-        {
-            var request = (HttpWebRequest)WebRequest.Create(url);
-
-            request.Timeout = timeOut;
-
-            if (cookieValue.HasValue())
-            {
-                request.CookieContainer = new CookieContainer();
-                request.CookieContainer.SetCookies(url, cookieValue.OrEmpty());
-            }
-
-            using (var response = await request.GetResponseAsync())
-            {
-                using (var stream = response.GetResponseStream())
-                    return await stream.ReadAllText();
-            }
-        }
-
-        /// <summary>
-        /// Downloads the data in this URL.
-        /// </summary>
-        public static async Task<byte[]> DownloadData(this Uri url, string cookieValue = null, int timeOut = DEFAULT_DOWNLOAD_TIMEOUT)
-        {
-            var request = (HttpWebRequest)HttpWebRequest.Create(url);
-
-            request.Timeout = timeOut;
-
-            if (cookieValue.HasValue())
-            {
-                request.CookieContainer = new CookieContainer();
-                request.CookieContainer.SetCookies(url, cookieValue.OrEmpty());
-            }
-
-            using (var response = await request.GetResponseAsync())
-            {
-                using (var stream = response.GetResponseStream())
-                    return await stream.ReadAllBytesAsync();
-            }
-        }
-
-        /// <summary>
-        /// Downloads the data in this URL.
-        /// </summary>
-        public static async Task<Blob> DownloadBlob(this Uri url, string cookieValue = null, int timeOut = DEFAULT_DOWNLOAD_TIMEOUT)
-        {
-            var fileName = "File.Unknown";
-
-            if (url.IsFile)
-                fileName = url.ToString().Split('/').Last();
-
-            return new Blob(await url.DownloadData(cookieValue, timeOut), fileName);
-        }
-
-        /// <summary>
-        /// Reads all text in this stream as UTF8.
-        /// </summary>
-        public static async Task<string> ReadAllText(this Stream response)
-        {
-            var result = "";
-
-            // Pipes the stream to a higher level stream reader with the required encoding format.
-            using (var readStream = new StreamReader(response, Encoding.UTF8))
-            {
-                var read = new char[256];
-                // Reads 256 characters at a time.
-                var count = await readStream.ReadAsync(read, 0, read.Length);
-
-                while (count > 0)
-                {
-                    // Dumps the 256 characters on a string and displays the string to the console.
-                    result += new string(read, 0, count);
-
-                    count = await readStream.ReadAsync(read, 0, read.Length);
-                }
-            }
-
-            return result;
-        }
 
         /// <summary>
         /// Gets the Html Encoded version of this text.

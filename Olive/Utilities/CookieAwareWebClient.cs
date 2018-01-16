@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace Olive.Web
+namespace Olive
 {
     public class CookieAwareWebClient : WebClient
     {
