@@ -300,6 +300,23 @@ namespace Olive
             }
         }
 
+        /// <summary>
+        /// Performs an action for all items within the list.
+        /// It will provide the index of the item in the list to the action handler as well.
+        /// </summary>        
+        public static async Task DoAsync<T>(this IEnumerable<T> list, Func<T, int, Task> action)
+        {
+            if (list == null) return;
+
+            var index = 0;
+
+            foreach (var item in list)
+            {
+                await (action?.Invoke(item, index) ?? Task.CompletedTask);
+                index++;
+            }
+        }
+
         public delegate void ItemHandler<in T>(T arg);
 
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> list, T item) => list.Concat(new T[] { item });
