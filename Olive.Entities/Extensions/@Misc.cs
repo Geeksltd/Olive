@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Olive.Entities
 {
@@ -20,6 +22,19 @@ namespace Olive.Entities
             if (baseType == typeof(Entity<string>)) return objectType;
 
             return GetRootEntityType(baseType);
+        }
+
+        /// <summary>
+        /// Downloads the data in this URL.
+        /// </summary>
+        public static async Task<Blob> DownloadBlob(this Uri url, string cookieValue = null, int timeOutSeconds = 60)
+        {
+            var fileName = "File.Unknown";
+
+            if (url.IsFile)
+                fileName = url.ToString().Split('/').Last();
+
+            return new Blob(await url.DownloadData(cookieValue, timeOutSeconds), fileName);
         }
     }
 }

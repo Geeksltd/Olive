@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Olive.Entities;
 using Olive.Services.Email;
-using Olive.Services.Integration;
 using Olive.Web;
 
 namespace Olive.Services.Testing
@@ -175,21 +173,21 @@ namespace Olive.Services.Testing
             {
                 Snapshot.RemoveSnapshot(request.Param("name"));
             }
-            else if (command == "inject.service.response")
-            {
-                var serviceType = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(a => a.GetTypes())
-                    .Where(x => x.InhritsFrom(typeof(IntegrationService)))
-                    .SingleOrDefault(x => x.Name == request.Param("service"));
+            // else if (command == "inject.service.response")
+            // {
+            //    var serviceType = AppDomain.CurrentDomain.GetAssemblies()
+            //        .SelectMany(a => a.GetTypes())
+            //        .Where(x => x.InhritsFrom(typeof(IntegrationService)))
+            //        .SingleOrDefault(x => x.Name == request.Param("service"));
 
-                if (serviceType == null)
-                    throw new Exception("Cannot find a class named " + request.Param("service") + " in the currently loaded assemblies, which inherits from IntegrationService<,>.");
+            //    if (serviceType == null)
+            //        throw new Exception("Cannot find a class named " + request.Param("service") + " in the currently loaded assemblies, which inherits from IntegrationService<,>.");
 
-                new Thread(new ThreadStart(async () =>
-                await IntegrationTestInjector.Inject(serviceType, request.Param("request"), request.Param("response"))))
-                { IsBackground = true }
-               .Start();
-            }
+            //    new Thread(new ThreadStart(async () =>
+            //    await IntegrationTestInjector.Inject(serviceType, request.Param("request"), request.Param("response"))))
+            //    { IsBackground = true }
+            //   .Start();
+            // }
 
             return result;
         }

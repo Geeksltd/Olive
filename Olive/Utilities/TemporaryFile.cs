@@ -31,8 +31,7 @@ namespace Olive
             get
             {
                 var folder = TemporaryFileFolder;
-                if (Directory.Exists(folder) == false)
-                    Directory.CreateDirectory(folder);
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
                 var filename = ID + "." + Extension.Trim('.');
                 return folder + "\\" + filename;

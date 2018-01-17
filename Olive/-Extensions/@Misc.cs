@@ -100,32 +100,6 @@ namespace Olive
         }
 
         /// <summary>
-        /// Will set the Position to zero, and then copy all bytes to a memory stream's buffer.
-        /// </summary>
-        public static byte[] ReadAllBytes(this Stream stream)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                stream.Position = 0;
-                stream.CopyTo(memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Will set the Position to zero, and then copy all bytes to a memory stream's buffer.
-        /// </summary>
-        public static async Task<byte[]> ReadAllBytesAsync(this Stream stream)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                stream.Position = 0;
-                await stream.CopyToAsync(memoryStream);
-                return memoryStream.ToArray();
-            }
-        }
-
-        /// <summary>
         /// Returns a nullable value wrapper object if this value is the default for its type.
         /// </summary>
         public static T? NullIfDefault<T>(this T @value, T defaultValue = default(T)) where T : struct

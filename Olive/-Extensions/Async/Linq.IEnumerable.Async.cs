@@ -31,5 +31,23 @@ namespace Olive
         public static Task<IEnumerable<TResult>> SelectManyAsync<TSource, TResult>(
           this IEnumerable<TSource> list, Func<TSource, IEnumerable<Task<TResult>>> func)
             => list.SelectMany(func).AwaitAll();
+
+        public static Task<IEnumerable<T>> ExceptAsync<T>(this IEnumerable<T> list, Func<T, Task<bool>> criteria)
+           => list.WhereAsync(i => criteria(i));
+
+        public static async Task<IEnumerable<T>> WhereAsync<T>(
+          this IEnumerable<T> list, Func<T, Task<bool>> predicate)
+        {
+            var tasks = list.Select(x => new
+            {
+                Predicate = predicate(x),
+                Value = x
+            }).ToArray();
+
+            // Run them in parallel
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+
+            return tasks.Where(x => x.Predicate.Result).Select(x => x.Value);
+        }
     }
 }

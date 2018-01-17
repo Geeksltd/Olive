@@ -1392,5 +1392,41 @@ namespace Olive
 
             return text + expression;
         }
+
+        /// <summary>
+        /// Gets the Html Encoded version of this text.
+        /// </summary>
+        public static string HtmlEncode(this string text)
+        {
+            if (text.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.HtmlEncode(text);
+        }
+
+        /// <summary>
+        /// Gets the Html Decoded version of this text.
+        /// </summary>
+        public static string HtmlDecode(this string text)
+        {
+            if (text.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.HtmlDecode(text);
+        }
+
+        /// <summary>
+        /// Gets the Url Encoded version of this text.
+        /// </summary>
+        public static string UrlEncode(this string text)
+        {
+            if (text.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.UrlEncode(text);
+        }
+
+        /// <summary>
+        /// Gets the Url Decoded version of this text.
+        /// </summary>
+        public static string UrlDecode(this string text)
+        {
+            if (text.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.UrlDecode(text);
+        }
     }
 }

@@ -7,6 +7,7 @@
  * They are intended to enable chaining of async linq calls.
  */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -156,5 +157,11 @@ namespace Olive
 
         public static async Task<TResult> Min<TSource, TResult>(
         this Task<IEnumerable<TSource>> list, Func<TSource, TResult> func) => (await list).Min(func);
+
+        public static async Task<IEnumerable<TResult>> Cast<TResult>(this Task<IEnumerable> list)
+            => (await list).Cast<TResult>();
+
+        public static async Task<IEnumerable<TResult>> OfType<TResult>(this Task<IEnumerable> list)
+            => (await list).OfType<TResult>();
     }
 }

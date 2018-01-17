@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive", "Olive\Olive.csproj", "{EF844D85-7C45-4725-B033-DBC6111C5F7F}"
 EndProject
@@ -32,8 +32,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.PDF", "Services\Olive.Services.PDF\Olive.Services.PDF.csproj", "{5B7D4B8F-66B2-4A74-A42F-37298CF1878F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.SMS", "Services\Olive.Services.SMS\Olive.Services.SMS.csproj", "{2CCA47DA-038F-4C63-8E7F-9F4A9296BB44}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.Integration", "Services\Olive.Services.Integration\Olive.Services.Integration.csproj", "{0199C138-414E-46AF-8898-3724D3331F4C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.Drawing", "Services\Olive.Services.Drawing\Olive.Services.Drawing.csproj", "{55390C42-F8DE-4089-B079-74E18714236D}"
 EndProject
@@ -77,53 +75,18 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Olive.MvcJs", "Olive.MvcJs\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "61844"
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_61844"
-		Debug.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_61844"
-		Release.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "61844"
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_61844"
-		Debug.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_61844"
-		Release.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "61844"
 		SlnRelativePath = "Olive.MvcJs\"
 	EndProjectSection
 EndProject
-
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Entities.Data.SQLite", "Olive.Entities.Data.SQLite\Olive.Entities.Data.SQLite.csproj", "{EE70F844-B284-42D1-8565-45B153727A1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SQLite", "Olive.Entities.Data.SQLite\Olive.Entities.Data.SQLite.csproj", "{EE70F844-B284-42D1-8565-45B153727A1B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.PushNotification", "Services\Olive.Services.PushNotification\Olive.Services.PushNotification.csproj", "{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security", "Olive.Security\Olive.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Olive.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiClient", "Olive.ApiClient\Olive.ApiClient.csproj", "{3CFA0862-652F-493B-B06F-6873A0B52271}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -179,10 +142,6 @@ Global
 		{2CCA47DA-038F-4C63-8E7F-9F4A9296BB44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CCA47DA-038F-4C63-8E7F-9F4A9296BB44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CCA47DA-038F-4C63-8E7F-9F4A9296BB44}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0199C138-414E-46AF-8898-3724D3331F4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0199C138-414E-46AF-8898-3724D3331F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0199C138-414E-46AF-8898-3724D3331F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0199C138-414E-46AF-8898-3724D3331F4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55390C42-F8DE-4089-B079-74E18714236D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55390C42-F8DE-4089-B079-74E18714236D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55390C42-F8DE-4089-B079-74E18714236D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -230,12 +189,10 @@ Global
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F}.Release|Any CPU.Build.0 = Debug|Any CPU
-
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE70F844-B284-42D1-8565-45B153727A1B}.Release|Any CPU.Build.0 = Release|Any CPU
-
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -248,7 +205,10 @@ Global
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0019E42E-F830-439C-9911-DF36142BACB0}.Release|Any CPU.Build.0 = Release|Any CPU
-
+		{3CFA0862-652F-493B-B06F-6873A0B52271}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CFA0862-652F-493B-B06F-6873A0B52271}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CFA0862-652F-493B-B06F-6873A0B52271}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CFA0862-652F-493B-B06F-6873A0B52271}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -262,7 +222,6 @@ Global
 		{5EE54E7F-07C7-4966-9EFA-5E2252206B77} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{5B7D4B8F-66B2-4A74-A42F-37298CF1878F} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{2CCA47DA-038F-4C63-8E7F-9F4A9296BB44} = {943E7871-2EEA-4C97-857B-16443CB240E6}
-		{0199C138-414E-46AF-8898-3724D3331F4C} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{55390C42-F8DE-4089-B079-74E18714236D} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{816FFC81-38E0-442C-8236-742551AC8AFC} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{E66479DB-792B-4A2F-AA03-DEAAB128CE94} = {943E7871-2EEA-4C97-857B-16443CB240E6}

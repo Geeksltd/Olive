@@ -20,6 +20,12 @@ namespace Olive
             return ToString(list.Cast<object>(), seperator);
         }
 
+        public static async Task<string> ToString(this Task<IEnumerable> list, string seperator)
+        {
+            if (list == null) return "{NULL}";
+            return (await list)?.ToString(seperator);
+        }
+
         public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator, string lastSeperator) =>
             list.Select(i => format.FormatWith(i)).ToString(seperator, lastSeperator);
 
@@ -30,10 +36,11 @@ namespace Olive
 
         public static bool Any<T>(this IEnumerable<T> list, Func<T, int, bool> predicate) => list.Any(predicate);
 
-        public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator) =>
-            list.Select(i => format.FormatWith(i)).ToString(seperator);
+        public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator)
+            => list.Select(i => format.FormatWith(i)).ToString(seperator);
 
-        public static string ToString<T>(this IEnumerable<T> list, string seperator) => ToString(list, seperator, seperator);
+        public static string ToString<T>(this IEnumerable<T> list, string seperator)
+            => ToString(list, seperator, seperator);
 
         public static string ToString<T>(this IEnumerable<T> list, string seperator, string lastSeperator)
         {
@@ -41,7 +48,7 @@ namespace Olive
 
             var items = list.Cast<object>().ToArray();
 
-            for (int i = 0; i < items.Length; i++)
+            for (var i = 0; i < items.Length; i++)
             {
                 var item = items[i];
 
@@ -296,6 +303,23 @@ namespace Olive
             foreach (var item in list)
             {
                 action?.Invoke(item, index);
+                index++;
+            }
+        }
+
+        /// <summary>
+        /// Performs an action for all items within the list.
+        /// It will provide the index of the item in the list to the action handler as well.
+        /// </summary>        
+        public static async Task DoAsync<T>(this IEnumerable<T> list, Func<T, int, Task> action)
+        {
+            if (list == null) return;
+
+            var index = 0;
+
+            foreach (var item in list)
+            {
+                await (action?.Invoke(item, index) ?? Task.CompletedTask);
                 index++;
             }
         }
