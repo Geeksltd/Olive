@@ -47,7 +47,7 @@ namespace Olive
             // Run them in parallel
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Where(x => !x.Predicate.Result).Select(x => x.Value);
+            return tasks.Where(x => x.Predicate.Result).Select(x => x.Value);
         }
     }
 }
