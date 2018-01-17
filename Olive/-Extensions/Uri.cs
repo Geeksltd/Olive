@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -9,6 +11,9 @@ namespace Olive
 {
     partial class OliveExtensions
     {
+        const int HTTP_PORT_NUMBER = 80;
+        const int HTTPS_PORT_NUMBER = 443;
+
         /// <summary>
         /// Downloads the text in this URL.
         /// </summary>
@@ -95,5 +100,36 @@ namespace Olive
                 return await client.Post(url.ToString(), postData);
             }
         }
+
+        /// <summary>
+        /// Removes all query string parameters of this Url and instead adds the specified ones.
+        /// </summary>
+        public static Uri ReplaceQueryString(this Uri baseUrl, Dictionary<string, string> queryStringDictionary)
+        {
+            var r = new StringBuilder();
+
+            r.Append(baseUrl.Scheme);
+            r.Append("://");
+            r.Append(baseUrl.Host);
+
+            if (baseUrl.Port != HTTP_PORT_NUMBER && baseUrl.Port != HTTPS_PORT_NUMBER) r.Append(":" + baseUrl.Port);
+            r.Append(baseUrl.AbsolutePath);
+
+            var query = queryStringDictionary
+                .Select(a => "{0}={1}".FormatWith(a.Key, a.Value.UrlEncode())).ToString("&");
+
+            if (query.HasValue())
+            {
+                r.Append("?");
+                r.Append(query);
+            }
+
+            return new Uri(r.ToString());
+        }
+
+       
+
+       
+
     }
 }

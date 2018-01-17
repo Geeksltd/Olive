@@ -429,6 +429,18 @@ namespace Olive
             return null;
         }
 
-        internal static WeakReference<T> GetWeakReference<T>(this T item) where T : class => new WeakReference<T>(item);
+        internal static WeakReference<T> GetWeakReference<T>(this T item) where T : class
+            => new WeakReference<T>(item);
+
+        public static object GetValue(this MemberInfo classMember, object obj)
+        {
+            if (classMember is PropertyInfo asProp) return asProp.GetValue(obj);
+
+            if (classMember is FieldInfo asField) return asField.GetValue(obj);
+
+            if (classMember is MethodInfo asMethod) return asMethod.Invoke(obj, new object[0]);
+
+            throw new Exception("GetValue() is not implemented for " + classMember?.GetType().Name);
+        }
     }
 }
