@@ -25,6 +25,10 @@ public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
 ```
 - From Startup.cs remove RegisterServiceImplementors() and CreateReferenceData() methods
 
-## 17 JAn 2018
+## 17 Jan 2018
 - In *#Model\Project.cs* remove all project settings except **Name(...)** and **SolutionFile(...)**.
+- In Domain project delete Entities and DAL folders
 - Delete App_Start\ViewLocationExpander.cs
+
+## Up to 17 Jan 2018
+- Delete Services\RoleStore.cs and UserStore.cs
