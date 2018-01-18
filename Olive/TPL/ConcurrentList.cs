@@ -13,7 +13,7 @@ namespace Olive
         bool IsVirgin = true; // For performance 
         T FirstItem;
 
-        public ConcurrentList() { List = new List<T>(); }
+        public ConcurrentList() => List = new List<T>();
 
         public ConcurrentList(int capacity)
         {

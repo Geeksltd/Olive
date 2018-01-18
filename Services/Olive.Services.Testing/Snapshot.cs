@@ -132,7 +132,7 @@ namespace Olive.Services.Testing
             }
         }
 
-        public static void RemoveSnapshots()
+        public static Task RemoveSnapshots()
         {
             var sharedSnapshots = GetSnapshotsRoot(isSharedSnapshotMode: true);
             if (sharedSnapshots.Exists)
@@ -149,9 +149,10 @@ namespace Olive.Services.Testing
             }
 
             Context.Response.Redirect("~/");
+            return Task.CompletedTask;
         }
 
-        public static void RemoveSnapshot(string name)
+        public static Task RemoveSnapshot(string name)
         {
             var snapshotName = CreateSnapshotName(name);
 
@@ -164,6 +165,7 @@ namespace Olive.Services.Testing
                 DeleteDirectory(shardSnapshotDirectory);
 
             Context.Response.Redirect("~/");
+            return Task.CompletedTask;
         }
 
         public static void DeleteDirectory(DirectoryInfo targetDirectory)

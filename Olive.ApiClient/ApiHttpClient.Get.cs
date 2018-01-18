@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Olive.ApiClient
 {
@@ -20,11 +20,12 @@ namespace Olive.ApiClient
         {
             lock (CacheSyncLock)
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName<TResponse>()));
+                var directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName<TResponse>()));
                 if (directoryInfo.Exists)
                 {
                     return directoryInfo.GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
                 }
+
                 return null;
             }
         }
@@ -33,11 +34,12 @@ namespace Olive.ApiClient
         {
             lock (CacheSyncLock)
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName(modified)));
+                var directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName(modified)));
                 if (directoryInfo.Exists)
                 {
                     return directoryInfo.GetFiles();
                 }
+
                 return null;
             }
         }
@@ -107,7 +109,7 @@ namespace Olive.ApiClient
             if (request.Error != null && cacheChoice != ApiResponseCache.Refuse)
             {
                 result = GetCachedResponse<TResponse>(relativeUrl);
-                //if (HasValue(result) && cacheChoice == ApiResponseCache.AcceptButWarn)
+                // if (HasValue(result) && cacheChoice == ApiResponseCache.AcceptButWarn)
                 //    await Alert.Toast(StaleDataWarning);
             }
 

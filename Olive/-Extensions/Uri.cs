@@ -126,10 +126,5 @@ namespace Olive
 
             return new Uri(r.ToString());
         }
-
-       
-
-       
-
     }
 }

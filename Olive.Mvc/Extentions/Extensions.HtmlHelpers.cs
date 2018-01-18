@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Olive;
 using Olive.Entities;
-using Olive.Services.Testing;
 using Olive.Web;
 
 namespace Olive.Mvc
@@ -229,18 +228,6 @@ namespace Olive.Mvc
                 return html.Hidden("Startup.Actions", startupActions);
 
             return HtmlString.Empty;
-        }
-
-        public static HtmlString ResetDatabaseLink(this IHtmlHelper html)
-        {
-            if (!WebTestManager.IsTddExecutionMode()) return null;
-
-            if (html.Request().IsAjaxCall()) return null;
-
-            if (WebTestManager.IsSanityExecutionMode())
-                html.RunJavascript("page.skipNewWindows();");
-
-            return new HtmlString(WebTestManager.GetWebTestWidgetHtml(Context.Http.Request));
         }
 
         public static HtmlString RunJavascript(this IHtmlHelper html, string script, PageLifecycleStage stage = PageLifecycleStage.Init) =>

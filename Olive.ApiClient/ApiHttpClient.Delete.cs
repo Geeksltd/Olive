@@ -57,7 +57,6 @@ namespace Olive.ApiClient
             var result = default(TResponse);
             if (await request.Send<TEntity, TIdentifier>(entity)) result = request.ExtractResponse<TResponse>();
             return Tuple.Create(result, request);
-
         }
         static async Task<Tuple<TResponse, RequestInfo>> DoDelete<TResponse>(
          string relativeUrl,

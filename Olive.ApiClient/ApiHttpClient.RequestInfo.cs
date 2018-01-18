@@ -1,10 +1,10 @@
-using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Olive.ApiClient
 {
@@ -60,7 +60,6 @@ namespace Olive.ApiClient
             {
                 try
                 {
-
                     ResponseText = (await Task.Run(DoSend)).OrEmpty();
                     return true;
                 }
@@ -187,11 +186,11 @@ namespace Olive.ApiClient
 
                         if (System.Diagnostics.Debugger.IsAttached) errorMessage = $"Api call failed: {url}";
 
-                        //if (!await Device.Network.IsAvailable())
-                        //{
+                        // if (!await Device.Network.IsAvailable())
+                        // {
                         //    errorMessage = "Internet connection is unavailable.";
                         //    throw new NoNetWorkException(errorMessage, ex);
-                        //}
+                        // }
 
                         responseBody = await (ex as WebException)?.GetResponseBody();
 
@@ -205,7 +204,7 @@ namespace Olive.ApiClient
                             }
                             catch { /* No logging is needed */; }
                         }
-                        //We are doing this in cases that error is not serialized in the SeverError format
+                        // We are doing this in cases that error is not serialized in the SeverError format
                         else errorMessage = responseBody.Or(errorMessage);
 
                         ErrorAction.Apply(errorMessage);

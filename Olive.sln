@@ -88,6 +88,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Oli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiClient", "Olive.ApiClient\Olive.ApiClient.csproj", "{3CFA0862-652F-493B-B06F-6873A0B52271}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Services.Hangfire", "Olive.Services.Hangfire\Olive.Services.Hangfire.csproj", "{77A2DD2F-8249-4140-B9D4-7F80FECAB405}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,10 @@ Global
 		{3CFA0862-652F-493B-B06F-6873A0B52271}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CFA0862-652F-493B-B06F-6873A0B52271}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CFA0862-652F-493B-B06F-6873A0B52271}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77A2DD2F-8249-4140-B9D4-7F80FECAB405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77A2DD2F-8249-4140-B9D4-7F80FECAB405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77A2DD2F-8249-4140-B9D4-7F80FECAB405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77A2DD2F-8249-4140-B9D4-7F80FECAB405}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -231,6 +237,7 @@ Global
 		{52AF0D90-E65E-450C-877B-95B831B35694} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{E0D4B0CD-4351-400C-8952-11C2F1318C6F} = {EB802F83-E581-4C4B-9B16-7D00D66C9329}
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6} = {943E7871-2EEA-4C97-857B-16443CB240E6}
+		{77A2DD2F-8249-4140-B9D4-7F80FECAB405} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

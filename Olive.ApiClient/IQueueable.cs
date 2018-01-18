@@ -2,7 +2,6 @@
 
 namespace Olive.ApiClient
 {
-
     /// <summary>
     /// Represents an Queueable Entity with unique identifier.
     /// </summary>
