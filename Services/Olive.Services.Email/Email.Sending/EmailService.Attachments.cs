@@ -64,7 +64,7 @@ namespace Olive.Services.Email
             var reference = data.GetOrDefault("PropertyReference") as string;
             if (reference.HasValue())
             {
-                var blob = Blob.FromReference(reference);
+                var blob = await Blob.FromReference(reference);
                 return new Attachment(new MemoryStream(await blob.GetFileDataAsync()), blob.FileName);
             }
 

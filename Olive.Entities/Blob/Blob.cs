@@ -405,7 +405,7 @@ namespace Olive.Entities
         ///  This will return the blob object linked to the correct entity.
         /// </summary>
         /// <param name="reference">Expected format: Type/Id/Property.</param>
-        public static Blob FromReference(string reference)
+        public static async Task<Blob> FromReference(string reference)
         {
             var parts = reference.OrEmpty().Split('/');
             if (parts.Length != 3) throw new ArgumentException("Expected format is Type/ID/Property.");
@@ -418,9 +418,9 @@ namespace Olive.Entities
             var id = parts[1];
             var propertyName = parts.Last();
 
-            var entity = Entity.Database.GetOrDefault(id, type);
+            var entity = await Entity.Database.GetOrDefault(id, type);
             if (entity == null)
-                throw new ArgumentException($"Could not load an instance of '{parts.First()}' with the ID of '{id} from the database."); ;
+                throw new ArgumentException($"Could not load an instance of '{parts.First()}' with the ID of '{id} from the database.");
 
             var property = type.GetProperty(propertyName);
             if (property == null)
