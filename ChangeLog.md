@@ -32,3 +32,4 @@ public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
 
 ## Up to 17 Jan 2018
 - Delete Services\RoleStore.cs and UserStore.cs
+- Delete AnonymousUser.cs
