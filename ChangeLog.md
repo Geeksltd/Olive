@@ -1,8 +1,7 @@
 # Olive compatibility change log
 
 ## 18 Jan 2018
-- Remove the nuget reference to Hangfire
-- Add Nuget reference to **Olive.Hangfire**
+- Add Nuget reference to **Olive.Hangfire** in Website
 - In FrontEnd.cshtml change @Html.ResetDatabaseLink() to **@Html.WebTestWidget()** 
 - Make your StartUp.cs compatible with the new format:
 
