@@ -78,8 +78,9 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage().UseBrowserLink();
-            else app.UseExceptionHandler("/Home/Error");
+            if (env.IsDevelopment() || env.IsStaging())
+                app.UseDeveloperExceptionPage().UseBrowserLink();
+            else app.UseExceptionHandler("/error");
         }
 
         protected virtual CultureInfo GetRequestCulture() => CultureInfo.CurrentCulture;
