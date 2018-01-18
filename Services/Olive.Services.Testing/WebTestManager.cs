@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Olive.Entities;
-using Olive.Services.Email;
 using Olive.Web;
 
 namespace Olive.Services.Testing
@@ -130,11 +129,11 @@ namespace Olive.Services.Testing
                 DatabaseChangeWatcher.Restart();
                 if (request.Has("runner")) CurrentRunner = request.Param("runner");
             }
-            else if (command == "testEmail")
-            {
-                await (await new EmailTestService(request, response).Initialize()).Process();
-                result = true;
-            }
+            //else if (command == "testEmail")
+            //{
+            //    await (await new EmailTestService(request, response).Initialize()).Process();
+            //    result = true;
+            //}
             else if (command == "dbChanges")
             {
                 DatabaseChangeWatcher.DispatchChanges();

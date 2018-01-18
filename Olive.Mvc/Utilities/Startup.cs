@@ -53,11 +53,11 @@ namespace Olive.Mvc
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            ConfigureExceptionPage(app, env);
+
             InitializeDatabase(app, env);
 
             app.ConfigureOliveDependencies(env);
-
-            ConfigureExceptionPage(app, env);
 
             if (WebTestManager.IsTddExecutionMode())
                 app.UseWebTestMiddleware();

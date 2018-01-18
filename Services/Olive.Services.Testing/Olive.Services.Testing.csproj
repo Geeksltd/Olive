@@ -31,14 +31,8 @@
     <Reference Include="Olive.Entities.Data.SqlServer">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="Olive.Services.Email">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Services.Email.dll</HintPath>
-    </Reference>
     <Reference Include="Olive.Services.Excel">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Services.Excel.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Services.Integration">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Services.Integration.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
