@@ -17,7 +17,7 @@ public override void ConfigureServices(IServiceCollection services)
 
 public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
 {
-    app.UseWebTest(ReferenceData.Create, config => config.AddTasks());
+    app.UseWebTest(ReferenceData.Create, config => config.AddTasks().AddEmail());
     base.Configure(app, env);
 
     if (Config.Get<bool>("Automated.Tasks:Enabled"))
