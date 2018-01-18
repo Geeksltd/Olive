@@ -79,5 +79,12 @@ namespace Olive
         /// Determines whether the ID of this logged-in user is the same as a specified user.
         /// </summary>
         public static bool Is(this ClaimsPrincipal loggedInUser, ILoginInfo loginInfo) => loginInfo.Is(loggedInUser);
+
+        public static GenericLoginInfo Clone(this ILoginInfo info, Action<GenericLoginInfo> change = null)
+        {
+            var clone = new GenericLoginInfo(info);
+            change?.Invoke(clone);
+            return clone;
+        }
     }
 }

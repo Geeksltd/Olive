@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Olive.Security
@@ -14,6 +15,17 @@ namespace Olive.Security
 
     public class GenericLoginInfo : ILoginInfo
     {
+        public GenericLoginInfo() { }
+
+        public GenericLoginInfo(ILoginInfo copyFrom)
+        {
+            Roles = copyFrom.GetRoles().ToArray();
+            DisplayName = copyFrom.DisplayName;
+            ID = copyFrom.ID;
+            Email = copyFrom.Email;
+            Timeout = copyFrom.Timeout;
+        }
+
         public IEnumerable<string> Roles { get; set; }
         public string DisplayName { get; set; }
         public string ID { get; set; }
