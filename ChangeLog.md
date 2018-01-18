@@ -27,4 +27,4 @@ public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
 
 ## 17 JAn 2018
 - In *#Model\Project.cs* remove all project settings except **Name(...)** and **SolutionFile(...)**.
-
+- Delete App_Start\ViewLocationExpander.cs
