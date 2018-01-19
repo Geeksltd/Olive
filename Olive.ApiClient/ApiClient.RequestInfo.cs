@@ -6,25 +6,25 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Olive.ApiClient
+namespace Olive
 {
-    partial class ApiHttpClient
+    partial class ApiClient
     {
-        public class RequestInfo
+        public partial class RequestInfo
         {
             const int HTTP_ERROR_STARTING_CODE = 400;
             object jsonData;
 
             public RequestInfo() { }
-            public RequestInfo(string relativeUrl) => RelativeUrl = relativeUrl;
+            public RequestInfo(string url) => Url = url;
 
             internal string LocalCachedVersion { get; set; }
-            public string RelativeUrl { get; set; }
+            public string Url { get; set; }
             public string HttpMethod { get; set; } = "GET";
             public string ContentType { get; set; }
             public string RequestData { get; set; }
             public string ResponseText { get; set; }
-            public OnError ErrorAction { get; set; } = OnError.Throw;
+            public OnApiCallError ErrorAction { get; set; } = OnApiCallError.Throw;
 
             public HttpStatusCode ResponseCode { get; private set; }
             public HttpResponseHeaders ResponseHeaders { get; private set; }
@@ -60,47 +60,11 @@ namespace Olive.ApiClient
             {
                 try
                 {
-                    ResponseText = (await Task.Run(DoSend)).OrEmpty();
+                    ResponseText = (await DoSend()).OrEmpty();
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    LogTheError(ex);
-                    return false;
-                }
-            }
-
-            /// <summary>
-            /// Sends this request to the server and processes the response.
-            /// The error action will also apply.
-            /// It will return whether the response was successfully received.
-            /// </summary>
-            public async Task<bool> Send<TEntity, TIdentifier>(TEntity entity) where TEntity : IQueueable<TIdentifier>
-            {
-                try
-                {
-                    ResponseText = (
-                          Task.Run(DoSend).ToString()
-                        ).ToStringOrEmpty();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    if (ex.Message.StartsWith("Internet connection is unavailable."))
-                    {
-                        // Add Queue status and properties
-                        entity.RequestInfo = this;
-                        entity.TimeAdded = DateTime.Now;
-                        entity.Status = QueueStatus.Added;
-
-                        // Add item to the Queue and write it to file
-                        await AddQueueItem<TEntity, TIdentifier>(entity);
-
-                        // Update the response caches
-                        await UpdateCacheUponOfflineModification<TEntity, TIdentifier>(entity, HttpMethod);
-                        return true;
-                    }
-
                     LogTheError(ex);
                     return false;
                 }
@@ -131,7 +95,7 @@ namespace Olive.ApiClient
 
             async Task<string> DoSend()
             {
-                var url = Url(RelativeUrl);
+                var url = Url;
                 if (EnsureTrailingSlash && url.Lacks("?")) url = url.EnsureEndsWith("/");
 
                 using (var client = new HttpClient())
@@ -156,7 +120,7 @@ namespace Olive.ApiClient
                     string responseBody = null;
                     try
                     {
-                        var response = await client.SendAsync(req);
+                        var response = await client.SendAsync(req).ConfigureAwait(false);
                         var failed = false;
 
                         ResponseCode = response.StatusCode;
@@ -186,12 +150,6 @@ namespace Olive.ApiClient
 
                         if (System.Diagnostics.Debugger.IsAttached) errorMessage = $"Api call failed: {url}";
 
-                        // if (!await Device.Network.IsAvailable())
-                        // {
-                        //    errorMessage = "Internet connection is unavailable.";
-                        //    throw new NoNetWorkException(errorMessage, ex);
-                        // }
-
                         responseBody = await (ex as WebException)?.GetResponseBody();
 
                         if (responseBody.OrEmpty().StartsWith("{\"Message\""))
@@ -207,7 +165,7 @@ namespace Olive.ApiClient
                         // We are doing this in cases that error is not serialized in the SeverError format
                         else errorMessage = responseBody.Or(errorMessage);
 
-                        ErrorAction.Apply(errorMessage);
+                        await ErrorAction.Apply(errorMessage);
 
                         throw new Exception(errorMessage, ex);
                     }
@@ -217,7 +175,7 @@ namespace Olive.ApiClient
             void LogTheError(Exception ex)
             {
                 Error = ex;
-                Debug.WriteLine($"Http{HttpMethod} failed -> {RelativeUrl}");
+                Debug.WriteLine($"Http{HttpMethod} failed -> {Url}");
                 Debug.WriteLine(ex);
             }
         }

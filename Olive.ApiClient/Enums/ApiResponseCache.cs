@@ -1,4 +1,4 @@
-﻿namespace Olive.ApiClient
+﻿namespace Olive
 {
     public enum ApiResponseCache
     {

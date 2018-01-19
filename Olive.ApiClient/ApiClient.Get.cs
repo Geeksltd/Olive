@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Olive.ApiClient
+namespace Olive
 {
-    partial class ApiHttpClient
+    partial class ApiClient
     {
         public static string StaleDataWarning = "The latest data cannot be received from the server right now.";
         const string CACHE_FOLDER = "-ApiCache";
@@ -71,7 +70,7 @@ namespace Olive.ApiClient
             return true;
         }
 
-        public static async Task<TResponse> Get<TResponse>(string relativeUrl, object queryParams = null, OnError errorAction = OnError.Throw, ApiResponseCache cacheChoice = ApiResponseCache.Accept, Func<TResponse, Task> refresher = null)
+        public static async Task<TResponse> Get<TResponse>(string url, object queryParams = null, OnApiCallError errorAction = OnApiCallError.Throw, ApiResponseCache cacheChoice = ApiResponseCache.Accept, Func<TResponse, Task> refresher = null)
         {
             if (refresher != null && cacheChoice != ApiResponseCache.PreferThenUpdate)
                 throw new ArgumentException("refresher can only be provided when using ApiResponseCache.PreferThenUpdate.");
@@ -79,36 +78,36 @@ namespace Olive.ApiClient
             if (refresher == null && cacheChoice == ApiResponseCache.PreferThenUpdate)
                 throw new ArgumentException("When using ApiResponseCache.PreferThenUpdate, refresher must be specified.");
 
-            relativeUrl = GetFullUrl(relativeUrl, queryParams);
+            url = GetFullUrl(url, queryParams);
 
             var result = default(TResponse);
             if (cacheChoice == ApiResponseCache.Prefer || cacheChoice == ApiResponseCache.PreferThenUpdate)
             {
-                result = GetCachedResponse<TResponse>(relativeUrl);
+                result = GetCachedResponse<TResponse>(url);
                 if (HasValue(result))
                 {
                     if (cacheChoice == ApiResponseCache.PreferThenUpdate)
                         new Thread(async () =>
                         {
-                            await RefreshUponUpdatedResponse(relativeUrl, refresher);
+                            await RefreshUponUpdatedResponse(url, refresher);
                         }).Start();
                     return result;
                 }
             }
 
-            var request = new RequestInfo(relativeUrl) { ErrorAction = errorAction, HttpMethod = "GET" };
+            var request = new RequestInfo(url) { ErrorAction = errorAction, HttpMethod = "GET" };
 
             if (await request.Send())
             {
                 result = request.ExtractResponse<TResponse>();
 
                 if (request.Error == null)
-                    await GetCacheFile<TResponse>(relativeUrl).WriteAllTextAsync(request.ResponseText);
+                    await GetCacheFile<TResponse>(url).WriteAllTextAsync(request.ResponseText);
             }
 
             if (request.Error != null && cacheChoice != ApiResponseCache.Refuse)
             {
-                result = GetCachedResponse<TResponse>(relativeUrl);
+                result = GetCachedResponse<TResponse>(url);
                 // if (HasValue(result) && cacheChoice == ApiResponseCache.AcceptButWarn)
                 //    await Alert.Toast(StaleDataWarning);
             }
@@ -135,7 +134,7 @@ namespace Olive.ApiClient
 
             var request = new RequestInfo(url)
             {
-                ErrorAction = OnError.Throw,
+                ErrorAction = OnApiCallError.Throw,
                 HttpMethod = "GET",
                 LocalCachedVersion = localCachedVersion
             };
@@ -161,42 +160,6 @@ namespace Olive.ApiClient
                 }
             }
             catch (Exception ex) { Debug.WriteLine(ex); }
-        }
-
-        static async Task UpdateCacheUponOfflineModification<TResponse, TIdentifier>(TResponse modified, string httpMethod) where TResponse : IQueueable<TIdentifier>
-        {
-            await Task.Delay(50);
-
-            // Get all cached files for this type
-            var cachedFiles = GetTypeCacheFiles(modified);
-            foreach (var file in cachedFiles)
-            {
-                var records = DeserializeResponse<IEnumerable<TResponse>>(file).ToList();
-                var changed = false;
-
-                // If the file contains the modified row, update it
-                if (httpMethod == "DELETE")
-                {
-                    var deletedRecords = records.Where(x => EqualityComparer<TIdentifier>.Default.Equals(x.ID, modified.ID));
-                    if (deletedRecords.Any())
-                    {
-                        records.RemoveAll(x => deletedRecords.Contains(x));
-                        changed = true;
-                    }
-                }
-                else if (httpMethod == "PATCH" || httpMethod == "PUT")
-                    records?.Do(record =>
-                    {
-                        record = modified;
-                        changed = true;
-                    });
-
-                if (!changed) continue;
-                // If cache file is edited, rewrite it
-                var newResponseText = JsonConvert.SerializeObject(records);
-                if (newResponseText.HasValue())
-                    await file.WriteAllTextAsync(newResponseText);
-            }
         }
 
         static TResponse GetCachedResponse<TResponse>(string url)

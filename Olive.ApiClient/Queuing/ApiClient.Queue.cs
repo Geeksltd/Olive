@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Olive.ApiClient
+namespace Olive
 {
-    partial class ApiHttpClient
+    partial class ApiClient
     {
         const string QUEUE_FOLDER = "-ApiQueue";
         static object QueueSyncLock = new object();
