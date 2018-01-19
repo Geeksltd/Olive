@@ -65,3 +65,4 @@ public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
   ```
  * If you haven't changed the style files, replace the whole **wwwroot\Styles** folder from [the new temlate](https://github.com/Geeksltd/Olive.MvcTemplate/tree/master/Template/Website/wwwroot/Styles)
     * Otherwise just replace the folder  **wwwroot\Styles\build**
+* Copy compilerconfig.json from the latest template (website root)
