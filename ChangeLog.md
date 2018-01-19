@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 19 Jan 2018
+- Update bower.json to use bootstrap v4.0.0
+
 ## 18 Jan 2018
 - Add Nuget reference to **Olive.Hangfire** in Website
 - In FrontEnd.cshtml change @Html.ResetDatabaseLink() to **@Html.WebTestWidget()** 
