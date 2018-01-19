@@ -40,5 +40,11 @@ public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
 - Domain\UserStore.cs
 
 ### Update javascript structure
-- Delete Website\ScriptReferences.json
-- Change Website\Views\Layouts\Common.Scripts.cshtml to the  file from the new template
+* Delete the following from Website
+  * ScriptReferences.json
+  * node_modules folder
+* Update the following files in **Website** from [the latest template](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/)
+  * Views\Layouts\Common.Scripts.cshtml
+  * bower.json (after changing, in VS right click it and select Restore Packages)
+  * wwwroot\Scripts folder (everything unless you've created your own scripts)
+  * tsconfig.json (if you don't have it already, but copy it in)
