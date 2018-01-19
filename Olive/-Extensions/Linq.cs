@@ -26,6 +26,12 @@ namespace Olive
             return (await list)?.ToString(seperator);
         }
 
+        public static async Task<string> ToString<T>(this Task<IEnumerable<T>> list, string seperator)
+        {
+            if (list == null) return "{NULL}";
+            return (await list)?.ToString(seperator);
+        }
+
         public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator, string lastSeperator) =>
             list.Select(i => format.FormatWith(i)).ToString(seperator, lastSeperator);
 

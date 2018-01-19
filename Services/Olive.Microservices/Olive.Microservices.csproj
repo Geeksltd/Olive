@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\..\@Assemblies\netcoreapp2.0\Olive.Microservices.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Web">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
