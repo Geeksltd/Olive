@@ -30,6 +30,15 @@ public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
 - In Domain project delete Entities and DAL folders
 - Delete App_Start\ViewLocationExpander.cs
 
-## Up to 17 Jan 2018
-- Delete Services\RoleStore.cs and UserStore.cs
-- Delete AnonymousUser.cs
+# Up to 17 Jan 2018
+
+### Delete these files:
+- Website\gulpfile.js
+- Website\package.json
+- Domain\...\AnonymousUser.cs
+- Domain\Services\RoleStore.cs
+- Domain\UserStore.cs
+
+### Update javascript structure
+- Delete Website\ScriptReferences.json
+- Change Website\Views\Layouts\Common.Scripts.cshtml to the  file from the new template
