@@ -10,4 +10,4 @@ There are many ways to implement microservices for business applications. You ca
 However Olive also facilitates microservice implementation for typical business applications by providing a particular framework and set of components that can speed you up.
 This guide will help get you started.
 
-![GitHub Logo](Micro.Services.Architecture.png)
+![GitHub Logo](https://github.com/Geeksltd/Olive/blob/master/Services/Olive.Microservices/Microservices.Architecture.png)
