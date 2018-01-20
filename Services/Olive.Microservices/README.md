@@ -11,3 +11,13 @@ However Olive also facilitates microservice implementation for typical business 
 This guide will help get you started.
 
 ![GitHub Logo](https://github.com/Geeksltd/Olive/blob/master/Services/Olive.Microservices/Microservices.Architecture.png)
+
+# UI Architecture
+In general for implementing UI in Microservices architecture you have two choices:
+- **Monolith UI:** A single UI application (e.g. SPA) containing all html templates, css, javascript, etc, but consuming API services of many microservice apps.
+- **Composite UI:** Each microservice will be responsible for its own UI (html templates, javascript, css) rendering and interactions.
+
+When you A monolith UI approach is more traditional and easier to understand. But will counter many of the benefits of Microservices (such as independent deployability) and is not a solution that we recommend.
+
+## Composite UI
+...
