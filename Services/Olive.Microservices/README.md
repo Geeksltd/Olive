@@ -18,3 +18,9 @@ Learn how the UI structure works in Olive microservices.
 
 ### [Urls and addressing](Addressing.md)
 Learn how to manage urls and addressing in a microservice solution.
+
+### [Creating a new microservice](Create.New.md)
+A step-by-step guide to create a new feature micro-service for your solution.
+
+### [Apis and Integration](Integration.md)
+Learn how to create, publish and invoke APIs to integrate multiple microservices together.
