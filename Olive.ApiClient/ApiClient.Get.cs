@@ -19,13 +19,10 @@ namespace Olive
         {
             lock (CacheSyncLock)
             {
-                var directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName<TResponse>()));
-                if (directoryInfo.Exists)
-                {
-                    return directoryInfo.GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
-                }
+                var appName = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent.Name;
+                var name = Path.Combine(Path.GetTempPath(), appName, CACHE_FOLDER, GetTypeName<TResponse>());
 
-                return null;
+                return name.AsDirectory().EnsureExists().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
             }
         }
 
