@@ -1,5 +1,5 @@
 
-# UI Architecture
+# Olive Microservices: UI Architecture
 In general for implementing UI in Microservices architecture you have two choices:
 - **Monolith UI:** A single UI application (e.g. SPA) containing all html templates, css, javascript, etc, but consuming API services of many microservice apps.
 - **Composite UI:** Each microservice will be responsible for its own UI (html templates, javascript, css) rendering and interactions.
