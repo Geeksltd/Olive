@@ -14,6 +14,7 @@ For example if you want to test the local version of *serviceA* which is hosted 
 
 So to keep things simple and clean you need to select an environment to run a service, and rest assured that the correct version of all other related services are being used during your testing.
 
+
 ## Environment definitions
 When you create a new Olive Microservice, as part of the template under the *Website* folder there are 3 files that define the configuration variables for your 3 environments.
 
@@ -39,4 +40,11 @@ When you create a new Olive Microservice, as part of the template under the *Web
     }   
 ```
 
-> The same settings exist for all microservices in your solution and should all be the same.
+> **Microservice URL**: Each microservice in your solution will be defined by a **unique name**, which is a sub-domain under the current environment's root domain. To get the full Url of a microservice by its unique name use:
+```csharp
+// Get the correct full url to the serviceX microservice: 
+string fullUrl = Olive.Microservice.Url("serviceX");
+
+// Or get the url to a specific api path inside that:
+string apiUrl = Olive.Microservice.Url("serviceX", "some/relative/path");
+```
