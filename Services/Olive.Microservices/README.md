@@ -15,3 +15,6 @@ This guide will help get you started.
 ## Topics:
 ### [UI Architecture](UI.Architecture.md)
 Learn how the UI structure works in Olive microservices.
+
+### [Urls and addressing](Addressign.md)
+Learn how to manage urls and addressing in a microservice solution.
