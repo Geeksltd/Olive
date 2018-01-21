@@ -55,9 +55,9 @@ namespace Olive.Mvc
 
                 var id = propertyInfo.Name + "_" + selectList.IndexOf(item);
 
-                result.AppendHtml(html.RadioButton(propertyInfo.Name, item.Value, IsSelected(item, value), new { id = id }));
+                result.AppendHtml(html.RadioButton(propertyInfo.Name, item.Value, IsSelected(item, value), new { id = id, @class = "form-check-input" }));
 
-                result.AppendHtmlLine($"<label for=\"{id}\">{item.Text}</label>");
+                result.AppendHtmlLine($"<label for=\"{id}\" class=\"form-check-label\">{item.Text}</label>");
 
                 result.AppendHtmlLine("</div>");
             }
@@ -128,7 +128,7 @@ namespace Olive.Mvc
 
                 var id = name + "_" + selectList.IndexOf(item);
 
-                r.AppendLine($"<input type=\"checkbox\" id=\"{id}\" name=\"{name}\" value=\"{item.Value}\"");
+                r.AppendLine($"<input type=\"checkbox\" id=\"{id}\" name=\"{name}\" value=\"{item.Value}\" class=\"form-check-input\"");
 
                 if (currentItems.Contains(item.Value)) r.Append(" checked=\"checked\"");
 
@@ -138,7 +138,7 @@ namespace Olive.Mvc
 
                 r.AppendLine(">");
 
-                r.AppendLine($"<label for=\"{id}\">{item.Text}</label>");
+                r.AppendLine($"<label for=\"{id}\" class=\"form-check-label\">{item.Text}</label>");
                 r.AppendLine("</div>");
             }
 

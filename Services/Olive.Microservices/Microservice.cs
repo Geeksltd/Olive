@@ -1,7 +1,7 @@
 ﻿using System;
 using Olive.Web;
 
-namespace Olive.Microservices
+namespace Olive
 {
     /// <summary>
     /// Provides helper services for implementing microservices using Olive.
