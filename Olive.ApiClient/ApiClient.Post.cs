@@ -5,57 +5,38 @@ namespace Olive
 {
     partial class ApiClient
     {
-        public static async Task<bool> Post(
-          string url,
-          OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Post()
         {
-            var result = await DoPost<string>(url, null, null, errorAction);
+            var result = await DoPost<string>(null, null);
             return result.Item2.Error == null;
         }
 
-        public static async Task<bool> Post(
-            string url,
-            string requestData,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Post(string requestData)
         {
-            var result = await DoPost<string>(url, requestData, null, errorAction);
+            var result = await DoPost<string>(requestData, null);
             return result.Item2.Error == null;
         }
 
-        public static async Task<bool> Post(
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Post(object jsonParams)
         {
-            var result = await DoPost<string>(url, null, jsonParams, errorAction);
+            var result = await DoPost<string>(null, jsonParams);
             return result.Item2.Error == null;
         }
 
-        public static async Task<TResponse> Post<TResponse>(
-            string url,
-            string requestData,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<TResponse> Post<TResponse>(string requestData)
         {
-            return (await DoPost<TResponse>(url, requestData, null, errorAction)).Item1;
+            return (await DoPost<TResponse>(requestData, null)).Item1;
         }
 
-        public static async Task<TResponse> Post<TResponse>(
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<TResponse> Post<TResponse>(object jsonParams)
         {
-            return (await DoPost<TResponse>(url, null, jsonParams, errorAction)).Item1;
+            return (await DoPost<TResponse>(null, jsonParams)).Item1;
         }
 
-        static async Task<Tuple<TResponse, RequestInfo>> DoPost<TResponse>(
-         string url,
-         string requestData,
-         object jsonParams,
-         OnApiCallError errorAction)
+        async Task<Tuple<TResponse, RequestInfo>> DoPost<TResponse>(string requestData, object jsonParams)
         {
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = errorAction,
                 HttpMethod = "POST",
                 RequestData = requestData,
                 JsonData = jsonParams

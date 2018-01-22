@@ -5,33 +5,22 @@ namespace Olive
 {
     partial class ApiClient
     {
-        public static Task<TResponse> Delete<TResponse, TEntity>(
-              TEntity entity,
-              string url,
-              object jsonParams,
-              OnApiCallError errorAction = OnApiCallError.Throw) where TEntity : IQueueable<Guid>
+        public Task<TResponse> Delete<TResponse, TEntity>(TEntity entity, object jsonParams) where TEntity : IQueueable<Guid>
         {
-            return Delete<TResponse, TEntity, Guid>(entity, url, jsonParams, errorAction);
+            return Delete<TResponse, TEntity, Guid>(entity, jsonParams);
         }
 
-        public static async Task<TResponse> Delete<TResponse, TEntity, TIdentifier>(
-            TEntity entity,
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw) where TEntity : IQueueable<TIdentifier>
+        public async Task<TResponse> Delete<TResponse, TEntity, TIdentifier>(
+            TEntity entity, object jsonParams) where TEntity : IQueueable<TIdentifier>
         {
-            return (await DoDelete<TResponse, TEntity, TIdentifier>(entity, url, jsonParams, errorAction)).Item1;
+            return (await DoDelete<TResponse, TEntity, TIdentifier>(entity, jsonParams)).Item1;
         }
 
-        static async Task<Tuple<TResponse, RequestInfo>> DoDelete<TResponse, TEntity, TIdentifier>(
-        TEntity entity,
-        string url,
-        object jsonParams,
-        OnApiCallError errorAction) where TEntity : IQueueable<TIdentifier>
+        async Task<Tuple<TResponse, RequestInfo>> DoDelete<TResponse, TEntity, TIdentifier>(
+        TEntity entity, object jsonParams) where TEntity : IQueueable<TIdentifier>
         {
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = errorAction,
                 HttpMethod = "DELETE",
                 JsonData = jsonParams
             };

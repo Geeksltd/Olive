@@ -11,9 +11,11 @@ namespace Olive
 {
     partial class ApiClient
     {
-        public static string StaleDataWarning = "The latest data cannot be received from the server right now.";
+        public string StaleDataWarning = "The latest data cannot be received from the server right now.";
         const string CACHE_FOLDER = "-ApiCache";
         static object CacheSyncLock = new object();
+
+        FileInfo GetCacheFile<TResponse>() => GetCacheFile<TResponse>(Url);
 
         static FileInfo GetCacheFile<TResponse>(string url)
         {
@@ -40,13 +42,14 @@ namespace Olive
             }
         }
 
-        static string GetTypeName<T>() => typeof(T).GetGenericArguments().SingleOrDefault()?.Name ?? typeof(T).Name.Replace("[]", "");
+        static string GetTypeName<T>()
+            => typeof(T).GetGenericArguments().SingleOrDefault()?.Name ?? typeof(T).Name.Replace("[]", "");
 
         static string GetTypeName<T>(T modified) => modified.GetType().Name;
 
-        static string GetFullUrl(string baseUrl, object queryParams = null)
+        string GetFullUrl(object queryParams = null)
         {
-            if (queryParams == null) return baseUrl;
+            if (queryParams == null) return Url;
 
             var queryString = queryParams as string;
 
@@ -54,20 +57,20 @@ namespace Olive
                 queryString = queryParams.GetType().GetPropertiesAndFields(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance).Select(p => p.Name + "=" + p.GetValue(queryParams).ToStringOrEmpty().UrlEncode())
                      .Trim().ToString("&");
 
-            if (queryString.LacksAll()) return baseUrl;
+            if (queryString.LacksAll()) return Url;
 
-            if (baseUrl.Contains("?")) return (baseUrl + "&" + queryString).KeepReplacing("&&", "&");
-            return baseUrl + "?" + queryString;
+            if (Url.Contains("?")) return (Url + "&" + queryString).KeepReplacing("&&", "&");
+            return Url + "?" + queryString;
         }
 
-        static bool HasValue<TType>(TType value)
+        bool HasValue<TType>(TType value)
         {
             if (ReferenceEquals(value, null)) return false;
             if (value.Equals(default(TType))) return false;
             return true;
         }
 
-        public static async Task<TResponse> Get<TResponse>(string url, object queryParams = null, OnApiCallError errorAction = OnApiCallError.Throw, ApiResponseCache cacheChoice = ApiResponseCache.Accept, Func<TResponse, Task> refresher = null)
+        public async Task<TResponse> Get<TResponse>(object queryParams = null, ApiResponseCache cacheChoice = ApiResponseCache.Accept, Func<TResponse, Task> refresher = null)
         {
             if (refresher != null && cacheChoice != ApiResponseCache.PreferThenUpdate)
                 throw new ArgumentException("refresher can only be provided when using ApiResponseCache.PreferThenUpdate.");
@@ -75,36 +78,36 @@ namespace Olive
             if (refresher == null && cacheChoice == ApiResponseCache.PreferThenUpdate)
                 throw new ArgumentException("When using ApiResponseCache.PreferThenUpdate, refresher must be specified.");
 
-            url = GetFullUrl(url, queryParams);
+            Url = GetFullUrl(queryParams);
 
             var result = default(TResponse);
             if (cacheChoice == ApiResponseCache.Prefer || cacheChoice == ApiResponseCache.PreferThenUpdate)
             {
-                result = GetCachedResponse<TResponse>(url);
+                result = GetCachedResponse<TResponse>();
                 if (HasValue(result))
                 {
                     if (cacheChoice == ApiResponseCache.PreferThenUpdate)
                         new Thread(async () =>
                         {
-                            await RefreshUponUpdatedResponse(url, refresher);
+                            await RefreshUponUpdatedResponse(refresher);
                         }).Start();
                     return result;
                 }
             }
 
-            var request = new RequestInfo(url) { ErrorAction = errorAction, HttpMethod = "GET" };
+            var request = new RequestInfo(this) { HttpMethod = "GET" };
 
             if (await request.Send())
             {
                 result = request.ExtractResponse<TResponse>();
 
                 if (request.Error == null)
-                    await GetCacheFile<TResponse>(url).WriteAllTextAsync(request.ResponseText);
+                    await GetCacheFile<TResponse>().WriteAllTextAsync(request.ResponseText);
             }
 
             if (request.Error != null && cacheChoice != ApiResponseCache.Refuse)
             {
-                result = GetCachedResponse<TResponse>(url);
+                result = GetCachedResponse<TResponse>();
                 // if (HasValue(result) && cacheChoice == ApiResponseCache.AcceptButWarn)
                 //    await Alert.Toast(StaleDataWarning);
             }
@@ -112,14 +115,14 @@ namespace Olive
             return result;
         }
 
-        static async Task RefreshUponUpdatedResponse<TResponse>(string url, Func<TResponse, Task> refresher)
+        async Task RefreshUponUpdatedResponse<TResponse>(Func<TResponse, Task> refresher)
         {
             await Task.Delay(50);
 
             string localCachedVersion;
             try
             {
-                localCachedVersion = (await GetCacheFile<TResponse>(url).ReadAllTextAsync()).CreateSHA1Hash();
+                localCachedVersion = (await GetCacheFile<TResponse>().ReadAllTextAsync()).CreateSHA1Hash();
                 if (localCachedVersion.LacksAll()) throw new Exception("Local cached file's hash is empty!");
             }
             catch (Exception ex)
@@ -129,9 +132,8 @@ namespace Olive
                 return; // High concurrency perhaps.
             }
 
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = OnApiCallError.Throw,
                 HttpMethod = "GET",
                 LocalCachedVersion = localCachedVersion
             };
@@ -152,16 +154,16 @@ namespace Olive
                 var result = request.ExtractResponse<TResponse>();
                 if (request.Error == null)
                 {
-                    await GetCacheFile<TResponse>(url).WriteAllTextAsync(request.ResponseText);
+                    await GetCacheFile<TResponse>().WriteAllTextAsync(request.ResponseText);
                     await refresher(result);
                 }
             }
             catch (Exception ex) { Debug.WriteLine(ex); }
         }
 
-        static TResponse GetCachedResponse<TResponse>(string url)
+        TResponse GetCachedResponse<TResponse>()
         {
-            var file = GetCacheFile<TResponse>(url);
+            var file = GetCacheFile<TResponse>();
             return DeserializeResponse<TResponse>(file);
         }
 
@@ -185,7 +187,7 @@ namespace Olive
         /// <summary>
         /// Deletes all cached Get API results.
         /// </summary>
-        public static Task DisposeCache()
+        public Task DisposeCache()
         {
             lock (CacheSyncLock)
             {
@@ -200,7 +202,7 @@ namespace Olive
         /// <summary>
         /// Deletes the cached Get API result for the specified API url.
         /// </summary>
-        public static Task DisposeCache<TResponse>(string getApiUrl)
+        public Task DisposeCache<TResponse>(string getApiUrl)
         {
             lock (CacheSyncLock)
             {

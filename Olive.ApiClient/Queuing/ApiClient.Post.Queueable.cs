@@ -5,52 +5,34 @@ namespace Olive
 {
     partial class ApiClient
     {
-        public static Task<TResponse> Post<TResponse, TEntity>(
-         TEntity entity,
-         string url,
-         string requestData,
-         OnApiCallError errorAction = OnApiCallError.Throw) where TEntity : IQueueable<Guid>
+        public Task<TResponse> Post<TResponse, TEntity>(TEntity entity, string requestData) where TEntity : IQueueable<Guid>
         {
-            return Post<TResponse, TEntity, Guid>(entity, url, requestData, errorAction);
+            return Post<TResponse, TEntity, Guid>(entity, requestData);
         }
 
-        public static async Task<TResponse> Post<TResponse, TEntity, TIdentifier>(
-           TEntity entity,
-           string url,
-           string requestData,
-           OnApiCallError errorAction = OnApiCallError.Throw) where TEntity : IQueueable<TIdentifier>
+        public async Task<TResponse> Post<TResponse, TEntity, TIdentifier>(
+           TEntity entity, string requestData) where TEntity : IQueueable<TIdentifier>
         {
-            return (await DoPost<TResponse, TEntity, TIdentifier>(entity, url, requestData, null, errorAction)).Item1;
+            return (await DoPost<TResponse, TEntity, TIdentifier>(entity, requestData, null)).Item1;
         }
 
-        public static Task<TResponse> Post<TResponse, TEntity>(
-           TEntity entity,
-           string url,
-           object jsonParams,
-           OnApiCallError errorAction = OnApiCallError.Throw) where TEntity : IQueueable<Guid>
+        public Task<TResponse> Post<TResponse, TEntity>(
+           TEntity entity, object jsonParams) where TEntity : IQueueable<Guid>
         {
-            return Post<TResponse, TEntity, Guid>(entity, url, jsonParams, errorAction);
+            return Post<TResponse, TEntity, Guid>(entity, jsonParams);
         }
 
-        public static async Task<TResponse> Post<TResponse, TEntity, TIdentifier>(
-            TEntity entity,
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw) where TEntity : IQueueable<TIdentifier>
+        public async Task<TResponse> Post<TResponse, TEntity, TIdentifier>(
+            TEntity entity, object jsonParams) where TEntity : IQueueable<TIdentifier>
         {
-            return (await DoPost<TResponse, TEntity, TIdentifier>(entity, url, null, jsonParams, errorAction)).Item1;
+            return (await DoPost<TResponse, TEntity, TIdentifier>(entity, null, jsonParams)).Item1;
         }
 
-        static async Task<Tuple<TResponse, RequestInfo>> DoPost<TResponse, TEntity, TIdentifier>(
-       TEntity entity,
-       string url,
-       string requestData,
-       object jsonParams,
-       OnApiCallError errorAction) where TEntity : IQueueable<TIdentifier>
+        async Task<Tuple<TResponse, RequestInfo>> DoPost<TResponse, TEntity, TIdentifier>(
+       TEntity entity, string requestData, object jsonParams) where TEntity : IQueueable<TIdentifier>
         {
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = errorAction,
                 HttpMethod = "POST",
                 RequestData = requestData,
                 JsonData = jsonParams

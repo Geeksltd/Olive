@@ -34,7 +34,7 @@ namespace Olive
                         entity.Status = QueueStatus.Added;
 
                         // Add item to the Queue and write it to file
-                        await AddQueueItem<TEntity, TIdentifier>(entity);
+                        await Client.AddQueueItem<TEntity, TIdentifier>(entity);
 
                         // Update the response caches
                         await UpdateCacheUponOfflineModification<TEntity, TIdentifier>(entity, HttpMethod);
@@ -46,7 +46,7 @@ namespace Olive
                 }
             }
 
-            static async Task UpdateCacheUponOfflineModification<TResponse, TIdentifier>(TResponse modified, string httpMethod) where TResponse : IQueueable<TIdentifier>
+            async Task UpdateCacheUponOfflineModification<TResponse, TIdentifier>(TResponse modified, string httpMethod) where TResponse : IQueueable<TIdentifier>
             {
                 await Task.Delay(50);
 

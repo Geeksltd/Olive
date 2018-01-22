@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Olive.Web;
 
 namespace Olive
@@ -8,6 +12,19 @@ namespace Olive
     /// </summary>
     public class Microservice
     {
+        /// <summary>
+        /// Gets the name of the current microservice from the config value of Microservice:Name.
+        /// </summary>
+        public static string Name
+        {
+            get
+            {
+                var result = Config.Get("Microservice:Name");
+                if (result.IsEmpty()) throw new Exception("Config value not found: Microservice:Name");
+                return result;
+            }
+        }
+
         /// <summary>
         /// Gets the value of the config key Microservice:Root.Domain.
         /// </summary>
@@ -25,6 +42,43 @@ namespace Olive
         public static string Url(string serviceName, string relativeUrl = null)
         {
             return HttpProtocol + "://" + serviceName + "." + RootDomain + relativeUrl.EnsureStartsWith("/");
+        }
+
+        /// <summary>
+        /// Authenticates me based on the auth service url of {auth.service}/api/login/service/{Name}/{secret} 
+        /// and returns the authentication cookie value.
+        /// Note: Secret is the config value of Microservice:Secret. It should be registered in the Auth service also.
+        /// </summary>
+        public static Task<Cookie[]> Authenticate()
+        {
+            var key = Config.Get("Microservice:Secret");
+            if (key.IsEmpty()) throw new Exception("Config key value is not specified: Microservice:Secret");
+
+            return Authenticate("auth", $"api/login/service/{Name}/{key}");
+        }
+
+        /// <summary>
+        /// Authenticates me by sending a Http Get request to the specified auth service url and returns the authentication cookie value from the response cookies.        
+        /// </summary>
+        public static async Task<Cookie[]> Authenticate(string authServiceName, string relativeAuthUrl)
+        {
+            var url = Url(authServiceName, relativeAuthUrl);
+
+            var authCookieName = ".myAuth"; // TODO: Get it from the cookie settings.
+
+            using (var handler = new HttpClientHandler { CookieContainer = new CookieContainer() })
+            using (var client = new HttpClient(handler))
+            {
+                var response = await client.GetAsync(url);
+
+                var responseCookies = handler.CookieContainer
+                    .GetCookies(Url(authServiceName).AsUri())
+                    .GetCookieOrChunks(authCookieName);
+
+                if (responseCookies.None())
+                    throw new Exception("Service authentication failed.");
+                return responseCookies;
+            }
         }
     }
 }

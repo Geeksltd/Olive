@@ -4,13 +4,16 @@ namespace Olive
 {
     public partial class ApiClient
     {
-        public static Func<string> GetSessionToken = () =>
+        public string Url { get; private set; }
+        public ApiClient(string apiUrl) => Url = apiUrl;
+
+        public OnApiCallError ErrorAction { get; private set; } = OnApiCallError.Throw;
+
+        public ApiClient OnError(OnApiCallError onError)
         {
-            var filName = "SessionToken.txt";
-            if (System.IO.File.Exists(filName))
-                return System.IO.File.ReadAllText(filName);
-            return null;
-        };
+            ErrorAction = onError;
+            return this;
+        }
     }
 
     internal class ServerError

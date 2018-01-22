@@ -5,28 +5,21 @@ namespace Olive
 {
     partial class ApiClient
     {
-        public static async Task<bool> Delete(string url, object jsonParams = null, OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Delete(object jsonParams = null)
         {
-            var result = await DoDelete<string>(url, jsonParams, errorAction);
+            var result = await DoDelete<string>(jsonParams);
             return result.Item2.Error == null;
         }
 
-        public static async Task<TResponse> Delete<TResponse>(
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<TResponse> Delete<TResponse>(object jsonParams)
         {
-            return (await DoDelete<TResponse>(url, jsonParams, errorAction)).Item1;
+            return (await DoDelete<TResponse>(jsonParams)).Item1;
         }
 
-        static async Task<Tuple<TResponse, RequestInfo>> DoDelete<TResponse>(
-         string url,
-         object jsonParams,
-         OnApiCallError errorAction)
+        async Task<Tuple<TResponse, RequestInfo>> DoDelete<TResponse>(object jsonParams)
         {
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = errorAction,
                 HttpMethod = "DELETE",
                 JsonData = jsonParams
             };

@@ -5,55 +5,41 @@ namespace Olive
 {
     partial class ApiClient
     {
-        public static async Task<bool> Patch(string url, OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Patch()
         {
-            var result = await DoPatch<string>(url, null, null, errorAction);
+            var result = await DoPatch<string>(null, null);
             return result.Item2.Error == null;
         }
 
-        public static async Task<bool> Patch(
-            string url,
-            string requestData,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Patch(string requestData)
         {
-            var result = await DoPatch<string>(url, requestData, null, errorAction);
+            var result = await DoPatch<string>(requestData, null);
             return result.Item2.Error == null;
         }
 
-        public static async Task<bool> Patch(
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Patch(object jsonParams)
         {
-            var result = await DoPatch<string>(url, null, jsonParams, errorAction);
+            var result = await DoPatch<string>(null, jsonParams);
             return result.Item2.Error == null;
         }
 
-        public static async Task<TResponse> Patch<TResponse>(
-            string url,
-            string requestData,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<TResponse> Patch<TResponse>(string requestData)
         {
-            return (await DoPatch<TResponse>(url, requestData, null, errorAction)).Item1;
+            return (await DoPatch<TResponse>(requestData, null)).Item1;
         }
 
-        public static async Task<TResponse> Patch<TResponse>(
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<TResponse> Patch<TResponse>(object jsonParams)
         {
-            return (await DoPatch<TResponse>(url, null, jsonParams, errorAction)).Item1;
+            return (await DoPatch<TResponse>(null, jsonParams)).Item1;
         }
 
-        static async Task<Tuple<TResponse, RequestInfo>> DoPatch<TResponse>(
-         string url,
+        async Task<Tuple<TResponse, RequestInfo>> DoPatch<TResponse>(
+
          string requestData,
-         object jsonParams,
-         OnApiCallError errorAction)
+         object jsonParams)
         {
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = errorAction,
                 HttpMethod = "PATCH",
                 RequestData = requestData,
                 JsonData = jsonParams

@@ -14,17 +14,20 @@ namespace Olive
         {
             const int HTTP_ERROR_STARTING_CODE = 400;
             object jsonData;
+            ApiClient Client;
 
-            public RequestInfo() { }
-            public RequestInfo(string url) => Url = url;
+            string Url => Client.Url;
+
+            public RequestInfo(ApiClient client)
+            {
+                Client = client;
+            }
 
             internal string LocalCachedVersion { get; set; }
-            public string Url { get; set; }
             public string HttpMethod { get; set; } = "GET";
             public string ContentType { get; set; }
             public string RequestData { get; set; }
             public string ResponseText { get; set; }
-            public OnApiCallError ErrorAction { get; set; } = OnApiCallError.Throw;
 
             public HttpStatusCode ResponseCode { get; private set; }
             public HttpResponseHeaders ResponseHeaders { get; private set; }
@@ -88,23 +91,18 @@ namespace Olive
                     ex = new Exception("Failed to convert API response to " + typeof(TResponse).GetCSharpName(), ex);
                     LogTheError(ex);
 
-                    ErrorAction.Apply("The server's response was unexpected");
+                    Client.ErrorAction.Apply("The server's response was unexpected");
                     return default(TResponse);
                 }
             }
 
             async Task<string> DoSend()
             {
-                var url = Url;
-                if (EnsureTrailingSlash && url.Lacks("?")) url = url.EnsureEndsWith("/");
+                if (EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url.EnsureEndsWith("/");
 
-                using (var client = new HttpClient())
+                using (var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies }))
                 {
-                    var req = new HttpRequestMessage(new HttpMethod(HttpMethod), url);
-
-                    var sessionToken = GetSessionToken();
-                    if (sessionToken.HasValue())
-                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessionToken);
+                    var req = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);
 
                     if (LocalCachedVersion.HasValue())
                         client.DefaultRequestHeaders.IfNoneMatch.Add(new EntityTagHeaderValue($"\"{LocalCachedVersion}\""));
@@ -148,7 +146,7 @@ namespace Olive
                     {
                         LogTheError(ex);
 
-                        if (System.Diagnostics.Debugger.IsAttached) errorMessage = $"Api call failed: {url}";
+                        if (System.Diagnostics.Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
 
                         responseBody = await (ex as WebException)?.GetResponseBody();
 
@@ -165,7 +163,7 @@ namespace Olive
                         // We are doing this in cases that error is not serialized in the SeverError format
                         else errorMessage = responseBody.Or(errorMessage);
 
-                        await ErrorAction.Apply(errorMessage);
+                        await Client.ErrorAction.Apply(errorMessage);
 
                         throw new Exception(errorMessage, ex);
                     }

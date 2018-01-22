@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -25,6 +26,17 @@ namespace Olive
                 using (var reader = new StreamReader(stream))
                     return await reader.ReadToEndAsync();
             }
+        }
+
+        /// <summary>
+        /// Gets the cookie or cookie chunks for the specified cookie name.
+        /// </summary>
+        public static Cookie[] GetCookieOrChunks(this CookieCollection cookies, string name)
+        {
+            return cookies.Cast<Cookie>()
+                   .Where(x => x.Name == name ||
+                   (x.Name.StartsWith(name + "C") && x.Name.TrimStart(name + "C").Is<int>()))
+                   .ToArray();
         }
     }
 }

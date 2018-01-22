@@ -5,57 +5,38 @@ namespace Olive
 {
     partial class ApiClient
     {
-        public static async Task<bool> Put(
-          string url,
-          OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Put()
         {
-            var result = await DoPut<string>(url, null, null, errorAction);
+            var result = await DoPut<string>(null, null);
             return result.Item2.Error == null;
         }
 
-        public static async Task<bool> Put(
-            string url,
-            string requestData,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Put(string requestData)
         {
-            var result = await DoPut<string>(url, requestData, null, errorAction);
+            var result = await DoPut<string>(requestData, null);
             return result.Item2.Error == null;
         }
 
-        public static async Task<bool> Put(
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<bool> Put(object jsonParams)
         {
-            var result = await DoPut<string>(url, null, jsonParams, errorAction);
+            var result = await DoPut<string>(null, jsonParams);
             return result.Item2.Error == null;
         }
 
-        public static async Task<TResponse> Put<TResponse>(
-            string url,
-            string requestData,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<TResponse> Put<TResponse>(string requestData)
         {
-            return (await DoPut<TResponse>(url, requestData, null, errorAction)).Item1;
+            return (await DoPut<TResponse>(requestData, null)).Item1;
         }
 
-        public static async Task<TResponse> Put<TResponse>(
-            string url,
-            object jsonParams,
-            OnApiCallError errorAction = OnApiCallError.Throw)
+        public async Task<TResponse> Put<TResponse>(object jsonParams)
         {
-            return (await DoPut<TResponse>(url, null, jsonParams, errorAction)).Item1;
+            return (await DoPut<TResponse>(null, jsonParams)).Item1;
         }
 
-        static async Task<Tuple<TResponse, RequestInfo>> DoPut<TResponse>(
-         string url,
-         string requestData,
-         object jsonParams,
-         OnApiCallError errorAction)
+        async Task<Tuple<TResponse, RequestInfo>> DoPut<TResponse>(string requestData, object jsonParams)
         {
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = errorAction,
                 HttpMethod = "PUT",
                 RequestData = requestData,
                 JsonData = jsonParams

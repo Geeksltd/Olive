@@ -10,9 +10,9 @@ namespace Olive
     partial class ApiClient
     {
         const string QUEUE_FOLDER = "-ApiQueue";
-        static object QueueSyncLock = new object();
+        object QueueSyncLock = new object();
 
-        static FileInfo GetQueueFile()
+        FileInfo GetQueueFile()
         {
             lock (QueueSyncLock)
             {
@@ -23,7 +23,7 @@ namespace Olive
             }
         }
 
-        static bool UpdateQueueFile<TEntity, TIdentifier>(IEnumerable<TEntity> items) where TEntity : IQueueable<TIdentifier>
+        bool UpdateQueueFile<TEntity, TIdentifier>(IEnumerable<TEntity> items) where TEntity : IQueueable<TIdentifier>
         {
             var text = JsonConvert.SerializeObject(items);
             if (text.HasValue())
@@ -36,7 +36,7 @@ namespace Olive
             return false;
         }
 
-        public static async Task<IEnumerable<TEntity>> GetQueueItems<TEntity>()
+        public async Task<IEnumerable<TEntity>> GetQueueItems<TEntity>()
         {
             var file = GetQueueFile();
             var text = await file.ReadAllTextAsync();
@@ -48,7 +48,7 @@ namespace Olive
                     });
         }
 
-        static async Task<bool> UpdateQueueItem<TEntity, TIdentifier>(TEntity item) where TEntity : IQueueable<TIdentifier>
+        async Task<bool> UpdateQueueItem<TEntity, TIdentifier>(TEntity item) where TEntity : IQueueable<TIdentifier>
         {
             var queueItems = await GetQueueItems<TEntity>();
             var edited = false;
@@ -68,14 +68,14 @@ namespace Olive
             return false;
         }
 
-        static async Task<bool> AddQueueItem<TEntity, TIdentifier>(TEntity item) where TEntity : IQueueable<TIdentifier>
+        async Task<bool> AddQueueItem<TEntity, TIdentifier>(TEntity item) where TEntity : IQueueable<TIdentifier>
         {
             var queueItems = (await GetQueueItems<TEntity>() ?? new List<TEntity>()).ToList();
             queueItems.Add(item);
             return UpdateQueueFile<TEntity, TIdentifier>(queueItems);
         }
 
-        public static async Task<bool> ApplyQueueItems<TEntity, TIdentifier>() where TEntity : IQueueable<TIdentifier>
+        public async Task<bool> ApplyQueueItems<TEntity, TIdentifier>() where TEntity : IQueueable<TIdentifier>
         {
             var queueItems = await GetQueueItems<TEntity>();
 
