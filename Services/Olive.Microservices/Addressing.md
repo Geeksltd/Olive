@@ -62,6 +62,6 @@ So how can you have those services available so you can get to testing your own 
 ### Option 1
 One option is to host all of the above on your development machine. But it can be a bit painful. Apart from that, the source code of some of the services you depend on may not even be available to you. Or they may have their own dependencies and setup complications.
 
-### Option 2
+### Option 2 (preferred)
 The other option is to use a **hosted version of the dependable services** on a development server which is available via internet. This way when developing your own service you can simply use those to go about your testing.
 
