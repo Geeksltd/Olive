@@ -148,7 +148,8 @@ namespace Olive
 
                         if (System.Diagnostics.Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
 
-                        responseBody = await (ex as WebException)?.GetResponseBody();
+                        if (ex is WebException webEx)
+                            responseBody = await webEx.GetResponseBody();
 
                         if (responseBody.OrEmpty().StartsWith("{\"Message\""))
                         {

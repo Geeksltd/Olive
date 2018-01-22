@@ -14,6 +14,9 @@
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
     </Reference>
+    <Reference Include="Olive.ApiClient">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.ApiClient.dll</HintPath>
+    </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
     </Reference>

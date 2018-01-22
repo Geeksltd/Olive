@@ -12,6 +12,8 @@ namespace Olive
     /// </summary>
     public class Microservice
     {
+        static bool IsAuthenticated;
+
         /// <summary>
         /// Gets the name of the current microservice from the config value of Microservice:Name.
         /// </summary>
@@ -49,18 +51,22 @@ namespace Olive
         /// and returns the authentication cookie value.
         /// Note: Secret is the config value of Microservice:Secret. It should be registered in the Auth service also.
         /// </summary>
-        public static Task<Cookie[]> Authenticate()
+        public static async Task Authenticate()
         {
+            if (IsAuthenticated) return;
+
             var key = Config.Get("Microservice:Secret");
             if (key.IsEmpty()) throw new Exception("Config key value is not specified: Microservice:Secret");
 
-            return Authenticate("auth", $"api/login/service/{Name}/{key}");
+            await Authenticate("auth", $"api/login/service/{Name}/{key}");
+
+            IsAuthenticated = true;
         }
 
         /// <summary>
         /// Authenticates me by sending a Http Get request to the specified auth service url and returns the authentication cookie value from the response cookies.        
         /// </summary>
-        public static async Task<Cookie[]> Authenticate(string authServiceName, string relativeAuthUrl)
+        public static async Task Authenticate(string authServiceName, string relativeAuthUrl)
         {
             var url = Url(authServiceName, relativeAuthUrl);
 
@@ -77,8 +83,15 @@ namespace Olive
 
                 if (responseCookies.None())
                     throw new Exception("Service authentication failed.");
-                return responseCookies;
+
+                ApiClient.SignInAsService(responseCookies);
             }
         }
+
+        /// <summary>
+        /// Creates an Api client to invoke an api of a specified service.
+        /// </summary>
+        public static ApiClient Api(string serviceName, string relativeApiUrl)
+            => new ApiClient(Url(serviceName, relativeApiUrl));
     }
 }

@@ -257,16 +257,18 @@ namespace Olive.Entities
 
             Blob result;
 
-            if (ownerEntity != null && attach)
+            if (ownerEntity != null)
             {
                 result = new Blob(await GetFileDataAsync(), FileName);
-
-                if (!@readonly) Attach(ownerEntity, OwnerProperty, FileAccessMode);
-                else
+                if (attach)
                 {
-                    result.ownerEntity = ownerEntity;
-                    result.OwnerProperty = OwnerProperty;
-                    result.FileAccessMode = FileAccessMode;
+                    if (!@readonly) Attach(ownerEntity, OwnerProperty, FileAccessMode);
+                    else
+                    {
+                        result.ownerEntity = ownerEntity;
+                        result.OwnerProperty = OwnerProperty;
+                        result.FileAccessMode = FileAccessMode;
+                    }
                 }
             }
             else
