@@ -10,7 +10,7 @@ namespace Olive.Entities.Data.SQLite
     public class SqliteManager
     {
         readonly string SQLiteDBLocation;
-        public SqliteManager() => SQLiteDBLocation = Config.GetConnectionString("SQLiteConnection");
+        public SqliteManager() => SQLiteDBLocation = Config.GetConnectionString("AppDatabase");
         public SqliteManager(string sqliteConnection) => SQLiteDBLocation = sqliteConnection;
 
         public void ExecuteSql(string sql)
