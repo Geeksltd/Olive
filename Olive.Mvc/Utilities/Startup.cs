@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Olive.Entities;
-using Olive.Services.Testing;
 using Olive.Web;
 
 namespace Olive.Mvc
@@ -55,25 +53,18 @@ namespace Olive.Mvc
         {
             ConfigureExceptionPage(app, env);
 
-            InitializeDatabase(app, env);
+            InstantiateDatabase(app, env);
 
             app.ConfigureOliveDependencies(env);
-
-            if (WebTestManager.IsTddExecutionMode())
-                app.UseWebTestMiddleware();
 
             app.UseAuthentication()
                 .UseStaticFiles()
                 .UseRequestLocalization(RequestLocalizationOptions)
                 .UseSession()
                 .UseMvc(ConfigureRoutes);
-
-            WebTestManager.CreateReferenceDataBy(CreateReferenceData);
-
-            Task.Factory.RunSync(() => WebTestManager.InitiateTempDatabase(enforceRestart: false, mustRenew: false));
         }
 
-        protected virtual void InitializeDatabase(IApplicationBuilder app, IHostingEnvironment env)
+        protected virtual void InstantiateDatabase(IApplicationBuilder app, IHostingEnvironment env)
             => Entity.InitializeDatabase(Entities.Data.Database.Instance);
 
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)
@@ -110,8 +101,5 @@ namespace Olive.Mvc
             options.Cookie.HttpOnly = true;
             options.Cookie.Name = ".myAuth";
         }
-
-        /// <summary>Invoked by the WebTestManager right after creating a new database.</summary>
-        protected abstract Task CreateReferenceData();
     }
 }

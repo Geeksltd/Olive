@@ -36,14 +36,14 @@ namespace Olive
           this Task<IEnumerable<TSource>> list, Func<TSource, Task<IEnumerable<TResult>>> func)
             => await (await list).Select(func).AwaitAll().SelectMany(x => x);
 
-        public static async Task<IEnumerable<TSource>> Except<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Except<TSource>(
           this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).Except(func);
 
         public static async Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IEnumerable<TSource>> list)
             => (await list).Cast<TResult>();
 
-        public static async Task<IEnumerable<TSource>> Concat<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<IEnumerable<TSource>> list, IEnumerable<TSource> second)
             => (await list).Concat(second);
 
@@ -51,21 +51,21 @@ namespace Olive
           this Task<IEnumerable<TSource>> list, Func<TSource, TResult> func)
             => (await list).Distinct(func);
 
-        public static async Task<TSource> First<TSource, TResult>(
+        public static async Task<TSource> First<TSource>(
           this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).First(func);
 
-        public static async Task<TSource> FirstOrDefault<TSource, TResult>(
+        public static async Task<TSource> FirstOrDefault<TSource>(
           this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).FirstOrDefault(func);
 
-        public static async Task<IEnumerable<TSource>> Intersect<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Intersect<TSource>(
         this Task<IEnumerable<TSource>> list, IEnumerable<TSource> second) => (await list).Intersect(second);
 
-        public static async Task<TSource> Last<TSource, TResult>(
+        public static async Task<TSource> Last<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).Last(func);
 
-        public static async Task<TSource> LastOrDefault<TSource, TResult>(
+        public static async Task<TSource> LastOrDefault<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).LastOrDefault(func);
 
         public static async Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
@@ -74,82 +74,82 @@ namespace Olive
         public static async Task<IOrderedEnumerable<TSource>> OrderByDescending<TSource, TKey>(
         this Task<IEnumerable<TSource>> list, Func<TSource, TKey> func) => (await list).OrderByDescending(func);
 
-        public static async Task<IEnumerable<TSource>> Reverse<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Reverse<TSource>(
         this Task<IEnumerable<TSource>> list) => (await list).Reverse();
 
-        public static async Task<TSource> Single<TSource, TResult>(
+        public static async Task<TSource> Single<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).Single(func);
 
-        public static async Task<TSource> SingleOrDefault<TSource, TResult>(
+        public static async Task<TSource> SingleOrDefault<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).SingleOrDefault(func);
 
-        public static async Task<IEnumerable<TSource>> Union<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Union<TSource>(
         this Task<IEnumerable<TSource>> list, IEnumerable<TSource> second) => (await list).Union(second);
 
-        public static async Task<IEnumerable<TSource>> Where<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Where<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).Where(func);
 
-        public static async Task<IEnumerable<TSource>> Where<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Where<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func) => (await list).Where(func);
 
         public static async Task<IEnumerable<TResult>> Zip<TSource, TSecond, TResult>(
         this Task<IEnumerable<TSource>> list, IEnumerable<TSecond> second, Func<TSource, TSecond, TResult> func) => (await list).Zip(second, func);
 
-        public static async Task<IEnumerable<TSource>> Skip<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Skip<TSource>(
         this Task<IEnumerable<TSource>> list, int count) => (await list).Skip(count);
 
-        public static async Task<IEnumerable<TSource>> SkipWhile<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> SkipWhile<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).SkipWhile(func);
 
-        public static async Task<IEnumerable<TSource>> SkipWhile<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> SkipWhile<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func) => (await list).SkipWhile(func);
 
-        public static async Task<IEnumerable<TSource>> Take<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Take<TSource>(
         this Task<IEnumerable<TSource>> list, int count) => (await list).Take(count);
 
-        public static async Task<IEnumerable<TSource>> Take<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> Take<TSource>(
         this Task<IEnumerable<TSource>> list, int lower, int upper) => (await list).Take(lower, upper);
 
-        public static async Task<IEnumerable<TSource>> TakeWhile<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> TakeWhile<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).TakeWhile(func);
 
-        public static async Task<IEnumerable<TSource>> TakeWhile<TSource, TResult>(
+        public static async Task<IEnumerable<TSource>> TakeWhile<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func) => (await list).TakeWhile(func);
 
-        public static async Task<TSource> Aggregate<TSource, TResult>(
+        public static async Task<TSource> Aggregate<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, TSource, TSource> func) => (await list).Aggregate(func);
 
-        public static async Task<TAccumulate> Aggregate<TSource, TAccumulate, TResult>(
+        public static async Task<TAccumulate> Aggregate<TSource, TAccumulate>(
         this Task<IEnumerable<TSource>> list, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func) => (await list).Aggregate(seed, func);
 
         public static async Task<TResult> Aggregate<TSource, TAccumulate, TResult>(
         this Task<IEnumerable<TSource>> list, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func1, Func<TAccumulate, TResult> func2) => (await list).Aggregate(seed, func1, func2);
 
-        public static async Task<bool> All<TSource, TResult>(
+        public static async Task<bool> All<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).All(func);
 
-        public static async Task<bool> Any<TSource, TResult>(
+        public static async Task<bool> Any<TSource>(
         this Task<IEnumerable<TSource>> list) => (await list).Any();
 
-        public static async Task<bool> Any<TSource, TResult>(
+        public static async Task<bool> Any<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).Any(func);
 
-        public static async Task<bool> Any<TSource, TResult>(
+        public static async Task<bool> Any<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func) => (await list).Any(func);
 
-        public static async Task<decimal> Average<TSource, TResult>(
+        public static async Task<decimal> Average<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, decimal> func) => (await list).Average(func);
 
-        public static async Task<int> Count<TSource, TResult>(
+        public static async Task<int> Count<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func) => (await list).Count(func);
 
-        public static async Task<int> Count<TSource, TResult>(
+        public static async Task<int> Count<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func) => (await list).Count(func);
 
-        public static async Task<decimal> Sum<TSource, TResult>(
+        public static async Task<decimal> Sum<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, decimal> func) => (await list).Sum(func);
 
-        public static async Task<TimeSpan> Sum<TSource, TResult>(
+        public static async Task<TimeSpan> Sum<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, TimeSpan> func) => (await list).Sum(func);
 
         public static async Task<TResult> Max<TSource, TResult>(

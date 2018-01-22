@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -144,6 +145,11 @@ namespace Olive
         /// Will join all items with a BR tag and return the result as a raw html.
         /// </summary>
         public static string ToHtmlLines<T>(this IEnumerable<T> items) => items.ToString("<br/>");
+
+        /// <summary>
+        /// Will join all items with a BR tag and return the result as a raw html.
+        /// </summary>
+        public static Task<string> ToHtmlLines<T>(this Task<IEnumerable<T>> items) => items.ToString("<br/>");
 
         /// <summary>
         /// Gets the same string if it is not null or empty. Otherwise it returns the specified default value.

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Olive.Entities.Data;
 using Olive.Web;
@@ -33,11 +34,11 @@ namespace Olive.Services.Testing
 
         internal static void Restart() => Changes.Clear();
 
-        internal static void DispatchChanges()
+        internal static Task DispatchChanges()
         {
             var response = new XElement("Changes", Changes).ToString();
             Changes.Clear();
-            Context.Response.EndWith(response, "text/xml");
+            return Context.Response.EndWith(response, "text/xml");
         }
     }
 }

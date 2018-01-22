@@ -1,31 +1,30 @@
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace Olive.ApiClient
+namespace Olive
 {
-    partial class ApiHttpClient
+    partial class ApiClient
     {
-        public static string StaleDataWarning = "The latest data cannot be received from the server right now.";
+        public string StaleDataWarning = "The latest data cannot be received from the server right now.";
         const string CACHE_FOLDER = "-ApiCache";
         static object CacheSyncLock = new object();
+
+        FileInfo GetCacheFile<TResponse>() => GetCacheFile<TResponse>(Url);
 
         static FileInfo GetCacheFile<TResponse>(string url)
         {
             lock (CacheSyncLock)
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName<TResponse>()));
-                if (directoryInfo.Exists)
-                {
-                    return directoryInfo.GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
-                }
-                return null;
+                var appName = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent.Name;
+                var name = Path.Combine(Path.GetTempPath(), appName, CACHE_FOLDER, GetTypeName<TResponse>());
+
+                return name.AsDirectory().EnsureExists().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
             }
         }
 
@@ -33,22 +32,24 @@ namespace Olive.ApiClient
         {
             lock (CacheSyncLock)
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName(modified)));
+                var directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName(modified)));
                 if (directoryInfo.Exists)
                 {
                     return directoryInfo.GetFiles();
                 }
+
                 return null;
             }
         }
 
-        static string GetTypeName<T>() => typeof(T).GetGenericArguments().SingleOrDefault()?.Name ?? typeof(T).Name.Replace("[]", "");
+        static string GetTypeName<T>()
+            => typeof(T).GetGenericArguments().SingleOrDefault()?.Name ?? typeof(T).Name.Replace("[]", "");
 
         static string GetTypeName<T>(T modified) => modified.GetType().Name;
 
-        static string GetFullUrl(string baseUrl, object queryParams = null)
+        string GetFullUrl(object queryParams = null)
         {
-            if (queryParams == null) return baseUrl;
+            if (queryParams == null) return Url;
 
             var queryString = queryParams as string;
 
@@ -56,20 +57,20 @@ namespace Olive.ApiClient
                 queryString = queryParams.GetType().GetPropertiesAndFields(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance).Select(p => p.Name + "=" + p.GetValue(queryParams).ToStringOrEmpty().UrlEncode())
                      .Trim().ToString("&");
 
-            if (queryString.LacksAll()) return baseUrl;
+            if (queryString.LacksAll()) return Url;
 
-            if (baseUrl.Contains("?")) return (baseUrl + "&" + queryString).KeepReplacing("&&", "&");
-            return baseUrl + "?" + queryString;
+            if (Url.Contains("?")) return (Url + "&" + queryString).KeepReplacing("&&", "&");
+            return Url + "?" + queryString;
         }
 
-        static bool HasValue<TType>(TType value)
+        bool HasValue<TType>(TType value)
         {
             if (ReferenceEquals(value, null)) return false;
             if (value.Equals(default(TType))) return false;
             return true;
         }
 
-        public static async Task<TResponse> Get<TResponse>(string relativeUrl, object queryParams = null, OnError errorAction = OnError.Throw, ApiResponseCache cacheChoice = ApiResponseCache.Accept, Func<TResponse, Task> refresher = null)
+        public async Task<TResponse> Get<TResponse>(object queryParams = null, ApiResponseCache cacheChoice = ApiResponseCache.Accept, Func<TResponse, Task> refresher = null)
         {
             if (refresher != null && cacheChoice != ApiResponseCache.PreferThenUpdate)
                 throw new ArgumentException("refresher can only be provided when using ApiResponseCache.PreferThenUpdate.");
@@ -77,51 +78,51 @@ namespace Olive.ApiClient
             if (refresher == null && cacheChoice == ApiResponseCache.PreferThenUpdate)
                 throw new ArgumentException("When using ApiResponseCache.PreferThenUpdate, refresher must be specified.");
 
-            relativeUrl = GetFullUrl(relativeUrl, queryParams);
+            Url = GetFullUrl(queryParams);
 
             var result = default(TResponse);
             if (cacheChoice == ApiResponseCache.Prefer || cacheChoice == ApiResponseCache.PreferThenUpdate)
             {
-                result = GetCachedResponse<TResponse>(relativeUrl);
+                result = GetCachedResponse<TResponse>();
                 if (HasValue(result))
                 {
                     if (cacheChoice == ApiResponseCache.PreferThenUpdate)
                         new Thread(async () =>
                         {
-                            await RefreshUponUpdatedResponse(relativeUrl, refresher);
+                            await RefreshUponUpdatedResponse(refresher);
                         }).Start();
                     return result;
                 }
             }
 
-            var request = new RequestInfo(relativeUrl) { ErrorAction = errorAction, HttpMethod = "GET" };
+            var request = new RequestInfo(this) { HttpMethod = "GET" };
 
             if (await request.Send())
             {
                 result = request.ExtractResponse<TResponse>();
 
                 if (request.Error == null)
-                    await GetCacheFile<TResponse>(relativeUrl).WriteAllTextAsync(request.ResponseText);
+                    await GetCacheFile<TResponse>().WriteAllTextAsync(request.ResponseText);
             }
 
             if (request.Error != null && cacheChoice != ApiResponseCache.Refuse)
             {
-                result = GetCachedResponse<TResponse>(relativeUrl);
-                //if (HasValue(result) && cacheChoice == ApiResponseCache.AcceptButWarn)
+                result = GetCachedResponse<TResponse>();
+                // if (HasValue(result) && cacheChoice == ApiResponseCache.AcceptButWarn)
                 //    await Alert.Toast(StaleDataWarning);
             }
 
             return result;
         }
 
-        static async Task RefreshUponUpdatedResponse<TResponse>(string url, Func<TResponse, Task> refresher)
+        async Task RefreshUponUpdatedResponse<TResponse>(Func<TResponse, Task> refresher)
         {
             await Task.Delay(50);
 
             string localCachedVersion;
             try
             {
-                localCachedVersion = (await GetCacheFile<TResponse>(url).ReadAllTextAsync()).CreateSHA1Hash();
+                localCachedVersion = (await GetCacheFile<TResponse>().ReadAllTextAsync()).CreateSHA1Hash();
                 if (localCachedVersion.LacksAll()) throw new Exception("Local cached file's hash is empty!");
             }
             catch (Exception ex)
@@ -131,9 +132,8 @@ namespace Olive.ApiClient
                 return; // High concurrency perhaps.
             }
 
-            var request = new RequestInfo(url)
+            var request = new RequestInfo(this)
             {
-                ErrorAction = OnError.Throw,
                 HttpMethod = "GET",
                 LocalCachedVersion = localCachedVersion
             };
@@ -154,52 +154,16 @@ namespace Olive.ApiClient
                 var result = request.ExtractResponse<TResponse>();
                 if (request.Error == null)
                 {
-                    await GetCacheFile<TResponse>(url).WriteAllTextAsync(request.ResponseText);
+                    await GetCacheFile<TResponse>().WriteAllTextAsync(request.ResponseText);
                     await refresher(result);
                 }
             }
             catch (Exception ex) { Debug.WriteLine(ex); }
         }
 
-        static async Task UpdateCacheUponOfflineModification<TResponse, TIdentifier>(TResponse modified, string httpMethod) where TResponse : IQueueable<TIdentifier>
+        TResponse GetCachedResponse<TResponse>()
         {
-            await Task.Delay(50);
-
-            // Get all cached files for this type
-            var cachedFiles = GetTypeCacheFiles(modified);
-            foreach (var file in cachedFiles)
-            {
-                var records = DeserializeResponse<IEnumerable<TResponse>>(file).ToList();
-                var changed = false;
-
-                // If the file contains the modified row, update it
-                if (httpMethod == "DELETE")
-                {
-                    var deletedRecords = records.Where(x => EqualityComparer<TIdentifier>.Default.Equals(x.ID, modified.ID));
-                    if (deletedRecords.Any())
-                    {
-                        records.RemoveAll(x => deletedRecords.Contains(x));
-                        changed = true;
-                    }
-                }
-                else if (httpMethod == "PATCH" || httpMethod == "PUT")
-                    records?.Do(record =>
-                    {
-                        record = modified;
-                        changed = true;
-                    });
-
-                if (!changed) continue;
-                // If cache file is edited, rewrite it
-                var newResponseText = JsonConvert.SerializeObject(records);
-                if (newResponseText.HasValue())
-                    await file.WriteAllTextAsync(newResponseText);
-            }
-        }
-
-        static TResponse GetCachedResponse<TResponse>(string url)
-        {
-            var file = GetCacheFile<TResponse>(url);
+            var file = GetCacheFile<TResponse>();
             return DeserializeResponse<TResponse>(file);
         }
 
@@ -223,7 +187,7 @@ namespace Olive.ApiClient
         /// <summary>
         /// Deletes all cached Get API results.
         /// </summary>
-        public static Task DisposeCache()
+        public Task DisposeCache()
         {
             lock (CacheSyncLock)
             {
@@ -238,7 +202,7 @@ namespace Olive.ApiClient
         /// <summary>
         /// Deletes the cached Get API result for the specified API url.
         /// </summary>
-        public static Task DisposeCache<TResponse>(string getApiUrl)
+        public Task DisposeCache<TResponse>(string getApiUrl)
         {
             lock (CacheSyncLock)
             {

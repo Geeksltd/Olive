@@ -2,15 +2,15 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Olive.ApiClient
+namespace Olive
 {
-    public enum OnError { Throw, Ignore, IgnoreAndNotify }
+    public enum OnApiCallError { Throw, Ignore, IgnoreAndNotify }
 
     public static class EnumExtensions
     {
-        public static Task Apply(this OnError strategy, string error) => Apply(strategy, new Exception(error));
+        public static Task Apply(this OnApiCallError strategy, string error) => Apply(strategy, new Exception(error));
 
-        public static Task Apply(this OnError strategy, Exception error, string friendlyMessage = null)
+        public static Task Apply(this OnApiCallError strategy, Exception error, string friendlyMessage = null)
         {
             if (error == null) return Task.CompletedTask;
 
@@ -18,11 +18,11 @@ namespace Olive.ApiClient
 
             switch (strategy)
             {
-                case OnError.IgnoreAndNotify:
+                case OnApiCallError.IgnoreAndNotify:
                     // TODO: Log.NotifyByEmail...()
                     return Task.CompletedTask;
-                case OnError.Ignore: return Task.CompletedTask;
-                case OnError.Throw: throw error;
+                case OnApiCallError.Ignore: return Task.CompletedTask;
+                case OnApiCallError.Throw: throw error;
                 default: throw new NotSupportedException(strategy + " is not implemented.");
             }
         }

@@ -44,8 +44,7 @@ namespace Olive
         /// </summary>
         public static IEnumerable<KeyValuePair<string, string>> GetConnectionStrings()
         {
-            return Configuration.GetSection(CONNECTION_STRINGS_CONFIG_ROOT).GetChildren()
-                .Select(section => new KeyValuePair<string, string>(section.Key, section.Value));
+            return SettingsUnder(CONNECTION_STRINGS_CONFIG_ROOT);
         }
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace Olive
         /// </summary>
         /// <param name="key">The key of the configuration section.</param>
         /// <param name="instance">The object to bind.</param>
-        public static void Bind(string key, object instance) => Configuration.GetSection(key).Bind(instance);
+        public static void Bind(string key, object instance) => Section(key).Bind(instance);
 
         /// <summary>
         /// Attempts to bind a new instance of given type to configuration values by matching
@@ -65,10 +64,20 @@ namespace Olive
         public static T Bind<T>(string key) where T : new()
         {
             var result = new T();
-
-            Configuration.GetSection(key).Bind(result);
-
+            Section(key).Bind(result);
             return result;
+        }
+
+        public static IConfigurationSection Section(string key) => Configuration.GetSection(key);
+
+        /// <summary>
+        /// Gets the child nodes under a specified parent key.
+        /// </summary>
+        public static IEnumerable<KeyValuePair<string, string>> SettingsUnder(string key)
+        {
+            return Section(key)
+                   .GetChildren()
+                   .Select(section => KeyValuePair.Create(section.Key, section.Value));
         }
 
         /// <summary>

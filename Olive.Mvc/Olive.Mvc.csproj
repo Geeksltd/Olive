@@ -28,9 +28,6 @@
     <Reference Include="Olive.Security">
       <HintPath>..\@Assemblies\netcoreapp2.0\Olive.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Olive.Services.Testing">
-      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.Services.Testing.dll</HintPath>
-    </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
     </Reference>

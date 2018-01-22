@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Olive.ClientApi</id>
-    <version>1.0.24</version>
+    <id>Olive.ApiClient</id>
+    <version>1.0.28</version>
     <title>Olive ClientApi</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
