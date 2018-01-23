@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Security.Claims" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
     </Reference>
