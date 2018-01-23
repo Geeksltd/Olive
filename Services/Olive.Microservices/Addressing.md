@@ -64,8 +64,9 @@ One option is to host all of the above on your development machine. But it can b
 ### Option 2 (preferred)
 The other option is to use a **hosted version of the dependable services** on a development server which is available via internet. This way when developing your own service you can simply use those to go about your testing.
 
-> To achieve this in your local HOSTS file you should map the full url to those services to the IP address of the dev server.
+> To achieve this in your local HOSTS file you should map the full url to those services to the IP address of the dev server. This should be done both on the dev server's hosts file as well as your development machine's.
 
 For example if your dev server's ip is 192.168.0.100 you should add:
 ***auth.my-solution.dev.com     192.168.0.100
 theme.my-solution.dev.com     192.168.0.100***
+
