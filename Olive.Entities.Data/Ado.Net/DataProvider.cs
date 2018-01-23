@@ -35,13 +35,13 @@ namespace Olive.Entities.Data
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Entity.Database.Save(item, SaveBehaviour.BypassAll);
+                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task BulkUpdate(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Entity.Database.Save(item, SaveBehaviour.BypassAll);
+                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task<int> Count(IDatabaseQuery query)

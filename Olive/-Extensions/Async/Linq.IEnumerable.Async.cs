@@ -51,7 +51,7 @@ namespace Olive
         }
 
         public static async Task<IEnumerable<T>> ConcatAsync<T>(
-          this IEnumerable<T> list, Task<IEnumerable<T>> second) => list.Concat(await second);
+          this IEnumerable<T> list, Task<IEnumerable<T>> second) => list.Concat((await second).OrEmpty());
 
         public static Task<IEnumerable<T>> ConcatAsync<T>(
           this IEnumerable<T> list, IEnumerable<Task<T>> second) => list.ConcatAsync(second.AwaitAll());
@@ -99,7 +99,7 @@ namespace Olive
         }
 
         public static async Task<IEnumerable<T>> IntersectAsync<T>(
-        this IEnumerable<T> list, Task<IEnumerable<T>> second) => list.Intersect(await second);
+        this IEnumerable<T> list, Task<IEnumerable<T>> second) => list.Intersect((await second).OrEmpty());
 
         public static Task<IEnumerable<T>> IntersectAsync<T>(
         this IEnumerable<T> list, IEnumerable<Task<T>> second) => list.IntersectAsync(second.AwaitAll());
@@ -186,11 +186,11 @@ namespace Olive
             return tasks.SingleOrDefault(x => x.Predicate.Result).Value;
         }
 
-        public static async Task<IEnumerable<T>> UnionAsync<T>(this IEnumerable<T> list, Task<IEnumerable<T>> second) => list.Union(await second);
+        public static async Task<IEnumerable<T>> UnionAsync<T>(this IEnumerable<T> list, Task<IEnumerable<T>> second) => list.Union((await second).OrEmpty());
 
         public static Task<IEnumerable<T>> UnionAsync<T>(this IEnumerable<T> list, IEnumerable<Task<T>> second) => list.UnionAsync(second.AwaitAll());
 
-        public static async Task<IEnumerable<TResult>> ZipAsync<TSource, TSecond, TResult>(this IEnumerable<TSource> list, Task<IEnumerable<TSecond>> second, Func<TSource, TSecond, TResult> func) => list.Zip(await second, func);
+        public static async Task<IEnumerable<TResult>> ZipAsync<TSource, TSecond, TResult>(this IEnumerable<TSource> list, Task<IEnumerable<TSecond>> second, Func<TSource, TSecond, TResult> func) => list.Zip((await second).OrEmpty(), func);
 
         public static Task<IEnumerable<TResult>> ZipAsync<TSource, TSecond, TResult>(this IEnumerable<TSource> list, IEnumerable<Task<TSecond>> second, Func<TSource, TSecond, TResult> func) => list.ZipAsync(second.AwaitAll(), func);
 

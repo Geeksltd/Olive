@@ -95,7 +95,7 @@ namespace Olive.Entities.Data
             {
                 try
                 {
-                    if (await Entity.Database.Get(objectID, actual) is Entity result) return result;
+                    if (await Database.Instance.Get(objectID, actual) is Entity result) return result;
                 }
                 catch { continue; }
             }

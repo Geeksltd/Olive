@@ -1290,5 +1290,18 @@ namespace Olive
 
             return tasks.Select(x => x.Result);
         }
+
+        public static T[] PadRight<T>(this T[] array, int size, T padItemValue)
+        {
+            if (array.Length >= size) return array;
+
+            var result = new T[size];
+            array.CopyTo(result, 0);
+
+            for (var i = array.Length; i < size; i++)
+                result[i] = padItemValue;
+
+            return result;
+        }
     }
 }

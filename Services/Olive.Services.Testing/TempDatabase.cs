@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Olive.Entities;
+using Olive.Entities.Data;
 
 namespace Olive.Services.Testing
 {
@@ -27,7 +28,7 @@ namespace Olive.Services.Testing
                 TempDatabaseInitiated = generator.Process();
                 createdNew = generator.CreatedNewDatabase;
 
-                await Entity.Database.Refresh();
+                await Database.Instance.Refresh();
                 SqlConnection.ClearAllPools();
             }
             finally { IsDatabaseBeingCreated = false; }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Olive.Entities;
+using Olive.Entities.Data;
 using Olive.Web;
 
 namespace Olive.Services.Testing
@@ -324,7 +325,7 @@ namespace Olive.Services.Testing
                     var attachTime = LocalTime.Now;
                     await AttachDatabase(connection, mdfFile, ldfFile);
                     Debug.WriteLine("Total time for attaching database: " + LocalTime.Now.Subtract(attachTime).Milliseconds);
-                    await Entity.Database.Refresh();
+                    await Database.Instance.Refresh();
                 }
 
                 Debug.WriteLine("Total time for restoreing database: " + LocalTime.Now.Subtract(restoreTime).Milliseconds);
