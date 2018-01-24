@@ -40,6 +40,9 @@ namespace Olive
           this Task<TSource[]> list, Func<TSource, bool> func)
             => list.ForLinq().Except(func);
 
+        public static Task<IEnumerable<TSource>> ExceptNull<TSource>(this Task<TSource[]> list)
+           => list.ForLinq().ExceptNull();
+
         public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<TSource[]> list)
             => list.ForLinq().Cast<TSource, TResult>();
 
@@ -47,9 +50,11 @@ namespace Olive
           this Task<TSource[]> list, IEnumerable<TSource> second)
             => list.ForLinq().Concat(second);
 
-        public static Task<IEnumerable<TSource>> Distinct<TSource, TResult>(
-          this Task<TSource[]> list, Func<TSource, TResult> func)
+        public static Task<IEnumerable<TSource>> Distinct<TSource, TResult>(this Task<TSource[]> list, Func<TSource, TResult> func)
             => list.ForLinq().Distinct(func);
+
+        public static Task<IEnumerable<TSource>> Distinct<TSource>(this Task<TSource[]> list)
+            => list.ForLinq().Distinct();
 
         public static Task<TSource> First<TSource>(
           this Task<TSource[]> list, Func<TSource, bool> func)
@@ -131,17 +136,20 @@ namespace Olive
         public static Task<bool> All<TSource>(this Task<TSource[]> list, Func<TSource, bool> func)
             => list.ForLinq().All(func);
 
-        public static Task<bool> Any<TSource>(
-        this Task<TSource[]> list) => list.ForLinq().Any();
+        public static Task<bool> Any<TSource>(this Task<TSource[]> list)
+            => list.ForLinq().Any();
 
-        public static Task<bool> Any<TSource>(
-        this Task<TSource[]> list, Func<TSource, bool> func) => list.ForLinq().Any(func);
+        public static Task<bool> Any<TSource>(this Task<TSource[]> list, Func<TSource, bool> func)
+            => list.ForLinq().Any(func);
 
-        public static Task<bool> Any<TSource>(
-        this Task<TSource[]> list, Func<TSource, int, bool> func) => list.ForLinq().Any(func);
+        public static Task<bool> Any<TSource>(this Task<TSource[]> list, Func<TSource, Task<bool>> func)
+            => list.ForLinq().Any(func);
 
-        public static Task<decimal> Average<TSource>(
-        this Task<TSource[]> list, Func<TSource, decimal> func) => list.ForLinq().Average(func);
+        public static Task<bool> Any<TSource>(this Task<TSource[]> list, Func<TSource, int, bool> func)
+            => list.ForLinq().Any(func);
+
+        public static Task<decimal> Average<TSource>(this Task<TSource[]> list, Func<TSource, decimal> func)
+            => list.ForLinq().Average(func);
 
         public static Task<int> Count<TSource>(
         this Task<TSource[]> list, Func<TSource, bool> func) => list.ForLinq().Count(func);

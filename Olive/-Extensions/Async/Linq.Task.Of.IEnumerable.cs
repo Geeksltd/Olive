@@ -40,12 +40,18 @@ namespace Olive
           this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).OrEmpty().Except(func);
 
+        public static Task<IEnumerable<TSource>> ExceptNull<TSource>(
+         this Task<IEnumerable<TSource>> list) => list.Where(x => !ReferenceEquals(x, null));
+
         public static async Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IEnumerable<TSource>> list)
             => (await list).OrEmpty().Cast<TResult>();
 
         public static async Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<IEnumerable<TSource>> list, IEnumerable<TSource> second)
             => (await list).OrEmpty().Concat(second);
+
+        public static async Task<IEnumerable<TSource>> Distinct<TSource>(
+          this Task<IEnumerable<TSource>> list) => (await list).OrEmpty().Distinct();
 
         public static async Task<IEnumerable<TSource>> Distinct<TSource, TResult>(
           this Task<IEnumerable<TSource>> list, Func<TSource, TResult> func)
@@ -154,6 +160,10 @@ namespace Olive
         public static async Task<bool> Any<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).OrEmpty().Any(func);
+
+        public static async Task<bool> Any<TSource>(
+        this Task<IEnumerable<TSource>> list, Func<TSource, Task<bool>> func)
+            => await (await list).OrEmpty().AnyAsync(func);
 
         public static async Task<bool> Any<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func)
