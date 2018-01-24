@@ -47,7 +47,7 @@ namespace Olive.Entities.Data
         public async Task<int> Count(IDatabaseQuery query)
         {
             var command = GenerateCountCommand(query);
-            return (int)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+            return Convert.ToInt32(await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters)));
         }
 
         public static List<string> ExtractIds(string idsXml) =>
