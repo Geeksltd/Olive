@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 24 Jan 2018
+Change .Common.scss using the latest version from the template
+
 ## 19 Jan 2018
 - Update bower.json to use bootstrap v4.0.0
 
