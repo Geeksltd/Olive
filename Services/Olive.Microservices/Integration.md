@@ -38,26 +38,33 @@ namespace {PublisherName}Service
             if ({Some invalid condition}) return BadRequest();
 
             MyReturnType result = ....;
-
             return Json(result);
         }
-    }
-    
-    public class MyReturnType
-    {
-         public string Property1 {get; set;}
-         public int Property2 {get; set;}
-         ...
+        
+        public class MyReturnType
+        {
+            public string Property1 {get; set;}
+            public int Property2 {get; set;}
+            ...
+        }
     }
 }
 ```
-### Main points
+### Best practices
 - Place this file in ***Website\Api*** folder
-- The **namespace** should be the name of the micro service that publishes the Api followed by *Service*. 
-- The
+- The **namespace** should be the name of the microservice that publishes the Api followed by *Service*. 
+- The controller **class name** should be the logical name of this particular Api and ideally named after the purpose that it serves for one particular consumer.
+- If the Api returns an object with several fields, create a basic DTO (Data Transfer Object) sub-class with no methods.
+
+> Aim to create **one Api controller class per consumer micro-service** and even name it after that.
+
+**Warning**
+Of course the are cases where multiple consumer microservices seem to need the same thing, and you might be tempted to generalise the Api to be used by all of them. However **beware** that: 
+- Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B. 
+- Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
 
 ### Tips
-- Add the appropriate [Authorize] 
+
 
 **Step 1**
 In the publisher service under *Website\Api* folder add a new class called ***XxxxApi.cs***.
