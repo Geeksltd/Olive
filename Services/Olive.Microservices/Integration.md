@@ -19,3 +19,45 @@ However that way you have to write a lot of code which can be time consuming and
 To free you from the problems mentioned above, there is a utility named **OliveApiProxyGenerator** that can automatically create a proxy Dll for your Apis. You will then install that dll in the consumer services and use it to access the API with maximume ease.
 
 It will automatically take care of all of the problems mentioned above and gives you a strongly typed and simplified approach to **invoke remote Apis as if they are local functions in the same consumer service**.
+
+## Creating an Api
+To benefit from the architecture and tools explained here you should use the pattern explained here for implementing your Apis.
+
+```csharp
+namespace {PublisherName}Service
+{
+    [Route("api")]
+    public class {SomeName}Api : BaseController
+    {
+        [HttpGet, Route("...")]
+        [Returns(typeof(MyReturnType)]
+        // Todo: add the required [Authorize(Role=...)] settings
+        public async Task<IActionResult> MyFunctionName(string someParameter1, stringsomeParameter2)
+        {
+            // TODO: Add any custom validation
+            if ({Some invalid condition}) return BadRequest();
+
+            MyReturnType result = ....;
+
+            return Json(result);
+        }
+    }
+    
+    public class MyReturnType
+    {
+         public string Property1 {get; set;}
+         public int Property2 {get; set;}
+         ...
+    }
+}
+```
+### Main points
+- Place this file in ***Website\Api*** folder
+- The **namespace** should be the name of the micro service that publishes the Api followed by *Service*. 
+- The
+
+### Tips
+- Add the appropriate [Authorize] 
+
+**Step 1**
+In the publisher service under *Website\Api* folder add a new class called ***XxxxApi.cs***.
