@@ -94,11 +94,11 @@ namespace MyPublisherService
     public class MyApi
     {
         Action<ApiClient> Config;
-        public MyApi Create(Action<ApiClient> config) => Config = config;
+        public static MyApi Create(Action<ApiClient> config) => Config = config;
         
-        public MyApi AsServiceUser() : this(x=>x.AsServiceUser()) { }
+        public static MyApi AsServiceUser() => Create(x => x.AsServiceUser());
         
-        public MyApi AsHttpUser() : this(x=>x.AsHttpUser()) { }        
+        public static MyApi AsHttpUser() => Create(x => x.AsHttpUser());
     
         // Note: For each Api action method a method with the same name and parameters will be generated.
         // But the return type will be determined by the [Returns...] attribute.
