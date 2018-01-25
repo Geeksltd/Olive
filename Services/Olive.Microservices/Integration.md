@@ -86,7 +86,7 @@ var result = await MyPublisherService.MyApi.AsServiceUser().MyFunction(...);
 
 
 # Under the hood: The generated proxy dll
-When running generate-proxy.exe a static class will be generated with the *same class name and namespace* as the Api controller.
+When running generate-proxy.exe a class will be generated with the *same class name and namespace* as the Api controller.
 
 ```csharp
 namespace MyPublisherService
