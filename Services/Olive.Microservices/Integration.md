@@ -24,7 +24,7 @@ It will automatically take care of all of the problems mentioned above and gives
 To benefit from the architecture and tools explained here you should use the pattern explained here for implementing your Apis.
 
 ```csharp
-namespace {PublisherName}Service
+namespace MyPublisherService
 {
     [Route("api")]
     public class MyApi : BaseController
@@ -67,10 +67,10 @@ Of course the are cases where multiple consumer microservices seem to need the s
 2. Right click on the Api controller class in Visual Studio solution explorer.
 3. Select "Generate Proxy Dll..." which will just invoke the following command:
 ```
-..\M#\lib\generate-proxy.exe /assembly:....Websit.dll /serviceName:"{PublisherServiceName}" /controller:{Namespace}.MyApi /output:....Website\obj\proxy-gen\{Namespace}.MyApi\
+..\M#\lib\generate-proxy.exe /assembly:....Websit.dll /serviceName:"«PublisherService»}" /controller:MyPublisherService.MyApi /output:....Website\obj\proxy-gen\MyPublisherService.MyApi\
 ```
 
-> Note: *{PublisherServiceName}* will be set from *appSettings.config*, under the key ***Microservice:Name***
+> Note: ***«PublisherService»*** will be set from *appSettings.config*, under the key ***Microservice:Name***
 
 The generate-proxy.exe tool will generate a *.Net class library project* as explained below.
 
@@ -80,7 +80,7 @@ A static class will be generated with the *same class name and namespace* as the
 For each **Api action method** it will generate a static method with the same name
 
 ```csharp
-namespace {PublisherName}Service
+namespace MyPublisherService
 {
     public class MyApi
     {
@@ -107,7 +107,7 @@ If the api method is a HttpGet one, the body of the generated method will be bas
 
 ```csharp
  var url = new RouteTemplate("{RouteTemplate}").Merge(new { someParameter1 , stringsomeParameter2 });
- var client = Microservice.Api("{PublisherServiceName}", url);
+ var client = Microservice.Api("«PublisherService»", url);
  Config?.Invoke(client);
  return await client.Get<MyReturnType>(ApiResponseCache.Prefer);
 ```
@@ -128,5 +128,5 @@ In addition to the proxy class, it will generate a DTO class for each of the fol
 In the consumer application (service) reference the generated dll.
 You can then create a proxy using the appropriate security option, and then call the remote Api function. For example:
 ```csharp
-var result = await {PublisherName}Service.MyApi.AsServiceUser().MyFunction(...);
+var result = await MyPublisherService.MyApi.AsServiceUser().MyFunction(...);
 ```
