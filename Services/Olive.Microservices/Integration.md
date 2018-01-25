@@ -52,19 +52,39 @@ namespace {PublisherName}Service
 ```
 ### Best practices
 - Place this file in ***Website\Api*** folder
-- The **namespace** should be the name of the microservice that publishes the Api followed by *Service*. 
-- The controller **class name** should be the logical name of this particular Api and ideally named after the purpose that it serves for one particular consumer.
+- The **namespace** should be the name of the microservice that publishes the Api followed by *"Service"*. 
+- The controller **class name** should be the logical name of this particular Api followed by *"Api"* and ideally named after the purpose that it serves for one particular consumer.
 - If the Api returns an object with several fields, create a basic DTO (Data Transfer Object) sub-class with no methods.
 
 > Aim to create **one Api controller class per consumer micro-service** and even name it after that.
 
-**Warning**
+#### Warning
 Of course the are cases where multiple consumer microservices seem to need the same thing, and you might be tempted to generalise the Api to be used by all of them. However **beware** that: 
 - Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B. 
 - Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
 
-### Tips
+## Generating an Api Proxy
+1. Compile the website project (which includes the Api code)
+2. Right click on the Api controller class in Visual Studio solution explorer.
+3. Select "Generate Proxy Dll..." which will just invoke the following command:
+```
+..\M#\lib\generate-proxy.exe /assembly:....Websit.dll /serviceName:"{PublisherServiceName}" /controller:{Namespace}.{ControllerClassName} /output:....Website\obj\proxy-gen\{Namespace}.{ControllerClassName}\
+```
 
+> Note: *{PublisherServiceName}* will be set from *appSettings.config*, under the key ***Microservice:Name***
 
-**Step 1**
-In the publisher service under *Website\Api* folder add a new class called ***XxxxApi.cs***.
+#### What is generated?
+
+The generate-proxy.exe tool will generate a *.Net class library project*. Inside it, a static class will be generated with the *same class name and namespace* as the source Api.
+
+In addition it will generate a DTO class for each of the following:
+- Return type of the Api method (as specified by the attribute).
+- From any argument of the Api method other than primitive types.
+
+It will also generate a static method with the same name as the Api method with the following implementation:
+```csharp
+ return await Microservice.Api("*{PublisherServiceName}*", "*{Route}*")
+                .AsServiceUser()
+                .Get<Person[]>(ApiResponseCache.Prefer);
+```
+
