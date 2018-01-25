@@ -86,14 +86,16 @@ namespace {PublisherName}Service
     public class {SomeName}Api
     {
         Action<ApiClient> Config;
-        public {SomeName}Api Proxy(Action<ApiClient> config = null)
-        {
-            Config = config;
-        }
+        public {SomeName}Api Create(Action<ApiClient> config) => Config = config;
+        
+        public {SomeName}Api AsServiceUser() : this(x=>x.AsServiceUser()) { }
+        
+        public {SomeName}Api AsHttpUser() : this(x=>x.AsHttpUser()) { }        
     
         // Note: For each Api action method a static method with the same name and parameters will be generated.
         // But the return type will be determined by the [Returns...] attribute.
-        public async Task<MyReturnType> MyFunctionName(string someParameter1, stringsomeParameter2)
+        public async Task<MyReturnType> MyFunctionName(string someParameter1, stringsomeParameter2, 
+           ApiResponseCache cacheChoice = ApiResponseCache.Accept)
         {
            ...
         }
@@ -109,7 +111,6 @@ If the api method is a HttpGet one, the body of the generated method will be bas
  var client = Microservice.Api("{PublisherServiceName}", url);
  Config?.Invoke(client);
  return await 
-                .AsServiceUser()
                 .Get<{ReturnType}>(ApiResponseCache.Prefer);
 ```
 
@@ -126,4 +127,8 @@ In addition to the proxy class, it will generate a DTO class for each of the fol
 - From any argument of the Api method other than primitive types.
 
 ## Using the generated proxy
-In the consumer application (service) 
+In the consumer application (service) reference the generated dll.
+You can then create a proxy using the appropriate security option, and then call the remote Api function. For example:
+```csharp
+var result = await {PublisherName}Service.{SomeName}Api.AsServiceUser().MyFunctionName(...);
+```
