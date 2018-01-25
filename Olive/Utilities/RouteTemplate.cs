@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Olive.Mvc
+namespace Olive
 {
+    /// <summary>
+    /// Provides processing features for url route patterns.
+    /// </summary>
     public class RouteTemplate
     {
         public string Template;
@@ -69,7 +72,14 @@ namespace Olive.Mvc
         /// If any parameter in the template is non-optional, and yet a value has not been provided, it will throw an error.
         /// If any of the provided route data parameters aren't expected in the pattern, then they will be added to the query string.
         /// </summary>
-        internal string Merge(Dictionary<string, string> routeData)
+        public string Merge(object routeData) => Merge(new Dictionary<string, string>().AddFromProperties(routeData));
+
+        /// <summary>
+        /// It will merge the provided route data parameters into the pattern of the template.
+        /// If any parameter in the template is non-optional, and yet a value has not been provided, it will throw an error.
+        /// If any of the provided route data parameters aren't expected in the pattern, then they will be added to the query string.
+        /// </summary>
+        public string Merge(Dictionary<string, string> routeData)
         {
             if (routeData == null)
                 throw new ArgumentNullException(nameof(routeData));

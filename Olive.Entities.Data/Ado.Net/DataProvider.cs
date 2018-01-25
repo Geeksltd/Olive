@@ -26,7 +26,7 @@ namespace Olive.Entities.Data
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }
 
-        static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>" };
+        static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
 
         string connectionStringKey, connectionString;
 
