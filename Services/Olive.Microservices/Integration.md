@@ -83,11 +83,17 @@ For each **Api action method** it will generate a static method with the same na
 ```csharp
 namespace {PublisherName}Service
 {
-    public static class {SomeName}Api
+    public class {SomeName}Api
     {
+        Action<ApiClient> Config;
+        public {SomeName}Api Proxy(Action<ApiClient> config = null)
+        {
+            Config = config;
+        }
+    
         // Note: For each Api action method a static method with the same name and parameters will be generated.
         // But the return type will be determined by the [Returns...] attribute.
-        public static async Task<MyReturnType> MyFunctionName(string someParameter1, stringsomeParameter2)
+        public async Task<MyReturnType> MyFunctionName(string someParameter1, stringsomeParameter2)
         {
            ...
         }
@@ -100,7 +106,9 @@ If the api method is a HttpGet one, the body of the generated method will be bas
 
 ```csharp
  var url = new RouteTemplate("{RouteTemplate}").Merge(new { someParameter1 , stringsomeParameter2 });
- return await Microservice.Api("{PublisherServiceName}", url)
+ var client = Microservice.Api("{PublisherServiceName}", url);
+ Config?.Invoke(client);
+ return await 
                 .AsServiceUser()
                 .Get<{ReturnType}>(ApiResponseCache.Prefer);
 ```
@@ -116,3 +124,6 @@ Note: If the method takes no input parameters, then the whole line will simply b
 In addition to the proxy class, it will generate a DTO class for each of the following:
 - Return type of the Api method (as specified by the attribute).
 - From any argument of the Api method other than primitive types.
+
+## Using the generated proxy
+In the consumer application (service) 
