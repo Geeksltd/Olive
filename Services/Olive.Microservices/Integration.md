@@ -15,7 +15,7 @@ However that way you have to write a lot of code which can be time consuming and
 - Making sure the correct version of the service is being invoked (Dev v.s. Staging v.s. Production)
 - Create DTO classes for request and response types
 
-## Api proxy generator
+## Solution: Olive Api Proxy Generator
 To free you from the problems mentioned above, there is a utility named **OliveApiProxyGenerator** that can automatically create a proxy Dll for your Apis. You will then install that dll in the consumer services and use it to access the API with maximume ease.
 
 It will automatically take care of all of the problems mentioned above and gives you a strongly typed and simplified approach to **invoke remote Apis as if they are local functions in the same consumer service**.
