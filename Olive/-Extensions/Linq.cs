@@ -35,8 +35,6 @@ namespace Olive
         public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator, string lastSeperator) =>
             list.Select(i => format.FormatWith(i)).ToString(seperator, lastSeperator);
 
-        
-
         public static bool Any<T>(this IEnumerable<T> list, Func<T, int, bool> predicate) => list.Any(predicate);
 
         public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator)
@@ -732,7 +730,7 @@ namespace Olive
         /// </summary>
         public static string ToLinesString<T>(this IEnumerable<T> list) => list.ToString(Environment.NewLine);
 
-        
+
 
         /// <summary>
         /// Chops a list into same-size smaller lists. For example:
@@ -792,8 +790,8 @@ namespace Olive
             list.Add(newItem);
         }
 
-      
-       
+
+
         /// <summary>
         /// Returns all elements of this list except those at the specified indices.
         /// </summary>
@@ -820,7 +818,7 @@ namespace Olive
         /// </summary>
         public static void RemoveNulls<T>(this IList<T> list) => list.RemoveWhere(i => i == null);
 
-      
+
 
         /// <summary>
         /// Determines whether this least contains at least the specified number of items.
@@ -1117,7 +1115,7 @@ namespace Olive
             return list.OrderByDescending(new Func<TSource, object>((new PropertyComparer(property)).ExtractValue<TSource, object>));
         }
 
-        
+
 
         public static T FirstOrDefault<T>(this ICollection<T> collection, Func<T, bool> selector)
         {

@@ -104,8 +104,8 @@ namespace Olive.Entities.Data
             Func<string, PropertyInfo> getProperty = name => type.GetProperties().Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic).Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic).OrderByDescending(x => x.DeclaringType == type).FirstOrDefault(p => p.Name == name);
 
             var dataProperties = propertyNames.Select(getProperty).ExceptNull()
-                .Except(CalculatedAttribute.IsCalculated)
-                .Where(LogEventsAttribute.ShouldLog)
+                .Except(x => CalculatedAttribute.IsCalculated(x))
+                .Where(x => LogEventsAttribute.ShouldLog(x))
                 .ToArray();
 
             foreach (var p in dataProperties)

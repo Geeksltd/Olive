@@ -154,23 +154,25 @@ namespace Olive
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).OrEmpty().All(func);
 
-        public static async Task<bool> Any<TSource>(
-        this Task<IEnumerable<TSource>> list) => (await list).OrEmpty().Any();
+        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> list)
+            => (await list).OrEmpty().Any();
 
-        public static async Task<bool> Any<TSource>(
-        this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
+        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).OrEmpty().Any(func);
 
-        public static async Task<bool> Any<TSource>(
-        this Task<IEnumerable<TSource>> list, Func<TSource, Task<bool>> func)
-            => await (await list).OrEmpty().AnyAsync(func);
+        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, Task<bool>> func)
+            => await (await list).OrEmpty().Any(func);
 
-        public static async Task<bool> Any<TSource>(
-        this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func)
+        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func)
             => (await list).OrEmpty().Any(func);
 
-        public static async Task<decimal> Average<TSource>(
-        this Task<IEnumerable<TSource>> list, Func<TSource, decimal> func)
+        public static async Task<bool> Contains<TSource>(this Task<IEnumerable<TSource>> list, TSource item)
+            => (await list).OrEmpty().Contains(item);
+
+        public static async Task<bool> Contains<TSource>(this Task<IEnumerable<TSource>> list, Task<TSource> item)
+            => (await list).OrEmpty().Contains(await item);
+
+        public static async Task<decimal> Average<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, decimal> func)
             => (await list).OrEmpty().Average(func);
 
         public static async Task<int> Count<TSource>(

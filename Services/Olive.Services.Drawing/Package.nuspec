@@ -2,13 +2,16 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Drawing</id>
-    <version>1.0.8</version>
+    <version>1.0.10</version>
     <title>Olive Drawing (Service)</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
     <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
+    <dependencies>
+      <dependency id="SkiaSharp" version="1.59.3" />
+    </dependencies>
   </metadata>
   <files>
     <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Services.Drawing.dll" target="lib\netcoreapp2.0\" />

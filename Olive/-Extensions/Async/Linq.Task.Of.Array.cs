@@ -148,6 +148,12 @@ namespace Olive
         public static Task<bool> Any<TSource>(this Task<TSource[]> list, Func<TSource, int, bool> func)
             => list.ForLinq().Any(func);
 
+        public static Task<bool> Contains<TSource>(this Task<TSource[]> list, TSource item)
+            => list.ForLinq().Contains(item);
+
+        public static Task<bool> Contains<TSource>(this Task<TSource[]> list, Task<TSource> item)
+            => list.ForLinq().Contains(item);
+
         public static Task<decimal> Average<TSource>(this Task<TSource[]> list, Func<TSource, decimal> func)
             => list.ForLinq().Average(func);
 
