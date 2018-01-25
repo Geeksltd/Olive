@@ -27,12 +27,12 @@ To benefit from the architecture and tools explained here you should use the pat
 namespace {PublisherName}Service
 {
     [Route("api")]
-    public class {SomeName}Api : BaseController
+    public class MyApi : BaseController
     {
         [HttpGet, Route("...")]
         [Returns(typeof(MyReturnType)]
         // Todo: add the required [Authorize(Role=...)] settings
-        public async Task<IActionResult> MyFunctionName(string someParameter1, stringsomeParameter2)
+        public async Task<IActionResult> MyFunction(string someParameter1, stringsomeParameter2)
         {
             // TODO: Add any custom validation
             if ({Some invalid condition}) return BadRequest();
@@ -53,8 +53,7 @@ namespace {PublisherName}Service
 ### Best practices
 - Place this file in ***Website\Api*** folder
 - The **namespace** should be the name of the microservice that publishes the Api followed by *"Service"*. 
-- The controller **class name** should be the logical name of this particular Api followed by *"Api"* and ideally named after the purpose that it serves for one particular consumer.
-- If the Api returns an object with several fields, create a basic DTO (Data Transfer Object) sub-class with no methods.
+- The controller **class name** ("MyApi" above) should be the logical name of this particular Api followed by *"Api"* and ideally named after the purpose that it serves for one particular consumer.
 
 > Aim to create **one Api controller class per consumer micro-service** and even name it after that.
 
@@ -68,7 +67,7 @@ Of course the are cases where multiple consumer microservices seem to need the s
 2. Right click on the Api controller class in Visual Studio solution explorer.
 3. Select "Generate Proxy Dll..." which will just invoke the following command:
 ```
-..\M#\lib\generate-proxy.exe /assembly:....Websit.dll /serviceName:"{PublisherServiceName}" /controller:{Namespace}.{ControllerClassName} /output:....Website\obj\proxy-gen\{Namespace}.{ControllerClassName}\
+..\M#\lib\generate-proxy.exe /assembly:....Websit.dll /serviceName:"{PublisherServiceName}" /controller:{Namespace}.MyApi /output:....Website\obj\proxy-gen\{Namespace}.MyApi\
 ```
 
 > Note: *{PublisherServiceName}* will be set from *appSettings.config*, under the key ***Microservice:Name***
@@ -83,18 +82,18 @@ For each **Api action method** it will generate a static method with the same na
 ```csharp
 namespace {PublisherName}Service
 {
-    public class {SomeName}Api
+    public class MyApi
     {
         Action<ApiClient> Config;
-        public {SomeName}Api Create(Action<ApiClient> config) => Config = config;
+        public MyApi Create(Action<ApiClient> config) => Config = config;
         
-        public {SomeName}Api AsServiceUser() : this(x=>x.AsServiceUser()) { }
+        public MyApi AsServiceUser() : this(x=>x.AsServiceUser()) { }
         
-        public {SomeName}Api AsHttpUser() : this(x=>x.AsHttpUser()) { }        
+        public MyApi AsHttpUser() : this(x=>x.AsHttpUser()) { }        
     
         // Note: For each Api action method a static method with the same name and parameters will be generated.
         // But the return type will be determined by the [Returns...] attribute.
-        public async Task<MyReturnType> MyFunctionName(string someParameter1, stringsomeParameter2, 
+        public async Task<MyReturnType> MyFunction(string someParameter1, stringsomeParameter2, 
            ApiResponseCache cacheChoice = ApiResponseCache.Accept)
         {
            ...
@@ -129,5 +128,5 @@ In addition to the proxy class, it will generate a DTO class for each of the fol
 In the consumer application (service) reference the generated dll.
 You can then create a proxy using the appropriate security option, and then call the remote Api function. For example:
 ```csharp
-var result = await {PublisherName}Service.{SomeName}Api.AsServiceUser().MyFunctionName(...);
+var result = await {PublisherName}Service.MyApi.AsServiceUser().MyFunction(...);
 ```
