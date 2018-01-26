@@ -1,25 +1,34 @@
-﻿using System;
+﻿using NLog.Web;
+using System;
 using System.Collections.Generic;
 
 namespace Olive
 {
     public static class Log
     {
-        static List<ILogger> Loggers = new List<ILogger>();
+        public static string EmailRepositoryName = "EmailRepository";
+        public static string EmailAppendarName = "EmailAppender";
+        public static string EmailLoggerName = "EmailLogger";
 
-        static Log() => Loggers.Add(DefaultLogger.Instance);
+        static List<NLog.ILogger> Loggers = new List<NLog.ILogger>();
 
-        public static void RegisterLogger(ILogger logger) => Loggers.Add(logger);
+        static Log()
+        {
+            Loggers.Add(NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger());
+        }
+
+        public static void RegisterLogger(NLog.ILogger logger) => Loggers.Add(logger);
 
         public static void ClearLogger() => Loggers.Clear();
 
-        public static void Error(Exception ex) => Loggers.ForEach(logger => logger.RecordException(ex));
+        public static void Error(Exception ex) => Loggers.ForEach(logger => logger.Error(ex));
 
         public static void Error(string description, Exception ex = null)
         {
-            if (ex == null) Record("Exception", description);
+            if (ex == null)
+                Record("Exception", description);
             else
-                Loggers.ForEach(logger => logger.RecordException(description, ex));
+                Loggers.ForEach(logger => logger.Error(ex, description));
         }
 
         public static void Warning(string description, object relatedObject = null, string userId = null, string userIp = null) =>
@@ -34,7 +43,10 @@ namespace Olive
         public static void Audit(string description, object relatedObject = null, string userId = null, string userIp = null) =>
             Record("Audit", description, relatedObject, userId, userIp);
 
-        public static void Record(string eventTitle, string description, object relatedObject = null, string userId = null, string userIp = null) =>
-            Loggers.ForEach(logger => logger.Log(eventTitle, description, relatedObject, userId, userIp));
+        public static void Record(string eventTitle, string description, object relatedObject = null, string userId = null, string userIp = null)
+        {
+            Loggers.ForEach(logger => logger.Info("Event Start\r\nTitle: '{0}', UserId: '{1}', UserIP: '{2}'", eventTitle, userId, userIp));
+            Loggers.ForEach(logger => logger.Info("Description: {0}\r\nEvent End", description));
+        }
     }
 }
