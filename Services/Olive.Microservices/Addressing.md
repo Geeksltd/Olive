@@ -80,8 +80,46 @@ At this stage, the *dotnet* command line utility will do the following:
 2. Load *Website\Properties\**LaunchSettings.json*** file.
 3. Read the *applicationUrl* value.
 4. Find the port number from the URL.
+   - Note: It ignores the rest of the URL.
+   - So whether you use http://localhost:9014 or http://anything.dev.co:9014 doesn't matter to it.
 5. Start a [Kestrel web server](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?tabs=aspnetcore2x) web server process and listen on the port for incoming requests.
    - Warning: The port number should not be already in use by IIS or any other running Kestrel web server instances.
    - For example if you use the same port number on multiple running ASP.NET applications this will break.
 
 So you can send HTTP requests to the application on that port from your browser and test the application.
+
+## Domain forwarding and IIS config
+During development you need to be able to access your microservices using just the domain and the default port (80).
+Unfortunately Kestrel doesn't support host names and only cares about the port number, which also cannot be 80 as that's used by IIS.
+
+> As a workaround you need to set up a special IIS application to act as a reverse proxy. That special IIS application will receive the requests on e.g. http://something.dev.co and pass it on to http://localhost:9014, and then receives the response and pass it on to the browser or HttpClient (in Api calls).
+
+To the caller (browser or api client) it's as if the application is simply responding to http://something.dev.co and there is no port involved.
+
+To set it up in IIS:
+1. Create a folder, e.g. C:\inetpub\map\
+2. Create an IIS application on that folder.
+3. Add bindings for all your microservice domains (e.g. something.my-solution.dev.co) on port 80.
+4. Add a web.config file based on the following:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+    <modules>
+      <remove name="FormsAuthentication" />
+    </modules>
+        <rewrite>
+            <rules>
+                <rule name="{my-service-name}" stopProcessing="true">
+                    <match url="(.*)" />
+                    <action type="Rewrite" url="http://localhost:9014/{R:1}" />
+                    <conditions>
+                        <add input="{HTTP_HOST}" pattern="my-service-name.my-solution.dev.co" />	
+                    </conditions>
+                </rule>              
+            </rules>
+        </rewrite>
+  </system.webServer>
+</configuration>
+```
+5. For each micro-service in your solution that you need to run locally, add a *<rule>* node under **<rules>** with the correct settings.
