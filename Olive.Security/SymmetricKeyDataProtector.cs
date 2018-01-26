@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using Microsoft.AspNetCore.DataProtection;
 
 namespace Olive.Security
@@ -11,9 +10,7 @@ namespace Olive.Security
 
         static SymmetricKeyDataProtector()
         {
-            EncryptionKey = Config.Get("Authentication:CookieDataProtectorKey");
-            if (EncryptionKey.IsEmpty())
-                throw new Exception("Encryption key not specified in config: Authentication:CookieDataProtectorKey");
+            EncryptionKey = Config.GetOrThrow("Authentication:CookieDataProtectorKey");
         }
 
         public SymmetricKeyDataProtector(string purpose)

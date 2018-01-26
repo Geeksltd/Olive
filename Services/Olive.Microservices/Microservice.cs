@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Olive.Web;
 
 namespace Olive
 {
@@ -17,25 +15,17 @@ namespace Olive
         /// <summary>
         /// Gets the name of the current microservice from the config value of Microservice:Name.
         /// </summary>
-        public static string Name
-        {
-            get
-            {
-                var result = Config.Get("Microservice:Name");
-                if (result.IsEmpty()) throw new Exception("Config value not found: Microservice:Name");
-                return result;
-            }
-        }
+        public static string Name => Config.GetOrThrow("Microservice:Name");
 
         /// <summary>
         /// Gets the value of the config key Microservice:Root.Domain.
         /// </summary>
-        public static string RootDomain => Config.Get("Microservice:Root.Domain");
+        public static string RootDomain => Config.GetOrThrow("Microservice:Root.Domain");
 
         /// <summary>
         /// Gets 'http'or 'https' baesd on the curretn config value of Microservice:Http.Protocol.
         /// </summary>
-        public static string HttpProtocol => Config.Get("Microservice:Http.Protocol");
+        public static string HttpProtocol => Config.GetOrThrow("Microservice:Http.Protocol");
 
         /// <summary>
         /// For example for the specified service name of 'auth' 
@@ -55,8 +45,7 @@ namespace Olive
         {
             if (IsAuthenticated) return;
 
-            var key = Config.Get("Microservice:Secret");
-            if (key.IsEmpty()) throw new Exception("Config key value is not specified: Microservice:Secret");
+            var key = Config.GetOrThrow("Microservice:Secret");
 
             await Authenticate("auth", $"api/login/service/{Name}/{key}");
 

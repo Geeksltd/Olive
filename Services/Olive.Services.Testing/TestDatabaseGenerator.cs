@@ -9,8 +9,6 @@ namespace Olive.Services.Testing
 {
     public class TestDatabaseGenerator
     {
-        const string TEMP_DATABASES_LOCATION_KEY = "Temp.Databases.Location";
-
         static object SyncLock = new object();
         static object ProcessSyncLock = new object();
 
@@ -19,11 +17,34 @@ namespace Olive.Services.Testing
         string TempDatabaseName, ReferenceDatabaseName;
 
         FileInfo ReferenceMDFFile, ReferenceLDFFile;
-        DirectoryInfo TempBackupsRoot, ProjectTempRoot, DbDirectory, CurrentHashDirectory;
+        DirectoryInfo ProjectTempRoot, DbDirectory, CurrentHashDirectory;
 
         readonly bool IsTempDatabaseOptional, MustRenew;
 
         public bool CreatedNewDatabase { get; private set; }
+
+        public static DirectoryInfo DatabaseStoragePath
+        {
+            get
+            {
+                var key = "Database:Storage.Path";
+                var result = Config.GetOrThrow(key);
+
+                if (!result.AsDirectory().Exists())
+                {
+                    // Try to build once:
+                    try { Directory.CreateDirectory(result); }
+                    catch
+                    {
+                        throw new Exception($"Failed to create the folder '{result}'. " +
+                            "Ensure it exists and is accessible to the current ASP.NET process. " +
+                            $"Otherwise specify a different location in AppSetting of '{key}'.");
+                    }
+                }
+
+                return result.AsDirectory();
+            }
+        }
 
         /// <summary>
         /// Creates a new TestDatabaseGenerator instance.
@@ -214,7 +235,7 @@ namespace Olive.Services.Testing
 
             MasterDatabaseAgent = new SqlServerManager(builder.ToString());
 
-            LoadTempDatabaseLocation();
+            ProjectTempRoot = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName);
             LoadMetaDirectory();
 
             if (!IsTempDatabaseOptional)
@@ -258,33 +279,6 @@ namespace Olive.Services.Testing
                 error = "In TDD mode full system access is needed in order to create temporary database files." + error;
                 throw new Exception(error);
             }
-        }
-
-        void LoadTempDatabaseLocation()
-        {
-            var specifiedLocation = Config.Get(TEMP_DATABASES_LOCATION_KEY);
-
-            if (specifiedLocation.IsEmpty())
-            {
-                throw new Exception("You must specify a valid path for AppSetting of '{0}'.".FormatWith(TEMP_DATABASES_LOCATION_KEY));
-            }
-
-            if (!specifiedLocation.AsDirectory().Exists())
-            {
-                // Try to build once:
-                try
-                {
-                    Directory.CreateDirectory(specifiedLocation);
-                }
-                catch
-                {
-                    throw new Exception("Could not create the folder '{0}'. Ensure it exists and is accessible. Otherwise specify a different location in AppSetting of '{1}'."
-                        .FormatWith(specifiedLocation, TEMP_DATABASES_LOCATION_KEY));
-                }
-            }
-
-            TempBackupsRoot = specifiedLocation.AsDirectory();
-            ProjectTempRoot = TempBackupsRoot.GetOrCreateSubDirectory(TempDatabaseName);
         }
 
         void LoadMetaDirectory()

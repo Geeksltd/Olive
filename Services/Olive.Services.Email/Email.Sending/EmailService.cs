@@ -79,7 +79,7 @@ namespace Olive.Services.Email
 
         static bool IsSendingPermitted(string to)
         {
-            var permittedDomains = Config.Get("Email:Permitted.Domains").Or("geeks.ltd.uk|uat.co").ToLowerOrEmpty();
+            var permittedDomains = Config.Get("Email:Permitted.Domains", defaultValue: "geeks.ltd.uk|uat.co").ToLowerOrEmpty();
             if (permittedDomains == "*") return true;
 
             if (permittedDomains.Split('|').Trim().Any(d => to.TrimEnd(">").EndsWith("@" + d))) return true;
@@ -285,7 +285,8 @@ namespace Olive.Services.Email
             foreach (var address in mailItem.Cc.Or("").Split(',').Trim().Where(a => IsSendingPermitted(a)))
                 mail.CC.Add(address);
 
-            foreach (var address in Config.Get("Email:Auto.CC.Address").Or("").Split(',').Trim().Where(a => IsSendingPermitted(a)))
+            foreach (var address in Config.Get("Email:Auto.CC.Address").OrEmpty().Split(',').Trim()
+                .Where(a => IsSendingPermitted(a)))
                 mail.CC.Add(address);
 
             // Add Bcc:

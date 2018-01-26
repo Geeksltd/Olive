@@ -135,7 +135,7 @@ namespace Olive
         /// Set the value of this property on the specified object.
         /// </summary>
         public static void SetValue(this PropertyInfo property, object @object, object value) => property.SetValue(@object, value, null);
-        
+
         /// <summary>
         /// Creates the instance of this type.
         /// </summary>

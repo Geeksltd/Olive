@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,7 +113,6 @@ namespace Olive
                 list.Remove(itemsToRemove);
             }
         }
-
 
         /// <summary>
         /// Gets all items of this list except those meeting a specified criteria.
@@ -730,8 +728,6 @@ namespace Olive
         /// </summary>
         public static string ToLinesString<T>(this IEnumerable<T> list) => list.ToString(Environment.NewLine);
 
-
-
         /// <summary>
         /// Chops a list into same-size smaller lists. For example:
         /// new int[] { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 }.Chop(5)
@@ -790,8 +786,6 @@ namespace Olive
             list.Add(newItem);
         }
 
-
-
         /// <summary>
         /// Returns all elements of this list except those at the specified indices.
         /// </summary>
@@ -818,8 +812,6 @@ namespace Olive
         /// </summary>
         public static void RemoveNulls<T>(this IList<T> list) => list.RemoveWhere(i => i == null);
 
-
-
         /// <summary>
         /// Determines whether this least contains at least the specified number of items.
         /// This can be faster than calling "x.Count() >= N" for complex iterators.
@@ -842,8 +834,6 @@ namespace Olive
 
             return result;
         }
-
-
 
         /// <summary>
         /// Adds the specified key/value pair to this list.
@@ -1114,8 +1104,6 @@ namespace Olive
 
             return list.OrderByDescending(new Func<TSource, object>((new PropertyComparer(property)).ExtractValue<TSource, object>));
         }
-
-
 
         public static T FirstOrDefault<T>(this ICollection<T> collection, Func<T, bool> selector)
         {

@@ -61,8 +61,8 @@ namespace Olive.Security
 
         internal static SymmetricSecurityKey GetJwtSecurityKey()
         {
-            var configKey = Config.Get("Authentication:JWT:Secret");
-            if (configKey.OrEmpty().Length != 21)
+            var configKey = Config.GetOrThrow("Authentication:JWT:Secret");
+            if (configKey.Length != 21)
                 throw new ArgumentException("Your config setting of 'Authentication:JWT:Secret' needs to be 21 characters.");
 
             var securityKey = configKey.ToBytes(encoding: Encoding.UTF8);
