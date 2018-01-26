@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Olive.Web;
 
 namespace Olive
 {
@@ -12,28 +10,22 @@ namespace Olive
     /// </summary>
     public class Microservice
     {
+        static bool IsAuthenticated;
+
         /// <summary>
         /// Gets the name of the current microservice from the config value of Microservice:Name.
         /// </summary>
-        public static string Name
-        {
-            get
-            {
-                var result = Config.Get("Microservice:Name");
-                if (result.IsEmpty()) throw new Exception("Config value not found: Microservice:Name");
-                return result;
-            }
-        }
+        public static string Name => Config.GetOrThrow("Microservice:Name");
 
         /// <summary>
         /// Gets the value of the config key Microservice:Root.Domain.
         /// </summary>
-        public static string RootDomain => Config.Get("Microservice:Root.Domain");
+        public static string RootDomain => Config.GetOrThrow("Microservice:Root.Domain");
 
         /// <summary>
         /// Gets 'http'or 'https' baesd on the curretn config value of Microservice:Http.Protocol.
         /// </summary>
-        public static string HttpProtocol => Config.Get("Microservice:Http.Protocol");
+        public static string HttpProtocol => Config.GetOrThrow("Microservice:Http.Protocol");
 
         /// <summary>
         /// For example for the specified service name of 'auth' 
@@ -49,18 +41,21 @@ namespace Olive
         /// and returns the authentication cookie value.
         /// Note: Secret is the config value of Microservice:Secret. It should be registered in the Auth service also.
         /// </summary>
-        public static Task<Cookie[]> Authenticate()
+        public static async Task Authenticate()
         {
-            var key = Config.Get("Microservice:Secret");
-            if (key.IsEmpty()) throw new Exception("Config key value is not specified: Microservice:Secret");
+            if (IsAuthenticated) return;
 
-            return Authenticate("auth", $"api/login/service/{Name}/{key}");
+            var key = Config.GetOrThrow("Microservice:Secret");
+
+            await Authenticate("auth", $"api/login/service/{Name}/{key}");
+
+            IsAuthenticated = true;
         }
 
         /// <summary>
         /// Authenticates me by sending a Http Get request to the specified auth service url and returns the authentication cookie value from the response cookies.        
         /// </summary>
-        public static async Task<Cookie[]> Authenticate(string authServiceName, string relativeAuthUrl)
+        public static async Task Authenticate(string authServiceName, string relativeAuthUrl)
         {
             var url = Url(authServiceName, relativeAuthUrl);
 
@@ -77,8 +72,15 @@ namespace Olive
 
                 if (responseCookies.None())
                     throw new Exception("Service authentication failed.");
-                return responseCookies;
+
+                ApiClient.SignInAsService(responseCookies);
             }
         }
+
+        /// <summary>
+        /// Creates an Api client to invoke an api of a specified service.
+        /// </summary>
+        public static ApiClient Api(string serviceName, string relativeApiUrl)
+            => new ApiClient(Url(serviceName, relativeApiUrl));
     }
 }

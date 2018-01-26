@@ -123,7 +123,8 @@ namespace Olive
             try
             {
                 localCachedVersion = (await GetCacheFile<TResponse>().ReadAllTextAsync()).CreateSHA1Hash();
-                if (localCachedVersion.LacksAll()) throw new Exception("Local cached file's hash is empty!");
+                if (localCachedVersion.IsEmpty())
+                    throw new Exception("Local cached file's hash is empty!");
             }
             catch (Exception ex)
             {
@@ -131,6 +132,8 @@ namespace Olive
                 Debug.WriteLine(ex);
                 return; // High concurrency perhaps.
             }
+
+            Header(x => x.IfNoneMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue($"\"{localCachedVersion}\"")));
 
             var request = new RequestInfo(this)
             {

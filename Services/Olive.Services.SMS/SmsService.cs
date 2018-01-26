@@ -27,7 +27,7 @@ namespace Olive.Services.SMS
                 ISMSSender sender;
                 try
                 {
-                    sender = Activator.CreateInstance(Type.GetType(Config.Get("SMS.Sender.Type"))) as ISMSSender;
+                    sender = Activator.CreateInstance(Type.GetType(Config.GetOrThrow("SMS.Sender.Type"))) as ISMSSender;
 
                     if (sender == null)
                         throw new Exception("Type is not defined, or it does not implement ISMSSender");

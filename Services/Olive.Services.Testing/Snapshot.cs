@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Olive.Entities;
+using Olive.Entities.Data;
 using Olive.Web;
 
 namespace Olive.Services.Testing
@@ -324,7 +324,7 @@ namespace Olive.Services.Testing
                     var attachTime = LocalTime.Now;
                     await AttachDatabase(connection, mdfFile, ldfFile);
                     Debug.WriteLine("Total time for attaching database: " + LocalTime.Now.Subtract(attachTime).Milliseconds);
-                    await Entity.Database.Refresh();
+                    await Database.Instance.Refresh();
                 }
 
                 Debug.WriteLine("Total time for restoreing database: " + LocalTime.Now.Subtract(restoreTime).Milliseconds);
@@ -420,11 +420,12 @@ namespace Olive.Services.Testing
         {
             if (isSharedSnapshotMode)
             {
-                return Path.Combine(Config.Get(TEMP_DATABASES_LOCATION_KEY), DatabaseName.Split('.').First() + " SNAPSHOTS").AsDirectory();
+                return TestDatabaseGenerator.DatabaseStoragePath
+                    .GetSubDirectory(DatabaseName.Split('.').First() + " SNAPSHOTS");
             }
             else
             {
-                return Path.Combine(Config.Get(TEMP_DATABASES_LOCATION_KEY), DatabaseName, "SNAPSHOTS").AsDirectory();
+                return TestDatabaseGenerator.DatabaseStoragePath.GetSubDirectory(DatabaseName + "\\SNAPSHOTS");
             }
         }
 

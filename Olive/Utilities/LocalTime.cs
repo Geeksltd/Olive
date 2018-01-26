@@ -10,7 +10,7 @@ namespace Olive
         /// </summary>
         public static Func<TimeZoneInfo> CurrentTimeZone = () => TimeZoneInfo.Local;
 
-        /// <summary>
+        /// <summary> 
         /// If set, it will provide the "Now" value.
         /// Note: This has lower priority than thread-level overrides. 
         /// </summary>

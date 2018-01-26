@@ -67,59 +67,48 @@ namespace Olive.Security
             }
         }
 
-        /// <summary>
-        /// Encrypts the specified text with the specified password.
-        /// </summary>
-        public static string Encrypt(string text, string password)
+        static byte[] GetUsableKey(string keyString)
         {
-            if (text.IsEmpty())
-                throw new ArgumentNullException(nameof(text));
+            var key = Encoding.UTF8.GetBytes(keyString);
 
-            if (password.IsEmpty())
-                throw new ArgumentNullException(nameof(password));
+            if (key.Length == 32) return key;
 
-            using (var key = new Rfc2898DeriveBytes(password, Encoding.ASCII.GetBytes(password.Length.ToString())))
+            return key = key.Take(32).ToArray().PadRight(32, (byte)0);
+        }
+
+        public static byte[] Encrypt(byte[] input, string password)
+        {
+            using (var aesAlg = Aes.Create())
             {
-                var aes = Aes.Create();
-                aes.Padding = PaddingMode.PKCS7;
-                var encryptor = aes.CreateEncryptor(key.GetBytes(THIRTY_TWO), key.GetBytes(SIXTEEN));
+                aesAlg.Key = GetUsableKey(password);
+                aesAlg.IV = aesAlg.Key.Take(16).ToArray();
 
-                var textData = Encoding.Unicode.GetBytes(text);
-                using (var encrypted = new MemoryStream())
-                using (var cryptoStream = new CryptoStream(encrypted, encryptor, CryptoStreamMode.Write))
+                var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                using (var msEncrypt = new MemoryStream())
+                using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                 {
-                    cryptoStream.Write(textData, 0, textData.Length);
-                    cryptoStream.FlushFinalBlock();
+                    using (var swEncrypt = new BinaryWriter(csEncrypt))
+                        swEncrypt.Write(input);
 
-                    return Convert.ToBase64String(encrypted.ToArray());
+                    return msEncrypt.ToArray();
                 }
             }
         }
 
-        /// <summary>
-        /// Decrypts the specified encrypted text with the specified password.
-        /// </summary>
-        public static string Decrypt(string encryptedText, string password)
+        public static byte[] Decrypt(byte[] cipher, string password)
         {
-            using (var key = new Rfc2898DeriveBytes(password, Encoding.ASCII.GetBytes(password.Length.ToString())))
+            using (var aesAlg = Aes.Create())
             {
-                var encryptedData = encryptedText.ToBytes();
+                aesAlg.Key = GetUsableKey(password);
+                aesAlg.IV = aesAlg.Key.Take(16).ToArray();
 
-                using (var aes = Aes.Create())
-                {
-                    aes.Padding = PaddingMode.PKCS7;
+                var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-                    using (var decryptor = aes.CreateDecryptor(key.GetBytes(THIRTY_TWO), key.GetBytes(SIXTEEN)))
-                    using (var memoryStream = new MemoryStream(encryptedData))
-                    using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-                    {
-                        // The size of decrypted data is unknown, so we allocate a buffer big enough to store encrypted data.
-                        // decrypted data is always the same or smaller than encrypted data.
-                        var plainText = new byte[encryptedData.Length];
-                        var decryptedSize = cryptoStream.Read(plainText, 0, plainText.Length);
-                        return Encoding.Unicode.GetString(plainText, 0, decryptedSize);
-                    }
-                }
+                using (var msDecrypt = new MemoryStream(cipher))
+                using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                using (var srDecrypt = new BinaryReader(csDecrypt))
+                    return srDecrypt.ReadAllBytes();
             }
         }
     }

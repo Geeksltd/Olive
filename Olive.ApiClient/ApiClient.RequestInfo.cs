@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -10,6 +11,16 @@ namespace Olive
 {
     partial class ApiClient
     {
+        public bool EnsureTrailingSlash { get; set; } = true;
+
+        List<Action<HttpRequestHeaders>> RequestHeadersCustomizers = new List<Action<HttpRequestHeaders>>();
+
+        public ApiClient Header(Action<HttpRequestHeaders> config)
+        {
+            if (config != null) RequestHeadersCustomizers.Add(config);
+            return this;
+        }
+
         public partial class RequestInfo
         {
             const int HTTP_ERROR_STARTING_CODE = 400;
@@ -32,8 +43,6 @@ namespace Olive
             public HttpStatusCode ResponseCode { get; private set; }
             public HttpResponseHeaders ResponseHeaders { get; private set; }
             public Exception Error { get; internal set; }
-
-            public bool EnsureTrailingSlash { get; set; } = true;
 
             public string GetContentType()
             {
@@ -98,14 +107,15 @@ namespace Olive
 
             async Task<string> DoSend()
             {
-                if (EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url.EnsureEndsWith("/");
+                if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url.EnsureEndsWith("/");
 
-                using (var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies }))
+                var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies });
+                using (client)
                 {
                     var req = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);
 
-                    if (LocalCachedVersion.HasValue())
-                        client.DefaultRequestHeaders.IfNoneMatch.Add(new EntityTagHeaderValue($"\"{LocalCachedVersion}\""));
+                    foreach (var config in Client.RequestHeadersCustomizers)
+                        config(client.DefaultRequestHeaders);
 
                     if (req.Method != System.Net.Http.HttpMethod.Get)
                     {
@@ -148,7 +158,8 @@ namespace Olive
 
                         if (System.Diagnostics.Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
 
-                        responseBody = await (ex as WebException)?.GetResponseBody();
+                        if (ex is WebException webEx)
+                            responseBody = await webEx.GetResponseBody();
 
                         if (responseBody.OrEmpty().StartsWith("{\"Message\""))
                         {

@@ -85,6 +85,15 @@ namespace Olive
         /// </summary>
         public static string Get(string key) => Get(key, string.Empty);
 
+        public static string GetOrThrow(string key)
+        {
+            var result = Get(key);
+            if (result.IsEmpty())
+                throw new Exception($"AppSetting value of '{key}' is not specified.");
+
+            return result;
+        }
+
         /// <summary>
         /// Gets the value configured in Web.Config (or App.config) under AppSettings.
         /// If no value is found there, it will return the specified default value.

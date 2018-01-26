@@ -241,8 +241,9 @@ namespace Olive.Mvc
             // If already added, ignore:
             var exists = actions
                 .Where(x => x.GetType().GetProperty("Script") != null)
-                .Where(x => x.GetType().GetProperty("Key") != null)
-                .Cast<dynamic>().Any(x => x.Key == key);
+                .Select(x => new { KeyProperty = x.GetType().GetProperty("Key"), Item = x })
+                .Where(x => x.KeyProperty != null)
+                .Any(x => x.KeyProperty.GetValue(x.Item).ToStringOrEmpty() == key);
 
             if (!exists)
                 actions.Add(new { Script = script, Key = key, Stage = stage.ToString() });

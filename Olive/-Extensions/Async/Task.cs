@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -58,5 +59,43 @@ namespace Olive
 
         public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> list)
             => await Task.WhenAll(list);
+
+        /// <summary>
+        /// Casts the result type of the input task as if it were covariant.
+        /// </summary>
+        /// <typeparam name="TOriginal">The original result type of the task</typeparam>
+        /// <typeparam name="TTarget">The covariant type to return</typeparam>
+        /// <param name="task">The target task to cast</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<TTarget> AsTask<TOriginal, TTarget>(this Task<TOriginal> task)
+            where TOriginal : TTarget => task.ContinueWith(t => (TTarget)t.Result);
+
+        /// <summary>
+        /// Casts it into a Task of IEnumerable, so the Linq methods can be invoked on it.
+        /// </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<IEnumerable<T>> ForLinq<T>(this Task<T[]> task)
+            => task.AsTask<T[], IEnumerable<T>>();
+
+        /// <summary>
+        /// Casts it into a Task of IEnumerable, so the Linq methods can be invoked on it.
+        /// </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<IEnumerable<T>> ForLinq<T>(this Task<List<T>> task)
+            => task.AsTask<List<T>, IEnumerable<T>>();
+
+        /// <summary>
+        /// Casts it into a Task of IEnumerable, so the Linq methods can be invoked on it.
+        /// </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<IEnumerable<T>> ForLinq<T>(this Task<IList<T>> task)
+            => task.AsTask<IList<T>, IEnumerable<T>>();
+
+        /// <summary>
+        /// Casts it into a Task of IEnumerable, so the Linq methods can be invoked on it.
+        /// </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<IEnumerable<T>> ForLinq<T>(this Task<IOrderedEnumerable<T>> task)
+            => task.AsTask<IOrderedEnumerable<T>, IEnumerable<T>>();
     }
 }

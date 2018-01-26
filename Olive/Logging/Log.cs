@@ -7,19 +7,19 @@ namespace Olive
     {
         static List<ILogger> Loggers = new List<ILogger>();
 
-        static Log() => Loggers.Add(DefaultLogger.Instance);
+        static Log() => Loggers.Add(new ConsoleLogger());
 
         public static void RegisterLogger(ILogger logger) => Loggers.Add(logger);
 
         public static void ClearLogger() => Loggers.Clear();
 
-        public static void Error(Exception ex) => Loggers.ForEach(logger => logger.RecordException(ex));
+        public static void Error(Exception ex) => Loggers.ForEach(logger => logger.Log(ex));
 
         public static void Error(string description, Exception ex = null)
         {
             if (ex == null) Record("Exception", description);
             else
-                Loggers.ForEach(logger => logger.RecordException(description, ex));
+                Loggers.ForEach(logger => logger.Log(description, ex));
         }
 
         public static void Warning(string description, object relatedObject = null, string userId = null, string userIp = null) =>

@@ -62,5 +62,8 @@ namespace Olive.Entities
         Task<TProperty?> Average<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
         Task<decimal?> Average<TProperty>(Expression<Func<TEntity, int>> property) where TProperty : struct;
         Task<decimal?> Average(Expression<Func<TEntity, int>> property);
+        Task<bool> Contains(TEntity item);
+        Task<bool> ContainsAny(TEntity[] items);
+        Task<bool> Any(Expression<Func<TEntity, bool>> criteria);
     }
 }

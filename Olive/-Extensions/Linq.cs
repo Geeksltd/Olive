@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,11 +33,6 @@ namespace Olive
 
         public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator, string lastSeperator) =>
             list.Select(i => format.FormatWith(i)).ToString(seperator, lastSeperator);
-
-        public static bool LacksKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) =>
-            !dictionary.ContainsKey(key);
-
-        public static bool Lacks(this IDictionary dictionary, object key) => !dictionary.Contains(key);
 
         public static bool Any<T>(this IEnumerable<T> list, Func<T, int, bool> predicate) => list.Any(predicate);
 
@@ -121,41 +115,10 @@ namespace Olive
         }
 
         /// <summary>
-        /// Adds all items from a specified dictionary to this dictionary.
-        /// </summary>
-        public static void Add<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IDictionary<TKey, TValue> items)
-        {
-            foreach (var item in items)
-                dictionary.Add(item.Key, item.Value);
-        }
-
-        public static void RemoveWhere<TKey, TValue>(
-            this IDictionary<TKey, TValue> dictionary,
-            Func<KeyValuePair<TKey, TValue>, bool> selector)
-        {
-            lock (dictionary)
-            {
-                var toRemove = dictionary.Where(selector).ToList();
-
-                foreach (var item in toRemove) dictionary.Remove(item.Key);
-            }
-        }
-
-        public static void RemoveWhereKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Func<TKey, bool> selector)
-        {
-            lock (dictionary)
-            {
-                var toRemove = dictionary.Where(x => selector(x.Key)).ToList();
-
-                foreach (var item in toRemove) dictionary.Remove(item.Key);
-            }
-        }
-
-        /// <summary>
         /// Gets all items of this list except those meeting a specified criteria.
         /// </summary>
         /// <param name="criteria">Exclusion criteria</param>
-		[EscapeGCop("It is the Except definition and so it cannot call itself")]
+        [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static IEnumerable<T> Except<T>(this IEnumerable<T> list, Func<T, bool> criteria) => list.Where(i => !criteria(i));
 
         public static IEnumerable<T> Except<T>(this IEnumerable<T> list, T item) => list.Except(new T[] { item });
@@ -766,16 +729,6 @@ namespace Olive
         public static string ToLinesString<T>(this IEnumerable<T> list) => list.ToString(Environment.NewLine);
 
         /// <summary>
-        /// Gets the value with the specified key, or null.
-        /// </summary>
-        public static TValue TryGet<TKey, TValue>(this IDictionary<TKey, TValue> list, TKey key)
-        {
-            if (list.TryGetValue(key, out TValue result)) return result;
-
-            return default(TValue);
-        }
-
-        /// <summary>
         /// Chops a list into same-size smaller lists. For example:
         /// new int[] { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 }.Chop(5)
         /// will return: { {1,2,3,4,5}, {6,7,8,9,10}, {11,12,13,14,15}, {16} }
@@ -798,11 +751,6 @@ namespace Olive
                     yield return item;
             }
         }
-
-        /// <summary>
-        /// Gets the keys of this dictionary.
-        /// </summary>
-        public static IEnumerable<T> GetKeys<T, K>(this IDictionary<T, K> dictionary) => dictionary.Select(i => i.Key);
 
         /// <summary>
         /// Returns the sum of a timespan selector on this list.
@@ -839,24 +787,6 @@ namespace Olive
         }
 
         /// <summary>
-        /// Gets all values from this dictionary.
-        /// </summary>
-        public static IEnumerable<TValue> GetAllValues<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
-        {
-            foreach (var item in dictionary)
-                yield return item.Value;
-        }
-
-        /// <summary>
-        /// Gets all values from this dictionary.
-        /// </summary>
-        public static IEnumerable<TValue> GetAllValues<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
-        {
-            foreach (var item in dictionary)
-                yield return item.Value;
-        }
-
-        /// <summary>
         /// Returns all elements of this list except those at the specified indices.
         /// </summary>
         public static IEnumerable<T> ExceptAt<T>(this IEnumerable<T> list, params int[] indices) =>
@@ -883,32 +813,6 @@ namespace Olive
         public static void RemoveNulls<T>(this IList<T> list) => list.RemoveWhere(i => i == null);
 
         /// <summary>
-        /// Tries to the remove an item with the specified key from this dictionary.
-        /// </summary>
-        public static K TryRemove<T, K>(this System.Collections.Concurrent.ConcurrentDictionary<T, K> list, T key)
-        {
-            if (list.TryRemove(key, out K result))
-                return result;
-            else return default(K);
-        }
-
-        /// <summary>
-        /// Tries to the remove an item with the specified key from this dictionary.
-        /// </summary>
-        public static K TryRemoveAt<T, K>(this System.Collections.Concurrent.ConcurrentDictionary<T, K> list, int index)
-        {
-            try
-            {
-                return list.TryRemove(list.Keys.ElementAt(index));
-            }
-            catch
-            {
-                // No logging is needed
-                return default(K);
-            }
-        }
-
-        /// <summary>
         /// Determines whether this least contains at least the specified number of items.
         /// This can be faster than calling "x.Count() >= N" for complex iterators.
         /// </summary>
@@ -929,49 +833,6 @@ namespace Olive
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Converts this to a KeyValueCollection.
-        /// </summary>
-        public static NameValueCollection ToNameValueCollection<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
-        {
-            var result = new NameValueCollection();
-
-            foreach (var item in dictionary)
-                result.Add(item.Key.ToStringOrEmpty(), item.Value.ToStringOrEmpty());
-
-            return result;
-        }
-
-        /// <summary>
-        /// Adds the properties of a specified [anonymous] object as items to this dictionary.
-        /// It ignores duplicate entries and null values.
-        /// </summary>
-        public static void AddFromProperties<TValue>(this Dictionary<string, TValue> dictionary, object data)
-        {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-
-            foreach (var property in data.GetType().GetProperties())
-            {
-                if (dictionary.ContainsKey(property.Name)) continue;
-
-                var value = property.GetValue(data);
-
-                if (value == null) continue;
-
-                if (typeof(TValue) == typeof(string) && value.GetType() != typeof(string))
-                    value = value.ToStringOrEmpty();
-
-                if (!value.GetType().IsA(typeof(TValue)))
-                {
-                    throw new Exception("The value on property '{0}' is of type '{1}' which cannot be casted as '{2}'."
-                        .FormatWith(property.Name, value.GetType().FullName, typeof(TValue).FullName));
-                }
-
-                dictionary.Add(property.Name, (TValue)value);
-            }
         }
 
         /// <summary>
@@ -1244,21 +1105,6 @@ namespace Olive
             return list.OrderByDescending(new Func<TSource, object>((new PropertyComparer(property)).ExtractValue<TSource, object>));
         }
 
-        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        {
-            var keyType = typeof(TKey);
-
-            if (keyType.IsValueType || keyType == typeof(string) || keyType == typeof(Type))
-            {
-                if (dictionary.TryGetValue(key, out TValue result)) return result;
-                return default(TValue);
-            }
-            else
-            {
-                return dictionary.Keys.FirstOrDefault(k => k.Equals(key)).Get(k => dictionary[k]);
-            }
-        }
-
         public static T FirstOrDefault<T>(this ICollection<T> collection, Func<T, bool> selector)
         {
             foreach (var item in collection)
@@ -1289,6 +1135,19 @@ namespace Olive
             await Task.WhenAll(tasks);
 
             return tasks.Select(x => x.Result);
+        }
+
+        public static T[] PadRight<T>(this T[] array, int size, T padItemValue)
+        {
+            if (array.Length >= size) return array;
+
+            var result = new T[size];
+            array.CopyTo(result, 0);
+
+            for (var i = array.Length; i < size; i++)
+                result[i] = padItemValue;
+
+            return result;
         }
     }
 }

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive", "Olive\Olive.csproj", "{EF844D85-7C45-4725-B033-DBC6111C5F7F}"
 EndProject
@@ -90,7 +90,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiClient", "Olive.Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Services.Hangfire", "Olive.Services.Hangfire\Olive.Services.Hangfire.csproj", "{77A2DD2F-8249-4140-B9D4-7F80FECAB405}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Microservices", "Services\Olive.Microservices\Olive.Microservices.csproj", "{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Microservices", "Services\Olive.Microservices\Olive.Microservices.csproj", "{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Mvc.NLog", "Services\Olive.Mvc.NLog\Olive.Mvc.NLog.csproj", "{CCBC2FEF-CA70-4C2D-A9D9-C0566FDD38E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -221,6 +223,10 @@ Global
 		{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCBC2FEF-CA70-4C2D-A9D9-C0566FDD38E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCBC2FEF-CA70-4C2D-A9D9-C0566FDD38E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCBC2FEF-CA70-4C2D-A9D9-C0566FDD38E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCBC2FEF-CA70-4C2D-A9D9-C0566FDD38E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -245,6 +251,7 @@ Global
 		{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{77A2DD2F-8249-4140-B9D4-7F80FECAB405} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF} = {943E7871-2EEA-4C97-857B-16443CB240E6}
+		{CCBC2FEF-CA70-4C2D-A9D9-C0566FDD38E1} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

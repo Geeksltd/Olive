@@ -26,7 +26,7 @@ namespace Olive.Entities.Data
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }
 
-        static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>" };
+        static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
 
         string connectionStringKey, connectionString;
 
@@ -35,19 +35,19 @@ namespace Olive.Entities.Data
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Entity.Database.Save(item, SaveBehaviour.BypassAll);
+                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task BulkUpdate(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Entity.Database.Save(item, SaveBehaviour.BypassAll);
+                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task<int> Count(IDatabaseQuery query)
         {
             var command = GenerateCountCommand(query);
-            return (int)await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
+            return Convert.ToInt32(await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters)));
         }
 
         public static List<string> ExtractIds(string idsXml) =>
@@ -104,8 +104,8 @@ namespace Olive.Entities.Data
             Func<string, PropertyInfo> getProperty = name => type.GetProperties().Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic).Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic).OrderByDescending(x => x.DeclaringType == type).FirstOrDefault(p => p.Name == name);
 
             var dataProperties = propertyNames.Select(getProperty).ExceptNull()
-                .Except(CalculatedAttribute.IsCalculated)
-                .Where(LogEventsAttribute.ShouldLog)
+                .Except(x => CalculatedAttribute.IsCalculated(x))
+                .Where(x => LogEventsAttribute.ShouldLog(x))
                 .ToArray();
 
             foreach (var p in dataProperties)

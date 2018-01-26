@@ -208,8 +208,9 @@ namespace Olive.Entities
 
         public string GetVirtualFolderUrl(AccessMode accessMode)
         {
-            var root = Config.Get("UploadFolder.VirtualRoot").Or("/Documents/");
-            if (accessMode == AccessMode.Secure) root = Config.Get("UploadFolder.VirtualRoot.Secure").Or(SecureVirtualRoot);
+            var root = Config.Get("UploadFolder.VirtualRoot", defaultValue: "/Documents/");
+            if (accessMode == AccessMode.Secure)
+                root = Config.Get("UploadFolder.VirtualRoot.Secure", defaultValue: SecureVirtualRoot);
             return root + FolderName + "/";
         }
 
@@ -257,16 +258,18 @@ namespace Olive.Entities
 
             Blob result;
 
-            if (ownerEntity != null && attach)
+            if (ownerEntity != null)
             {
                 result = new Blob(await GetFileDataAsync(), FileName);
-
-                if (!@readonly) Attach(ownerEntity, OwnerProperty, FileAccessMode);
-                else
+                if (attach)
                 {
-                    result.ownerEntity = ownerEntity;
-                    result.OwnerProperty = OwnerProperty;
-                    result.FileAccessMode = FileAccessMode;
+                    if (!@readonly) Attach(ownerEntity, OwnerProperty, FileAccessMode);
+                    else
+                    {
+                        result.ownerEntity = ownerEntity;
+                        result.OwnerProperty = OwnerProperty;
+                        result.FileAccessMode = FileAccessMode;
+                    }
                 }
             }
             else
