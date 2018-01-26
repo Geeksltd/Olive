@@ -72,7 +72,7 @@ theme.my-solution.dev.co     192.168.0.100***
 
 # Domains and Ports configuration
 When developing ASP.NET core applications you can run the project by pressing F5 in Visual Studio. When you do that, it will automatically run the following command:
-> c:\...\my-solution\my-service\website> **dotnet run**
+> C:\...\my-solution\my-service\website> **dotnet run**
 
 At this stage, the *dotnet* command line utility will do the following:
 
