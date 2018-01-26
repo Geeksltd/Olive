@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Olive.Mvc.Attributes
+namespace Olive.Mvc
 {
     /// <summary>
     /// Intended for use on Web Api methods to specify the primary type of the result that is returned in happy scenarios.

@@ -1,7 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
-using Olive.Entities;
 using Olive.Entities.Data;
 
 namespace Olive.Services.Testing

@@ -208,8 +208,9 @@ namespace Olive.Entities
 
         public string GetVirtualFolderUrl(AccessMode accessMode)
         {
-            var root = Config.Get("UploadFolder.VirtualRoot").Or("/Documents/");
-            if (accessMode == AccessMode.Secure) root = Config.Get("UploadFolder.VirtualRoot.Secure").Or(SecureVirtualRoot);
+            var root = Config.Get("UploadFolder.VirtualRoot", defaultValue: "/Documents/");
+            if (accessMode == AccessMode.Secure)
+                root = Config.Get("UploadFolder.VirtualRoot.Secure", defaultValue: SecureVirtualRoot);
             return root + FolderName + "/";
         }
 

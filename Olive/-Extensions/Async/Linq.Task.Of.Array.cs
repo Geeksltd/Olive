@@ -7,7 +7,6 @@
  * They are intended to enable chaining of async linq calls.
  */
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
