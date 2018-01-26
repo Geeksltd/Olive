@@ -67,6 +67,21 @@ The other option is to use a **hosted version of the dependable services** on a 
 > To achieve this in your local HOSTS file you should map the full url to those services to the IP address of the dev server. This should be done both on the dev server's hosts file as well as your development machine's.
 
 For example if your dev server's ip is 192.168.0.100 you should add:
-***auth.my-solution.dev.com     192.168.0.100
-theme.my-solution.dev.com     192.168.0.100***
+***auth.my-solution.dev.co     192.168.0.100
+theme.my-solution.dev.co     192.168.0.100***
 
+# Domains and Ports configuration
+When developing ASP.NET core applications you can run the project by pressing F5 in Visual Studio. When you do that, it will automatically run the following command:
+> c:\...\my-solution\my-service\website> **dotnet run**
+
+At this stage, the *dotnet* command line utility will do the following:
+
+1. Compile the web application.
+2. Load *Website\Properties\**LaunchSettings.json*** file.
+3. Read the *applicationUrl* value.
+4. Find the port number from the URL.
+5. Start a [Kestrel web server](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?tabs=aspnetcore2x) web server process and listen on the port for incoming requests.
+   - Warning: The port number should not be already in use by IIS or any other running Kestrel web server instances.
+   - For example if you use the same port number on multiple running ASP.NET applications this will break.
+
+So you can send HTTP requests to the application on that port from your browser and test the application.
