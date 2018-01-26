@@ -12,4 +12,4 @@
 5. Set *"Authentication:CookieDataProtectorKey"* to the same secret value that you use in your Auth service.
 
 ## Website\Properties\LaunchSettings.json
-1. Set **applicationUrl** to the correct value and with a unique port within your overall solution (e.g. calendar.my-solution.dev.co:9043)
+1. Set **applicationUrl** to the correct value and with a unique port within your overall solution (e.g. http://calendar.my-solution.dev.co:9043)
