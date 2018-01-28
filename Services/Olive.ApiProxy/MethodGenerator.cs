@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Olive.Mvc;
 
 namespace Olive.ApiProxy
 {
-    class MethodGenerator
+    public class MethodGenerator
     {
         MethodInfo Method;
 
@@ -30,7 +31,7 @@ namespace Olive.ApiProxy
 
             r.AppendLine();
             r.Append($"return client.{HttpVerb()}");
-            if (HttpVerb() == "Get") r.Append($"<{ReturnType() ?? "object"}>");
+            if (HttpVerb() == "Get") r.Append($"<{ReturnType()?.Name ?? "object"}>");
 
             r.Append("(new { /* TODO: Inject the params */ }");
             if (HttpVerb() == "Get") r.Append(", cacheChoice");
@@ -73,13 +74,27 @@ namespace Olive.ApiProxy
         string MethodReturnType()
         {
             if (ReturnType() == null) return "Task";
-            return "Task<" + ReturnType() + ">";
+            return "Task<" + ReturnType()?.Name + ">";
         }
 
-        string ReturnType()
+        public Type ReturnType()
         {
-            return (Method.GetCustomAttribute(typeof(ReturnsAttribute)) as ReturnsAttribute)
-              ?.ReturnType.Name;
+            return (Method.GetCustomAttribute(typeof(ReturnsAttribute)) as ReturnsAttribute)?.ReturnType;
+        }
+
+        public Type[] GetCustomTypes()
+        {
+            var types = Method.GetParameters().Select(x => x.ParameterType).ToList();
+
+            if (ReturnType() != null)
+                types.Add(ReturnType());
+
+            types = types.Distinct().ToList();
+
+            return types
+                .Where(x => !x.FullName.StartsWith("System."))
+                .Where(x => !x.FullName.StartsWith("Olive."))
+                .ToArray();
         }
     }
 }

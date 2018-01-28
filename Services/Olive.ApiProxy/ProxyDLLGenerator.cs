@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace Olive.ApiProxy
         public static DirectoryInfo Output;
         public static Assembly Assembly;
         public static Type ControllerType;
-        public static MethodInfo[] ActionMethods;
+        public static MethodGenerator[] ActionMethods;
 
         static void PrepareOutputDirectory()
         {
@@ -49,11 +50,28 @@ namespace Olive.ApiProxy
             File.WriteAllText(Output + @"\" + ControllerName + ".cs", proxyClassCode);
             Console.WriteLine("Done");
 
+            AddDTOTypes();
+
             Console.Write("Building the generated project...");
             RunCommand("dotnet build");
             var batchCommand = new StringBuilder();
             Console.WriteLine("Done");
         }
+
+        static void AddDTOTypes()
+        {
+            var types = ActionMethods.SelectMany(x => x.GetCustomTypes()).Distinct().ToArray();
+
+            foreach (var type in types)
+            {
+                Console.Write("Adding DTO class " + type.Name + "...");
+                File.WriteAllText(Output + @"\" + type.Name + ".cs", new DtoProgrammer(type).Generate());
+                Console.WriteLine("Done");
+            }
+            // Add a type for each.
+        }
+
+
 
         static void LoadAssembly()
         {
@@ -65,7 +83,9 @@ namespace Olive.ApiProxy
                 ?? throw new Exception(ControllerName + " was not found.");
 
             ActionMethods = ControllerType
-                .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
+                .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                .Select(x => new MethodGenerator(x))
+                .ToArray();
 
             if (ActionMethods.Length == 0) throw new Exception("This controller has no action method.");
         }
@@ -74,7 +94,7 @@ namespace Olive.ApiProxy
         {
             var r = new StringBuilder();
 
-            r.AppendLine("namespace " + PublisherService);
+            r.AppendLine("namespace " + ControllerType.Namespace);
             r.AppendLine("{");
             r.AppendLine("using System;");
             r.AppendLine("using System.Threading.Tasks;");
@@ -93,7 +113,7 @@ namespace Olive.ApiProxy
             r.AppendLine();
 
             foreach (var method in ActionMethods)
-                r.AppendLine(new MethodGenerator(method).Generate());
+                r.AppendLine(method.Generate());
 
             r.AppendLine("}");
             r.AppendLine("}");
