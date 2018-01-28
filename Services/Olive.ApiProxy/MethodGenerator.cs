@@ -91,6 +91,8 @@ namespace Olive.ApiProxy
 
             types = types.Distinct().ToList();
 
+            types = types.Select(x => x.IsArray ? x.GetElementType() : x).Distinct().ToList();
+
             return types
                 .Where(x => !x.FullName.StartsWith("System."))
                 .Where(x => !x.FullName.StartsWith("Olive."))

@@ -29,7 +29,9 @@ namespace Olive.ApiProxy
             }
             catch (Exception ex)
             {
+                Console.WriteLine("ERROR!");
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
         }
 
