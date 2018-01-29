@@ -1,29 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <RootNamespace>Olive.Entities.Data</RootNamespace>
-    <AssemblyName>Olive.Entities.Data</AssemblyName>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TargetFramework>netstandard2.0</TargetFramework>
     <OutputPath>..\@Assemblies\</OutputPath>
-    <DocumentationFile>..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.xml</DocumentationFile>
+    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Ado.Net\SqlServer\**" />
-    <EmbeddedResource Remove="Ado.Net\SqlServer\**" />
-    <None Remove="Ado.Net\SqlServer\**" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <Reference Include="Olive">
-      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
+      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Entities">
-      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.Entities.dll</HintPath>
+      <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
     </Reference>
   </ItemGroup>
 

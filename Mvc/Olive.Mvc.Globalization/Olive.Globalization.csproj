@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>Olive.Globalization</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\..\@Assemblies\netcoreapp2.0\Olive.Globalization.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.5.2-beta6" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Web">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

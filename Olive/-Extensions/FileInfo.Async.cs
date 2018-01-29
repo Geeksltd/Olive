@@ -23,10 +23,15 @@ namespace Olive
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
-        public static Task<byte[]> ReadAllBytesAsync(this FileInfo file)
+        public static async Task<byte[]> ReadAllBytesAsync(this FileInfo file)
         {
-            return TryHardAsync(file, () => Task.Run(() => File.ReadAllBytes(file.FullName)),
-                "The system cannot read the file: {0}");
+            byte[] result;
+            using (var stream = File.Open(file.FullName, FileMode.Open))
+            {
+                result = new byte[stream.Length];
+                await stream.ReadAsync(result, 0, (int)stream.Length);
+                return result;
+            }
         }
 
         /// <summary>

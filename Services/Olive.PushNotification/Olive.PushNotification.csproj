@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>   
+    <OutputPath>..\..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.PushNotification.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PushSharp.Core" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Olive\Olive.csproj" />
+  </ItemGroup>
+
+</Project>

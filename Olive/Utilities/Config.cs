@@ -77,7 +77,7 @@ namespace Olive
         {
             return Section(key)
                    .GetChildren()
-                   .Select(section => KeyValuePair.Create(section.Key, section.Value));
+                   .Select(section => new KeyValuePair<string, string>(section.Key, section.Value));
         }
 
         /// <summary>

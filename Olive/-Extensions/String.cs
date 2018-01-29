@@ -1097,6 +1097,8 @@ namespace Olive
             }
         }
 
+        public static string[] Split(this string text, string separator, StringSplitOptions option = StringSplitOptions.RemoveEmptyEntries) => text.Split(new[] { text }, option);
+
         public static string Substring(this string text, int fromIndex, string toText)
         {
             var toIndex = text.IndexOf(toText, fromIndex + 1);

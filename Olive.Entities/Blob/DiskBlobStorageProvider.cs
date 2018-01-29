@@ -22,7 +22,7 @@ namespace Olive.Entities
             {
                 using (await GetAsyncLock(blob.LocalPath).Lock())
                 {
-                    var data = await File.ReadAllBytesAsync(blob.LocalPath);
+                    var data = await blob.LocalPath.AsFile().ReadAllBytesAsync();
                     if (data == null) await DeleteAsync(blob);
                     else if (data.SequenceEqual(await blob.GetFileDataAsync())) return; // Nothing changed.
                     else await DeleteAsync(blob);
@@ -31,7 +31,7 @@ namespace Olive.Entities
 
             using (await GetAsyncLock(blob.LocalPath).Lock())
             {
-                await new Func<Task>(async () => await File.WriteAllBytesAsync(blob.LocalPath, fileDataToSave)).Invoke(retries: 6, waitBeforeRetries: TimeSpan.FromSeconds(0.5));
+                await blob.LocalPath.AsFile().WriteAllBytesAsync(fileDataToSave);
             }
         }
 
@@ -60,7 +60,7 @@ namespace Olive.Entities
             using (await GetAsyncLock(blob.LocalPath).Lock())
             {
                 if (File.Exists(blob.LocalPath))
-                    return await File.ReadAllBytesAsync(blob.LocalPath);
+                    return await blob.LocalPath.AsFile().ReadAllBytesAsync();
             }
 
             return new byte[0];

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities.Data.MySql</id>
-    <version>1.0.8</version>
+    <version>1.0.10</version>
     <title>Olive Entities Data MySql</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -11,8 +11,8 @@
     <description>Olive Framework</description>
   </metadata>
   <files>
-    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.MySql.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.MySql.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\@Assemblies\netcoreapp2.0\Olive.Entities.Data.MySql.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.MySql.dll" target="lib\netstandard2.0\" />
+    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.MySql.pdb" target="lib\netstandard2.0\" />
+    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.MySql.xml" target="lib\netstandard2.0\" />
   </files>
 </package>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.Hangfire</id>
+    <version>1.0.19</version>
+    <title>Olive Hangfire (Service)</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <description>Olive Framework</description>
+    <dependencies>
+      <dependency id="Hangfire" version="1.6.17" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Hangfire.dll" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Hangfire.pdb" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Hangfire.xml" target="lib\netcoreapp2.0\" />
+  </files>
+</package>

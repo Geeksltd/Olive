@@ -126,5 +126,104 @@ namespace Olive
 
             return new Uri(r.ToString());
         }
+
+        /// <summary>
+        /// Gets the query string parameters of this Url.
+        /// </summary>
+        public static Dictionary<string, string> GetQueryString(this Uri url)
+        {
+            var result = new Dictionary<string, string>();
+
+            var query = url.Query.OrEmpty().TrimStart("?");
+            if (query.IsEmpty()) return result;
+
+            var namePos = 0;
+
+            while (namePos <= query.Length)
+            {
+                int valuePos = -1, valueEnd = -1;
+                for (var q = namePos; q < query.Length; q++)
+                {
+                    if (valuePos == -1 && query[q] == '=') valuePos = q + 1;
+                    else if (query[q] == '&')
+                    {
+                        valueEnd = q;
+                        break;
+                    }
+                }
+
+                string name;
+                if (valuePos == -1)
+                {
+                    name = null;
+                    valuePos = namePos;
+                }
+                else name = UrlDecode(query.Substring(namePos, valuePos - namePos - 1));
+
+                if (valueEnd < 0) valueEnd = query.Length;
+
+                namePos = valueEnd + 1;
+                var value = UrlDecode(query.Substring(valuePos, valueEnd - valuePos));
+                if (name != null)
+                    result.Add(name, value);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Removes the specified query string parameter.
+        /// </summary>
+        public static Uri RemoveEmptyQueryParameters(this Uri url)
+        {
+            var toRemove = url.GetQueryString().Where(x => x.Value.IsEmpty()).ToList();
+
+            foreach (var item in toRemove) url = url.RemoveQueryString(item.Key);
+
+            return url;
+        }
+
+        /// <summary>
+        /// Removes the specified query string parameter.
+        /// </summary>
+        public static Uri RemoveQueryString(this Uri url, string key)
+        {
+            var qs = url.GetQueryString();
+            key = key.ToLower();
+            if (qs.ContainsKey(key)) qs.Remove(key);
+
+            return url.ReplaceQueryString(qs);
+        }
+
+        /// <summary>
+        /// Adds the specified query string setting to this Url.
+        /// </summary>
+        public static Uri AddQueryString(this Uri url, string key, string value)
+        {
+            var qs = url.GetQueryString();
+
+            qs.RemoveWhere(x => x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+            qs.Add(key, value);
+
+            return url.ReplaceQueryString(qs);
+        }
+
+        /// <summary>
+        /// Properly sets a query string key value in this Uri, returning a new Uri object.
+        /// </summary>
+        public static Uri SetQueryString(this Uri uri, string key, object value)
+        {
+            var pairs = uri.GetQueryString();
+
+            pairs[key] = value.ToStringOrEmpty();
+
+            var builder = new UriBuilder(uri)
+            {
+                Query = pairs.Select(x => x.Key + "=" + x.Value.UrlEncode()).ToString("&")
+            };
+
+            return builder.Uri;
+        }
     }
 }

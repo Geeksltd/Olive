@@ -1,24 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Entities</RootNamespace>
     <AssemblyName>Olive.Entities</AssemblyName>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\@Assemblies\</OutputPath>
-    <DocumentationFile>..\@Assemblies\netcoreapp2.0\Olive.Entities.xml</DocumentationFile>
+    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573</NoWarn>
   </PropertyGroup>
-
+ 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Olive">
-      <HintPath>..\@Assemblies\netcoreapp2.0\Olive.dll</HintPath>
+      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
     </Reference>
   </ItemGroup>
 
