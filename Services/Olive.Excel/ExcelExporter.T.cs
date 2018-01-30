@@ -238,7 +238,7 @@ namespace Olive.Excel
             foreach (var row in DataRows)
             {
                 var fields = new List<string>();
-                for (int i = 0; i < row.Length; i++)
+                for (var i = 0; i < row.Length; i++)
                 {
                     var cell = row[i];
                     var column = Columns[i];
@@ -468,7 +468,7 @@ namespace Olive.Excel
         {
             foreach (var row in DataRows)
             {
-                for (int i = 0; i < row.Length; i++)
+                for (var i = 0; i < row.Length; i++)
                 {
                     var cell = row[i] as ExcelCell;
 
@@ -538,7 +538,7 @@ namespace Olive.Excel
             {
                 r.AppendLine(@"<Row>");
 
-                for (int i = 0; i < row.Length; i++)
+                for (var i = 0; i < row.Length; i++)
                 {
                     var cell = row[i];
                     var column = Columns[i];

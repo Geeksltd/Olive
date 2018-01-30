@@ -20,7 +20,7 @@ namespace Olive.Mvc
             {
                 var temp = output.Attributes
                     .Where(att => att.Name.IsAnyOf(ValidationTextAttributes))
-                    .Select(att => new { Name = att.Name, Value = att.Value.ToString() }).ToArray();
+                    .Select(att => new { att.Name, Value = att.Value.ToString() }).ToArray();
 
                 foreach (var att in temp)
                     output.Attributes.SetAttribute(att.Name, Translator.Translate(att.Value));

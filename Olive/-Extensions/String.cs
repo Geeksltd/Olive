@@ -115,7 +115,7 @@ namespace Olive
             {
                 text = (text ?? string.Empty).ToLower();
 
-                for (int i = 0; i < keywords.Length; i++) keywords[i] = keywords[i].ToLower();
+                for (var i = 0; i < keywords.Length; i++) keywords[i] = keywords[i].ToLower();
             }
 
             foreach (var key in keywords)
@@ -205,7 +205,7 @@ namespace Olive
 
                 var lastSpace = -1;
 
-                foreach (char wordSeperator in " \r\n\t")
+                foreach (var wordSeperator in " \r\n\t")
                     lastSpace = Math.Max(text.LastIndexOf(wordSeperator), lastSpace);
 
                 if (lastSpace > maximumLength / 2)
@@ -262,7 +262,7 @@ namespace Olive
         public static string SeparateAtUpperCases(this string pascalCase)
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < pascalCase.Length; i++)
+            for (var i = 0; i < pascalCase.Length; i++)
             {
                 if (char.IsUpper(pascalCase[i]) && i > 0)
                     sb.Append(" ");
@@ -591,7 +591,7 @@ namespace Olive
                 "û","ü","ý","þ","ÿ",
             };
 
-            for (int i = 0; i < from.Length; i++)
+            for (var i = 0; i < from.Length; i++)
                 source = source.Replace(from[i], to[i]);
 
             return Regex.Replace(source, @"<(.|\n)*?>", " ").Trim();
@@ -1059,7 +1059,7 @@ namespace Olive
         /// </summary>
         public static string CreateSHA256Hash(this string inputString)
         {
-            using (SHA256 hash = SHA256Managed.Create())
+            using (var hash = SHA256Managed.Create())
             {
                 return string.Concat(
                     hash
@@ -1073,7 +1073,7 @@ namespace Olive
         /// </summary>
         public static string CreateSHA512Hash(this string inputString)
         {
-            using (SHA512 hash = SHA512Managed.Create())
+            using (var hash = SHA512Managed.Create())
             {
                 return string.Concat(
                     hash
@@ -1158,8 +1158,7 @@ namespace Olive
         public static T? TryParseEnum<T>(this string text, T? @default = null) where T : struct
         {
             if (Enum.TryParse(text, ignoreCase: true, result: out T value)) return value;
-
-            return @default;
+            else return @default;
         }
 
         /// <summary>
@@ -1168,7 +1167,7 @@ namespace Olive
         public static string OrEmpty(this string text)
         {
             if (text == null) return string.Empty;
-            return text;
+            else return text;
         }
 
         /// <summary>

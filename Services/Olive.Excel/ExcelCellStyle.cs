@@ -293,8 +293,10 @@ namespace Olive.Excel
 
         internal ExcelCellStyle OverrideWith(ExcelCellStyle overrideStyle)
         {
-            var result = new ExcelCellStyle();
-            result.Settings = new Dictionary<string, string>(Settings);
+            var result = new ExcelCellStyle
+            {
+                Settings = new Dictionary<string, string>(Settings)
+            };
 
             foreach (var setting in overrideStyle.Settings)
                 result.Settings[setting.Key] = setting.Value;

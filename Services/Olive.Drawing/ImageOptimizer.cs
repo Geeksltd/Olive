@@ -80,7 +80,7 @@ namespace Olive.Drawing
                 {
                     using (var resultBitmap = Optimize(source))
                     {
-                        using (SKImage image = SKImage.FromBitmap(resultBitmap))
+                        using (var image = SKImage.FromBitmap(resultBitmap))
                         {
                             return image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, Quality).ToArray();
                         }

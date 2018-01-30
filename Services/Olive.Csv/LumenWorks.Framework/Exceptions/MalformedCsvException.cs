@@ -89,7 +89,7 @@ namespace LumenWorks.Framework.IO.Csv
         public MalformedCsvException(string message, Exception innerException)
             : base(string.Empty, innerException)
         {
-            this.message = (message == null ? string.Empty : message);
+            this.message = (message ?? string.Empty);
 
             rawData = string.Empty;
             currentPosition = -1;
@@ -120,7 +120,7 @@ namespace LumenWorks.Framework.IO.Csv
         public MalformedCsvException(string rawData, int currentPosition, long currentRecordIndex, int currentFieldIndex, Exception innerException)
             : base(string.Empty, innerException)
         {
-            this.rawData = (rawData == null ? string.Empty : rawData);
+            this.rawData = (rawData ?? string.Empty);
             this.currentPosition = currentPosition;
             this.currentRecordIndex = currentRecordIndex;
             this.currentFieldIndex = currentFieldIndex;

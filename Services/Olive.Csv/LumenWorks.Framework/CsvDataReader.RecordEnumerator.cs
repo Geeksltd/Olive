@@ -64,10 +64,7 @@ namespace LumenWorks.Framework.IO.Csv
             /// </exception>
             public RecordEnumerator(CsvDataReader reader)
             {
-                if (reader == null)
-                    throw new ArgumentNullException("reader");
-
-                _reader = reader;
+                _reader = reader ?? throw new ArgumentNullException("reader");
                 _current = null;
 
                 _currentRecordIndex = reader.currentRecordIndex;

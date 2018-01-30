@@ -125,7 +125,7 @@ namespace Olive.Globalization
 
             var currentLine = new StringBuilder();
 
-            for (int i = 0; i < text.Length; i++)
+            for (var i = 0; i < text.Length; i++)
             {
                 if (currentLine.Length <= eachLineLength)
                 {
@@ -275,7 +275,7 @@ namespace Olive.Globalization
         {
             var result = new StringBuilder();
 
-            for (int i = 0; i < phraseInDefaultLanguage.Length && !char.IsLetter(phraseInDefaultLanguage[i]); i++)
+            for (var i = 0; i < phraseInDefaultLanguage.Length && !char.IsLetter(phraseInDefaultLanguage[i]); i++)
                 result.Append(phraseInDefaultLanguage[i]);
 
             return result.ToString();
@@ -285,7 +285,7 @@ namespace Olive.Globalization
         {
             var result = new StringBuilder();
 
-            for (int i = phraseInDefaultLanguage.Length - 1; i >= 0 && !char.IsLetter(phraseInDefaultLanguage[i]); i--)
+            for (var i = phraseInDefaultLanguage.Length - 1; i >= 0 && !char.IsLetter(phraseInDefaultLanguage[i]); i--)
                 result.Insert(0, phraseInDefaultLanguage[i]);
 
             return result.ToString();

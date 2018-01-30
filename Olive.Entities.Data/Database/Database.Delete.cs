@@ -85,7 +85,7 @@ namespace Olive.Entities.Data
 
             await EnlistOrCreateTransaction(async () =>
             {
-                foreach (T obj in instances.ToArray()) await Delete(obj);
+                foreach (var obj in instances.ToArray()) await Delete(obj);
             });
         }
 

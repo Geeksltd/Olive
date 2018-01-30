@@ -92,7 +92,7 @@ namespace Olive.Mvc
                 context.HttpContext.Response.StatusCode = HTTP_STATUS_CODE_PARTIAL_CONTENT;
                 if (context.HttpContext.Request.Method != "HEAD")
                 {
-                    for (int i = 0; i < RangesStartIndexes.Length; i++)
+                    for (var i = 0; i < RangesStartIndexes.Length; i++)
                     {
                         if (MultipartRequest)
                         {
@@ -126,7 +126,7 @@ namespace Olive.Mvc
         {
             var rangesHeader = GetHeader(request, "Range");
             var ifRangeHeader = GetHeader(request, "If-Range", EntityTag);
-            var isIfRangeHeaderDate = DateTime.TryParseExact(ifRangeHeader, DateFormats, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime ifRangeHeaderDate);
+            var isIfRangeHeaderDate = DateTime.TryParseExact(ifRangeHeader, DateFormats, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var ifRangeHeaderDate);
 
             if (rangesHeader.IsEmpty() || (!isIfRangeHeaderDate && ifRangeHeader != EntityTag) || (isIfRangeHeaderDate && HttpModificationDate > ifRangeHeaderDate))
             {
@@ -144,7 +144,7 @@ namespace Olive.Mvc
                 RangeRequest = true;
                 MultipartRequest = ranges.HasMany();
 
-                for (int i = 0; i < ranges.Length; i++)
+                for (var i = 0; i < ranges.Length; i++)
                 {
                     var currentRange = ranges[i].Split('-');
 
@@ -168,7 +168,7 @@ namespace Olive.Mvc
         {
             var contentLength = 0;
 
-            for (int i = 0; i < RangesStartIndexes.Length; i++)
+            for (var i = 0; i < RangesStartIndexes.Length; i++)
             {
                 contentLength += Convert.ToInt32(RangesEndIndexes[i] - RangesStartIndexes[i]) + 1;
 
@@ -191,7 +191,7 @@ namespace Olive.Mvc
                 return false;
             }
 
-            for (int i = 0; i < RangesStartIndexes.Length; i++)
+            for (var i = 0; i < RangesStartIndexes.Length; i++)
             {
                 if (RangesStartIndexes[i] > FileLength - 1 || RangesEndIndexes[i] > FileLength - 1 || RangesStartIndexes[i] < 0 || RangesEndIndexes[i] < 0 || RangesEndIndexes[i] < RangesStartIndexes[i])
                 {
@@ -209,7 +209,7 @@ namespace Olive.Mvc
             if (modifiedSinceHeader.HasValue())
             {
                 DateTime.TryParseExact(modifiedSinceHeader, DateFormats, null,
-                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime modifiedSinceDate);
+                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var modifiedSinceDate);
 
                 if (HttpModificationDate <= modifiedSinceDate)
                 {
@@ -222,7 +222,7 @@ namespace Olive.Mvc
             if (unmodifiedSinceHeader.HasValue())
             {
                 var unmodifiedSinceDateParsed = DateTime.TryParseExact(unmodifiedSinceHeader, DateFormats, null,
-                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out DateTime unmodifiedSinceDate);
+                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var unmodifiedSinceDate);
 
                 if (HttpModificationDate > unmodifiedSinceDate)
                 {
@@ -264,7 +264,7 @@ namespace Olive.Mvc
                 }
 
                 var entitiesTags = noneMatchHeader.Split(',');
-                foreach (string entityTag in entitiesTags)
+                foreach (var entityTag in entitiesTags)
                 {
                     if (EntityTag != entityTag) continue;
 

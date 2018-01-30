@@ -28,7 +28,7 @@ namespace Olive.Entities.Data
             foreach (var property in properties)
                 dataTable.Columns.Add(property.Name);
 
-            foreach (T item in items)
+            foreach (var item in items)
             {
                 var row = dataTable.NewRow();
 

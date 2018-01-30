@@ -80,13 +80,13 @@ namespace Olive
 
             var parts = new Dictionary<string, double>();
 
-            if (TryReduceDays(ref period, 365, out double years))
+            if (TryReduceDays(ref period, 365, out var years))
                 parts.Add(name("year"), years);
 
-            if (TryReduceDays(ref period, 30, out double months))
+            if (TryReduceDays(ref period, 30, out var months))
                 parts.Add(name("month"), months);
 
-            if (TryReduceDays(ref period, 7, out double weeks))
+            if (TryReduceDays(ref period, 7, out var weeks))
                 parts.Add(name("week"), weeks);
 
             if (period.TotalDays >= 1)

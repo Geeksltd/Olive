@@ -502,10 +502,10 @@ new DateTime(2099,04,13)};
             var result = date;
 
             if (days > 0)
-                for (int day = 0; day < days; day++)
+                for (var day = 0; day < days; day++)
                     result = result.NextWorkingDay(considerEnglishBankHolidays);
             else
-                for (int day = 0; day < -days; day++)
+                for (var day = 0; day < -days; day++)
                     result = result.PreviousWorkingDay(considerEnglishBankHolidays);
 
             return result;
@@ -701,7 +701,7 @@ new DateTime(2099,04,13)};
         {
             var startMonths = new[] { 1, 4, 7, 10 };
 
-            for (int i = startMonths.Length - 1; i >= 0; i--)
+            for (var i = startMonths.Length - 1; i >= 0; i--)
             {
                 var beginningOfQuarter = new DateTime(date.Year, startMonths[i], 1);
                 if (date >= beginningOfQuarter)

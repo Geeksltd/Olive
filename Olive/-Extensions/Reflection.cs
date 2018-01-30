@@ -66,7 +66,7 @@ namespace Olive
         {
             var displayName = input.Name;
 
-            for (int i = displayName.Length - 1; i >= 0; i--)
+            for (var i = displayName.Length - 1; i >= 0; i--)
             {
                 if (displayName[i] == char.ToUpper(displayName[i]))
                     if (i > 0)

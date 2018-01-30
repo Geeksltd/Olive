@@ -500,7 +500,7 @@ namespace Olive.Entities
         {
             if (ReferenceEquals(left, right)) return true;
 
-            else if (ReferenceEquals(left, null)) return false;
+            else if (left is null) return false;
 
             else return left.Equals(right);
         }

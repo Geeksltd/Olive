@@ -24,9 +24,11 @@ namespace Olive.Security
         static RSA CreateRSACryptoServiceProvider() => RSA.Create();
 
         /// <summary>
-		/// Encrypts the specified text with the specified public key.
-		/// </summary>
-		/// <param name="padding">The default padding value is OaepSHA512.</param>
+        /// Encrypts the specified text with the specified public key.
+        /// </summary>
+        /// <param name="text">The clear text value to encrypt</param>
+        /// <param name="publicKeyXml">The public key XML for encryption.</param>
+        /// <param name="padding">The default padding value is OaepSHA512.</param>
         public static string EncryptAsymmetric(string text, string publicKeyXml, RSAEncryptionPadding padding = null)
         {
             if (text.IsEmpty()) throw new ArgumentNullException(nameof(text));
@@ -48,22 +50,25 @@ namespace Olive.Security
         /// <summary>
         /// Decrypts the specified text with the specified public/private key pair.
         /// </summary>
-		/// <param name="padding">The default padding value is OaepSHA512.</param>
-        public static string DecryptAsymmetric(string encodedText, string publicPrivateKeyXml, RSAEncryptionPadding padding = null)
+        /// <param name="encryptedText">The encrypted text to decode.</param>
+        /// <param name="publicPrivateKeyXml">The private key used to decrype it.</param>
+        /// <param name="padding">The default padding value is OaepSHA512.</param>
+        public static string DecryptAsymmetric(string encryptedText
+            , string publicPrivateKeyXml, RSAEncryptionPadding padding = null)
         {
-            if (encodedText.IsEmpty()) throw new ArgumentNullException(nameof(encodedText));
+            if (encryptedText.IsEmpty()) throw new ArgumentNullException(nameof(encryptedText));
 
             if (publicPrivateKeyXml.IsEmpty()) throw new ArgumentNullException(nameof(publicPrivateKeyXml));
 
-            if (encodedText.Contains("|"))
+            if (encryptedText.Contains("|"))
             {
-                return encodedText.Split('|').Select(p => DecryptAsymmetric(p, publicPrivateKeyXml)).ToString(string.Empty);
+                return encryptedText.Split('|').Select(p => DecryptAsymmetric(p, publicPrivateKeyXml)).ToString(string.Empty);
             }
             else
             {
                 var rsa = CreateRSACryptoServiceProvider();
                 rsa.FromXmlString(publicPrivateKeyXml);
-                return rsa.Decrypt(encodedText.ToBytes(), padding ?? RSAEncryptionPadding.OaepSHA512).ToString(Encoding.UTF8);
+                return rsa.Decrypt(encryptedText.ToBytes(), padding ?? RSAEncryptionPadding.OaepSHA512).ToString(Encoding.UTF8);
             }
         }
 

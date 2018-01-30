@@ -7,6 +7,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\@Assemblies</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.NLog.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,9 +18,11 @@
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Mvc">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 

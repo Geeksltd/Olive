@@ -1,5 +1,6 @@
 ﻿namespace Olive.Mvc
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Olive.Entities;
@@ -18,10 +19,10 @@
 
         public ActionResult Redirect(string url) => new RedirectResult(url);
 
-        protected TViewModel Bind<TViewModel>(object settings) where TViewModel : IViewModel, new()
+        protected async Task<TViewModel> Bind<TViewModel>(object settings) where TViewModel : IViewModel, new()
         {
             var result = new TViewModel();
-            if (settings != null) ViewModelServices.CopyData(settings, result);
+            if (settings != null) await ViewModelServices.CopyData(settings, result);
             return result;
         }
     }

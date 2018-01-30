@@ -38,7 +38,7 @@ namespace Olive
 
             var buffer = new char[length];
             var chLen = charSet.Length;
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
                 buffer[i] = charSet[rng.Next(chLen)];
 
             return new string(buffer);

@@ -19,7 +19,7 @@ namespace Olive.Entities
         /// </summary>
         public static bool IsCalculated(PropertyInfo property)
         {
-            if (Cache.TryGetValue(property, out bool result)) return result;
+            if (Cache.TryGetValue(property, out var result)) return result;
 
             return DetectAndCache(property);
         }

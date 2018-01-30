@@ -12,36 +12,40 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
     <PackageReference Include="System.Security.Principal" Version="4.3.0" />
-    <PackageReference Include="System.Security.Principal.Windows" Version="4.4.0" />
+    <PackageReference Include="System.Security.Principal.Windows" Version="4.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Entities.Data">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Entities.Data.SqlServer">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Excel">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Excel.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Mvc">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Services.Excel">
-      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Services.Excel.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 

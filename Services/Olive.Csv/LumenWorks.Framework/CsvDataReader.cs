@@ -494,7 +494,7 @@ namespace LumenWorks.Framework.IO.Csv
 
             var fieldHeaders = new string[this.fieldHeaders.Length];
 
-            for (int i = 0; i < fieldHeaders.Length; i++)
+            for (var i = 0; i < fieldHeaders.Length; i++)
                 fieldHeaders[i] = this.fieldHeaders[i];
 
             return fieldHeaders;
@@ -699,9 +699,7 @@ namespace LumenWorks.Framework.IO.Csv
         {
             EnsureInitialize();
 
-            int index;
-
-            if (fieldHeaderIndexes != null && fieldHeaderIndexes.TryGetValue(header, out index))
+            if (fieldHeaderIndexes != null && fieldHeaderIndexes.TryGetValue(header, out var index))
                 return index;
             else
                 return -1;
@@ -748,7 +746,7 @@ namespace LumenWorks.Framework.IO.Csv
             if (array.Length - index < fieldCount)
                 throw new ArgumentException(ExceptionMessage.NotEnoughSpaceInArray, "array");
 
-            for (int i = 0; i < fieldCount; i++)
+            for (var i = 0; i < fieldCount; i++)
             {
                 if (parseErrorFlag) array[index + i] = null;
                 else array[index + i] = this[i];
@@ -1388,7 +1386,7 @@ namespace LumenWorks.Framework.IO.Csv
                     fieldHeaders = new string[fieldCount];
                     fieldHeaderIndexes = new Dictionary<string, int>(fieldCount, fieldHeaderComparer);
 
-                    for (int i = 0; i < fields.Length; i++)
+                    for (var i = 0; i < fields.Length; i++)
                     {
                         var headerName = fields[i];
                         if (string.IsNullOrEmpty(headerName) || headerName.Trim().Length == 0)
@@ -1675,7 +1673,7 @@ namespace LumenWorks.Framework.IO.Csv
 
             missingFieldFlag = true;
 
-            for (int i = fieldIndex + 1; i < fieldCount; i++)
+            for (var i = fieldIndex + 1; i < fieldCount; i++)
                 fields[i] = null;
 
             if (value != null)
@@ -1762,7 +1760,7 @@ namespace LumenWorks.Framework.IO.Csv
                 var chars = value.ToCharArray((int)fieldOffset, length);
                 var source = new byte[chars.Length]; ;
 
-                for (int i = 0; i < chars.Length; i++)
+                for (var i = 0; i < chars.Length; i++)
                     source[i] = Convert.ToByte(chars[i]);
 
                 Array.Copy(source, 0, destinationArray, destinationOffset, length);
@@ -1847,12 +1845,12 @@ namespace LumenWorks.Framework.IO.Csv
             {
                 columnNames = new string[fieldCount];
 
-                for (int i = 0; i < fieldCount; i++)
+                for (var i = 0; i < fieldCount; i++)
                     columnNames[i] = "Column" + i.ToString(CultureInfo.InvariantCulture);
             }
 
             // null marks columns that will change for each row
-            object[] schemaRow = new object[] {
+            var schemaRow = new object[] {
                     true,					// 00- AllowDBNull
 					null,					// 01- BaseColumnName
 					string.Empty,			// 02- BaseSchemaName
@@ -1878,7 +1876,7 @@ namespace LumenWorks.Framework.IO.Csv
 					false					// 21- IsRowVersion
 			  };
 
-            for (int i = 0; i < columnNames.Length; i++)
+            for (var i = 0; i < columnNames.Length; i++)
             {
                 schemaRow[1] = columnNames[i]; // Base column name
                 schemaRow[4] = columnNames[i]; // Column name
@@ -1900,7 +1898,7 @@ namespace LumenWorks.Framework.IO.Csv
 
             var value = this[i];
 
-            return int.Parse(value == null ? string.Empty : value, CultureInfo.CurrentCulture);
+            return int.Parse(value ?? string.Empty, CultureInfo.CurrentCulture);
         }
 
         object IDataRecord.this[string name]
@@ -1973,7 +1971,7 @@ namespace LumenWorks.Framework.IO.Csv
 
             var record = (IDataRecord)this;
 
-            for (int i = 0; i < fieldCount; i++)
+            for (var i = 0; i < fieldCount; i++)
                 values[i] = record.GetValue(i);
 
             return fieldCount;
@@ -2010,9 +2008,8 @@ namespace LumenWorks.Framework.IO.Csv
 
             var value = this[i];
 
-            int result;
 
-            if (int.TryParse(value, out result))
+            if (int.TryParse(value, out var result))
                 return (result != 0);
             else
                 return bool.Parse(value);
@@ -2035,9 +2032,8 @@ namespace LumenWorks.Framework.IO.Csv
             EnsureInitialize();
             ValidateDataReader(DataReaderValidations.IsNotClosed);
 
-            int index;
 
-            if (!fieldHeaderIndexes.TryGetValue(name, out index))
+            if (!fieldHeaderIndexes.TryGetValue(name, out var index))
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, ExceptionMessage.FieldHeaderNotFound, name), "name");
 
             return index;

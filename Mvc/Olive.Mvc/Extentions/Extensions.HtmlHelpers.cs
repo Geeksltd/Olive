@@ -55,7 +55,8 @@ namespace Olive.Mvc
 
                 var id = propertyInfo.Name + "_" + selectList.IndexOf(item);
 
-                result.AppendHtml(html.RadioButton(propertyInfo.Name, item.Value, IsSelected(item, value), new { id = id, @class = "form-check-input" }));
+                result.AppendHtml(html.RadioButton(propertyInfo.Name, item.Value, IsSelected(item, value),
+                    new { id, @class = "form-check-input" }));
 
                 result.AppendHtmlLine($"<label for=\"{id}\" class=\"form-check-label\">{item.Text}</label>");
 

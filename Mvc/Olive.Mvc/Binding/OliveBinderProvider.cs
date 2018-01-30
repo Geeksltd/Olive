@@ -39,7 +39,7 @@ namespace Olive.Mvc
 
             if (PrimitiveTypes.Contains(modelType)) return new PrimitiveValueModelBinder();
 
-            if (TryGetListModelBinder(modelType, out IModelBinder binder))
+            if (TryGetListModelBinder(modelType, out var binder))
                 return binder;
 
             if (modelType == typeof(OptionalBooleanFilter)) return new OptionalBooleanFilterModelBinder();

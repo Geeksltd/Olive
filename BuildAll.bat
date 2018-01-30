@@ -23,9 +23,10 @@ dotnet build Integration\Olive.Microservices
 dotnet build Mvc\Olive.Web
 dotnet build Mvc\Olive.Security
 dotnet build Mvc\Olive.Mvc
-dotnet build Mvc\Olive.Mvc.Email
-dotnet build Mvc\Olive.Security.Impersonation
 dotnet build Mvc\Olive.Mvc.Testing
+dotnet build Mvc\Olive.Email
+dotnet build Mvc\Olive.Security.Impersonation
+
 dotnet build Mvc\Olive.Mvc.IpFilter
 dotnet build Mvc\Olive.Mvc.NLog
 dotnet build Mvc\Olive.Mvc.Security.Auth0

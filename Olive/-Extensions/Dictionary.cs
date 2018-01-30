@@ -103,7 +103,7 @@ namespace Olive
         /// </summary>
         public static K TryRemove<T, K>(this System.Collections.Concurrent.ConcurrentDictionary<T, K> list, T key)
         {
-            if (list.TryRemove(key, out K result))
+            if (list.TryRemove(key, out var result))
                 return result;
             else return default(K);
         }
@@ -144,7 +144,7 @@ namespace Olive
 
             if (keyType.IsValueType || keyType == typeof(string) || keyType == typeof(Type))
             {
-                if (dictionary.TryGetValue(key, out TValue result)) return result;
+                if (dictionary.TryGetValue(key, out var result)) return result;
                 return default(TValue);
             }
             else
@@ -158,7 +158,7 @@ namespace Olive
         /// </summary>
         public static TValue TryGet<TKey, TValue>(this IDictionary<TKey, TValue> list, TKey key)
         {
-            if (list.TryGetValue(key, out TValue result)) return result;
+            if (list.TryGetValue(key, out var result)) return result;
 
             return default(TValue);
         }

@@ -18,7 +18,7 @@ namespace Olive.Entities
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            if (Cache.TryGetValue(type, out bool result)) return result;
+            if (Cache.TryGetValue(type, out var result)) return result;
 
             return DetectAndCache(type);
         }

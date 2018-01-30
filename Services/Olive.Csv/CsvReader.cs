@@ -40,14 +40,14 @@ namespace Olive.Csv
                 if (!isFirstRowHeaders)
                     headers = Enumerable.Range(0, fieldCount).Select(i => "Column" + i).ToArray();
 
-                for (int i = 0; i < fieldCount; i++)
+                for (var i = 0; i < fieldCount; i++)
                     output.Columns.Add(new DataColumn(headers[i], typeof(string)));
 
                 while (csv.ReadNextRecord())
                 {
                     var row = output.NewRow();
 
-                    for (int i = 0; i < fieldCount; i++) row[i] = csv[i];
+                    for (var i = 0; i < fieldCount; i++) row[i] = csv[i];
 
                     output.Rows.Add(row);
                 }

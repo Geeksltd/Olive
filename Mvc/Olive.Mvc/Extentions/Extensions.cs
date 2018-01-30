@@ -84,7 +84,7 @@ namespace Olive.Mvc
         public static IEnumerable<string> GetErrors(this ModelStateDictionary modelState, bool errorStack = false)
         {
             foreach (var item in modelState.Values)
-                foreach (ModelError error in item.Errors)
+                foreach (var error in item.Errors)
                     yield return error.ErrorMessage.Or(error.Exception.Get(x => errorStack ? x.ToLogString() : x.Message));
         }
 
