@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Olive.Entities.Data;
@@ -35,7 +36,14 @@ namespace Olive.Mvc.Testing
             if (createdNew)
             {
                 // A new database is created. Add the reference data
-                await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask);
+                try
+                {
+                    await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to run the reference data.", ex);
+                }
             }
         }
 

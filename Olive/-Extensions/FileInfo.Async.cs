@@ -130,31 +130,5 @@ namespace Olive
 
             return Task.Run(() => File.AppendAllText(file.FullName, content, encoding));
         }
-
-        /// <summary>
-        /// Compresses this data into Gzip.
-        /// </summary>
-        public static async Task<byte[]> GZipAsync(this byte[] data)
-        {
-            using (var outFile = new MemoryStream())
-            {
-                using (var inFile = new MemoryStream(data))
-                using (var Compress = new GZipStream(outFile, CompressionMode.Compress))
-                    await inFile.CopyToAsync(Compress);
-
-                return outFile.ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Compresses this string into Gzip. By default it will use UTF8 encoding.
-        /// </summary>
-        public static Task<byte[]> GZipAsync(this string data) => GZipAsync(data, Encoding.UTF8);
-
-        /// <summary>
-        /// Compresses this string into Gzip.
-        /// </summary>
-        public static Task<byte[]> GZipAsync(this string data, Encoding encoding)
-            => encoding.GetBytes(data).GZipAsync();
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 
 namespace Olive.Security
 {
@@ -24,9 +23,9 @@ namespace Olive.Security
         }
 
         public byte[] Protect(byte[] plaintext)
-            => Encryption.Encrypt(plaintext, EncryptionKey + Purpose);
+            => Encryption.Encrypt(plaintext, EncryptionKey + Purpose).GZip();
 
         public byte[] Unprotect(byte[] protectedData)
-            => Encryption.Decrypt(protectedData, EncryptionKey + Purpose);
+            => Encryption.Decrypt(protectedData.UnGZip(), EncryptionKey + Purpose);
     }
 }

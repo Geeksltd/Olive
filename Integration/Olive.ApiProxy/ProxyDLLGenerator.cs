@@ -71,8 +71,6 @@ namespace Olive.ApiProxy
             // Add a type for each.
         }
 
-
-
         static void LoadAssembly()
         {
             if (!AssemblyFile.Exists)
@@ -124,7 +122,7 @@ namespace Olive.ApiProxy
         static void CreateNewProject()
         {
             Console.Write("Creating a new class library project at " + Output.FullName + "...");
-            RunCommand("dotnet new classlib -o " + Output.FullName + " -f netcoreapp2.0 --force ");
+            RunCommand("dotnet new classlib -o " + Output.FullName + " -f netstandard2.0 --force ");
             foreach (var f in Output.GetFiles("Class1.cs")) f.Delete();
             Console.WriteLine("Done");
 

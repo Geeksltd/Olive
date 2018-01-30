@@ -130,8 +130,23 @@ namespace Olive
             using (var outFile = new MemoryStream())
             {
                 using (var inFile = new MemoryStream(data))
-                using (var Compress = new GZipStream(outFile, CompressionMode.Compress))
-                    inFile.CopyTo(Compress);
+                using (var compress = new GZipStream(outFile, CompressionMode.Compress))
+                    inFile.CopyTo(compress);
+
+                return outFile.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Decompresses this gzipped data.
+        /// </summary>
+        public static byte[] UnGZip(this byte[] data)
+        {
+            using (var outFile = new MemoryStream())
+            {
+                using (var inFile = new MemoryStream(data))
+                using (var decompress = new GZipStream(outFile, CompressionMode.Decompress))
+                    inFile.CopyTo(decompress);
 
                 return outFile.ToArray();
             }

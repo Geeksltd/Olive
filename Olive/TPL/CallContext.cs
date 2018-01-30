@@ -19,7 +19,8 @@
         /// Retrieves an object with the specified name from the current call context/>.
         /// </summary>        
         /// <param name="name">The name of the item in the call context.</param>
-        /// <returns>The object in the call context associated with the specified name, or a default value for <typeparamref name="T"/> if none is found.</returns>
+        /// <returns>The object in the call context associated with the specified name,
+        /// or a default value for <typeparamref name="T"/> if none is found.</returns>
         public static T GetData(string name) =>
             state.TryGetValue(name, out var data) ? data.Value : default(T);
     }

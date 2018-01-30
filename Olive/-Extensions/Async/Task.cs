@@ -17,14 +17,32 @@ namespace Olive
         /// Runs a specified task in a new thread to prevent deadlock (context switch race).
         /// </summary> 
         public static void RunSync(this TaskFactory factory, Func<Task> task)
-            => factory.StartNew(task, TaskCreationOptions.LongRunning)
-            .Wait();
+        {
+            factory.StartNew(task, TaskCreationOptions.LongRunning)
+              .ContinueWith(t =>
+              {
+                  if (t.Exception == null) return;
+                  System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
+                  throw t.Exception.InnerException;
+              })
+              .Wait();
+        }
 
         /// <summary>
         /// Runs a specified task in a new thread to prevent deadlock (context switch race).
         /// </summary> 
         public static TResult RunSync<TResult>(this TaskFactory factory, Func<Task<TResult>> task)
-            => factory.StartNew(task, TaskCreationOptions.LongRunning).Result.Result;
+        {
+            return factory.StartNew(task, TaskCreationOptions.LongRunning)
+                 .ContinueWith(t =>
+                 {
+                     if (t.Exception == null) return t.Result;
+
+                     System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
+                     throw t.Exception.InnerException;
+                 })
+                 .Result.Result;
+        }
 
         public static async Task WithTimeout(this Task task, TimeSpan timeout, Action success = null, Action timeoutAction = null)
         {
