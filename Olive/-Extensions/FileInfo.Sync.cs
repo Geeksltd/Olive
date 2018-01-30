@@ -140,16 +140,14 @@ namespace Olive
         /// <summary>
         /// Decompresses this gzipped data.
         /// </summary>
-        public static byte[] UnGZip(this byte[] data)
+        public static byte[] UnGZip(this byte[] zippedData)
         {
-            using (var outFile = new MemoryStream())
-            {
-                using (var inFile = new MemoryStream(data))
-                using (var decompress = new GZipStream(outFile, CompressionMode.Decompress))
-                    inFile.CopyTo(decompress);
+            if (zippedData == null)
+                throw new ArgumentNullException(nameof(zippedData));
 
-                return outFile.ToArray();
-            }
+            using (var zippedStream = zippedData.AsStream())
+            using (var decompress = new GZipStream(zippedStream, CompressionMode.Decompress))
+                return decompress.ReadAllBytes();
         }
 
         /// <summary>

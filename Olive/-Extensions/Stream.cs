@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System;
 
 namespace Olive
 {
@@ -13,7 +14,8 @@ namespace Olive
         {
             using (var memoryStream = new MemoryStream())
             {
-                stream.Position = 0;
+                try { stream.Position = 0; }
+                catch (NotSupportedException) { /*Not needed*/ }
                 stream.CopyTo(memoryStream);
                 return memoryStream.ToArray();
             }
@@ -70,5 +72,7 @@ namespace Olive
                 return ms.ToArray();
             }
         }
+
+        public static MemoryStream AsStream(this byte[] data) => new MemoryStream(data);
     }
 }
