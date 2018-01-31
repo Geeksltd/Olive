@@ -12,10 +12,10 @@ namespace Olive.ApiProxy
 
         static bool LoadParameters()
         {
-            if (Args.None()) return true;
+            if (Args.None()) return false;
             if ((Context.ControllerName = Param("controller")) == null) return false;
 
-            var websiteFolder = Param("websiteFolder")?.AsDirectory();
+            var websiteFolder = Param("website")?.AsDirectory();
             if (websiteFolder != null)
             {
                 if (!websiteFolder.Exists)
@@ -23,6 +23,8 @@ namespace Olive.ApiProxy
                     Console.WriteLine(websiteFolder.FullName + " does not exist!");
                     return false;
                 }
+
+                Console.WriteLine("Processing " + websiteFolder.FullName + "...");
 
                 Context.Output = websiteFolder.CreateSubdirectory("obj\\api-proxy");
                 Context.AssemblyFile = websiteFolder.GetFile("bin\\Debug\\netcoreapp2.0\\Website.dll");
@@ -62,7 +64,9 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Publisher service: " + Context.PublisherService);
                 Console.WriteLine("Api assembly: " + Context.AssemblyFile);
                 Console.WriteLine("Api Controller: " + Context.ControllerName);
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("---------------------");
+                Console.ResetColor();
 
                 ProxyDLLGenerator.Generate();
                 Console.WriteLine("Add done");
@@ -70,8 +74,11 @@ namespace Olive.ApiProxy
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("ERROR!");
                 Console.WriteLine(ex.Message);
+                Console.ResetColor();
+                Console.WriteLine("Press any key to end...");
                 Console.ReadLine();
                 return -1;
             }
@@ -95,7 +102,7 @@ namespace Olive.ApiProxy
         static string Param(string key)
         {
             var decorateKey = "/" + key + ":";
-            return Args.FirstOrDefault(x => x.StartsWith(decorateKey)).TrimStart(decorateKey).OrNullIfEmpty();
+            return Args.FirstOrDefault(x => x.StartsWith(decorateKey))?.TrimStart(decorateKey).OrNullIfEmpty();
         }
     }
 }

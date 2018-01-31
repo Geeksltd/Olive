@@ -20,7 +20,7 @@ namespace Olive.ApiProxy
 
             try
             {
-                if (Context.Output.Exists) Context.Output.Delete(recursive: true);
+                if (Context.Output.Exists) Context.Output.Delete(recursive: true, harshly: true).Wait();
                 Context.Output.Create();
             }
             catch (Exception ex)

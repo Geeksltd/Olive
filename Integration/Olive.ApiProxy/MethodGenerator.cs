@@ -55,16 +55,13 @@ namespace Olive.ApiProxy
                   .Except(RouteParams).Trim().ToString(", ").WithWrappers("new { ", " }");
             args.Add(queryString);
 
-            if (HttpVerb() == "Get") args.Add("cacheChoice");
+            if (HttpVerb() == "Get") args.Add("CacheChoice");
             return args.ToArray();
         }
 
         string GetArgs()
         {
             var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true) + " " + x.Name).ToList();
-
-            if (HttpVerb() == "Get")
-                items.Add("ApiResponseCache cacheChoice = ApiResponseCache.Accept");
 
             return string.Join(", ", items);
         }

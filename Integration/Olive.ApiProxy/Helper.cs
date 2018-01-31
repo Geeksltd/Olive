@@ -42,7 +42,7 @@ namespace Olive.ApiProxy
             Show("   dotnet ", ConsoleColor.White);
             Show(Assembly.GetExecutingAssembly().GetName().Name + ".dll ", ConsoleColor.Green);
 
-            ShowLine("/websiteFolder:... /controller:...", ConsoleColor.Yellow);
+            ShowLine("/website:... /controller:...", ConsoleColor.Yellow);
             Console.WriteLine();
 
             return -1;

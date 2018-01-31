@@ -28,7 +28,19 @@ namespace Olive
         public static T Use<T>(this T proxy, Action<ApiClient> config) where T : StronglyTypedApiProxy
             => (T)proxy.Configure(config);
 
+        /// <summary>
+        /// When calling the remote service, the identity used will be that of the current trusted service as opposed to that of the http context user.
+        /// </summary>
         public static T AsServiceUser<T>(this T proxy) where T : StronglyTypedApiProxy
             => proxy.Use(x => x.AsServiceUser());
+
+        /// <summary>
+        /// Sets the cache choice for Get requests made by this proxy.
+        /// </summary>
+        public static T Cache<T>(this T proxy, ApiResponseCache cacheChoice) where T : StronglyTypedApiProxy
+        {
+            proxy.CacheChoice = cacheChoice;
+            return proxy;
+        }
     }
 }

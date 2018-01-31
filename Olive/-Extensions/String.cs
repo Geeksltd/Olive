@@ -975,7 +975,11 @@ namespace Olive
         /// <summary>
         /// Converts this path into a file object.
         /// </summary>
-        public static System.IO.FileInfo AsFile(this string path) => new System.IO.FileInfo(path);
+        public static System.IO.FileInfo AsFile(this string path)
+        {
+            if (path.IsEmpty()) return null;
+            return new System.IO.FileInfo(path);
+        }
 
         /// <summary>
         /// Converts this path into a Uri object.
@@ -985,7 +989,11 @@ namespace Olive
         /// <summary>
         /// Converts this path into a directory object.
         /// </summary>
-        public static System.IO.DirectoryInfo AsDirectory(this string path) => new System.IO.DirectoryInfo(path);
+        public static System.IO.DirectoryInfo AsDirectory(this string path)
+        {
+            if (path.IsEmpty()) return null;
+            return new System.IO.DirectoryInfo(path);
+        }
 
         /// <summary>
         /// Gets the Xml Encoded version of this text.
