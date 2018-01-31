@@ -81,7 +81,7 @@ namespace Olive
         }
 
         /// <summary>
-        /// Gets the value configured in Web.Config (or App.config) under AppSettings.
+        /// Gets the value configured in appSettings.json.
         /// </summary>
         public static string Get(string key) => Get(key, string.Empty);
 

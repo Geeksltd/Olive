@@ -11,6 +11,7 @@ namespace Olive
     public class Microservice
     {
         static bool IsAuthenticated;
+        internal static Cookie[] ServiceIdentityCookies;
 
         /// <summary>
         /// Gets the name of the current microservice from the config value of Microservice:Name.
@@ -73,7 +74,7 @@ namespace Olive
                 if (responseCookies.None())
                     throw new Exception("Service authentication failed.");
 
-                ApiClient.SignInAsService(responseCookies);
+                ServiceIdentityCookies = responseCookies;
             }
         }
 

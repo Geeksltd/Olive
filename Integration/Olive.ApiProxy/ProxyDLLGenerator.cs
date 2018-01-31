@@ -9,28 +9,23 @@ namespace Olive.ApiProxy
 {
     public static class ProxyDLLGenerator
     {
-        public static string PublisherService, ControllerName;
-        public static FileInfo AssemblyFile;
-        public static DirectoryInfo Output;
-        public static Assembly Assembly;
-        public static Type ControllerType;
-        public static MethodGenerator[] ActionMethods;
+
 
         static void PrepareOutputDirectory()
         {
-            if (!Output.Exists)
-                throw new Exception("Output directory not found: " + Output.FullName);
+            if (!Context.Output.Exists)
+                throw new Exception("Output directory not found: " + Context.Output.FullName);
 
-            Output = new DirectoryInfo(Path.Combine(Output.FullName, ControllerName + "Proxy"));
+            Context.Output = new DirectoryInfo(Path.Combine(Context.Output.FullName, Context.ControllerName + "Proxy"));
 
             try
             {
-                if (Output.Exists) Output.Delete(recursive: true);
-                Output.Create();
+                if (Context.Output.Exists) Context.Output.Delete(recursive: true);
+                Context.Output.Create();
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to delete the previous output directory " + Output.FullName +
+                throw new Exception("Failed to delete the previous output directory " + Context.Output.FullName +
                     Environment.NewLine + ex.Message);
             }
         }
@@ -40,17 +35,17 @@ namespace Olive.ApiProxy
             LoadAssembly();
 
             Console.WriteLine("Generating the proxy class ...");
-            var proxyClassCode = GenerateProxyClass();
+            var proxyClassCode = ProxyClassProgrammer.Generate();
 
             PrepareOutputDirectory();
 
             CreateNewProject();
 
             Console.Write("Adding the proxy class...");
-            File.WriteAllText(Output + @"\" + ControllerName + ".cs", proxyClassCode);
+            File.WriteAllText(Context.Output + @"\" + Context.ControllerName + ".cs", proxyClassCode);
             Console.WriteLine("Done");
 
-            AddDTOTypes();
+            DtoProgrammer.CreateDtoTypes();
 
             Console.Write("Building the generated project...");
             RunCommand("dotnet build");
@@ -58,72 +53,28 @@ namespace Olive.ApiProxy
             Console.WriteLine("Done");
         }
 
-        static void AddDTOTypes()
-        {
-            var types = ActionMethods.SelectMany(x => x.GetCustomTypes()).Distinct().ToArray();
-
-            foreach (var type in types)
-            {
-                Console.Write("Adding DTO class " + type.Name + "...");
-                File.WriteAllText(Output + @"\" + type.Name + ".cs", new DtoProgrammer(type).Generate());
-                Console.WriteLine("Done");
-            }
-            // Add a type for each.
-        }
-
         static void LoadAssembly()
         {
-            if (!AssemblyFile.Exists)
-                throw new Exception("File not found: " + AssemblyFile.FullName);
+            if (!Context.AssemblyFile.Exists)
+                throw new Exception("File not found: " + Context.AssemblyFile.FullName);
 
-            Assembly = Assembly.LoadFrom(AssemblyFile.FullName);
-            ControllerType = Assembly.GetType(ControllerName)
-                ?? throw new Exception(ControllerName + " was not found.");
+            Context.Assembly = Assembly.LoadFrom(Context.AssemblyFile.FullName);
+            Context.ControllerType = Context.Assembly.GetType(Context.ControllerName)
+                ?? throw new Exception(Context.ControllerName + " was not found.");
 
-            ActionMethods = ControllerType
+            Context.ActionMethods = Context.ControllerType
                 .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
                 .Select(x => new MethodGenerator(x))
                 .ToArray();
 
-            if (ActionMethods.Length == 0) throw new Exception("This controller has no action method.");
-        }
-
-        static string GenerateProxyClass()
-        {
-            var r = new StringBuilder();
-
-            r.AppendLine("namespace " + ControllerType.Namespace);
-            r.AppendLine("{");
-            r.AppendLine("using System;");
-            r.AppendLine("using System.Threading.Tasks;");
-            r.AppendLine("using Olive;");
-            r.AppendLine();
-            r.AppendLine("/// <summary>Provides access to the " + ControllerType.Name + " api of the " + PublisherService + " service.</summary>");
-            r.AppendLine("public class " + ControllerType.Name);
-            r.AppendLine("{");
-            r.AppendLine($"Action<ApiClient> Config;");
-            r.AppendLine();
-            r.AppendLine("public static ProjectsApi Create(Action<ApiClient> config) => new ProjectsApi { Config = config };");
-            r.AppendLine();
-            r.AppendLine("public static ProjectsApi AsServiceUser() => Create(x => x.AsServiceUser());");
-            r.AppendLine();
-            r.AppendLine("public static ProjectsApi AsHttpUser() => Create(x => x.AsHttpUser());");
-            r.AppendLine();
-
-            foreach (var method in ActionMethods)
-                r.AppendLine(method.Generate());
-
-            r.AppendLine("}");
-            r.AppendLine("}");
-
-            return r.ToString();
+            if (Context.ActionMethods.Length == 0) throw new Exception("This controller has no action method.");
         }
 
         static void CreateNewProject()
         {
-            Console.Write("Creating a new class library project at " + Output.FullName + "...");
-            RunCommand("dotnet new classlib -o " + Output.FullName + " -f netstandard2.0 --force ");
-            foreach (var f in Output.GetFiles("Class1.cs")) f.Delete();
+            Console.Write("Creating a new class library project at " + Context.Output.FullName + "...");
+            RunCommand("dotnet new classlib -o " + Context.Output.FullName + " -f netstandard2.0 --force ");
+            foreach (var f in Context.Output.GetFiles("Class1.cs")) f.Delete();
             Console.WriteLine("Done");
 
             foreach (var item in new[] { "Olive", "Olive.ApiClient", "Olive.Microservices" })
@@ -139,7 +90,7 @@ namespace Olive.ApiProxy
             var cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.WorkingDirectory = Output.FullName;
+            cmd.StartInfo.WorkingDirectory = Context.Output.FullName;
             cmd.StartInfo.RedirectStandardOutput = true;
             cmd.StartInfo.CreateNoWindow = false;
             cmd.StartInfo.UseShellExecute = false;

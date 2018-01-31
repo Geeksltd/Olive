@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -8,39 +9,59 @@ namespace Olive.ApiProxy
     public class MethodGenerator
     {
         MethodInfo Method;
+        string[] RouteParams;
 
-        public MethodGenerator(MethodInfo method) => Method = method;
+        public MethodGenerator(MethodInfo method)
+        {
+            Method = method;
+            RouteParams = new RouteTemplate(Route()).Parameters.Select(x => x.Key).ToArray();
+        }
 
         public string Generate()
         {
             var r = new StringBuilder();
 
+            r.AppendLine($"/// <summary>Sends a Http{HttpVerb()} request to {Route()} of the {Context.PublisherService} service.</summary>");
+
             r.AppendLine($"public {MethodReturnType()} {Method.Name}({GetArgs()})");
             r.AppendLine("{");
 
-            r.AppendLine($"var routeTemplate = new RouteTemplate(\"{Route()}\");");
-            r.AppendLine("var url = routeTemplate.Merge(new { /* TODO: Inject the params */ });");
+            if (RouteParams.Any())
+            {
+                r.AppendLine($"var routeTemplate = new RouteTemplate(\"{Route()}\");");
+                r.AppendLine($"var url = routeTemplate.Merge({RouteParams.ToString(", ").WithWrappers("new { ", "}")});");
+            }
+            else r.AppendLine($"var url = \"{Route()}\";");
 
             r.AppendLine();
-            r.AppendLine($"var client = Microservice.Api(\"{ProxyDLLGenerator.PublisherService}\", url);");
-            r.AppendLine("Config?.Invoke(client);");
+            r.AppendLine($"var client = Microservice.Api(\"{Context.PublisherService}\", url);");
+            r.AppendLine("foreach (var config in Configurators) config(client);");
 
             r.AppendLine();
             r.Append($"return client.{HttpVerb()}");
             if (HttpVerb() == "Get") r.Append($"<{ReturnType()?.Name ?? "object"}>");
 
-            r.Append("(new { /* TODO: Inject the params */ }");
-            if (HttpVerb() == "Get") r.Append(", cacheChoice");
-            r.AppendLine(");");
+            r.AppendLine("(" + Args().Trim().ToString(", ") + ");");
 
             r.AppendLine("}");
 
             return r.ToString();
         }
 
+        string[] Args()
+        {
+            var args = new List<string>();
+            var queryString = Method.GetParameters().Select(x => x.Name)
+                  .Except(RouteParams).Trim().ToString(", ").WithWrappers("new { ", " }");
+            args.Add(queryString);
+
+            if (HttpVerb() == "Get") args.Add("cacheChoice");
+            return args.ToArray();
+        }
+
         string GetArgs()
         {
-            var items = Method.GetParameters().Select(x => x.ParameterType.Name + " " + x.Name).ToList();
+            var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true) + " " + x.Name).ToList();
 
             if (HttpVerb() == "Get")
                 items.Add("ApiResponseCache cacheChoice = ApiResponseCache.Accept");
@@ -59,12 +80,15 @@ namespace Olive.ApiProxy
 
         string Route()
         {
+            var classRouteAttr = Context.ControllerType.GetCustomAttributesData()
+              .FirstOrDefault(x => x.AttributeType.Name == "Route" + "Attribute")
+             ?.ConstructorArguments.Single().Value.ToString();
+
             var routeAttr = Method.GetCustomAttributesData()
-                .FirstOrDefault(x => x.AttributeType.Name == "Route" + "Attribute");
+                .FirstOrDefault(x => x.AttributeType.Name == "Route" + "Attribute")
+                ?.ConstructorArguments.Single().Value.ToString(); ;
 
-            if (routeAttr == null) return "{Route?}";
-
-            return routeAttr.ConstructorArguments.Single().Value.ToString();
+            return classRouteAttr.WithSuffix("/" + routeAttr.Or("{Route?}"));
         }
 
         string MethodReturnType()
@@ -78,21 +102,9 @@ namespace Olive.ApiProxy
             return (Method.GetCustomAttribute(typeof(ReturnsAttribute)) as ReturnsAttribute)?.ReturnType;
         }
 
-        public Type[] GetCustomTypes()
+        public Type[] GetArgAndReturnTypes()
         {
-            var types = Method.GetParameters().Select(x => x.ParameterType).ToList();
-
-            if (ReturnType() != null)
-                types.Add(ReturnType());
-
-            types = types.Distinct().ToList();
-
-            types = types.Select(x => x.IsArray ? x.GetElementType() : x).Distinct().ToList();
-
-            return types
-                .Where(x => !x.FullName.StartsWith("System."))
-                .Where(x => !x.FullName.StartsWith("Olive."))
-                .ToArray();
+            return Method.GetParameters().Select(x => x.ParameterType).Concat(ReturnType()).ToArray();
         }
     }
 }

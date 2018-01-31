@@ -2,33 +2,66 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace Olive.ApiProxy
 {
     class Program
     {
+        static string[] Args;
+
+        static bool LoadParameters()
+        {
+            if (Args.None()) return true;
+            if ((Context.ControllerName = Param("controller")) == null) return false;
+
+            var websiteFolder = Param("websiteFolder")?.AsDirectory();
+            if (websiteFolder != null)
+            {
+                if (!websiteFolder.Exists)
+                {
+                    Console.WriteLine(websiteFolder.FullName + " does not exist!");
+                    return false;
+                }
+
+                Context.Output = websiteFolder.CreateSubdirectory("obj\\api-proxy");
+                Context.AssemblyFile = websiteFolder.GetFile("bin\\Debug\\netcoreapp2.0\\Website.dll");
+                Directory.SetCurrentDirectory(websiteFolder.FullName);
+                if ((Context.PublisherService = Config.Get("Microservice:Name")).IsEmpty())
+                {
+                    Console.WriteLine("Setting of Microservice:Name under appSettings.json was not found.");
+                    return false;
+                }
+            }
+            else
+            {
+                if ((Context.PublisherService = Param("serviceName")) == null) return false;
+                if ((Context.AssemblyFile = Param("assembly")?.AsFile()) == null) return false;
+                if ((Context.Output = Param("output")?.AsDirectory()) == null) return false;
+            }
+
+            return true;
+        }
 
         static int Main(string[] args)
         {
-            if (args.None())
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            Args = args;
+
+            if (!LoadParameters()) return Helper.ShowHelp();
+
+            if (!Context.AssemblyFile.Exists)
             {
-                Helper.ShowHelp();
+                Console.WriteLine(Context.Assembly.FullName + " does not exist!");
                 return -1;
             }
-
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-
-            ProxyDLLGenerator.AssemblyFile = new FileInfo(Param(args, "assembly"));
-            ProxyDLLGenerator.PublisherService = Param(args, "serviceName");
-            ProxyDLLGenerator.ControllerName = Param(args, "controller");
-            ProxyDLLGenerator.Output = new DirectoryInfo(Param(args, "output"));
 
             try
             {
                 Console.WriteLine("Generating Client SDK proxy from...");
-                Console.WriteLine("Publisher service: " + ProxyDLLGenerator.PublisherService);
-                Console.WriteLine("Api assembly: " + ProxyDLLGenerator.AssemblyFile);
-                Console.WriteLine("Api Controller: " + ProxyDLLGenerator.ControllerName);
+                Console.WriteLine("Publisher service: " + Context.PublisherService);
+                Console.WriteLine("Api assembly: " + Context.AssemblyFile);
+                Console.WriteLine("Api Controller: " + Context.ControllerName);
                 Console.WriteLine("---------------------");
 
                 ProxyDLLGenerator.Generate();
@@ -53,22 +86,16 @@ namespace Olive.ApiProxy
             fileName = fileName.ToLower();
             if (!fileName.EndsWith(".dll")) fileName += ".dll";
 
-            var file = Path.Combine(ProxyDLLGenerator.AssemblyFile.Directory.FullName, fileName);
+            var file = Path.Combine(Context.AssemblyFile.Directory.FullName, fileName);
 
             if (File.Exists(file)) return Assembly.LoadFile(file);
             else throw new Exception("File not found: " + file);
         }
 
-        static string Param(string[] args, string key)
+        static string Param(string key)
         {
             var decorateKey = "/" + key + ":";
-            var result = args.FirstOrDefault(x => x.StartsWith(decorateKey)) ?? string.Empty;
-            if (result != null) result = result.Substring(decorateKey.Length);
-
-            if (string.IsNullOrEmpty(result))
-                throw new Exception("Expected parameter is not provided: " + decorateKey);
-
-            return result;
+            return Args.FirstOrDefault(x => x.StartsWith(decorateKey)).TrimStart(decorateKey).OrNullIfEmpty();
         }
     }
 }

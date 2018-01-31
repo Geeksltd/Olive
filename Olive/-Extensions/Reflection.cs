@@ -19,6 +19,29 @@ namespace Olive
 
         static ConcurrentDictionary<Type, string> AssemblyQualifiedNameCache = new ConcurrentDictionary<Type, string>();
 
+        static readonly Dictionary<Type, string> CSharpTypeAliases =
+            new Dictionary<Type, string>
+            {
+                { typeof(int), "int" },
+                { typeof(short), "short" },
+                { typeof(long), "long" },
+                { typeof(float), "float" },
+                { typeof(double), "double" },
+                { typeof(decimal), "decimal" },
+                { typeof(bool), "bool" },
+                { typeof(char), "char" },
+                { typeof(string), "string" },
+
+                { typeof(int?), "int?" },
+                { typeof(short?), "short?" },
+                { typeof(long?), "long?" },
+                { typeof(float?), "float?" },
+                { typeof(double?), "double?" },
+                { typeof(decimal?), "decimal?" },
+                { typeof(bool?), "bool?" },
+                { typeof(char?), "char?" }
+            };
+
         public delegate T Method<out T>();
 
         /// <summary>
@@ -252,15 +275,17 @@ namespace Olive
         /// <summary>
         /// Gets the full programming name of this type. Unlike the standard FullName property, it handles Generic types properly.
         /// </summary>
-        public static string GetProgrammingName(this Type type, bool useGlobal, bool useNamespace = true, bool useNamespaceForParams = true, bool useGlobalForParams = false)
+        public static string GetProgrammingName(this Type type, bool useGlobal, bool useNamespace = true, bool useNamespaceForParams = true, bool useGlobalForParams = false, bool useCSharpAlias = false)
         {
+            if (useCSharpAlias && CSharpTypeAliases.TryGetValue(type, out var alias)) return alias;
+
             if (type.GetGenericArguments().Any())
             {
                 return "global::".OnlyWhen(useGlobal && type.FullName != null) +
                     "{0}{1}<{2}>".FormatWith(
                     type.Namespace.OnlyWhen(useNamespace).WithSuffix("."),
                     type.Name.Remove(type.Name.IndexOf('`')),
-                    type.GetGenericArguments().Select(t => t.GetProgrammingName(useGlobalForParams, useNamespaceForParams, useNamespaceForParams, useGlobalForParams)).ToString(", "));
+                    type.GetGenericArguments().Select(t => t.GetProgrammingName(useGlobalForParams, useNamespaceForParams, useNamespaceForParams, useGlobalForParams, useCSharpAlias)).ToString(", "));
             }
             else
             {
