@@ -9,10 +9,7 @@ namespace Olive.ApiProxy
     {
         MethodInfo Method;
 
-        public MethodGenerator(MethodInfo method)
-        {
-            Method = method;
-        }
+        public MethodGenerator(MethodInfo method) => Method = method;
 
         public string Generate()
         {

@@ -7,8 +7,15 @@ namespace Olive.ApiProxy
 {
     class Program
     {
-        static void Main(string[] args)
+
+        static int Main(string[] args)
         {
+            if (args.None())
+            {
+                Helper.ShowHelp();
+                return -1;
+            }
+
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             ProxyDLLGenerator.AssemblyFile = new FileInfo(Param(args, "assembly"));
@@ -26,12 +33,14 @@ namespace Olive.ApiProxy
 
                 ProxyDLLGenerator.Generate();
                 Console.WriteLine("Add done");
+                return 0;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR!");
                 Console.WriteLine(ex.Message);
                 Console.ReadLine();
+                return -1;
             }
         }
 
