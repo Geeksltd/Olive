@@ -75,8 +75,6 @@ The controller class name should be the **logical name** of this particular Api 
 
 The Api.Proxy.dll tool will generate a *.Net class library project* and compile that into a **private nuget package** for use in your consumer services.
 
-> **NOTE**: This tool requires that Nuget.exe is available in your system's environment path.
-
 It will generate the following classes:
 - A class will be generated with the *same class name and namespace* as the Api controller.
 - A DTO class will be generated for each of the following:
