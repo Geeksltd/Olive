@@ -10,7 +10,7 @@ namespace Olive.ApiProxy
     {
         public static string PublisherService, ControllerName;
         public static FileInfo AssemblyFile;
-        public static DirectoryInfo Output;
+        public static DirectoryInfo TempPath, Output;
         public static Assembly Assembly;
         public static Type ControllerType;
         public static MethodGenerator[] ActionMethods;

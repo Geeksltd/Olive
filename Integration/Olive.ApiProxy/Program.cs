@@ -15,6 +15,13 @@ namespace Olive.ApiProxy
             if (Args.None()) return false;
             if ((Context.ControllerName = Param("controller")) == null) return false;
 
+            if ((Context.Output = Param("out")?.AsDirectory()) == null) return false;
+            if (!Context.Output.Exists)
+            {
+                Console.WriteLine("The specified output folder does not exist.");
+                return false;
+            }
+
             var websiteFolder = Param("website")?.AsDirectory();
             if (websiteFolder != null)
             {
@@ -24,9 +31,10 @@ namespace Olive.ApiProxy
                     return false;
                 }
 
+                Context.TempPath = websiteFolder.CreateSubdirectory("obj\\api-proxy");
+
                 Console.WriteLine("Processing " + websiteFolder.FullName + "...");
 
-                Context.Output = websiteFolder.CreateSubdirectory("obj\\api-proxy");
                 Context.AssemblyFile = websiteFolder.GetFile("bin\\Debug\\netcoreapp2.0\\Website.dll");
                 Directory.SetCurrentDirectory(websiteFolder.FullName);
                 if ((Context.PublisherService = Config.Get("Microservice:Name")).IsEmpty())
@@ -39,7 +47,9 @@ namespace Olive.ApiProxy
             {
                 if ((Context.PublisherService = Param("serviceName")) == null) return false;
                 if ((Context.AssemblyFile = Param("assembly")?.AsFile()) == null) return false;
-                if ((Context.Output = Param("output")?.AsDirectory()) == null) return false;
+
+                Context.TempPath = Path.GetTempPath().AsDirectory()
+                    .GetOrCreateSubDirectory("api-proxy").CreateSubdirectory(Guid.NewGuid().ToString());
             }
 
             return true;
@@ -64,6 +74,7 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Publisher service: " + Context.PublisherService);
                 Console.WriteLine("Api assembly: " + Context.AssemblyFile);
                 Console.WriteLine("Api Controller: " + Context.ControllerName);
+                Console.WriteLine("Temp folder: " + Context.TempPath);
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("---------------------");
                 Console.ResetColor();

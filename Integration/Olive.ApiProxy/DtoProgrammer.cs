@@ -56,7 +56,7 @@ namespace Olive.ApiProxy
             foreach (var type in TypesToDefine)
             {
                 Console.Write("Adding DTO class " + type.Name + "...");
-                File.WriteAllText(Context.Output + @"\" + type.Name + ".cs", new DtoProgrammer(type).Generate());
+                File.WriteAllText(Context.TempPath + @"\" + type.Name + ".cs", new DtoProgrammer(type).Generate());
                 Console.WriteLine("Done");
             }
         }

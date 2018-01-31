@@ -9,23 +9,22 @@ namespace Olive.ApiProxy
 {
     public static class ProxyDLLGenerator
     {
-
-
         static void PrepareOutputDirectory()
         {
-            if (!Context.Output.Exists)
-                throw new Exception("Output directory not found: " + Context.Output.FullName);
+            if (!Context.TempPath.Exists)
+                throw new Exception("Output directory not found: " + Context.TempPath.FullName);
 
-            Context.Output = new DirectoryInfo(Path.Combine(Context.Output.FullName, Context.ControllerName + "Proxy"));
+            Context.TempPath = new DirectoryInfo(Path.Combine(Context.TempPath.FullName, Context.ControllerName + ".Proxy"));
 
             try
             {
-                if (Context.Output.Exists) Context.Output.Delete(recursive: true, harshly: true).Wait();
-                Context.Output.Create();
+                if (Context.TempPath.Exists)
+                    Context.TempPath.Delete(recursive: true, harshly: true).Wait();
+                Context.TempPath.Create();
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to delete the previous output directory " + Context.Output.FullName +
+                throw new Exception("Failed to delete the previous output directory " + Context.TempPath.FullName +
                     Environment.NewLine + ex.Message);
             }
         }
@@ -42,15 +41,48 @@ namespace Olive.ApiProxy
             CreateNewProject();
 
             Console.Write("Adding the proxy class...");
-            File.WriteAllText(Context.Output + @"\" + Context.ControllerName + ".cs", proxyClassCode);
+            File.WriteAllText(Context.TempPath + @"\" + Context.ControllerName + ".cs", proxyClassCode);
             Console.WriteLine("Done");
 
             DtoProgrammer.CreateDtoTypes();
 
             Console.Write("Building the generated project...");
             RunCommand("dotnet build");
-            var batchCommand = new StringBuilder();
             Console.WriteLine("Done");
+
+            Console.Write("Creating Nuget package...");
+            CreateNuspec();
+            //RunCommand("dotnet pack --no-dependencies -o \"" + Context.Output + "\"");
+            RunCommand("nuget.exe pack Package.nuspec");
+
+            var package = Context.TempPath.GetFiles("*.nupkg").FirstOrDefault();
+            if (package == null) throw new Exception("Nuget package was not succesfully generated.");
+            package.CopyTo(Context.Output.GetFile(package.Name));
+
+            Console.WriteLine("Done");
+        }
+
+        static void CreateNuspec()
+        {
+            var version = DateTime.Now.ToString("yyMMdd.HH.mmss");
+
+            var nuspec = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
+  <metadata>
+    <id>{Context.ControllerName}</id>
+    <version>{version}</version>
+    <title>{Context.ControllerName}</title>
+    <authors>Olive Api Proxy Generator</authors>    
+    <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
+  </metadata>
+  <files>
+    <file src=""bin\Debug\netstandard2.0\{Context.ControllerName}.Proxy.dll"" target=""lib\netstandard2.0\"" />
+    <file src=""bin\Debug\netstandard2.0\{Context.ControllerName}.Proxy.pdb"" target=""lib\netstandard2.0\"" />
+    <file src=""bin\Debug\netstandard2.0\{Context.ControllerName}.Proxy.xml"" target=""lib\netstandard2.0\"" />
+  </files>
+</package>";
+
+            Context.TempPath.GetFile("Package.nuspec").WriteAllText(nuspec);
         }
 
         static void LoadAssembly()
@@ -72,9 +104,9 @@ namespace Olive.ApiProxy
 
         static void CreateNewProject()
         {
-            Console.Write("Creating a new class library project at " + Context.Output.FullName + "...");
-            RunCommand("dotnet new classlib -o " + Context.Output.FullName + " -f netstandard2.0 --force ");
-            foreach (var f in Context.Output.GetFiles("Class1.cs")) f.Delete();
+            Console.Write("Creating a new class library project at " + Context.TempPath.FullName + "...");
+            RunCommand("dotnet new classlib -o " + Context.TempPath.FullName + " -f netstandard2.0 --force ");
+            foreach (var f in Context.TempPath.GetFiles("Class1.cs")) f.Delete();
             Console.WriteLine("Done");
 
             foreach (var item in new[] { "Olive", "Olive.ApiClient", "Olive.Microservices" })
@@ -83,6 +115,13 @@ namespace Olive.ApiProxy
                 RunCommand("dotnet add package " + item);
                 Console.WriteLine("Done");
             }
+
+            var file = Context.TempPath.GetFiles("*.csproj").Single();
+            var content = file.ReadAllText().ToLines().ToList();
+            content.Insert(content.IndexOf(x => x.Trim().StartsWith("<TargetFramework")) + 1,
+                $@"    <DocumentationFile>bin\Debug\netstandard2.0\{Context.ControllerName}.Proxy.xml</DocumentationFile>"
+                );
+            file.WriteAllText(content.ToLinesString());
         }
 
         static void RunCommand(string command)
@@ -90,7 +129,7 @@ namespace Olive.ApiProxy
             var cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.WorkingDirectory = Context.Output.FullName;
+            cmd.StartInfo.WorkingDirectory = Context.TempPath.FullName;
             cmd.StartInfo.RedirectStandardOutput = true;
             cmd.StartInfo.CreateNoWindow = false;
             cmd.StartInfo.UseShellExecute = false;
