@@ -45,7 +45,7 @@ namespace Olive.ApiProxy
 
             if (type.Assembly == Context.Assembly)
             {
-                method = "Associate" + "ManyToMany".OnlyWhen(propertyType.IsArray) + "<" + type.Name + ">";
+                method = "Associate" + "<" + type.Name + ">";
             }
 
             switch (method)
@@ -54,7 +54,12 @@ namespace Olive.ApiProxy
                 default: break;
             }
 
-            return method + "(\"" + name + "\");";
+            var result = method + "(\"" + name + "\")";
+
+            if (type.Assembly == Context.Assembly && propertyType.IsArray)
+                result += ".MaxCardinality(null)";
+
+            return result + ";";
         }
     }
 }
