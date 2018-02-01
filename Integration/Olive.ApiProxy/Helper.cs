@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Olive.ApiProxy
 {
@@ -49,9 +47,7 @@ namespace Olive.ApiProxy
 
             Param("serviceName", @"The name of the microservice that publishes this api as specified in appSettings under ""Microservice:Name""");
 
-
             return -1;
         }
-
     }
 }

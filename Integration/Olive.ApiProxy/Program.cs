@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 
 namespace Olive.ApiProxy
 {
@@ -75,11 +74,13 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Api assembly: " + Context.AssemblyFile);
                 Console.WriteLine("Api Controller: " + Context.ControllerName);
                 Console.WriteLine("Temp folder: " + Context.TempPath);
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("---------------------");
-                Console.ResetColor();
 
-                ProxyDLLGenerator.Generate();
+                Context.PrepareOutputDirectory();
+                Context.LoadAssembly();
+                DtoTypes.FindAll();
+                new ProxyProjectCreator().Build();
+                if (DtoTypes.All.Any()) new MSharpProjectCreator().Build();
+
                 Console.WriteLine("Add done");
                 return 0;
             }
