@@ -22,26 +22,37 @@ namespace Olive.Entities
         /// Gets the entity record from a specified database call expression.
         /// The first time it is loaded, all future calls will be immediately served.
         /// </summary>
-        public async Task<TEntity> Get(TId? id)
+        public TEntity Get(TId? id)
         {
             if (!Id.Equals(id)) Value = null; // Different ID from the cache.
             Id = id;
 
-            if (Value == null)
+            if (Value != null) return Value;
+            return Task.Factory.RunSync(() => GetAsync(id));
+        }
+
+        /// <summary>
+        /// Gets the entity record from a specified database call expression.
+        /// The first time it is loaded, all future calls will be immediately served.
+        /// </summary>
+        public async Task<TEntity> GetAsync(TId? id)
+        {
+            if (!Id.Equals(id)) Value = null; // Different ID from the cache.
+            Id = id;
+
+            if (Value != null) return Value;
+
+            if (id == null) return null;
+
+            var result = await Entity.Database.Get<TEntity>(id.ToString());
+
+            if (!Entity.Database.AnyOpenTransaction())
             {
-                if (id == null) return null;
-
-                var result = await Entity.Database.Get<TEntity>(id.ToString());
-
-                if (!Entity.Database.AnyOpenTransaction())
-                {
-                    Value = result;
-                    Value.RegisterCachedCopy(this);
-                }
-                else return result;
+                Value = result;
+                Value.RegisterCachedCopy(this);
+                return result;
             }
-
-            return Value;
+            else return result;
         }
 
         void Bind(TEntity entity)

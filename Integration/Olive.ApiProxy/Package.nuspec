@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.ApiProxy</id>
+    <version>1.0.37</version>
+    <title>Olive Api Proxy Generator</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <description>Generates Api Proxy packages for Olive microservice Apis</description>
+  </metadata>
+  <files>
+    <file src="bin\Debug\netcoreapp2.0\Olive.dll" target="content\obj\" />
+    <file src="bin\Debug\netcoreapp2.0\Olive.ApiProxy.dll" target="content\obj\" />
+    <file src="bin\Debug\netcoreapp2.0\Olive.ApiProxy.runtimeconfig.json" target="content\obj\" />
+  </files>
+</package>

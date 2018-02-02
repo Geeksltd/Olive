@@ -226,7 +226,7 @@ namespace Olive.Entities
             if (FileName == EMPTY_FILE) return true;
 
             if (GetStorageProvider().CostsToCheckExistence() ||
-                GetStorageProvider().FileExistsAsync(this).AwaitResult())
+             Task.Factory.RunSync(() => GetStorageProvider().FileExistsAsync(this)))
             {
                 hasValue = true;
                 return false;

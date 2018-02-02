@@ -11,6 +11,7 @@ namespace Olive
         /// <summary>
         /// It works similar to calling .Result property, but it forces a context switch to prevent deadlocks in UI and ASP.NET context.
         /// </summary>
+        [Obsolete("Use Task.Factory.RunSync() instead.", error: true)]
         public static TResult AwaitResult<TResult>(this Task<TResult> task) => Task.Run(async () => await task).Result;
 
         /// <summary>

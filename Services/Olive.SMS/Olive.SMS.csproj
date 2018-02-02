@@ -7,7 +7,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\@Assemblies\</OutputPath>
-    <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.Services.SMS.xml</DocumentationFile>
+    <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.SMS.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573</NoWarn>
   </PropertyGroup>
 

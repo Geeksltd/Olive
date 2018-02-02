@@ -6,6 +6,10 @@
     <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.Hangfire.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="HangFire" Version="1.6.17" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.1" />
