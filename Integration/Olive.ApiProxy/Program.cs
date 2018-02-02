@@ -7,59 +7,10 @@ namespace Olive.ApiProxy
 {
     class Program
     {
-        static string[] Args;
-
-        static bool LoadParameters()
-        {
-            if (Args.None()) return false;
-            if ((Context.ControllerName = Param("controller")) == null) return false;
-
-            if ((Context.Output = Param("out")?.AsDirectory()) == null) return false;
-            if (!Context.Output.Exists)
-            {
-                Console.WriteLine("The specified output folder does not exist.");
-                return false;
-            }
-
-            var websiteFolder = Param("website")?.AsDirectory();
-            if (websiteFolder != null)
-            {
-                if (!websiteFolder.Exists)
-                {
-                    Console.WriteLine(websiteFolder.FullName + " does not exist!");
-                    return false;
-                }
-
-                Context.TempPath = websiteFolder.CreateSubdirectory("obj\\api-proxy");
-
-                Console.WriteLine("Processing " + websiteFolder.FullName + "...");
-
-                Context.AssemblyFile = websiteFolder.GetFile("bin\\Debug\\netcoreapp2.0\\Website.dll");
-                Directory.SetCurrentDirectory(websiteFolder.FullName);
-                if ((Context.PublisherService = Config.Get("Microservice:Name")).IsEmpty())
-                {
-                    Console.WriteLine("Setting of Microservice:Name under appSettings.json was not found.");
-                    return false;
-                }
-            }
-            else
-            {
-                if ((Context.PublisherService = Param("serviceName")) == null) return false;
-                if ((Context.AssemblyFile = Param("assembly")?.AsFile()) == null) return false;
-
-                Context.TempPath = Path.GetTempPath().AsDirectory()
-                    .GetOrCreateSubDirectory("api-proxy").CreateSubdirectory(Guid.NewGuid().ToString());
-            }
-
-            return true;
-        }
-
         static int Main(string[] args)
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            Args = args;
-
-            if (!LoadParameters()) return Helper.ShowHelp();
+            if (!ParametersParser.LoadParameters(args)) return Helper.ShowHelp();
 
             if (!Context.AssemblyFile.Exists)
             {
@@ -110,13 +61,5 @@ namespace Olive.ApiProxy
             if (File.Exists(file)) return Assembly.LoadFile(file);
             else throw new Exception("File not found: " + file);
         }
-
-        static string Param(string key)
-        {
-            var decorateKey = "/" + key + ":";
-            return Args.FirstOrDefault(x => x.StartsWith(decorateKey))?.TrimStart(decorateKey).OrNullIfEmpty();
-        }
     }
 }
-
-
