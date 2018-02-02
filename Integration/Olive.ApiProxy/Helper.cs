@@ -40,7 +40,7 @@ namespace Olive.ApiProxy
             ShowLine("PARAMETERS: ", ConsoleColor.Red);
             Console.WriteLine("--------------------");
             Param("website", @"The full path to a the website directory");
-            Param("controller", @"The full name of the Api controller class, e.g. ""MyPublisherService.MyConsumerApi""");
+            Param("controller", @"The name of the Api controller class, e.g. ""MyConsumerApi"". If there are multiple classes with the same name, provide the full name with namespace.");
             Param("out", @"The full path to a directory inside which the proxy nuget package will be generated, e.g. C:\Projects\my-solution\PrivatePackages");
 
             Param("assembly", @"Path of the dll containing the Api, e.g.C:\Projects\MyProject\Website\bin\Debug\netcoreapp2.0\website.dll");
