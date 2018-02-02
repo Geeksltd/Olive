@@ -99,5 +99,6 @@ When creating a proxy object, you often need to specify the security identity un
 var result = await new MyPublisherService.MyApi().AsServiceUser().MyFunction(...);
 ```
 
+> If the target api controller class or method explicitly declare [AuthorizeService] attribute or [AuthorizeTrustedService] then the generated proxy will automatically call **.AsServiceUser()** and you don't need to.
 
 
