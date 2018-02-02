@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -27,30 +28,30 @@ namespace Olive.GeoLocation
             var fullAddress = postcode + "," + countryCode;
 
             return CachedLocations.GetOrAdd(fullAddress, address =>
+            {
+                var clientParameter = "key".OnlyWhen(GoogleSignatureKey.IsEmpty()).Or("client");
+
+                var url = "https://" + $"maps.googleapis.com/maps/api/geocode/xml?address={address}&sensor=false" +
+                    GoogleClientKey.UrlEncode().WithPrefix($"&{clientParameter}=") +
+                    GoogleSignatureKey.UrlEncode().WithPrefix("&signature=");
+
+                var response = (new HttpClient().GetStringAsync(url).Result).To<XElement>();
+
+                var status = response.GetValue<string>("status");
+
+                if (status == "ZERO_RESULTS") return null;
+                if (status != "OK") throw new Exception("Google API Error: " + status + "\r\n\r\n" + response);
+
+                var location = response.Element("result").Get(x => x.Element("geometry")).Get(x => x.Element("location"));
+
+                if (location == null) throw new Exception("Unexpected result from Google API: \r\n\r\n" + response);
+
+                return new GeoLocation
                 {
-                    var clientParameter = "key".OnlyWhen(GoogleSignatureKey.IsEmpty()).Or("client");
-
-                    var url = "https://" + $"maps.googleapis.com/maps/api/geocode/xml?address={address}&sensor=false" +
-                        GoogleClientKey.UrlEncode().WithPrefix($"&{clientParameter}=") +
-                        GoogleSignatureKey.UrlEncode().WithPrefix("&signature=");
-
-                    var response = (new WebClient().DownloadString(url)).To<XElement>();
-
-                    var status = response.GetValue<string>("status");
-
-                    if (status == "ZERO_RESULTS") return null;
-                    if (status != "OK") throw new Exception("Google API Error: " + status + "\r\n\r\n" + response);
-
-                    var location = response.Element("result").Get(x => x.Element("geometry")).Get(x => x.Element("location"));
-
-                    if (location == null) throw new Exception("Unexpected result from Google API: \r\n\r\n" + response);
-
-                    return new GeoLocation
-                    {
-                        Latitude = location.GetValue<string>("lat").To<double>(),
-                        Longitude = location.GetValue<string>("lng").To<double>()
-                    };
-                });
+                    Latitude = location.GetValue<string>("lat").To<double>(),
+                    Longitude = location.GetValue<string>("lng").To<double>()
+                };
+            });
         }
 
         /// <summary>

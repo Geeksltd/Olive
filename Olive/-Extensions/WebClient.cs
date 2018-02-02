@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,14 +13,14 @@ namespace Olive
         /// <summary>
         /// First three bytes of GZip compressed Data
         /// </summary>
-        readonly static byte[] GZipStarter = new byte[] { 31, 139, 8 };
+        static readonly byte[] GZipStarter = new byte[] { 31, 139, 8 };
 
-        public static async Task<byte[]> DownloadData(this WebClient client, string address, bool handleGzip)
+        public static async Task<byte[]> DownloadData(this HttpClient client, string address, bool handleGzip)
         {
             if (!handleGzip)
-                return await client.DownloadDataTaskAsync(address);
+                return await client.GetByteArrayAsync(address);
 
-            var result = await client.DownloadDataTaskAsync(address);
+            var result = await client.GetByteArrayAsync(address);
             if (result != null && result.Length > 3 && result[0] == GZipStarter[0] && result[1] == GZipStarter[1] && result[2] == GZipStarter[2])
             {
                 // GZIP:
@@ -49,8 +50,10 @@ namespace Olive
         /// Posts the specified data to a url and returns the response as string.
         /// All properties of the postData object will be sent as individual FORM parameters to the destination.
         /// </summary>
+        /// <param name="url">Post url address</param>
         /// <param name="postData">An anonymous object containing post data.</param>
-        public static async Task<string> Post(this WebClient webClient, string url, object postData)
+        /// <param name="httpClient">HttpClient instance</param>
+        public static async Task<string> Post(this HttpClient httpClient, string url, object postData)
         {
             if (postData == null)
                 throw new ArgumentNullException(nameof(postData));
@@ -58,20 +61,20 @@ namespace Olive
             var data = new Dictionary<string, string>();
             data.AddFromProperties(postData);
 
-            return await Post(webClient, url, data);
+            return await Post(httpClient, url, data);
         }
 
         /// <summary>
         /// Posts the specified data to a url and returns the response as string.
         /// All items in the postData object will be sent as individual FORM parameters to the destination.
         /// </summary>
-        public static async Task<string> Post(this WebClient webClient, string url, Dictionary<string, string> postData) =>
-            await Post(webClient, url, postData, Encoding.UTF8);
+        public static async Task<string> Post(this HttpClient httpClient, string url, Dictionary<string, string> postData) =>
+            await Post(httpClient, url, postData, Encoding.UTF8);
 
         /// <summary>
         /// Posts the specified data to a url and returns the response as string.
         /// </summary>
-        public static async Task<string> Post(this WebClient webClient, string url, Dictionary<string, string> postData, Encoding responseEncoding)
+        public static async Task<string> Post(this HttpClient httpClient, string url, Dictionary<string, string> postData, Encoding responseEncoding)
         {
             if (responseEncoding == null)
                 throw new ArgumentNullException(nameof(responseEncoding));
@@ -82,11 +85,11 @@ namespace Olive
             if (url.IsEmpty())
                 throw new ArgumentNullException(nameof(url));
 
-            var responseBytes = await webClient.UploadValuesTaskAsync(url, postData.ToNameValueCollection());
+            var responseBytes = await httpClient.PostAsync(url, postData.AsHttpContent());
 
             try
             {
-                return responseEncoding.GetString(responseBytes);
+                return responseEncoding.GetString(responseBytes.Content.ReadAsByteArrayAsync().Result);
             }
             catch (WebException ex)
             {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net.Http;
 
 namespace Olive
 {
@@ -52,6 +53,11 @@ namespace Olive
             return result;
         }
 
+        public static HttpContent AsHttpContent(this IDictionary<string, string> dictionary)
+        {
+            HttpContent content = new FormUrlEncodedContent(dictionary);
+            return content;
+        }
         /// <summary>
         /// Adds the properties of a specified [anonymous] object as items to this dictionary.
         /// It ignores duplicate entries and null values.

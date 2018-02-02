@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -319,28 +320,33 @@ namespace Olive.Globalization
 
             try
             {
-                var response = (await new WebClient().DownloadDataTaskAsync(request)).ToString(Encoding.UTF8);
+
+                var response = (await new HttpClient().DownloadData(request, true)).ToString(Encoding.UTF8);
 
                 if (response.Contains(GOOGLE_TERMS_OF_SERVICE_ABUSE_MESSAGE, caseSensitive: false))
                 {
                     IsGoogleTranslateMisconfigured = true;
                     return null;
                 }
-                else
+
+                var ser = new DataContractJsonSerializer(typeof(GoogleTranslateJsonResponseRootObject));
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(response)))
                 {
-                    var ser = new DataContractJsonSerializer(typeof(GoogleTranslateJsonResponseRootObject));
-                    var stream = new MemoryStream(Encoding.UTF8.GetBytes(response));
-                    var rootObjectResponse = ser.ReadObject(stream) as GoogleTranslateJsonResponseRootObject;
-                    var result = rootObjectResponse.data.translations[0].translatedText;
-                    result = result.Replace(LINE_BREAK_UNICODE, Environment.NewLine);   // Decode line breaks
-                    return HttpUtility.HtmlDecode(result);
+                    if (ser.ReadObject(stream) is GoogleTranslateJsonResponseRootObject rootObjectResponse)
+                    {
+                        var result = rootObjectResponse.data.translations[0].translatedText;
+                        result = result.Replace(LINE_BREAK_UNICODE, Environment.NewLine);   // Decode line breaks
+                        return HttpUtility.HtmlDecode(result);
+                    }
                 }
+
             }
             catch
             {
                 // No  Logging needed
                 return null;
             }
+            return null;
         }
 
         /// <summary>
@@ -364,21 +370,19 @@ namespace Olive.Globalization
 
             try
             {
-                var response = Encoding.UTF8.GetString(await new WebClient().DownloadDataTaskAsync(request));
+                var response = Encoding.UTF8.GetString(await new HttpClient().DownloadData(request, true));
 
                 if (response.Contains(GOOGLE_TERMS_OF_SERVICE_ABUSE_MESSAGE, caseSensitive: false))
                 {
                     IsGoogleTranslateMisconfigured = true;
                     return null;
                 }
-                else
-                {
-                    var ser = new DataContractJsonSerializer(typeof(GoogleAutoDetectJsonResponseRootObject));
-                    var stream = new MemoryStream(Encoding.UTF8.GetBytes(response));
-                    var rootObjectResponse = ser.ReadObject(stream) as GoogleAutoDetectJsonResponseRootObject;
-                    var dectection = rootObjectResponse.data.detections[0][0];
-                    return new GoogleAutodetectResponse(dectection.language, dectection.confidence);
-                }
+
+                var ser = new DataContractJsonSerializer(typeof(GoogleAutoDetectJsonResponseRootObject));
+                var stream = new MemoryStream(Encoding.UTF8.GetBytes(response));
+                var rootObjectResponse = ser.ReadObject(stream) as GoogleAutoDetectJsonResponseRootObject;
+                var dectection = rootObjectResponse?.data.detections[0][0];
+                return new GoogleAutodetectResponse(dectection?.language, dectection?.confidence);
             }
             catch
             {
