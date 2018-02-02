@@ -7,13 +7,11 @@ This guide will explain what they are and how you can set them up to get started
 ## Sharpen up your skills
 To successfully develop microservice solutions using M# and Olive technologies you need to learn the following foundation technologies:
 - ASP.NET Core Mvc (including Web Apis)
-- Task parallel library (async/await)
-- Bootstrap 4
-- SASS
-- RequireJS
-- Typescript
+- Task parallel library (async/await) in C#
+- Bootstrap 4, SASS, Jquery, Typescript, RequireJS
 - Olive Entities and Data Access Api
 - Docker and Containers
+- Pangolin: Automated testing
 
 ## NugetServer
 ...
