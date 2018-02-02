@@ -9,10 +9,13 @@ namespace Olive.ApiProxy
         string Name;
         public DirectoryInfo Folder;
 
+        static string Version = DateTime.Now.ToString("yyMMdd.HH.mmss");
+
         protected abstract bool AddXml { get; }
         protected abstract string Framework { get; }
         protected abstract string[] References { get; }
         protected abstract void AddFiles();
+        protected abstract string IconUrl { get; }
 
         protected ProjectCreator(string name)
         {
@@ -78,8 +81,6 @@ namespace Olive.ApiProxy
 
         void CreateNuspec()
         {
-            var version = DateTime.Now.ToString("yyMMdd.HH.mmss");
-
             var dll = $@"bin\Debug\{Framework}\{Folder.Name}";
 
             var xml = $@"<file src=""{dll}.xml"" target=""lib\{Framework}\"" />".OnlyWhen(AddXml);
@@ -88,9 +89,10 @@ namespace Olive.ApiProxy
 <package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
   <metadata>
     <id>{Folder.Name}</id>
-    <version>{version}</version>
+    <version>{Version}</version>
     <title>{Folder.Name}</title>
-    <authors>Olive Api Proxy Generator</authors>    
+    <authors>Olive Api Proxy Generator</authors>
+    {IconUrl.WithWrappers("<iconUrl>", "</iconUrl>")}
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
   </metadata>
   <files>

@@ -4,11 +4,11 @@ namespace Olive.ApiProxy
 {
     class ProxyProjectCreator : ProjectCreator
     {
-        public ProxyProjectCreator() : base("Proxy")
-        {
-        }
+        public ProxyProjectCreator() : base("Proxy") { }
 
         protected override string Framework => "netstandard2.0";
+
+        protected override string IconUrl => null;
 
         protected override string[] References
             => new[] { "Olive", "Olive.Entities", "Olive.ApiClient", "Olive.Microservices" };
