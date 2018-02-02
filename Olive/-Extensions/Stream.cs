@@ -14,7 +14,7 @@ namespace Olive
         {
             using (var memoryStream = new MemoryStream())
             {
-                try { stream.Position = 0; }
+                try { if (stream.CanSeek) stream.Position = 0; }
                 catch (NotSupportedException) { /*Not needed*/ }
                 stream.CopyTo(memoryStream);
                 return memoryStream.ToArray();
@@ -28,7 +28,7 @@ namespace Olive
         {
             using (var memoryStream = new MemoryStream())
             {
-                stream.Position = 0;
+                if (stream.CanSeek) stream.Position = 0;
                 await stream.CopyToAsync(memoryStream);
                 return memoryStream.ToArray();
             }

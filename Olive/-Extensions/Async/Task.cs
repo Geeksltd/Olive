@@ -19,14 +19,21 @@ namespace Olive
         /// </summary> 
         public static void RunSync(this TaskFactory factory, Func<Task> task)
         {
-            factory.StartNew(task, TaskCreationOptions.LongRunning)
-              .ContinueWith(t =>
-              {
-                  if (t.Exception == null) return;
-                  System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
-                  throw t.Exception.InnerException;
-              })
-              .Wait();
+            try
+            {
+                factory.StartNew(task, TaskCreationOptions.LongRunning)
+                  .ContinueWith(t =>
+                  {
+                      if (t.Exception == null) return;
+                      System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
+                      throw t.Exception.InnerException;
+                  })
+                  .Wait();
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         /// <summary>
@@ -34,15 +41,22 @@ namespace Olive
         /// </summary> 
         public static TResult RunSync<TResult>(this TaskFactory factory, Func<Task<TResult>> task)
         {
-            return factory.StartNew(task, TaskCreationOptions.LongRunning)
-                 .ContinueWith(t =>
-                 {
-                     if (t.Exception == null) return t.Result;
+            try
+            {
+                return factory.StartNew(task, TaskCreationOptions.LongRunning)
+                     .ContinueWith(t =>
+                     {
+                         if (t.Exception == null) return t.Result;
 
-                     System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
-                     throw t.Exception.InnerException;
-                 })
-                 .Result.Result;
+                         System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
+                         throw t.Exception.InnerException;
+                     })
+                     .Result.Result;
+            }
+            catch (AggregateException ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         public static async Task WithTimeout(this Task task, TimeSpan timeout, Action success = null, Action timeoutAction = null)

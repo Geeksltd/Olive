@@ -77,6 +77,9 @@ namespace Olive
                 }
                 catch (Exception ex)
                 {
+                    if ((int)ResponseCode >= 400 && (int)ResponseCode < 500)
+                        throw ex; // It contains user message.
+
                     LogTheError(ex);
                     return false;
                 }

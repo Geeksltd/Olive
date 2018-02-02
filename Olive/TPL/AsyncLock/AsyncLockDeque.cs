@@ -9,10 +9,7 @@ namespace Olive
         T[] Buffer;
         int Offset;
 
-        public AsyncLockDeque(int capacity = 5)
-        {
-            Buffer = new T[capacity];
-        }
+        public AsyncLockDeque(int capacity = 5) => Buffer = new T[capacity];
 
         int Capacity => Buffer.Length;
 

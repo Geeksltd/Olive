@@ -22,7 +22,7 @@ namespace Olive
                     // TODO: Log.NotifyByEmail...()
                     return Task.CompletedTask;
                 case OnApiCallError.Ignore: return Task.CompletedTask;
-                case OnApiCallError.Throw: throw error;
+                case OnApiCallError.Throw: return Task.FromException(error);
                 default: throw new NotSupportedException(strategy + " is not implemented.");
             }
         }
