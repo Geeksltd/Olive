@@ -15,8 +15,8 @@ However that way you have to write a lot of code which can be time consuming and
 - Making sure the correct version of the service is being invoked (Dev v.s. Staging v.s. Production)
 - Create DTO classes for request and response types
 
-## Solution: Olive Api Proxy Generator
-To free you from the problems mentioned above, there is a utility named **OliveApiProxyGenerator** that can automatically create a proxy Dll for your Apis. You will then install that dll in the consumer services and use it to access the API with maximume ease.
+# Solution: Olive Api Proxy Generator
+To free you from the problems mentioned above, there is a utility named **Olive.ApiProxy** that can automatically creates a proxy Dll for your Apis. You will then install that dll in the consumer services and use it to access the API with maximume ease. 
 
 It will automatically take care of all of the problems mentioned above and gives you a strongly typed and simplified approach to **invoke remote Apis as if they are local functions in the same consumer service**.
 
@@ -65,7 +65,10 @@ The controller class name should be the **logical name** of this particular Api 
 - Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B. 
 - Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
 
-## Generating an Api Proxy
+# Generating an Api Proxy
+
+> To obtain *Olive.ApiProxy.dll* [download this package](https://www.nuget.org/api/v2/package/Olive.ApiProxy), rename the .nupkg file to *.zip* and copy the files from its **content\obj** folder to your *Website\obj*.
+
 1. Compile the website project (which includes the Api code)
 2. Right click on the Api controller class in Visual Studio solution explorer.
 3. Select "Generate Proxy Dll..." which will just invoke the following command:
