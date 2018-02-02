@@ -1,26 +1,34 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Olive.ApiProxy
 {
     class ProxyClassProgrammer
     {
-        static string ClassName => Context.ControllerType.Name;
+        static Type Controller => Context.ControllerType;
+        static string ClassName => Controller.Name;
 
         public static string Generate()
         {
             var r = new StringBuilder();
 
-            r.AppendLine("namespace " + Context.ControllerType.Namespace);
+            r.AppendLine("namespace " + Controller.Namespace);
             r.AppendLine("{");
             r.AppendLine("using System;");
             r.AppendLine("using System.Threading.Tasks;");
             r.AppendLine("using System.Collections.Generic;");
             r.AppendLine("using Olive;");
             r.AppendLine();
-            r.AppendLine("/// <summary>Provides access to the " + ClassName + " api of the " + Context.PublisherService + " service.</summary>");
+            r.Append("/// <summary>Provides access to the " + ClassName + " api of the " + Context.PublisherService + " service.");
+            if (GetAuthorizeServiceAttribute().HasValue())
+                r.Append($" As the target Api declares [{GetAuthorizeServiceAttribute()}], my constructor will call AsServiceUser() automatically.");
+            r.AppendLine("</summary>");
             r.AppendLine($"public class {ClassName} : StronglyTypedApiProxy");
             r.AppendLine("{");
             r.AppendLine();
+
+            if (GetAuthorizeServiceAttribute().HasValue())
+                r.AppendLine($"public {ClassName}() => this.AsServiceUser();");
 
             foreach (var method in Context.ActionMethods)
             {
@@ -32,6 +40,13 @@ namespace Olive.ApiProxy
             r.AppendLine("}");
 
             return r.ToString();
+        }
+
+        static string GetAuthorizeServiceAttribute()
+        {
+            foreach (var att in new[] { "AuthorizeTrustedService", "AuthorizeService" })
+                if (Controller.GetAttribute(att) != null) return att;
+            return null;
         }
     }
 }

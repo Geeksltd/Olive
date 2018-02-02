@@ -60,8 +60,15 @@ namespace Olive.ApiProxy
                 throw new Exception("File not found: " + AssemblyFile.FullName);
 
             Assembly = Assembly.LoadFrom(AssemblyFile.FullName);
-            ControllerType = Assembly.GetType(ControllerName)
-                ?? throw new Exception(ControllerName + " was not found.");
+            ControllerType = Assembly.GetType(ControllerName);
+
+            if (ControllerType == null) // Maybe no namespace?
+            {
+                ControllerType = Assembly.GetTypes().FirstOrDefault(x => x.Name == ControllerName)
+                  ?? throw new Exception(ControllerName + " was not found.");
+            }
+
+            ControllerName = ControllerType.FullName; // Ensure it has full namespace
 
             ActionMethods = ControllerType
                 .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)

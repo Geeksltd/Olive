@@ -77,13 +77,11 @@ namespace Olive.ApiProxy
 
         string Route()
         {
-            var classRouteAttr = Context.ControllerType.GetCustomAttributesData()
-              .FirstOrDefault(x => x.AttributeType.Name == "Route" + "Attribute")
+            var classRouteAttr = Context.ControllerType.GetAttribute("Route")
              ?.ConstructorArguments.Single().Value.ToString();
 
-            var routeAttr = Method.GetCustomAttributesData()
-                .FirstOrDefault(x => x.AttributeType.Name == "Route" + "Attribute")
-                ?.ConstructorArguments.Single().Value.ToString(); ;
+            var routeAttr = Method.GetAttribute("Route")
+                ?.ConstructorArguments.Single().Value.ToString();
 
             return classRouteAttr.WithSuffix("/" + routeAttr.Or("{Route?}"));
         }

@@ -75,8 +75,8 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Api Controller: " + Context.ControllerName);
                 Console.WriteLine("Temp folder: " + Context.TempPath);
 
-                Context.PrepareOutputDirectory();
                 Context.LoadAssembly();
+                Context.PrepareOutputDirectory();
                 DtoTypes.FindAll();
                 new ProxyProjectCreator().Build();
                 if (DtoTypes.All.Any()) new MSharpProjectCreator().Build();
