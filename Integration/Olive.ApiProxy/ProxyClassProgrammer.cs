@@ -8,6 +8,8 @@ namespace Olive.ApiProxy
         static Type Controller => Context.ControllerType;
         static string ClassName => Controller.Name;
 
+        static bool ServiceOnly() => Controller.GetExplicitAuthorizeServiceAttribute().HasValue();
+
         public static string Generate()
         {
             var r = new StringBuilder();
@@ -20,14 +22,14 @@ namespace Olive.ApiProxy
             r.AppendLine("using Olive;");
             r.AppendLine();
             r.Append("/// <summary>Provides access to the " + ClassName + " api of the " + Context.PublisherService + " service.");
-            if (GetAuthorizeServiceAttribute().HasValue())
-                r.Append($" As the target Api declares [{GetAuthorizeServiceAttribute()}], my constructor will call AsServiceUser() automatically.");
+            if (ServiceOnly())
+                r.Append($" As the target Api declares [{Controller.GetExplicitAuthorizeServiceAttribute()}], my constructor will call AsServiceUser() automatically.");
             r.AppendLine("</summary>");
             r.AppendLine($"public class {ClassName} : StronglyTypedApiProxy");
             r.AppendLine("{");
             r.AppendLine();
 
-            if (GetAuthorizeServiceAttribute().HasValue())
+            if (ServiceOnly())
                 r.AppendLine($"public {ClassName}() => this.AsServiceUser();");
 
             foreach (var method in Context.ActionMethods)
@@ -40,13 +42,6 @@ namespace Olive.ApiProxy
             r.AppendLine("}");
 
             return r.ToString();
-        }
-
-        static string GetAuthorizeServiceAttribute()
-        {
-            foreach (var att in new[] { "AuthorizeTrustedService", "AuthorizeService" })
-                if (Controller.GetAttribute(att) != null) return att;
-            return null;
         }
     }
 }

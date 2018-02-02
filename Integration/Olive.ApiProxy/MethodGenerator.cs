@@ -21,10 +21,17 @@ namespace Olive.ApiProxy
         {
             var r = new StringBuilder();
 
-            r.AppendLine($"/// <summary>Sends a Http{HttpVerb()} request to {Route()} of the {Context.PublisherService} service.</summary>");
+            r.Append($"/// <summary>Sends a Http{HttpVerb()} request to {Route()} of the {Context.PublisherService} service.");
+
+            if (Method.GetExplicitAuthorizeServiceAttribute().HasValue())
+                r.Append($" As the target Api declares [{Method.GetExplicitAuthorizeServiceAttribute()}], I will call AsServiceUser() automatically.");
+            r.AppendLine("</summary>");
 
             r.AppendLine($"public {MethodReturnType()} {Method.Name}({GetArgs()})");
             r.AppendLine("{");
+
+            if (Method.GetExplicitAuthorizeServiceAttribute().HasValue())
+                r.AppendLine("this.AsServiceUser();");
 
             if (RouteParams.Any())
             {
