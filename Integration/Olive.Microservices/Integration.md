@@ -65,26 +65,36 @@ The controller class name should be the **logical name** of this particular Api 
 - Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B. 
 - Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
 
-# Generating an Api Proxy
-
-> To obtain *Olive.ApiProxy.dll* [download this package](https://www.nuget.org/api/v2/package/Olive.ApiProxy), rename the .nupkg file to *.zip* and copy the files from its **content\obj** folder to your *Website\obj*.
-
+# Generating an Api Proxy (Olive.ApiProxy.dll)
 1. Compile the website project (which includes the Api code)
 2. Right click on the Api controller class in Visual Studio solution explorer.
-3. Select "Generate Proxy Dll..." which will just invoke the following command:
+3. Select "Generate Proxy Dll..."
+4. At this point it will download the Olive.ApiProxy.dll from Nuget and install that in your *obj* folder.
+5. It will then invoke the following command:
 ```
-..\M#\lib\dotnet Olive.ApiProxy.dll /website:C:\...\Website /controller:MyPublisherService.MyApi
+..\M#\lib\dotnet Olive.ApiProxy.dll /file:Api\MyApi.cs
 ```
+The Api.Proxy.dll tool will generate two class library projects, one called Proxy and one called MSharp. Their role is explained below.
 
-The Api.Proxy.dll tool will generate a *.Net class library project* and compile that into a **private nuget package** for use in your consumer services.
+### Api input and output types (schema)
+Your Api functions' arguments and return types may be void, simple .net types (string, int, DateTime, ...) or they may be classes with multiple fields. For example if you have an Api function called GetUserDetails() it will probably need to return a class with several fields.
+```csharp
+class User
+{
+    public Guid ID {get; set;}
+    public string FirstName {get; set;}
+    public string LastName {get; set;}
+    ...
+}
+```
+These class definitions (aka schema) should be recognised in the consumer applications also so they can communicate correctly with your Api. To simplify your consumer apps' code **Olive.ApiProxy.dll** will generate a simple DTO class with exactly the same name and properties as the types used in your Api function (either as argument or return type).
 
-It will generate the following classes:
-- A class will be generated with the *same class name and namespace* as the Api controller.
-- A DTO class will be generated for each of the following:
-  - Return type of the Api method (as specified by the attribute).
-  - From any argument of the Api method other than primitive types.
+Of course it will also generate a proxy class which acts as an agent in the consumer app to connect to your Api. It will have the *same class name and namespace* as the Api controller.
   
-> **Tip: The generated proxy dll:** Feel free to inspect the generated proxy library's code to learn what it does deep down. Look inside the publisher service's Website\obj\api-proxy folder. 
+> **Tip: The generated proxy dll:** Feel free to inspect the generated proxy class's code to learn what is under the hood by looking inside the publisher service's Website\obj\api-proxy folder. 
+
+## Distribution 
+To distribute a generated proxy dll to the consumer service the best approach is to use a private NuGet server [Learn how](PrivateNuget.md).
 
 ## Using the generated proxy
 In the consumer application (service) reference the generated nuget package.
