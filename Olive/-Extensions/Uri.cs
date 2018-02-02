@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -78,13 +79,13 @@ namespace Olive
         /// Posts the specified data to this url and returns the response as string.
         /// All items in the postData object will be sent as individual FORM parameters to the destination.
         /// </summary>
-        public static async Task<string> Post(this Uri url, object data, Action<WebClient> customiseClient = null)
+        public static async Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
         {
-            using (var client = new WebClient())
+            using (var client = new HttpClient())
             {
                 customiseClient?.Invoke(client);
 
-                return await client.Post(url.ToString(), data);
+                return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
             }
         }
 
@@ -92,12 +93,12 @@ namespace Olive
         /// Posts the specified data to this url and returns the response as string.
         /// All items in the postData object will be sent as individual FORM parameters to the destination.
         /// </summary>
-        public static async Task<string> Post(this Uri url, Dictionary<string, string> postData, Action<WebClient> customiseClient = null)
+        public static async Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
         {
-            using (var client = new WebClient())
+            using (var client = new HttpClient())
             {
                 customiseClient?.Invoke(client);
-                return await client.Post(url.ToString(), postData);
+                return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
             }
         }
 
