@@ -13,6 +13,9 @@ This guide will help get you started.
 ![GitHub Logo](Microservices.Architecture.png)
 
 ## Topics:
+### [Environment setup](Setup.md)
+Steps you need to take to create a microservice based solution.
+
 ### [UI Architecture](UI.Architecture.md)
 Learn how the UI structure works in Olive microservices.
 
