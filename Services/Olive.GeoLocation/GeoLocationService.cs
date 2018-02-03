@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Olive.Utilities;
 
 namespace Olive.GeoLocation
 {
@@ -35,7 +36,9 @@ namespace Olive.GeoLocation
                     GoogleClientKey.UrlEncode().WithPrefix($"&{clientParameter}=") +
                     GoogleSignatureKey.UrlEncode().WithPrefix("&signature=");
 
-                var response = (new HttpClient().GetStringAsync(url).Result).To<XElement>();
+                var client = HttpClientFactorySingleton.Factory.GetOrCreate(new Uri("maps.googleapis.com"));
+                //var response = (new HttpClient().GetStringAsync(url).Result).To<XElement>();
+                var response = (client.GetStringAsync(url).Result).To<XElement>();
 
                 var status = response.GetValue<string>("status");
 

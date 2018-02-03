@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Olive.Utilities;
 
 namespace Olive
 {
@@ -81,7 +82,8 @@ namespace Olive
         /// </summary>
         public static async Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
         {
-            var client = new HttpClient();
+            //var client = new HttpClient();
+            var client = HttpClientFactorySingleton.Factory.GetOrCreate(url);
             customiseClient?.Invoke(client);
 
             return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
@@ -94,7 +96,8 @@ namespace Olive
         /// </summary>
         public static async Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
         {
-            var client = new HttpClient();
+            //var client = new HttpClient();
+            var client = HttpClientFactorySingleton.Factory.GetOrCreate(url);
             customiseClient?.Invoke(client);
             return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
             

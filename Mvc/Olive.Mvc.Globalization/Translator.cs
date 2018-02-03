@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using HtmlAgilityPack;
 using Olive.Entities;
+using Olive.Utilities;
 using Olive.Web;
 
 namespace Olive.Globalization
@@ -320,8 +321,8 @@ namespace Olive.Globalization
 
             try
             {
-
-                var response = (await new HttpClient().DownloadData(request, true)).ToString(Encoding.UTF8);
+                var client = HttpClientFactorySingleton.Factory.GetOrCreate(new Uri("www.googleapis.com"));
+                var response = (await client.DownloadData(request, true)).ToString(Encoding.UTF8);
 
                 if (response.Contains(GOOGLE_TERMS_OF_SERVICE_ABUSE_MESSAGE, caseSensitive: false))
                 {
@@ -370,7 +371,8 @@ namespace Olive.Globalization
 
             try
             {
-                var response = Encoding.UTF8.GetString(await new HttpClient().DownloadData(request, true));
+                var client = HttpClientFactorySingleton.Factory.GetOrCreate(new Uri("www.googleapis.com"));
+                var response = Encoding.UTF8.GetString(await client.DownloadData(request, true));
 
                 if (response.Contains(GOOGLE_TERMS_OF_SERVICE_ABUSE_MESSAGE, caseSensitive: false))
                 {
