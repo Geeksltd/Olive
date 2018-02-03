@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Olive.Utilities;
 
 namespace Olive
 {
@@ -62,20 +63,21 @@ namespace Olive
 
             var authCookieName = ".myAuth"; // TODO: Get it from the cookie settings.
 
-            using (var handler = new HttpClientHandler { CookieContainer = new CookieContainer() })
-            using (var client = new HttpClient(handler))
-            {
-                var response = await client.GetAsync(url);
+            var handler = new HttpClientHandler { CookieContainer = new CookieContainer() };
+            var client = HttpClientFactorySingleton.Factory.GetOrCreate(url, handler: handler);
+            //var client = new HttpClient(handler);
 
-                var responseCookies = handler.CookieContainer
-                    .GetCookies(Url(authServiceName).AsUri())
-                    .GetCookieOrChunks(authCookieName);
+            var response = await client.GetAsync(url);
 
-                if (responseCookies.None())
-                    throw new Exception("Service authentication failed.");
+            var responseCookies = handler.CookieContainer
+                .GetCookies(Url(authServiceName).AsUri())
+                .GetCookieOrChunks(authCookieName);
 
-                ServiceIdentityCookies = responseCookies;
-            }
+            if (responseCookies.None())
+                throw new Exception("Service authentication failed.");
+
+            ServiceIdentityCookies = responseCookies;
+
         }
 
         /// <summary>

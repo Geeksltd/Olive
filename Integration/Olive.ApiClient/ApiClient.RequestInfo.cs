@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Olive.Utilities;
 
 namespace Olive
 {
@@ -112,7 +113,9 @@ namespace Olive
             {
                 if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url.EnsureEndsWith("/");
 
-                var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies });
+                //var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies });
+                var client = HttpClientFactorySingleton.Factory.GetOrCreate(Url, handler: new HttpClientHandler { CookieContainer = Client.RequestCookies });
+
                 using (client)
                 {
                     var req = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);

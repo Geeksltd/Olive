@@ -11,7 +11,8 @@ namespace Olive.ApiProxy
         {
             Args = args;
             if (Args.None()) return false;
-            if ((Context.ControllerName = Param("controller")) == null) return false;
+            var controllerName = Param("controller") ?? Param("file");
+            if ((Context.ControllerName = controllerName) == null) return false;
 
             if ((Context.Output = Param("out")?.AsDirectory()) == null) return false;
             if (!Context.Output.Exists)
@@ -31,7 +32,16 @@ namespace Olive.ApiProxy
 
         static bool LoadFromControllerFile(FileInfo file)
         {
-            // TODO: Parse the controller file and find all other parameters.
+            if (file == null || !file.Exists)
+            {
+                Console.WriteLine(file?.FullName + " controller file does not exist!");
+                return false;
+            }
+
+            Context.ControllerName = file.FullName;
+            if (file.FullName.ToLower().Contains("\\website\\"))
+                return LoadFromWebsite(file.Directory?.FullName.TrimAfter("\\website\\", false).AsDirectory());
+
             return false;
         }
 
