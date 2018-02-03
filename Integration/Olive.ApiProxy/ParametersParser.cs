@@ -40,7 +40,7 @@ namespace Olive.ApiProxy
 
             Context.ControllerName = file.FullName;
             if (file.FullName.ToLower().Contains("\\website\\"))
-                LoadFromWebsite(file.Directory?.FullName.TrimAfter("\\website\\", false).AsDirectory());
+                return LoadFromWebsite(file.Directory?.FullName.TrimAfter("\\website\\", false).AsDirectory());
 
             return false;
         }
