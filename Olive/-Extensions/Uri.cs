@@ -81,12 +81,11 @@ namespace Olive
         /// </summary>
         public static async Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
         {
-            using (var client = new HttpClient())
-            {
-                customiseClient?.Invoke(client);
+            var client = new HttpClient();
+            customiseClient?.Invoke(client);
 
-                return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
-            }
+            return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
+
         }
 
         /// <summary>
@@ -95,11 +94,10 @@ namespace Olive
         /// </summary>
         public static async Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
         {
-            using (var client = new HttpClient())
-            {
-                customiseClient?.Invoke(client);
-                return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
-            }
+            var client = new HttpClient();
+            customiseClient?.Invoke(client);
+            return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
+            
         }
 
         /// <summary>
