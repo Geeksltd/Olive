@@ -20,7 +20,7 @@ namespace Olive.Email
         HttpResponse Response;
         string To, ReturnUrl;
         Attachment AttachmentFile;
-        IEmailQueueItem Email;
+        IEmailMessage Email;
         bool IsInitialized;
 
         public EmailTestService(HttpRequest request, HttpResponse response)
@@ -37,7 +37,7 @@ namespace Olive.Email
                 AttachmentFile = await EmailService.ParseAttachment(Request.Param("attachmentInfo"));
 
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
-                Email = await Request.GetOrDefault<IEmailQueueItem>("id");
+                Email = await Request.GetOrDefault<IEmailMessage>("id");
 
             IsInitialized = true;
 
@@ -110,13 +110,13 @@ namespace Olive.Email
             await Response.WriteAsync("</body></html>");
         }
 
-        async Task<List<IEmailQueueItem>> GetEmails()
+        async Task<List<IEmailMessage>> GetEmails()
         {
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
             {
-                var items = (await Entity.Database.GetList<IEmailQueueItem>()).Where(x => To.IsEmpty() || (x.To + "," + x.Cc + ", " + x.Bcc).ToLower().Contains(To));
+                var items = (await Entity.Database.GetList<IEmailMessage>()).Where(x => To.IsEmpty() || (x.To + "," + x.Cc + ", " + x.Bcc).ToLower().Contains(To));
 
-                return items.OrderByDescending(x => x.Date).Take(15).ToList();
+                return items.OrderByDescending(x => x.SendableDate).Take(15).ToList();
             }
         }
 
@@ -141,6 +141,7 @@ namespace Olive.Email
             r.AppendLine("<th>Date</th>");
             r.AppendLine("<th>Time</th>");
             r.AppendLine("<th>From</th>");
+            r.AppendLine("<th>ReplyTo</th>");
             r.AppendLine("<th>To</th>");
             r.AppendLine("<th>Cc</th>");
             r.AppendLine("<th>Bcc</th>");
@@ -159,9 +160,12 @@ namespace Olive.Email
                 foreach (var item in emails)
                 {
                     r.AppendLine("<tr>");
-                    r.AddFormattedLine("<td>{0}</td>", item.Date.ToString("yyyy-MM-dd"));
-                    r.AddFormattedLine("<td>{0}</td>", item.Date.ToSmallTime());
-                    r.AddFormattedLine("<td>{0}</td>", GetFrom(item));
+                    r.AddFormattedLine("<td>{0}</td>", item.SendableDate.ToString("yyyy-MM-dd"));
+                    r.AddFormattedLine("<td>{0}</td>", item.SendableDate.ToSmallTime());
+                    r.AddFormattedLine("<td>{0}</td>",
+                        item.GetEffectiveFromName() + "(" + item.GetEffectiveFromAddress() + ")");
+                    r.AddFormattedLine("<td>{0}</td>",
+                        item.GetEffectiveReplyToName() + "(" + item.GetEffectiveReplyToAddress() + ")");
                     r.AddFormattedLine("<td>{0}</td>", item.To);
                     r.AddFormattedLine("<td>{0}</td>", item.Cc);
                     r.AddFormattedLine("<td>{0}</td>", item.Bcc);
@@ -180,9 +184,7 @@ namespace Olive.Email
             return r.ToString();
         }
 
-        string GetFrom(IEmailQueueItem email) => email.GetSender().Get(s => s.DisplayName.Or("").HtmlEncode() + s.Address.WithWrappers(" &lt;", "&gt;"));
-
-        async Task<string> GetAttachmentLinks(IEmailQueueItem email)
+        async Task<string> GetAttachmentLinks(IEmailMessage email)
         {
             return (await email.Attachments.OrEmpty().Split('|').Trim()
                 .Select(async f => $"<form action='/?Web.Test.Command=testEmail&To={To}&ReturnUrl={ReturnUrl.UrlEncode()}' " +
@@ -204,11 +206,12 @@ namespace Olive.Email
             var body = GetBodyHtml(Email.Body.Or("[EMPTY BODY]"), Email.Html);
 
             var toShow = new Dictionary<string, object> {
-                { "Date", Email.Date.ToString("yyyy-MM-dd") +" at " + Email.Date.ToString("HH:mm") },
-                {"From", GetFrom(Email)},
-                { "To", Email.To},
-                {"Bcc", Email.Bcc},
-                {"Cc", Email.Cc},
+                {"Date", Email.SendableDate.ToString("yyyy-MM-dd") +" at " + Email.SendableDate.ToString("HH:mm") },
+                {"From", Email.GetEffectiveFromAddress()},
+                {"ReplyTo", Email.GetEffectiveReplyToAddress()},
+                {"To", Email.GetEffectiveToAddresses()},
+                {"Bcc", Email.GetEffectiveBccAddresses().ToString(", ")},
+                {"Cc", Email.GetEffectiveCcAddresses().ToString(", ")},
                 {"Subject", Email.Subject.Or("[NO SUBJECT]").HtmlEncode().WithWrappers("<b>", "</b>")},
                 {"Body", body.WithWrappers("<div class='body'>" ,"</div>") },
                 {"Attachments", GetAttachmentLinks(Email) }

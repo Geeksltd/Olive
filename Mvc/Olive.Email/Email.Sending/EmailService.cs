@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -16,25 +17,15 @@ namespace Olive.Email
     /// </summary>
     public static partial class EmailService
     {
-        const string ALL_CATEGORIES = "*";
-        static Type concreteEmailQueueItemType;
         static AsyncLock AsyncLock = new AsyncLock();
         static Random Random = new Random();
-
         public static int MaximumRetries => Config.Get("Email:Maximum.Retries", 4);
-
-        /// <summary>
-        /// Specifies a factory to instantiate EmailQueueItem objects.
-        /// </summary>
-        public static Func<IEmailQueueItem> EmailQueueItemFactory = CreateEmailQueueItem;
 
         /// <summary>
         /// Provides a message which can dispatch an email message.
         /// Returns whether the message was sent successfully.
         /// </summary>
-        public static Func<IEmailQueueItem, MailMessage, Task<bool>> EmailDispatcher = SendViaSmtp;
-
-        #region Events
+        public static Func<IEmailMessage, MailMessage, Task<bool>> EmailDispatcher = SendViaSmtp;
 
         /// <summary>
         /// Occurs when the smtp mail message for this email is about to be sent.
@@ -51,35 +42,10 @@ namespace Olive.Email
         /// </summary>
         public static readonly AsyncEvent<EmailSendingEventArgs> SendError = new AsyncEvent<EmailSendingEventArgs>();
 
-        #endregion
-
-        #region Factory
-
-        static IEmailQueueItem CreateEmailQueueItem()
+        internal static bool IsSendingPermitted(string to)
         {
-            if (concreteEmailQueueItemType != null)
-                return Activator.CreateInstance(concreteEmailQueueItemType) as IEmailQueueItem;
-
-            var possible = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.References(typeof(IEmailQueueItem).Assembly))
-                .SelectMany(a => { try { return a.GetExportedTypes(); } catch { return new Type[0]; /* No logging needed */ } })
-                .Where(t => t.IsClass && !t.IsAbstract && t.Implements<IEmailQueueItem>()).ToList();
-
-            if (possible.Count == 0)
-                throw new Exception("No type in the currently loaded assemblies implements IEmailQueueItem.");
-
-            if (possible.Count > 1)
-                throw new Exception("More than one type in the currently loaded assemblies implement IEmailQueueItem:" + possible.Select(x => x.FullName).ToString(" and "));
-
-            concreteEmailQueueItemType = possible.Single();
-            return CreateEmailQueueItem();
-        }
-
-        #endregion
-
-        static bool IsSendingPermitted(string to)
-        {
-            var permittedDomains = Config.Get("Email:Permitted.Domains", defaultValue: "geeks.ltd.uk|uat.co").ToLowerOrEmpty();
+            var permittedDomains = Config.Get("Email:Permitted.Domains",
+                defaultValue: "geeks.ltd.uk|uat.co").ToLowerOrEmpty();
             if (permittedDomains == "*") return true;
 
             if (permittedDomains.Split('|').Trim().Any(d => to.TrimEnd(">").EndsWith("@" + d))) return true;
@@ -89,49 +55,20 @@ namespace Olive.Email
             return permittedAddresses.Any() && new MailAddress(to).Address.IsAnyOf(permittedAddresses);
         }
 
-        /// <summary>
-        /// Tries to sends all emails.
-        /// </summary>
-        public static Task SendAll() => SendAll(ALL_CATEGORIES, TimeSpan.Zero);
-
-        /// <summary>
-        /// Tries to sends all emails.
-        /// </summary>
-        /// <param name="category">The category of the emails to send. Use "*" to indicate "all emails".</param>
-        public static Task SendAll(string category) => SendAll(category, TimeSpan.Zero);
-
-        /// <summary>
-        /// Tries to sends all emails.
-        /// </summary>
-        /// <param name="delay">The time to wait in between sending each outstanding email.</param>
-        public static Task SendAll(TimeSpan delay) => SendAll(ALL_CATEGORIES, delay);
-
-        /// <summary>
-        /// Tries to sends all emails.
-        /// </summary>
-        /// <param name="category">The category of the emails to send. Use "*" to indicate "all emails".</param>
-        public static async Task SendAll(string category, TimeSpan delay)
+        /// <summary>Tries to sends all emails.</summary>
+        public static async Task SendAll(TimeSpan? delayPerSend = null)
         {
             using (await AsyncLock.Lock())
             {
-                foreach (var mail in (await Entity.Database.GetList<IEmailQueueItem>()).OrderBy(e => e.Date).ToArray())
+                foreach (var mail in (await Entity.Database.GetList<IEmailMessage>()).OrderBy(e => e.SendableDate).ToArray())
                 {
                     if (mail.Retries >= MaximumRetries) continue;
 
-                    if (category != ALL_CATEGORIES)
-                    {
-                        if (category.IsEmpty() && mail.Category.HasValue()) continue;
-                        if (category != mail.Category) continue;
-                    }
-
-                    if (delay > TimeSpan.Zero)
+                    if (delayPerSend > TimeSpan.Zero)
                     {
                         var multiply = 1 + (Random.NextDouble() - 0.5) / 4; // from 0.8 to 1.2
 
-                        try
-                        {
-                            await Task.Delay(TimeSpan.FromMilliseconds(delay.TotalMilliseconds * multiply));
-                        }
+                        try { await Task.Delay(delayPerSend.Value.Multiply(multiply)); }
                         catch (ThreadAbortException)
                         {
                             // Application terminated.
@@ -155,10 +92,9 @@ namespace Olive.Email
         /// <summary>
         /// Will try to send the specified email and returns true for successful sending.
         /// </summary>
-        public static async Task<bool> Send(IEmailQueueItem mailItem)
+        public static async Task<bool> Send(IEmailMessage mailItem)
         {
             if (mailItem == null) throw new ArgumentNullException(nameof(mailItem));
-
             if (mailItem.Retries >= MaximumRetries) return false;
 
             MailMessage mail = null;
@@ -180,35 +116,20 @@ namespace Olive.Email
             }
         }
 
-        static async Task<bool> SendViaSmtp(IEmailQueueItem mailItem, MailMessage mail)
+        static async Task<bool> SendViaSmtp(IEmailMessage mailItem, MailMessage mail)
         {
-            // Developer note: Web.config setting for SSL is designed to take priority over the specific setting of the email.
-            // If in your application you want the email item's setting to take priority, do this:
-            //      1. Remove the 'Email->Enable.Ssl' setting from appsettings.json totally.
-            //      2. If you need a default value, use  your application's Global Settings object and use that value everywhere you create an EmailQueueItem.
-            using (var smtpClient = new SmtpClient { EnableSsl = Config.Get("Email:Enable.Ssl", mailItem.EnableSsl) })
+            using (var smtpClient = new SmtpClient())
             {
-                smtpClient.Configure();
+                smtpClient.EnableSsl = mailItem.EnableSsl ?? Config.GetOrThrow("Email:EnableSsl").To<bool>();
+                smtpClient.Port = mailItem.SmtpPort ?? Config.GetOrThrow("Email:SmtpPort").To<int>();
+                smtpClient.Host = mailItem.SmtpHost.OrNullIfEmpty() ?? Config.GetOrThrow("Email:SmtpHost");
 
-                if (mailItem.SmtpHost.HasValue())
-                    smtpClient.Host = mailItem.SmtpHost;
-
-                if (mailItem.SmtpPort.HasValue)
-                    smtpClient.Port = mailItem.SmtpPort.Value;
-
-                if (mailItem.Username.HasValue())
-                    smtpClient.Credentials = new NetworkCredential(mailItem.Username, mailItem.Password.Or((smtpClient.Credentials as NetworkCredential).Get(c => c.Password)));
-
-                if (Config.IsDefined("Email:Random.Usernames"))
-                {
-                    var userName = Config.Get("Email:Random.Usernames").Split(',').Trim().PickRandom();
-                    smtpClient.Credentials = new NetworkCredential(userName, Config.Get("Email:Password"));
-                }
+                var userName = mailItem.Username.OrNullIfEmpty() ?? Config.GetOrThrow("Email:Username");
+                var password = mailItem.Password.OrNullIfEmpty() ?? Config.GetOrThrow("Email:Password");
+                smtpClient.Credentials = new NetworkCredential(userName, password);
 
                 await Sending.Raise(new EmailSendingEventArgs(mailItem, mail));
-
                 await smtpClient.SendMailAsync(mail);
-
                 await Sent.Raise(new EmailSendingEventArgs(mailItem, mail));
             }
 
@@ -218,7 +139,7 @@ namespace Olive.Email
         /// <summary>
         /// Gets the email items which have been sent (marked as soft deleted).
         /// </summary>
-        public static async Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailQueueItem
+        public static async Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage
         {
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: false))
             {
@@ -230,123 +151,33 @@ namespace Olive.Email
         /// <summary>
         /// Creates an SMTP mail message for a specified mail item.
         /// </summary>
-        static async Task<MailMessage> CreateMailMessage(IEmailQueueItem mailItem)
+        static async Task<MailMessage> CreateMailMessage(IEmailMessage mailItem)
         {
-            // Make sure it's due:
-            if (mailItem.Date > LocalTime.Now) return null;
+            if (mailItem.SendableDate > LocalTime.Now) return null; // Not due yet
 
             var mail = new MailMessage { Subject = mailItem.Subject.Or("[NO SUBJECT]").Remove("\r", "\n") };
 
-            #region Set Body
-
-            if (mailItem.Html)
-            {
-                var htmlView = AlternateView.CreateAlternateViewFromString(mailItem.Body, new ContentType("text/html; charset=UTF-8"));
-
-                // Add Linked Resources
-                htmlView.LinkedResources.AddRange(mailItem.GetLinkedResources());
-
-                mail.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(mailItem.Body.RemoveHtmlTags(), new ContentType("text/plain; charset=UTF-8")));
-                mail.AlternateViews.Add(htmlView);
-            }
-            else
-            {
-                mail.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(mailItem.Body.RemoveHtmlTags(), new ContentType("text/plain; charset=UTF-8")));
-            }
-
-            if (mailItem.VCalendarView.HasValue())
-            {
-                var calendarType = new ContentType("text/calendar");
-                calendarType.Parameters.Add("method", "REQUEST");
-                calendarType.Parameters.Add("name", "meeting.ics");
-
-                var calendarView = AlternateView.CreateAlternateViewFromString(mailItem.VCalendarView, calendarType);
-                calendarView.TransferEncoding = TransferEncoding.SevenBit;
-
-                mail.AlternateViews.Add(calendarView);
-            }
-
-            #endregion
-
-            #region Set Sender
-
-            mail.From = mailItem.GetSender();
-            mail.ReplyToList.Add(mailItem.GetReplyTo());
-
-            #endregion
-
-            #region Set Receivers
-
-            // Add To:
-            foreach (var address in mailItem.To.Or("").Split(',').Trim().Where(a => IsSendingPermitted(a)))
-                mail.To.Add(address);
-
-            // Add Cc:
-            foreach (var address in mailItem.Cc.Or("").Split(',').Trim().Where(a => IsSendingPermitted(a)))
-                mail.CC.Add(address);
-
-            foreach (var address in Config.Get("Email:Auto.CC.Address").OrEmpty().Split(',').Trim()
-                .Where(a => IsSendingPermitted(a)))
-                mail.CC.Add(address);
-
-            // Add Bcc:
-            foreach (var address in mailItem.Bcc.Or("").Split(',').Trim().Where(a => IsSendingPermitted(a)))
-                mail.Bcc.Add(address);
+            mailItem.GetEffectiveToAddresses().Do(x => mail.To.Add(x));
+            mailItem.GetEffectiveCcAddresses().Do(x => mail.CC.Add(x));
+            mailItem.GetEffectiveBccAddresses().Do(x => mail.Bcc.Add(x));
 
             if (mail.To.None() && mail.CC.None() && mail.Bcc.None())
+            {
+                Debug.WriteLine($"Mail message {mailItem.GetId()} will not be sent as there is no effective recipient.");
                 return null;
+            }
 
-            #endregion
+            mail.AlternateViews.AddRange(mailItem.GetEffectiveBodyViews());
 
-            // Add attachments
+            mail.From = new MailAddress(mailItem.GetEffectiveFromAddress(), mailItem.GetEffectiveFromName());
+
+            mail.ReplyToList.Add(new MailAddress(mailItem.GetEffectiveReplyToAddress(),
+                mailItem.GetEffectiveReplyToName()));
+
             mail.Attachments.AddRange(await mailItem.GetAttachments());
 
             return mail;
         }
-
-        public static MailAddress GetSender(this IEmailQueueItem mailItem)
-        {
-            var addressPart = mailItem.SenderAddress.Or(Config.Get("Email:Sender:Address"));
-            var displayNamePart = mailItem.SenderName.Or(Config.Get("Email:Sender:Name"));
-            return new MailAddress(addressPart, displayNamePart);
-        }
-
-        public static MailAddress GetReplyTo(this IEmailQueueItem mailItem)
-        {
-            var result = mailItem.GetSender();
-
-            var asCustomReplyTo = mailItem as ICustomReplyToEmailQueueItem;
-            if (asCustomReplyTo == null) return result;
-
-            return new MailAddress(asCustomReplyTo.ReplyToAddress.Or(result.Address),
-                    asCustomReplyTo.ReplyToName.Or(result.DisplayName));
-        }
-
-        #region Configuration
-
-        /// <summary>
-        /// Configures this smtp client with the specified config file path.
-        /// </summary>
-        public static void Configure(this SmtpClient client)
-        {
-            var setting = Config.Bind<SmtpNetworkSetting>("system.net:mailSettings");
-
-            client.Port = setting.Port;
-
-            if (setting.TargetName.HasValue())
-                client.TargetName = setting.TargetName;
-
-            if (client.DeliveryMethod == SmtpDeliveryMethod.Network)
-                client.Host = setting.Host;
-
-            if (setting.DefaultCredentials && setting.UserName.HasValue() &&
-                 setting.Password.HasValue())
-            {
-                client.Credentials = new NetworkCredential(setting.UserName, setting.Password);
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Creates a VCalendar text with the specified parameters.

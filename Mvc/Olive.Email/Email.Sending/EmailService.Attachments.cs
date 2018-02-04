@@ -14,7 +14,7 @@ namespace Olive.Email
         /// <summary>
         /// Gets the Attachment objects to be attached to this email.
         /// </summary>
-        public static async Task<IEnumerable<Attachment>> GetAttachments(this IEmailQueueItem mail)
+        public static async Task<IEnumerable<Attachment>> GetAttachments(this IEmailMessage mail)
         {
             var result = new List<Attachment>();
 
@@ -75,7 +75,7 @@ namespace Olive.Email
         /// Gets the Linked Resource objects to be attached to this email.
         /// </summary>
 		[EscapeGCop("It would cause error if you dispose the result.")]
-        public static IEnumerable<LinkedResource> GetLinkedResources(this IEmailQueueItem mail)
+        public static IEnumerable<LinkedResource> GetLinkedResources(this IEmailMessage mail)
         {
             if (mail.Attachments.HasValue())
             {

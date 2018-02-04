@@ -7,7 +7,11 @@ namespace Olive
     {
         static List<ILogger> Loggers = new List<ILogger>();
 
-        static Log() => Loggers.Add(new ConsoleLogger());
+        static Log()
+        {
+            if (Config.Get("DebugMode", defaultValue: false))
+                Loggers.Add(new ConsoleLogger());
+        }
 
         public static void RegisterLogger(ILogger logger) => Loggers.Add(logger);
 

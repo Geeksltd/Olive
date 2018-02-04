@@ -9,7 +9,7 @@ namespace Olive.Mvc
     [HtmlTargetElement("input")]
     public class ValidationTranslatorTagHelper : TagHelper
     {
-        static bool TranslateValidators = Config.Get("Translate.Validators", defaultValue: false);
+        static bool TranslateValidators = Config.Get("Globalization:TranslateValidators", defaultValue: false);
         static string[] ValidationTextAttributes = new[] { "data-val-length", "data-val-required", "data-val-email" };
 
         public override int Order => int.MaxValue;

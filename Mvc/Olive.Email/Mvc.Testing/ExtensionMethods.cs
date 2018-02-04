@@ -6,7 +6,7 @@ using Olive.Web;
 
 namespace Olive.Email
 {
-    public static class ExtensionMethods
+    partial class EmailExtensions
     {
         public static IWebTestConfig AddEmail(this IWebTestConfig config)
         {
