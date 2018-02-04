@@ -71,8 +71,6 @@ namespace Olive.Entities.Data
             }
         }
 
-
-
         /// <summary>
         /// Gets the assemblies for which a data provider factory has been registered in the current domain.
         /// </summary>
