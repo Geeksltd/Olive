@@ -10,12 +10,12 @@ namespace Olive.Mvc
     {
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).Get(x => x.FirstValue).OrEmpty();
+            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).FirstValue;
 
             if (bindingContext.ModelType.IsA<Blob>())
-                bindingContext.Result = ModelBindingResult.Success(await BindDocument(value));
+                bindingContext.Result = ModelBindingResult.Success(await BindDocument(value.OrEmpty()));
             else
-                bindingContext.Result = ModelBindingResult.Success((await BindDocuments(value)).ToList());
+                bindingContext.Result = ModelBindingResult.Success((await BindDocuments(value.OrEmpty())).ToList());
         }
 
         internal async Task<Blob> BindDocument(string value)

@@ -224,7 +224,7 @@ namespace Olive.Excel
                 new { Value1 = FontName , Value2 = style2.FontName },
                 new { Value1 = ForeColor , Value2 = style2.ForeColor },
             }
-            .All(s => s.Value2?.ToString().ToLower() == s.Value1.Get(v => v.ToLower()));
+            .All(s => s.Value2?.ToString().ToLower() == s.Value1.ToLowerOrEmpty());
         }
 
         public static bool operator ==(ExcelCellStyle style1, ExcelCellStyle style2)

@@ -85,7 +85,11 @@ namespace Olive.Mvc
         {
             foreach (var item in modelState.Values)
                 foreach (var error in item.Errors)
-                    yield return error.ErrorMessage.Or(error.Exception.Get(x => errorStack ? x.ToLogString() : x.Message));
+                {
+                    if (error.ErrorMessage.HasValue()) yield return error.ErrorMessage;
+                    else if (error.Exception == null) continue;
+                    else yield return errorStack ? error.Exception.ToLogString() : error.Exception.Message;
+                }
         }
 
         /// <summary>

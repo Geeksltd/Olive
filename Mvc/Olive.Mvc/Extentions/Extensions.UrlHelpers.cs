@@ -124,8 +124,7 @@ namespace Olive.Mvc
             if (key.IsEmpty()) throw new ArgumentNullException(nameof(key));
 
             return actionContext.GetRequestParameters()
-                .FirstOrDefault(x => x.Key.OrEmpty().ToLower() == key.ToLower())
-                .Get(x => x.Value);
+                .FirstOrDefault(x => x.Key.OrEmpty().ToLower() == key.ToLower()).Value;
         }
 
         public static Task<IEnumerable<T>> GetList<T>(this HttpRequest request, string key, char separator = ',') where T : IEntity

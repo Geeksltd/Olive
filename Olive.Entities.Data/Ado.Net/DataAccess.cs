@@ -108,7 +108,7 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running Non-Query SQL command.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")))
+                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
             }
             finally
@@ -146,7 +146,7 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running SQL Query.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")))
+                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
             }
             finally
@@ -182,7 +182,7 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running Scalar SQL Command.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")))
+                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
             }
             finally
@@ -233,7 +233,7 @@ namespace Olive.Entities.Data
                     catch (Exception ex)
                     {
                         throw new Exception("Error in executing SQL command.", ex).AddData("Command", c.Key)
-                            .AddData("Parameters", c.Value.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")));
+                            .AddData("Parameters", c.Value?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "));
                     }
                     finally
                     {

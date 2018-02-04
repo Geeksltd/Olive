@@ -42,7 +42,7 @@ namespace Olive.GeoLocation
                 if (status == "ZERO_RESULTS") return null;
                 if (status != "OK") throw new Exception("Google API Error: " + status + "\r\n\r\n" + response);
 
-                var location = response.Element("result").Get(x => x.Element("geometry")).Get(x => x.Element("location"));
+                var location = response.Element("result")?.Element("geometry")?.Element("location");
 
                 if (location == null) throw new Exception("Unexpected result from Google API: \r\n\r\n" + response);
 
@@ -73,8 +73,11 @@ namespace Olive.GeoLocation
         /// </summary>
         public static async Task<double?> CalculateTravelDistance(string fromPostCode, string toPostCode, string countryCode = "GB")
         {
-            var fromLocation = GetPostcodeLocation(fromPostCode, countryCode).Get(x => x.Latitude + "," + x.Longitude);
-            var toLocation = GetPostcodeLocation(toPostCode, countryCode).Get(x => x.Latitude + "," + x.Longitude);
+            var loc = GetPostcodeLocation(fromPostCode, countryCode);
+            var fromLocation = loc == null ? null : loc.Latitude + "," + loc.Longitude;
+
+            loc = GetPostcodeLocation(toPostCode, countryCode);
+            var toLocation = loc == null ? null : loc.Latitude + "," + loc.Longitude;
 
             var url = DIRECTION_URL.AsUri()
                 .AddQueryString("origins", fromLocation)
@@ -93,7 +96,7 @@ namespace Olive.GeoLocation
             if (status == "ZERO_RESULTS") return null;
             if (status != "OK") throw new Exception("Google API Error: " + status + "\r\n\r\n" + response);
 
-            var miles = response.Element("row").Get(r => r.Element("element").Get(e => e.Element("distance")).Get(d => d.Element("text")));
+            var miles = response.Element("row")?.Element("element")?.Element("distance")?.Element("text");
 
             if (miles == null) throw new Exception("Unexpected result from Google API: \r\n\r\n" + response);
 

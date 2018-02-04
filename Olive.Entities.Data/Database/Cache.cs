@@ -174,7 +174,7 @@ namespace Olive.Entities.Data
                 var id = entity.GetId().ToString();
                 if (entities.ContainsKey(id))
                 {
-                    entities.GetOrDefault(id).Perform(x => x.InvalidateCachedReferences());
+                    entities.GetOrDefault(id)?.InvalidateCachedReferences();
                     entities.Remove(id);
                 }
 

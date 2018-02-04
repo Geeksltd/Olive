@@ -108,7 +108,7 @@ namespace Olive.Mvc
             {
                 if (selectedItems is string) currentItems = new[] { (string)selectedItems };
                 else currentItems = (selectedItems as IEnumerable).Cast<object>().ExceptNull()
-                .Select(x => (x as IEntity).Get(b => b.GetId()).ToStringOrEmpty().Or(x.ToString())).ToArray();
+                .Select(x => ((x as IEntity)?.GetId()).ToStringOrEmpty().Or(x.ToString())).ToArray();
             }
 
             var settings = ToHtmlAttributes(htmlAttributes);

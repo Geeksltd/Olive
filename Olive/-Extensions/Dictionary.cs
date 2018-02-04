@@ -155,7 +155,7 @@ namespace Olive
             }
             else
             {
-                return dictionary.Keys.FirstOrDefault(k => k.Equals(key)).Get(k => dictionary[k]);
+                return dictionary.FirstOrDefault(x => x.Key.Equals(key)).Value;
             }
         }
 

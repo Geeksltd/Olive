@@ -74,8 +74,7 @@ namespace Olive
         {
             try
             {
-                if (item is DictionaryEntry)
-                    return ((DictionaryEntry)item).Get(x => x.Key + ": " + x.Value);
+                if (item is DictionaryEntry d) return d.Key + ": " + d.Value;
                 return item.ToString();
             }
             catch

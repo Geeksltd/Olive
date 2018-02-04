@@ -19,7 +19,7 @@ namespace Olive.Security
         public async Task LogOff()
         {
             await Context.Http.SignOutAsync();
-            Context.Http.Session.Perform(s => s.Clear());
+            Context.Http.Session?.Clear();
         }
 
         public async Task LoginBy(string provider)

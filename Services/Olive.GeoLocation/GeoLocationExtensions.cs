@@ -34,17 +34,17 @@ namespace Olive.GeoLocation
         /// <summary>
         /// Gets the geo distance in miles between this located object and a specified location.
         /// </summary>
-        public static double? GetDistance(this IGeoLocated from, IGeoLocation to) => GetDistance(from.Get(l => l.GetLocation()), to);
+        public static double? GetDistance(this IGeoLocated from, IGeoLocation to) => GetDistance(from?.GetLocation(), to);
 
         /// <summary>
         /// Gets the geo distance in miles between this location and a specified located object.
         /// </summary>
-        public static double? GetDistance(this IGeoLocation from, IGeoLocated to) => GetDistance(from, to.Get(l => l.GetLocation()));
+        public static double? GetDistance(this IGeoLocation from, IGeoLocated to) => GetDistance(from, to?.GetLocation());
 
         /// <summary>
         /// Gets the geo distance in miles between this and another specified located object.
         /// </summary>
         public static double? GetDistance(this IGeoLocated from, IGeoLocated to) =>
-            GetDistance(from.Get(l => l.GetLocation()), to.Get(l => l.GetLocation()));
+            GetDistance(from?.GetLocation(), to?.GetLocation());
     }
 }

@@ -168,9 +168,9 @@ namespace Olive
                         {
                             try
                             {
-                                var explicitMessage = JsonConvert.DeserializeObject<ServerError>(responseBody).Get(x => x.Message.Or(x.ExceptionMessage));
-
-                                errorMessage = explicitMessage.Or(errorMessage);
+                                var serverError = JsonConvert.DeserializeObject<ServerError>(responseBody);
+                                if (serverError != null)
+                                    errorMessage = serverError.Message.Or(serverError.ExceptionMessage).Or(errorMessage);
                             }
                             catch { /* No logging is needed */; }
                         }

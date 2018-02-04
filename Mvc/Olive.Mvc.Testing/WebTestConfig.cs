@@ -41,10 +41,15 @@ namespace Olive.Mvc.Testing
         {
             if (isActive.HasValue) return isActive.Value;
 
-            var db = Config.GetConnectionString("AppDatabase")
-                .Get(c => new System.Data.SqlClient.SqlConnectionStringBuilder(c).InitialCatalog);
+            var connectionString = Config.GetConnectionString("AppDatabase");
+            if (connectionString.IsEmpty())
+            {
+                isActive = false;
+                return false;
+            }
 
-            db = db.Or("").ToLower().TrimStart("[").TrimEnd("]").Trim('`');
+            var db = new System.Data.SqlClient.SqlConnectionStringBuilder(connectionString).InitialCatalog
+                .ToLowerOrEmpty().TrimStart("[").TrimEnd("]").Trim('`');
 
             isActive = db.EndsWith(".temp");
 

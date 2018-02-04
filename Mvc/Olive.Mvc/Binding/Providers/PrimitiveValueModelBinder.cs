@@ -7,9 +7,9 @@ namespace Olive.Mvc
     {
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).Get(x => x.FirstValue).OrEmpty();
+            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).FirstValue;
 
-            bindingContext.Result = ModelBindingResult.Success(await ViewModelServices.Convert(value, bindingContext.ModelType));
+            bindingContext.Result = ModelBindingResult.Success(await ViewModelServices.Convert(value.OrEmpty(), bindingContext.ModelType));
         }
     }
 }

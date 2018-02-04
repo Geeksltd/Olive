@@ -98,7 +98,7 @@
                         {
                             (value as Blob).FolderName = (sourceValue as Blob).FolderName;
                         }
-                        else if (from is IViewModel && ((value as Blob).Get(x => x.FileName == "«UNCHANGED»") ?? true))
+                        else if (from is IViewModel && (value == null || (value as Blob).FileName == "«UNCHANGED»"))
                         {
                             // Null in view model means not changed.
                             continue;
@@ -140,7 +140,7 @@
 
                 if (source.ToString().IsEmpty()) return null;
 
-                else return (await Entity.Database.GetOrDefault(source.ToString(), target)).Get(x => x.Clone());
+                else return (await Entity.Database.GetOrDefault(source.ToString(), target))?.Clone();
             }
 
             if (target.IsA<IViewModel>() && source is IEntity)
