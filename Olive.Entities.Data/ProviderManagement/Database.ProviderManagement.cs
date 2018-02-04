@@ -16,10 +16,12 @@ namespace Olive.Entities.Data
 
         static readonly Database instance = new Database();
 
-        public static readonly DatabaseConfig Configuration = Config.Bind<DatabaseConfig>("Database");
+        public static DatabaseConfig Configuration { get; private set; }
 
         Database()
         {
+            if (Configuration == null) Configuration = Config.Bind<DatabaseConfig>("Database");
+
             foreach (var factoryInfo in Configuration.Providers.OrEmpty())
                 RegisterDataProviderFactory(factoryInfo);
         }

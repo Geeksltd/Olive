@@ -6,20 +6,21 @@ namespace Olive.Entities.Data
 {
     public class DatabaseConfig
     {
-        public List<Provider> Providers;
-        public bool Profile;
-        public CacheConfig Cache;
-        public TransactionConfig Transaction;
+        public List<Provider> Providers { get; set; }
+        public bool Profile { get; set; }
+        public CacheConfig Cache { get; set; }
+        public TransactionConfig Transaction { get; set; }
 
         public class CacheConfig
         {
-            public bool ConcurrencyAware, Enabled;
+            public bool ConcurrencyAware { get; set; }
+            public bool Enabled { get; set; }
         }
 
         public class TransactionConfig
         {
-            public string Type;
-            public bool EnforceForSave;
+            public string Type { get; set; }
+            public bool EnforceForSave { get; set; }
         }
 
         public class Provider

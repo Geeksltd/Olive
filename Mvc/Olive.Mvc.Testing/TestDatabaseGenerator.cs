@@ -370,7 +370,7 @@ namespace Olive.Mvc.Testing
 
         void CopyFiles()
         {
-            DiskBlobStorageProvider.Root.Delete();
+            DiskBlobStorageProvider.Root.EnsureExists().Delete();
             var source = AppDomain.CurrentDomain.GetPath(Config.GetOrThrow("Blob:TestFilesOrigin")).AsDirectory();
             source.CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
         }
