@@ -67,8 +67,8 @@ namespace Olive.Entities.Data
 
         #endregion
 
-        static IsolationLevel GetDefaultIsolationLevel() =>
-            Config.Get("Default.Transaction.IsolationLevel", IsolationLevel.ReadUncommitted);
+        internal static IsolationLevel GetDefaultIsolationLevel() =>
+             Config.Get("Default:Transaction:DefaultIsolationLevel", IsolationLevel.ReadUncommitted);
 
         internal async Task<DbTransaction> GetDbTransaction()
         {

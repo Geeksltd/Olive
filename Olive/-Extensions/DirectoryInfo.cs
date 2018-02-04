@@ -104,7 +104,7 @@ namespace Olive
         /// <summary>
         /// Copies the entire content of a directory to a specified destination.
         /// </summary>
-        public static void CopyToSync(this DirectoryInfo source, string destination, bool overwrite = false)
+        public static void CopyTo(this DirectoryInfo source, string destination, bool overwrite = false)
         {
             destination.AsDirectory().EnsureExists();
 
@@ -112,7 +112,7 @@ namespace Olive
                 file.CopyTo(Path.Combine(destination, file.Name).AsFile(), overwrite);
 
             foreach (var sub in source.GetDirectories())
-                sub.CopyToSync(Path.Combine(destination, sub.Name), overwrite);
+                sub.CopyTo(Path.Combine(destination, sub.Name), overwrite);
         }
 
         /// <summary>

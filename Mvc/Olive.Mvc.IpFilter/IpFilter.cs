@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Olive.Entities;
 using Olive.Csv;
 using Olive.Web;
 
@@ -13,8 +12,8 @@ namespace Olive.Mvc
     public class IpFilter
     {
         static List<string> BlockedCountryCodes = new List<string>();
-        static FileInfo CountryIpsFile =>
-                Path.Combine(Blob.GetPhysicalFilesRoot(Blob.AccessMode.Secure).FullName, "IPBlock\\dbip-country.csv").AsFile();
+        static FileInfo CountryIpsFile
+            => AppDomain.CurrentDomain.GetPath("--IPFilter").AsDirectory().EnsureExists().GetFile("dbip-country.csv");
 
         static List<Range<uint>> BlockedIpRanges;
 

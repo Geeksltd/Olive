@@ -43,9 +43,10 @@ namespace Olive.Web
         /// <summary>
         /// Dispatches a file back to the client.
         /// </summary>
-        public static async Task Dispatch(this HttpResponse response, Blob blob, string contentType = "Application/octet-stream")
+        public static async Task Dispatch(this HttpResponse response, Blob blob,
+            string contentType = "Application/octet-stream")
         {
-            await Dispatch(response, await blob.LocalPath.AsFile().ReadAllBytesAsync(), blob.FileName, contentType);
+            await Dispatch(response, await blob.GetFileDataAsync(), blob.FileName, contentType);
         }
 
         /// <summary>

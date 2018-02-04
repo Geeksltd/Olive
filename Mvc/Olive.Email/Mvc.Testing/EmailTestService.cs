@@ -34,7 +34,7 @@ namespace Olive.Email
             To = Request.Param("to").ToStringOrEmpty().ToLower();
             ReturnUrl = Request.GetReturnUrl();
             if (Request.Has("attachmentInfo"))
-                AttachmentFile = await EmailService.ParseAttachment(Request.Param("attachmentInfo"));
+                AttachmentFile = EmailService.ParseAttachment(Request.Param("attachmentInfo"));
 
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
                 Email = await Request.GetOrDefault<IEmailMessage>("id");
@@ -189,7 +189,7 @@ namespace Olive.Email
             return (await email.Attachments.OrEmpty().Split('|').Trim()
                 .Select(async f => $"<form action='/?Web.Test.Command=testEmail&To={To}&ReturnUrl={ReturnUrl.UrlEncode()}' " +
                 $"method='post'><input type=hidden name='attachmentInfo' value='{f.HtmlEncode()}'/><a href='#' " +
-                $"onclick='this.parentElement.submit()'>{(await EmailService.ParseAttachment(f))?.Name.HtmlEncode()}</a></form>")
+                $"onclick='this.parentElement.submit()'>{(EmailService.ParseAttachment(f))?.Name.HtmlEncode()}</a></form>")
                 .AwaitAll()).ToString("");
         }
 

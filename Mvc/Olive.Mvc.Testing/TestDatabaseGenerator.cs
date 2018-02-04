@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using Olive.Entities;
 using Olive.Entities.Data;
 
 namespace Olive.Mvc.Testing
@@ -27,7 +28,7 @@ namespace Olive.Mvc.Testing
         {
             get
             {
-                var key = "Database:Storage.Path";
+                var key = "Database:StoragePath";
                 var result = Config.GetOrThrow(key);
 
                 if (!result.AsDirectory().Exists())
@@ -369,37 +370,9 @@ namespace Olive.Mvc.Testing
 
         void CopyFiles()
         {
-            foreach (
-                var key in
-                    new[]
-                        {
-                            Tuple.Create("Test.Files.Origin:Open", "UploadFolder"),
-                            Tuple.Create("Test.Files.Origin:Secure", "UploadFolder.Secure")
-                        })
-            {
-                var source = Config.Get(key.Item1);
-                if (source.IsEmpty()) continue;
-                else source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(source).FullName;
-                if (!Directory.Exists(source) || source.AsDirectory().GetDirectories().None())
-                {
-                    // No files to copy
-                    continue;
-                }
-
-                var destination = Config.Get(key.Item2);
-                if (destination.IsEmpty())
-                    throw new Exception("Destination directory not configured in App.Config for key: " + key.Item2);
-                else destination = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(destination).FullName;
-
-                if (!Directory.Exists(destination))
-                {
-                    if (new DirectoryInfo(source).IsEmpty()) continue;
-                    Directory.CreateDirectory(destination);
-                }
-
-                new DirectoryInfo(destination).Delete(recursive: true);
-                new DirectoryInfo(source).CopyToSync(destination, overwrite: true);
-            }
+            DiskBlobStorageProvider.Root.Delete();
+            var source = AppDomain.CurrentDomain.GetPath(Config.GetOrThrow("Blob:TestFilesOrigin")).AsDirectory();
+            source.CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
         }
     }
 }

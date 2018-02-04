@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Olive.Entities;
 using Olive.Entities.Data;
 using Olive.Web;
 
@@ -39,7 +40,8 @@ namespace Olive.Mvc.Testing
             SetupDirecory();
             await SnapshotDatabase();
             await CreateSnapshotCookies(context);
-            await CopyUploadedFiles(CopyProcess.Backup);
+            DiskBlobStorageProvider.GetRoot(SnapshotsDirectory)
+                    .CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
             await SaveDate();
             await SaveUrl(context);
         }
@@ -49,7 +51,6 @@ namespace Olive.Mvc.Testing
         public bool Exists()
         {
             if (IsSnapshotsDisabled) return false;
-
             return SnapshotsDirectory.Exists();
         }
 
@@ -67,7 +68,9 @@ namespace Olive.Mvc.Testing
             Debug.WriteLine("Total time for restoring cookies: " + LocalTime.Now.Subtract(restoreCookies).Milliseconds);
 
             var restoreFiles = LocalTime.Now;
-            await CopyUploadedFiles(CopyProcess.Restore);
+            DiskBlobStorageProvider.GetRoot(SnapshotsDirectory)
+                .CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
+
             Debug.WriteLine("Total time for restoring files: " + LocalTime.Now.Subtract(restoreFiles).Milliseconds);
 
             var restoreDate = LocalTime.Now;
@@ -77,41 +80,6 @@ namespace Olive.Mvc.Testing
             var restoreUrl = LocalTime.Now;
             await RestoreUrl(context);
             Debug.WriteLine("Total time for restoring url: " + LocalTime.Now.Subtract(restoreUrl).Milliseconds);
-        }
-
-        async Task CopyUploadedFiles(CopyProcess process)
-        {
-            var copyTasks = new List<Task>();
-
-            foreach (var key in new[] { "UploadFolder", "UploadFolder.Secure" })
-            {
-                var source = Config.Get(key);
-                if (source.IsEmpty())
-                {
-                    Debug.WriteLine("Destination directory not configured in App.Config for key: " + key);
-                    continue;
-                }
-
-                var folder = Config.Get(key);
-                if (folder.ToCharArray()[0] == '/') folder = folder.Substring(1);
-
-                if (process == CopyProcess.Restore)
-                {
-                    source = Path.Combine(SnapshotsDirectory.ToString(), folder);
-                    if (!Directory.Exists(source)) continue;
-
-                    var dest = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(Config.Get(key));
-                    copyTasks.Add(new DirectoryInfo(source).CopyToAsync(dest, overwrite: true));
-                }
-                else if (process == CopyProcess.Backup)
-                {
-                    source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(source).FullName;
-                    if (!Directory.Exists(source)) continue;
-                    copyTasks.Add(new DirectoryInfo(source).CopyToAsync(Path.Combine(SnapshotsDirectory.ToString(), folder), overwrite: true));
-                }
-            }
-
-            await Task.WhenAll(copyTasks);
         }
 
         async Task SaveDate()

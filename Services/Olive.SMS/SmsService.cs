@@ -13,28 +13,28 @@ namespace Olive.SMS
 
         /// <summary>
         /// Sends the specified SMS item.
-        /// It will try several times to deliver the message. The number of retries can be specified in AppConfig of "SMS.Maximum.Retries".
+        /// It will try several times to deliver the message. The number of retries can be specified in AppConfig of "SMS:MaximumRetries".
         /// If it is not declared in web.config, then 3 retires will be used.
         /// Note: The actual SMS Sender component must be implemented as a public type that implements ISMSSender interface.
-        /// The assembly qualified name of that component, must be specified in AppConfig of "SMS.Sender.Type".
+        /// The assembly qualified name of that component, must be specified in AppConfig of "SMS:SenderType".
         /// </summary>
         public static async Task<bool> Send(ISmsQueueItem smsItem)
         {
-            if (smsItem.Retries > Config.Get<int>("SMS.Maximum.Retries", 3))
+            if (smsItem.Retries > Config.Get("SMS:MaximumRetries", 3))
                 return false;
             try
             {
                 ISMSSender sender;
                 try
                 {
-                    sender = Activator.CreateInstance(Type.GetType(Config.GetOrThrow("SMS.Sender.Type"))) as ISMSSender;
+                    sender = Activator.CreateInstance(Type.GetType(Config.GetOrThrow("SMS:SenderType"))) as ISMSSender;
 
                     if (sender == null)
                         throw new Exception("Type is not defined, or it does not implement ISMSSender");
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Can not instantiate the sms sender from App config of " + Config.Get("SMS.Sender.Type"), ex);
+                    Log.Error("Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"), ex);
                     return false;
                 }
 

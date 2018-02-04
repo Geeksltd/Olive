@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Mime;
@@ -14,26 +15,11 @@ namespace Olive.Email
         /// <summary>
         /// Attaches a file to this email.
         /// </summary>
-        public static void Attach(this IEmailMessage mail, Blob file)
+        public static async Task Attach(this IEmailMessage mail, Blob file)
         {
             if (file == null) throw new ArgumentNullException(nameof(file));
             if (file.IsEmpty()) return;
-
-            if (file.LocalPath.IsEmpty())
-                throw new ArgumentException("In-memory blob instances cannot be used for email attachment. It should be saved on disk first.");
-
-            var reference = file.GetOwnerPropertyReference();
-            if (reference.HasValue())
-            {
-                var json = JsonConvert.SerializeObject(new { PropertyReference = reference });
-
-                if (mail.Attachments.IsEmpty()) mail.Attachments = json;
-                else mail.Attachments += "|" + json;
-            }
-            else
-            {
-                Attach(mail, file.LocalPath);
-            }
+            mail.Attach(await file.GetFileDataAsync(), file.FileName);
         }
 
         /// <summary>
@@ -42,25 +28,39 @@ namespace Olive.Email
 		/// <param name="mail">The email queue item.</param>
         /// <param name="filePath">The path of the attachment file.
         /// This must be the physical path of a file inside the running application.</param>
-        public static void Attach(this IEmailMessage mail, string filePath)
+        public static void Attach(this IEmailMessage mail, FileInfo file)
         {
-            if (filePath.IsEmpty()) throw new ArgumentNullException(nameof(filePath));
+            if (file == null) throw new ArgumentNullException(nameof(file));
 
             var basePath = AppDomain.CurrentDomain.WebsiteRoot().FullName.ToLower();
 
-            if (filePath.ToLower().StartsWith(basePath)) // Relative:
-                filePath = filePath.Substring(basePath.Length).TrimStart("\\");
+            var path = file.FullName;
 
-            if (mail.Attachments.IsEmpty()) mail.Attachments = filePath;
-            else mail.Attachments += "|" + filePath;
+            if (path.StartsWith(basePath, caseSensitive: false)) // Relative:
+                path = path.Substring(basePath.Length).TrimStart("\\");
+
+            if (mail.Attachments.IsEmpty()) mail.Attachments = path;
+            else mail.Attachments += "|" + path;
         }
 
         /// <summary>
         /// Attaches the specified byte array content to this email as an attachment.
         /// </summary>
-        public static void Attach(this IEmailMessage mail, byte[] fileData, string name, string contentId, bool isLinkedResource = false)
+        public static void Attach(this IEmailMessage mail, byte[] fileData, string name)
         {
-            var data = new { Contents = fileData.ToBase64String(), Name = name, ContentId = contentId, IsLinkedResource = isLinkedResource };
+            var data = new { Contents = fileData.ToBase64String(), Name = name };
+            var json = JsonConvert.SerializeObject(data);
+
+            if (mail.Attachments.IsEmpty()) mail.Attachments = json;
+            else mail.Attachments += "|" + json;
+        }
+
+        /// <summary>
+        /// Attaches the specified byte array content to this email, which will be used as a linked resource in the email body.
+        /// </summary>
+        public static void AttachLinkedResource(this IEmailMessage mail, byte[] fileData, string name, string contentId)
+        {
+            var data = new { Contents = fileData.ToBase64String(), Name = name, ContentId = contentId, IsLinkedResource = true };
             var json = JsonConvert.SerializeObject(data);
 
             if (mail.Attachments.IsEmpty()) mail.Attachments = json;

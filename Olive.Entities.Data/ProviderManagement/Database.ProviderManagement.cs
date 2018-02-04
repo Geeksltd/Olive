@@ -130,9 +130,9 @@ namespace Olive.Entities.Data
         /// </summary>
         public ITransactionScope CreateTransactionScope(DbTransactionScopeOption option = DbTransactionScopeOption.Required)
         {
-            var isolationLevel = Config.Get("Default.Transaction.IsolationLevel", System.Data.IsolationLevel.Serializable);
+            var isolationLevel = DbTransactionScope.GetDefaultIsolationLevel();
 
-            var typeName = Config.Get<string>("Default.TransactionScope.Type");
+            var typeName = Config.Get<string>("Database:Transaction:Type");
 
             if (typeName.HasValue())
             {

@@ -20,18 +20,18 @@ namespace Olive.Email
 
             foreach (var attachmentInfo in mail.Attachments.OrEmpty().Split('|').Trim())
             {
-                var item = await ParseAttachment(attachmentInfo);
+                var item = ParseAttachment(attachmentInfo);
                 if (item != null) result.Add(item);
             }
 
             return result;
         }
 
-        public static async Task<Attachment> ParseAttachment(string attachmentInfo)
+        public static Attachment ParseAttachment(string attachmentInfo)
         {
             if (attachmentInfo.StartsWith("{"))
             {
-                return await GetAttachmentFromJSon(attachmentInfo);
+                return GetAttachmentFromJSon(attachmentInfo);
             }
             else
             {
@@ -42,7 +42,7 @@ namespace Olive.Email
             }
         }
 
-        static async Task<Attachment> GetAttachmentFromJSon(string attachmentInfo)
+        static Attachment GetAttachmentFromJSon(string attachmentInfo)
         {
             var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(attachmentInfo);
 
@@ -52,20 +52,14 @@ namespace Olive.Email
 
             if (contents.HasValue())
             {
-                if (data.GetOrDefault("IsLinkedResource").ToStringOrEmpty().TryParseAs<bool>() == true) return null; // No attachment needed?
+                if (data.GetOrDefault("IsLinkedResource").ToStringOrEmpty().TryParseAs<bool>() == true) return null;
+                // No attachment needed?
 
                 var stream = new MemoryStream(Convert.FromBase64String(contents));
                 var name = data["Name"] as string;
                 var contentId = data["ContentId"] as string;
 
                 return new Attachment(stream, name) { ContentId = contentId };
-            }
-
-            var reference = data.GetOrDefault("PropertyReference") as string;
-            if (reference.HasValue())
-            {
-                var blob = await Blob.FromReference(reference);
-                return new Attachment(new MemoryStream(await blob.GetFileDataAsync()), blob.FileName);
             }
 
             return null;

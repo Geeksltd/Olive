@@ -9,7 +9,7 @@ namespace Olive.Entities.Data
 {
     partial class Database
     {
-        bool ENFORCE_SAVE_TRANSACTION = Config.Get("Database:Save.Enforce.Transaction", defaultValue: false);
+        bool ENFORCE_SAVE_TRANSACTION = Config.Get("Database:Transaction:EnforceForSave", defaultValue: false);
 
         static ConcurrentDictionary<string, AsyncLock> StringKeySyncLocks = new ConcurrentDictionary<string, AsyncLock>();
 

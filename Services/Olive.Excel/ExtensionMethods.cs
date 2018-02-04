@@ -26,7 +26,8 @@ namespace Olive.Excel
 
             var result = exporter.Generate(ExcelExporter.Output.Csv);
 
-            var file = Blob.GetPhysicalFilesRoot(Blob.AccessMode.Secure).EnsureExists().GetFile("Sql.Profile." + DateTime.Now.ToOADate() + ".csv");
+            var file = AppDomain.CurrentDomain.GetPath("--Sql-Profiler").AsDirectory().EnsureExists()
+                .GetFile(DateTime.Now.ToOADate() + ".csv");
 
             await file.WriteAllTextAsync(result);
 

@@ -127,7 +127,7 @@ namespace Olive.BlobAws
 
         static string GetKey(Blob document)
         {
-            return (document.FolderName + "/" + document.GetFileNameWithoutExtension()).KeepReplacing("//", "/").TrimStart("/");
+            return (document.FolderName + "/" + document.OwnerId()).KeepReplacing("//", "/").TrimStart("/");
         }
 
         static DeleteObjectsRequest CreateDeleteOldsRequest(IEnumerable<KeyVersion> oldKeys)

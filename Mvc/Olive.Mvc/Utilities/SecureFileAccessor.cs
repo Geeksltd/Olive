@@ -53,13 +53,6 @@ namespace Olive.Mvc
 
         public bool IsAllowed() => SecurityErrors.IsEmpty();
 
-        public FileInfo GetFile()
-        {
-            var file = Blob.LocalPath;
-
-            return file.AsFile();
-        }
-
         void FindRequestedProperty()
         {
             var typeName = PathParts[0].Split('.')[0];
