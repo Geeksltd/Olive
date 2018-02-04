@@ -16,7 +16,6 @@ namespace Olive.Mvc.Testing
 {
     class Snapshot
     {
-        const string TEMP_DATABASES_LOCATION_KEY = "Temp.Databases.Location";
         const string URL_FILE_NAME = "url.txt";
         const string DATE_FILE_NAME = "date.txt";
         static string DatabaseName = GetDatabaseName();
@@ -35,7 +34,7 @@ namespace Olive.Mvc.Testing
 
         public async Task Create(HttpContext context)
         {
-            if (IsSnapshotsDisabled) return;
+            if (!Enabled) return;
 
             SetupDirecory();
             await SnapshotDatabase();
@@ -46,11 +45,11 @@ namespace Olive.Mvc.Testing
             await SaveUrl(context);
         }
 
-        static bool IsSnapshotsDisabled => Config.Get<bool>("WebTestManager.DisableSnapshots");
+        static bool Enabled => Config.Get("Olive.Mvc.Testing:Snapshot:Enabled", defaultValue: true);
 
         public bool Exists()
         {
-            if (IsSnapshotsDisabled) return false;
+            if (!Enabled) return false;
             return SnapshotsDirectory.Exists();
         }
 

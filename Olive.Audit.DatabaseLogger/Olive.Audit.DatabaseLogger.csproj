@@ -1,12 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>..\@Assemblies\</OutputPath>
-    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\@Assemblies</OutputPath>
+    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Audit.DatabaseLogger.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
@@ -17,10 +20,9 @@
     <Reference Include="Olive.Entities">
       <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
     </Reference>
+    <Reference Include="Olive.Excel">
+      <HintPath>..\@Assemblies\netstandard2.0\Olive.Excel.dll</HintPath>
+    </Reference>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;" />
-  </Target>
 
 </Project>

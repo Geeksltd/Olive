@@ -19,7 +19,7 @@ namespace Olive.Email
     {
         static AsyncLock AsyncLock = new AsyncLock();
         static Random Random = new Random();
-        public static int MaximumRetries => Config.Get("Email:Maximum.Retries", 4);
+        public static int MaximumRetries => Config.Get("Email:MaximumRetries", 4);
 
         /// <summary>
         /// Provides a message which can dispatch an email message.
@@ -44,13 +44,13 @@ namespace Olive.Email
 
         internal static bool IsSendingPermitted(string to)
         {
-            var permittedDomains = Config.Get("Email:Permitted.Domains",
+            var permittedDomains = Config.Get("Email:Permitted:Domains",
                 defaultValue: "geeks.ltd.uk|uat.co").ToLowerOrEmpty();
             if (permittedDomains == "*") return true;
 
             if (permittedDomains.Split('|').Trim().Any(d => to.TrimEnd(">").EndsWith("@" + d))) return true;
 
-            var permittedAddresses = Config.Get("Email:Permitted.Addresses").ToLowerOrEmpty().Split('|').Trim();
+            var permittedAddresses = Config.Get("Email:Permitted:Addresses").ToLowerOrEmpty().Split('|').Trim();
 
             return permittedAddresses.Any() && new MailAddress(to).Address.IsAnyOf(permittedAddresses);
         }

@@ -18,10 +18,10 @@ namespace Olive.Entities.Data
 
         // Note: This feature can prevent a rare concurrency issue in highly concurrent applications.
         // But it comes at the cost of performance degradation. If your application doesn't have extremely concurrent processing
-        // with multiple threads reading and updating records at the same time, you can disable it in web.config to improve performance.
-        internal static bool IsConcurrencyAware = Config.Get("Database:Cache:ConcurrencyAware", defaultValue: true);
+        // with multiple threads reading and updating records at the same time, you can disable it in web.config to improve performance.        
 
-        internal static DateTime? GetQueryTimestamp() => IsConcurrencyAware ? DateTime.UtcNow : default(DateTime?);
+        internal static DateTime? GetQueryTimestamp()
+            => Database.Configuration.Cache.ConcurrencyAware ? DateTime.UtcNow : default(DateTime?);
 
         #region Row Version
 
@@ -55,13 +55,8 @@ namespace Olive.Entities.Data
 
         #endregion
 
-        #region IsEnabled property
-
-        static bool IsCachingEnabled = Config.Get("Database:Cache:Enabled", defaultValue: true);
-
-        public static bool CanCache(Type type) => CacheObjectsAttribute.IsEnabled(type) ?? IsCachingEnabled;
-
-        #endregion
+        public static bool CanCache(Type type)
+            => CacheObjectsAttribute.IsEnabled(type) ?? Database.Configuration.Cache.Enabled;
 
         /// <summary>
         /// Gets the current cache.
@@ -195,10 +190,8 @@ namespace Olive.Entities.Data
         public virtual void Remove(IEntity entity)
         {
             entity.InvalidateCachedReferences();
-
-            if (!(entity is IApplicationEvent))
-                foreach (var type in CacheDependentAttribute.GetDependentTypes(entity.GetType()))
-                    Remove(type, invalidateCachedReferences: true);
+            foreach (var type in CacheDependentAttribute.GetDependentTypes(entity.GetType()))
+                Remove(type, invalidateCachedReferences: true);
 
             if (!CanCache(entity.GetType())) return;
 

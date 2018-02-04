@@ -60,8 +60,6 @@ namespace Olive.Entities
                 // Leaf nodes first (most concrete):
                 .OrderByDescending(t => t.GetParentTypes().Count());
 
-            result = result.Except(new[] { typeof(IApplicationEvent) }).ToArray();
-
             if (result.None())
             {
                 if (baseType != null && mustFind)

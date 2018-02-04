@@ -9,7 +9,7 @@ namespace Olive
 
         static Log()
         {
-            if (Config.Get("DebugMode", defaultValue: false))
+            if (Config.Get("Log:Console", defaultValue: false))
                 Loggers.Add(new ConsoleLogger());
         }
 

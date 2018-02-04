@@ -43,7 +43,7 @@ namespace Olive.BlobAws
             {
                 using (var client = CreateClient())
                 {
-                    return await client.GetObjectMetadataAsync(AWSInfo.DocumentsS3BucketName, GetKey(document)) != null;
+                    return await client.GetObjectMetadataAsync(AWSInfo.S3BucketName, GetKey(document)) != null;
                 }
             }
             catch (AmazonS3Exception ex)
@@ -77,7 +77,7 @@ namespace Olive.BlobAws
         {
             return new GetObjectRequest
             {
-                BucketName = AWSInfo.DocumentsS3BucketName,
+                BucketName = AWSInfo.S3BucketName,
                 Key = objectKey
             };
         }
@@ -113,7 +113,7 @@ namespace Olive.BlobAws
             var key = GetKey(document);
             using (var client = CreateClient())
             {
-                var response = await client.DeleteObjectAsync(AWSInfo.DocumentsS3BucketName, key);
+                var response = await client.DeleteObjectAsync(AWSInfo.S3BucketName, key);
 
                 switch (response.HttpStatusCode)
                 {
@@ -134,7 +134,7 @@ namespace Olive.BlobAws
         {
             return new DeleteObjectsRequest
             {
-                BucketName = AWSInfo.DocumentsS3BucketName,
+                BucketName = AWSInfo.S3BucketName,
                 Objects = oldKeys.ToList()
             };
         }
@@ -158,7 +158,7 @@ namespace Olive.BlobAws
 
             return new ListObjectsRequest
             {
-                BucketName = AWSInfo.DocumentsS3BucketName,
+                BucketName = AWSInfo.S3BucketName,
                 Prefix = prefix
             };
         }
@@ -170,7 +170,7 @@ namespace Olive.BlobAws
         {
             return new PutObjectRequest
             {
-                BucketName = AWSInfo.DocumentsS3BucketName,
+                BucketName = AWSInfo.S3BucketName,
                 Key = GetKey(document),
                 InputStream = new MemoryStream(await document.GetFileDataAsync())
             };

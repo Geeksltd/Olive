@@ -9,8 +9,6 @@ namespace Olive.Entities.Data
     /// </summary>
     public class DataAccessProfiler
     {
-        internal static bool IsEnabled = Config.Get("Database:Profile", defaultValue: false);
-
         static ConcurrentBag<Watch> Watches = new ConcurrentBag<Watch>();
 
         static object SyncLock = new object();

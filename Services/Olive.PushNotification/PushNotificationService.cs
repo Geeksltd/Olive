@@ -30,15 +30,15 @@
         static ApnsConfiguration CreateAppleConfig()
         {
             return new ApnsConfiguration(
-                Config.Get<ApnsConfiguration.ApnsServerEnvironment>("PN.Apple.Environment"),
-                AppDomain.CurrentDomain.GetPath(Config.Get<string>("PN.Apple.CertificateFile")),
-                Config.Get<string>("PN.Apple.CertificatePassword"));
+                Config.Get<ApnsConfiguration.ApnsServerEnvironment>("PushNotification:Apple:Environment"),
+                AppDomain.CurrentDomain.GetPath(Config.Get("PushNotification:Apple:CertificateFile")),
+                Config.Get("PushNotification:Apple:CertificatePassword"));
         }
 
         static void InitializeAppleBroker()
         {
             if (ApnsBroker != null) return;
-            if (!Config.IsDefined("PN.Apple.CertificateFile")) return;
+            if (!Config.IsDefined("PushNotification:Apple:CertificateFile")) return;
 
             // Configuration (NOTE: .pfx can also be used here)
             var config = CreateAppleConfig();
@@ -64,12 +64,9 @@
         {
             if (GcmBroker != null) return;
 
-            if (!Config.IsDefined("PN.Google.SenderId")) return;
+            if (!Config.IsDefined("PushNotification:Google:SenderId")) return;
 
-            // var config = new GcmConfiguration(Config.Get<string>("PN.Google.SenderId"),
-            //                              Config.Get<string>("PN.Google.AuthToken"), null);
-
-            var config = new GcmConfiguration(Config.Get<string>("PN.Google.SenderId"), Config.Get<string>("PN.Google.AuthToken"), null)
+            var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"), Config.Get("PushNotification:Google:AuthToken"), null)
             { GcmUrl = "https://fcm.googleapis.com/fcm/send" };
 
             GcmBroker = new GcmServiceBroker(config);
@@ -94,12 +91,12 @@
         static void InitializeWindowsBroker()
         {
             if (WnsBroker != null) return;
-            if (!Config.IsDefined("PN.Windows.PackageName")) return;
+            if (!Config.IsDefined("PushNotification:Windows:PackageName")) return;
 
             // Configuration
-            var config = new WnsConfiguration(Config.Get<string>("PN.Windows.PackageName"),
-                                          Config.Get<string>("PN.Windows.PackageSID"),
-                                          Config.Get<string>("PN.Windows.ClientSecret"));
+            var config = new WnsConfiguration(Config.Get("PushNotification:Windows:PackageName"),
+                                          Config.Get("PushNotification:Windows:PackageSID"),
+                                          Config.Get("PushNotification:Windows:ClientSecret"));
 
             WnsBroker = new WnsServiceBroker(config);
 

@@ -107,7 +107,7 @@ namespace Olive.Email
 
         public static string[] GetEffectiveCcAddresses(this IEmailMessage mailItem)
         {
-            var cc = Config.Get("Email:Auto.CC.Address").WithSuffix(",") + mailItem.Cc;
+            var cc = Config.Get("Email:AutoAddCc").WithSuffix(",") + mailItem.Cc;
             return cc.OrEmpty().Split(',').Trim().Where(a => EmailService.IsSendingPermitted(a)).ToArray();
         }
 
@@ -142,7 +142,5 @@ namespace Olive.Email
                 yield return calendarView;
             }
         }
-
-
     }
 }

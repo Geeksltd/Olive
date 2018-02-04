@@ -5,7 +5,7 @@ namespace Olive.BlobAws
     /// <summary>This class is to help the AWS Bucket</summary>
     static class AWSInfo
     {
-        internal static string DocumentsS3BucketName => Config.Get("S3UploadBucketName");
+        internal static string S3BucketName => Config.Get("Blob:S3:Bucket");
 
         /// <summary>
         /// Returns the Amazaon Region Endpoint as it might change in future
@@ -14,7 +14,7 @@ namespace Olive.BlobAws
         {
             get
             {
-                var regionName = Config.TryGet<string>("S3.Region");
+                var regionName = Config.TryGet<string>("Blob:S3:Region");
 
                 if (regionName.HasValue())
                     return RegionEndpoint.GetBySystemName(regionName);

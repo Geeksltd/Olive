@@ -8,7 +8,7 @@ namespace ASP
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class ControlValidationTranslation
     {
-        static bool TranslateValidators = Config.Get("Translate.Validators", defaultValue: false);
+        static bool TranslateValidators = Config.Get("Globalization:TranslateValidators", defaultValue: false);
         static string[] ValidationTextAttributes = new[] { "data-val-length", "data-val-required", "data-val-email" };
 
         internal static IHtmlContent Translate(IHtmlContent source)

@@ -63,8 +63,7 @@ namespace Olive.Entities.Data
             DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassLogging))
-                if (!(entity is IApplicationEvent) && Config.Get("Log.Record:Application:Events", defaultValue: true))
-                    await ApplicationEventManager.RecordDelete(entity);
+                await Audit.Audit.LogDelete(entity);
 
             await OnUpdated(entity);
 

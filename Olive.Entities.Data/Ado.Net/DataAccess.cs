@@ -86,7 +86,7 @@ namespace Olive.Entities.Data
 
         DataAccessProfiler.Watch StartWatch(string command)
         {
-            if (DataAccessProfiler.IsEnabled) return DataAccessProfiler.Start(command);
+            if (Database.Configuration.Profile) return DataAccessProfiler.Start(command);
             else return null;
         }
 

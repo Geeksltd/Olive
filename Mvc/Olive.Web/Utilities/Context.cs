@@ -39,9 +39,7 @@ namespace Olive.Web
             Context.httpContextAccessor = httpContextAccessor;
             Context.actionContextAccessor = actionContextAccessor;
 
-            Entities.DefaultApplicationEventManager.InitializeUseAccessor(() => User);
-            Entities.DefaultApplicationEventManager.InitializeIpAccessor(() => Http.Connection.RemoteIpAddress.ToString());
-
+            Audit.Audit.Use(() => User, () => Http.Connection.RemoteIpAddress.ToString());
             IsInitialized = true;
         }
     }

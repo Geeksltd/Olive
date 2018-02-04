@@ -9,8 +9,6 @@ namespace Olive.Entities.Data
 {
     partial class Database
     {
-        bool ENFORCE_SAVE_TRANSACTION = Config.Get("Database:Transaction:EnforceForSave", defaultValue: false);
-
         static ConcurrentDictionary<string, AsyncLock> StringKeySyncLocks = new ConcurrentDictionary<string, AsyncLock>();
 
         public static AsyncLock GetSyncLock(string key) => StringKeySyncLocks.GetOrAdd(key, f => new AsyncLock());
@@ -39,7 +37,7 @@ namespace Olive.Entities.Data
                 else using (await GetSyncLock(entity.GetType().FullName + entity.GetId()).Lock()) await save();
             };
 
-            if (ENFORCE_SAVE_TRANSACTION) await EnlistOrCreateTransaction(doSave);
+            if (Configuration.Transaction.EnforceForSave) await EnlistOrCreateTransaction(doSave);
             else await doSave();
         }
 
@@ -94,9 +92,9 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             #endregion
 
-            if (!IsSet(behaviour, SaveBehaviour.BypassLogging) && !(entity is IApplicationEvent) &&
-                Config.Get("Log.Record:Application:Events", defaultValue: true))
-                await ApplicationEventManager.RecordSave(entity, mode);
+            if (!IsSet(behaviour, SaveBehaviour.BypassLogging))
+                if (mode == SaveMode.Insert) await Audit.Audit.LogInsert(entity);
+                else await Audit.Audit.LogUpdate(entity);
 
             await dataProvider.Save(entity);
             Cache.Current.UpdateRowVersion(entity);
@@ -117,8 +115,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
 
-            if (!(entity is IApplicationEvent))
-                await OnUpdated(entity);
+            await OnUpdated(entity);
 
             if (!IsSet(behaviour, SaveBehaviour.BypassSaved))
                 await EntityManager.RaiseOnSaved(entity, new SaveEventArgs(mode));

@@ -23,6 +23,9 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.ApiClient.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Olive.Audit">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Audit.dll</HintPath>
+    </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
       <Private>false</Private>

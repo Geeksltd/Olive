@@ -10,7 +10,7 @@
     {
         // The following constants may be changed without breaking existing hashes.
         const int SALT_BYTE_SIZE = 64, HASH_BYTE_SIZE = 64;
-        static int PBKDF2_ITERATIONS = Config.Get("Secure.Password.Pbkdf2.Iterations", defaultValue: 10000);
+        static int PBKDF2_ITERATIONS = Config.Get("Authentication:SecurePassword:Pbkdf2Iterations", defaultValue: 10000);
 
         public string Password { get; set; }
         public string Salt { get; set; }

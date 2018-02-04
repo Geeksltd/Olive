@@ -7,7 +7,7 @@ namespace Olive.PDF
     /// </summary>
     public static class PdfService
     {
-        const string HTML2PDF_CONVERTER_CONFIG_KEY = "Html2Pdf.Converter.Type";
+        const string HTML2PDF_CONVERTER_CONFIG_KEY = "Olive.Html2Pdf:ConverterType";
         const string DEFAULT_HTML2PDF_TYPE = "Geeks.Html2PDF.Winnovative.Html2PdfConverter, Geeks.Html2PDF.Winnovative";
 
         /// <summary>

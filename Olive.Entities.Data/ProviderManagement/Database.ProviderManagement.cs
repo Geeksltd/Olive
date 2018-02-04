@@ -9,22 +9,19 @@ namespace Olive.Entities.Data
 {
     partial class Database
     {
+        public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
+            = new Dictionary<Assembly, IDataProviderFactory>();
+
+        Dictionary<Type, IDataProviderFactory> TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
+
         static readonly Database instance = new Database();
+
+        public static readonly DatabaseConfig Configuration = Config.Bind<DatabaseConfig>("Database");
 
         Database()
         {
-            AssemblyProviderFactories = new Dictionary<Assembly, IDataProviderFactory>();
-            TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
-
-            // Load from configuration:
-            var configSection = Config.Bind<DataProviderModelConfigurationSection>("DataProviderModel");
-
-            if (configSection != null)
-            {
-                if (configSection.Providers != null)
-                    foreach (var factoryInfo in configSection.Providers)
-                        RegisterDataProviderFactory(factoryInfo);
-            }
+            foreach (var factoryInfo in Configuration.Providers.OrEmpty())
+                RegisterDataProviderFactory(factoryInfo);
         }
 
         public static Database Instance => instance;
@@ -40,7 +37,7 @@ namespace Olive.Entities.Data
         #endregion
 
         object DataProviderSyncLock = new object();
-        public void RegisterDataProviderFactory(DataProviderFactoryInfo factoryInfo)
+        public void RegisterDataProviderFactory(DatabaseConfig.Provider factoryInfo)
         {
             if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));
 
@@ -72,8 +69,7 @@ namespace Olive.Entities.Data
             }
         }
 
-        public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; internal set; }
-        Dictionary<Type, IDataProviderFactory> TypeProviderFactories;
+
 
         /// <summary>
         /// Gets the assemblies for which a data provider factory has been registered in the current domain.
@@ -132,7 +128,7 @@ namespace Olive.Entities.Data
         {
             var isolationLevel = DbTransactionScope.GetDefaultIsolationLevel();
 
-            var typeName = Config.Get<string>("Database:Transaction:Type");
+            var typeName = Configuration.Transaction.Type;
 
             if (typeName.HasValue())
             {
