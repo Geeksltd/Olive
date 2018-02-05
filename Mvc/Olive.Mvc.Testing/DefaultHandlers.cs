@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Olive.Excel;
@@ -23,7 +24,11 @@ namespace Olive.Mvc.Testing
                 WebTestConfig.SetRunner();
                 await TempDatabase.Start();
 
-                if (shouldRedirect) Context.Response.Redirect(redirect);
+                if (shouldRedirect)
+                {
+                    Debug.WriteLine("All done. Redirecting to: " + redirect);
+                    Context.Response.Redirect(redirect);
+                }
 
                 return shouldRedirect;
             }

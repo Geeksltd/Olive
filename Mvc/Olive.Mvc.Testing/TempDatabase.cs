@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Olive.Entities.Data;
@@ -13,7 +14,11 @@ namespace Olive.Mvc.Testing
 
         public static async Task Create(bool enforceRestart, bool mustRenew)
         {
-            if (!WebTestConfig.IsActive()) return;
+            if (!WebTestConfig.IsActive())
+            {
+                Debug.WriteLine("Creating temp database aborted. Test mode is not active.");
+                return;
+            }
 
             IsDatabaseBeingCreated = true;
             var createdNew = false;

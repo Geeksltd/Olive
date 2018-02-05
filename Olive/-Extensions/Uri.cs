@@ -190,7 +190,7 @@ namespace Olive
         public static Uri RemoveQueryString(this Uri url, string key)
         {
             var qs = url.GetQueryString();
-            key = key.ToLower();
+            //key = key.ToLower();
             if (qs.ContainsKey(key)) qs.Remove(key);
 
             return url.ReplaceQueryString(qs);

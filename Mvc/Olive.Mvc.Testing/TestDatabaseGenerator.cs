@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Olive.Entities;
@@ -214,18 +215,23 @@ namespace Olive.Mvc.Testing
 
         public bool Process()
         {
-            if (ConnectionString.IsEmpty()) return false;
+            if (ConnectionString.IsEmpty())
+            {
+                Debug.WriteLine("Temp databae creation aborted. There is no connection string.");
+                return false;
+            }
 
             var builder = new SqlConnectionStringBuilder(ConnectionString);
             TempDatabaseName = builder.InitialCatalog.Or("").TrimStart("[").TrimEnd("]");
 
             if (TempDatabaseName.IsEmpty())
             {
-                // None of my business.
+                Debug.WriteLine("Temp databae creation aborted. No database name was found in the connection string.");
                 return false;
             }
             else if (!TempDatabaseName.ToLower().EndsWith(".temp") && IsTempDatabaseOptional)
             {
+                Debug.WriteLine($"Temp databae creation aborted. Database name '{TempDatabaseName}' does not end in '.Temp'.");
                 // Optional and irrelevant
                 return false;
             }
@@ -263,6 +269,8 @@ namespace Olive.Mvc.Testing
         {
             var identity = System.Security.Principal.WindowsIdentity.GetCurrent()?.Name;
 
+            Debug.WriteLine($"Temp databae creation: current identity '{identity}' has enough permission.");
+
             var error = "\r\n\r\nRecommended action: If using IIS, update the Application Pool (Advanced Settings) and set Identity to LocalSystem.";
 
             if (identity.IsEmpty())
@@ -280,6 +288,8 @@ namespace Olive.Mvc.Testing
                 error = "In TDD mode full system access is needed in order to create temporary database files." + error;
                 throw new Exception(error);
             }
+
+            Debug.WriteLine($"Temp databae creation: '{identity}' seems good to use.");
         }
 
         void LoadMetaDirectory()
@@ -293,6 +303,8 @@ namespace Olive.Mvc.Testing
         bool DoProcess()
         {
             var hash = (GetCurrentDatabaseCreationHash()).Replace("/", "-").Replace("\\", "-");
+
+            Debug.WriteLine("Temp database: Hash of the current DB scripts -> " + hash);
 
             lock (SyncLock)
             {
@@ -336,6 +348,7 @@ namespace Olive.Mvc.Testing
         {
             if (ReferenceMDFFile.Exists() && ReferenceLDFFile.Exists())
             {
+                Debug.WriteLine("Temp database. Aborted creating a new reference database for the current SQL Scripts. The DB file already exists: " + ReferenceMDFFile.FullName);
                 return false;
             }
 

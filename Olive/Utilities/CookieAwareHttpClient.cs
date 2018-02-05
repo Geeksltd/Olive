@@ -13,6 +13,6 @@ namespace Olive
             CookieContainer = container;
         }
 
-        public CookieContainer CookieContainer { get; set; }
+        public CookieContainer CookieContainer { get; private set; }
     }
 }

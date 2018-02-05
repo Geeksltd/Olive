@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Olive.Entities.Data
@@ -110,8 +111,12 @@ END".FormatWith(databaseName);
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = script;
 
-                    try { return (int)cmd.ExecuteScalar() > 0; }
+                    bool result;
+                    try { result = (int)cmd.ExecuteScalar() > 0; }
                     catch (Exception ex) { throw EnrichError(ex, script); }
+
+                    Debug.WriteLine($"Database '{databaseName}' already exists in '{connection.DataSource}' -> " + result);
+                    return result;
                 }
             }
         }

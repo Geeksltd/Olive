@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Reflection;
     using System.Text;
     using MySql.Data.MySqlClient;
 
@@ -57,6 +58,33 @@
             var whereGenerator = new MySqlCriterionGenerator(query);
             foreach (var c in query.Criteria)
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
+
+            return r.ToString();
+        }
+
+        public override DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association)
+        {
+            var whereClause = GenerateAssociationLoadingCriteria(query, association);
+            return new DirectDatabaseCriterion(whereClause) { Parameters = query.Parameters };
+        }
+
+        string GenerateAssociationLoadingCriteria(IDatabaseQuery iquery, PropertyInfo association)
+        {
+            var query = (DatabaseQuery)iquery;
+
+            if (query.PageSize.HasValue && query.OrderByParts.None())
+                throw new ArgumentException("PageSize cannot be used without OrderBy.");
+
+            var r = new StringBuilder();
+
+            r.Append($"ID IN (");
+            r.Append("SELECT ");
+            r.AppendLine($" {association.Name} FROM {GetTables()}");
+            r.AppendLine(GenerateWhere(query));
+            r.AppendLine((query.PageSize.HasValue ? GenerateSort(query) : string.Empty).WithPrefix(" ORDER BY "));
+            r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
+
+            r.Append(")");
 
             return r.ToString();
         }
