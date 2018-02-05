@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Olive
+namespace Olive.Mvc
 {
     /// <summary>
     /// Intended for use on methods to specify the primary type of the result that is returned in happy scenarios.
@@ -12,5 +12,12 @@ namespace Olive
         public readonly Type ReturnType;
         public ReturnsAttribute(Type returnType)
             => ReturnType = returnType ?? throw new ArgumentNullException();
+
+        /// <summary>
+        /// When set, if the method takes a single Guid parameter then Olive.ApiProxy will generate
+        /// a data provider that will be registered in consumer app, so this Api method can be invoked
+        /// also using Database.Get().
+        /// </summary>
+        public bool EnableDatabaseGet { get; set; } = true;
     }
 }

@@ -8,7 +8,7 @@ namespace Olive.ApiProxy
 {
     public class MethodGenerator
     {
-        MethodInfo Method;
+        internal MethodInfo Method;
         string[] RouteParams;
 
         public MethodGenerator(MethodInfo method)
@@ -101,7 +101,18 @@ namespace Olive.ApiProxy
 
         public Type ReturnType()
         {
-            return (Method.GetCustomAttribute(typeof(ReturnsAttribute)) as ReturnsAttribute)?.ReturnType;
+            return Method.GetAttribute("Returns")?.ConstructorArguments.Single().Value as Type;
+        }
+
+        public bool IsGetDataprovider()
+        {
+            if (ReturnType() == null) return false;
+            if (ReturnType().IsArray) return false;
+
+            if (Method.GetAttribute("Returns").NamedArguments
+                .Any(x => x.MemberName == "EnableDatabaseGet" && (bool)x.TypedValue.Value == false)) return false;
+
+            return true;
         }
 
         public Type[] GetArgAndReturnTypes()
