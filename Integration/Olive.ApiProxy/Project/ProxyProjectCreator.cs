@@ -11,7 +11,7 @@ namespace Olive.ApiProxy
         protected override string IconUrl => null;
 
         protected override string[] References
-            => new[] { "Olive", "Olive.Entities", "Olive.ApiClient", "Olive.Microservices" };
+            => new[] { "Olive", "Olive.Entities", "Olive.Entities.Data", "Olive.ApiClient", "Olive.Microservices" };
 
         protected override bool AddXml => true;
 

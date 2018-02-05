@@ -23,16 +23,7 @@ namespace Olive
             {
                 var actualTask = new Task<object>(task);
                 actualTask.RunSynchronously();
-                actualTask.Wait(); // To get the exception
-
-                //factory.StartNew(task, TaskCreationOptions.LongRunning)
-                //  .ContinueWith(t =>
-                //  {
-                //      if (t.Exception == null) return;
-                //      System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
-                //      throw t.Exception.InnerException;
-                //  })
-                //  .Wait();
+                actualTask.Wait(); // To get the exception                
             }
             catch (AggregateException ex)
             {
@@ -134,5 +125,32 @@ namespace Olive
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<IEnumerable<T>> ForLinq<T>(this Task<IOrderedEnumerable<T>> task)
             => task.AsTask<IOrderedEnumerable<T>, IEnumerable<T>>();
+
+        /// <summary>
+        /// A shorter more readable alternative to ContinueWith().
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task<TResult> Get<TSource, TResult>(this Task<TSource> sourceTask, Func<TSource, TResult> expression)
+            => expression(await sourceTask.ConfigureAwait(continueOnCapturedContext: false));
+
+        /// <summary>
+        /// A shorter more readable alternative to nested ContinueWith() methods.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task<TResult> Get<TSource, TResult>(this Task<TSource> sourceTask, Func<TSource, Task<TResult>> expression)
+        {
+            var item = await sourceTask.ConfigureAwait(continueOnCapturedContext: false);
+            return await expression(item).ConfigureAwait(continueOnCapturedContext: false);
+        }
+
+        /// <summary>
+        /// A shorter more readable alternative to nested ContinueWith() methods.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task Then<TSource, TResult>(this Task<TSource> sourceTask, Action<TSource> action)
+        {
+            var item = await sourceTask.ConfigureAwait(continueOnCapturedContext: false);
+            action(item);
+        }
     }
 }

@@ -18,6 +18,10 @@ namespace Olive.ApiProxy
             r.AppendLine("{");
             r.AppendLine("using System;");
             r.AppendLine("using System.Collections.Generic;");
+            r.AppendLine("using System.Threading.Tasks;");
+            r.AppendLine("using System.Reflection;");
+            r.AppendLine("using Olive.Entities;");
+            r.AppendLine("using Olive.Entities.Data;");
             r.AppendLine();
             r.AppendLine("public class " + Type.Name + " : Olive.Entities.GuidEntity");
             r.AppendLine("{");
