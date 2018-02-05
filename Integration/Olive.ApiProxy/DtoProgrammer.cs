@@ -12,7 +12,7 @@ namespace Olive.ApiProxy
         public DtoProgrammer(Type type)
         {
             Type = type;
-            DatabaseGetMethod = Context.ActionMethods.FirstOrDefault(x => x.IsGetDataprovider())?.Method;
+            DatabaseGetMethod = type.FindDatabaseGetMethod();
         }
 
         internal string Generate()

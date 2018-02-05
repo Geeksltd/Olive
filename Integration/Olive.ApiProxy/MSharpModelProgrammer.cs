@@ -24,7 +24,10 @@ namespace Olive.ApiProxy
             r.AppendLine("public " + Type.Name + "()");
             r.AppendLine("{");
 
-            r.AppendLine("DatabaseMode(DatabaseOption.Transient).HasExternallyDomainClass();");
+            r.AppendLine("HasExternallyDomainClass();");
+            if (Type.FindDatabaseGetMethod() == null)
+                r.AppendLine("DatabaseMode(DatabaseOption.Transient);");
+            else r.AppendLine("DatabaseMode(DatabaseOption.Custom);");
 
             foreach (var p in Type.GetPropertiesAndFields(BindingFlags.Public | BindingFlags.Instance))
                 r.AppendLine(AddProperty(p.GetPropertyOrFieldType(), p.Name));
