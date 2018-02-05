@@ -7,12 +7,20 @@ namespace PushForLocalTesting
 {
     class Program
     {
+        static bool HasError;
+
         public static void Main()
         {
             var root = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
 
             foreach (var t in new[] { "netstandard2.0", "netcoreapp2.0" })
                 Deploy(new DirectoryInfo(Path.Combine(root.FullName, t)));
+
+            if (HasError)
+            {
+                Console.WriteLine("Press Enter key to continue....");
+                Console.ReadLine();
+            }
         }
 
         static void Deploy(DirectoryInfo sourceDirectory)
@@ -28,9 +36,15 @@ namespace PushForLocalTesting
             foreach (var pack in packages)
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                var packFolder = new DirectoryInfo(Path.Combine(nuget.FullName, pack.Replace(".Services.", ".")));
+
+                var cleanName = pack.Replace(".Services.", ".").Replace("Olive.Mvc.Testing", "Olive.Testing");
+
+                var packFolder = new DirectoryInfo(Path.Combine(nuget.FullName, cleanName));
                 if (!packFolder.Exists)
+                {
+                    Error("Skipped " + pack + " - Package folder not found:" + packFolder.FullName);
                     continue; // Not installed. 
+                }
 
                 var latest = packFolder.GetDirectories().OrderByDescending(x => ToVersion(x.Name)).FirstOrDefault();
                 if (latest == null)
@@ -50,8 +64,11 @@ namespace PushForLocalTesting
             }
         }
 
+
+
         static void Error(string message)
         {
+            HasError = true;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
             Console.ForegroundColor = ConsoleColor.White;

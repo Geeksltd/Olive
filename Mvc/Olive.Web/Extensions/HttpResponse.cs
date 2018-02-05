@@ -11,12 +11,6 @@ namespace Olive.Web
         const int MOVED_PERMANENTLY_STATUS_CODE = 301;
 
         /// <summary>
-        /// Writes the specified content wrapped in a DIV tag.
-        /// </summary>
-        public static void WriteLine(this HttpResponse response, string content) =>
-            response.WriteAsync($"<div>{content}</div>").RunSynchronously();
-
-        /// <summary>
         /// Redirects the client to the specified URL with a 301 status (permanent).
         /// </summary>
         public static void RedirectPermanent(this HttpResponse response, string permanentUrl)
@@ -84,10 +78,8 @@ namespace Olive.Web
 
             response.ContentType = contentType;
 
-            if (encoding != null)
-                response.WriteAsync(responseText, encoding).RunSynchronously();
-            else
-                response.WriteAsync(responseText).RunSynchronously();
+            if (encoding != null) response.Write(responseText, encoding);
+            else response.Write(responseText);
         }
 
         /// <summary>
@@ -98,5 +90,16 @@ namespace Olive.Web
             response.ContentType = mimeType;
             await response.WriteAsync(message);
         }
+
+        public static void Write(this HttpResponse response, string message)
+            => Task.Factory.RunSync(() => response.WriteAsync(message));
+
+        public static void Write(this HttpResponse response, string message, System.Text.Encoding encoding)
+            => Task.Factory.RunSync(() => response.WriteAsync(message, encoding));
+
+        /// <summary>
+        /// Writes the specified content wrapped in a DIV tag.
+        /// </summary>
+        public static void WriteLine(this HttpResponse response, string content) => response.Write($"<div>{content}</div>");
     }
 }

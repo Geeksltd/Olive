@@ -29,9 +29,11 @@
 
         static ApnsConfiguration CreateAppleConfig()
         {
+            var certFile = AppDomain.CurrentDomain.WebsiteRoot().GetFile(Config.Get("PushNotification:Apple:CertificateFile")).FullName;
+
             return new ApnsConfiguration(
                 Config.Get<ApnsConfiguration.ApnsServerEnvironment>("PushNotification:Apple:Environment"),
-                AppDomain.CurrentDomain.GetPath(Config.Get("PushNotification:Apple:CertificateFile")),
+                certFile,
                 Config.Get("PushNotification:Apple:CertificatePassword"));
         }
 

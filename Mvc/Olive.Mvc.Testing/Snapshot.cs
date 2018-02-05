@@ -143,13 +143,13 @@ namespace Olive.Mvc.Testing
             foreach (var file in files)
             {
                 file.Attributes = FileAttributes.Normal;
-                file.Delete();
+                file.Delete(harshly: true);
             }
 
             foreach (var dir in dirs)
                 DeleteDirectory(dir);
 
-            targetDirectory.Delete();
+            targetDirectory.DeleteIfExists(recursive: true);
         }
 
         #region URL

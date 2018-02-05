@@ -358,8 +358,8 @@ namespace Olive.Mvc.Testing
 
                 if (error)
                 {
-                    ReferenceMDFFile.Delete();
-                    ReferenceLDFFile.Delete();
+                    ReferenceMDFFile.Delete(harshly: true);
+                    ReferenceLDFFile.Delete(harshly: true);
                 }
             }
 
@@ -370,9 +370,10 @@ namespace Olive.Mvc.Testing
 
         void CopyFiles()
         {
-            DiskBlobStorageProvider.Root.EnsureExists().Delete();
-            var source = AppDomain.CurrentDomain.GetPath(Config.GetOrThrow("Blob:TestFilesOrigin")).AsDirectory();
-            source.CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
+            DiskBlobStorageProvider.Root.DeleteIfExists(recursive: true);
+            var source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(Config.GetOrThrow("Blob:TestFilesOrigin"));
+            if (source.Exists())
+                source.CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
         }
     }
 }

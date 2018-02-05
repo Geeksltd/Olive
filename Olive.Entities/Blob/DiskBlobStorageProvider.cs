@@ -80,7 +80,7 @@ namespace Olive.Entities
             {
                 using (await GetAsyncLock(file.FullName).Lock())
                 {
-                    tasks.Add(new Func<Task>(async () => await Task.Factory.StartNew(() => file.Delete()))
+                    tasks.Add(new Func<Task>(async () => await Task.Factory.StartNew(() => file.Delete(harshly: true)))
                         .Invoke(retries: 6, waitBeforeRetries: TimeSpan.FromSeconds(0.5)));
                 }
             }

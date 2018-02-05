@@ -47,8 +47,14 @@ namespace Olive
             return TryHard(file, readFile, "The system cannot read the file: {0}");
         }
 
+        public static void DeleteIfExists(this FileInfo file)
+        {
+            if (file != null && file.Exists())
+                file.Delete();
+        }
+
         /// <summary>
-        /// Will try to delete a specified directory by first deleting its sub-folders and files.
+        /// Will try to delete a specified file if it exists.
         /// </summary>
         /// <param name="harshly">If set to true, then it will try multiple times, in case the file is temporarily locked.</param>
         public static void Delete(this FileInfo file, bool harshly)

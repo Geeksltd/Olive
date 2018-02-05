@@ -123,7 +123,7 @@ namespace Olive.Compression
             }
             finally
             {
-                await tempFolder?.Delete(recursive: true, harshly: true);
+                await tempFolder?.DeleteAsync(recursive: true, harshly: true);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Olive.Compression
             }
             finally
             {
-                await tempFolder.Delete(recursive: true, harshly: true);
+                await tempFolder.DeleteAsync(recursive: true, harshly: true);
             }
         }
 

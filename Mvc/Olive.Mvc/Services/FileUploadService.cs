@@ -62,7 +62,7 @@ namespace Olive.Mvc
                 var age = LocalTime.Now.Subtract(folder.LastWriteTime);
                 if (age < olderThan) continue;
 
-                await folder.Delete(recursive: true, harshly: true);
+                await folder.DeleteAsync(recursive: true, harshly: true);
             }
         }
     }

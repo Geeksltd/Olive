@@ -13,7 +13,7 @@ namespace Olive.Mvc
     {
         static List<string> BlockedCountryCodes = new List<string>();
         static FileInfo CountryIpsFile
-            => AppDomain.CurrentDomain.GetPath("--IPFilter").AsDirectory().EnsureExists().GetFile("dbip-country.csv");
+            => AppDomain.CurrentDomain.WebsiteRoot().GetOrCreateSubDirectory("--IPFilter").GetFile("dbip-country.csv");
 
         static List<Range<uint>> BlockedIpRanges;
 

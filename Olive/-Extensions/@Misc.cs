@@ -116,22 +116,6 @@ namespace Olive
             else return root;
         }
 
-        /// <summary>
-        /// Gets the full path of a file or directory from a specified relative path.
-        /// </summary>
-        public static string GetPath(this AppDomain applicationDomain, params string[] relativePathSections)
-        {
-            var result = applicationDomain.BaseDirectory;
-
-            foreach (var path in relativePathSections)
-            {
-                if (path.HasValue())
-                    result = Path.Combine(result, path.Replace('/', Path.DirectorySeparatorChar));
-            }
-
-            return result;
-        }
-
         public static DirectoryInfo GetBaseDirectory(this AppDomain domain) => domain.BaseDirectory.AsDirectory();
 
         public static Assembly LoadAssembly(this AppDomain domain, string assemblyName)

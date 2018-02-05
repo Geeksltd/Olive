@@ -12,7 +12,7 @@ namespace Olive
         /// <summary>
         /// If specified as recursive and harshly, then it tries multiple times to delete this directory.        
         /// </summary>
-        public static async Task Delete(this DirectoryInfo directory, bool recursive, bool harshly)
+        public static async Task DeleteAsync(this DirectoryInfo directory, bool recursive, bool harshly)
         {
             if (directory == null)
                 throw new ArgumentNullException(nameof(directory));
@@ -32,7 +32,7 @@ namespace Olive
             try
             {
                 // First attempt: Simple delete:
-                await Task.Factory.StartNew(() => directory.Delete(recursive: true));
+                directory.Delete(recursive: true);
             }
             catch
             {
@@ -40,6 +40,13 @@ namespace Olive
                 // Normal attempt failed. Let's try it harshly!
                 await HarshDelete(directory);
             }
+        }
+
+        public static void DeleteIfExists(this DirectoryInfo directory, bool recursive = false)
+        {
+            if (directory == null) return;
+            if (!directory.Exists()) return;
+            directory.Delete(recursive);
         }
 
         /// <summary>
@@ -106,6 +113,9 @@ namespace Olive
         /// </summary>
         public static void CopyTo(this DirectoryInfo source, string destination, bool overwrite = false)
         {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (!source.Exists()) throw new Exception(source.FullName + " does not exist.");
+
             destination.AsDirectory().EnsureExists();
 
             foreach (var file in source.GetFiles())

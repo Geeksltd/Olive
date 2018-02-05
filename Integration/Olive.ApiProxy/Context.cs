@@ -25,7 +25,7 @@ namespace Olive.ApiProxy
             try
             {
                 if (TempPath.Exists)
-                    TempPath.Delete(recursive: true, harshly: true).Wait();
+                    TempPath.DeleteAsync(recursive: true, harshly: true).Wait();
                 TempPath.Create();
             }
             catch (Exception ex)

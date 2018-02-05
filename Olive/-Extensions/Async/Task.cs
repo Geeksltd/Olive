@@ -21,14 +21,18 @@ namespace Olive
         {
             try
             {
-                factory.StartNew(task, TaskCreationOptions.LongRunning)
-                  .ContinueWith(t =>
-                  {
-                      if (t.Exception == null) return;
-                      System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
-                      throw t.Exception.InnerException;
-                  })
-                  .Wait();
+                var actualTask = new Task<object>(task);
+                actualTask.RunSynchronously();
+                actualTask.Wait(); // To get the exception
+
+                //factory.StartNew(task, TaskCreationOptions.LongRunning)
+                //  .ContinueWith(t =>
+                //  {
+                //      if (t.Exception == null) return;
+                //      System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
+                //      throw t.Exception.InnerException;
+                //  })
+                //  .Wait();
             }
             catch (AggregateException ex)
             {

@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Olive.Web;
 
 namespace Olive.Mvc
 {
@@ -96,22 +97,21 @@ namespace Olive.Mvc
                     {
                         if (MultipartRequest)
                         {
-                            context.HttpContext.Response.WriteAsync(string.Format("--{0}\r\n", boundary)).RunSynchronously();
-                            context.HttpContext.Response.WriteAsync(string.Format("Content-Type: {0}\r\n", ContentType)).RunSynchronously();
-                            context.HttpContext.Response.WriteAsync(string.Format("Content-Range: bytes {0}-{1}/{2}\r\n\r\n", RangesStartIndexes[i], RangesEndIndexes[i], FileLength)).RunSynchronously();
+                            context.HttpContext.Response.Write(string.Format("--{0}\r\n", boundary));
+                            context.HttpContext.Response.Write(string.Format("Content-Type: {0}\r\n", ContentType));
+                            context.HttpContext.Response.Write(string.Format("Content-Range: bytes {0}-{1}/{2}\r\n\r\n", RangesStartIndexes[i], RangesEndIndexes[i], FileLength));
                         }
 
                         if (!context.HttpContext.RequestAborted.IsCancellationRequested)
                         {
                             WriteEntityRange(context.HttpContext.Response, RangesStartIndexes[i], RangesEndIndexes[i]);
-                            if (MultipartRequest)
-                                context.HttpContext.Response.WriteAsync("\r\n").RunSynchronously();
+                            if (MultipartRequest) context.HttpContext.Response.Write("\r\n");
                         }
                         else
                             return;
                     }
 
-                    if (MultipartRequest) context.HttpContext.Response.WriteAsync(string.Format("--{0}--", boundary)).RunSynchronously();
+                    if (MultipartRequest) context.HttpContext.Response.Write(string.Format("--{0}--", boundary));
                 }
             }
         }
