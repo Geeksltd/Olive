@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 14 Feb 2018
+- Change *Context.Request* to **Context.Current.Request()**
+
 ## 24 Jan 2018
 Change .Common.scss using the latest version from the template
 
