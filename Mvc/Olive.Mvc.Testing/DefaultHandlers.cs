@@ -9,9 +9,9 @@ namespace Olive.Mvc.Testing
 {
     static class DefaultHandlers
     {
-        static string Param(string key) => Context.Request.Param(key);
+        static string Param(string key) => Context.Current.Request().Param(key);
 
-        static Task Respond(string response) => Context.Response.EndWith(response);
+        static Task Respond(string response) => Context.Current.Response().EndWith(response);
 
         internal static IWebTestConfig AddDatabaseManager(this IWebTestConfig config)
         {
@@ -19,7 +19,7 @@ namespace Olive.Mvc.Testing
 
             async Task<bool> startDatabase(bool shouldRedirect = false)
             {
-                var redirect = Context.Request.ToAbsoluteUri().AsUri().RemoveQueryString("Web.Test.Command").ToString();
+                var redirect = Context.Current.Request().ToAbsoluteUri().AsUri().RemoveQueryString("Web.Test.Command").ToString();
 
                 WebTestConfig.SetRunner();
                 await TempDatabase.Start();
@@ -27,7 +27,7 @@ namespace Olive.Mvc.Testing
                 if (shouldRedirect)
                 {
                     Debug.WriteLine("All done. Redirecting to: " + redirect);
-                    Context.Response.Redirect(redirect);
+                    Context.Current.Response().Redirect(redirect);
                 }
 
                 return shouldRedirect;
@@ -43,13 +43,13 @@ namespace Olive.Mvc.Testing
 
         internal static IWebTestConfig AddSnapshot(this IWebTestConfig config)
         {
-            bool shared() => Context.Request.Param("mode") == "shared";
+            bool shared() => Context.Current.Request().Param("mode") == "shared";
 
             config.Add("snap", () =>
-                  new Snapshot(Param("name"), shared()).Create(Context.Http));
+                  new Snapshot(Param("name"), shared()).Create());
 
             config.Add("restore", () =>
-                 new Snapshot(Param("name"), shared()).Restore(Context.Http));
+                 new Snapshot(Param("name"), shared()).Restore());
 
             config.Add("remove_snapshots", () => Snapshot.RemoveSnapshots(), "Kill DB Snapshots");
 

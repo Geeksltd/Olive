@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Olive.Entities;
 
-namespace Olive.Web
+namespace Olive
 {
-    public static partial class OliveExtensions
+    partial class OliveWebExtensions
     {
         /// <summary>
         /// Gets the cookies sent by the client.
@@ -26,7 +26,7 @@ namespace Olive.Web
         /// </summary>
         public static async Task<T> GetOrDefault<T>(this HttpRequest request, string key)
         {
-            request = request ?? Context.Request ??
+            request = request ?? Olive.Context.Current.Request() ??
                     throw new InvalidOperationException("Request.GetOrDefault<T>() can only be called inside an Http context.");
 
             if (key == ".") key = "." + typeof(T).Name;
@@ -61,9 +61,6 @@ namespace Olive.Web
         /// </summary>
         public static string Param(this HttpRequest request, string key)
         {
-            if (Context.Request != request)
-                throw new Exception("The given request is not match with ActionContext`s request.");
-
             if (request.HasFormContentType && request.Form.ContainsKey(key))
                 return request.Form[key].ToStringOrEmpty();
 
@@ -78,13 +75,8 @@ namespace Olive.Web
         /// </summary>
         static async Task<T> GetEntity<T>(this HttpRequest request, string key, bool throwIfNotFound = true)
         {
-            if (request == null)
-            {
-                if (Context.Http != null)
-                    request = Context.Request;
-                else
+            request = request ?? Context.Current.Request() ??
                     throw new InvalidOperationException("Request.Get<T>() can only be called inside an Http context.");
-            }
 
             if (key == ".") key = "." + typeof(T).Name;
 
@@ -160,7 +152,7 @@ namespace Olive.Web
 
         public static RouteValueDictionary GetRouteValues(this HttpRequest request)
         {
-            return Context.ActionContextAccessor?.ActionContext?.RouteData?.Values;
+            return Olive.Context.Current.ActionContext()?.RouteData?.Values;
         }
 
         /// <summary>
@@ -171,7 +163,7 @@ namespace Olive.Web
         /// <summary>
         /// Gets the root of the requested website.
         /// </summary>
-        public static string GetWebsiteRoot(this HttpRequest request) => $"{request.Scheme}://{request.Host}/";
+        public static string RootUrl(this HttpRequest request) => $"{request.Scheme}://{request.Host}/";
 
         /// <summary>
         /// Gets the raw url of the request.
@@ -186,13 +178,13 @@ namespace Olive.Web
         /// Gets the absolute Uri of the request.
         /// </summary>
         public static string ToAbsoluteUri(this HttpRequest request) =>
-            $"{request.GetWebsiteRoot().TrimEnd('/')}{request.PathBase}{request.Path}{request.QueryString}";
+            $"{request.RootUrl().TrimEnd('/')}{request.PathBase}{request.Path}{request.QueryString}";
 
         /// <summary>
         /// Gets the absolute URL for a specified relative url.
         /// </summary>
         public static string GetAbsoluteUrl(this HttpRequest request, string relativeUrl) =>
-            request.GetWebsiteRoot() + relativeUrl.TrimStart("/");
+            request.RootUrl() + relativeUrl.TrimStart("/");
 
         /// <summary>
         /// Determines whether this is an Ajax call.

@@ -9,9 +9,6 @@ namespace Olive.Entities
         bool IsIdLoaded; // For performance, this is used instead of Nullable<Guid>
         Guid id;
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Func<Type, Guid> NewGuidGenerator = t => Guid.NewGuid();
-
         /// <summary>
         /// Gets a unique Identifier for this instance. In the database, this will be the primary key of this object.
         /// </summary>
@@ -22,7 +19,7 @@ namespace Olive.Entities
                 if (IsIdLoaded) return id;
                 else
                 {
-                    id = NewGuidGenerator(GetType());
+                    id = Guid.NewGuid();
                     IsIdLoaded = true;
                     return id;
                 }

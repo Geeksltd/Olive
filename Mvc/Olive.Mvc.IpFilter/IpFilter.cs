@@ -111,7 +111,7 @@ namespace Olive.Mvc
             return BlockedIpRanges.None(range => range.Contains(address));
         }
 
-        static Task EndWithMessage() => Context.Response.EndWith(BlockedAttemptResponse);
+        static Task EndWithMessage() => Context.Current.Response().EndWith(BlockedAttemptResponse);
 
         static async Task LoadBlockedIpRanges()
         {

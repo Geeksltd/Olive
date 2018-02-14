@@ -10,7 +10,7 @@ namespace Olive.Globalization
     partial class Translator
     {
         public static async Task<string> TranslateHtml(string htmlInDefaultLanguage)
-            => await TranslateHtml(htmlInDefaultLanguage, await GetCurrentLanguage());
+            => await TranslateHtml(htmlInDefaultLanguage, await Context.Current.Language());
 
         public static async Task<string> TranslateHtml(string htmlInDefaultLanguage, ILanguage language)
         {

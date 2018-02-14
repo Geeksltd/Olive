@@ -32,17 +32,17 @@ namespace Olive.Mvc.Testing
             SnapshotsDirectory = GetSnapshotsRoot(IsInShareSnapshotMode).GetSubDirectory(SnapshotName);
         }
 
-        public async Task Create(HttpContext context)
+        public async Task Create()
         {
             if (!Enabled) return;
 
             SetupDirecory();
             await SnapshotDatabase();
-            await CreateSnapshotCookies(context);
+            await CreateSnapshotCookies();
             DiskBlobStorageProvider.GetRoot(SnapshotsDirectory)
                     .CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
             await SaveDate();
-            await SaveUrl(context);
+            await SaveUrl();
         }
 
         static bool Enabled => Config.Get("Olive.Mvc.Testing:Snapshot:Enabled", defaultValue: true);
@@ -53,7 +53,7 @@ namespace Olive.Mvc.Testing
             return SnapshotsDirectory.Exists();
         }
 
-        public async Task Restore(HttpContext context)
+        public async Task Restore()
         {
             if (!Exists())
                 throw new DirectoryNotFoundException("Cannot find snapshot " + SnapshotName);
@@ -63,7 +63,7 @@ namespace Olive.Mvc.Testing
             Debug.WriteLine("Total time for restoring including mutex: " + LocalTime.Now.Subtract(restoreDatabase).Milliseconds);
 
             var restoreCookies = LocalTime.Now;
-            await RestoreCookies(context);
+            await RestoreCookies();
             Debug.WriteLine("Total time for restoring cookies: " + LocalTime.Now.Subtract(restoreCookies).Milliseconds);
 
             var restoreFiles = LocalTime.Now;
@@ -77,7 +77,7 @@ namespace Olive.Mvc.Testing
             Debug.WriteLine("Total time for restoring date: " + LocalTime.Now.Subtract(restoreDate).Milliseconds);
 
             var restoreUrl = LocalTime.Now;
-            await RestoreUrl(context);
+            await RestoreUrl();
             Debug.WriteLine("Total time for restoring url: " + LocalTime.Now.Subtract(restoreUrl).Milliseconds);
         }
 
@@ -115,10 +115,10 @@ namespace Olive.Mvc.Testing
                 normalSnapshots.EnsureExists();
             }
 
-            Context.Response.Redirect("~/");
+            Context.Current.Response().Redirect("~/");
             return Task.CompletedTask;
         }
-
+        
         public static Task RemoveSnapshot(string name)
         {
             var snapshotName = CreateSnapshotName(name);
@@ -131,7 +131,7 @@ namespace Olive.Mvc.Testing
             if (shardSnapshotDirectory.Exists)
                 DeleteDirectory(shardSnapshotDirectory);
 
-            Context.Response.Redirect("~/");
+            Context.Current.Response().Redirect("~/");
             return Task.CompletedTask;
         }
 
@@ -154,37 +154,37 @@ namespace Olive.Mvc.Testing
 
         #region URL
 
-        async Task SaveUrl(HttpContext context)
+        async Task SaveUrl()
         {
-            var uri = new Uri(Context.Request.ToAbsoluteUri());
+            var uri = new Uri(Context.Current.Request().ToAbsoluteUri());
             var url = uri.PathAndQuery;
 
             url = url.Substring(0, url.IndexOf("Web.Test.Command", StringComparison.OrdinalIgnoreCase) - 1);
             if (url.HasValue())
             {
                 await File.WriteAllTextAsync(SnapshotsDirectory.GetFile(URL_FILE_NAME).FullName, url);
-                context.Response.Redirect(url);
+                Context.Current.Response().Redirect(url);
             }
         }
 
-        async Task RestoreUrl(HttpContext context)
+        async Task RestoreUrl()
         {
             var urlFile = SnapshotsDirectory.GetFile(URL_FILE_NAME);
             if (urlFile.Exists())
-                context.Response.Redirect(context.Request.GetWebsiteRoot() + (await urlFile.ReadAllTextAsync()).TrimStart("/"));
+                Context.Current.Response().Redirect(Context.Current.Request().RootUrl() + (await urlFile.ReadAllTextAsync()).TrimStart("/"));
         }
 
         #endregion
 
         #region Cookie
-        async Task CreateSnapshotCookies(HttpContext context)
+        async Task CreateSnapshotCookies()
         {
-            var json = JsonConvert.SerializeObject(context.Request.GetCookies().ToArray());
+            var json = JsonConvert.SerializeObject(Context.Current.Request().GetCookies().ToArray());
 
             await GetCookiesFile().WriteAllTextAsync(json);
         }
 
-        async Task RestoreCookies(HttpContext context)
+        async Task RestoreCookies()
         {
             var cookiesFile = GetCookiesFile();
 
@@ -193,7 +193,7 @@ namespace Olive.Mvc.Testing
             var cookies = JsonConvert.DeserializeObject<KeyValuePair<string, string>[]>(await cookiesFile.ReadAllTextAsync());
 
             foreach (var cookie in cookies)
-                context.Response.Cookies.Append(cookie.Key, cookie.Value);
+                Context.Current.Response().Cookies.Append(cookie.Key, cookie.Value);
         }
 
         FileInfo GetCookiesFile() => SnapshotsDirectory.GetFile("cookies.json");

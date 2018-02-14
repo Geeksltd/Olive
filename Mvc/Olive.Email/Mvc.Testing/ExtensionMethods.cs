@@ -12,7 +12,7 @@ namespace Olive.Email
         {
             config.Add("testEmail", async () =>
             {
-                var service = new EmailTestService(Context.Request, Context.Response);
+                var service = new EmailTestService();
                 await service.Initialize();
                 await service.Process();
                 return true;

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Olive.Entities;
-using Olive.Web;
 
 namespace Olive.Globalization
 {
     public partial class Translator
     {
-        static ILanguage DefaultLanguage;
         public readonly static List<ITranslationProvider> Providers = new List<ITranslationProvider>();
 
         static Translator()
@@ -26,35 +24,15 @@ namespace Olive.Globalization
         public static readonly AsyncEvent<TranslationDownloadedEventArgs> TranslationDownloaded =
             new AsyncEvent<TranslationDownloadedEventArgs>();
 
-        /// <summary>
-        /// Gets the language of the current user from cookie.
-        /// If no language is specified, then the default language will be used as configured in the database.
-        /// </summary>
-        public static Func<Task<ILanguage>> GetCurrentLanguage = async ()
-            => await CookieProperty.Get<ILanguage>() ?? await GetDefaultLanguage();
-
-        public static async Task<ILanguage> GetDefaultLanguage()
-        {
-            if (DefaultLanguage == null)
-            {
-                DefaultLanguage = await Entity.Database.FirstOrDefault<ILanguage>(l => l.IsDefault);
-
-                if (DefaultLanguage == null)
-                    throw new Exception("There is no default language specified in the system.");
-            }
-
-            return DefaultLanguage;
-        }
-
         public static async Task<string> Translate(string phraseInDefaultLanguage)
-            => await Translate(phraseInDefaultLanguage, await GetCurrentLanguage());
+            => await Translate(phraseInDefaultLanguage, await Context.Current.Language());
 
         public static async Task<string> Translate(string phraseInDefaultLanguage, ILanguage language)
         {
             if (language == null) throw new ArgumentNullException(nameof(language));
 
             if (phraseInDefaultLanguage.IsEmpty()) return phraseInDefaultLanguage;
-            if (language.Equals(await GetDefaultLanguage())) return phraseInDefaultLanguage;
+            if (language.Equals(await Context.Current.DefaultLanguage())) return phraseInDefaultLanguage;
 
             // Already saved locally?
             var translation = await GetLocalTranslation(phraseInDefaultLanguage, language);
@@ -78,7 +56,8 @@ namespace Olive.Globalization
             {
                 foreach (var translator in Providers)
                 {
-                    translation = await translator.Translate(phraseInDefaultLanguage, DefaultLanguage.IsoCode, language.IsoCode);
+                    translation = await translator.Translate(phraseInDefaultLanguage,
+                        (await Context.Current.DefaultLanguage()).IsoCode, language.IsoCode);
 
                     if (translation.HasValue())
                     {

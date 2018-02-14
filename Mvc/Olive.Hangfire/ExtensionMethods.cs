@@ -13,7 +13,7 @@ namespace Olive.Hangfire
         {
             config.Add("tasks", async () =>
             {
-                await Context.Response.EndWith(@"
+                await Context.Current.Response().EndWith(@"
          <html>
             <body>
                <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/ jquery.min.js'>

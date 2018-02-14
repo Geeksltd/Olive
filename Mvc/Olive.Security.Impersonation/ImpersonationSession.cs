@@ -29,12 +29,7 @@ namespace Olive.Security.Impersonation
     /// </summary>
     public class ImpersonationSession
     {
-        /// <summary>
-        /// Provides the current user. 
-        /// </summary>
-        public static Func<IPrincipal> CurrentUserProvider = GetCurrentUser;
-
-        static HttpContext Context => Web.Context.Http;
+        static HttpContext Context => Olive.Context.Current.Http();
 
         /// <summary>
         /// Determines if the current user is impersonated.
@@ -49,7 +44,7 @@ namespace Olive.Security.Impersonation
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            var admin = CurrentUserProvider?.Invoke() as IImpersonator
+            var admin = GetCurrentUser() as IImpersonator
                 ?? throw new InvalidOperationException("The current user is not an IImpersonator.");
 
             if (!admin.CanImpersonate(user))
@@ -103,7 +98,7 @@ namespace Olive.Security.Impersonation
         /// </summary>
         public static async Task<IImpersonator> GetImpersonator()
         {
-            var user = CurrentUserProvider?.Invoke();
+            var user = GetCurrentUser();
             if (user == null || user.IsInRole("Guest") || user.IsInRole("Anonymous")) return null;
 
             var token = await ImpersonationToken;

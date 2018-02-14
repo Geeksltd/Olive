@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Entities;
 
-namespace Olive.Web
+namespace Olive
 {
-    partial class OliveExtensions
+    partial class OliveWebExtensions
     {
         const int MOVED_PERMANENTLY_STATUS_CODE = 301;
 

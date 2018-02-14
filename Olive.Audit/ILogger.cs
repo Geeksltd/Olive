@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Olive.Entities;
+using System.Security.Claims;
 
 namespace Olive.Audit
 {
@@ -11,5 +12,11 @@ namespace Olive.Audit
     {
         IAuditEvent CreateInstance();
         Task Log(IAuditEvent auditEvent);
+    }
+
+    public interface IContextUserProvider
+    {
+        ClaimsPrincipal GetUser();
+        string GetUserIP();
     }
 }

@@ -83,7 +83,7 @@ namespace Olive.Mvc
         /// <summary>
         /// Gets HTTP-specific information about an individual HTTP request.
         /// </summary>
-        public new HttpContext HttpContext => base.HttpContext ?? Context.Http;
+        public new HttpContext HttpContext => base.HttpContext ?? Context.Current.Http();
 
         /// <summary>
         /// Creates a new instance of the specified view model type and binds it using the standard request data.

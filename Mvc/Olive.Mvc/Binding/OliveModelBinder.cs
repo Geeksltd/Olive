@@ -38,7 +38,7 @@ namespace Olive.Mvc
 
         async Task BindMasterDetailsProperty(ModelBindingContext bindingContext, MasterDetailsAttribute attribute)
         {
-            if (Context.Request.IsGet()) return;
+            if (Context.Current.Request().IsGet()) return;
 
             var prefix = attribute.Prefix + "-";
             var listObject = Activator.CreateInstance(bindingContext.ModelType) as IList;

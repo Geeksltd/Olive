@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Routing;
@@ -25,13 +27,14 @@ namespace Olive.Mvc
         // visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            services.InjectOliveDependencies();
+            Context.Initialize(services);
 
-            var builder = services.AddMvc(o => o.ModelBinderProviders.Insert(0, new OliveBinderProvider()))
+            services.AddSingleton(typeof(IHttpContextAccessor), typeof(HttpContextAccessor))
+               .AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
 
-            .AddJsonOptions(o => o.SerializerSettings.ContractResolver = new DefaultContractResolver())
-
-            .ConfigureApplicationPartManager(manager =>
+            var mvc = services.AddMvc(o => o.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
+            mvc.AddJsonOptions(o => o.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            mvc.ConfigureApplicationPartManager(manager =>
             {
                 manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
                 manager.FeatureProviders.Add(new ReferencesMetadataReferenceFeatureProvider());
@@ -51,11 +54,9 @@ namespace Olive.Mvc
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            Context.Current.Configure(app.ApplicationServices);
             ConfigureExceptionPage(app, env);
-
             InstantiateDatabase(app, env);
-
-            app.ConfigureOliveDependencies(env);
 
             app.UseAuthentication()
                 .UseStaticFiles()
