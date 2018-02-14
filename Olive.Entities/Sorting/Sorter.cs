@@ -88,9 +88,9 @@ namespace Olive.Entities
                 if (first <= 0) return false;
 
                 await Entity.Database.Update(item, o => o.Order = first - 1, saveBehaviour);
-                await JustifyOrders(item, saveBehaviour);
-                return true;
             }
+            await JustifyOrders(item, saveBehaviour);
+            return true;
         }
 
         /// <summary>
@@ -103,9 +103,9 @@ namespace Olive.Entities
                 var last = (await FindSiblings(item)).Max(o => o.Order);
 
                 await Entity.Database.Update(item, o => o.Order = last + 1, saveBehaviour);
-                await JustifyOrders(item, saveBehaviour);
-                return true;
             }
+            await JustifyOrders(item, saveBehaviour);
+            return true;
         }
 
         /// <summary>

@@ -15,6 +15,23 @@ namespace Olive
         public static TResult AwaitResult<TResult>(this Task<TResult> task) => Task.Run(async () => await task).Result;
 
         /// <summary>
+        /// If the task is not completed already it throws an exception warning you to await the task.
+        /// If the task wraps an exception, the wrapped exception will be thrown.
+        /// Otherwise the result will be returned.
+        /// Use this instead of calling the Result property when you know that the result is ready to avoid deadlocks.
+        /// </summary>
+        public static TResult GetAlreadyCompletedResult<TResult>(this Task<TResult> task)
+        {
+            if (!task.IsCompleted)
+                throw new InvalidOperationException("This task is not completed yet. Do you need to await it?");
+
+            if (task.Exception != null)
+                throw task.Exception.InnerException;
+
+            return task.Result;
+        }
+
+        /// <summary>
         /// Runs a specified task in a new thread to prevent deadlock (context switch race).
         /// </summary> 
         public static void RunSync(this TaskFactory factory, Func<Task> task)
@@ -96,7 +113,7 @@ namespace Olive
         /// <param name="task">The target task to cast</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<TTarget> AsTask<TOriginal, TTarget>(this Task<TOriginal> task)
-            where TOriginal : TTarget => task.ContinueWith(t => (TTarget)t.Result);
+            where TOriginal : TTarget => task.ContinueWith(t => (TTarget)t.GetAlreadyCompletedResult());
 
         /// <summary>
         /// Casts it into a Task of IEnumerable, so the Linq methods can be invoked on it.

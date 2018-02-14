@@ -1134,7 +1134,7 @@ namespace Olive
 
             await Task.WhenAll(tasks);
 
-            return tasks.Select(x => x.Result);
+            return tasks.Select(x => x.GetAlreadyCompletedResult());
         }
 
         public static T[] PadRight<T>(this T[] array, int size, T padItemValue)

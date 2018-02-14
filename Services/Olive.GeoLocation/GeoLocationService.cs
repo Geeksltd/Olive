@@ -17,17 +17,18 @@ namespace Olive.GeoLocation
         public static string GoogleClientKey = Config.Get("Google.Maps.Api.Client.Key");
         public static string GoogleSignatureKey = Config.Get("Google.Maps.Api.Signature");
 
-        static ConcurrentDictionary<string, GeoLocation> CachedLocations = new ConcurrentDictionary<string, GeoLocation>();
+        static ConcurrentDictionary<string, Task<GeoLocation>> CachedLocations =
+            new ConcurrentDictionary<string, Task<GeoLocation>>();
 
         /// <summary>
         ///  Gets the Geo Location of a specified postcode using Google API.
         ///  This method has daily usage limit of 25000 calls.
         /// </summary>
-        public static GeoLocation GetPostcodeLocation(string postcode, string countryCode = "GB")
+        public static Task<GeoLocation> GetPostcodeLocation(string postcode, string countryCode = "GB")
         {
             var fullAddress = postcode + "," + countryCode;
 
-            return CachedLocations.GetOrAdd(fullAddress, address =>
+            return CachedLocations.GetOrAdd(fullAddress, async address =>
             {
                 var clientParameter = "key".OnlyWhen(GoogleSignatureKey.IsEmpty()).Or("client");
 
@@ -35,7 +36,7 @@ namespace Olive.GeoLocation
                     GoogleClientKey.UrlEncode().WithPrefix($"&{clientParameter}=") +
                     GoogleSignatureKey.UrlEncode().WithPrefix("&signature=");
 
-                var response = (new HttpClient().GetStringAsync(url).Result).To<XElement>();
+                var response = (await new HttpClient().GetStringAsync(url)).To<XElement>();
 
                 var status = response.GetValue<string>("status");
 
@@ -57,12 +58,12 @@ namespace Olive.GeoLocation
         /// <summary>
         /// Gets the distance between 2 locations in miles.
         /// </summary>
-        public static double? CalculateDistance(string postcode1, string postcode2, string countryCode = "GB")
+        public static async Task<double?> CalculateDistance(string postcode1, string postcode2, string countryCode = "GB")
         {
-            var location1 = GetPostcodeLocation(postcode1, countryCode);
+            var location1 = await GetPostcodeLocation(postcode1, countryCode);
             if (location1 == null) return null;
 
-            var location2 = GetPostcodeLocation(postcode2, countryCode);
+            var location2 = await GetPostcodeLocation(postcode2, countryCode);
             if (location2 == null) return null;
 
             return location1.GetDistance(location2);
@@ -73,10 +74,10 @@ namespace Olive.GeoLocation
         /// </summary>
         public static async Task<double?> CalculateTravelDistance(string fromPostCode, string toPostCode, string countryCode = "GB")
         {
-            var loc = GetPostcodeLocation(fromPostCode, countryCode);
+            var loc = await GetPostcodeLocation(fromPostCode, countryCode);
             var fromLocation = loc == null ? null : loc.Latitude + "," + loc.Longitude;
 
-            loc = GetPostcodeLocation(toPostCode, countryCode);
+            loc = await GetPostcodeLocation(toPostCode, countryCode);
             var toLocation = loc == null ? null : loc.Latitude + "," + loc.Longitude;
 
             var url = DIRECTION_URL.AsUri()
