@@ -1,5 +1,14 @@
 # Olive compatibility change log
 
+## 15 Feb 2018
+- Change bower.json: *olive.mvc* to be *0.6.4* and **bootstrap-file-style** to be **2.1.0**
+- Change the imports section of *bootstrap-social.scss* to [this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/wwwroot/Styles/Imports/bootstrap-social.scss)
+- Change **Common.scss** based on [this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/wwwroot/Styles/Imports/Common.scss)
+- Remove the import line from **nav.scss**
+- Change **typeaheadjs.scss** based on [this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/wwwroot/Styles/Imports/typeaheadjs.scss)
+- Replace \_custom-variables.scss with [this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/wwwroot/styles/Imports/_variables.scss)
+
+
 ## 14 Feb 2018
 - Change *Context.Request* to **Context.Current.Request()**
 
