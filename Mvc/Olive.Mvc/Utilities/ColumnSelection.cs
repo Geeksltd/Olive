@@ -9,7 +9,7 @@ namespace Olive.Mvc
 {
     public class ColumnSelection
     {
-        List<string> Current;
+        List<string> current;
         string cookieKey, Prefix;
 
         public ColumnSelection(string prefix = null) => Prefix = prefix;
@@ -23,13 +23,18 @@ namespace Olive.Mvc
             return result;
         }
 
-        public async Task<List<string>> GetCurrent()
+        public IEnumerable<string> Current
         {
-            if (Current != null) return Current;
+            get
+            {
+                if (current == null)
+                {
+                    var fromCookie = Task.Factory.RunSync(() => CookieProperty.Get(CookieKey));
+                    SetSelection(fromCookie.OrEmpty().Split('|'));
+                }
 
-            SetSelection((await CookieProperty.Get(CookieKey)).OrEmpty().Split('|'));
-
-            return Current;
+                return current;
+            }
         }
 
         public List<string> Default { get; set; }
@@ -51,18 +56,18 @@ namespace Olive.Mvc
             }
         }
 
-        public bool Contains(string column) => Current.Contains(column);
+        public bool Contains(string column) => current.Contains(column);
 
         internal void SetSelection(IEnumerable<string> selectedColumns)
         {
             selectedColumns = selectedColumns.Or(new string[0]).Intersect(Options);
 
-            Current = selectedColumns.Or(Default).ToList();
+            current = selectedColumns.Or(Default).ToList();
 
-            if (Current.IsEquivalentTo(Default))
+            if (current.IsEquivalentTo(Default))
                 CookieProperty.Remove(CookieKey);
             else
-                CookieProperty.Set(CookieKey, Current.ToString("|"));
+                CookieProperty.Set(CookieKey, current.ToString("|"));
         }
     }
 }

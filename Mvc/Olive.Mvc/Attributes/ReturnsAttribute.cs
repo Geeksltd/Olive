@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Olive.Mvc
 {
@@ -7,11 +9,11 @@ namespace Olive.Mvc
     /// This is used in cases where the actual return type of the method itself can't be that type and has to be a generic interface to cater for exceptional scenarios (e.g. Web Api methods return IActionResult).
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class ReturnsAttribute : Attribute
+    public class ReturnsAttribute : ProducesResponseTypeAttribute
     {
-        public readonly Type ReturnType;
-        public ReturnsAttribute(Type returnType)
-            => ReturnType = returnType ?? throw new ArgumentNullException();
+        public ReturnsAttribute(Type returnType) : base(returnType, StatusCodes.Status200OK)
+        {
+        }
 
         /// <summary>
         /// When set, if the method takes a single Guid parameter then Olive.ApiProxy will generate
