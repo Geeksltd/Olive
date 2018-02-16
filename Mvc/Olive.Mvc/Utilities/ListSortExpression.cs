@@ -51,14 +51,14 @@ namespace Olive.Mvc
             sortExpression = sortExpression.OrEmpty();
 
             if (UseAjaxPost)
-                return Context.HttpContextAccessor.HttpContext.GetUrlHelper().ActionWithQuery(Container.GetType().Name + "/Reload");
+                return Context.Current.Http().GetUrlHelper().ActionWithQuery(Container.GetType().Name + "/Reload");
             else
                 return UrlForGet(sortExpression);
         }
 
         string UrlForGet(string sortExpression)
         {
-            var result = Context.HttpContextAccessor.HttpContext.GetUrlHelper().CurrentUri();
+            var result = Context.Current.Http().GetUrlHelper().CurrentUri();
 
             var queryKey = Prefix.WithSuffix(".").ToLower() + "s";
 

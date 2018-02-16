@@ -8,7 +8,7 @@ namespace Olive.Mvc.Testing
     {
         public static string GetWebTestWidgetHtml()
         {
-            var baseUrl = new Uri(Context.Request.ToAbsoluteUri()).RemoveQueryString("Web.Test.Command");
+            var baseUrl = new Uri(Context.Current.Request().ToAbsoluteUri()).RemoveQueryString("Web.Test.Command");
 
             var r = new StringBuilder();
             r.AppendLine(@"<div class='webtest-commands'

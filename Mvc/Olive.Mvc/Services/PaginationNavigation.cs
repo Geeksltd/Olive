@@ -42,7 +42,7 @@
 
         string GetLinkAttributes(int number)
         {
-            var urlHelper = new UrlHelper(Context.ActionContextAccessor.ActionContext);
+            var urlHelper = Context.Current.Http().GetUrlHelper();
 
             if (Paging.UseAjaxPost)
             {

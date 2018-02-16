@@ -13,7 +13,7 @@
         /// <summary>
         /// Gets HTTP-specific information about an individual HTTP request.
         /// </summary>
-        public new HttpContext HttpContext => base.HttpContext ?? Context.Http;
+        public new HttpContext HttpContext => base.HttpContext ?? Context.Current.Http();
 
         protected new HttpRequest Request => HttpContext?.Request;
 

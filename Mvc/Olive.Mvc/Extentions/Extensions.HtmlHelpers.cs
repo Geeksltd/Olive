@@ -206,7 +206,7 @@ namespace Olive.Mvc
 
             if (request.IsAjaxGet())
             {
-                var title = Context.Http.Items["Page.Title"].ToStringOrEmpty().Or(html.ViewData["Title"].ToStringOrEmpty());
+                var title = Context.Current.Http().Items["Page.Title"].ToStringOrEmpty().Or(html.ViewData["Title"].ToStringOrEmpty());
                 result = result.Concat(html.Hidden("page.meta.title", title));
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 
 namespace Olive.ApiProxy
@@ -11,7 +12,9 @@ namespace Olive.ApiProxy
         {
             Args = args;
             if (Args.None()) return false;
-            if ((Context.ControllerName = Param("controller")) == null) return false;
+
+            var controllerName = Param("controller") ?? Param("file");
+            if ((Context.ControllerName = controllerName) == null) return false;
 
             if ((Context.Output = Param("out")?.AsDirectory()) == null) return false;
             if (!Context.Output.Exists)
@@ -31,8 +34,27 @@ namespace Olive.ApiProxy
 
         static bool LoadFromControllerFile(FileInfo file)
         {
-            // TODO: Parse the controller file and find all other parameters.
-            return false;
+            if (file == null || !file.Exists)
+            {
+                Console.WriteLine(file?.FullName + " controller file does not exist!");
+                return false;
+            }
+
+            var lines = file.ReadAllText().ToLines().Trim();
+            var @namespace = lines.FirstOrDefault(x => x.StartsWith("namespace "))?.TrimBefore("namespace ", trimPhrase: true);
+            var @class = lines.FirstOrDefault(x => x.StartsWith("public class "))?
+                .TrimBefore("public class ", trimPhrase: true).TrimAfter(" ");
+
+            Context.ControllerName = @namespace.WithSuffix(".") + @class;
+
+            var directory = file.Directory;
+            while (directory.Name.ToLower() != "website")
+            {
+                directory = directory.Parent;
+                if (directory.Root == directory) return false;
+            }
+
+            return LoadFromWebsite(directory);
         }
 
         static bool LoadFromWebsite(DirectoryInfo websiteFolder)
@@ -49,7 +71,13 @@ namespace Olive.ApiProxy
 
             Context.AssemblyFile = websiteFolder.GetFile("bin\\Debug\\netcoreapp2.0\\Website.dll");
             Directory.SetCurrentDirectory(websiteFolder.FullName);
-            if ((Context.PublisherService = Config.Get("Microservice:Name")).IsEmpty())
+
+            Context.PublisherService = websiteFolder.GetFile("appSettings.json").ReadAllText().ToLines().Trim()
+                  .SkipWhile(x => !x.StartsWith("\"Microservice\":"))
+                  .FirstOrDefault(x => x.StartsWith("\"Name\":"))
+                  ?.TrimBefore(":", trimPhrase: true).TrimEnd(",").Trim(' ', '\"');
+
+            if (Context.PublisherService.IsEmpty())
             {
                 Console.WriteLine("Setting of Microservice:Name under appSettings.json was not found.");
                 return false;

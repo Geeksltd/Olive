@@ -22,7 +22,7 @@ namespace Olive.Security
                 try
                 {
                     user = OAuth.Instance.DecodeJwt(jwt);
-                    if (user != null) Context.Http.User = user;
+                    if (user != null) Context.Current.Http().User = user;
                 }
                 catch (Exception ex)
                 {

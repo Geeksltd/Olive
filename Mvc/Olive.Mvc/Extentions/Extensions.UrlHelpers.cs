@@ -20,7 +20,7 @@ namespace Olive.Mvc
         {
             var result = url.ActionContext?.HttpContext.Request.Param("current.request.url");
 
-            if (result.IsEmpty()) result = Context.Http?.Request.Param("current.request.url");
+            if (result.IsEmpty()) result = Context.Current.Request().Param("current.request.url");
 
             if (result.HasValue())
             {
@@ -30,7 +30,7 @@ namespace Olive.Mvc
             {
                 result = url.ActionContext?.HttpContext.Request.ToRawUrl();
 
-                if (result.IsEmpty()) result = Context.Http?.Request.ToRawUrl();
+                if (result.IsEmpty()) result = Context.Current.Request().ToRawUrl();
             }
 
             return result;

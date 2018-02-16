@@ -47,7 +47,7 @@ namespace Olive
             // Run them in parallel
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Where(x => x.Predicate.Result).Select(x => x.Value);
+            return tasks.Where(x => x.Predicate.AwaitResult).Select(x => x.Value);
         }
 
         public static async Task<IEnumerable<T>> Concat<T>(
@@ -67,7 +67,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Distinct(x => x.Predicate.Result).Select(x => x.Value);
+            return tasks.Distinct(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
         public static async Task<T> First<T>(
@@ -81,7 +81,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.First(x => x.Predicate.Result).Value;
+            return tasks.First(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
         public static async Task<T> FirstOrDefault<T>(
@@ -95,7 +95,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.FirstOrDefault(x => x.Predicate.Result).Value;
+            return tasks.FirstOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
         public static async Task<IEnumerable<T>> Intersect<T>(
@@ -115,7 +115,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Last(x => x.Predicate.Result).Value;
+            return tasks.Last(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
         public static async Task<T> LastOrDefault<T>(
@@ -129,7 +129,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.LastOrDefault(x => x.Predicate.Result).Value;
+            return tasks.LastOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
         public static async Task<IEnumerable<TSource>> OrderBy<TSource, TKey>(
@@ -143,7 +143,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(false);
 
-            return tasks.OrderBy(x => x.OrderKey.Result).Select(x => x.Value);
+            return tasks.OrderBy(x => x.OrderKey.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
         public static async Task<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(
@@ -157,7 +157,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(false);
 
-            return tasks.OrderByDescending(x => x.OrderKey.Result).Select(x => x.Value);
+            return tasks.OrderByDescending(x => x.OrderKey.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
         public static async Task<T> Single<T>(this IEnumerable<T> list, Func<T, Task<bool>> func)
@@ -170,7 +170,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Single(x => x.Predicate.Result).Value;
+            return tasks.Single(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
         public static async Task<T> SingleOrDefault<T>(this IEnumerable<T> list, Func<T, Task<bool>> func)
@@ -183,7 +183,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.SingleOrDefault(x => x.Predicate.Result).Value;
+            return tasks.SingleOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
         public static async Task<IEnumerable<T>> Union<T>(this IEnumerable<T> list, Task<IEnumerable<T>> second)
@@ -211,7 +211,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.SkipWhile(x => x.Predicate.Result).Select(x => x.Value);
+            return tasks.SkipWhile(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
         public static async Task<IEnumerable<T>> TakeWhile<T>(
@@ -225,7 +225,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.TakeWhile(x => x.Predicate.Result).Select(x => x.Value);
+            return tasks.TakeWhile(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
         public static async Task<bool> All<T>(this IEnumerable<T> list, Func<T, Task<bool>> func)
@@ -238,7 +238,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.All(x => x.Predicate.Result);
+            return tasks.All(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<bool> Any<T>(this IEnumerable<T> list, Func<T, Task<bool>> func)
@@ -251,7 +251,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Any(x => x.Predicate.Result);
+            return tasks.Any(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<decimal> Average<T>(this IEnumerable<T> list, Func<T, Task<decimal>> func)
@@ -264,7 +264,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Average(x => x.Predicate.Result);
+            return tasks.Average(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<int> Count<T>(this IEnumerable<T> list, Func<T, Task<bool>> func)
@@ -277,7 +277,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Count(x => x.Predicate.Result);
+            return tasks.Count(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<decimal> Sum<T>(this IEnumerable<T> list, Func<T, Task<decimal>> func)
@@ -290,7 +290,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Sum(x => x.Predicate.Result);
+            return tasks.Sum(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<TResult> Max<TSource, TResult>(this IEnumerable<TSource> list, Func<TSource, Task<TResult>> func)
@@ -303,7 +303,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Max(x => x.Predicate.Result);
+            return tasks.Max(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<TResult> Min<TSource, TResult>(
@@ -317,7 +317,7 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.Min(x => x.Predicate.Result);
+            return tasks.Min(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<bool> Contains<TSource>(this IEnumerable<TSource> list, Task<TSource> item)

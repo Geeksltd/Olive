@@ -39,8 +39,9 @@ namespace Olive.Mvc
 
             var url = "/temp-file/" + key;
 
-            if (Context.Http != null)
-                url = Context.Http?.GetUrlHelper().Content("~" + url);
+            var http = Context.Current.Http();
+            if (http != null)
+                url = http?.GetUrlHelper().Content("~" + url);
 
             return new { Download = url };
         }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Globalization</RootNamespace>
   </PropertyGroup>
 
@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.6.15" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
@@ -24,10 +23,6 @@
     </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Olive.Web">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

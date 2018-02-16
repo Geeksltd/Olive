@@ -15,6 +15,23 @@ namespace Olive
         public static TResult AwaitResult<TResult>(this Task<TResult> task) => Task.Run(async () => await task).Result;
 
         /// <summary>
+        /// If the task is not completed already it throws an exception warning you to await the task.
+        /// If the task wraps an exception, the wrapped exception will be thrown.
+        /// Otherwise the result will be returned.
+        /// Use this instead of calling the Result property when you know that the result is ready to avoid deadlocks.
+        /// </summary>
+        public static TResult GetAlreadyCompletedResult<TResult>(this Task<TResult> task)
+        {
+            if (!task.IsCompleted)
+                throw new InvalidOperationException("This task is not completed yet. Do you need to await it?");
+
+            if (task.Exception != null)
+                throw task.Exception.InnerException;
+
+            return task.Result;
+        }
+
+        /// <summary>
         /// Runs a specified task in a new thread to prevent deadlock (context switch race).
         /// </summary> 
         public static void RunSync(this TaskFactory factory, Func<Task> task)
@@ -23,16 +40,7 @@ namespace Olive
             {
                 var actualTask = new Task<object>(task);
                 actualTask.RunSynchronously();
-                actualTask.Wait(); // To get the exception
-
-                //factory.StartNew(task, TaskCreationOptions.LongRunning)
-                //  .ContinueWith(t =>
-                //  {
-                //      if (t.Exception == null) return;
-                //      System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
-                //      throw t.Exception.InnerException;
-                //  })
-                //  .Wait();
+                actualTask.Wait(); // To get the exception                
             }
             catch (AggregateException ex)
             {
@@ -105,7 +113,7 @@ namespace Olive
         /// <param name="task">The target task to cast</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<TTarget> AsTask<TOriginal, TTarget>(this Task<TOriginal> task)
-            where TOriginal : TTarget => task.ContinueWith(t => (TTarget)t.Result);
+            where TOriginal : TTarget => task.ContinueWith(t => (TTarget)t.GetAlreadyCompletedResult());
 
         /// <summary>
         /// Casts it into a Task of IEnumerable, so the Linq methods can be invoked on it.
@@ -134,5 +142,32 @@ namespace Olive
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<IEnumerable<T>> ForLinq<T>(this Task<IOrderedEnumerable<T>> task)
             => task.AsTask<IOrderedEnumerable<T>, IEnumerable<T>>();
+
+        /// <summary>
+        /// A shorter more readable alternative to ContinueWith().
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task<TResult> Get<TSource, TResult>(this Task<TSource> sourceTask, Func<TSource, TResult> expression)
+            => expression(await sourceTask.ConfigureAwait(continueOnCapturedContext: false));
+
+        /// <summary>
+        /// A shorter more readable alternative to nested ContinueWith() methods.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task<TResult> Get<TSource, TResult>(this Task<TSource> sourceTask, Func<TSource, Task<TResult>> expression)
+        {
+            var item = await sourceTask.ConfigureAwait(continueOnCapturedContext: false);
+            return await expression(item).ConfigureAwait(continueOnCapturedContext: false);
+        }
+
+        /// <summary>
+        /// A shorter more readable alternative to nested ContinueWith() methods.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task Then<TSource, TResult>(this Task<TSource> sourceTask, Action<TSource> action)
+        {
+            var item = await sourceTask.ConfigureAwait(continueOnCapturedContext: false);
+            action(item);
+        }
     }
 }

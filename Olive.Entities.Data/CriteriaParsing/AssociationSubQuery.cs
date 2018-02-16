@@ -16,7 +16,8 @@ namespace Olive.Entities.Data
         public AssociationSubQuery(PropertyInfo property, string mappedSubquery)
         {
             Property = property;
-            var subquerySplitted = mappedSubquery.Split(" WHERE ", StringSplitOptions.RemoveEmptyEntries).Trim().ToArray();
+            var subquerySplitted = mappedSubquery.Split(new[] { " WHERE " }, StringSplitOptions.RemoveEmptyEntries)
+                .Trim().ToArray();
 
             SelectClause = subquerySplitted[0].ToLines().Trim().ToString(" ");
 

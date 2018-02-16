@@ -12,6 +12,8 @@ namespace Olive.Entities.Data
         public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
             = new Dictionary<Assembly, IDataProviderFactory>();
 
+        public Dictionary<Type, IDataProvider> TypeProviders { get; } = new Dictionary<Type, IDataProvider>();
+
         Dictionary<Type, IDataProviderFactory> TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
 
         static readonly Database instance = new Database();
@@ -71,6 +73,15 @@ namespace Olive.Entities.Data
             }
         }
 
+        public void RegisterDataProvider(Type entityType, IDataProvider dataProvider)
+        {
+            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            if (dataProvider == null) throw new ArgumentNullException(nameof(dataProvider));
+
+            lock (TypeProviders)
+                TypeProviders[entityType] = dataProvider;
+        }
+
         /// <summary>
         /// Gets the assemblies for which a data provider factory has been registered in the current domain.
         /// </summary>
@@ -112,8 +123,13 @@ namespace Olive.Entities.Data
 
         public IDataProvider GetProvider(Type type)
         {
+            if (TypeProviders.TryGetValue(type, out var result))
+                return result;
+
             var factory = GetProviderFactory(type);
-            if (factory != null) return factory.GetProvider(type);
+            if (factory != null)
+                lock (TypeProviders)
+                    return TypeProviders[type] = factory.GetProvider(type);
 
             if (type.IsInterface) return new InterfaceDataProvider(type);
             else

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace Olive.ApiProxy
 {
@@ -19,6 +20,11 @@ namespace Olive.ApiProxy
                 if (type.GetAttribute(att) != null) return att;
 
             return null;
+        }
+
+        public static MethodInfo FindDatabaseGetMethod(this Type type)
+        {
+            return Context.ActionMethods.FirstOrDefault(x => x.ReturnType() == type && x.IsGetDataprovider())?.Method;
         }
     }
 }

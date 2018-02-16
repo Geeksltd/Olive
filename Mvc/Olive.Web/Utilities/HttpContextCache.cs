@@ -16,7 +16,7 @@
             if (key == null) throw new ArgumentNullException(nameof(key));
             if (valueProducer == null) throw new ArgumentNullException(nameof(valueProducer));
 
-            var bag = Context.HttpContextAccessor.HttpContext?.Items;
+            var bag = Olive.Context.Current.Http().Items;
             if (bag == null) return valueProducer();
 
             if (bag.ContainsKey(key)) return (TValue)bag[key];
@@ -33,14 +33,10 @@
         /// </summary>
         public static void Remove<TKey>(TKey key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            var bag = Olive.Context.Current.Http()?.Items;
 
-            var context = Context.HttpContextAccessor.HttpContext;
-            if (context == null) return;
-
-            var bag = context.Items;
-
-            if (bag.ContainsKey(key)) bag.Remove(key);
+            if (bag?.ContainsKey(key) == true) bag.Remove(key);
         }
     }
 }

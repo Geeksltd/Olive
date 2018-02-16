@@ -155,7 +155,7 @@ namespace Olive.Entities
             var result = (T)entity.Clone();
             result.IsNew = true;
 
-            if (result is GuidEntity) (result as GuidEntity).ID = GuidEntity.NewGuidGenerator(result.GetType());
+            if (result is GuidEntity) (result as GuidEntity).ID = Guid.NewGuid();
             // TODO: the following line need to be reviewed and fixed.
             // if (result is IntEntity) (result as IntEntity).ID = IntEntity.NewIdGenerator(result.GetType());
 

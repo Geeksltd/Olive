@@ -89,7 +89,7 @@ namespace Olive
 
             try
             {
-                return responseEncoding.GetString(responseBytes.Content.ReadAsByteArrayAsync().Result);
+                return responseEncoding.GetString(await responseBytes.Content.ReadAsByteArrayAsync());
             }
             catch (WebException ex)
             {

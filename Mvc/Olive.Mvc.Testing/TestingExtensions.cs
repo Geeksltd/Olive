@@ -41,7 +41,7 @@ namespace Olive.Mvc
         {
             if (!WebTestConfig.IsActive()) return null;
 
-            if (Context.Request.IsAjaxCall()) return null;
+            if (Context.Current.Request().IsAjaxCall()) return null;
 
             if (WebTestConfig.IsAutoExecMode)
                 html.RunJavascript("page.skipNewWindows();");

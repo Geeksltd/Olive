@@ -44,9 +44,9 @@
         {
             var key = propertyName.Or("Default.Value.For." + typeof(T).FullName);
 
-            var value = Context.HttpContextAccessor.HttpContext.Request.Cookies[key];
+            var value = Olive.Context.Current.Request().Cookies[key];
 
-            if (!Context.HttpContextAccessor.HttpContext.Request.Cookies.ContainsKey(key))
+            if (!Olive.Context.Current.Request().Cookies.ContainsKey(key))
             {
                 return defaultValue;
             }
@@ -149,7 +149,7 @@
         /// </summary>
         public static void Remove(string propertyName)
         {
-            var cookies = Context.HttpContextAccessor.HttpContext?.Response?.Cookies;
+            var cookies = Olive.Context.Current.Response()?.Cookies;
 
             if (cookies == null) return;
 
@@ -175,7 +175,7 @@
             if (key.IsEmpty())
                 throw new ArgumentNullException(nameof(key));
 
-            var cookies = Context.HttpContextAccessor.HttpContext?.Response?.Cookies;
+            var cookies = Olive.Context.Current.Response()?.Cookies;
 
             if (cookies == null) return;
 
@@ -186,7 +186,7 @@
                 {
                     HttpOnly = isHttpOnly,
                     Expires = DateTime.Now.AddYears(10),
-                    Secure = Context.HttpContextAccessor.HttpContext.Request.IsHttps
+                    Secure = Olive.Context.Current.Request().IsHttps
                 }
                 );
         }

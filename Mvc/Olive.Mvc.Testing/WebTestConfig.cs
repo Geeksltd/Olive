@@ -31,7 +31,7 @@ namespace Olive.Mvc.Testing
 
         internal static void SetRunner()
         {
-            if (Context.Request.Has("runner")) IsAutoExecMode = true;
+            if (Context.Current.Request().Has("runner")) IsAutoExecMode = true;
         }
 
         /// <summary>

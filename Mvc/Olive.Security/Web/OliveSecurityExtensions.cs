@@ -33,8 +33,8 @@ namespace Olive
             var descriptor = new SecurityTokenDescriptor
             {
                 Subject = info.ToClaimsIdentity(),
-                Issuer = Context.Request.GetWebsiteRoot(),
-                Audience = Context.Request.GetWebsiteRoot(),
+                Issuer = Context.Current.Request().RootUrl(),
+                Audience = Context.Current.Request().RootUrl(),
                 Expires = DateTime.UtcNow.Add(info.Timeout),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256),
             };
@@ -47,7 +47,7 @@ namespace Olive
 
         public static async Task LogOn(this ILoginInfo loginInfo, bool remember = false)
         {
-            await Context.Http.SignOutAsync();
+            await Context.Current.Http().SignOutAsync();
 
             var prop = new AuthenticationProperties
             {
@@ -55,7 +55,7 @@ namespace Olive
                 ExpiresUtc = DateTimeOffset.UtcNow.Add(loginInfo.Timeout)
             };
 
-            await Context.Http.SignInAsync(new ClaimsPrincipal(loginInfo.ToClaimsIdentity()), prop);
+            await Context.Current.Http().SignInAsync(new ClaimsPrincipal(loginInfo.ToClaimsIdentity()), prop);
         }
 
         /// <summary>

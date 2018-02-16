@@ -38,7 +38,7 @@ namespace Olive.Mvc.Testing
         {
             var response = new XElement("Changes", Changes).ToString();
             Changes.Clear();
-            return Context.Response.EndWith(response, "text/xml");
+            return Context.Current.Response().EndWith(response, "text/xml");
         }
     }
 }

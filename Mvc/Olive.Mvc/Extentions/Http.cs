@@ -88,7 +88,7 @@ namespace Olive.Mvc
         /// <summary>
         /// Gets a URL helper for the current http context.
         /// </summary>
-        public static UrlHelper GetUrlHelper(this HttpContext context) =>
-            new UrlHelper(Context.ActionContextAccessor.ActionContext);
+        public static UrlHelper GetUrlHelper(this HttpContext context)
+            => new UrlHelper(Context.Current.ActionContext());
     }
 }

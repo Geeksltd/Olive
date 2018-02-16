@@ -23,9 +23,9 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Generating Client SDK proxy from...");
                 Console.WriteLine("Publisher service: " + Context.PublisherService);
                 Console.WriteLine("Api assembly: " + Context.AssemblyFile);
-                Console.WriteLine("Api Controller: " + Context.ControllerName);
+                Console.WriteLine("Api controller class: " + Context.ControllerName);
                 Console.WriteLine("Temp folder: " + Context.TempPath);
-
+                Console.WriteLine("------------------------");
                 Context.LoadAssembly();
                 Context.PrepareOutputDirectory();
                 DtoTypes.FindAll();

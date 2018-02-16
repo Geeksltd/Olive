@@ -16,18 +16,12 @@ namespace Olive.Email
     {
         static readonly Regex LinkPattern = new Regex("(https?://[^ ]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        HttpRequest Request;
-        HttpResponse Response;
+        HttpRequest Request => Context.Current.Request();
+        HttpResponse Response => Context.Current.Response();
         string To, ReturnUrl;
         Attachment AttachmentFile;
         IEmailMessage Email;
         bool IsInitialized;
-
-        public EmailTestService(HttpRequest request, HttpResponse response)
-        {
-            Request = request;
-            Response = response;
-        }
 
         public async Task<EmailTestService> Initialize()
         {

@@ -40,7 +40,7 @@ namespace Olive.Mvc
             get
             {
                 if (cookieKey == null)
-                    cookieKey = Context.ActionContextAccessor.ActionContext.RouteData.Values["action"] +
+                    cookieKey = Context.Current.ActionContext().RouteData.Values["action"] +
                         Prefix.WithPrefix(".") + ".Columns";
 
                 return cookieKey;

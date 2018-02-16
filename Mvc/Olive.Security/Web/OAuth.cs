@@ -18,19 +18,19 @@ namespace Olive.Security
 
         public async Task LogOff()
         {
-            await Context.Http.SignOutAsync();
-            Context.Http.Session?.Clear();
+            await Context.Current.Http()?.SignOutAsync();
+            Context.Current.Http()?.Session?.Clear();
         }
 
         public async Task LoginBy(string provider)
         {
-            if (Context.Request.Query["ReturnUrl"].ToString().IsEmpty())
+            if (Context.Current.Request().Param("ReturnUrl").IsEmpty())
             {
                 // it's mandatory, otherwise Challenge() immediately returns to Login page
                 throw new InvalidOperationException("Request has no ReturnUrl.");
             }
 
-            await Context.Http.ChallengeAsync(provider, new AuthenticationProperties
+            await Context.Current.Http().ChallengeAsync(provider, new AuthenticationProperties
             {
                 RedirectUri = "/ExternalLoginCallback",
                 Items = { new KeyValuePair<string, string>("LoginProvider", provider) }
