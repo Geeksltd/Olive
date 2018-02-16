@@ -14,16 +14,16 @@
 
 ## 5 Feb 2018
 - IEmailQueueItem is now called IEmailMessage. A few of the fields have been changed:
---EnableSsl -> no longer mandatory
---Date -> Sendable date
---Sender name -> From name
---Sender address -> From address
---Reply to name, Reply to address -> NEW
+  - EnableSsl -> no longer mandatory
+  - Date -> Sendable date
+  - Sender name -> From name
+  - Sender address -> From address
+  - Reply to name, Reply to address -> NEW
 
--IApplicationEvent is now called IAuditEvent and you need a reference to the package **Olive.Audit** in Domain . The field changes are:
---Item key -. Item Id
---IP -> User ip
---Data -> Item data
+- IApplicationEvent is now called IAuditEvent and you need a reference to the package **Olive.Audit** in Domain:
+  - Item key -> Item Id
+  - IP -> User ip
+  - Data -> Item data
 
 - Update appsettings.json based on the template
 
