@@ -22,6 +22,8 @@ namespace Olive
         /// </summary>
         public static TResult GetAlreadyCompletedResult<TResult>(this Task<TResult> task)
         {
+            if (task == null) return default(TResult);
+
             if (!task.IsCompleted)
                 throw new InvalidOperationException("This task is not completed yet. Do you need to await it?");
 

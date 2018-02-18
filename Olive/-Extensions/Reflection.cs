@@ -75,6 +75,11 @@ namespace Olive
 
         public static bool IsA<T>(this Type type) => typeof(T).IsAssignableFrom(type);
 
+        public static MethodInfo GetGenericMethod(this Type type, string methodName, params Type[] genericTypes)
+        {
+            return type.GetMethod(methodName).MakeGenericMethod(genericTypes);
+        }
+
         public static bool IsA(this Type thisType, Type type) => type.IsAssignableFrom(thisType);
 
         public static bool References(this Assembly assembly, Assembly anotherAssembly)
@@ -330,6 +335,9 @@ namespace Olive
 
         public static MemberInfo GetPropertyOrField(this Type type, string name) =>
             type.GetProperty(name) ?? (MemberInfo)type.GetField(name);
+
+        public static PropertyInfo GetPropertyOrThrow(this Type type, string name) =>
+            type.GetProperty(name) ?? throw new Exception(type.FullName + " does not have a property named " + name);
 
         public static IEnumerable<MemberInfo> GetPropertiesAndFields(this Type type, BindingFlags flags) =>
             type.GetProperties(flags).Cast<MemberInfo>().Concat(type.GetFields(flags));

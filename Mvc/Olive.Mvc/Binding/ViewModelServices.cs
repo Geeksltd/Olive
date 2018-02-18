@@ -123,6 +123,27 @@
         {
             if (source == null) return null;
 
+            if (source is Task asTask)
+            {
+                await asTask;
+                source = source.GetType().GetPropertyOrThrow("Result").GetValue(source);
+                if (source == null) return null;
+            }
+
+            if (target.IsA<Task>())
+            {
+                target = target.GetGenericArguments().Single();
+                source = await ConvertNonTask(source, target);
+                // Wrap the result as task:
+                return typeof(Task).GetGenericMethod("FromResult", target).Invoke(null, new[] { source });
+            }
+            else return await ConvertNonTask(source, target);
+        }
+
+        [EscapeGCop("It takes time to fix this warning now. I will check it later.")]
+        static async Task<object> ConvertNonTask(object source, Type target)
+        {
+
             if (source is Blob) return (await (source as Blob).CloneAsync(attach: true, @readonly: true));
 
             if (source.GetType().IsA(target)) return source;
@@ -133,7 +154,8 @@
 
             if (target.IsA<IEntity>())
             {
-                if (new[] { typeof(string), typeof(Guid?), typeof(Guid) }.Lacks(source.GetType()))
+                if (new[] { typeof(string), typeof(Guid?), typeof(Guid)
+    }.Lacks(source.GetType()))
                 {
                     throw new Exception($"Cannot convert {source.GetType().FullName} to {target.FullName}");
                 }
