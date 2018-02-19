@@ -51,7 +51,11 @@ namespace Olive
             var authCookieName = ".myAuth"; // TODO: Get it from the cookie settings.
             var cookie = new Cookie(authCookieName, AccessKey, "/", "localhost"); // TODO: Does it need protecting?
 
-            return new ApiClient(Url(relativeApiUrl)).Authenticate(cookie);
+            var result = new ApiClient(Url(relativeApiUrl));
+
+            result.Header(x => x.Add("Microservice.AccessKey", AccessKey));
+
+            return result;
         }
     }
 }
