@@ -49,7 +49,7 @@ namespace Olive
         public ApiClient Api(string relativeApiUrl)
         {
             var authCookieName = ".myAuth"; // TODO: Get it from the cookie settings.
-            var cookie = new Cookie(authCookieName, AccessKey); // TODO: Does it need protecting?
+            var cookie = new Cookie(authCookieName, AccessKey, "/", "localhost"); // TODO: Does it need protecting?
 
             return new ApiClient(Url(relativeApiUrl)).Authenticate(cookie);
         }
