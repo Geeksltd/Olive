@@ -72,11 +72,21 @@ The controller class name should be the **logical name** of this particular Api 
 4. At this point it will download **Olive.ApiProxy.dll** from Nuget and install that in your *Website\obj* folder.
 5. It will then invoke the following command:
 ```
-dotnet Olive.ApiProxy.dll /file:C:\...\Website\Api\SomeApi.cs /out:C:\...\Website\obj\api-proxy
+dotnet Olive.ApiProxy.dll /file:C:\{MySolution}\{MyPublisherService}\Website\Api\SomeApi.cs /out::C:\{MySolution}\PrivatePackages\
 ```
-The Api.Proxy.dll tool will generate two class library projects, one called Proxy and one called MSharp. Their role is explained below.
+The Api.Proxy.dll tool will generate two class library projects, one called **Proxy** and one called **MSharp**. Their role is explained later. It will then compile them and generate a nuget package for each. Then the packages will be copied to the path specified in the **out** parameter.
 
-### Api input and output types (schema)
+## Distribution 
+To distribute a generated proxy dll to the consumer service the best approach is to use a private NuGet server [Learn how](PrivateNuget.md).
+
+## Using the generated proxy
+In the consumer application (service) reference the generated nuget package.
+You can then create a proxy object and then call the remote Api function. For example:
+```csharp
+var result = await new MyPublisherService.MyApi().MyFunction(...);
+```
+
+## Api input and output types (schema)
 Your Api functions' arguments and return types may be void, simple .net types (string, int, DateTime, ...) or they may be classes with multiple fields. For example if you have an Api function called GetUserDetails() it will probably need to return a class with several fields.
 ```csharp
 class User
@@ -92,16 +102,6 @@ These class definitions (aka schema) should be recognised in the consumer applic
 Of course it will also generate a proxy class which acts as an agent in the consumer app to connect to your Api. It will have the *same class name and namespace* as the Api controller.
   
 > **Tip: The generated proxy dll:** Feel free to inspect the generated proxy class's code to learn what is under the hood by looking inside the publisher service's Website\obj\api-proxy folder. 
-
-## Distribution 
-To distribute a generated proxy dll to the consumer service the best approach is to use a private NuGet server [Learn how](PrivateNuget.md).
-
-## Using the generated proxy
-In the consumer application (service) reference the generated nuget package.
-You can then create a proxy object and then call the remote Api function. For example:
-```csharp
-var result = await new MyPublisherService.MyApi().MyFunction(...);
-```
 
 ## Security
 When creating a proxy object, you often need to specify the security identity under which the remote service is called.
