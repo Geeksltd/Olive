@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Olive.ApiProxy
@@ -20,6 +21,13 @@ namespace Olive.ApiProxy
                 if (type.GetAttribute(att) != null) return att;
 
             return null;
+        }
+
+        public static MemberInfo[] GetEffectiveProperties(this Type type)
+        {
+            return type.GetPropertiesAndFields(BindingFlags.Public | BindingFlags.Instance)
+                 .Except(x => x.Name == "ID" && x.GetPropertyOrFieldType() == typeof(Guid))
+                 .ToArray();
         }
 
         public static MethodInfo FindDatabaseGetMethod(this Type type)

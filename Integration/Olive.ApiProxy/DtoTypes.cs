@@ -26,7 +26,7 @@ namespace Olive.ApiProxy
 
         static bool Crawl(Type type)
         {
-            foreach (var member in type.GetPropertiesAndFields(BindingFlags.Instance | BindingFlags.Public))
+            foreach (var member in type.GetEffectiveProperties())
             {
                 var memberType = GetDefinableType(member.GetPropertyOrFieldType());
                 if (memberType == null || All.Contains(memberType)) continue;

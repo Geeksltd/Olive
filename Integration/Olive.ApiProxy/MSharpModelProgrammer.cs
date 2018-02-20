@@ -29,7 +29,7 @@ namespace Olive.ApiProxy
                 r.AppendLine("DatabaseMode(DatabaseOption.Transient);");
             else r.AppendLine("DatabaseMode(DatabaseOption.Custom);");
 
-            foreach (var p in Type.GetPropertiesAndFields(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var p in Type.GetEffectiveProperties())
                 r.AppendLine(AddProperty(p.GetPropertyOrFieldType(), p.Name));
 
             r.AppendLine("}");

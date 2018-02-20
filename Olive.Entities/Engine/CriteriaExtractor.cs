@@ -239,6 +239,8 @@ namespace Olive.Entities
 
                 return method.Invoke(instance, methodExpression.Arguments.Select(a => ExtractExpressionValue(a)).ToArray());
             }
+            else if (expression is UnaryExpression un && un.NodeType == ExpressionType.Convert)
+                return ExtractExpressionValue(un.Operand);
             else
             {
                 throw new Exception("The specified expression cannot be converted to SQL without compilation. Use simple data variables or properties in your lambda queries.");

@@ -52,7 +52,7 @@ namespace Olive.ApiProxy
                 r.AppendLine();
             }
 
-            foreach (var p in Type.GetPropertiesAndFields(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var p in Type.GetEffectiveProperties())
             {
                 var type = p.GetPropertyOrFieldType().GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true);
                 r.AppendLine($"public {type} {p.Name} {{ get; set; }}");

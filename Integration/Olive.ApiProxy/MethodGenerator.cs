@@ -41,7 +41,7 @@ namespace Olive.ApiProxy
             else r.AppendLine($"var url = \"{Route()}\";");
 
             r.AppendLine();
-            r.AppendLine($"var client = Microservice.Api(\"{Context.PublisherService}\", url);");
+            r.AppendLine($"var client = Microservice.Of(\"{Context.PublisherService}\").Api(url);");
             r.AppendLine("foreach (var config in Configurators) config(client);");
 
             r.AppendLine();
