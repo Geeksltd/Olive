@@ -58,7 +58,8 @@ namespace Olive.Mvc
             ConfigureExceptionPage(app, env);
             InstantiateDatabase(app, env);
 
-            app.UseAuthentication()
+            app.UseMicroserviceAccessKeyAuthentication()
+                .UseAuthentication()
                 .UseStaticFiles()
                 .UseRequestLocalization(RequestLocalizationOptions)
                 .UseSession()

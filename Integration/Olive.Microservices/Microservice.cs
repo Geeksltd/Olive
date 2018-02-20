@@ -17,7 +17,7 @@ namespace Olive
         {
             return new Microservice(serviceName)
             {
-                BaseUrl = Config.GetOrThrow("Microservice:" + serviceName + ":Url"),
+                BaseUrl = Config.GetOrThrow("Microservice:" + serviceName + ":Url").EnsureEndsWith("/"),
                 AccessKey = Config.Get("Microservice:" + serviceName + ":AccessKey")
             };
         }
@@ -39,7 +39,7 @@ namespace Olive
         /// </summary>
         public string Url(string relativeUrl = null)
         {
-            return BaseUrl + relativeUrl.OrEmpty().TrimStart("/").EnsureStartsWith("/");
+            return BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
         }
 
         /// <summary>
@@ -48,9 +48,6 @@ namespace Olive
         /// </summary>
         public ApiClient Api(string relativeApiUrl)
         {
-            var authCookieName = ".myAuth"; // TODO: Get it from the cookie settings.
-            var cookie = new Cookie(authCookieName, AccessKey, "/", "localhost"); // TODO: Does it need protecting?
-
             var result = new ApiClient(Url(relativeApiUrl));
 
             result.Header(x => x.Add("Microservice.AccessKey", AccessKey));
