@@ -69,10 +69,10 @@ The controller class name should be the **logical name** of this particular Api 
 1. Compile the website project (which includes the Api code)
 2. Right click on the Api controller class in Visual Studio solution explorer.
 3. Select "Generate Proxy Dll..."
-4. At this point it will download the Olive.ApiProxy.dll from Nuget and install that in your *obj* folder.
+4. At this point it will download **Olive.ApiProxy.dll** from Nuget and install that in your *Website\obj* folder.
 5. It will then invoke the following command:
 ```
-..\M#\lib\dotnet Olive.ApiProxy.dll /file:Api\MyApi.cs
+dotnet Olive.ApiProxy.dll /file:C:\...\Website\Api\SomeApi.cs /out:C:\...\Website\obj\api-proxy
 ```
 The Api.Proxy.dll tool will generate two class library projects, one called Proxy and one called MSharp. Their role is explained below.
 
