@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Olive.Entities;
+using Olive.Security;
 using Olive.Web;
 
 namespace Olive.Mvc
@@ -102,6 +103,9 @@ namespace Olive.Mvc
             options.SlidingExpiration = true;
             options.Cookie.HttpOnly = true;
             options.Cookie.Name = ".myAuth";
+
+            if (Config.Get("Authentication:CookieDataProtectorKey").HasValue())
+                options.DataProtectionProvider = new SymmetricKeyDataProtector("AuthCookies");
         }
     }
 }
