@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive", "Olive\Olive.csproj", "{EF844D85-7C45-4725-B033-DBC6111C5F7F}"
 EndProject
@@ -90,7 +90,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Microservices", "Inte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.NLog", "Mvc\Olive.Mvc.NLog\Olive.Mvc.NLog.csproj", "{CCBC2FEF-CA70-4C2D-A9D9-C0566FDD38E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiProxy", "Integration\Olive.ApiProxy\Olive.ApiProxy.csproj", "{81877296-65EB-4F57-8B58-6B3982ADF05B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiProxyGenerator", "Integration\Olive.ApiProxyGenerator\Olive.ApiProxyGenerator.csproj", "{81877296-65EB-4F57-8B58-6B3982ADF05B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mvc", "Mvc", "{4EE1A9FA-1435-417C-B407-77E652959CE1}"
 EndProject

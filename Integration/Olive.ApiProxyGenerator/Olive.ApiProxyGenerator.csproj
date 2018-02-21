@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <StartupObject>Olive.ApiProxy.Program</StartupObject>
     <ApplicationIcon />
-    <AssemblyName>Olive.ApiProxy</AssemblyName>
+    <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
   </PropertyGroup>
 

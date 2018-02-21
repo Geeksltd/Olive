@@ -15,6 +15,8 @@ namespace Olive.ApiProxy
         public static Type ControllerType;
         public static MethodGenerator[] ActionMethods;
 
+        public static DirectoryInfo Source;
+
         internal static void PrepareOutputDirectory()
         {
             if (!TempPath.Exists)
