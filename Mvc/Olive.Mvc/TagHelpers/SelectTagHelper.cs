@@ -6,8 +6,7 @@ using Olive.Entities;
 
 namespace Olive.Mvc
 {
-    [HtmlTargetElement("select", Attributes = "asp-for")]
-    [HtmlTargetElement("select", Attributes = "asp-items")]
+    [HtmlTargetElement("select", Attributes = "asp-for,asp-items")]
     public class SelectTagHelper : Microsoft.AspNetCore.Mvc.TagHelpers.SelectTagHelper
     {
         public SelectTagHelper(IHtmlGenerator generator) : base(generator) { }
@@ -24,13 +23,10 @@ namespace Olive.Mvc
             await base.ProcessAsync(context, output);
 
             if (For.Model is IEntity ent)
-            {
                 SetSelected(output.PostContent, ent);
-            }
-            else if (For.Model is IEnumerable<IEntity> entities)
-            {
+
+            if (For.Model is IEnumerable<IEntity> entities)
                 SetSelected(output.PostContent, entities);
-            }
         }
 
         void SetSelected(TagHelperContent content, IEntity entity)
