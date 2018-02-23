@@ -19,7 +19,11 @@ namespace Olive
             Current = new Context(services);
         }
 
-        public void Configure(IServiceProvider provider) => ServiceProvider = provider;
+        public Context Configure(IServiceProvider provider)
+        {
+            ServiceProvider = provider;
+            return this;
+        }
 
         public TService GetService<TService>() => ServiceProvider.GetRequiredService<TService>();
 

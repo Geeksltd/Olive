@@ -55,7 +55,7 @@ namespace Olive.Mvc
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            Context.Current.Configure(app.ApplicationServices);
+            Context.Current.Configure(app.ApplicationServices).Configure(env);
             ConfigureExceptionPage(app, env);
             InstantiateDatabase(app, env);
 
