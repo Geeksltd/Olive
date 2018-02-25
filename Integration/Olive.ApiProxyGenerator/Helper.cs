@@ -22,10 +22,16 @@ namespace Olive.ApiProxy
 
         public static int ShowHelp()
         {
-            ShowLine("Usage pattern:\n", ConsoleColor.Red);
+            ShowLine("Usage pattern 1:\n", ConsoleColor.Red);
             Show("   dotnet ", ConsoleColor.White);
             Show(Assembly.GetExecutingAssembly().GetName().Name + ".dll ", ConsoleColor.Green);
             ShowLine("[/assembly:...] [/serviceName:...] /controller:... /out:...", ConsoleColor.Yellow);
+            Console.WriteLine();
+
+            ShowLine("Usage pattern 2:\n", ConsoleColor.Red);
+            Show("   dotnet ", ConsoleColor.White);
+            Show(Assembly.GetExecutingAssembly().GetName().Name + ".dll ", ConsoleColor.Green);
+            ShowLine("[/assembly:...] [/serviceName:...] /controller:... /push:... /apiKey:...", ConsoleColor.Yellow);
             Console.WriteLine();
 
             ShowLine("PARAMETERS: ", ConsoleColor.Red);
@@ -42,6 +48,13 @@ namespace Olive.ApiProxy
 
             Param("out", @"The full path to a directory to publish the generated nuget packages. e.g. C:\Projects\my-solution\PrivatePackages");
             Console.WriteLine();
+
+            Param("push", @"The url of a [private] nuget server to publish the generated package to. For example: http://nuget.my-solution.my-server.com/nuget");
+            Console.WriteLine();
+
+            Param("apiKey", @"The Api Key expected by the [private] nuget server, for security.");
+            Console.WriteLine();
+
             return -1;
         }
     }

@@ -12,15 +12,20 @@ namespace Olive.ApiProxy
         {
             Args = args;
             Context.Source = AppDomain.CurrentDomain.GetBaseDirectory();
-            return Param("out").HasValue() && Param("controller").HasValue();
+            if (Param("controller").IsEmpty()) return false;
+            return Param("out").HasValue() || Param("push").HasValue();
         }
 
         public static void LoadParameters()
         {
             Context.ControllerName = Param("controller");
             Context.Output = Param("out")?.AsDirectory();
-            if (!Context.Output.Exists)
+
+            if (Context.Output?.Exists == false)
                 throw new Exception("The specified output folder does not exist.");
+
+            Context.NugetServer = Param("push");
+            Context.NugetApiKey = Param("apiKey");
 
             Context.PublisherService = GetServiceName();
             Context.AssemblyFile = Context.Source.GetFile(Param("assembly").Or("Website.dll"));
@@ -30,8 +35,6 @@ namespace Olive.ApiProxy
             Context.TempPath = Path.GetTempPath().AsDirectory()
                 .GetOrCreateSubDirectory("api-proxy").CreateSubdirectory(Guid.NewGuid().ToString());
         }
-
-
 
         //static bool LoadFromControllerFile(FileInfo file)
         //{

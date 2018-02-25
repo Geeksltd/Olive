@@ -8,14 +8,12 @@ namespace Olive.ApiProxy
 {
     class Context
     {
-        public static string PublisherService, ControllerName;
+        public static string PublisherService, ControllerName, NugetServer, NugetApiKey;
         public static FileInfo AssemblyFile;
-        public static DirectoryInfo TempPath, Output;
+        public static DirectoryInfo TempPath, Output, Source;
         public static Assembly Assembly;
         public static Type ControllerType;
         public static MethodGenerator[] ActionMethods;
-
-        public static DirectoryInfo Source;
 
         internal static void PrepareOutputDirectory()
         {

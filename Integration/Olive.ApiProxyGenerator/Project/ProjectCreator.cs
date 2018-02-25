@@ -74,9 +74,15 @@ namespace Olive.ApiProxy
             Environment.CurrentDirectory = Folder.FullName;
             Context.Run("nuget.exe pack Package.nuspec");
 
-            var package = Folder.GetFiles("*.nupkg").FirstOrDefault();
-            if (package == null) throw new Exception("Nuget package was not succesfully generated.");
-            package.CopyTo(Context.Output.GetFile(package.Name));
+            var package = Folder.GetFiles("*.nupkg").FirstOrDefault()
+                ?? throw new Exception("Nuget package was not succesfully generated.");
+
+            if (Context.Output != null)
+                package.CopyTo(Context.Output.GetFile(package.Name));
+            else
+            {
+                Context.Run($"nuget.exe push {package.Name} {Context.NugetApiKey} -s {Context.NugetServer}");
+            }
         }
 
         void CreateNuspec()
