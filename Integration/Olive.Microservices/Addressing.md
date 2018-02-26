@@ -4,9 +4,9 @@ You will typically have 3 environments in a microservice solution:
 
 | Environment  | Microservice Urls | Notes
 | ------------- | ------------- | ------------- 
-| Local (dev)  | http://localhost:123456 | This address is set under ****. You need a unique port for each microservices in the solution.
-| Staging (UAT) | https://serviceA.my-solution.uat.co | Any domain you want to use for staging. Each microservice will usually be a sub-domain. You might even have multiple staging versions, each for a different feature implementation.
-| Production (Live) | https://serviceA.my-solution.com  | Similar to Staging, but with the live domain. 
+| Local (dev)  | http://localhost:123456 | This address is set in *Website\Properties\**LaunchSettings.json***. You need a unique port per microservices in your solution.
+| Staging (UAT) | https://serviceA.my-solution.uat.co | You will normally need a root domain for staging, where each microservice will be a sub-domain of it. The root domain can be a sub-domain of a master domain itself.
+| Production (Live) | https://serviceA.my-solution.com  | Similar to Staging, but with the live domain.
 
 ## Sister service dependency and addressing
 Let's say you want to run the application and test your *serviceA* which is in development. It might have dependencies on other services such as *serviceB*, *serviceC*, etc. For each of those services, you may also have different versions on different environments.
