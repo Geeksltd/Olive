@@ -7,20 +7,12 @@ namespace Olive.Security
         string Purpose;
         static string EncryptionKey;
 
-        static SymmetricKeyDataProtector()
-        {
+        static SymmetricKeyDataProtector() =>
             EncryptionKey = Config.GetOrThrow("Authentication:CookieDataProtectorKey");
-        }
 
-        public SymmetricKeyDataProtector(string purpose)
-        {
-            Purpose = purpose;
-        }
+        public SymmetricKeyDataProtector(string purpose) => Purpose = purpose;
 
-        public IDataProtector CreateProtector(string purpose)
-        {
-            return new SymmetricKeyDataProtector(purpose);
-        }
+        public IDataProtector CreateProtector(string purpose) => new SymmetricKeyDataProtector(purpose);
 
         public byte[] Protect(byte[] plaintext)
             => Encryption.Encrypt(plaintext, EncryptionKey + Purpose).GZip();

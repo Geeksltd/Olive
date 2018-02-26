@@ -9,92 +9,71 @@ namespace Olive.Security
 {
     public class Encryption
     {
-        const int MAX_ENCRYPTION_PART_LENGTH = 117, SIXTEEN = 16, THIRTY_TWO = 32;
-
-        /// <summary>
-        /// Generates a public/private key for asymmetric encryption.
-        /// </summary>
-        public static KeyValuePair<string, string> GenerateAsymmetricKeys()
+        public class AssymetricKeyPair
         {
-            var rsa = CreateRSACryptoServiceProvider();
+            public string EncryptionKey { get; set; }
+            public string DecryptionKey { get; set; }
 
-            return new KeyValuePair<string, string>(rsa.ToXmlString(includePrivateParameters: false), rsa.ToXmlString(includePrivateParameters: true));
+            /// <summary>
+            /// Invoke this method once and save the generated result in a file.
+            /// Then deploy the encryption key in your encryption app's config file (e.g. Auth\appSettings.json) 
+            /// and publish the descryption key to your decryptor apps' config files.
+            /// </summary>
+            public static AssymetricKeyPair Generate()
+            {
+                throw new NotImplementedException();
+
+                //var rsa = CreateRSACryptoServiceProvider();
+                //return new KeyValuePair<string, string>(rsa.ToXmlString(includePrivateParameters: false), rsa.ToXmlString(includePrivateParameters: true));
+            }
         }
-
-        static RSA CreateRSACryptoServiceProvider() => RSA.Create();
 
         /// <summary>
         /// Encrypts the specified text with the specified public key.
         /// </summary>
-        /// <param name="text">The clear text value to encrypt</param>
-        /// <param name="publicKeyXml">The public key XML for encryption.</param>
+        /// <param name="raw">The clear text value to encrypt</param>
+        /// <param name="encryptKey">The public key XML for encryption.</param>
         /// <param name="padding">The default padding value is OaepSHA512.</param>
-        public static string EncryptAsymmetric(string text, string publicKeyXml, RSAEncryptionPadding padding = null)
+        public static byte[] EncryptAsymmetric(byte[] raw, string encryptKey)
         {
-            if (text.IsEmpty()) throw new ArgumentNullException(nameof(text));
+            if (raw == null) throw new ArgumentNullException(nameof(raw));
+            if (encryptKey.IsEmpty()) throw new ArgumentNullException(nameof(encryptKey));
 
-            if (publicKeyXml.IsEmpty()) throw new ArgumentNullException(nameof(publicKeyXml));
-
-            if (text.Length > MAX_ENCRYPTION_PART_LENGTH)
-            {
-                return text.Split(MAX_ENCRYPTION_PART_LENGTH).Select(p => EncryptAsymmetric(p, publicKeyXml)).ToString("|");
-            }
-            else
-            {
-                var rsa = CreateRSACryptoServiceProvider();
-                rsa.FromXmlString(publicKeyXml);
-                return rsa.Encrypt(text.ToBytes(Encoding.UTF8), padding ?? RSAEncryptionPadding.OaepSHA512).ToBase64String();
-            }
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Decrypts the specified text with the specified public/private key pair.
         /// </summary>
-        /// <param name="encryptedText">The encrypted text to decode.</param>
-        /// <param name="publicPrivateKeyXml">The private key used to decrype it.</param>
-        /// <param name="padding">The default padding value is OaepSHA512.</param>
-        public static string DecryptAsymmetric(string encryptedText
-            , string publicPrivateKeyXml, RSAEncryptionPadding padding = null)
+        public static byte[] DecryptAsymmetric(byte[] cipher, string decryptKey)
         {
-            if (encryptedText.IsEmpty()) throw new ArgumentNullException(nameof(encryptedText));
-
-            if (publicPrivateKeyXml.IsEmpty()) throw new ArgumentNullException(nameof(publicPrivateKeyXml));
-
-            if (encryptedText.Contains("|"))
-            {
-                return encryptedText.Split('|').Select(p => DecryptAsymmetric(p, publicPrivateKeyXml)).ToString(string.Empty);
-            }
-            else
-            {
-                var rsa = CreateRSACryptoServiceProvider();
-                rsa.FromXmlString(publicPrivateKeyXml);
-                return rsa.Decrypt(encryptedText.ToBytes(), padding ?? RSAEncryptionPadding.OaepSHA512).ToString(Encoding.UTF8);
-            }
+            if (cipher == null) throw new ArgumentNullException(nameof(cipher));
+            if (decryptKey.IsEmpty()) throw new ArgumentNullException(nameof(decryptKey));
+            throw new NotImplementedException();
         }
 
-        static byte[] GetUsableKey(string keyString)
+        static byte[] GetValidAesKey(string keyString)
         {
             var key = Encoding.UTF8.GetBytes(keyString);
-
             if (key.Length == 32) return key;
-
             return key = key.Take(32).ToArray().PadRight(32, (byte)0);
         }
 
-        public static byte[] Encrypt(byte[] input, string password)
+        public static byte[] Encrypt(byte[] raw, string password)
         {
+            if (raw == null) throw new ArgumentNullException(nameof(raw));
+
             using (var aesAlg = Aes.Create())
             {
-                aesAlg.Key = GetUsableKey(password);
+                aesAlg.Key = GetValidAesKey(password);
                 aesAlg.IV = aesAlg.Key.Take(16).ToArray();
-
                 var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
                 using (var msEncrypt = new MemoryStream())
                 using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                 {
                     using (var swEncrypt = new BinaryWriter(csEncrypt))
-                        swEncrypt.Write(input);
+                        swEncrypt.Write(raw);
 
                     return msEncrypt.ToArray();
                 }
@@ -105,7 +84,7 @@ namespace Olive.Security
         {
             using (var aesAlg = Aes.Create())
             {
-                aesAlg.Key = GetUsableKey(password);
+                aesAlg.Key = GetValidAesKey(password);
                 aesAlg.IV = aesAlg.Key.Take(16).ToArray();
 
                 var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
