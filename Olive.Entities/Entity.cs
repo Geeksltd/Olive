@@ -274,7 +274,7 @@ namespace Olive.Entities
         public static bool operator ==(Entity left, Entity right)
         {
             if (ReferenceEquals(left, right)) return true;
-            if (ReferenceEquals(left, null)) return false;
+            if (left is null) return false;
             return left.Equals(right);
         }
 

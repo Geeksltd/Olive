@@ -33,7 +33,7 @@
 
             var typed = other as Entity<T>;
 
-            if (ReferenceEquals(this, null) || ReferenceEquals(typed, null)) return false;
+            if (typed is null) return false;
 
             if (GetType() != typed.GetType()) return false;
 
