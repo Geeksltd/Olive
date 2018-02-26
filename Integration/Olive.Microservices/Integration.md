@@ -65,22 +65,17 @@ The controller class name should be the **logical name** of this particular Api 
 - Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B. 
 - Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
 
-# Generating an Api Proxy (Olive.ApiProxy.dll)
-1. Compile the website project (which includes the Api code)
-2. Right click on the Api controller class in Visual Studio solution explorer.
-3. Select "Generate Proxy Dll..."
-4. At this point it will download **Olive.ApiProxy.dll** from Nuget and install that in your *Website\obj* folder.
-5. It will then invoke the following command:
-```
-dotnet Olive.ApiProxy.dll /file:C:\{MySolution}\{MyPublisherService}\Website\Api\SomeApi.cs /out::C:\{MySolution}\PrivatePackages\
-```
-The Api.Proxy.dll tool will generate two class library projects, one called **Proxy** and one called **MSharp**. Their role is explained later. It will then compile them and generate a nuget package for each. Then the packages will be copied to the path specified in the **out** parameter.
+# Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
+1. Ensure you have a NuGet reference to [Olive.ApiProxyGenerator](https://www.nuget.org/packages/Olive.ApiProxyGenerator/)
+2. Compile the website project (which includes the Api code)
+3. Right click on the Api controller class in Visual Studio solution explorer.
+4. Select "Generate Proxy Dll..." which opens a pop-up
+5. Provide the requested settings to define the target destination for publishing the generated Proxy.
 
-## Distribution 
-To distribute a generated proxy dll to the consumer service the best approach is to use a private NuGet server [Learn how](PrivateNuget.md).
+> The Api.Proxy.dll tool will generate two class library projects, one called **Proxy** and one called **MSharp**. It will then compile them and generate a nuget package for each, and publish to the requested destination. The generated NuGet packages can then be referenced in the consuming microservices.
 
 ## Using the generated proxy
-In the consumer application (service) reference the generated nuget package.
+In the consumer application (service) reference the generated NuGet package.
 You can then create a proxy object and then call the remote Api function. For example:
 ```csharp
 var result = await new MyPublisherService.MyApi().MyFunction(...);
