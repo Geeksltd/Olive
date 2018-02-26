@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -9,7 +8,7 @@ namespace Olive.Security
 {
     public class Encryption
     {
-        public class AssymetricKeyPair
+        public class AsymmetricKeyPair
         {
             public string EncryptionKey { get; set; }
             public string DecryptionKey { get; set; }
@@ -19,27 +18,44 @@ namespace Olive.Security
             /// Then deploy the encryption key in your encryption app's config file (e.g. Auth\appSettings.json) 
             /// and publish the descryption key to your decryptor apps' config files.
             /// </summary>
-            public static AssymetricKeyPair Generate()
+            public static AsymmetricKeyPair Generate()
             {
-                throw new NotImplementedException();
+                var cspParams = new CspParameters(1)
+                {
+                    KeyContainerName = "KeyContainer",
+                    Flags = CspProviderFlags.UseMachineKeyStore,
+                    ProviderName = "Microsoft Strong Cryptographic Provider"
+                };
 
-                //var rsa = CreateRSACryptoServiceProvider();
-                //return new KeyValuePair<string, string>(rsa.ToXmlString(includePrivateParameters: false), rsa.ToXmlString(includePrivateParameters: true));
+                var rsa = new RSACryptoServiceProvider(cspParams);
+
+                return new AsymmetricKeyPair
+                {
+                    DecryptionKey = rsa.ToXmlString(true),
+                    EncryptionKey = rsa.ToXmlString(false)
+                };
             }
+        }
+
+        static RSACryptoServiceProvider CreateRSAProvider(string key)
+        {
+            var result = new RSACryptoServiceProvider(256);
+            result.FromXmlString(key);
+            return result;
         }
 
         /// <summary>
         /// Encrypts the specified text with the specified public key.
         /// </summary>
-        /// <param name="raw">The clear text value to encrypt</param>
-        /// <param name="encryptKey">The public key XML for encryption.</param>
-        /// <param name="padding">The default padding value is OaepSHA512.</param>
+        /// <param name="raw">The raw data to encrypt</param>
+        /// <param name="encryptKey">The public key for encryption.</param> 
         public static byte[] EncryptAsymmetric(byte[] raw, string encryptKey)
         {
             if (raw == null) throw new ArgumentNullException(nameof(raw));
             if (encryptKey.IsEmpty()) throw new ArgumentNullException(nameof(encryptKey));
 
-            throw new NotImplementedException();
+            using (var provider = CreateRSAProvider(encryptKey))
+                return provider.Decrypt(raw, fOAEP: false);
         }
 
         /// <summary>
@@ -49,7 +65,9 @@ namespace Olive.Security
         {
             if (cipher == null) throw new ArgumentNullException(nameof(cipher));
             if (decryptKey.IsEmpty()) throw new ArgumentNullException(nameof(decryptKey));
-            throw new NotImplementedException();
+
+            using (var provider = CreateRSAProvider(decryptKey))
+                return provider.Decrypt(cipher, fOAEP: false);
         }
 
         static byte[] GetValidAesKey(string keyString)

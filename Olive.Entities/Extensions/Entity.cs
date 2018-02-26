@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Olive;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -59,20 +60,8 @@ namespace Olive.Entities
         /// </summary>
         public static bool IsImage(this Blob doc)
         {
-            throw new NotImplementedException();
-            // if (doc.IsEmpty()) return false;
-
-            // try
-            // {
-            //    using (System.Drawing.Imaging.BitmapHelper.FromBuffer(doc.FileData))
-            //    {
-            //        return true;
-            //    }
-            // }
-            // catch
-            // {
-            //    return false;
-            // }
+            return Olive.OliveExtensions.IsAnyOf(doc.FileExtension.ToLower().TrimStart("."),
+                "jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff");
         }
 
         /// <summary>
