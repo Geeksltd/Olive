@@ -119,11 +119,9 @@ When creating a proxy object, by default it will assume a **service identity**. 
 When a Http request is received by the Api host, it will read the header value under the key of **"Microservice.AccessKey"**. That token is then matched against its registered Api Clients in its own *appSettings.json* file:
 ```json
  ...
- "Authentication": {
-        ...
+ "Authentication": {        
         "Api.Clients": {
-            "some-token-xyz": [ "Role1", "Role2" ],
-            ...
+            "some-token-xyz": [ "Role1", "Role2" ]            
         }        
     },
  ...
