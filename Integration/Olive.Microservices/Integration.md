@@ -104,14 +104,47 @@ Of course it will also generate a proxy class which acts as an agent in the cons
 > **Tip: The generated proxy dll:** Feel free to inspect the generated proxy class's code to learn what is under the hood by looking inside the publisher service's Website\obj\api-proxy folder. 
 
 ## Security
-When creating a proxy object, you often need to specify the security identity under which the remote service is called.
-- Call *AsServiceUser()* if you want the remote service to identify the call as a trusted sister service.
-- Call *AsHttpUser()* if you want to pass the identity of the current http user on to the remote service.
+When creating a proxy object, by default it will assume a **service identity**. It will read the *AccessKey* value from *appSettings.json* (*which is issued to it by the Api publisher service*) and send it using HTTP HEADER with the key of **"Microservice.AccessKey"**.
 
-```csharp
-var result = await new MyPublisherService.MyApi().AsServiceUser().MyFunction(...);
+```json
+...
+"Microservice": {
+        "Me": {
+            "Name": "SomeConsumerService"
+        },
+
+        "SomePublisherService": {
+            "Url": "http://localhost:9015",
+            "AccessKey": "some-token-xyz"
+        }
+    },
+...   
 ```
 
-> If the target api controller class or method explicitly declare [AuthorizeService] attribute or [AuthorizeTrustedService] then the generated proxy will automatically call **.AsServiceUser()** and you don't need to.
+When a Http request is received by the Api host, it will read the header value under the key of **"Microservice.AccessKey"**. That token is then matched against its registered Api Clients in its own *appSettings.json* file:
+```json
+ ...
+ "Authentication": {
+        ...
+        "Api.Clients": {
+            "some-token-xyz": [ "Role1", "Role2" ],
+            ...
+        }        
+    },
+ ...
+```
+
+It will then create a Http Context user object with the fixed name of ***"Microservice.ApiUser"*** and the roles specified above.
+So you can use the standard ASP.NET role based security for your Api definition. For example you can use the usual *[Authorise(Roles=...)]* code in your Web Api class or Action method definition.
+
+### Impersonating the (human) user
+Sometimes you need to call an Api in a microservice, but you need the Api to be invoked with the identity of the current HTTP user, rather than the client service.
+
+To achieve that, when creating an Api Proxy instance, invoke AsHttpUser() before calling the Api function. For example:
+
+```csharp
+var result = await new MyPublisherService.MyApi().AsHttpUser().MyFunction(...);
+```
+When you do this, the cookies from the current http request will be forwarded in the Http call to the Api publishing service.
 
 
