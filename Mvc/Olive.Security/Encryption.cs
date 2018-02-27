@@ -31,8 +31,8 @@ namespace Olive.Security
 
                 return new AsymmetricKeyPair
                 {
-                    DecryptionKey = rsa.ToXmlString(true),
-                    EncryptionKey = rsa.ToXmlString(false)
+                    DecryptionKey = Convert.ToBase64String(Encoding.ASCII.GetBytes(rsa.ToXmlString(true))),
+                    EncryptionKey = Convert.ToBase64String(Encoding.ASCII.GetBytes(rsa.ToXmlString(false)))
                 };
             }
         }
@@ -54,8 +54,9 @@ namespace Olive.Security
             if (raw == null) throw new ArgumentNullException(nameof(raw));
             if (encryptKey.IsEmpty()) throw new ArgumentNullException(nameof(encryptKey));
 
-            using (var provider = CreateRSAProvider(encryptKey))
-                return provider.Decrypt(raw, fOAEP: false);
+            var base64EncKey = Encoding.ASCII.GetString(Convert.FromBase64String(encryptKey));
+            using (var provider = CreateRSAProvider(base64EncKey))
+                return provider.Encrypt(raw, fOAEP: false);
         }
 
         /// <summary>
@@ -66,7 +67,8 @@ namespace Olive.Security
             if (cipher == null) throw new ArgumentNullException(nameof(cipher));
             if (decryptKey.IsEmpty()) throw new ArgumentNullException(nameof(decryptKey));
 
-            using (var provider = CreateRSAProvider(decryptKey))
+            var base64EncKey = Encoding.ASCII.GetString(Convert.FromBase64String(decryptKey));
+            using (var provider = CreateRSAProvider(base64EncKey))
                 return provider.Decrypt(cipher, fOAEP: false);
         }
 
