@@ -64,24 +64,31 @@ namespace Olive.ApiProxy
 
             Console.Write("Creating Nuget package for " + Folder.Name + "...");
             CreateNuspec();
-            CreateNugetPackage();
+            var package = CreateNugetPackage();
             Console.WriteLine("Done");
+
+            PublishNuget(package);
         }
 
-        void CreateNugetPackage()
+        FileInfo CreateNugetPackage()
         {
             // RunCommand("dotnet pack --no-dependencies -o \"" + Context.Output + "\"");
             Environment.CurrentDirectory = Folder.FullName;
             Context.Run("nuget.exe pack Package.nuspec");
 
-            var package = Folder.GetFiles("*.nupkg").FirstOrDefault()
+            return Folder.GetFiles("*.nupkg").FirstOrDefault()
                 ?? throw new Exception("Nuget package was not succesfully generated.");
+        }
 
+        void PublishNuget(FileInfo package)
+        {
             if (Context.Output != null)
                 package.CopyTo(Context.Output.GetFile(package.Name));
             else
             {
-                Context.Run($"nuget.exe push {package.Name} {Context.NugetApiKey} -s {Context.NugetServer}");
+                Console.Write($"Publishing Nuget package to '{Context.NugetServer}' with key '{Context.NugetApiKey}'...");
+                Context.Run($"nuget.exe push {package.Name} {Context.NugetApiKey} -source {Context.NugetServer}");
+                Console.WriteLine("Done");
             }
         }
 
