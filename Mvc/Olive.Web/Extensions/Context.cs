@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,9 @@ namespace Olive
     partial class OliveWebExtensions
     {
         static IHostingEnvironment environment;
+
+        public static ClaimsPrincipal User(this Context context)
+            => context.Http()?.User;
 
         public static HttpContext Http(this Context context)
             => context.GetService<IHttpContextAccessor>()?.HttpContext;
