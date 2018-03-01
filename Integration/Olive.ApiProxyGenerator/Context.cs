@@ -20,8 +20,6 @@ namespace Olive.ApiProxy
             if (!TempPath.Exists)
                 throw new Exception("Output directory not found: " + TempPath.FullName);
 
-            TempPath = new DirectoryInfo(Path.Combine(TempPath.FullName, ControllerName));
-
             try
             {
                 if (TempPath.Exists)

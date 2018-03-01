@@ -12,9 +12,7 @@ namespace Olive.ApiProxy
 
         protected override string[] References
             => new[] { "Olive", "Olive.Entities", "Olive.Entities.Data", "Olive.ApiClient", "Olive.Microservices" };
-
-        protected override bool AddXml => true;
-
+        
         protected override void AddFiles()
         {
             Console.Write("Adding the proxy class...");
@@ -24,7 +22,12 @@ namespace Olive.ApiProxy
             foreach (var type in DtoTypes.All)
             {
                 Console.Write("Adding DTO class " + type.Name + "...");
-                Folder.GetFile(type.Name + ".cs").WriteAllText(new DtoProgrammer(type).Generate());
+                var dto = new DtoProgrammer(type);
+                Folder.GetFile(type.Name + ".cs").WriteAllText(dto.Generate());
+
+                if (dto.DatabaseGetMethod != null)
+                    Folder.GetFile(type.Name + "DataProvider.cs").WriteAllText(dto.GenerateDataProvider());
+
                 Console.WriteLine("Done");
             }
         }

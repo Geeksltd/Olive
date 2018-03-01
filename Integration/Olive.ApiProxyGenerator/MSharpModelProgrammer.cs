@@ -36,7 +36,7 @@ namespace Olive.ApiProxy
             r.AppendLine("}");
             r.AppendLine("}");
 
-            return r.ToString();
+            return new CSharpFormatter(r.ToString()).Format();
         }
 
         string AddProperty(Type propertyType, string name)

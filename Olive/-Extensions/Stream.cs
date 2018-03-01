@@ -40,11 +40,13 @@ namespace Olive
         /// <param name="encoding">If not specified (or NULL specified) then UTF8 will be used.</param>
         public static async Task<string> ReadAllText(this Stream response, Encoding encoding = null)
         {
-            var result = "";
+            encoding = encoding ?? Encoding.UTF8;
 
             // Pipes the stream to a higher level stream reader with the required encoding format.
             using (var readStream = new StreamReader(response, encoding))
             {
+                var result = "";
+
                 var read = new char[256];
                 // Reads 256 characters at a time.
                 var count = await readStream.ReadAsync(read, 0, read.Length);
@@ -55,9 +57,9 @@ namespace Olive
                     result += new string(read, 0, count);
                     count = await readStream.ReadAsync(read, 0, read.Length);
                 }
-            }
 
-            return result;
+                return result;
+            }
         }
 
         public static byte[] ReadAllBytes(this BinaryReader reader)
