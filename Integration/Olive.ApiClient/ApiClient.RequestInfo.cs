@@ -11,6 +11,7 @@ namespace Olive
 {
     partial class ApiClient
     {
+
         public bool EnsureTrailingSlash { get; set; } = true;
 
         List<Action<HttpRequestHeaders>> RequestHeadersCustomizers = new List<Action<HttpRequestHeaders>>();
@@ -21,6 +22,8 @@ namespace Olive
             return this;
         }
 
+
+
         public partial class RequestInfo
         {
             const int HTTP_ERROR_STARTING_CODE = 400;
@@ -29,10 +32,7 @@ namespace Olive
 
             string Url => Client.Url;
 
-            public RequestInfo(ApiClient client)
-            {
-                Client = client;
-            }
+            public RequestInfo(ApiClient client) => Client = client;
 
             internal string LocalCachedVersion { get; set; }
             public string HttpMethod { get; set; } = "GET";
@@ -131,7 +131,7 @@ namespace Olive
                     string responseBody = null;
                     try
                     {
-                        var response = await client.SendAsync(req).ConfigureAwait(false);
+                        var response = await Client.SendAsync(client, req).ConfigureAwait(false);
                         var failed = false;
 
                         ResponseCode = response.StatusCode;
@@ -159,7 +159,7 @@ namespace Olive
                     {
                         LogTheError(ex);
 
-                        if (System.Diagnostics.Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
+                        if (Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
 
                         if (ex is WebException webEx)
                             responseBody = await webEx.GetResponseBody();

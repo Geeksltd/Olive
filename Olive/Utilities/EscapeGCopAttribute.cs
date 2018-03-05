@@ -9,7 +9,8 @@
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
     public class EscapeGCopAttribute : Attribute
     {
-        public EscapeGCopAttribute(string reason) { Reason = reason; }
+        public EscapeGCopAttribute(string reason = null) => Reason = reason;
+
         public string Reason { get; private set; }
     }
 }
