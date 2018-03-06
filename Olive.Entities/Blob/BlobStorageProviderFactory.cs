@@ -18,7 +18,6 @@ namespace Olive.Entities
         internal static IBlobStorageProvider GetProvider(string folderName)
         {
             if (folderName.IsEmpty()) return DefaultProvider;
-
             return Providers.GetOrDefault(folderName) ?? DefaultProvider;
         }
     }
