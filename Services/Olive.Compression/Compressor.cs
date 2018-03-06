@@ -1,92 +1,80 @@
-﻿using SharpCompress.Archives;
+﻿using System;
+using System.IO;
+using SharpCompress.Archives;
 using SharpCompress.Archives.GZip;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 using SharpCompress.Readers;
-using SharpCompress.Writers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
-namespace Olive.Compression
+namespace Olive
 {
-    public static class Compressor
+    public enum CompressionFormat { Zip, Gzip, Tar }
+
+    public static class CompressionIOExtensions
     {
         /// <summary>
-        /// A fluent API for compressing archives
-        /// </summary>
-        /// <param name="format">Format of compressed file</param>
-        /// <param name="folderPath">The folder path that you want to compress</param>
-        /// <param name="destinationFilePath">Desired folder that your compressed file is going to be saved in</param>
-        public static void Compress(CompressionFormats format, DirectoryInfo folderPath, FileInfo destinationFilePath)
+        /// Creates a compressed file from this directory.
+        /// </summary>        
+        /// <param name="destination">Path of the target zip file to generate.</param>
+        public static void Compress(this DirectoryInfo source, CompressionFormat format, FileInfo destination, bool overwrite = false)
         {
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
 
-            if (format == CompressionFormats.zip)
+            if (destination.Exists() && !overwrite)
+                throw new Exception("Destination file already exists: " + destination.FullName);
+
+            IWritableArchive archive;
+            var type = CompressionType.Deflate;
+
+            switch (format)
             {
-                using (var archive = ZipArchive.Create())
-                {
-                    archive.AddAllFromDirectory(folderPath.FullName);
-                    archive.SaveTo(destinationFilePath.FullName, CompressionType.Deflate);
-                }
+                case CompressionFormat.Zip:
+                    archive = ZipArchive.Create();
+                    break;
+                case CompressionFormat.Gzip:
+                    archive = GZipArchive.Create();
+                    break;
+                case CompressionFormat.Tar:
+                    archive = TarArchive.Create();
+                    type = CompressionType.None;
+                    break;
+                default: throw new NotSupportedException();
             }
 
-            else if (format == CompressionFormats.tar)
+            using (archive)
             {
-                using (var archive = TarArchive.Create())
-                {
-                    archive.AddAllFromDirectory(folderPath.FullName);
-                    archive.SaveTo(destinationFilePath.FullName, CompressionType.None);
-                }
-            }
-
-            else if (format == CompressionFormats.gzip)
-            {
-                using (var archive = GZipArchive.Create())
-                {
-                    archive.AddAllFromDirectory(folderPath.FullName);
-                    archive.SaveTo(destinationFilePath.FullName, CompressionType.Deflate);
-                }
-            }
-
-            else
-            {
-                throw new NotSupportedException();
+                archive.AddAllFromDirectory(source.FullName);
+                archive.SaveTo(destination.FullName, type);
             }
         }
+
         /// <summary>
-        /// This method used for decompressing archives
+        /// Decompresses this file into a specified directory.
         /// </summary>
-        /// <param name="filePath">The compressed file desired to decompress</param>
-        /// <param name="destinationPath">Desired decompression desination path</param>
-        /// <param name="extractFullPath"></param>
-        /// <param name="overrite"></param>
-        public static void Decompress(FileInfo filePath, DirectoryInfo destinationPath, bool extractFullPath = true, bool overrite = true)
+        /// <param name="destination">Desired decompression desination path.</param>
+        public static void Decompress(this FileInfo compressedFile, DirectoryInfo destination,
+            bool extractFullPath = true, bool overwrite = false)
         {
-            using (Stream stream = File.OpenRead(filePath.FullName))
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
+
+            if (!compressedFile.Exists())
+                throw new IOException("File does not exist: " + compressedFile.FullName);
+
+            if (destination.Exists() && !overwrite)
+                throw new Exception("Destination file already exists: " + destination.FullName);
+
+            var options = new ExtractionOptions()
+            {
+                ExtractFullPath = extractFullPath,
+                Overwrite = overwrite
+            };
+
+            using (var stream = File.OpenRead(compressedFile.FullName))
             using (var reader = ReaderFactory.Open(stream))
-            {
                 while (reader.MoveToNextEntry())
-                {
                     if (!reader.Entry.IsDirectory)
-                    {
-                        Console.WriteLine(reader.Entry.Key);
-                        reader.WriteEntryToDirectory(destinationPath.FullName, new ExtractionOptions()
-                        {
-                            ExtractFullPath = extractFullPath,
-                            Overwrite = overrite
-                        });
-                    }
-                }
-            }
+                        reader.WriteEntryToDirectory(destination.FullName, options);
         }
-
-    }
-    public enum CompressionFormats
-    {
-        zip,
-        gzip,
-        tar
     }
 }
