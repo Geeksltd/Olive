@@ -6,7 +6,8 @@ NLog can process diagnostic messages emitted from any .NET language, augment the
 
 [See features, examples and configuration](http://nlog-project.org/#targets)
 
-## How to install?
+## How to install
+
 1. Add the nuget package Olive.Mvc.NLog to your application.
 2. Open StartUp.cs
 3. In Configure() method add the following line:
@@ -19,4 +20,5 @@ public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
     // ...
 }
 ```
-4. Add a [NLog.config file](https://github.com/nlog/nlog/wiki/Configuration-file) to your website root and customise it based on your requirements. 
+
+4. Add a [NLog.config file](https://github.com/nlog/nlog/wiki/Configuration-file) to your website root and customise it based on your requirements.
