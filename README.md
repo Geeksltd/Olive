@@ -1,1 +1,1 @@
-# [Olive Documentation is moved here](https://geeksltd.github.io/Olive/)
+# [See Olive Documentation](https://geeksltd.github.io/Olive/)
