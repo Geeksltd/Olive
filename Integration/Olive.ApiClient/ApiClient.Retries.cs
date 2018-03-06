@@ -73,7 +73,7 @@ namespace Olive
                 }
             }
 
-            return await policy.Execute(() => client.SendAsync(request).ConfigureAwait(false));
+            return await policy.ExecuteAsync(() => client.SendAsync(request));
         }
     }
 }
