@@ -12,23 +12,23 @@ using System.Text;
 
 namespace Olive.Compression
 {
-    public static class SharpCompress
+    public static class Compressor
     {
         /// <summary>
         /// A fluent API for compressing archives
         /// </summary>
         /// <param name="format">Format of compressed file</param>
         /// <param name="folderPath">The folder path that you want to compress</param>
-        /// <param name="destinationPath">Desired folder that your compressed file is going to be saved in</param>
-        /// <param name="filename">Filename including extension name</param>
-        public static void Compress(CompressionFormats format, string folderPath, string destinationPath, string filename)
+        /// <param name="destinationFilePath">Desired folder that your compressed file is going to be saved in</param>
+        public static void Compress(CompressionFormats format, DirectoryInfo folderPath, FileInfo destinationFilePath)
         {
+
             if (format == CompressionFormats.zip)
             {
                 using (var archive = ZipArchive.Create())
                 {
-                    archive.AddAllFromDirectory(folderPath);
-                    archive.SaveTo(Path.Combine(destinationPath, filename), CompressionType.Deflate);
+                    archive.AddAllFromDirectory(folderPath.FullName);
+                    archive.SaveTo(destinationFilePath.FullName, CompressionType.Deflate);
                 }
             }
 
@@ -36,8 +36,8 @@ namespace Olive.Compression
             {
                 using (var archive = TarArchive.Create())
                 {
-                    archive.AddAllFromDirectory(folderPath);
-                    archive.SaveTo(Path.Combine(destinationPath, filename), CompressionType.None);
+                    archive.AddAllFromDirectory(folderPath.FullName);
+                    archive.SaveTo(destinationFilePath.FullName, CompressionType.None);
                 }
             }
 
@@ -45,8 +45,8 @@ namespace Olive.Compression
             {
                 using (var archive = GZipArchive.Create())
                 {
-                    archive.AddAllFromDirectory(folderPath);
-                    archive.SaveTo(Path.Combine(destinationPath, filename), CompressionType.Deflate);
+                    archive.AddAllFromDirectory(folderPath.FullName);
+                    archive.SaveTo(destinationFilePath.FullName, CompressionType.Deflate);
                 }
             }
 
@@ -62,9 +62,9 @@ namespace Olive.Compression
         /// <param name="destinationPath">Desired decompression desination path</param>
         /// <param name="extractFullPath"></param>
         /// <param name="overrite"></param>
-        public static void Decompress(string filePath, string destinationPath, bool extractFullPath = true, bool overrite = true)
+        public static void Decompress(FileInfo filePath, DirectoryInfo destinationPath, bool extractFullPath = true, bool overrite = true)
         {
-            using (Stream stream = File.OpenRead(filePath))
+            using (Stream stream = File.OpenRead(filePath.FullName))
             using (var reader = ReaderFactory.Open(stream))
             {
                 while (reader.MoveToNextEntry())
@@ -72,7 +72,7 @@ namespace Olive.Compression
                     if (!reader.Entry.IsDirectory)
                     {
                         Console.WriteLine(reader.Entry.Key);
-                        reader.WriteEntryToDirectory(destinationPath, new ExtractionOptions()
+                        reader.WriteEntryToDirectory(destinationPath.FullName, new ExtractionOptions()
                         {
                             ExtractFullPath = extractFullPath,
                             Overwrite = overrite
