@@ -10,16 +10,16 @@ Olive is a .NET Standard 2.0 library and so compatible with .NET Framework 4.6.1
 
 # Learn Olive:
 
-## General .NET enhancers
+### General .NET enhancers
 - [Olive .Net Extensions](Core/Extensions.md) : With a vast range of extension methods on top of many basic .NET types (int, string, DateTime, ...) it makes your code more readable, consice and efficient code.
 - [Utility classes](Core/Utilities.md) : A bunch of useful utility classes which should have existed in the .NET base class library!
 
-## Security
+### Security
 - [Olive Security](Security/Security.md) : ...
 
-## Logging
+### Logging
 - [Olive Logging Overview](Logging/Logging.md) : ...
 - [Using NLog](Logging/NLog.md) : ...
 
-## Microservices
+### Microservices
 - [Olive Microservices Architecture](Microservices/Overview.md) : ...
