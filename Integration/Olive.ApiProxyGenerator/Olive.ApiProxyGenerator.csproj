@@ -26,6 +26,9 @@
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
     </Reference>
+    <Reference Include="Olive.Mvc">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -8,11 +8,9 @@ namespace Olive.Mvc
     /// also using Database.Get().
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class RemoteDataProvider : Attribute
+    public class RemoteDataProviderAttribute : Attribute
     {
-        Type EntityType;
-        public RemoteDataProvider(Type entityType) => EntityType = entityType;
-
-        public bool EnableDatabaseGet { get; set; } = true;
+        public readonly Type EntityType;
+        public RemoteDataProviderAttribute(Type entityType) => EntityType = entityType;
     }
 }

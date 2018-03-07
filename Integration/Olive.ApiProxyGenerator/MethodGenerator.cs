@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Olive;
+using Olive.Mvc;
 
 namespace Olive.ApiProxy
 {
@@ -43,16 +45,41 @@ namespace Olive.ApiProxy
             r.AppendLine();
             r.AppendLine($"var client = Microservice.Of(\"{Context.PublisherService}\").Api(url);");
             r.AppendLine("foreach (var config in Configurators) config(client);");
-
             r.AppendLine();
-            r.Append($"return client.{HttpVerb()}");
-            if (HttpVerb() == "Get") r.Append($"<{ReturnType()?.Name ?? "object"}>");
-
-            r.AppendLine("(" + Args().Trim().ToString(", ") + ");");
-
+            r.AppendLine(GetReturnStatement());
             r.AppendLine("}");
 
             return r.ToString();
+        }
+
+        private string GetReturnStatement()
+        {
+            var result = new StringBuilder();
+
+            var generateDefaultGet = Args().IsSingle() &&
+                                     Method.GetParameters().Single().ParameterType == typeof(Guid) &&
+                                     ReturnType() == Method.ReturnType;
+
+            var methodName = HttpVerb();
+            var resultFilter = string.Empty;
+
+            if (generateDefaultGet)
+            {
+                methodName = "Get";
+            }
+            else if (ReturnType().IsIEnumerableOf(Method.ReturnType) && Args().None())
+            {
+                methodName = "All";
+                resultFilter = ".FirstOrDefault()";
+            }
+
+
+            result.Append($"return client.{methodName}");
+            if (methodName == "Get") result.Append($"<{ReturnType()?.Name ?? "object"}>");
+
+            result.AppendLine("(" + Args().Trim().ToString(", ") + $"){resultFilter};");
+
+            return result.ToString();
         }
 
         string[] Args()
@@ -105,13 +132,8 @@ namespace Olive.ApiProxy
 
         public bool IsGetDataprovider()
         {
-            if (ReturnType() == null) return false;
-            if (ReturnType().IsArray) return false;
-
-            if (Method.GetAttribute("Returns").NamedArguments
-                .Any(x => x.MemberName == "EnableDatabaseGet" && (bool)x.TypedValue.Value == false)) return false;
-
-            return true;
+            if (ReturnType() == null || ReturnType().IsArray) return false;
+            return Method.Defines<RemoteDataProviderAttribute>();
         }
 
         public Type[] GetArgAndReturnTypes()
