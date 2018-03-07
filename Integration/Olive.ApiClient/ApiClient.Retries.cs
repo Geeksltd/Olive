@@ -8,10 +8,8 @@ namespace Olive
 {
     partial class ApiClient
     {
-        int retries;
+        int retries, ExceptionsBeforeBreakingCircuit;
         PolicyBuilder Policy = Polly.Policy.Handle<HttpRequestException>();
-
-        int ExceptionsBeforeBreakingCircuit;
         TimeSpan CircuitBreakDuration, RetryPauseDuration;
 
         static Dictionary<string, Polly.CircuitBreaker.CircuitBreakerPolicy> CircuitBreakers

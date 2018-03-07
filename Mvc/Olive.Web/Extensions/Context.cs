@@ -21,6 +21,7 @@ namespace Olive
             => context.GetService<IActionContextAccessor>()?.ActionContext;
 
         public static HttpRequest Request(this Context context) => context.Http()?.Request;
+
         public static HttpResponse Response(this Context context) => context.Http()?.Response;
 
         public static IHostingEnvironment Environment(this Context context)

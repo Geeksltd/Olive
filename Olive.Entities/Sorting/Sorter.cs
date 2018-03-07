@@ -89,6 +89,7 @@ namespace Olive.Entities
 
                 await Entity.Database.Update(item, o => o.Order = first - 1, saveBehaviour);
             }
+
             await JustifyOrders(item, saveBehaviour);
             return true;
         }
@@ -104,6 +105,7 @@ namespace Olive.Entities
 
                 await Entity.Database.Update(item, o => o.Order = last + 1, saveBehaviour);
             }
+
             await JustifyOrders(item, saveBehaviour);
             return true;
         }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Olive
 {
@@ -14,10 +13,7 @@ namespace Olive
 
         Context(IServiceCollection services) => Services = services;
 
-        public static void Initialize(IServiceCollection services)
-        {
-            Current = new Context(services);
-        }
+        public static void Initialize(IServiceCollection services) => Current = new Context(services);
 
         public Context Configure(IServiceProvider provider)
         {

@@ -2008,7 +2008,6 @@ namespace LumenWorks.Framework.IO.Csv
 
             var value = this[i];
 
-
             if (int.TryParse(value, out var result))
                 return (result != 0);
             else
@@ -2031,7 +2030,6 @@ namespace LumenWorks.Framework.IO.Csv
         {
             EnsureInitialize();
             ValidateDataReader(DataReaderValidations.IsNotClosed);
-
 
             if (!fieldHeaderIndexes.TryGetValue(name, out var index))
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, ExceptionMessage.FieldHeaderNotFound, name), "name");

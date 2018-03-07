@@ -13,14 +13,15 @@ namespace Olive.ApiProxy
 
         protected abstract string Framework { get; }
         protected abstract string[] References { get; }
-        protected abstract void AddFiles();
-        protected abstract string IconUrl { get; }
 
         protected ProjectCreator(string name)
         {
             Name = name;
             Folder = Context.TempPath.GetOrCreateSubDirectory(Context.ControllerType.FullName + "." + name);
         }
+        protected abstract void AddFiles();
+
+        protected abstract string IconUrl { get; }
 
         void Create()
         {

@@ -1,9 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -109,8 +107,8 @@ namespace Olive
             return result;
         }
 
-        //async Task RefreshUponUpdatedResponse<TResponse>(Func<TResponse, Task> refresher)
-        //{
+        // async Task RefreshUponUpdatedResponse<TResponse>(Func<TResponse, Task> refresher)
+        // {
         //    await Task.Delay(50);
 
         //    string localCachedVersion;
@@ -156,7 +154,7 @@ namespace Olive
         //        }
         //    }
         //    catch (Exception ex) { Debug.WriteLine(ex); }
-        //}
+        // }
 
         TResponse GetCachedResponse<TResponse>()
         {

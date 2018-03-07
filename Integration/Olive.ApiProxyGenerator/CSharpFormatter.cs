@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -38,7 +36,7 @@ namespace Olive.ApiProxy
             {
                 line.SetContextIndent(IndentLevel);
 
-                //if (line.Code.EndsWith("=>")) IndentLevel++;
+                // if (line.Code.EndsWith("=>")) IndentLevel++;
                 if (line.Code == "{") IndentLevel++;
                 if (line.UnindentsSelf()) IndentLevel--;
             }

@@ -12,7 +12,7 @@ namespace Olive.ApiProxy
 
         protected override string[] References
             => new[] { "Olive", "Olive.Entities", "Olive.Entities.Data", "Olive.ApiClient", "Olive.Microservices" };
-        
+
         protected override void AddFiles()
         {
             Console.Write("Adding the proxy class...");

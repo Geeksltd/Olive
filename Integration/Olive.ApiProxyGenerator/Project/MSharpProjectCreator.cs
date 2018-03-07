@@ -11,7 +11,7 @@ namespace Olive.ApiProxy
         protected override string IconUrl => "http://licensing.msharp.co.uk/images/icon.png";
 
         protected override string[] References => new[] { "Olive", "MSharp" };
-        
+
         protected override void AddFiles()
         {
             foreach (var type in DtoTypes.All)

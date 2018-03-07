@@ -1,6 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Olive.Mvc
 {
@@ -15,7 +13,6 @@ namespace Olive.Mvc
         Type EntityType;
         public RemoteDataProvider(Type entityType) => EntityType = entityType;
 
-       
         public bool EnableDatabaseGet { get; set; } = true;
     }
 }

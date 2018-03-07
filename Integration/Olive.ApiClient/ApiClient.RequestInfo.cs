@@ -11,7 +11,6 @@ namespace Olive
 {
     partial class ApiClient
     {
-
         public bool EnsureTrailingSlash { get; set; } = true;
 
         List<Action<HttpRequestHeaders>> RequestHeadersCustomizers = new List<Action<HttpRequestHeaders>>();
@@ -21,8 +20,6 @@ namespace Olive
             if (config != null) RequestHeadersCustomizers.Add(config);
             return this;
         }
-
-
 
         public partial class RequestInfo
         {

@@ -1,6 +1,4 @@
-﻿using Olive.Web;
-
-namespace Olive.Mvc
+﻿namespace Olive.Mvc
 {
     public class MenuItem
     {

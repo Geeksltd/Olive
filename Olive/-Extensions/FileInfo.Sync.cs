@@ -49,8 +49,7 @@ namespace Olive
 
         public static void DeleteIfExists(this FileInfo file)
         {
-            if (file != null && file.Exists())
-                file.Delete();
+            if (file != null && file.Exists()) file.Delete();
         }
 
         /// <summary>

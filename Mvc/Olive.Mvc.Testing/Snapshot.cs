@@ -6,18 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Olive.Entities;
 using Olive.Entities.Data;
-using Olive.Web;
 
 namespace Olive.Mvc.Testing
 {
     class Snapshot
     {
-        const string URL_FILE_NAME = "url.txt";
-        const string DATE_FILE_NAME = "date.txt";
+        const string URL_FILE_NAME = "url.txt", DATE_FILE_NAME = "date.txt";
         static string DatabaseName = GetDatabaseName();
         string SnapshotName;
         bool IsInShareSnapshotMode;
@@ -118,7 +115,7 @@ namespace Olive.Mvc.Testing
             Context.Current.Response().Redirect("~/");
             return Task.CompletedTask;
         }
-        
+
         public static Task RemoveSnapshot(string name)
         {
             var snapshotName = CreateSnapshotName(name);

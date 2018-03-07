@@ -4,7 +4,6 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Olive.Entities;
-    using Olive.Web;
 
     public abstract class ViewComponent : Microsoft.AspNetCore.Mvc.ViewComponent
     {

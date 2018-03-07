@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 
 namespace Olive.Mvc
@@ -24,6 +23,7 @@ namespace Olive.Mvc
                     .Concat(new Claim(ClaimTypes.Name, "Microservice.ApiUser"));
                     context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Service"));
                 }
+
                 await next();
             });
 
@@ -36,7 +36,6 @@ namespace Olive.Mvc
                 new AppSettingsPermissionsProvider();
             return provider.GetRoles(clientId);
         }
-
 
         public abstract class PermissionsProvider
         {

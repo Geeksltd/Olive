@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Olive.Web;
 
 namespace Olive.Security
 {

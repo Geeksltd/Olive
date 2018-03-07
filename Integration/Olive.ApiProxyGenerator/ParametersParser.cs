@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace Olive.ApiProxy
 {
@@ -36,8 +36,8 @@ namespace Olive.ApiProxy
                 .GetOrCreateSubDirectory("api-proxy").CreateSubdirectory(Guid.NewGuid().ToString());
         }
 
-        //static bool LoadFromControllerFile(FileInfo file)
-        //{
+        // static bool LoadFromControllerFile(FileInfo file)
+        // {
         //    if (file == null || !file.Exists)
         //    {
         //        Console.WriteLine(file?.FullName + " controller file does not exist!");
@@ -59,10 +59,10 @@ namespace Olive.ApiProxy
         //    }
 
         //    return LoadFromWebsite(directory);
-        //}
+        // }
 
-        //static bool LoadFromWebsite(DirectoryInfo websiteFolder)
-        //{
+        // static bool LoadFromWebsite(DirectoryInfo websiteFolder)
+        // {
         //    if (!websiteFolder.Exists)
         //    {
         //        Console.WriteLine(websiteFolder.FullName + " does not exist!");
@@ -88,7 +88,7 @@ namespace Olive.ApiProxy
         //    }
 
         //    return true;
-        //}
+        // }
 
         static string GetServiceName()
         {
@@ -118,6 +118,7 @@ namespace Olive.ApiProxy
                 if (result.Exists()) return result;
                 dir = dir.Parent;
             }
+
             throw new Exception("Failed to find appSettings.json in any of the parent directories.");
         }
 

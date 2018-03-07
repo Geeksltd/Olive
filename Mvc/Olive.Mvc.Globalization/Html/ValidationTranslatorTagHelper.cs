@@ -2,15 +2,13 @@
 // TODO: Check this and turn into its own package.
 // ******************************************
 
+// using System.Linq;
+// using System.Threading.Tasks;
+// using Microsoft.AspNetCore.Razor.TagHelpers;
+// using Olive.Globalization;
 
-
-//using System.Linq;
-//using System.Threading.Tasks;
-//using Microsoft.AspNetCore.Razor.TagHelpers;
-//using Olive.Globalization;
-
-//namespace Olive.Mvc
-//{
+// namespace Olive.Mvc
+// {
 //    [HtmlTargetElement("select")]
 //    [HtmlTargetElement("input")]
 //    public class ValidationTranslatorTagHelper : TagHelper
@@ -35,4 +33,4 @@
 //            await base.ProcessAsync(context, output);
 //        }
 //    }
-//}
+// }

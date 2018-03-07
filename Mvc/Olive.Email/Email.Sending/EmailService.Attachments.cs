@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Olive.Entities;
 
 namespace Olive.Email
 {
