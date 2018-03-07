@@ -15,7 +15,5 @@ namespace Olive.Mvc
         Type EntityType;
         public RemoteDataProvider(Type entityType) => EntityType = entityType;
 
-       
-        public bool EnableDatabaseGet { get; set; } = true;
     }
 }
