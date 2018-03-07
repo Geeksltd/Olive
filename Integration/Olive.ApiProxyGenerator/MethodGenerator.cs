@@ -62,7 +62,6 @@ namespace Olive.ApiProxy
                   .Except(RouteParams).Trim().ToString(", ").WithWrappers("new { ", " }");
             args.Add(queryString);
 
-            if (HttpVerb() == "Get") args.Add("CacheChoice");
             return args.ToArray();
         }
 

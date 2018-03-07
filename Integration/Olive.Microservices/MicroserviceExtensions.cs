@@ -20,9 +20,10 @@ namespace Olive
         /// <summary>
         /// Sets the cache choice for Get requests made by this proxy.
         /// </summary>
-        public static T Cache<T>(this T proxy, ApiResponseCache cacheChoice) where T : StronglyTypedApiProxy
+        public static T Cache<T>(this T proxy, CachePolicy policy, TimeSpan? cacheExpiry = null)
+            where T : StronglyTypedApiProxy
         {
-            proxy.CacheChoice = cacheChoice;
+            proxy.Configure(x => x.Cache(policy, cacheExpiry));
             return proxy;
         }
     }

@@ -10,9 +10,6 @@ namespace Olive
         protected List<Action<ApiClient>> Configurators = new List<Action<ApiClient>>();
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public ApiResponseCache CacheChoice { get; set; } = ApiResponseCache.Accept;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public StronglyTypedApiProxy Configure(Action<ApiClient> config)
         {
             if (config != null) Configurators.Add(config);
