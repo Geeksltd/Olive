@@ -85,7 +85,7 @@ namespace Olive
             var result = default(TResponse);
             if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
             {
-                result = GetCachedResponse<TResponse>();
+                result = await GetCachedResponse<TResponse>();
                 if (HasValue(result)) return result;
             }
 
@@ -96,13 +96,13 @@ namespace Olive
                 result = request.ExtractResponse<TResponse>();
 
                 if (request.Error == null)
+                {
                     await GetCacheFile<TResponse>().WriteAllTextAsync(request.ResponseText);
+                }
             }
 
             if (request.Error != null && CachePolicy != CachePolicy.FreshOrFail)
-            {
-                result = GetCachedResponse<TResponse>();
-            }
+                result = await GetCachedResponse<TResponse>();
 
             return result;
         }
@@ -156,13 +156,13 @@ namespace Olive
         //    catch (Exception ex) { Debug.WriteLine(ex); }
         // }
 
-        TResponse GetCachedResponse<TResponse>()
+        async Task<TResponse> GetCachedResponse<TResponse>()
         {
             var file = GetCacheFile<TResponse>();
-            return DeserializeResponse<TResponse>(file);
+            return await DeserializeResponse<TResponse>(file);
         }
 
-        TResponse DeserializeResponse<TResponse>(FileInfo file)
+        async Task<TResponse> DeserializeResponse<TResponse>(FileInfo file)
         {
             if (!file.Exists()) return default(TResponse);
 
@@ -173,7 +173,7 @@ namespace Olive
             try
             {
                 return JsonConvert.DeserializeObject<TResponse>(
-                    file.ReadAllText(),
+                    await file.ReadAllTextAsync(),
                     new JsonSerializerSettings()
                     {
                         TypeNameHandling = TypeNameHandling.Auto

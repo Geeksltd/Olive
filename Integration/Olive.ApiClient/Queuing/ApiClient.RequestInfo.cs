@@ -54,7 +54,7 @@ namespace Olive
                 var cachedFiles = GetTypeCacheFiles(modified);
                 foreach (var file in cachedFiles)
                 {
-                    var records = Client.DeserializeResponse<IEnumerable<TResponse>>(file).ToList();
+                    var records = await Client.DeserializeResponse<IEnumerable<TResponse>>(file).ToList();
                     var changed = false;
 
                     // If the file contains the modified row, update it

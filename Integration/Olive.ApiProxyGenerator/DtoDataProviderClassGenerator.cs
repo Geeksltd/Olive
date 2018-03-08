@@ -69,9 +69,12 @@ namespace Olive.ApiProxy
             r.AppendLine($"/// <summary>Implements the standard Get() method of Database by delegating the call to the remote Web Api.</summary>");
             r.AppendLine("public override async Task<IEntity> Get(object id)");
             r.AppendLine("{");
+            r.AppendLine("if (id is null) return null");
+
             if (ApiMethodReturnsList)
             {
                 r.AppendLine("var guid = id.ToString().To<Guid>();");
+                r.AppendLine("if (guid == Guid.Empty) return null;");
                 r.AppendLine();
             }
 
