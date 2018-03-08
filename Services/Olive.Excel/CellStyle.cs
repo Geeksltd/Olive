@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Olive.Excel
+namespace Olive.Export
 {
     /// <summary>
-    /// Provides styles for excel cells.
+    /// Provides styles for export cells.
     /// </summary>
-    public class ExcelCellStyle
+    public class CellStyle
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExcelCellStyle" /> class.
+        /// Initializes a new instance of the <see cref="CellStyle" /> class.
         /// </summary>
-        public ExcelCellStyle() => Italic = false;
+        public CellStyle() => Italic = false;
 
         #region Alignment
 
         /// <summary>
         /// Gets or sets the horizontal alignment of this style.
         /// </summary>
-        public ExcelExporter.HorizentalAlignment Alignment
+        public Exporter.HorizentalAlignment Alignment
         {
-            get => GetSetting("Alignment.Horizontal", ExcelExporter.HorizentalAlignment.Left);
+            get => GetSetting("Alignment.Horizontal", Exporter.HorizentalAlignment.Left);
             set => Settings["Alignment.Horizontal"] = ((int)value).ToString();
         }
 
@@ -33,9 +33,9 @@ namespace Olive.Excel
         /// <summary>
         /// Gets or sets the vertical alignment of this style.
         /// </summary>
-        public ExcelExporter.VerticalAlignment VerticalAlignment
+        public Exporter.VerticalAlignment VerticalAlignment
         {
-            get => GetSetting("Alignment.Vertical", ExcelExporter.VerticalAlignment.Center);
+            get => GetSetting("Alignment.Vertical", Exporter.VerticalAlignment.Center);
             set => Settings["Alignment.Vertical"] = ((int)value).ToString();
         }
 
@@ -46,9 +46,9 @@ namespace Olive.Excel
         /// <summary>
         /// Gets or sets the cell orientation of this style.
         /// </summary>
-        public ExcelExporter.CellOrientation Orientation
+        public Exporter.CellOrientation Orientation
         {
-            get => GetSetting("Alignment.Orientation", ExcelExporter.CellOrientation.Horizontal);
+            get => GetSetting("Alignment.Orientation", Exporter.CellOrientation.Horizontal);
             set => Settings["Alignment.Orientation"] = ((int)value).ToString();
         }
 
@@ -191,15 +191,15 @@ namespace Olive.Excel
         #region Manage Style items
 
         /// <summary>
-        /// Gets or sets the Style of this ExcelColumn.
-        /// Use ExcelExporter.Style.[Item] to add styles to this.
+        /// Gets or sets the settings.
+        /// Use Exporter.Style.[Item] to add styles to this.
         /// </summary>
         public Dictionary<string, string> Settings = new Dictionary<string, string>();
 
         /// <summary>
-        /// Use ExcelExporter.Style.[Item] to add styles.
+        /// Use Exporter.Style.[Item] to add styles.
         /// </summary>
-        public ExcelCellStyle Set(string key, string value)
+        public CellStyle Set(string key, string value)
         {
             Settings[key] = value;
             return this;
@@ -212,7 +212,7 @@ namespace Olive.Excel
 
         public override bool Equals(object obj)
         {
-            var style2 = obj as ExcelCellStyle;
+            var style2 = obj as CellStyle;
             if (style2 == null) return false;
 
             if (ReferenceEquals(this, style2)) return true;
@@ -227,7 +227,7 @@ namespace Olive.Excel
             .All(s => s.Value2?.ToString().ToLower() == s.Value1.ToLowerOrEmpty());
         }
 
-        public static bool operator ==(ExcelCellStyle style1, ExcelCellStyle style2)
+        public static bool operator ==(CellStyle style1, CellStyle style2)
         {
             if (ReferenceEquals(style1, style2)) return true;
 
@@ -236,7 +236,7 @@ namespace Olive.Excel
             return style1.Equals(style2);
         }
 
-        public static bool operator !=(ExcelCellStyle style1, ExcelCellStyle style2) => !(style1 == style2);
+        public static bool operator !=(CellStyle style1, CellStyle style2) => !(style1 == style2);
 
         public override int GetHashCode() => base.GetHashCode();
 
@@ -282,21 +282,19 @@ namespace Olive.Excel
         {
             switch (Orientation)
             {
-                case ExcelExporter.CellOrientation.Vertical:
+                case Exporter.CellOrientation.Vertical:
                     return "90";
-                case ExcelExporter.CellOrientation.Horizontal:
+                case Exporter.CellOrientation.Horizontal:
                     return "0";
                 default:
                     throw new NotSupportedException("This orientation is not supported.");
             }
         }
 
-        internal ExcelCellStyle OverrideWith(ExcelCellStyle overrideStyle)
+        internal CellStyle OverrideWith(CellStyle overrideStyle)
         {
-            var result = new ExcelCellStyle
-            {
-                Settings = new Dictionary<string, string>(Settings)
-            };
+            var result = new CellStyle();
+            result.Settings.Add(Settings);
 
             foreach (var setting in overrideStyle.Settings)
                 result.Settings[setting.Key] = setting.Value;

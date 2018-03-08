@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Testing</id>
-    <version>1.0.40</version>
+    <version>1.0.41</version>
     <title>Olive Testing (Service)</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -12,7 +12,7 @@
     <dependencies>
       <dependency id="Olive.Mvc" version="0.0.0" />
       <dependency id="Olive.Entities.Data" version="0.0.0" />
-      <dependency id="Olive.Entities.Excel" version="0.0.0" />
+      <dependency id="Olive.Export" version="0.0.0" />
     </dependencies>
   </metadata>
   <files>

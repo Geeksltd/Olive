@@ -35,9 +35,8 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Olive.Excel">
-      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Excel.dll</HintPath>
-      <Private>false</Private>
+    <Reference Include="Olive.Export">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Export.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Mvc">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>

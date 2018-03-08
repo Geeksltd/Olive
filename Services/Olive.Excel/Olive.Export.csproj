@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Olive.Excel</RootNamespace>
-    <AssemblyName>Olive.Excel</AssemblyName>
+    <RootNamespace>Olive.Export</RootNamespace>
+    <AssemblyName>Olive.Export</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\@Assemblies\</OutputPath>
-    <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.Excel.xml</DocumentationFile>
+    <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.Export.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573</NoWarn>
   </PropertyGroup>
 

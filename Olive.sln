@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Compression", "Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Csv", "Services\Olive.CSV\Olive.Csv.csproj", "{50ABA031-EAD6-4554-AC73-8BCA56C637B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Excel", "Services\Olive.Excel\Olive.Excel.csproj", "{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Services\Olive.Excel\Olive.Export.csproj", "{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.GeoLocation", "Services\Olive.GeoLocation\Olive.GeoLocation.csproj", "{253531A7-A460-4D61-9A85-A3E29B33AA94}"
 EndProject

@@ -1,16 +1,16 @@
-﻿namespace Olive.Excel
+﻿namespace Olive.Export
 {
-    public partial class ExcelExporter : ExcelExporter<object>
+    public partial class Exporter : Exporter<object>
     {
         /// <summary>
-        /// Creates a new ExcelExporter instance.
+        /// Creates a new Exporter instance.
         /// </summary>
-        public ExcelExporter(string documentName) : base(documentName) { }
+        public Exporter(string documentName) : base(documentName) { }
 
         /// <summary>
-        /// Creates a new ExcelExporter instance.
+        /// Creates a new Exporter instance.
         /// </summary>
-        public ExcelExporter(System.Data.DataTable dataTable) : base(dataTable) { }
+        public Exporter(System.Data.DataTable dataTable) : base(dataTable) { }
 
         public enum CellOrientation : int { Vertical, Horizontal }
         public enum VerticalAlignment : int { Top, Center, Bottom }
