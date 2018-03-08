@@ -202,14 +202,6 @@ namespace Olive
         /// Deletes the cached Get API result for the specified API url.
         /// </summary>
         public Task DisposeCache<TResponse>(string getApiUrl)
-        {
-            lock (CacheSyncLock)
-            {
-                var file = GetCacheFile<TResponse>(getApiUrl);
-                if (file.Exists()) file.DeleteAsync(true);
-            }
-
-            return Task.CompletedTask;
-        }
+            => GetCacheFile<TResponse>(getApiUrl).DeleteAsync(harshly: true);
     }
 }

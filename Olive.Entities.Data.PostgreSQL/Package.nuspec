@@ -2,13 +2,17 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities.Data.PostgreSQL</id>
-    <version>1.0.16</version>
+    <version>1.0.17</version>
     <title>Olive Entities Data PostgreSQL</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
-    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework - PostgreSQL Data Provider</description>
+    <dependencies>
+      <dependency id="Olive.Entities.Data" version="0.0.0" />
+      <dependency id="Npgsql" version="3.2.6" />
+    </dependencies>
   </metadata>
   <files>
     <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.PostgreSQL.dll" target="lib\netstandard2.0\" />

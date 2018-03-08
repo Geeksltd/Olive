@@ -2,15 +2,16 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Hangfire</id>
-    <version>1.0.22</version>
+    <version>1.0.23</version>
     <title>Olive Hangfire (Service)</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
-    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
       <dependency id="Hangfire" version="1.6.17" />
+      <dependency id="Olive.Mvc.Testing" version="0.0.0" />
     </dependencies>
   </metadata>
   <files>

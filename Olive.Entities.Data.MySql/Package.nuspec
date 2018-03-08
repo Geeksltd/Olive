@@ -2,13 +2,17 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities.Data.MySql</id>
-    <version>1.0.14</version>
+    <version>1.0.15</version>
     <title>Olive Entities Data MySql</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
-    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
+    <dependencies>
+      <dependency id="Olive.Entities.Data" version="0.0.0" />
+      <dependency id="MySqlConnector" version="0.35.0" />
+    </dependencies>
   </metadata>
   <files>
     <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.MySql.dll" target="lib\netstandard2.0\" />
