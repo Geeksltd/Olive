@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Olive.Entities.Attributes
+namespace Olive.Entities
 {
     /// <summary>
     /// When applied to a class field or property, it marks it as the default string representation of that class.
