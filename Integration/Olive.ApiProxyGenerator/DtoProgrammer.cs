@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
+using System.Reflection;
 
 namespace Olive.ApiProxy
 {
     internal class DtoProgrammer
     {
         Type Type;
+
+        MemberInfo[] EffectiveProperties => Type.GetEffectiveProperties();
 
         public DtoProgrammer(Type type) => Type = type;
 
@@ -35,7 +39,7 @@ namespace Olive.ApiProxy
             r.AppendLine("public class " + Type.Name + " : Olive.Entities.GuidEntity");
             r.AppendLine("{");
 
-            foreach (var p in Type.GetEffectiveProperties())
+            foreach (var p in EffectiveProperties)
             {
                 var type = p.GetPropertyOrFieldType().GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true);
 
@@ -44,8 +48,39 @@ namespace Olive.ApiProxy
                 r.AppendLine();
             }
 
+            r.AppendLine(GenerateTheToString());
+
             r.AppendLine("}");
             return r.ToString();
+        }
+
+        private string GenerateTheToString() => $"public override string ToString()=> {GetToStringField()};";
+
+        private string GetToStringField()
+        {
+            var explicitToStringField = EffectiveProperties.SingleOrDefault(i => i.GetCustomAttribute<Entities.ToStringAttribute>() != null);
+            var toStringField = explicitToStringField ?? SelectDefaultToStringField();
+
+            if (toStringField == null)
+                throw new Exception($"Could not find an implementation for ToString(). There is no field annotated with {nameof(Entities.ToStringAttribute)} attribute or a field named {CommonDefaultProperties.Select(s => s.ToPascalCaseId()).ToString(",", " or ")} for {Type.FullName}.");
+
+            return toStringField.Name;
+        }
+
+        static string[] CommonDefaultProperties = new[] { "title", "name", "subject", "description", "label", "text" };
+        MemberInfo SelectDefaultToStringField()
+        {
+            MemberInfo result;
+
+            // Priority 1 = Accurate:
+            result = CommonDefaultProperties.Select(n => EffectiveProperties.FirstOrDefault(p => p.Name.ToLower() == n)).FirstOrDefault(p => p != null);
+            if (result != null) return result;
+
+            // Priority 2 = Contains:
+            result = CommonDefaultProperties.Select(n => EffectiveProperties.FirstOrDefault(p => p.Name.ToLower().Contains(n))).FirstOrDefault(p => p != null);
+            if (result != null) return result;
+
+            return null;
         }
     }
 }
