@@ -470,5 +470,10 @@ namespace Olive
 
             throw new Exception("GetValue() is not implemented for " + classMember?.GetType().Name);
         }
+
+        public static bool IsIEnumerableOf(this Type @this, Type typeofT)
+        {
+            return @this.IsA(typeof(IEnumerable<>).MakeGenericType(typeofT));
+        }
     }
 }

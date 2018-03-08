@@ -19,14 +19,32 @@ namespace Olive.ApiProxy
             Folder.GetFile($"{Context.ControllerName}.cs").WriteAllText(ProxyClassProgrammer.Generate());
             Console.WriteLine("Done");
 
+            GenerateDtoClasses();
+            GenerateDataProviderClasses();
+        }
+
+        void GenerateDtoClasses()
+        {
+            foreach (var type in DtoTypes.All)
+            {
+                Console.Write("Adding DTO class " + type.Name + "...");
+                var dto = new DtoProgrammer(type);
+                Folder.GetFile(type.Name + ".cs").WriteAllText(dto.Generate());
+                Console.WriteLine("Done");
+            }
+        }
+
+        void GenerateDataProviderClasses()
+        {
             foreach (var type in DtoTypes.All)
             {
                 Console.Write("Adding DTO class " + type.Name + "...");
                 var dto = new DtoProgrammer(type);
                 Folder.GetFile(type.Name + ".cs").WriteAllText(dto.Generate());
 
-                if (dto.DatabaseGetMethod != null)
-                    Folder.GetFile(type.Name + "DataProvider.cs").WriteAllText(dto.GenerateDataProvider());
+                var dataProvider = new DtoDataProviderClassGenerator(type).Generate();
+                if (dataProvider.HasValue())
+                    Folder.GetFile(type.Name + "DataProvider.cs").WriteAllText(dataProvider);
 
                 Console.WriteLine("Done");
             }

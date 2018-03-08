@@ -70,7 +70,6 @@ namespace Olive.ApiProxy
 
             ActionMethods = ControllerType
                 .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
-                .Validate()
                 .Select(x => new MethodGenerator(x))
                 .ToArray();
 

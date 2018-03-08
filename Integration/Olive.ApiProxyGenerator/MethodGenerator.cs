@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Olive;
-using Olive.Mvc;
 
 namespace Olive.ApiProxy
 {
@@ -12,6 +11,8 @@ namespace Olive.ApiProxy
     {
         internal MethodInfo Method;
         string[] RouteParams;
+
+        string ReturnType => Method.GetApiMethodReturnType()?.Name;
 
         public MethodGenerator(MethodInfo method)
         {
@@ -29,7 +30,7 @@ namespace Olive.ApiProxy
                 r.Append($" As the target Api declares [{Method.GetExplicitAuthorizeServiceAttribute()}], I will call AsServiceUser() automatically.");
             r.AppendLine("</summary>");
 
-            r.AppendLine($"public {MethodReturnType()} {Method.Name}({GetArgs()})");
+            r.AppendLine($"public Task{ReturnType.WithWrappers("<", ">")} {Method.Name}({GetArgs()})");
             r.AppendLine("{");
 
             if (Method.GetExplicitAuthorizeServiceAttribute().HasValue())
@@ -52,34 +53,13 @@ namespace Olive.ApiProxy
             return r.ToString();
         }
 
-        private string GetReturnStatement()
+        string GetReturnStatement()
         {
-            var result = new StringBuilder();
-
-            var generateDefaultGet = Args().IsSingle() &&
-                                     Method.GetParameters().Single().ParameterType == typeof(Guid) &&
-                                     ReturnType() == Method.ReturnType;
-
-            var methodName = HttpVerb();
-            var resultFilter = string.Empty;
-
-            if (generateDefaultGet)
-            {
-                methodName = "Get";
-            }
-            else if (ReturnType().IsIEnumerableOf(Method.ReturnType) && Args().None())
-            {
-                methodName = "All";
-                resultFilter = ".FirstOrDefault()";
-            }
-
-
-            result.Append($"return client.{methodName}");
-            if (methodName == "Get") result.Append($"<{ReturnType()?.Name ?? "object"}>");
-
-            result.AppendLine("(" + Args().Trim().ToString(", ") + $"){resultFilter};");
-
-            return result.ToString();
+            var r = new StringBuilder();
+            r.Append($"return client.{HttpVerb()}");
+            if (HttpVerb() == "Get") r.Append($"<{ReturnType ?? "object"}>");
+            r.AppendLine("(" + Args().Trim().ToString(", ") + ");");
+            return r.ToString();
         }
 
         string[] Args()
@@ -119,26 +99,9 @@ namespace Olive.ApiProxy
             return classRouteAttr.WithSuffix("/" + routeAttr.Or("{Route?}"));
         }
 
-        string MethodReturnType()
-        {
-            if (ReturnType() == null) return "Task";
-            return "Task<" + ReturnType()?.Name + ">";
-        }
-
-        public Type ReturnType()
-        {
-            return Method.GetAttribute("Returns")?.ConstructorArguments.Single().Value as Type;
-        }
-
-        public bool IsGetDataprovider()
-        {
-            if (ReturnType() == null || ReturnType().IsArray) return false;
-            return Method.Defines<RemoteDataProviderAttribute>();
-        }
-
         public Type[] GetArgAndReturnTypes()
         {
-            return Method.GetParameters().Select(x => x.ParameterType).Concat(ReturnType()).ToArray();
+            return Method.GetParameters().Select(x => x.ParameterType).Concat(Method.GetApiMethodReturnType()).ToArray();
         }
     }
 }
