@@ -18,14 +18,14 @@ Each microservice will be responsible for its own html (razor) templates, custom
 ## Composite UI
 In almost every business application, you can think of the overall page UI structure as consisting of three concerns:
 
-**Overall layout microservice: Access Hub**
+#### Overall layout microservice: Access Hub
 This is effectively the host or container for all pages of the application. It provides the overall layout including banner, logo, footer, and other common elements. Also it provides the overall navigation such as main menu, sub menu level 1, ...
 
 It also provides a placeholder where the UI fragment for the actual features (unique pages) will be displayed inside the overall layout, so to the end user everything seems integrated and consistent.
 
 In Olive this is implemented through a single application named **AccessHub**.
 
-**Business Feature microservices**
+#### Business Feature microservices
 The actual business functionality is delivered to the user as UI fragments. Each one is usually an MVC page with just the unique content for that page such as form fields, list modules, ... but not the overall shared layout. It can then be hosted inside AccessHub either as a Web Component (fully Ajax based) or an IFrame (for legacy services).
 
 There will usually be many such microservices in the solution, each with one or a few pages related to that microservice.
