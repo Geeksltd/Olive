@@ -7,3 +7,4 @@ Microservice architecture is a method of developing software applications as a *
 Olive facilitates microservice implementation for typical business applications by providing a productive framework and set of components that can speed you up. This guide will help get you started.
 
 ![GitHub Logo](AccessHub.png)
+[Edit diagram](https://www.draw.io/?url=https://raw.githubusercontent.com/Geeksltd/Olive/master/docs/Microservices/AccessHub.png)
