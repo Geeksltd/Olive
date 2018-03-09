@@ -21,7 +21,8 @@ Docker and container is supported in Windows server 2016. But just windows conta
 3-Copy `C:\Program Files\Docker` from the Windows 10 machine to `C:\Program Files\Docker` on your Server 2016.
 
 4- Switch to Windows Server 2016, then import these registry settings:
-``` 
+
+```
 ---START---
 Windows Registry Editor Version 5.00
 
@@ -49,4 +50,8 @@ Windows Registry Editor Version 5.00
 
 ## Running dockerized microservices
 
-Go to the solution, select `Docker Compose` as start-up project. Then press f5 and run the solution!
+First change the connection string of website project to
+`Database=YourDatabaseName;Server=sql.data;User Id=sa;Password=Pass@word;Persist Security Info=False;MultipleActiveResultSets=True` 
+Which can be found in *appsettings.json* file.
+
+Then go to the solution, select `Docker Compose` as start-up project. Then press f5 and run the solution!
