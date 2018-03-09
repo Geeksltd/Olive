@@ -9,7 +9,6 @@
     * [Environment Setup](Microservices/Setup.md)
     * [Private Nuget Server](Microservices/PrivateNuget.md)
     -----------------------    
-    * [UI Architecture](Microservices/UI.Architecture.md)
     * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
