@@ -1,21 +1,26 @@
-* Core
+* Olive Core
 
-    * [Extensions](Core/Extensions.md)
-    * [Utilities](Core/Utilities.md)
+    * [.NET Extensions](Core/Extensions.md)
+    * [Utility classes](Core/Utilities.md)
 
-* Logging
-    * [NLog](Logging/NLog.md)
-
-* Microservices
-    * [Addressing](Microservices/Addressing.md)
-    * [Create New](Microservices/Create.New.md)
-    * [API Design](Microservices/APIDesign.md)
-    * [Docker](Microservices/Docker.md)
-    * [Overview](Microservices/Overview.md)
-    * [Private Nuget](Microservices/PrivateNuget.md)
-    * [Setup](Microservices/Setup.md)
+* Microservices Architecture
+    * [Overview: Microservices in Olive](Microservices/Overview.md)
+    * [Environment Setup](Microservices/Setup.md)
+    * [Private Nuget Server](Microservices/PrivateNuget.md)
+    -----------------------
     * [UI Architecture](Microservices/UI.Architecture.md)
+    * [Urls and Addressing](Microservices/Addressing.md)
+    -----------------------
+    * [Creating a new microservice](Microservices/Create.New.md)
+    * [API Design](Microservices/APIDesign.md)
+    -----------------------
+    * [Docker support](Microservices/Docker.md)
+    
 
 * Security
+    * [Olive Security Overview](Security/Security.md)
     * [Config](Security/Config.md)
-    * [Security](Security/Security.md)
+    
+* Logging
+    * [Olive Logging Overview](Logging/Logging.md)
+    * [NLog integration](Logging/NLog.md)
