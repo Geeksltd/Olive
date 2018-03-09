@@ -9,7 +9,7 @@ In microservice scenarios, authentication is typically handled centrally as you 
 ## Authentication via AccessHub
 In Olive, the AccessHub microservice acts as a security token service (STS). As you can see in the diagram below.
 
-The user will be authenticated to AccessHub either using username/password fields, or via an ID provider such as Google, Facebook, Microsoft, etc. [Learn more about Olive Authentication](#/Security/Security).
+The user will be authenticated to AccessHub either using username/password fields, or via an ID provider such as Google, Facebook, Microsoft, etc. [Learn more about Olive Authentication](https://geeksltd.github.io/Olive/#/Security/Security).
 
 Once the user has been authenticated, her **email** is established and known to AccessHub. At this moment, it needs to identify the user's name, ID (Guid) and roles, from which to create a standard ASP.NET Authentication cookie and send back to the user's browser.
 
