@@ -10,7 +10,7 @@
     * [Private Nuget Server](Microservices/PrivateNuget.md)
     -----------------------    
     * [UI Architecture](Microservices/UI.Architecture.md)
-    * [Security (Auth)](Microservices/Auth.md)
+    * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
     
