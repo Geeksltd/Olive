@@ -16,6 +16,7 @@
     -----------------------
     * [DevOps](Microservices/Docker.md)
         * [Docker support](Microservices/Docker.md)
+        * [Build server: Jenkins](Microservices/Jenkins.md)
 
 * Olive Entities
     * [Overview](Entities/Overview.md)
