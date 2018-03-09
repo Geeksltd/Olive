@@ -1,6 +1,6 @@
 # Olive Microservices
 
-> **Important** If you're new to Microservices and Docker, [read this book first](https://www.microsoft.com/net/download/thank-you/microservices-architecture-ebook).
+> **Important** If you're new to Microservices and Docker, [read this 35 page book summary](https://docs.google.com/document/d/1tmvhoywkvPwl6I5jkX3aS71zcjm_1ecOOi-7_z886zU/edit?usp=sharing) first.
 
 Microservice architecture is a method of developing software applications as a **suite of independently deployable**, small, modular services (i.e. applications) in which **each service runs a unique process** and communicates through a well-defined, lightweight mechanism to serve a business goal.
 
