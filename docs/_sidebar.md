@@ -5,11 +5,12 @@
     * [Utility classes](Core/Utilities.md)
 
 * Microservices Architecture
-    * [Overview: Microservices in Olive](Microservices/Overview.md)
+    * [Overview](Microservices/Overview.md)
     * [Environment Setup](Microservices/Setup.md)
     * [Private Nuget Server](Microservices/PrivateNuget.md)
-    -----------------------
+    -----------------------    
     * [UI Architecture](Microservices/UI.Architecture.md)
+    * [Security (Auth)](Microservices/Auth.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
     
