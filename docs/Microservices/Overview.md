@@ -1,10 +1,16 @@
 # Olive Microservices
 
-> **Important** If you're new to Microservices and Docker, [read this 35 page book summary](https://docs.google.com/document/d/1tmvhoywkvPwl6I5jkX3aS71zcjm_1ecOOi-7_z886zU/edit?usp=sharing) first.
-
 Microservice architecture is a method of developing software applications as a **suite of independently deployable**, small, modular services (i.e. applications) in which **each service runs a unique process** and communicates through a well-defined, lightweight mechanism to serve a business goal.
 
 Olive facilitates microservice implementation for typical business applications by providing a productive framework and set of components that can speed you up. This guide will help get you started.
+
+## Prerequisites
+To successfully develop microservice solutions using M# and Olive you need to know the following:
+- **Docker and Microservices:** [definitely read this book summary](https://docs.google.com/document/d/1tmvhoywkvPwl6I5jkX3aS71zcjm_1ecOOi-7_z886zU/edit?usp=sharing) first.
+- **.NET:** ASP.NET Core Mvc,  Web Apis, RESTful design, Task parallel library (*async/await*)
+- **Front end:** Bootstrap 4, SASS, Jquery, Typescript, RequireJS
+- **Olive:** Olive Entities and Data Access Api
+- **[M# in Visual Studio](http://learn.msharp.co.uk/#/Overview/README)**
 
 ## Distributed UI via Access Hub 
 To get the most benefit out of the microservices architecture, each service (small web app) should have full autonomy over its UI. Instead of sharing the UI code in a central monolith application, the UI pages and modules specific to each microservice should be a part of its own source code.
