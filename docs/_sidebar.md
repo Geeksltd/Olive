@@ -11,11 +11,11 @@
     -----------------------
     * [UI Architecture](Microservices/UI.Architecture.md)
     * [Urls and Addressing](Microservices/Addressing.md)
-    -----------------------
     * [Creating a new microservice](Microservices/Create.New.md)
     * [API Design](Microservices/APIDesign.md)
     -----------------------
-    * [Docker support](Microservices/Docker.md)
+    * [DevOps](Microservices/Docker.md)
+        * [Docker support](Microservices/Docker.md)
     
 
 * Security
