@@ -43,7 +43,8 @@ var customers = await new ApiClient($"{baseUrl}/customers").Get<Customer[]>();
 ## Sending query string arguments
 To send query string parameters to the target Web Api, simply add them as properties of an anonymous object, and pass it as the Get() method attribute.
 ```csharp
-var customers = await new ApiClient($"{baseUrl}/customers").Get<Customer[]>(new { category = myCategoryId });
+var customers = await new ApiClient($"{baseUrl}/customers")
+                         .Get<Customer[]>(new { category = myCategoryId });
 ```
 
 ## Cache vs Fresh
@@ -61,12 +62,15 @@ var customers = await new ApiClient($"{baseUrl}/customers")
                          .Get<Customer[]>();
 ```
 
-You have 3 options.
-### CachePolicy.FreshOrCacheOrFail (default)
- Choose this if your priorities are: 
- 1. Up-to-date result
- 2. Minimum crashing
- 3. Can compromise on speed and resource efficieny. 
+You have 3 options:
+
+| Option  | When your priorities are |
+| ------------- | ------------- |
+| FreshOrCacheOrFail  | **Up-to-date** then **Minimum crashing** 
+| CacheOrFreshOrFail  | **Speed** then **Minimum crashing**
+| FreshOrFail  | **Must be up-to-date**  |
+
+#### CachePolicy.FreshOrCacheOrFail (default)
 
 This is the safest option. It is likely to give you up to date result mos of the time.
 But it's not the fastest option as it always waits for a remote call before returning.
@@ -78,11 +82,9 @@ This is how it works:
      * Yes? Return from cache.
      * No? Throw the exception. 
 
-### CachePolicy.CacheOrFreshOrFail
- Choose this if your priorities are: 
- 1. Fastest response
- 2. Minimum crashing, 
- 3. Not the most up-to-date response. 
+#### CachePolicy.CacheOrFreshOrFail
+This is the fastest option, and is the least likely to crash.
+Use this if you can tolerate response data that may not be up-to-date.
 
 This is how it works:
  
@@ -92,11 +94,8 @@ This is how it works:
       * Successful? Update the cache file, and return the response.
       * Failed? Throw the exception. 
 
-### CachePolicy.FreshOrFail
- Choose this if your priorities are: 
- 1. Must be up-to-date
- 2. Happy for it to crash otherwise
- 3. Speed is also irrelevant
+#### CachePolicy.FreshOrFail
+Choose this if you only want up-to-date data and want to ignore the cache, even if it means crashing.
 
 This is how it works:
  
@@ -104,7 +103,7 @@ This is how it works:
    * Successful? update the cache file, and return the response.
    * Failed? Throw the exception.
 
-The cache file will still be updated (in case you want to invoke the same Api with a different cache policy in the future).
+Note: The cache file will still be updated (in case you want to invoke the same Api with a different cache policy in the future).
 
 
 ## Error handling
