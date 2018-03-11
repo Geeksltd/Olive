@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Olive.Csv</RootNamespace>
+    <AssemblyName>Olive.Csv</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.Csv.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

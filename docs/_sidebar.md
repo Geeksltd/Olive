@@ -7,15 +7,13 @@
 * Microservices Architecture
     * [Overview](Microservices/Overview.md)
     * [Environment Setup](Microservices/Setup.md)
-    * [Private Nuget Server](Microservices/PrivateNuget.md)
-    -----------------------    
+        * [Private Nuget Server](Microservices/PrivateNuget.md)    
     * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
-    
-    -----------------------
     * [DevOps](Microservices/Docker.md)
         * [Docker support](Microservices/Docker.md)
+        * [Build server: Jenkins](Microservices/Jenkins.md)
 
 * Olive Entities
     * [Overview](Entities/Overview.md)
