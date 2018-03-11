@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
     </Reference>
