@@ -2,7 +2,7 @@
 
 ASP.NET Web Apis are based on the standard HTTP protocol, which means any http client from any technology can use them.
 
-### .NET based client app
+## .NET based client app
 To consume a Web Api in a .NET clietn app you can use the *HttpClient* class provided by the .NET framework.
 
 HttpClient provides a basic set of methods for sending HTTP requests to any URL, and receiving the responses.
@@ -20,7 +20,7 @@ When using HttpClient directly, you should manually take care of:
   * Retries for GET requests
   * Circuit breaking (to avoid server overloading)
 
-### Olive.ApiClient
+## Olive.ApiClient
 Olive provides a helper utility class named ***ApiClient*** which handles all of the above issues for you.
 It's built on top of the standard HttpClient, and is ideal for invoking Web Apis.
 
@@ -30,7 +30,7 @@ The following simple line is enough to take care of all aspects of downloading a
 var customer = await new ApiClient($"{baseUrl}/customers/{id}").Get<Customer>();
 ```
 
-### Result object deserialization
+## Result object deserialization
 The above example assumes that the Web Api will return som json data that is compatible with the schema of the *Customer* class in the client application.
 It will automatically deserialize the json result to that type.
 
@@ -40,13 +40,13 @@ For example:
 var customers = await new ApiClient($"{baseUrl}/customers").Get<Customer[]>();
 ```
 
-### Sending query string arguments
+## Sending query string arguments
 To send query string parameters to the target Web Api, simply add them as properties of an anonymous object, and pass it as the Get() method attribute.
 ```csharp
 var customers = await new ApiClient($"{baseUrl}/customers").Get<Customer[]>(new { category = myCategoryId });
 ```
 
-### Cache vs Fresh
+## Cache vs Fresh
 Remove services can be faulty, slow or unresponsive at times due to network, server or application problems.
 
 By default, Olive will cache the response of every Get request. The raw textual result (often Json data) will be saved upon every successful execution of that Api.
@@ -62,7 +62,7 @@ var customers = await new ApiClient($"{baseUrl}/customers")
 ```
 
 You have 3 options.
-#### CachePolicy.FreshOrCacheOrFail (default)
+### CachePolicy.FreshOrCacheOrFail (default)
  Choose this if your priorities are: 
  1. Up-to-date result
  2. Minimum crashing
@@ -78,7 +78,7 @@ This is how it works:
      * Yes? Return from cache.
      * No? Throw the exception. 
 
-#### CachePolicy.CacheOrFreshOrFail
+### CachePolicy.CacheOrFreshOrFail
  Choose this if your priorities are: 
  1. Fastest response
  2. Minimum crashing, 
@@ -92,7 +92,7 @@ This is how it works:
       * Successful? Update the cache file, and return the response.
       * Failed? Throw the exception. 
 
-#### CachePolicy.FreshOrFail
+### CachePolicy.FreshOrFail
  Choose this if your priorities are: 
  1. Must be up-to-date
  2. Happy for it to crash otherwise
@@ -107,5 +107,5 @@ This is how it works:
 The cache file will still be updated (in case you want to invoke the same Api with a different cache policy in the future).
 
 
-### Error handling
+## Error handling
 If a call to a Web Api results in an error, by default you will get an exception thrown with the correct error message.
