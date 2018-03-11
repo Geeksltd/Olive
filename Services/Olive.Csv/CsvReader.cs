@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Olive.Entities;
+using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Olive.Entities;
 
 namespace Olive.Csv
 {
@@ -31,11 +31,14 @@ namespace Olive.Csv
         {
             var output = new DataTable();
 
-            using (var csv = new LumenWorks.Framework.IO.Csv.CsvDataReader(new StringReader(csvContent), isFirstRowHeaders))
+            using (TextReader textReaderContent = new StringReader(csvContent))
+            using (var csvResult = new CsvHelper.CsvReader(textReaderContent))
             {
-                csv.MissingFieldAction = LumenWorks.Framework.IO.Csv.MissingFieldAction.ReplaceByNull;
-                var fieldCount = Math.Max(csv.FieldCount, minimumFieldCount);
-                var headers = csv.GetFieldHeaders();
+                csvResult.Read();
+                csvResult.ReadHeader();
+
+                var fieldCount = Math.Max(csvResult.Context.HeaderRecord.Length, minimumFieldCount);
+                var headers = csvResult.Context.HeaderRecord;
 
                 if (!isFirstRowHeaders)
                     headers = Enumerable.Range(0, fieldCount).Select(i => "Column" + i).ToArray();
@@ -43,17 +46,23 @@ namespace Olive.Csv
                 for (var i = 0; i < fieldCount; i++)
                     output.Columns.Add(new DataColumn(headers[i], typeof(string)));
 
-                while (csv.ReadNextRecord())
+                if (!isFirstRowHeaders)
+                {
+                    var headerRow = output.NewRow();
+                    foreach (DataColumn column in output.Columns)
+                        headerRow[column.ColumnName] = csvResult.Context.HeaderRecord[column.Ordinal];
+                    output.Rows.Add(headerRow);
+                }
+
+                while (csvResult.Read())
                 {
                     var row = output.NewRow();
-
-                    for (var i = 0; i < fieldCount; i++) row[i] = csv[i];
-
+                    foreach (DataColumn column in output.Columns)
+                        row[column.ColumnName] = csvResult.GetField(column.DataType, column.Ordinal);
                     output.Rows.Add(row);
                 }
+                return output;
             }
-
-            return output;
         }
 
         /// <summary>
@@ -66,8 +75,13 @@ namespace Olive.Csv
         /// </summary>
         public static string[] GetColumns(string csvContent)
         {
-            using (var csv = new LumenWorks.Framework.IO.Csv.CsvDataReader(new StringReader(csvContent), true))
-                return csv.GetFieldHeaders();
+            using (TextReader textReaderContent = new StringReader(csvContent))
+            using (var csvResult = new CsvHelper.CsvReader(textReaderContent))
+            {
+                csvResult.Read();
+                csvResult.ReadHeader();
+                return csvResult.Context.HeaderRecord;
+            }
         }
     }
 }
