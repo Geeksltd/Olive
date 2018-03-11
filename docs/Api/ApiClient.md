@@ -141,3 +141,21 @@ Notification here means *showing a toast message to the user*. This option is on
 This is a handy option for when: 
 * You don't want to show an error screen if the remote Api has crashed
 * But you want to inform the user that the result they see on the page may be out of date.
+
+## Resiliency
+You can set retry and circuit breaker settings for a more resilient and fault tolerant integration.
+```csharp
+var customers = await new ApiClient($"{baseUrl}/customers")
+                         .Retries(3)
+                         .CircuitBreaker(exceptionsBeforeBreaking: 5, breakDurationSeconds: 10)
+                         .Get<Customer[]>();
+```
+
+#### What is Circuit Breaker?
+It prevents sending too many requests to an already failed remote service.
+If http exceptions are raised consecutively for the specified number of times, it will
+***break the circuit*** for the specified duration.
+
+During the break period, any attempt to execute a new request will **immediately throw a BrokenCircuitException**.
+Once the duration is over, if the first action throws http exception again,
+the circuit will break again for the same duration. Otherwise the circuit will reset.
