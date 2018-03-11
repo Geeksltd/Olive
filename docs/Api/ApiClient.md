@@ -121,12 +121,12 @@ Your choice here is relevant in relation to the cache policy and the actuality o
 
 | Cache Policy  | OnError | Api failed, cache available | Api failed, cache unavailable
 | ------------- | ------------- | ---------- | -------
-| FreshOrCacheOrFail  | Throw | (from cache) | Exception
-| FreshOrCacheOrFail  | Ignore | (from cache) | NULL
-| FreshOrCacheOrFail  | IgnoreAndNotify | (from cache) | NULL, toast message
-| CacheOrFreshOrFail  | Throw | (from cache) | Exception
-| CacheOrFreshOrFail  | Ignore | (from cache) | NULL
-| CacheOrFreshOrFail  | IgnoreAndNotify | (from cache) | NULL, toast message
-| FreshOrFail  | Throw | Exception | Exception
-| FreshOrFail  | Ignore | Null | Null
-| FreshOrFail  | IgnoreAndNotify | Null, toast message | Null, toast message
+| FreshOrCacheOrFail  | Throw | (from cache) | **Exception**
+| FreshOrCacheOrFail  | Ignore | (from cache) | *NULL*
+| FreshOrCacheOrFail  | IgnoreAndNotify | (from cache) | *NULL*, toast message
+| CacheOrFreshOrFail  | Throw | (from cache) | **Exception**
+| CacheOrFreshOrFail  | Ignore | (from cache) | *NULL*
+| CacheOrFreshOrFail  | IgnoreAndNotify | (from cache) | *NULL*, toast message
+| FreshOrFail  | Throw | **Exception** | **Exception**
+| FreshOrFail  | Ignore | *NULL* | *NULL*
+| FreshOrFail  | IgnoreAndNotify | *NULL*, toast message | *NULL*, toast message
