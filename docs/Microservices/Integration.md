@@ -7,16 +7,16 @@ If you're building an internal business application however, there is a good cha
 
 ## The problem with normal Api calling
 
-Of course the .NET framework provides you with standard classes to invoke Http based web-api services.
-You can see [examples here](https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client) for how to use HttpClient and related classes to achieve this.
+The .NET framework provides you with the *HttpClient* class to invoke Http based web-apis.
+In addition, Olive provides the **ApiClient** class which [provides a lot of benefits on top of that](../Api/ApiClient.md)
+and solves many routine problems for you.
 
-However that way you have to write a lot of code which can be time consuming and error prone. You also have to deal with many issues yourself:
+Yet still, for consuming remote services, there are some problems remaining, such as:
 
-- Caching 
-- Exception handling and logging
+- Create DTO classes for request and response types
 - Making sure the Api Urls are up to date
 - Making sure the correct version of the service is being invoked (Dev v.s. Staging v.s. Production)
-- Create DTO classes for request and response types
+
 
 # Solution: Olive Api Proxy Generator
 

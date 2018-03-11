@@ -6,6 +6,7 @@ ASP.NET Web Apis are based on the standard HTTP protocol, which means any http c
 To consume a Web Api in a .NET clietn app you can use the *HttpClient* class provided by the .NET framework.
 
 HttpClient provides a basic set of methods for sending HTTP requests to any URL, and receiving the responses.
+You can see [examples here](https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client) to learn how to use HttpClient.
 
 When using HttpClient directly, you should manually take care of:
 * Serialization of CLR request parameters
