@@ -64,11 +64,11 @@ var customers = await new ApiClient($"{baseUrl}/customers")
 
 You have 3 options:
 
-| Option  | When your priorities are |
-| ------------- | ------------- |
-| FreshOrCacheOrFail  | **Up-to-date** then **Minimum crashing** 
-| CacheOrFreshOrFail  | **Speed** then **Minimum crashing**
-| FreshOrFail  | **Must be up-to-date**  |
+| Option  | When your priorities are | And you're happy to accept
+| ------------- | ------------- | ----------
+| FreshOrCacheOrFail  | **Up-to-date** then **Minimum crashing** | *Lower speed**
+| CacheOrFreshOrFail  | **Speed** then **Minimum crashing** | *Relatively out-of-date result**
+| FreshOrFail  | **Must be up-to-date** | *Lower speed and more crashing**
 
 #### CachePolicy.FreshOrCacheOrFail (default)
 
