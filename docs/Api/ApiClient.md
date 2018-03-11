@@ -40,12 +40,15 @@ For example:
 var customers = await new ApiClient($"{baseUrl}/customers").Get<Customer[]>();
 ```
 
+---
+
 ## Sending query string arguments
 To send query string parameters to the target Web Api, simply add them as properties of an anonymous object, and pass it as the Get() method attribute.
 ```csharp
 var customers = await new ApiClient($"{baseUrl}/customers")
                          .Get<Customer[]>(new { category = myCategoryId });
 ```
+---
 
 ## Cache vs Fresh
 Remove services can be faulty, slow or unresponsive at times due to network, server or application problems.
@@ -85,7 +88,6 @@ This is how it works:
 #### CachePolicy.CacheOrFreshOrFail
 This is the fastest option, and is the least likely to crash.
 Use this if you can tolerate response data that may not be up-to-date.
-
 This is how it works:
  
 * Is there a cached file from before?
@@ -96,15 +98,15 @@ This is how it works:
 
 #### CachePolicy.FreshOrFail
 Choose this if you only want up-to-date data and want to ignore the cache, even if it means crashing.
-
 This is how it works:
  
 * Make a fresh HTTP request and wait for the response.
    * Successful? update the cache file, and return the response.
    * Failed? Throw the exception.
 
-Note: The cache file will still be updated (in case you want to invoke the same Api with a different cache policy in the future).
+Note: The cache file will still be updated, in case you want to invoke the same Api with a different cache policy in the future.
 
+---
 
 ## Error handling
 If a call to a Web Api results in an error, by default you will get an exception thrown with the correct error message.
