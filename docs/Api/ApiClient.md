@@ -61,7 +61,7 @@ To specify your choice, you simply call the Cache(...) method on ApiClient:
 
 ```csharp
 var customers = await new ApiClient($"{baseUrl}/customers")
-                         .Cache(CachePolicy.FreshOrCacheOrFail)
+                         .Cache(CachePolicy.FreshOrCacheOrFail) // <- Default if not set
                          .Get<Customer[]>();
 ```
 
@@ -113,7 +113,7 @@ If a call to a Web Api results in an error, by default you will get an exception
 You can set an error policy on your ApiClient by using:
 ```csharp
 var customers = await new ApiClient($"{baseUrl}/customers")
-                         .OnError(OnApiCallError.Throw)
+                         .OnError(OnApiCallError.Throw) // <- Default if not set
                          .Get<Customer[]>();
 ```
 
