@@ -14,6 +14,11 @@
     * [DevOps](Microservices/Docker.md)
         * [Docker support](Microservices/Docker.md)
         * [Build server: Jenkins](Microservices/Jenkins.md)
+        
+* Web Api and Integration
+    * [ASP.NET WebApi](Api/WebApi.md)
+    * [ApiClient](Api/ApiClient.md)
+    * [Api Proxy](Api/Proxy.md)    
 
 * Olive Entities
     * [Overview](Entities/Overview.md)
@@ -28,10 +33,6 @@
 * Olive Javascript Fx (MvcJS)
     * [Overview](MvcJS/Overview.md)    
     
-* Web Api and Integration
-    * [ApiClient class]()
-    * [Api Proxy Generation]()
-    * [API Design](Microservices/APIDesign.md)
     
 * Olive Plugins
     * [Email notifications]()
