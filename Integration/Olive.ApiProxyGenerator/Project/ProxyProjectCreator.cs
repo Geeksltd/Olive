@@ -8,7 +8,7 @@ namespace Olive.ApiProxy
 
         protected override string Framework => "netstandard2.0";
 
-        protected override string IconUrl => null;
+        protected override string IconUrl => "https://raw.githubusercontent.com/Geeksltd/Olive/master/Integration/Olive.ApiProxyGenerator/ProxyIcon.png";
 
         protected override string[] References
             => new[] { "Olive", "Olive.Entities", "Olive.Entities.Data", "Olive.ApiClient", "Olive.Microservices" };

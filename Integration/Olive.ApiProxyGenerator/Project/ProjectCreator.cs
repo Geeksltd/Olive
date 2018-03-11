@@ -102,7 +102,7 @@ namespace Olive.ApiProxy
     <version>{Version}</version>
     <title>{Folder.Name}</title>
     <authors>Olive Api Proxy Generator</authors>
-    {IconUrl.WithWrappers("<iconUrl>", "</iconUrl>")}
+    <iconUrl>{IconUrl}</iconUrl>
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
   </metadata>
   <files>
