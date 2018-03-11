@@ -110,3 +110,23 @@ Note: The cache file will still be updated, in case you want to invoke the same 
 
 ## Error handling
 If a call to a Web Api results in an error, by default you will get an exception thrown with the correct error message.
+You can set an error policy on your ApiClient by using:
+```csharp
+var customers = await new ApiClient($"{baseUrl}/customers")
+                         .OnError(OnApiCallError.Throw)
+                         .Get<Customer[]>();
+```
+
+Your choice here is relevant in relation to the cache policy and the actuality of the situation:
+
+| Cache Policy  | OnError | Api failed, cache available | Api failed, cache unavailable
+| ------------- | ------------- | ---------- | -------
+| FreshOrCacheOrFail  | Throw | (from cache) | Exception
+| FreshOrCacheOrFail  | Ignore | (from cache) | NULL
+| FreshOrCacheOrFail  | IgnoreAndNotify | (from cache) | NULL, toast message
+| CacheOrFreshOrFail  | Throw | (from cache) | Exception
+| CacheOrFreshOrFail  | Ignore | (from cache) | NULL
+| CacheOrFreshOrFail  | IgnoreAndNotify | (from cache) | NULL, toast message
+| FreshOrFail  | Throw | Exception | Exception
+| FreshOrFail  | Ignore | Null | Null
+| FreshOrFail  | IgnoreAndNotify | Null, toast message | Null, toast message
