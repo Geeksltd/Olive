@@ -900,7 +900,7 @@ namespace Olive
         /// <summary>
         /// Converts this Base64 string to an array of bytes.
         /// </summary>
-        public static byte[] ToBytes(this string value)
+        public static byte[] ToBytesFromBase64(this string value)
         {
             if (value.IsEmpty()) return new byte[0];
 

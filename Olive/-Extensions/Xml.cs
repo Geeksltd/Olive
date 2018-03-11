@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace Olive
 {
@@ -110,6 +111,21 @@ namespace Olive
         }
 
         public static XmlReader ToXmlReader(this string xmlString) => XmlReader.Create(new StringReader(xmlString));
+
+        public static string Serialize(this XmlSerializer serializer, object item)
+        {
+            using (var textWriter = new StringWriter())
+            {
+                serializer.Serialize(textWriter, item);
+                return textWriter.ToString();
+            }
+        }
+
+        public static T Deserialize<T>(this XmlSerializer serializer, string xml)
+        {
+            using (var reader = new StringReader(xml))
+                return (T)serializer.Deserialize(reader);
+        }
 
         // public static XmlElement ToXmlElement(this XElement element)
         // {
