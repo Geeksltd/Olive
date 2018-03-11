@@ -40,8 +40,8 @@ For example:
 var customers = await new ApiClient($"{baseUrl}/customers").Get<Customer[]>();
 ```
 
-### Sending Query String Arguments
+### Sending query string arguments
 To send query string parameters to the target Web Api, simply add them as properties of an anonymous object, and pass it as the Get() method attribute.
 ```csharp
-var customer = await new ApiClient($"{baseUrl}/customers/{id}").Get<Customer>(new { queryStringParameter1 = value1 } );
+var customers = await new ApiClient($"{baseUrl}/customers").Get<Customer[]>(new { category = myCategoryId });
 ```
