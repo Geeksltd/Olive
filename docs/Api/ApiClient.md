@@ -123,10 +123,21 @@ Your choice here is relevant in relation to the cache policy and the actuality o
 | ------------- | ------------- | ---------- | -------
 | FreshOrCacheOrFail  | Throw | (from cache) | **Exception**
 | FreshOrCacheOrFail  | Ignore | (from cache) | *NULL*
-| FreshOrCacheOrFail  | IgnoreAndNotify | (from cache) | *NULL*, toast message
+| FreshOrCacheOrFail  | IgnoreAndNotify | (from cache), toast message | *NULL*, toast message
 | CacheOrFreshOrFail  | Throw | (from cache) | **Exception**
 | CacheOrFreshOrFail  | Ignore | (from cache) | *NULL*
 | CacheOrFreshOrFail  | IgnoreAndNotify | (from cache) | *NULL*, toast message
 | FreshOrFail  | Throw | **Exception** | **Exception**
 | FreshOrFail  | Ignore | *NULL* | *NULL*
 | FreshOrFail  | IgnoreAndNotify | *NULL*, toast message | *NULL*, toast message
+
+#### IgnoreAndNotify
+Notification here means *showing a toast message to the user*. This option is only applicable when:
+* The Api client app is an ASP.NET app itself.
+* The call to ApiClient is running within an active Http request. 
+
+> The notification will be registered in the ASP.NET pipeline, and displayed on web page when the response is sent
+
+This is a handy option for when: 
+* You don't want to show an error screen if the remote Api has crashed
+* But you want to inform the user that the result they see on the page may be out of date.
