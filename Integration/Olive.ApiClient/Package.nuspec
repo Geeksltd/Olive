@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.ApiClient</id>
-    <version>1.0.47</version>
+    <version>1.0.49</version>
     <title>Olive ClientApi</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -11,9 +11,9 @@
     <description>An Olive Framework component</description>
     <dependencies>
       <dependency id="Polly" version="5.8.0" />
-      <dependency id="Olive" version="0.0.0" />
+      <!--<dependency id="Olive" version="0.0.0" />
       <dependency id="Microsoft.AspNetCore.Authentication.Cookies" version="0.0.0" />
-      <dependency id="Newtonsoft.Json" version="0.0.0" />
+      <dependency id="Newtonsoft.Json" version="0.0.0" />-->
     </dependencies>
   </metadata>
   <files>

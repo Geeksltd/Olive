@@ -101,8 +101,15 @@ namespace Olive
                 }
             }
 
-            if (request.Error != null && CachePolicy != CachePolicy.FreshOrFail)
-                result = await GetCachedResponse<TResponse>();
+            if (request.Error != null)
+            {
+                if (CachePolicy != CachePolicy.FreshOrFail)
+                {
+                    result = await GetCachedResponse<TResponse>();
+                    if (result == null) // No cache available
+                        throw request.Error;
+                }
+            }
 
             return result;
         }

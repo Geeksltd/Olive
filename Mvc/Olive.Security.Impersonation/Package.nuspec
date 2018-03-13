@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Security.Impersonation</id>
-    <version>1.0.19</version>
+    <version>1.0.20</version>
     <title>Olive Security Impersonation</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -10,8 +10,8 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
-      <dependency id="Olive.Security" version="0.0.0" />
-      <dependency id="Olive.Entities.Data" version="0.0.0" />
+      <!--<dependency id="Olive.Security" version="0.0.0" />
+      <dependency id="Olive.Entities.Data" version="0.0.0" />-->
     </dependencies>
   </metadata>
   <files>

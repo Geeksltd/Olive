@@ -98,7 +98,7 @@ namespace Olive.ApiProxy
             var nuspec = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
   <metadata>
-    <id>{Folder.Name}</id>
+    <id>{Folder.Name.TrimEnd(".Proxy")}</id>
     <version>{Version}</version>
     <title>{Folder.Name}</title>
     <authors>Olive Api Proxy Generator</authors>

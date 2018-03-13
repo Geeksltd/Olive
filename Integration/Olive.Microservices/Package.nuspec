@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Microservices</id>
-    <version>1.0.28</version>
+    <version>1.0.29</version>
     <title>Olive Microservices helper framework</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -10,7 +10,7 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>A plugin for Olive Framework</description>
     <dependencies>
-      <dependency id="Olive.ApiClient" version="0.0.0" />
+      <!--<dependency id="Olive.ApiClient" version="0.0.0" />-->
       <dependency id="System.Security.Claims" version="4.3.0" />
     </dependencies>
   </metadata>

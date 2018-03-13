@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities.Data</id>
-    <version>1.0.40</version>
+    <version>1.0.41</version>
     <title>Olive Entities Data</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -10,7 +10,7 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
-      <dependency id="Olive.Audit" version="0.0.0" />
+      <!--<dependency id="Olive.Audit" version="0.0.0" />-->
     </dependencies>
   </metadata>
   <files>

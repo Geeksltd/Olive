@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities.Data.SqlServer</id>
-    <version>1.0.16</version>
+    <version>1.0.17</version>
     <title>Olive Entities Data SqlServer</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -10,7 +10,7 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
-      <dependency id="Olive.Entities.Data" version="0.0.0" />
+      <!--<dependency id="Olive.Entities.Data" version="0.0.0" />-->
       <dependency id="System.Data.SqlClient" version="4.4.2" />
     </dependencies>
   </metadata>

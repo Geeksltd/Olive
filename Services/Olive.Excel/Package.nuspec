@@ -2,13 +2,13 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Export</id>
-    <version>1.0.17</version>
+    <version>1.0.18</version>
     <title>Olive Export Service</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
-    <description>Olive Framework</description>
+    <description>Enables exporting tabular data to Csv or Excel.</description>
   </metadata>
   <files>
     <file src="..\..\@Assemblies\netstandard2.0\Olive.Export.dll" target="lib\netstandard2.0\" />

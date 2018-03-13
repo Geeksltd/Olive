@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.IpFilter</id>
-    <version>1.0.14</version>
+    <version>1.0.15</version>
     <title>Olive Ip Filter (Service)</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -10,8 +10,8 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
-      <dependency id="Olive.Web" version="0.0.0" />
-      <dependency id="Olive.Csv" version="0.0.0" />
+      <!--<dependency id="Olive.Web" version="0.0.0" />
+      <dependency id="Olive.Csv" version="0.0.0" />-->
     </dependencies>
   </metadata>
   <files>

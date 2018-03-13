@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Web</id>
-    <version>1.0.34</version>
+    <version>1.0.35</version>
     <title>Olive Web</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -10,8 +10,8 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
-      <dependency id="Olive.Entities" version="0.0.0" />
-      <dependency id="Olive.ApiClient" version="0.0.0" />
+      <!--<dependency id="Olive.Entities" version="0.0.0" />
+      <dependency id="Olive.ApiClient" version="0.0.0" />-->
       <dependency id="Microsoft.AspNetCore.All" version="2.0.5" />
     </dependencies>
   </metadata>
