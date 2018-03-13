@@ -91,7 +91,7 @@ namespace Olive
         /// <para>—————————————————————————————————</para>
         /// <para>using (LocalTime.Set(DateTime.Parse("15/01/2000 06:13")))</para>
         /// <para>{</para>
-        /// <para><tab> </tab>//Here any call for LocalTime.Now/Today will return 15th of Jan 2000 (at 6:30).</para>
+        /// <para>//Here any call for LocalTime.Now/Today will return 15th of Jan 2000 (at 6:30).</para>
         /// <para>}</para>
         /// </summary>
         public static IDisposable Set(DateTime overriddenNow) => Set(() => overriddenNow);

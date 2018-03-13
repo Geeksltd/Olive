@@ -14,7 +14,6 @@ The generated proxy assembly will:
 - Automatically take care of composing the correct Api Url
 - Make sure the correct version of the service is being invoked (Dev v.s. Staging v.s. Production)
 
-
 ## Creating an Api
 
 To benefit from the architecture and tools explained here you should use the pattern explained here for implementing your Apis.
@@ -64,7 +63,7 @@ The controller class name should be the **logical name** of this particular Api 
 - Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B.
 - Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
 
-# Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
+## Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
 
 1. Ensure you have a NuGet reference to [Olive.ApiProxyGenerator](https://www.nuget.org/packages/Olive.ApiProxyGenerator/)
 2. Compile the website project (which includes the Api code)

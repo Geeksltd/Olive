@@ -66,6 +66,24 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Olive.MvcJs", "Olive.MvcJs\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "61844"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_61844"
+		Debug.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_61844"
+		Release.AspNetCompiler.PhysicalPath = "Olive.MvcJs\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_61844\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "61844"
 		SlnRelativePath = "Olive.MvcJs\"
 	EndProjectSection
 EndProject
@@ -119,6 +137,10 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "docs\", "{D3A7C778-
 		VWDPort = "57392"
 		SlnRelativePath = "docs\"
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Markdown", "Olive.Markdown\Olive.Markdown.csproj", "{12CEDB33-C108-48A4-A026-B235F683FD1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDEngine", "MDEngine\MDEngine.csproj", "{1F229F6A-3355-4726-B70C-830954FBEA92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -269,6 +291,14 @@ Global
 		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{12CEDB33-C108-48A4-A026-B235F683FD1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12CEDB33-C108-48A4-A026-B235F683FD1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12CEDB33-C108-48A4-A026-B235F683FD1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12CEDB33-C108-48A4-A026-B235F683FD1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F229F6A-3355-4726-B70C-830954FBEA92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F229F6A-3355-4726-B70C-830954FBEA92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F229F6A-3355-4726-B70C-830954FBEA92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F229F6A-3355-4726-B70C-830954FBEA92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -299,6 +329,7 @@ Global
 		{81877296-65EB-4F57-8B58-6B3982ADF05B} = {E2BA5BD4-58EF-4031-9203-10FD08B0AE9E}
 		{6C81363C-E71F-4999-80A4-AF42FAF69D04} = {4EE1A9FA-1435-417C-B407-77E652959CE1}
 		{4E848AF4-85B4-4B47-82FB-C78C337573C9} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
+		{1F229F6A-3355-4726-B70C-830954FBEA92} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
