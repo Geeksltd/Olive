@@ -86,7 +86,7 @@ namespace Olive
 
         /// <summary>
         /// <para>Creates a log-string from the Exception.</para>
-        /// <para>The result includes the stacktrace, innerexception et cetera, separated by <seealso cref = "Environment.NewLine"/>.</para>
+        /// <para>The result includes the stacktrace, innerexception et cetera, separated by.</para>
         /// </summary>
         /// <param name = "ex">The exception to create the string from.</param>
         /// <param name = "additionalMessage">Additional message to place at the top of the string, maybe be empty or null.</param>
