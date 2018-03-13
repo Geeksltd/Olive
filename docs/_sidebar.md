@@ -17,7 +17,7 @@
         * [Build server: Jenkins](Microservices/Jenkins.md)
 
 * Web Api and Integration
-    * [ASP.NET WebApi](Api/WebApi.md)
+    * [RESTful Api](Api/WebApi.md)
     * [ApiClient](Api/ApiClient.md)
     * [Api Proxy](Api/Proxy.md)
     * [Api Versioning](Api/Versioning.md)
@@ -35,6 +35,7 @@
     * [Overview](MvcJS/Overview.md)
 
 * Olive Plugins
+    * [Compression](services/Compression.md)
     * [Email notifications](README.md)
     * [SMS notifications](README.md)
     * [GeoLocation](README.md)
