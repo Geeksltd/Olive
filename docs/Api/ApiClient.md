@@ -22,7 +22,7 @@ When using HttpClient directly, you should manually take care of:
   * Circuit breaking (to avoid server overloading)
 
 ## Olive.ApiClient
-Olive provides a helper utility class named ***ApiClient*** which handles all of the above issues for you.
+Olive provides a helper utility class named [***ApiClient***](https://github.com/Geeksltd/Olive/tree/master/Integration/Olive.ApiClient) which handles all of the above issues for you.
 It's built on top of the standard HttpClient, and is ideal for invoking Web Apis.
 
 The following simple line is enough to take care of all aspects of downloading a customer object from a remote Web Api.
