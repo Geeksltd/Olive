@@ -35,6 +35,7 @@ We'll review your code ASAP and we will do the merge if everything was just fine
 #### Next steps
 
 Olive projects might have dependencies to each other. You might need to build other projects recursively to run a certain project. All projects have dependencies to **Olive** project; So you need to build this one first.
+Also you can run **BuildAll.bat**, which is located in the root of the project, to build all of the Olive projects.
 
 ### Authors
 
