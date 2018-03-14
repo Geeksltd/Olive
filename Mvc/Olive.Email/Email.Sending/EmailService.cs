@@ -77,8 +77,7 @@ namespace Olive.Email
 
                     try
                     {
-                        if (await mail.Send() && !mail.IsNew)
-                            await Entity.Database.Delete(mail);
+                        await mail.Send();
                     }
                     catch (Exception ex)
                     {
@@ -129,6 +128,9 @@ namespace Olive.Email
 
                 await Sending.Raise(new EmailSendingEventArgs(mailItem, mail));
                 await smtpClient.SendMailAsync(mail);
+
+                if (!mailItem.IsNew) await Entity.Database.Delete(mailItem);
+
                 await Sent.Raise(new EmailSendingEventArgs(mailItem, mail));
             }
 
