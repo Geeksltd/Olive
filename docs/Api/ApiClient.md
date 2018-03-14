@@ -3,7 +3,7 @@
 ASP.NET Web Apis are based on the standard HTTP protocol, which means any http client from any technology can use them.
 
 ## .NET based client app
-To consume a Web Api in a .NET clietn app you can use the *HttpClient* class provided by the .NET framework.
+To consume a Web Api in a .NET client app you can use the *HttpClient* class provided by the .NET framework.
 
 HttpClient provides a basic set of methods for sending HTTP requests to any URL, and receiving the responses.
 You can see [examples here](https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client) to learn how to use HttpClient.
@@ -57,7 +57,7 @@ Remove services can be faulty, slow or unresponsive at times due to network, ser
 By default, Olive will cache the response of every Get request. The raw textual result (often Json data) will be saved upon every successful execution of that Api.
 The name of the cache file will come from the URL (HASHED) so that subsequent successful calls to the same url will simply overwrite the same file.
 
-When calling GET based Apis, you have a choice (trade-off) to make in relation to reliabilty vs freshness of the response data.
+When calling GET based Apis, you have a choice (trade-off) to make in relation to reliability vs freshness of the response data.
 To specify your choice, you simply call the Cache(...) method on ApiClient:
 
 ```csharp
@@ -76,7 +76,7 @@ You have 3 options:
 
 #### CachePolicy.FreshOrCacheOrFail (default)
 
-This is the safest option. It is likely to give you up to date result mos of the time.
+This is the safest option. It is likely to give you up to date result most of the time.
 But it's not the fastest option as it always waits for a remote call before returning.
 This is how it works:
  
