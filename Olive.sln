@@ -4,11 +4,6 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive", "Olive\Olive.csproj", "{EF844D85-7C45-4725-B033-DBC6111C5F7F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EB802F83-E581-4C4B-9B16-7D00D66C9329}"
-	ProjectSection(SolutionItems) = preProject
-		GCop.json = GCop.json
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities", "Olive.Entities\Olive.Entities.csproj", "{81D870C8-EA2A-46DA-A936-0D4D520B2C32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data", "Olive.Entities.Data\Olive.Entities.Data.csproj", "{35B19C59-D221-47AF-AAC6-F9CEB0953FFB}"
@@ -21,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Compression", "Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Csv", "Services\Olive.CSV\Olive.Csv.csproj", "{50ABA031-EAD6-4554-AC73-8BCA56C637B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Excel", "Services\Olive.Excel\Olive.Excel.csproj", "{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Services\Olive.Excel\Olive.Export.csproj", "{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.GeoLocation", "Services\Olive.GeoLocation\Olive.GeoLocation.csproj", "{253531A7-A460-4D61-9A85-A3E29B33AA94}"
 EndProject
@@ -103,6 +98,27 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Audit", "Olive.Audit\Olive.Audit.csproj", "{4F36784E-BBBB-4CE4-A491-8BB1BD0CCB35}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Audit.DatabaseLogger", "Olive.Audit.DatabaseLogger\Olive.Audit.DatabaseLogger.csproj", "{CA96897D-00EA-4554-8EE1-06F42939ECA3}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "docs\", "{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_57392"
+		Debug.AspNetCompiler.PhysicalPath = "docs\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57392\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_57392"
+		Release.AspNetCompiler.PhysicalPath = "docs\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57392\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "57392"
+		SlnRelativePath = "docs\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -249,6 +265,10 @@ Global
 		{CA96897D-00EA-4554-8EE1-06F42939ECA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA96897D-00EA-4554-8EE1-06F42939ECA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA96897D-00EA-4554-8EE1-06F42939ECA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

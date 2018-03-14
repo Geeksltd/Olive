@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Text;
 
 namespace Olive.ApiProxy
@@ -36,7 +35,7 @@ namespace Olive.ApiProxy
             r.AppendLine("}");
             r.AppendLine("}");
 
-            return r.ToString();
+            return new CSharpFormatter(r.ToString()).Format();
         }
 
         string AddProperty(Type propertyType, string name)

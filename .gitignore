@@ -267,3 +267,4 @@ GCopLog.txt
 /GCopReport.json
 @Assemblies
 /Olive.MvcJs
+nuget.exe

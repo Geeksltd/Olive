@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Olive
+﻿namespace Olive
 {
     /// <summary>
     /// Provides helper services for implementing microservices using Olive.
@@ -37,10 +35,7 @@ namespace Olive
         /// Returns the full url to a specified resource in this microservice by
         /// concatinating the base url of this service with the specified relative url.
         /// </summary>
-        public string Url(string relativeUrl = null)
-        {
-            return BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
-        }
+        public string Url(string relativeUrl = null) => BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
 
         /// <summary>
         /// Creates an Api client for this service.

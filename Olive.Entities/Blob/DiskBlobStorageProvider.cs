@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static Olive.Entities.Blob;
 
 namespace Olive.Entities
 {
@@ -64,9 +63,8 @@ namespace Olive.Entities
             }
 
             using (await GetAsyncLock(path.FullName).Lock())
-            {
                 await path.WriteAllBytesAsync(fileDataToSave);
-            }
+
         }
 
         public virtual async Task DeleteAsync(Blob blob)

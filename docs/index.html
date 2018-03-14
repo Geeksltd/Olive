@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Olive documents</title>
+  <link rel="icon" href="_media/favicon.ico">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="keywords" content="doc,docs,dotnet,core,mvc,Msharp,geeks,geeksltd,olive,microservice">
+  <meta name="description" content="MSharp documents">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
+  <link rel="stylesheet" href="//unpkg.com/docsify-copy-code/styles.css">
+  <style>
+    .markdown-section { line-height: 140%;}
+  </style>
+</head>
+<body>
+  <div id="app">Loading ...</div>
+  <script src="//unpkg.com/docsify-copy-code/index.js"></script>
+  <script>
+    window.$docsify = {
+      notFoundPage: '_media/404.md',
+      auto2top: true,
+      executeScript: true,
+      loadSidebar: true,
+      mergeNavbar: true,
+      maxLevel: 4,
+      subMaxLevel: 2,
+      name: 'Learn Olive<br/><img src="https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png"/>',
+      search: {
+        noData: {
+          '/': 'No results!'
+        },
+        paths: 'auto',
+        placeholder: {
+          '/': 'Search'
+        }
+      },
+      formatUpdated: '{MM}/{DD} {HH}:{mm}',
+      plugins: [
+      window.DocsifyCopyCodePlugin.init(),
+        function (hook, vm) {
+          hook.beforeEach(function (html) {
+            var url = 'https://github.com/geeksltd/Olive/blob/master/docs/' + vm.route.file
+            var editHtml = '[:memo: Edit me!](' + url + ')\n'
+            return editHtml
+             + html
+             + '\n\n----\n\n'
+             + '<a href="https://github.com/Geeksltd/Olive/issues/" target="_blank" style="color: inherit; font-weight: normal; ">Got any questions or issues?</a>'
+          })
+        }
+      ]
+
+    }
+  </script>
+  <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+  <script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-csharp.min.js"></script>
+</body>
+</html>

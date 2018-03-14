@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,16 +8,25 @@ namespace Olive
 {
     partial class OliveExtensions
     {
+        static ConcurrentDictionary<string, AsyncLock> FileSyncLocks = new ConcurrentDictionary<string, AsyncLock>();
+        public static AsyncLock GetSyncLock(this FileInfo file)
+        {
+            return FileSyncLocks.GetOrAdd(file.FullName.ToLower(), f => new AsyncLock());
+        }
+
         /// <summary>
         /// Copies this file onto the specified desination path.
         /// </summary>
         public static async Task CopyToAsync(this FileInfo file, FileInfo destinationPath, bool overwrite = true)
         {
-            if (!overwrite && destinationPath.Exists()) return;
-            if (!file.Exists()) throw new Exception("File does not exist: " + file.FullName);
+            using (await file.GetSyncLock().Lock())
+            {
+                if (!overwrite && destinationPath.Exists()) return;
+                if (!file.Exists()) throw new Exception("File does not exist: " + file.FullName);
 
-            var content = await file.ReadAllBytesAsync();
-            await destinationPath.WriteAllBytesAsync(content);
+                var content = await file.ReadAllBytesAsync();
+                await destinationPath.WriteAllBytesAsync(content);
+            }
         }
 
         /// <summary>
@@ -25,12 +34,15 @@ namespace Olive
         /// </summary>
         public static async Task<byte[]> ReadAllBytesAsync(this FileInfo file)
         {
-            byte[] result;
-            using (var stream = File.Open(file.FullName, FileMode.Open))
+            using (await file.GetSyncLock().Lock())
             {
-                result = new byte[stream.Length];
-                await stream.ReadAsync(result, 0, (int)stream.Length);
-                return result;
+                byte[] result;
+                using (var stream = File.Open(file.FullName, FileMode.Open))
+                {
+                    result = new byte[stream.Length];
+                    await stream.ReadAsync(result, 0, (int)stream.Length);
+                    return result;
+                }
             }
         }
 
@@ -44,16 +56,10 @@ namespace Olive
         /// </summary>
         public static async Task<string> ReadAllTextAsync(this FileInfo file, Encoding encoding)
         {
-            Func<Task<string>> readFile = async () =>
-            {
-                using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    using (var reader = new StreamReader(stream, encoding))
-                        return await reader.ReadToEndAsync();
-                }
-            };
-
-            return await TryHardAsync(file, readFile, "The system cannot read the file: {0}");
+            using (await file.GetSyncLock().Lock())
+            using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var reader = new StreamReader(stream, encoding))
+                return await reader.ReadToEndAsync();
         }
 
         /// <summary>
@@ -64,14 +70,8 @@ namespace Olive
         {
             if (!file.Exists()) return;
 
-            if (!harshly)
-            {
-                await Task.Factory.StartNew(file.Delete);
-                return;
-            }
-
-            await DoTryHardAsync(file, () => Task.Run(() => file.DeleteAsync(harshly)),
-                "The system cannot delete the file, even after several attempts. Path: {0}");
+            using (await file.GetSyncLock().Lock())
+                await file.DeleteAsync(harshly);
         }
 
         /// <summary>
@@ -79,10 +79,10 @@ namespace Olive
         /// </summary>
         public static async Task WriteAllBytesAsync(this FileInfo file, byte[] content)
         {
-            if (!file.Directory.Exists())
-                file.Directory.Create();
+            if (!file.Directory.Exists()) file.Directory.Create();
 
-            await DoTryHardAsync(file, () => Task.Run(() => File.WriteAllBytes(file.FullName, content)),
+            using (await file.GetSyncLock().Lock())
+                await DoTryHardAsync(file, () => Task.Run(() => File.WriteAllBytes(file.FullName, content)),
                 "The system cannot write the specified content on the file: {0}");
         }
 
@@ -96,15 +96,14 @@ namespace Olive
         /// Saves the specified content on this file. 
         /// Note: For backward compatibility, for UTF-8 encoding, it will always add the BOM signature.
         /// </summary>
-        public static Task WriteAllTextAsync(this FileInfo file, string content, Encoding encoding)
+        public static async Task WriteAllTextAsync(this FileInfo file, string content, Encoding encoding)
         {
             if (encoding == null) encoding = DefaultEncoding;
-
             file.Directory.EnsureExists();
-
             if (encoding is UTF8Encoding) encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
-            return Task.Run(() => File.WriteAllText(file.FullName, content, encoding));
+            using (await file.GetSyncLock().Lock())
+                await Task.Run(() => File.WriteAllText(file.FullName, content, encoding));
         }
 
         /// <summary>
@@ -122,13 +121,13 @@ namespace Olive
         /// <summary>
         /// Saves the specified content to the end of this file.
         /// </summary>
-        public static Task AppendAllTextAsync(this FileInfo file, string content, Encoding encoding)
+        public static async Task AppendAllTextAsync(this FileInfo file, string content, Encoding encoding)
         {
             if (encoding == null) encoding = DefaultEncoding;
-
             file.Directory.EnsureExists();
 
-            return Task.Run(() => File.AppendAllText(file.FullName, content, encoding));
+            using (await file.GetSyncLock().Lock())
+                await Task.Run(() => File.AppendAllText(file.FullName, content, encoding));
         }
     }
 }

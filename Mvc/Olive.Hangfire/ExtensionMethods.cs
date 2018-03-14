@@ -3,7 +3,6 @@ using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Olive.Mvc.Testing;
-using Olive.Web;
 
 namespace Olive.Hangfire
 {

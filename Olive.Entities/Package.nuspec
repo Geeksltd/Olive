@@ -2,13 +2,16 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities</id>
-    <version>1.0.31</version>
+    <version>1.0.34</version>
     <title>Olive Entities</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
-    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
+    <dependencies>
+      <!--<dependency id="Olive" version="0.0.0" />-->
+    </dependencies>
   </metadata>
   <files>
     <file src="..\@Assemblies\netstandard2.0\Olive.Entities.dll" target="lib\netstandard2.0\" />

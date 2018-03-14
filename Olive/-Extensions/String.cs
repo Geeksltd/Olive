@@ -93,22 +93,6 @@ namespace Olive
 
         public static bool IsAnyOf(this string text, IEnumerable<string> items) => IsAnyOf(text, items.ToArray());
 
-        public static string EnsureStart(this string text, string startText, bool caseSensitive = false)
-        {
-            if (startText.IsEmpty())
-                throw new ArgumentNullException(nameof(startText));
-
-            if (text.IsEmpty()) return string.Empty;
-
-            if (caseSensitive)
-                if (text.StartsWith(startText)) return text;
-
-                else if (text.ToLower().StartsWith(startText.ToLower()))
-                    return text;
-
-            return startText + text;
-        }
-
         public static bool ContainsAll(this string text, string[] keywords, bool caseSensitive)
         {
             if (!caseSensitive)
@@ -916,7 +900,7 @@ namespace Olive
         /// <summary>
         /// Converts this Base64 string to an array of bytes.
         /// </summary>
-        public static byte[] ToBytes(this string value)
+        public static byte[] ToBytesFromBase64(this string value)
         {
             if (value.IsEmpty()) return new byte[0];
 

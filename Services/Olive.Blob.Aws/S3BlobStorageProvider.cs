@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Olive.Entities;
 
 namespace Olive.BlobAws
@@ -14,5 +15,16 @@ namespace Olive.BlobAws
         public Task<bool> FileExistsAsync(Blob document) => S3Proxy.FileExists(document);
 
         public bool CostsToCheckExistence() => true;
+    }
+}
+
+namespace Olive
+{
+    public static class BlobAWSExtensions
+    {
+        public static IServiceCollection AddS3BlobStorageProvider(this IServiceCollection services)
+        {
+            return services.AddSingleton(typeof(IBlobStorageProvider), new BlobAws.S3BlobStorageProvider());
+        }
     }
 }

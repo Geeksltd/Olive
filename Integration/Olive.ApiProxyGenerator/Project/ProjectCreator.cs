@@ -11,17 +11,17 @@ namespace Olive.ApiProxy
 
         static string Version = DateTime.Now.ToString("yyMMdd.HH.mmss");
 
-        protected abstract bool AddXml { get; }
         protected abstract string Framework { get; }
         protected abstract string[] References { get; }
-        protected abstract void AddFiles();
-        protected abstract string IconUrl { get; }
 
         protected ProjectCreator(string name)
         {
             Name = name;
-            Folder = Context.TempPath.GetOrCreateSubDirectory(Context.TempPath.Name + "." + name);
+            Folder = Context.TempPath.GetOrCreateSubDirectory(Context.ControllerType.FullName + "." + name);
         }
+        protected abstract void AddFiles();
+
+        protected abstract string IconUrl { get; }
 
         void Create()
         {
@@ -42,15 +42,12 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Done");
             }
 
-            if (AddXml)
-            {
-                var file = Folder.GetFiles("*.csproj").Single();
-                var content = file.ReadAllText().ToLines().ToList();
-                content.Insert(content.IndexOf(x => x.Trim().StartsWith("<TargetFramework")) + 1,
-                    $@"    <DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile>"
-                    );
-                file.WriteAllText(content.ToLinesString());
-            }
+            var file = Folder.GetFiles("*.csproj").Single();
+            var content = file.ReadAllText().ToLines().ToList();
+            content.Insert(content.IndexOf(x => x.Trim().StartsWith("<TargetFramework")) + 1,
+                $@"    <DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile>"
+                );
+            file.WriteAllText(content.ToLinesString());
         }
 
         internal void Build()
@@ -96,16 +93,16 @@ namespace Olive.ApiProxy
         {
             var dll = $@"bin\Debug\{Framework}\{Folder.Name}";
 
-            var xml = $@"<file src=""{dll}.xml"" target=""lib\{Framework}\"" />".OnlyWhen(AddXml);
+            var xml = $@"<file src=""{dll}.xml"" target=""lib\{Framework}\"" />";
 
             var nuspec = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
   <metadata>
-    <id>{Folder.Name}</id>
+    <id>{Folder.Name.TrimEnd(".Proxy")}</id>
     <version>{Version}</version>
     <title>{Folder.Name}</title>
     <authors>Olive Api Proxy Generator</authors>
-    {IconUrl.WithWrappers("<iconUrl>", "</iconUrl>")}
+    <iconUrl>{IconUrl}</iconUrl>
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
   </metadata>
   <files>

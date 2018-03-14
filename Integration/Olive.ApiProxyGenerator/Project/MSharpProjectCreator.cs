@@ -12,8 +12,6 @@ namespace Olive.ApiProxy
 
         protected override string[] References => new[] { "Olive", "MSharp" };
 
-        protected override bool AddXml => false;
-
         protected override void AddFiles()
         {
             foreach (var type in DtoTypes.All)

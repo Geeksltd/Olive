@@ -143,7 +143,6 @@
         [EscapeGCop("It takes time to fix this warning now. I will check it later.")]
         static async Task<object> ConvertNonTask(object source, Type target)
         {
-
             if (source is Blob) return (await (source as Blob).CloneAsync(attach: true, @readonly: true));
 
             if (source.GetType().IsA(target)) return source;

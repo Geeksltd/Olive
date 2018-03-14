@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Olive.Entities;
 using Olive.Security;
-using Olive.Web;
 
 namespace Olive.Mvc
 {

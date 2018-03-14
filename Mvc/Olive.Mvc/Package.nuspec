@@ -2,13 +2,18 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Mvc</id>
-    <version>1.0.74</version>
+    <version>1.0.78</version>
     <title>Olive MVC</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
-    <copyright>Copyright ©2017 Geeks Ltd - All rights reserved.</copyright>
-    <description>Olive Framework</description>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
+    <description>Mvc Utilities for Olive</description>
+    <dependencies>
+      <!--<dependency id="Olive" version="0.0.0" />
+      <dependency id="Olive.Entities" version="0.0.0" />
+      <dependency id="Olive.Entities.Data" version="0.0.0" />-->
+    </dependencies>
   </metadata>
   <files>
     <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll" target="lib\netcoreapp2.0\" />

@@ -12,8 +12,7 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        const int HTTP_PORT_NUMBER = 80;
-        const int HTTPS_PORT_NUMBER = 443;
+        const int HTTP_PORT_NUMBER = 80, HTTPS_PORT_NUMBER = 443;
 
         /// <summary>
         /// Downloads the text in this URL.
@@ -165,8 +164,7 @@ namespace Olive
 
                 namePos = valueEnd + 1;
                 var value = UrlDecode(query.Substring(valuePos, valueEnd - valuePos));
-                if (name != null)
-                    result.Add(name, value);
+                if (name != null) result.Add(name, value);
             }
 
             return result;
@@ -190,7 +188,7 @@ namespace Olive
         public static Uri RemoveQueryString(this Uri url, string key)
         {
             var qs = url.GetQueryString();
-            //key = key.ToLower();
+            // key = key.ToLower();
             if (qs.ContainsKey(key)) qs.Remove(key);
 
             return url.ReplaceQueryString(qs);

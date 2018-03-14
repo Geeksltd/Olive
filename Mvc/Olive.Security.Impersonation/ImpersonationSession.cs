@@ -3,7 +3,6 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Entities;
-using Olive.Security;
 using Olive.Web;
 
 namespace Olive.Security.Impersonation

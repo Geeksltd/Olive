@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace Olive.ApiProxy
 {
@@ -24,6 +22,8 @@ namespace Olive.ApiProxy
                 Context.LoadAssembly();
                 Context.PrepareOutputDirectory();
                 DtoTypes.FindAll();
+                DtoDataProviderClassGenerator.ValidateRemoteDataProviderAttributes();
+
                 new ProxyProjectCreator().Build();
                 if (DtoTypes.All.Any()) new MSharpProjectCreator().Build();
 

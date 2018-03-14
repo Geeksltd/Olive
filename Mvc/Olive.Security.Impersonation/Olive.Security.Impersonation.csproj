@@ -28,10 +28,6 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Olive.Globalization">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Globalization.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="Olive.Security">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Security.dll</HintPath>
       <Private>false</Private>

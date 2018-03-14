@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using Olive.Security;
-using Olive.Web;
 
 namespace Olive
 {
@@ -43,7 +41,6 @@ namespace Olive
             var token = tokenHandler.CreateToken(descriptor);
             return tokenHandler.WriteToken(token);
         }
-
 
         public static async Task LogOn(this ILoginInfo loginInfo, bool remember = false)
         {

@@ -14,12 +14,5 @@ namespace Olive.Mvc
         public ReturnsAttribute(Type returnType) : base(returnType, StatusCodes.Status200OK)
         {
         }
-
-        /// <summary>
-        /// When set, if the method takes a single Guid parameter then Olive.ApiProxy will generate
-        /// a data provider that will be registered in consumer app, so this Api method can be invoked
-        /// also using Database.Get().
-        /// </summary>
-        public bool EnableDatabaseGet { get; set; } = true;
     }
 }

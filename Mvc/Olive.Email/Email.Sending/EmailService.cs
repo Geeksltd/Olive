@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,8 +77,7 @@ namespace Olive.Email
 
                     try
                     {
-                        if (await mail.Send() && !mail.IsNew)
-                            await Entity.Database.Delete(mail);
+                        await mail.Send();
                     }
                     catch (Exception ex)
                     {
@@ -130,6 +128,9 @@ namespace Olive.Email
 
                 await Sending.Raise(new EmailSendingEventArgs(mailItem, mail));
                 await smtpClient.SendMailAsync(mail);
+
+                if (!mailItem.IsNew) await Entity.Database.Delete(mailItem);
+
                 await Sent.Raise(new EmailSendingEventArgs(mailItem, mail));
             }
 

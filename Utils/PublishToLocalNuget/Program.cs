@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace PushForLocalTesting
 {
@@ -63,8 +62,6 @@ namespace PushForLocalTesting
                 Update(pack, sourceDirectory, target);
             }
         }
-
-
 
         static void Error(string message)
         {

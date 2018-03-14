@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,9 @@ namespace Olive
     {
         static IHostingEnvironment environment;
 
+        public static ClaimsPrincipal User(this Context context)
+            => context.Http()?.User;
+
         public static HttpContext Http(this Context context)
             => context.GetService<IHttpContextAccessor>()?.HttpContext;
 
@@ -17,6 +21,7 @@ namespace Olive
             => context.GetService<IActionContextAccessor>()?.ActionContext;
 
         public static HttpRequest Request(this Context context) => context.Http()?.Request;
+
         public static HttpResponse Response(this Context context) => context.Http()?.Response;
 
         public static IHostingEnvironment Environment(this Context context)

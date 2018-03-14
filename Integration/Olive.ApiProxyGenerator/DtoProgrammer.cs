@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Reflection;
 using System.Text;
+using System.Linq;
+using System.Reflection;
 
 namespace Olive.ApiProxy
 {
     internal class DtoProgrammer
     {
         Type Type;
-        MethodInfo DatabaseGetMethod;
 
-        public DtoProgrammer(Type type)
-        {
-            Type = type;
-            DatabaseGetMethod = type.FindDatabaseGetMethod();
-        }
+        MemberInfo[] EffectiveProperties => Type.GetEffectiveProperties();
+
+        public DtoProgrammer(Type type) => Type = type;
 
         internal string Generate()
         {
@@ -29,49 +27,60 @@ namespace Olive.ApiProxy
             r.AppendLine();
             r.AppendLine(GenerateDto());
 
-            if (DatabaseGetMethod != null)
-                r.AppendLine(GenerateDataProvider());
             r.AppendLine("}");
 
-            return r.ToString();
+            return new CSharpFormatter(r.ToString()).Format();
         }
 
         string GenerateDto()
         {
             var r = new StringBuilder();
+            r.AppendLine($"/// <summary>The {Type.Name} DTO type (Data Transfer Object) to be used with {Context.ControllerType.Name} Api.</summary>");
             r.AppendLine("public class " + Type.Name + " : Olive.Entities.GuidEntity");
             r.AppendLine("{");
 
-            if (DatabaseGetMethod != null)
+            foreach (var p in EffectiveProperties)
             {
-                r.AppendLine($"static {Type.Name}()");
-                r.AppendLine("{");
-                r.AppendLine("Olive.Entities.Data.Database.Instance");
-                r.AppendLine($".RegisterDataProvider(typeof({Type.Name}), new {Type.Name}DataProvider());");
-                r.AppendLine("}");
+                var type = p.GetPropertyOrFieldType().GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true);
+
+                r.AppendLine($"/// <summary>Gets or sets the {p.Name} of this {Type.Name} instance.</summary>");
+                r.AppendLine($"public {type} {p.Name} {{ get; set; }}");
                 r.AppendLine();
             }
 
-            foreach (var p in Type.GetEffectiveProperties())
-            {
-                var type = p.GetPropertyOrFieldType().GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true);
-                r.AppendLine($"public {type} {p.Name} {{ get; set; }}");
-            }
+            r.AppendLine(GenerateTheToString());
 
             r.AppendLine("}");
             return r.ToString();
         }
 
-        string GenerateDataProvider()
+        private string GenerateTheToString() => $"public override string ToString()=> {GetToStringField()};";
+
+        private string GetToStringField()
         {
-            var r = new StringBuilder();
-            r.AppendLine();
-            r.AppendLine("public class " + Type.Name + "DataProvider : LimitedDataProvider");
-            r.AppendLine("{");
-            r.AppendLine("public override async Task<IEntity> Get(object id)");
-            r.AppendLine($"=> await new {Context.ControllerType.Name}().{DatabaseGetMethod.Name}((Guid)id);");
-            r.AppendLine("}");
-            return r.ToString();
+            var explicitToStringField = EffectiveProperties.SingleOrDefault(i => i.GetCustomAttribute<Entities.ToStringAttribute>() != null);
+            var toStringField = explicitToStringField ?? SelectDefaultToStringField();
+
+            if (toStringField == null)
+                throw new Exception($"Could not find an implementation for ToString(). There is no field annotated with {nameof(Entities.ToStringAttribute)} attribute or a field named {CommonDefaultProperties.Select(s => s.ToPascalCaseId()).ToString(",", " or ")} for {Type.FullName}.");
+
+            return toStringField.Name;
+        }
+
+        static string[] CommonDefaultProperties = new[] { "title", "name", "subject", "description", "label", "text" };
+        MemberInfo SelectDefaultToStringField()
+        {
+            MemberInfo result;
+
+            // Priority 1 = Accurate:
+            result = CommonDefaultProperties.Select(n => EffectiveProperties.FirstOrDefault(p => p.Name.ToLower() == n)).FirstOrDefault(p => p != null);
+            if (result != null) return result;
+
+            // Priority 2 = Contains:
+            result = CommonDefaultProperties.Select(n => EffectiveProperties.FirstOrDefault(p => p.Name.ToLower().Contains(n))).FirstOrDefault(p => p != null);
+            if (result != null) return result;
+
+            return null;
         }
     }
 }
