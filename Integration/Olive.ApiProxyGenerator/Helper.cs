@@ -54,7 +54,7 @@ namespace Olive.ApiProxy
 
             Param("apiKey", @"The Api Key expected by the [private] nuget server, for security.");
             Console.WriteLine();
-
+            Console.ReadKey(true);
             return -1;
         }
     }
