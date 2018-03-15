@@ -34,13 +34,13 @@ requirejs.config({
 
 This is a standard requireJs feature [and fully documented](http://requirejs.org/docs/api.html#config). Here is a brief summary of what you need to know:
 
-#### baseUrl
+### baseUrl
 It sets the zero point for all script urls. Everything that proceeds in the rest of this file is measured in reference to this.
 The value of */lib* means the *wwwroot/lib* folder in the website project source. You normally don't need to change this.
 
 The url equivalent to that will be http://localhost:1234/lib. Unlike traditional ASP.NET, in ASP.NET Core the / url is mapped to the *wwwroot* folder as opposed to the website root folder (this is for security, so people can't download your source files).
 
-#### paths
+### paths
 In general, when using requireJS, you can load modules by their full path. But you can also load them by an alias which is a unique name that you define for each script file. The benfit of giving your javascript files an alias is that you will have a short reference to them for defining dependencies and desired loading order.
 
 The 'paths' section in the requireJs config is where you define the aliases. The abovee example should be self-explanatory. The only point here is that the url part is measured in relation to the baseUrl. Also the .js extension will be automatically added.
@@ -49,7 +49,7 @@ For example:
 - The url of a file at *Website\wwwroot\lib\some-lib\some-lib.js* will be "some-lib\some-lib".
 - The url of a file at *Website\wwwroot\scripts\my-custom-file.js* will be "../scripts/my-custom-file".
 
-#### map
+### map
 This setting allows you to define **address part aliaises** and map them to a url fragment. This is used for correcting incorrect addresses, to help them be resolved correctly.
 
 Imagine that you are using a third party library and you don't want to change its source code. Inside that library it might be assuming a dependency to jquery.
@@ -58,7 +58,7 @@ Imagine that you are using a third party library and you don't want to change it
 
 The *map* config section is helpful when ever you see an error log in the Chrome console, complaining that a javascript file does not exist.
 
-#### shim
+### shim
 Often javascript files have a dependency on other scripts and hence they need to be loaded in the correct order. The traditional solution (Without using requireJs) was to list the <script> tags in the correct order in the html file. But requireJs works in a different way, and tried to parallelise script loading for improving performance when there is no known dependencies. 
 
 What this means is that requireJs needs to know about those dependencies, or else it will load them in parallel, or in any random order, which can cause problems.
@@ -66,3 +66,15 @@ What this means is that requireJs needs to know about those dependencies, or els
 Script files can declare their dependencies by using the **import** statement, in which case requireJs would be able to understand that automatically.
 
 Alternatively, and in particular for legacy libraries that don't do it, you need to declare the dependencies using the **shim** config section as demonstrated in the above example.
+
+## Loading javascript files
+The next statement after config, in **references.js**, is the load command:
+```javascript
+requirejs(["app/appPage", "olive/olivePage", "jquery", "jquery-ui", ...]);
+```
+Basically for each javascript file you want added, you add its alias to the array.
+
+This means that to add a new Javascript file to the project (that you want loaded at the beginning and for every page) you can just:
+1. Define it under **paths** in the config section.
+2. Add its aliais to this array.
+
