@@ -48,3 +48,14 @@ The 'paths' section in the requireJs config is where you define the aliases. The
 For example:
 - The url of a file at *Website\wwwroot\lib\some-lib\some-lib.js* will be "some-lib\some-lib".
 - The url of a file at *Website\wwwroot\scripts\my-custom-file.js* will be "../scripts/my-custom-file".
+
+#### map
+This setting allows you to define **address part aliaises** and map them to a url fragment. This is used for correcting incorrect addresses, to help them be resolved correctly.
+
+Imagine that you are using a third party library and you don't want to change its source code. Inside that library it might be assuming a dependency to jquery.
+- If that library had referenced jquery by its alias of 'jquery', all you had to do was to define that alias to map to the correct file in your project using the *paths* node as explained above.
+- But imagine that the library had hard-coded the path as 'bower_components/jquery/jquery'. To solve this problem you can add an entry in the **map** config section to replace 'bower_components' to '.' so that the path would be evaluated as './jquery/jquery' (and . means the baseUrl).
+
+The *map* config section is helpful when ever you see an error log in the Chrome console, complaining that a javascript file does not exist.
+
+#### shim
