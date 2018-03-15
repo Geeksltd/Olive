@@ -11,6 +11,10 @@ namespace Olive
         {
             if (Config.Get("Log:Console", defaultValue: false))
                 Loggers.Add(new ConsoleLogger());
+            if (Config.Get("Log:Debug", defaultValue: false))
+                Loggers.Add(new DebugLogger());
+            if (Config.Get("Log:File:IsActive", defaultValue: false))
+                Loggers.Add(new FileLogger());
         }
 
         public static void RegisterLogger(ILogger logger) => Loggers.Add(logger);
