@@ -102,5 +102,6 @@ public class SomePage : RootPage
     public SomePage()
     {
         LoadJavascriptModule("/scripts/components/projectTabs.js", "Run()");
+        ...
     }
 }
