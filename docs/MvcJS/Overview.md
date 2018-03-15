@@ -59,3 +59,10 @@ Imagine that you are using a third party library and you don't want to change it
 The *map* config section is helpful when ever you see an error log in the Chrome console, complaining that a javascript file does not exist.
 
 #### shim
+Often javascript files have a dependency on other scripts and hence they need to be loaded in the correct order. The traditional solution (Without using requireJs) was to list the <script> tags in the correct order in the html file. But requireJs works in a different way, and tried to parallelise script loading for improving performance when there is no known dependencies. 
+
+What this means is that requireJs needs to know about those dependencies, or else it will load them in parallel, or in any random order, which can cause problems.
+
+Script files can declare their dependencies by using the **import** statement, in which case requireJs would be able to understand that automatically.
+
+Alternatively, and in particular for legacy libraries that don't do it, you need to declare the dependencies using the **shim** config section as demonstrated in the above example.
