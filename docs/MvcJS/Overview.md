@@ -1,6 +1,9 @@
 # Olive Javascripts
 ...
 
+## Typescript
+...
+
 ## requireJS
 
 ## wwwroot\scripts\references.js
@@ -77,4 +80,19 @@ Basically for each javascript file you want added, you add its alias to the arra
 This means that to add a new Javascript file to the project (that you want loaded at the beginning and for every page) you can just:
 1. Define it under **paths** in the config section.
 2. Add its aliais to this array.
+
+## Loading javascript modules dynamically
+Sometimes you need to create custom javascript modules that are loaded for specific pages as opposed to the whole application.
+
+For example if your script file is under wwwroot/scripts/components/my-script.js you can load it by running the following Javascript code:
+
+'''javascript
+window.loadModule('/scripts/components/my-script');
+```
+
+Or if you want to run a static function of your module named *Run* as soon as it's loaded, you can use:
+
+'''javascript
+window.loadModule('/scripts/components/my-script', m => m.default.Run());
+```
 
