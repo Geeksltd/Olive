@@ -5,7 +5,7 @@ This guide will explain what they are and how you can set them up to get started
 
 ### AccessHub
 If you want to benefit from the Composite UI architecture, then you need a UI container to orchestrate everything together.
-AccessHub is an implementation of such UI container, or hub.
+[AccessHub](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/Overview.md#distributed-ui-via-access-hub) is an implementation of such UI container.
 
 For each new solution (consisting of multiple microservices) you can simply:
 1. Clone AccessHub from [here](https://gitlab.com/Geeks.Microservices/AccessHub)
