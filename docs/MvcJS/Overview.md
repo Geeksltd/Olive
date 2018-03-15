@@ -95,4 +95,12 @@ Or if you want to run a static function of your module named *Run* as soon as it
 '''javascript
 window.loadModule('/scripts/components/my-script', m => m.default.Run());
 ```
-
+To achieve this in M#, in the Page definition file where you want this script to be loaded, you can use the *LoadJavascriptModule()* method as shown below:
+```csharp
+public class SomePage : RootPage
+{
+    public SomePage()
+    {
+        LoadJavascriptModule("/scripts/components/projectTabs.js", "Run()");
+    }
+}
