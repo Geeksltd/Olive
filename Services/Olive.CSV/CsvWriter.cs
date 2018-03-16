@@ -25,11 +25,11 @@ namespace Olive.Csv
         {
             var CSV = new StringBuilder();
             foreach (var pair in dictionary)
-            {
                 CSV.AppendLine(string.Format("{0},{1}", pair.Key, pair.Value));
-            }
+
             return CSV.ToString();
         }
+
         /// <summary>
         /// Converts an IEnumerable object to CSV string
         /// </summary>
@@ -41,29 +41,29 @@ namespace Olive.Csv
         {
             var csvBuilder = new StringBuilder();
             var properties = typeof(T).GetProperties();
-            foreach (T item in items)
+
+            foreach (var item in items)
             {
-                string line = string.Join(",", properties.Select(p => p.GetValue(item, null).ToCsvValue()).ToArray());
+                var line = string.Join(",", properties.Select(p => p.GetValue(item, null).ToCsvValue()).ToArray());
                 csvBuilder.AppendLine(line);
             }
+
             return csvBuilder.ToString();
         }
 
-        private static string ToCsvValue<T>(this T item)
+        static string ToCsvValue<T>(this T item)
         {
             if (item == null) return "\"\"";
 
             if (item is string)
-            {
                 return string.Format("\"{0}\"", item.ToString().Replace("\"", "\\\""));
-            }
-            double dummy;
-            if (double.TryParse(item.ToString(), out dummy))
-            {
+
+            if (double.TryParse(item.ToString(), out var dummy))
                 return string.Format("{0}", item);
-            }
+
             return string.Format("\"{0}\"", item);
         }
+
         /// <summary>
         /// Converts a DataTable object to CSV string
         /// </summary>
@@ -71,41 +71,32 @@ namespace Olive.Csv
         /// <returns>CSV string content</returns>
         public static string ToCsv(this DataTable dtDataTable)
         {
-            StringBuilder sb = new StringBuilder();
-            //headers  
-            for (int i = 0; i < dtDataTable.Columns.Count; i++)
+            var sb = new StringBuilder();
+            // headers
+            for (var i = 0; i < dtDataTable.Columns.Count; i++)
             {
                 sb.Append(dtDataTable.Columns[i]);
-                if (i < dtDataTable.Columns.Count - 1)
-                {
-                    sb.Append(",");
-                }
+                if (i < dtDataTable.Columns.Count - 1) sb.Append(",");
             }
+
             sb.AppendLine();
-            foreach (DataRow dr in dtDataTable.Rows)
+            foreach (var dr in dtDataTable.GetRows())
             {
-                for (int i = 0; i < dtDataTable.Columns.Count; i++)
+                for (var i = 0; i < dtDataTable.Columns.Count; i++)
                 {
                     if (!Convert.IsDBNull(dr[i]))
                     {
-                        string value = dr[i].ToString();
-                        if (value.Contains(','))
-                        {
-                            value = String.Format("\"{0}\"", value);
-                            sb.Append(value);
-                        }
-                        else
-                        {
-                            sb.Append(dr[i].ToString());
-                        }
+                        var value = dr[i].ToString();
+                        if (value.Contains(',')) sb.Append(string.Format("\"{0}\"", value));
+                        else sb.Append(dr[i].ToString());
                     }
-                    if (i < dtDataTable.Columns.Count - 1)
-                    {
-                        sb.Append(",");
-                    }
+
+                    if (i < dtDataTable.Columns.Count - 1) sb.Append(",");
                 }
+
                 sb.AppendLine();
             }
+
             return sb.ToString();
         }
     }
