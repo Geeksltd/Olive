@@ -15,6 +15,12 @@ namespace Olive.Csv
         /// <param name="csv">Csv string</param>
         /// <param name="path">File save path</param>
         public static void Save(this string csv, FileInfo path) => File.WriteAllText(path.FullName, csv);
+
+        /// <summary>
+        /// Converts a Dictionary object to CSV string
+        /// </summary>
+        /// <param name="dictionary"></param>
+        /// <returns>CSV string content</returns>
         public static string ToCsv(this Dictionary<string, string> dictionary)
         {
             var CSV = new StringBuilder();
@@ -24,6 +30,12 @@ namespace Olive.Csv
             }
             return CSV.ToString();
         }
+        /// <summary>
+        /// Converts an IEnumerable object to CSV string
+        /// </summary>
+        /// <typeparam name="T">Type of IEnumerable</typeparam>
+        /// <param name="items"></param>
+        /// <returns>CSV string content</returns>
         public static string ToCsv<T>(this IEnumerable<T> items)
             where T : class
         {
@@ -52,6 +64,11 @@ namespace Olive.Csv
             }
             return string.Format("\"{0}\"", item);
         }
+        /// <summary>
+        /// Converts a DataTable object to CSV string
+        /// </summary>
+        /// <param name="dtDataTable"></param>
+        /// <returns>CSV string content</returns>
         public static string ToCsv(this DataTable dtDataTable)
         {
             StringBuilder sb = new StringBuilder();
