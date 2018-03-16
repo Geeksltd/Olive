@@ -10,7 +10,7 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
-      <!--<dependency id="Olive.Entities" version="0.0.0" />-->
+      <dependency id="Olive.Entities" version="0.0.0" />
     </dependencies>
   </metadata>
   <files>
