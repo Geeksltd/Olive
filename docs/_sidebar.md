@@ -12,7 +12,7 @@
     * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
-    * [DevOps](Microservices/Docker.md)
+    * DevOps
         * [Docker support](Microservices/Docker.md)
         * [Build server: Jenkins](Microservices/Jenkins.md)
         
@@ -45,7 +45,7 @@
     * [GeoLocation]()
     * [Globalization]()
     * [Data Export]()
-    * [Parsing CSV]()
+    * [Parsing CSV](Services/CSV.md)
     * [PDF generation]()
     * [Push Notifications]()
     * [Image optimization]()
