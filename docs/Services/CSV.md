@@ -2,7 +2,7 @@
 
 This librery helps you to work with CSV file as easy as possible. This library features reading CSV files by either **FileInfo**, **Blob** or raw CSV string.
 
-## Example
+## Reading CSV
 
 let's assume that we have a CSV containing following information:
 
@@ -58,3 +58,33 @@ foreach (var column in columns)
 ```
 
 ![image](https://user-images.githubusercontent.com/22152065/37521325-8c071528-2935-11e8-8259-cec2e94e0cfe.png)
+
+## Writing CSV
+
+Olive.CSV provides fluent extention methods to create CSV from **Dictionary**, **IEnumerable** and **DataTable**.
+You can call `.ToCsv()` to get the CSV string. Also you can call `ToCsv().Save(new FileInfo("e:\\somewhere.csv"));` to save the CSV in your storage.
+
+### Example
+
+Here we want to create a CSV from a dictionary then save it somewhere then write it to console:
+
+```csharp
+//Create a name value dictionary
+Dictionary<string, string> data = new Dictionary<string, string>();
+data.Add("foo", "bar");
+data.Add("x", "zee");
+data.Add("somewhere", "not here");
+
+//Save it somewhere
+data.ToCsv().Save(new FileInfo("e:\\Somewhere.csv"));
+//write the string value to console
+Console.WriteLine(data.ToCsv());
+```
+
+Console output:
+
+![image](https://user-images.githubusercontent.com/22152065/37524448-1b795e9c-293f-11e8-9694-c4bf2d3f95b4.png)
+
+File output:
+
+![image](https://user-images.githubusercontent.com/22152065/37524419-07fc1df0-293f-11e8-9b1e-b0d794d19ae5.png)
