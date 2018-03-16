@@ -6,8 +6,7 @@ namespace Olive
     {
         public void Log(string eventTitle, string description, object relatedObject, string userId, string userIp)
         {
-            Console.Write($"Event Start\r\nTitle: '{eventTitle}', UserId: '{userId}', UserIP: '{userIp}'");
-            Console.Write($"Description: {description}\r\nEvent End");
+            Console.WriteLine(Olive.Log.ToYaml(eventTitle, description, relatedObject, userId, userIp));
         }
 
         public void Log(Exception ex) => Log(string.Empty, ex);

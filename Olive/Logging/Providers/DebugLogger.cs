@@ -9,8 +9,7 @@ namespace Olive
     {
         public void Log(string eventTitle, string description, object relatedObject, string userId, string userIp)
         {
-            Debug.Write($"Event Start\r\nTitle: '{eventTitle}', UserId: '{userId}', UserIP: '{userIp}'");
-            Debug.Write($"Description: {description}\r\nEvent End");
+            Debug.WriteLine(Olive.Log.ToYaml(eventTitle, description, relatedObject, userId, userIp));
         }
 
         public void Log(Exception ex) => Log(string.Empty, ex);
