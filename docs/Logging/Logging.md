@@ -47,7 +47,7 @@ Currently Olive supports these kinds of logs:
 
 You can use any of them according to your use case.
 
-### Passing information into log
+### Passing object information
 
 You can pass object information into the log. Also **Error** log type supports *Exceptions*.
 Example:
@@ -71,3 +71,28 @@ catch (Exception ex)
 Output:
 
 ![image](https://user-images.githubusercontent.com/22152065/37423630-98bf95dc-27d3-11e8-9e92-f26cf9f82641.png)
+
+## Log providers
+
+Currently Olive supports 3 types of Log providers:
+
+- **Console provider**: Logs information into a console
+- **Debug provider**: Logs information into debug window. Extreamly handy during development.
+- **File provider**: Logs data into a text file.
+
+Other types of providers will be added soon.
+
+### How to use providers
+
+Everything is done in your **appsettings.json**! You don't need to edit your codebase of your application. The full pattern of logging which includes **Console**, **Debug** and **File** is shown below:
+
+```json
+"Log": {
+    "Console": true,
+    "Debug": true,
+    "File": {
+      "IsActive": true,
+      "Path": "somewhere.log"
+    }
+  },
+```
