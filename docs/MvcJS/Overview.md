@@ -1,5 +1,11 @@
 # Olive Javascripts
-...
+Every Olive solution adds a bower reference to the [**olive.mvc** package](https://github.com/Geeksltd/Olive.MvcJs/releases) which provides lightweight client-side framework for Olive applications. It consists of a number of useful elements:
+
+- Extension methods for jQuery, String, Array and other low level types. E.g. string.trimStart(), string.contains(), etc.
+- Helper utilities for general client-side coding related to url manipulation, form data, validation, modal (pop-up), etc.
+- Plug-ins to convert basic html elements (e.g. input or select), into sophisticated ones (e.g. html editor, auto-complete, etc)
+- A lightweight framework for a high performance SPA experience that is based on Razor templates and MVC.
+
 
 ## Typescript
 Anders Hejlsberg, the genius father of Turbo Pascal, Delphi and C#, came up with yet another programming language that has dominated the web: Typescript. It's the scripting language of choice by Olive applications.
