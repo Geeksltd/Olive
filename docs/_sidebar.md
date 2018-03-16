@@ -58,6 +58,7 @@
     
 * Logging & Audit
     * [Olive Logging Overview](Logging/Logging.md)
+    * [Olive Audit](Logging/Audit.md)
     * [NLog integration](Logging/NLog.md)
 
 * Performance tips
