@@ -2,9 +2,21 @@
 ...
 
 ## Typescript
-...
+Anders Hejlsberg, the genius father of Turbo Pascal, Delphi and C#, came up with yet another programming language that has dominated the web: Typescript. It's the scripting language of choice by Olive applications.
+
+When you want to write custom javascript code in your application, you should create a typescript file (\*.ts) inside the *wwwroot\scripts* folder. The Typescript compiler will then create the \*.js version of your script in the same folder when you compile the website.
+
+> wwwroot\scripts\components\myCustomModule.ts → wwwroot\scripts\components\myCustomModule.js
+
 
 ## requireJS
+RequireJS is a JavaScript file and module loader. It is optimized for in-browser use, and can improve the speed and quality of your javascript code. In particular it provides the following benefits:
+- Explicit dependencies between modules, listed in code.
+- Asynchronous module loading.
+- Lazy (on-demand) module loading.
+- Support for one of the standard module wrappers called AMD, which is implemented by many open source libraries, making them easily available to your project.
+
+requireJS is added by default to the Olive projects template.
 
 ## wwwroot\scripts\references.js
 This is the primary file to configure requireJs and start-up libraries.
@@ -84,16 +96,16 @@ This means that to add a new Javascript file to the project (that you want loade
 ## Loading javascript modules dynamically
 Sometimes you need to create custom javascript modules that are loaded for specific pages as opposed to the whole application.
 
-For example if your script file is under wwwroot/scripts/components/my-script.js you can load it by running the following Javascript code:
+For example if your script file is under wwwroot/scripts/components/myScript.js you can load it by running the following Javascript code:
 
 '''javascript
-window.loadModule('/scripts/components/my-script');
+window.loadModule('/scripts/components/myScript');
 ```
 
 Or if you want to run a static function of your module named *Run* as soon as it's loaded, you can use:
 
 '''javascript
-window.loadModule('/scripts/components/my-script', m => m.default.Run());
+window.loadModule('/scripts/components/myScript', m => m.default.Run());
 ```
 To achieve this in M#, instead of writing the code shown above, in the Page definition file where you want this script to be loaded, ismply call the *LoadJavascriptModule()* method as shown below:
 ```csharp
