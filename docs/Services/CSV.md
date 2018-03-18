@@ -4,13 +4,9 @@ This librery helps you to work with CSV file as easy as possible. This library f
 
 ## Reading CSV
 
-let's assume that we have a CSV containing following information:
+Let's assume that we have a CSV containing following information:
 
 ![image](https://user-images.githubusercontent.com/22152065/37519997-9aaa7778-2930-11e8-89c7-1f5dafa35172.png)
-
-Now let's get the information of this CSV via Olive.CSV library. First you need to create a test console application then install [Olive.CSV NuGet package](https://www.nuget.org/packages/Olive.Csv/).
-
-`Install-Package Olive.CSV`
 
 Now use this method to get the CSV file as a datatable:
 
@@ -40,7 +36,7 @@ Console.WriteLine(datatable.Rows[1][1]);
 
 ### Getting the columns as string array
 
-You can read the columns of CSV content using follwing code:
+You can read the columns of CSV content using following code:
 
 ```csharp
  var columns = CsvReader.GetColumnsAsync(new FileInfo("E:\\Book1.csv")).Result;
