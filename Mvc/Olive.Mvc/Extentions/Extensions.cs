@@ -143,8 +143,7 @@ namespace Olive.Mvc
         {
             if (errorMessage == null) errorMessage = @this.Message;
 
-            return ($"<img name=\"Error icon\" title=\"{errorMessage.HtmlEncode()}\"" +
-            $" class=\"soft-error-icon\" alt=\"error\" />").Raw();
+            return ($"<error title=\"{errorMessage.HtmlEncode()}\" class=\"soft-error-icon\" />").Raw();
         }
     }
 }
