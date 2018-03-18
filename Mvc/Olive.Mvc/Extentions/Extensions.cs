@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -136,6 +137,14 @@ namespace Olive.Mvc
                 if (id == null) return default(TUser);
                 return Task.Factory.RunSync(() => Database.Instance.GetOrDefault<TUser>(id));
             });
+        }
+
+        public static HtmlString ToIcon(this Exception @this, string errorMessage = null)
+        {
+            if (errorMessage == null) errorMessage = @this.Message;
+
+            return ($"<img name=\"Error icon\" title=\"{errorMessage.HtmlEncode()}\"" +
+            $" class=\"soft-error-icon\" alt=\"error\" />").Raw();
         }
     }
 }
