@@ -1,32 +1,43 @@
+using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Linq;
-using System.Security.Claims;
 
 namespace Olive.Mvc
 {
     public class AuthorizeApiAttribute : TypeFilterAttribute
     {
-        public AuthorizeApiAttribute(string claimType, string claimValue) : base(typeof(ClaimRequirementFilter))
+        public AuthorizeApiAttribute() : base(typeof(ClaimRequirementFilter))
         {
-            Arguments = new object[] { new Claim(claimType, claimValue) };
+            Arguments = new object[0];
+        }
+
+        /// <summary>
+        /// A comma separated list of roles.
+        /// </summary>
+        public string Roles
+        {
+            set => Arguments = value.OrEmpty().Split(',').Trim().ToArray();
         }
     }
+
     public class ClaimRequirementFilter : IAuthorizationFilter
     {
-        readonly Claim claim;
-        public string Role { get; set; }
+        readonly string[] Roles;
 
-        public ClaimRequirementFilter(Claim claim) => this.claim = claim;
-        
+        public ClaimRequirementFilter(object[] roles) => Roles = roles.Select(x => x.ToString()).ToArray();
+
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            if (!context.HttpContext.User.Identity.IsAuthenticated)
-                context.Result = new StatusCodeResult(401);
-            else if (!context.HttpContext.User.Claims.Any(c => c.Type == claim.Type && c.Value == claim.Value))
-            {
-                context.Result = new StatusCodeResult(403);
-            }
+            var user = context.HttpContext.User;
+
+            var allowed = user.Identity.IsAuthenticated;
+
+            if (Roles.Any() && Roles.None(x => user.IsInRole(x)))
+                allowed = false;
+
+            if (!allowed)
+                context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
         }
     }
 }

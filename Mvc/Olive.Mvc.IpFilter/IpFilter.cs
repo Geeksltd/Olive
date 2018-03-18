@@ -114,7 +114,7 @@ namespace Olive.Mvc
 
         static async Task LoadBlockedIpRanges()
         {
-            var table = await CsvReader.Read(CountryIpsFile, isFirstRowHeaders: false);
+            var table = await CsvReader.ReadAsync(CountryIpsFile, isFirstRowHeaders: false);
 
             BlockedIpRanges = new List<Range<uint>>();
 
