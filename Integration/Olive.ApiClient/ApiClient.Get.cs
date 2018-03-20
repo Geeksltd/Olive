@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +12,9 @@ namespace Olive
 {
     partial class ApiClient
     {
+        static ConcurrentDictionary<string, AsyncLock> GetLocks =
+            new ConcurrentDictionary<string, AsyncLock>();
+
         public string StaleDataWarning = "The latest data cannot be received from the server right now.";
         const string CACHE_FOLDER = "-ApiCache";
         static object CacheSyncLock = new object();
@@ -82,6 +88,20 @@ namespace Olive
         {
             Url = GetFullUrl(queryParams);
 
+            if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
+            {
+                var result = await GetCachedResponse<TResponse>();
+                if (HasValue(result)) return result;
+            }
+
+            // Not already cached:
+            var urlLock = GetLocks.GetOrAdd(Url, x => new AsyncLock());
+            using (await urlLock.Lock())
+                return await ExecuteGet<TResponse>();
+        }
+
+        async Task<TResponse> ExecuteGet<TResponse>()
+        {
             var result = default(TResponse);
             if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
             {
@@ -169,26 +189,49 @@ namespace Olive
             return await DeserializeResponse<TResponse>(file);
         }
 
+        static ConcurrentDictionary<string, object> DeserializedCache =
+            new ConcurrentDictionary<string, object>();
+
         async Task<TResponse> DeserializeResponse<TResponse>(FileInfo file)
         {
-            if (!file.Exists()) return default(TResponse);
+            if (!file.Exists() || IsCacheExpired(file)) return default(TResponse);
 
-            // TODO: Compare file.CreationTime with the specified cache time policy.
-            if (CacheExpiry.HasValue && file.CreationTimeUtc < LocalTime.UtcNow.Subtract(CacheExpiry.Value))
-                return default(TResponse);
+            var cacheKey = file.FullName + "|" + typeof(TResponse).FullName;
+            if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
+            {
+                // Already cached in memory?                
+                if (DeserializedCache.TryGetValue(cacheKey, out var result))
+                    return (TResponse)result;
+            }
 
             try
             {
-                return JsonConvert.DeserializeObject<TResponse>(
+                var result = JsonConvert.DeserializeObject<TResponse>(
                     await file.ReadAllTextAsync(),
-                    new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Auto
-                    }
+                    new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto }
                 );
+
+                if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
+                    DeserializedCache.TryAdd(cacheKey, result);
+
+                return result;
             }
-            catch { return default(TResponse); }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to deserialize the cached file into " +
+                    typeof(TResponse).Name + " : " + ex.Message);
+
+                return default(TResponse);
+            }
         }
+
+        bool IsCacheExpired(FileInfo file)
+        {
+            if (CacheExpiry == null) return false;
+            return file.CreationTimeUtc < LocalTime.UtcNow.Subtract(CacheExpiry.Value);
+        }
+
+
 
         /// <summary>
         /// Deletes all cached Get API results.

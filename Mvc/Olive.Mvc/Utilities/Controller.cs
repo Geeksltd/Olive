@@ -121,6 +121,12 @@ namespace Olive.Mvc
         [NonAction]
         protected JsonResult JsonActions() => Json(Actions);
 
+        public async Task<JsonResult> Json<TResult>(Task<TResult> data)
+        {
+            var result = await data;
+            return base.Json(result);
+        }
+
         [NonAction]
         protected async Task<ActionResult> JsonActions(IViewModel info)
         {
