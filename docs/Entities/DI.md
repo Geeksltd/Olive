@@ -1,6 +1,16 @@
-# Dependency Injection in Olive
+# Dependency Injection and provider model in Olive
 
-Olive template takes the advantage of *Dependency Injection* (DI) to give the developers a high range of flexibility in the development cycle. If you don't know much about DI and Strategy pattern, first look at [HERE](https://www.codeproject.com/Tips/657668/Dependency-Injection-DI) and [HERE](https://stackify.com/dependency-injection-c-sharp/) (Make sure you are totally cool with full OOP concepts first).
+Olive template takes the advantage of *provider model* and *Dependency Injection* (DI) to give the developers a high range of flexibility in the development cycle. If you don't know much about DI and Strategy pattern, first look at [HERE](https://www.codeproject.com/Tips/657668/Dependency-Injection-DI) and [HERE](https://stackify.com/dependency-injection-c-sharp/) (Make sure you are totally cool with full OOP concepts first).
+
+## Provider model
+
+Olive follows *Provider model*. This simply means that developers can use different providers for a certain service. In another word any developer can choose different behaviors for a service.
+
+![image](https://user-images.githubusercontent.com/22152065/37720232-1943a776-2d3c-11e8-9fd5-9112027d97ff.png)
+
+In this example we registered *File provider* anf *Console provider* to a logging service. So if in any application we try to log something, It will be logged by both *File* and *Console* provider.
+
+In real world .NET programs, developers use *Dependency Injection*(DI) for this purpose.There would be an *Interface* representing the service and also implementation of that interface representing the providers.
 
 ## How Olive handles DI
 
