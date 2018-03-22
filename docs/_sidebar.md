@@ -43,7 +43,7 @@
     * [Email notifications]()
     * [SMS notifications]()
     * [GeoLocation]()
-    * [Globalization]()
+    * [Globalization](Services/Globalization.md)
     * [Data Export]()
     * [Parsing CSV](Services/CSV.md)
     * [PDF generation]()
