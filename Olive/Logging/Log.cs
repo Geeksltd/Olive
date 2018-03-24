@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Olive
 {
@@ -11,6 +12,12 @@ namespace Olive
         {
             if (Config.Get("Log:Console", defaultValue: false))
                 Loggers.Add(new ConsoleLogger());
+
+            if (Config.Get("Log:Debug", defaultValue: false))
+                Loggers.Add(new DebugLogger());
+
+            if (Config.Get("Log:File:IsActive", defaultValue: false))
+                Loggers.Add(new FileLogger());
         }
 
         public static void RegisterLogger(ILogger logger) => Loggers.Add(logger);
@@ -40,5 +47,29 @@ namespace Olive
 
         public static void Record(string eventTitle, string description, object relatedObject = null, string userId = null, string userIp = null) =>
             Loggers.ForEach(logger => logger.Log(eventTitle, description, relatedObject, userId, userIp));
+
+        internal static string ToYaml(string eventTitle, string description, object relatedObject, string userId, string userIp)
+        {
+            var r = new StringBuilder();
+            r.AppendLine($"Event '{eventTitle}'");
+            if (userId.HasValue()) r.AppendLine($"  UserId: {userId}");
+            if (userIp.HasValue()) r.AppendLine($"  UserIP: {userIp}");
+            if (relatedObject != null) r.AppendLine($"  Object: {{ {relatedObject.GetType()}: {relatedObject.ToStringOrEmpty()} }}");
+
+            if (description.HasValue())
+            {
+                r.Append("  Description: ");
+                var firstLine = true;
+                foreach (var line in description.ToLines().Trim())
+                {
+                    if (!firstLine) r.Append("  Description: ".Length);
+                    r.AppendLine(line);
+                    firstLine = false;
+                }
+            }
+
+            return r.ToString();
+        }
+
     }
 }

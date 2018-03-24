@@ -7,13 +7,16 @@ namespace Olive
 {
     public class Context
     {
+        static Context current;
         public IServiceProvider ServiceProvider { get; private set; }
         public readonly IServiceCollection Services;
-        public static Context Current { get; private set; }
+
+        public static Context Current => current
+            ?? throw new InvalidOperationException("Olive.Context is not initialized!");
 
         Context(IServiceCollection services) => Services = services;
 
-        public static void Initialize(IServiceCollection services) => Current = new Context(services);
+        public static void Initialize(IServiceCollection services) => current = new Context(services);
 
         public Context Configure(IServiceProvider provider)
         {

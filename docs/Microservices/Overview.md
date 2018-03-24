@@ -25,11 +25,18 @@ Each microservice will be responsible for its own html (razor) templates, custom
 In almost every business application, you can think of the overall page UI structure as consisting of three concerns:
 
 #### Overall layout microservice: Access Hub
-This is effectively the host or container for all pages of the application. It provides the overall layout including banner, logo, footer, and other common elements. Also it provides the overall navigation such as main menu, sub menu level 1, ...
+This is effectively the host or container for all pages of the application. It also provides a placeholder where the UI fragment for the actual features (unique pages) will be displayed inside the overall layout, so to the end user everything seems integrated and consistent. In Olive this is implemented through a single application named **AccessHub**.
 
-It also provides a placeholder where the UI fragment for the actual features (unique pages) will be displayed inside the overall layout, so to the end user everything seems integrated and consistent.
+Access Hub provides a unified UI experience for the end user. To the end user, AccessHub is *"the application"*. It has a main URL that the user will go to, in order to use the solution. Everything else will happen from there.
 
-In Olive this is implemented through a single application named **AccessHub**.
+It provides:
+
+- Overall layout: including banner, logo, footer, and other common elements.
+- Overall navigation: including main menu, sub menu level 1, ...
+- Url orchestration: Although each microservice is hosted on a different physical URL, but the urls are rewritten as friendly and unified fragments on the main application URL (of AccessHub itself).
+- Common theme: Shared css files
+- Common scripts: Shared javascript components
+
 
 #### Business Feature microservices
 The actual business functionality is delivered to the user as UI fragments. Each one is usually an MVC page with just the unique content for that page such as form fields, list modules, ... but not the overall shared layout. It can then be hosted inside AccessHub either as a Web Component (fully Ajax based) or an IFrame (for legacy services).

@@ -11,21 +11,6 @@ namespace Olive.Mvc
 
     public class FileUploadService
     {
-        public async Task<object> TempSaveUploadedFile(IFormFile file)
-        {
-            var id = Guid.NewGuid().ToString();
-
-            var path = GetFolder(id).EnsureExists().GetFile(file.FileName.ToSafeFileName());
-
-            using (var stream = new MemoryStream())
-            {
-                file.CopyTo(stream);
-                await File.WriteAllBytesAsync(path.FullName, stream.ToArray());
-            }
-
-            return new { ID = id, Name = file.FileName.ToSafeFileName() };
-        }
-
         public static DirectoryInfo GetFolder(string key = null)
             => AppDomain.CurrentDomain.WebsiteRoot().GetOrCreateSubDirectory("@Temp.File.Uploads" +
                 key.WithPrefix("\\"));
@@ -64,6 +49,27 @@ namespace Olive.Mvc
 
                 await folder.DeleteAsync(recursive: true, harshly: true);
             }
+        }
+
+        /// <param name="allowUnsafeExtension">If set to false (default) it will prevent uploading of all unsafe files (as defined in Blob.GetUnsafeExtensions())</param>
+        public async Task<object> TempSaveUploadedFile(IFormFile file, bool allowUnsafeExtension = false)
+        {
+            if (!allowUnsafeExtension && Blob.HasUnsafeFileExtension(file.FileName))
+                return new { Error = "Invalid file extension." };
+
+            var id = Guid.NewGuid().ToString();
+
+            var path = GetFolder(id).EnsureExists().GetFile(file.FileName.ToSafeFileName());
+            if (path.Length >= 260)
+                return new { Error = "File name length is too long." };
+
+            using (var stream = new MemoryStream())
+            {
+                file.CopyTo(stream);
+                await File.WriteAllBytesAsync(path.FullName, stream.ToArray());
+            }
+
+            return new { ID = id, Name = file.FileName.ToSafeFileName() };
         }
     }
 }

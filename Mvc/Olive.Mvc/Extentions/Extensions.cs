@@ -144,5 +144,12 @@ namespace Olive.Mvc
                 return Task.Factory.RunSync(() => Database.Instance.GetOrDefault<TUser>(id));
             });
         }
+
+        public static HtmlString ToIcon(this Exception @this, string errorMessage = null)
+        {
+            if (errorMessage == null) errorMessage = @this.Message;
+
+            return ($"<error title=\"{errorMessage.HtmlEncode()}\" class=\"soft-error-icon\" />").Raw();
+        }
     }
 }

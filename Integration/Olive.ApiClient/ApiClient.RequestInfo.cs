@@ -107,7 +107,7 @@ namespace Olive
 
             async Task<string> DoSend()
             {
-                if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url.EnsureEndsWith("/");
+                if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url;
 
                 var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies });
                 using (client)

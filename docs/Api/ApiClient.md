@@ -66,6 +66,8 @@ var customers = await new ApiClient($"{baseUrl}/customers")
                          .Get<Customer[]>();
 ```
 
+> The Cache() method also accepts an optional *TimeSpan* variable named **cacheExpiry**. When set, if the cached file (from a previous Api response) is older than that, then the cache will be ignored.
+
 You have 3 options:
 
 | Option  | When your priorities are | And you're happy to accept

@@ -3,20 +3,21 @@
     * [What is Olive?](README.md)
     * [.NET Extensions](Core/Extensions.md)
     * [Utility classes](Core/Utilities.md)
+    * [change log](ChangeLog.md)
 
 * Microservices Architecture
     * [Overview](Microservices/Overview.md)
     * [Environment Setup](Microservices/Setup.md)
-        * [Private Nuget Server](Microservices/PrivateNuget.md)    
+        * [Private Nuget Server](Microservices/PrivateNuget.md)
     * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
-    * [DevOps](Microservices/Docker.md)
+    * DevOps
         * [Docker support](Microservices/Docker.md)
         * [Build server: Jenkins](Microservices/Jenkins.md)
         
 * Web Api and Integration
-    * [ASP.NET WebApi](Api/WebApi.md)
+    * [RESTful WebApi](Api/WebApi.md)
     * [ApiClient](Api/ApiClient.md)
     * [Api Proxy](Api/Proxy.md)
     * [Api Versioning](Api/Versioning.md)
@@ -32,16 +33,19 @@
            
 
 * Olive Javascript Fx (MvcJS)
-    * [Overview](MvcJS/Overview.md)    
+    * [Overview](MvcJS/Overview.md)
+    * [Loading custom modules](MvcJS/Custom.md)
+    * [Loading JS libraries](MvcJS/Library.md)
     
     
 * Olive Plugins
+    * [Compression](Services/Compression.md)
     * [Email notifications]()
     * [SMS notifications]()
     * [GeoLocation]()
     * [Globalization]()
     * [Data Export]()
-    * [Parsing CSV]()
+    * [Parsing CSV](Services/CSV.md)
     * [PDF generation]()
     * [Push Notifications]()
     * [Image optimization]()
@@ -54,6 +58,7 @@
     
 * Logging & Audit
     * [Olive Logging Overview](Logging/Logging.md)
+    * [Olive Audit](Logging/Audit.md)
     * [NLog integration](Logging/NLog.md)
 
 * Performance tips

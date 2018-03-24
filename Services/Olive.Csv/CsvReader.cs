@@ -1,9 +1,9 @@
-﻿using Olive.Entities;
-using System;
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Olive.Entities;
 
 namespace Olive.Csv
 {
@@ -15,13 +15,13 @@ namespace Olive.Csv
         /// <summary>
         /// Reads a CSV blob into a data table. Note use the CastTo() method on the returned DataTable to gain fully-typed objects.
         /// </summary>
-        public static async Task<DataTable> Read(Blob csv, bool isFirstRowHeaders, int minimumFieldCount = 0) =>
-            Read(await csv.GetContentTextAsync(), isFirstRowHeaders, minimumFieldCount);
+        public static async Task<DataTable> ReadAsync(Blob csv, bool isFirstRowHeaders, int minimumFieldCount = 0)
+            => Read(await csv.GetContentTextAsync(), isFirstRowHeaders, minimumFieldCount);
 
         /// <summary>
         /// Reads a CSV file into a data table. Note use the CastTo() method on the returned DataTable to gain fully-typed objects.
         /// </summary>
-        public static async Task<DataTable> Read(FileInfo csv, bool isFirstRowHeaders, int minimumFieldCount = 0)
+        public static async Task<DataTable> ReadAsync(FileInfo csv, bool isFirstRowHeaders, int minimumFieldCount = 0)
             => Read(await csv.FullName.AsFile().ReadAllTextAsync(), isFirstRowHeaders, minimumFieldCount);
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Olive.Csv
         {
             var output = new DataTable();
 
-            using (TextReader textReaderContent = new StringReader(csvContent))
+            using (var textReaderContent = new StringReader(csvContent))
             using (var csvResult = new CsvHelper.CsvReader(textReaderContent))
             {
                 csvResult.Read();
@@ -61,6 +61,7 @@ namespace Olive.Csv
                         row[column.ColumnName] = csvResult.GetField(column.DataType, column.Ordinal);
                     output.Rows.Add(row);
                 }
+
                 return output;
             }
         }
@@ -68,14 +69,21 @@ namespace Olive.Csv
         /// <summary>
         /// Gets the column names on the specified CSV blob.
         /// </summary>
-        public static async Task<string[]> GetColumns(Blob blob) => GetColumns(await blob.GetContentTextAsync());
+        public static async Task<string[]> GetColumnsAsync(Blob blob)
+            => GetColumns(await blob.GetContentTextAsync());
+
+        /// <summary>
+        /// Gets the column names on the specified CSV from a file.
+        /// </summary>
+        public static async Task<string[]> GetColumnsAsync(FileInfo file)
+            => GetColumns(await file.FullName.AsFile().ReadAllTextAsync());
 
         /// <summary>
         /// Gets the column names on the specified CSV content.
         /// </summary>
         public static string[] GetColumns(string csvContent)
         {
-            using (TextReader textReaderContent = new StringReader(csvContent))
+            using (var textReaderContent = new StringReader(csvContent))
             using (var csvResult = new CsvHelper.CsvReader(textReaderContent))
             {
                 csvResult.Read();

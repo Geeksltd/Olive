@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -99,7 +100,6 @@ namespace Olive.Mvc
         {
             options.AccessDeniedPath = options.LoginPath = "/login";
             options.LogoutPath = "/lLogout";
-            options.SlidingExpiration = true;
             options.Cookie.HttpOnly = true;
             options.Cookie.Name = ".myAuth";
 
@@ -112,6 +112,9 @@ namespace Olive.Mvc
             {
                 options.DataProtectionProvider = new SymmetricKeyDataProtector("AuthCookies");
             }
+
+            options.SlidingExpiration = true;
+            options.Cookie.Expiration = TimeSpan.FromMinutes(Config.Get("Authentication:Cookie:Timeout", 20.0));
         }
     }
 }
