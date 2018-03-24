@@ -18,19 +18,19 @@ namespace Olive.Mvc
 {
     public static partial class OliveMvcExtensions
     {
-        //START : frz:Should remove in next version
-        [Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.TakePage] instead. this method will be remove in next version.", error: false)]
-        public static IEnumerable<T> TakePage<T>(this IEnumerable<T> list, ListPagination paging) =>
-            list.TakePage(paging.PageSize, paging.CurrentPage);
+        ////START : frz:Should remove in next version
+        //[Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.TakePage] instead. this method will be remove in next version.", error: false)]
+        //public static IEnumerable<T> TakePage<T>(this IEnumerable<T> list, ListPagination paging) =>
+        //    list.TakePage(paging.PageSize, paging.CurrentPage);
 
-        [Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Page] instead. this method will be remove in next version.", error: false)]
-        public static T Page<T>(this T query, ListPagination paging)
-            where T : IDatabaseQuery
-        {
-            query.Page(paging.CurrentPage, paging.PageSize ?? 100000);
-            return query;
-        }
-        //END : frz:Should remove in next version
+        //[Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Page] instead. this method will be remove in next version.", error: false)]
+        //public static T Page<T>(this T query, ListPagination paging)
+        //    where T : IDatabaseQuery
+        //{
+        //    query.Page(paging.CurrentPage, paging.PageSize ?? 100000);
+        //    return query;
+        //}
+        ////END : frz:Should remove in next version
 
         public static HtmlString Replace(this IHtmlContent content, string oldText, string newText) =>
             new HtmlString(GetString(content).KeepReplacing(oldText, newText));
