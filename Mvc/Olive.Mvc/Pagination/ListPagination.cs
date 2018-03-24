@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Olive.Entities;
 
-namespace Olive.Mvc
+namespace Olive.Mvc.Pagination
 {
     public class ListPagination
     {
@@ -108,22 +106,6 @@ namespace Olive.Mvc
             var orderBy = sort.Expression.Or("ID") + " DESC".OnlyWhen(sort.Descending);
 
             return ToQueryOption(orderBy);
-        }
-    }
-
-    public class ColumnSelectionBinder : IModelBinder
-    {
-        public Task BindModelAsync(ModelBindingContext bindingContext)
-        {
-            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
-
-            if (value == null) return Task.CompletedTask; ;
-
-            var result = bindingContext.Model as ColumnSelection;
-
-            result?.SetSelection(value.FirstValue.OrEmpty().Split('|'));
-
-            return Task.CompletedTask;
         }
     }
 }

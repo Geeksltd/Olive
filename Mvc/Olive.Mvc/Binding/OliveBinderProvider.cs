@@ -5,34 +5,34 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Olive.Entities;
+using Olive.Mvc.Pagination;
 
 namespace Olive.Mvc
 {
     public class OliveBinderProvider : IModelBinderProvider
     {
-        static Type[] PrimitiveTypes = new[] {typeof(DateTime), typeof(DateTime?), typeof(TimeSpan),
+        static readonly Type[] PrimitiveTypes = {typeof(DateTime), typeof(DateTime?), typeof(TimeSpan),
                 typeof(TimeSpan?), typeof(bool), typeof(bool?)};
 
-        static ConcurrentDictionary<ModelMetadata, ModelMetadata[]> PropertyBinderCache = new ConcurrentDictionary<ModelMetadata, ModelMetadata[]>();
+        static readonly ConcurrentDictionary<ModelMetadata, ModelMetadata[]> PropertyBinderCache = new ConcurrentDictionary<ModelMetadata, ModelMetadata[]>();
 
         IModelBinder IModelBinderProvider.GetBinder(ModelBinderProviderContext context) => SelectBinder(context);
 
-        static internal IModelBinder SelectBinder(ModelBinderProviderContext context)
+        internal static IModelBinder SelectBinder(ModelBinderProviderContext context)
         {
             var modelType = context.Metadata.ModelType;
 
             if (modelType.IsA<IViewModel>())
             {
-                var propertyBinders = new Dictionary<ModelMetadata, IModelBinder>();
-
-                foreach (var property in GetProperties(context.Metadata))
-                    propertyBinders.Add(property, context.CreateBinder(property));
+                var propertyBinders = GetProperties(context.Metadata).ToDictionary(property => property, context.CreateBinder);
 
                 return new OliveModelBinder(propertyBinders);
             }
 
             if (modelType.IsA<ListSortExpression>()) return new ListSortExpressionBinder();
+
             if (modelType.IsA<ListPagination>()) return new ListPaginationBinder();
+
             if (modelType.IsA<ColumnSelection>()) return new ColumnSelectionBinder();
             if (modelType.IsA<IEntity>()) return new EntityModelBinder();
             if (modelType.IsA<Blob>() || modelType.IsA<List<Blob>>()) return new BlobModelBinder();
@@ -71,7 +71,7 @@ namespace Olive.Mvc
             return modelBinder != null;
         }
 
-        static ModelMetadata[] GetProperties(ModelMetadata metadata)
+        static IEnumerable<ModelMetadata> GetProperties(ModelMetadata metadata)
         {
             return PropertyBinderCache.GetOrAdd(metadata, x =>
             {
