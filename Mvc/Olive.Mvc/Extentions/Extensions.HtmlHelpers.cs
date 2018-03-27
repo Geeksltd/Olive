@@ -13,12 +13,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Olive;
 using Olive.Entities;
+using Olive.Mvc.Pagination;
 
 namespace Olive.Mvc
 {
     partial class OliveMvcExtensions
     {
-        const int DEFAULT_VISIBLE_PAGES = 7;
 
         public static HtmlString ToJson(this IHtmlHelper html, object obj)
         {
@@ -176,11 +176,18 @@ namespace Olive.Mvc
             return settings.Select(x => x.name + "=\"" + x.value + "\"").ToString(" ").WithPrefix(" ");
         }
 
-        public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, object htmlAttributes = null, string prefix = null) =>
-            Pagination(html, paging, DEFAULT_VISIBLE_PAGES, htmlAttributes, prefix);
+        ////START : frz:Should remove in next version
 
-        public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, int visiblePages, object htmlAttributes = null, string prefix = null) =>
-            new PaginationRenderer(html, paging, visiblePages, htmlAttributes, prefix).Render();
+        //const int DEFAULT_VISIBLE_PAGES = 7;
+        //[Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Pagination] instead. this method will be remove in next version.", error: false)]
+        //public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, object htmlAttributes = null, string prefix = null) =>
+        //    Pagination(html, paging, DEFAULT_VISIBLE_PAGES, htmlAttributes, prefix);
+
+        //[Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Pagination] instead. this method will be remove in next version.", error: false)]
+        //public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, int visiblePages, object htmlAttributes = null, string prefix = null) =>
+        //    new PaginationRenderer(html, paging, visiblePages, htmlAttributes, prefix).Render();
+
+        ////END : frz:Should remove in next version
 
         /// <summary>
         /// Will join this with other Mvc Html String items;

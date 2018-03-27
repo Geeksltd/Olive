@@ -1,4 +1,4 @@
-﻿namespace Olive.Mvc
+﻿namespace Olive.Mvc.Pagination
 {
     using System.Collections.Generic;
     using System.Text;
@@ -118,4 +118,5 @@
             builder.AppendLine("</li>");
         }
     }
+
 }

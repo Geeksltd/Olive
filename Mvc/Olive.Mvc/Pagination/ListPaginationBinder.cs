@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Olive.Mvc
+namespace Olive.Mvc.Pagination
 {
     public class ListPaginationBinder : IModelBinder
     {
@@ -9,21 +9,20 @@ namespace Olive.Mvc
         {
             var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
-            if (value == null) return null;
-
             var prefix = bindingContext.ModelName.OrEmpty().Unless("p");
             if (prefix.EndsWith(".p")) prefix = prefix.Split('.').ExceptLast().ToString(".");
 
             var old = bindingContext.Model as ListPagination;
 
-            bindingContext.Result = ModelBindingResult.Success(new ListPagination(old.Container, value.FirstValue)
+            bindingContext.Result = ModelBindingResult.Success(new ListPagination(old?.Container, value.FirstValue)
             {
                 Prefix = prefix,
-                UseAjaxPost = old.UseAjaxPost,
-                UseAjaxGet = old.UseAjaxGet
+                UseAjaxPost = old != null && old.UseAjaxPost,
+                UseAjaxGet = old != null && old.UseAjaxGet
             });
 
             return Task.CompletedTask;
         }
     }
+
 }

@@ -44,7 +44,7 @@ namespace Olive.ApiProxy
             Console.WriteLine(message);
             Console.ResetColor();
             Console.WriteLine("Press any key to end...");
-            Console.ReadLine();
+            Console.ReadKey();
         }
     }
 }
