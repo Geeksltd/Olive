@@ -1,4 +1,4 @@
-﻿namespace Olive.Mvc.Pagination
+﻿namespace Olive.Mvc
 {
     using System.Collections.Generic;
     using System.Text;

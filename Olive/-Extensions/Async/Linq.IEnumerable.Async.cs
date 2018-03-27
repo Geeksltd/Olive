@@ -84,8 +84,7 @@ namespace Olive
             return tasks.First(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
-        public static async Task<T> FirstOrDefault<T>(
-          this IEnumerable<T> list, Func<T, Task<bool>> func)
+        public static async Task<T> FirstOrDefault<T>(this IEnumerable<T> list, Func<T, Task<bool>> func)
         {
             var tasks = list.Select(x => new
             {
@@ -95,7 +94,10 @@ namespace Olive
 
             await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
 
-            return tasks.FirstOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
+            var result = tasks.FirstOrDefault(x => x.Predicate.GetAlreadyCompletedResult());
+
+            if (result is null) return default(T);
+            return result.Value;
         }
 
         public static async Task<IEnumerable<T>> Intersect<T>(
@@ -253,6 +255,9 @@ namespace Olive
 
             return tasks.Any(x => x.Predicate.GetAlreadyCompletedResult());
         }
+
+        public static async Task<bool> None<T>(this IEnumerable<T> list, Func<T, Task<bool>> func)
+            => !await list.Any(func);
 
         public static async Task<decimal> Average<T>(this IEnumerable<T> list, Func<T, Task<decimal>> func)
         {

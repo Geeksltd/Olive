@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Olive.Entities;
-using Olive.Mvc.Pagination;
 
 namespace Olive.Mvc
 {
@@ -16,9 +15,7 @@ namespace Olive.Mvc
 
         static readonly ConcurrentDictionary<ModelMetadata, ModelMetadata[]> PropertyBinderCache = new ConcurrentDictionary<ModelMetadata, ModelMetadata[]>();
 
-        IModelBinder IModelBinderProvider.GetBinder(ModelBinderProviderContext context) => SelectBinder(context);
-
-        internal static IModelBinder SelectBinder(ModelBinderProviderContext context)
+        IModelBinder IModelBinderProvider.GetBinder(ModelBinderProviderContext context)
         {
             var modelType = context.Metadata.ModelType;
 
@@ -30,8 +27,6 @@ namespace Olive.Mvc
             }
 
             if (modelType.IsA<ListSortExpression>()) return new ListSortExpressionBinder();
-
-            if (modelType.IsA<ListPagination>()) return new ListPaginationBinder();
 
             if (modelType.IsA<ColumnSelection>()) return new ColumnSelectionBinder();
             if (modelType.IsA<IEntity>()) return new EntityModelBinder();
@@ -91,18 +86,16 @@ namespace Olive.Mvc
 
         static bool IsListOfEnum(Type modelType)
         {
-            // if (modelType == null) return false;
             if (!modelType.IsGenericType) return false;
-            if (!modelType.GetGenericArguments().First().IsEnum) return false; ;
+            if (!modelType.GetGenericArguments().First().IsEnum) return false;
 
             return modelType.GetGenericTypeDefinition().FullName.StartsWith("System.Collections.Generic.List");
         }
 
         static bool IsListOfEntity(Type modelType)
         {
-            // if (modelType == null) return false;
             if (!modelType.IsGenericType) return false;
-            if (!modelType.GetGenericArguments().First().IsA<IEntity>()) return false; ;
+            if (!modelType.GetGenericArguments().First().IsA<IEntity>()) return false;
 
             return modelType.GetGenericTypeDefinition().FullName.StartsWith("System.Collections.Generic.List");
         }

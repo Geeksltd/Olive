@@ -36,6 +36,8 @@ namespace Olive
 
         public static bool Any<T>(this IEnumerable<T> list, Func<T, int, bool> predicate) => list.Any(predicate);
 
+        public static bool None<T>(this IEnumerable<T> list, Func<T, int, bool> predicate) => !list.Any(predicate);
+
         public static string ToFormatString<T>(this IEnumerable<T> list, string format, string seperator)
             => list.Select(i => format.FormatWith(i)).ToString(seperator);
 

@@ -34,7 +34,10 @@ namespace Olive.Mvc
                .AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
 
             var mvc = services.AddMvc(o => o.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
+            Context.Current.AddService(typeof(IMvcBuilder), mvc);
+
             mvc.AddJsonOptions(o => o.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
             mvc.ConfigureApplicationPartManager(manager =>
             {
                 manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
@@ -44,9 +47,7 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(options =>
                 options.ViewLocationExpanders.Add(GetViewLocationExpander()));
 
-            services.ConfigureApplicationCookie(ConfigureApplicationCookie)
-                .AddDistributedMemoryCache() // Adds a default in-memory implementation of IDistributedCache.
-                .AddSession();
+            services.ConfigureApplicationCookie(ConfigureApplicationCookie);
 
             AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies")
                 .AddCookie(ConfigureApplicationCookie);
@@ -63,7 +64,6 @@ namespace Olive.Mvc
                 .UseAuthentication()
                 .UseStaticFiles()
                 .UseRequestLocalization(RequestLocalizationOptions)
-                .UseSession()
                 .UseMvc(ConfigureRoutes);
         }
 

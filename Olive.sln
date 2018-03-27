@@ -120,6 +120,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "docs\", "{D3A7C778-
 		SlnRelativePath = "docs\"
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Paging", "Mvc\Olive.Mvc.Paging\Olive.Mvc.Paging.csproj", "{A504705A-BAAA-447D-A15F-C99BEFF296F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -269,6 +271,10 @@ Global
 		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{D3A7C778-5FCA-4052-BB7B-F4EE1CB0F689}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{A504705A-BAAA-447D-A15F-C99BEFF296F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A504705A-BAAA-447D-A15F-C99BEFF296F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A504705A-BAAA-447D-A15F-C99BEFF296F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A504705A-BAAA-447D-A15F-C99BEFF296F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -299,6 +305,7 @@ Global
 		{81877296-65EB-4F57-8B58-6B3982ADF05B} = {E2BA5BD4-58EF-4031-9203-10FD08B0AE9E}
 		{6C81363C-E71F-4999-80A4-AF42FAF69D04} = {4EE1A9FA-1435-417C-B407-77E652959CE1}
 		{4E848AF4-85B4-4B47-82FB-C78C337573C9} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
+		{A504705A-BAAA-447D-A15F-C99BEFF296F7} = {4EE1A9FA-1435-417C-B407-77E652959CE1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

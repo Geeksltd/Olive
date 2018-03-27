@@ -1,8 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Olive.Mvc.Pagination
+namespace Olive.Mvc
 {
+    public class ListPaginationBinderProvider : IModelBinderProvider
+    {
+        IModelBinder IModelBinderProvider.GetBinder(ModelBinderProviderContext context)
+        {
+            if (context.Metadata.ModelType.IsA<ListPagination>())
+                return new ListPaginationBinder();
+            else
+                return null;
+        }
+    }
+
     public class ListPaginationBinder : IModelBinder
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)

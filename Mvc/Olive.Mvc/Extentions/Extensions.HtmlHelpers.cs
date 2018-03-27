@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Olive;
 using Olive.Entities;
-using Olive.Mvc.Pagination;
 
 namespace Olive.Mvc
 {
@@ -164,7 +163,7 @@ namespace Olive.Mvc
             return $"The {propertyName} field is required.";
         }
 
-        internal static string ToHtmlAttributes(object htmlAttributes)
+        public static string ToHtmlAttributes(object htmlAttributes)
         {
             if (htmlAttributes == null) return string.Empty;
 

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using Olive.Entities;
 
-namespace Olive.Mvc.Pagination
+namespace Olive.Mvc
 {
-    public static class Extensions
+    public static class PaginationExtensions
     {
         const int DEFAULT_VISIBLE_PAGES = 7;
 
@@ -26,5 +25,10 @@ namespace Olive.Mvc.Pagination
         public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, int visiblePages, object htmlAttributes = null, string prefix = null) =>
             new PaginationRenderer(html, paging, visiblePages, htmlAttributes, prefix).Render();
 
+        public static void AddMvcPagination(this IServiceCollection services)
+        {
+            Context.Current.Mvc()
+                .AddMvcOptions(x => x.ModelBinderProviders.Add(new ListPaginationBinderProvider()));
+        }
     }
 }

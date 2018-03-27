@@ -166,6 +166,18 @@ namespace Olive
         public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func)
             => (await list).OrEmpty().Any(func);
 
+        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> list)
+          => (await list).OrEmpty().None();
+
+        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
+            => (await list).OrEmpty().None(func);
+
+        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, Task<bool>> func)
+            => await (await list).OrEmpty().None(func);
+
+        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> list, Func<TSource, int, bool> func)
+            => (await list).OrEmpty().None(func);
+
         public static async Task<bool> Contains<TSource>(this Task<IEnumerable<TSource>> list, TSource item)
             => (await list).OrEmpty().Contains(item);
 

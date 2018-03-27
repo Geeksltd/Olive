@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Olive.Entities;
 
-namespace Olive.Mvc.Pagination
+namespace Olive.Mvc
 {
     public class ListPagination
     {

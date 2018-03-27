@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Olive.Mvc</id>
-    <version>1.0.87</version>
-    <title>Olive MVC</title>
+    <id>Olive.Mvc.Paging</id>
+    <version>1.0.11</version>
+    <title>Olive MVC Paging</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
-    <description>Mvc Utilities for Olive</description>
+    <description>Pagination Utilities for Olive</description>
     <dependencies>
       <!--<dependency id="Olive" version="0.0.0" />
       <dependency id="Olive.Entities" version="0.0.0" />
@@ -16,8 +16,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Paging.dll" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Paging.pdb" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Paging.xml" target="lib\netcoreapp2.0\" />
   </files>
 </package>
