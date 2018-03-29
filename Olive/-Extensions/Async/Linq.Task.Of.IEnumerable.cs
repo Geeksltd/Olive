@@ -128,8 +128,8 @@ namespace Olive
             => (await list).OrEmpty().Take(count);
 
         public static async Task<IEnumerable<TSource>> Take<TSource>(
-        this Task<IEnumerable<TSource>> list, int lower, int upper)
-            => (await list).OrEmpty().Take(lower, upper);
+        this Task<IEnumerable<TSource>> list, int lower, int count)
+            => (await list).OrEmpty().Take(lower, count);
 
         public static async Task<IEnumerable<TSource>> TakeWhile<TSource>(
         this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)

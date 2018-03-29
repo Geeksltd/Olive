@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -230,8 +229,6 @@ namespace Olive
             if (CacheExpiry == null) return false;
             return file.CreationTimeUtc < LocalTime.UtcNow.Subtract(CacheExpiry.Value);
         }
-
-
 
         /// <summary>
         /// Deletes all cached Get API results.

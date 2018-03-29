@@ -431,30 +431,15 @@ namespace Olive
         }
 
         /// <summary>
-        /// Returns a subset of the items in a given collection in a range including the items at lower and upper bounds.
+        /// Returns a subset of the items in this collection.
         /// </summary>
-        public static IEnumerable<T> Take<T>(this IEnumerable<T> list, int lowerBound, int upperBound)
+        public static IEnumerable<T> Take<T>(this IEnumerable<T> list, int lowerBound, int count)
         {
-            if (upperBound == 0) return Enumerable.Empty<T>();
             if (lowerBound < 0) throw new ArgumentOutOfRangeException(nameof(lowerBound));
-            if (upperBound < 0) throw new ArgumentOutOfRangeException(nameof(upperBound));
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+            if (count == 0) return Enumerable.Empty<T>();
 
-            if (lowerBound > upperBound)
-                throw new ArgumentException("lower bound should be smaller than upper bound.", nameof(upperBound));
-
-            var result = new List<T>();
-
-            var index = -1;
-            foreach (var item in list)
-            {
-                index++;
-
-                if (index < lowerBound) continue;
-                if (index > upperBound) break;
-                result.Add(item);
-            }
-
-            return result;
+            return list.Skip(lowerBound).Take(count);
         }
 
         public static IEnumerable<T> Distinct<T, TResult>(this IEnumerable<T> list, Func<T, TResult> selector)
@@ -898,24 +883,7 @@ namespace Olive
         /// Returns an empty collection if this collection is null.
         /// </summary>
         public static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> collection) => collection ?? Enumerable.Empty<T>();
-
-        public static IEnumerable<T> TakePage<T>(this IEnumerable<T> list, int? pageSize, int currentPage)
-        {
-            if (pageSize == null) return list;
-
-            if (currentPage < 1) currentPage = 1;
-
-            var startIndex = (pageSize.Value) * (currentPage - 1);
-            var endIndex = startIndex + pageSize.Value;
-
-            if (currentPage > 1 && startIndex > list.Count())
-                return TakePage<T>(list, pageSize, 1);
-
-            if (currentPage > 1) endIndex--;
-
-            return list.Take(startIndex, endIndex);
-        }
-
+        
         /// <summary>
         /// Determines if the specified item exists in this list. 
         /// </summary>

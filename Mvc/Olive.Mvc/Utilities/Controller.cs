@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.CodeAnalysis;
 using Olive.Entities;
 
 namespace Olive.Mvc
@@ -46,6 +45,8 @@ namespace Olive.Mvc
             }
         }
 
+        JavascriptActions JavascriptActions => HttpContext.JavascriptActions();
+
         /// <summary>
         /// Do not use this overload. Always provide a viewmodel as a parameter.
         /// </summary>
@@ -55,27 +56,27 @@ namespace Olive.Mvc
         /// <summary>
         /// Creates a ViewResult object by using the model that renders a view to the response.
         /// </summary>
-        protected new internal async Task<ViewResult> View(object model)
+        public override ViewResult View(object model)
         {
-            AddAction(await NotificationAction.GetScheduledNotification());
+            JavascriptActions.ScheduleNotifications();
             return base.View(model);
         }
 
         /// <summary>
         /// Creates a ViewResult object by using the model that renders a view to the response.
         /// </summary>
-        protected new internal async Task<ViewResult> View(string viewName)
+        public override ViewResult View(string viewName)
         {
-            AddAction(await NotificationAction.GetScheduledNotification());
+            JavascriptActions.ScheduleNotifications();
             return base.View(viewName);
         }
 
         /// <summary>
         /// Creates a ViewResult object by using the model that renders a view to the response.
         /// </summary>
-        protected new internal async Task<ViewResult> View(string viewName, object model)
+        public override ViewResult View(string viewName, object model)
         {
-            AddAction(await NotificationAction.GetScheduledNotification());
+            JavascriptActions.ScheduleNotifications();
             return base.View(viewName, model);
         }
 
@@ -107,19 +108,15 @@ namespace Olive.Mvc
 
         protected new HttpRequest Request => HttpContext.Request;
 
-        protected List<object> Actions =>
-            (List<object>)(HttpContext.Items["JavascriptActions"] ?? (HttpContext.Items["JavascriptActions"] = new List<object>()));
-
         [NonAction]
         protected JsonResult AddAction(object action)
         {
-            if (action != null) Actions.Add(action);
-
+            JavascriptActions.Add(action);
             return JsonActions();
         }
 
         [NonAction]
-        protected JsonResult JsonActions() => Json(Actions);
+        protected JsonResult JsonActions() => Json(JavascriptActions);
 
         public async Task<JsonResult> Json<TResult>(Task<TResult> data)
         {
@@ -128,10 +125,10 @@ namespace Olive.Mvc
         }
 
         [NonAction]
-        protected async Task<ActionResult> JsonActions(IViewModel info)
+        protected ActionResult JsonActions(IViewModel info)
         {
-            if (Request.IsAjaxCall()) return Json(Actions);
-            else return await View(info);
+            if (Request.IsAjaxCall()) return JsonActions();
+            else return View(info);
         }
 
         [NonAction]
@@ -142,39 +139,26 @@ namespace Olive.Mvc
             AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
 
         [NonAction]
-        public JsonResult JavaScript(string script) => JavaScript(script, PageLifecycleStage.Init);
-
-        [NonAction]
-        public JsonResult JavaScript(string script, PageLifecycleStage stage) =>
-            AddAction(new { Script = script, Stage = stage.ToString() });
+        public JsonResult JavaScript(string script, PageLifecycleStage stage = PageLifecycleStage.Init)
+        {
+            JavascriptActions.JavaScript(script, stage);
+            return JsonActions();
+        }
 
         [NonAction]
         public ActionResult AjaxRedirect(string url)
         {
-            url = url.Or("#");
-            if (!url.OrEmpty().ToLower().StartsWithAny("/", "http:", "https:")) url = "/" + url;
-
-            if (Actions.OfType<NotificationAction>().Any())
-                NotificationAction.ScheduleForNextRequest(Actions);
-
-            Actions.Add(new { Redirect = url, WithAjax = true });
-
+            JavascriptActions.Redirect(url, withAjax: true);
             return JsonActions();
         }
 
         [NonAction]
         public ActionResult Redirect(string url, string target = null)
         {
-            url = url.Or("#");
-            if (!url.OrEmpty().ToLower().StartsWithAny("/", "http:", "https:")) url = "/" + url;
-
-            if (Actions.OfType<NotificationAction>().Any())
-                NotificationAction.ScheduleForNextRequest(Actions);
+            JavascriptActions.Redirect(url, target: target);
 
             if (Request.IsAjaxCall() || target.HasValue())
             {
-                Actions.Add(new { Redirect = url, Target = target });
-
                 return JsonActions();
             }
             else
@@ -186,11 +170,8 @@ namespace Olive.Mvc
         [NonAction]
         protected JsonResult Do(WindowAction action)
         {
-            if (Actions.OfType<NotificationAction>().Any())
-                if (new[] { WindowAction.Refresh, WindowAction.CloseModalRefreshParent }.Contains(action))
-                    NotificationAction.ScheduleForNextRequest(Actions);
-
-            return AddAction(new { BrowserAction = action.ToString() });
+            JavascriptActions.Do(action);
+            return JsonActions();
         }
 
         [NonAction]
@@ -244,6 +225,8 @@ namespace Olive.Mvc
             var onLoaded = staticFunctionInvokation.WithPrefix(", m => m.default.");
             var fullUrl = Request.GetAbsoluteUrl(relativePath);
             JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
+
+            this.TryUpdateModelAsync
         }
     }
 

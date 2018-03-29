@@ -113,7 +113,7 @@ namespace Olive
         this Task<TSource[]> list, int count) => list.ForLinq().Take(count);
 
         public static Task<IEnumerable<TSource>> Take<TSource>(
-        this Task<TSource[]> list, int lower, int upper) => list.ForLinq().Take(lower, upper);
+        this Task<TSource[]> list, int lower, int count) => list.ForLinq().Take(lower, count);
 
         public static Task<IEnumerable<TSource>> TakeWhile<TSource>(
         this Task<TSource[]> list, Func<TSource, bool> func) => list.ForLinq().TakeWhile(func);

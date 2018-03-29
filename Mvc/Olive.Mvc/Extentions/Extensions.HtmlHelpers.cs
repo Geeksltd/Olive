@@ -18,7 +18,6 @@ namespace Olive.Mvc
 {
     partial class OliveMvcExtensions
     {
-
         public static HtmlString ToJson(this IHtmlHelper html, object obj)
         {
             if (obj == null) return new HtmlString("[]");
@@ -28,8 +27,7 @@ namespace Olive.Mvc
 
         public static HtmlString GetActionsJson(this IHtmlHelper html)
         {
-            var data = html.ViewContext.HttpContext.Items["JavascriptActions"] as object;
-
+            var data = html.ViewContext.HttpContext.JavascriptActions();
             return html.ToJson(data);
         }
 
@@ -175,18 +173,18 @@ namespace Olive.Mvc
             return settings.Select(x => x.name + "=\"" + x.value + "\"").ToString(" ").WithPrefix(" ");
         }
 
-        ////START : frz:Should remove in next version
+        // //START : frz:Should remove in next version
 
-        //const int DEFAULT_VISIBLE_PAGES = 7;
-        //[Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Pagination] instead. this method will be remove in next version.", error: false)]
-        //public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, object htmlAttributes = null, string prefix = null) =>
+        // const int DEFAULT_VISIBLE_PAGES = 7;
+        // [Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Pagination] instead. this method will be remove in next version.", error: false)]
+        // public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, object htmlAttributes = null, string prefix = null) =>
         //    Pagination(html, paging, DEFAULT_VISIBLE_PAGES, htmlAttributes, prefix);
 
-        //[Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Pagination] instead. this method will be remove in next version.", error: false)]
-        //public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, int visiblePages, object htmlAttributes = null, string prefix = null) =>
+        // [Obsolete("This method is obsolete. Call [Olive.Mvc.Pagination.Extensions.Pagination] instead. this method will be remove in next version.", error: false)]
+        // public static HtmlString Pagination(this IHtmlHelper html, ListPagination paging, int visiblePages, object htmlAttributes = null, string prefix = null) =>
         //    new PaginationRenderer(html, paging, visiblePages, htmlAttributes, prefix).Render();
 
-        ////END : frz:Should remove in next version
+        // //END : frz:Should remove in next version
 
         /// <summary>
         /// Will join this with other Mvc Html String items;
@@ -241,8 +239,7 @@ namespace Olive.Mvc
 
         public static HtmlString RunJavascript(this IHtmlHelper html, string key, string script, PageLifecycleStage stage = PageLifecycleStage.Init)
         {
-            var actions = html.ViewContext.HttpContext.Items["JavascriptActions"] as List<object>;
-            if (actions == null) html.ViewContext.HttpContext.Items["JavascriptActions"] = actions = new List<object>();
+            var actions = html.ViewContext.HttpContext.JavascriptActions();
 
             // If already added, ignore:
             var exists = actions

@@ -137,5 +137,11 @@ namespace Olive.Mvc
 
             return ($"<error title=\"{errorMessage.HtmlEncode()}\" class=\"soft-error-icon\" />").Raw();
         }
+
+        internal static JavascriptActions JavascriptActions(this HttpContext context)
+        {
+            return (JavascriptActions)(context.Items["JavascriptActions"] ??
+                  (context.Items["JavascriptActions"] = new JavascriptActions()));
+        }
     }
 }

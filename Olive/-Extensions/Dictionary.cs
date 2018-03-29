@@ -58,6 +58,7 @@ namespace Olive
             HttpContent content = new FormUrlEncodedContent(dictionary);
             return content;
         }
+
         /// <summary>
         /// Adds the properties of a specified [anonymous] object as items to this dictionary.
         /// It ignores duplicate entries and null values.

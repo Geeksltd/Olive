@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,13 @@ namespace Olive
             return this;
         }
 
-        public TService GetService<TService>() => ServiceProvider.GetRequiredService<TService>();
+        public TService GetService<TService>()
+        {
+            if (ServiceProvider == null)
+                throw new InvalidOperationException("Services are not registered yet as Olive.Context.Configure() is not called yet.");
+
+            return ServiceProvider.GetRequiredService<TService>();
+        }
 
         public TService GetOptionalService<TService>() where TService : class
         {

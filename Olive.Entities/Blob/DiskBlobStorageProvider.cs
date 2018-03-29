@@ -64,7 +64,6 @@ namespace Olive.Entities
 
             using (await GetAsyncLock(path.FullName).Lock())
                 await path.WriteAllBytesAsync(fileDataToSave);
-
         }
 
         public virtual async Task DeleteAsync(Blob blob)

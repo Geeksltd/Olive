@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Olive.ApiProxy
 {
@@ -54,9 +54,9 @@ namespace Olive.ApiProxy
             return r.ToString();
         }
 
-        private string GenerateTheToString() => $"public override string ToString()=> {GetToStringField()};";
+        string GenerateTheToString() => $"public override string ToString()=> {GetToStringField()};";
 
-        private string GetToStringField()
+        string GetToStringField()
         {
             var explicitToStringField = EffectiveProperties.SingleOrDefault(i => i.GetCustomAttribute<Entities.ToStringAttribute>() != null);
             var toStringField = explicitToStringField ?? SelectDefaultToStringField();

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Olive.Entities;
 
 namespace Olive.Mvc
 {
+    [ModelBinder(typeof(ListPaginationBinder))]
     public class ListPagination
     {
         public static string DefaultFirstText = "&laquo;";

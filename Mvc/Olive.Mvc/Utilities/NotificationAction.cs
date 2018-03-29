@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Newtonsoft.Json;
 using Olive.Web;
 
@@ -17,13 +15,13 @@ namespace Olive.Mvc
         /// <summary>
         /// Removes the notification actions from the current set of specified actions, and schedules them in the next request through the cookie.
         /// </summary>
-        internal static void ScheduleForNextRequest(List<object> actions)
+        internal static void ScheduleForNextRequest()
         {
-            var notificationActions = actions.OfType<NotificationAction>().ToList();
+            var js = Context.Current.Http().JavascriptActions();
+            var notificationActions = js.OfType<NotificationAction>().ToList();
+            notificationActions.Do(a => js.Remove(a));
 
             if (notificationActions.None()) return;
-
-            notificationActions.Do(a => actions.Remove(a));
 
             var json = JsonConvert.SerializeObject(new NotificationAction
             {
@@ -35,9 +33,9 @@ namespace Olive.Mvc
             CookieProperty.Set(COOKIE_KEY, json);
         }
 
-        internal static async Task<NotificationAction> GetScheduledNotification()
+        internal static NotificationAction GetScheduledNotification()
         {
-            var value = await CookieProperty.Get(COOKIE_KEY);
+            var value = CookieProperty.Get(COOKIE_KEY).GetAlreadyCompletedResult();
 
             if (value.IsEmpty()) return null;
 

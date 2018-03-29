@@ -20,6 +20,7 @@ namespace Olive.Entities.Data.SQLite
             var result = new SqliteParameter { Value = value, ParameterName = data.Key.Remove(" ") };
             return result;
         }
+
         public override string GenerateSelectCommand(IDatabaseQuery iquery)
         {
             var query = (DatabaseQuery)iquery;
@@ -36,6 +37,7 @@ namespace Olive.Entities.Data.SQLite
 
             return r.ToString();
         }
+
         public override string GenerateWhere(DatabaseQuery query)
         {
             var r = new StringBuilder();

@@ -1046,6 +1046,7 @@ namespace Olive
         {
             return Convert.ToBase64String(SHA1.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(clearText))).TrimEnd('=');
         }
+
         /// <summary>
         /// Creates SHA256 hash of this text
         /// </summary>
@@ -1060,6 +1061,7 @@ namespace Olive
                 );
             }
         }
+
         /// <summary>
         /// Creates SHA512 hash of this text
         /// </summary>
