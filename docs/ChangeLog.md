@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 29 March
+- Add a NuGet reference to *Olive.Mvc.Paging* in the *Website* project
+
 ## 15 Feb 2018
 - Change bower.json: *olive.mvc* to be *0.6.4* and **bootstrap-file-style** to be **2.1.0**
 - Change the imports section of *bootstrap-social.scss* to [this](https://github.com/Geeksltd/Olive.MvcTemplate/blob/master/Template/Website/wwwroot/Styles/Imports/bootstrap-social.scss)
