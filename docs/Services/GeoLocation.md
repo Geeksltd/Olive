@@ -16,7 +16,7 @@ public interface IGeoLocation
 
 ## IGeoLocated Interface
 
-This interface is also provided under `Olive.Services` namespace and only contains definition of one method “GetLocation()”. This method returns an “IGeoLocation” type object, which we discussed above.
+This interface is also provided under `Olive.Services` namespace and only contains definition of one method `GetLocation()`. This method returns an **IGeoLocation** type object, which we discussed above.
 
 ```csharp
 public interface IGeoLocated
