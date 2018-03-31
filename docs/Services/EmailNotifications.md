@@ -239,3 +239,5 @@ public static readonly AsyncEvent<EmailSendingEventArgs> Sent = new AsyncEvent<E
 /// </summary>
 public static readonly AsyncEvent<EmailSendingEventArgs> SendError = new AsyncEvent<EmailSendingEventArgs>();
 ```
+
+> **Note :** Checkout [M# Email tutorial](http://learn.msharp.co.uk/#/Tutorials/14/README) to have a deep look email notifications.
