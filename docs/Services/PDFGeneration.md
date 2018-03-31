@@ -42,8 +42,8 @@ As shown in above, we need to define the *“ContentType”* and *“Header”* 
 
 `Html2PDFconverter` class exposes three main public properties to configure a PDF template
 
-1) PdfHeaderOptions
-2) PdfDocumentOptions
-3) PdfFooterOptions
+1. PdfHeaderOptions
+2. PdfDocumentOptions
+3. PdfFooterOptions
 
 The above mentioned properties implement further properties to design each section e.g. Font, height, width, margins, quality etc.
