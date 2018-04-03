@@ -47,7 +47,7 @@
     * [Data Export](Services/DataExport.md)
     * [Parsing CSV](Services/CSV.md)
     * [PDF generation](Services/PDFGeneration.md)
-    * [Push Notifications]()
+    * [Push Notifications](Services/PushNotifications.md)
     * [Image optimization]()
     * [Website IP Filter]()
 
