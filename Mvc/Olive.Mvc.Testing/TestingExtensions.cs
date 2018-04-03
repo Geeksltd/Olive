@@ -21,7 +21,7 @@ namespace Olive.Mvc.Testing
             config?.Invoke(settings);
 
             if (settings.AddDefaultHandlers)
-                settings.AddDatabaseManager().AddSnapshot().AddTimeInjector().AddSqlProfile();
+                settings.AddDatabaseManager().AddSnapshot().AddTimeInjector().AddSqlProfile().AddRestartCache();
 
             app.UseMiddleware<WebTestMiddleware>();
 
