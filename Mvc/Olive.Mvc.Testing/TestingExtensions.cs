@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Olive.Mvc.Testing;
 
 namespace Olive.Mvc.Testing
 {
@@ -11,7 +10,7 @@ namespace Olive.Mvc.Testing
     {
         public static IApplicationBuilder UseWebTest(this IApplicationBuilder app,
             Func<Task> createReferenceData,
-            Action<IWebTestConfig> config = null)
+            Action<IDevCommandsConfig> config = null)
         {
             if (!WebTestConfig.IsActive()) return app;
 
@@ -21,7 +20,11 @@ namespace Olive.Mvc.Testing
             config?.Invoke(settings);
 
             if (settings.AddDefaultHandlers)
-                settings.AddDatabaseManager().AddSnapshot().AddTimeInjector().AddSqlProfile().AddRestartCache();
+                settings.AddDatabaseManager()
+                    .AddSnapshot()
+                    .AddTimeInjector()
+                    .AddSqlProfile()
+                    .AddClearDatabaseCache();
 
             app.UseMiddleware<WebTestMiddleware>();
 

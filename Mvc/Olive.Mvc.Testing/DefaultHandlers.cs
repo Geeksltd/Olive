@@ -12,7 +12,7 @@ namespace Olive.Mvc.Testing
 
         static Task Respond(string response) => Context.Current.Response().EndWith(response);
 
-        internal static IWebTestConfig AddDatabaseManager(this IWebTestConfig config)
+        internal static IDevCommandsConfig AddDatabaseManager(this IDevCommandsConfig config)
         {
             config.Add("dbChanges", () => DatabaseChangeWatcher.DispatchChanges());
 
@@ -40,14 +40,13 @@ namespace Olive.Mvc.Testing
             return config;
         }
 
-        internal static IWebTestConfig AddRestartCache(this IWebTestConfig config)
+        internal static IDevCommandsConfig AddClearDatabaseCache(this IDevCommandsConfig config)
         {
-            config.Add("clear-cache", () => ApiClient.DisposeCache(), "Clear cache");
-
+            config.Add("clear-db-cache", () => Entities.Data.Database.Instance.Refresh(), "Clear DB cache");
             return config;
         }
 
-        internal static IWebTestConfig AddSnapshot(this IWebTestConfig config)
+        internal static IDevCommandsConfig AddSnapshot(this IDevCommandsConfig config)
         {
             bool shared() => Context.Current.Request().Param("mode") == "shared";
 
@@ -76,7 +75,7 @@ namespace Olive.Mvc.Testing
             return config;
         }
 
-        internal static IWebTestConfig AddSqlProfile(this IWebTestConfig config)
+        internal static IDevCommandsConfig AddSqlProfile(this IDevCommandsConfig config)
         {
             config.Add("Sql.Profile", async () =>
             {
@@ -88,7 +87,7 @@ namespace Olive.Mvc.Testing
             return config;
         }
 
-        internal static IWebTestConfig AddTimeInjector(this IWebTestConfig config)
+        internal static IDevCommandsConfig AddTimeInjector(this IDevCommandsConfig config)
         {
             config.Add("setLocalDate", async () =>
             {
@@ -117,7 +116,7 @@ namespace Olive.Mvc.Testing
             return config;
         }
 
-        internal static IWebTestConfig AddServiceInjector(this IWebTestConfig config)
+        internal static IDevCommandsConfig AddServiceInjector(this IDevCommandsConfig config)
         {
             return config;
             // else if (command == "inject.service.response")

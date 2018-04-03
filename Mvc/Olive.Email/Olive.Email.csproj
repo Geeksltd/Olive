@@ -26,10 +26,6 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Olive.Mvc.Testing">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Testing.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
       <Private>false</Private>
