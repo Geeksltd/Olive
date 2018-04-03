@@ -40,6 +40,13 @@ namespace Olive.Mvc.Testing
             return config;
         }
 
+        internal static IWebTestConfig AddRestartCache(this IWebTestConfig config)
+        {
+            config.Add("clear-cache", () => ApiClient.DisposeCache(), "Clear cache");
+
+            return config;
+        }
+
         internal static IWebTestConfig AddSnapshot(this IWebTestConfig config)
         {
             bool shared() => Context.Current.Request().Param("mode") == "shared";
