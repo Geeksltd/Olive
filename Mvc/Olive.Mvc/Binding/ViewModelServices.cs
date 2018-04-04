@@ -42,6 +42,7 @@
             foreach (var property in from.GetType().GetProperties(PropertyFlags))
             {
                 if (sourcePrefix.HasValue() && !property.Name.StartsWith(sourcePrefix)) continue;
+                if (property.PropertyType.IsA<Task>()) continue;
 
                 var inTarget = to.GetType().GetProperty(targetPrefix + property.Name.TrimStart(sourcePrefix.OrEmpty()), PropertyFlags);
 

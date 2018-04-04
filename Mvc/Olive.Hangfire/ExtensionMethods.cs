@@ -2,13 +2,12 @@
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Olive.Mvc.Testing;
 
 namespace Olive.Hangfire
 {
     public static class ExtensionMethods
     {
-        public static IWebTestConfig AddTasks(this IWebTestConfig config)
+        public static IDevCommandsConfig AddTasks(this IDevCommandsConfig config)
         {
             config.Add("tasks", async () =>
             {

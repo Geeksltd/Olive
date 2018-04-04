@@ -225,8 +225,6 @@ namespace Olive.Mvc
             var onLoaded = staticFunctionInvokation.WithPrefix(", m => m.default.");
             var fullUrl = Request.GetAbsoluteUrl(relativePath);
             JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
-
-            this.TryUpdateModelAsync
         }
     }
 

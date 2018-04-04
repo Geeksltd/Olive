@@ -26,7 +26,7 @@ namespace Olive.Email
         /// Attaches a file to this email.
         /// </summary>
 		/// <param name="mail">The email queue item.</param>
-        /// <param name="filePath">The path of the attachment file.
+        /// <param name="file">The path of the attachment file.
         /// This must be the physical path of a file inside the running application.</param>
         public static void Attach(this IEmailMessage mail, FileInfo file)
         {

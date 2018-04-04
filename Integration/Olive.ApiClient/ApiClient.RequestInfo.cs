@@ -110,6 +110,7 @@ namespace Olive
                 if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url;
 
                 var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies });
+                client.Timeout = Config.Get("ApiClient:Timeout", 10).Seconds();
                 using (client)
                 {
                     var req = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);

@@ -34,11 +34,19 @@ namespace Olive
         {
             lock (CacheSyncLock)
             {
-                var appName = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent.Name;
-                var name = Path.Combine(Path.GetTempPath(), appName, CACHE_FOLDER, GetTypeName<TResponse>());
-
-                return name.AsDirectory().EnsureExists().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
+                return GetCacheDirectory<TResponse>().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
             }
+        }
+
+        static DirectoryInfo GetCacheDirectory<TResponse>()
+        {
+            return GetRootCacheDirectory().GetOrCreateSubDirectory(GetTypeName<TResponse>());
+        }
+
+        static DirectoryInfo GetRootCacheDirectory()
+        {
+            var appName = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent.Name;
+            return Path.Combine(Path.GetTempPath(), appName, CACHE_FOLDER).AsDirectory().EnsureExists();
         }
 
         static FileInfo[] GetTypeCacheFiles<TResponse>(TResponse modified)
@@ -233,12 +241,13 @@ namespace Olive
         /// <summary>
         /// Deletes all cached Get API results.
         /// </summary>
-        public Task DisposeCache()
+        public static Task DisposeCache()
         {
             lock (CacheSyncLock)
             {
-                if (Directory.Exists(CACHE_FOLDER))
-                    Directory.Delete(CACHE_FOLDER, true);
+                var cacheDir = GetRootCacheDirectory();
+                if (cacheDir.Exists)
+                    cacheDir.Delete(true);
             }
 
             // Desined as a task in case in the future we need it.
