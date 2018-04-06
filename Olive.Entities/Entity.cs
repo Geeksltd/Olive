@@ -20,7 +20,9 @@ namespace Olive.Entities
         object CachedCopiesLock = new object();
         internal List<ICachedReference> CachedCopies;
         internal bool IsImmutable;
-        [XmlIgnore, JsonIgnore] public Entity _ClonedFrom;
+
+        [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        public Entity _ClonedFrom;
 
         /// <summary>
         /// Base constructor (called implicitly in all typed entity classes) to initialize an object.

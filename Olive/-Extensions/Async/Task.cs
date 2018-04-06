@@ -38,16 +38,33 @@ namespace Olive
         /// </summary> 
         public static void RunSync(this TaskFactory factory, Func<Task> task)
         {
+            if (task == null) throw new ArgumentNullException(nameof(task));
+
+            var actualTask = new Task<Task>(task);
+
             try
             {
-                var actualTask = new Task<object>(task);
                 actualTask.RunSynchronously();
-                actualTask.Wait(); // To get the exception                
+                actualTask.WaitAndThrow();
+                actualTask.Result.WaitAndThrow();
             }
             catch (AggregateException ex)
             {
                 throw ex.InnerException;
             }
+        }
+
+        /// <summary>
+        /// Waits for a task to complete, and then if it contains an exception, it will be thrown.
+        /// </summary>
+        public static void WaitAndThrow(this Task task)
+        {
+            if (task == null) return;
+            try { task.Wait(); }
+            catch (AggregateException ex) { throw ex.InnerException; }
+
+            if (task.Exception?.InnerException != null)
+                throw task.Exception.InnerException;
         }
 
         /// <summary>

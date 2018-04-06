@@ -883,7 +883,7 @@ namespace Olive
         /// Returns an empty collection if this collection is null.
         /// </summary>
         public static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> collection) => collection ?? Enumerable.Empty<T>();
-        
+
         /// <summary>
         /// Determines if the specified item exists in this list. 
         /// </summary>
@@ -908,6 +908,11 @@ namespace Olive
 
             return items.Contains(item.Value);
         }
+
+        /// <summary>
+        /// Determines if this item is in the specified list.
+        /// </summary>
+        public static bool IsAnyOf(this int item, IEnumerable<int> items) => items.Contains(item);
 
         /// <summary>
         /// Specifies whether this list contains any of the specified values.

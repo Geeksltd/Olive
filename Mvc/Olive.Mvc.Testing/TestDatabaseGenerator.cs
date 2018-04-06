@@ -317,13 +317,19 @@ namespace Olive.Mvc.Testing
                 lock (ProcessSyncLock)
                 {
                     var createdNewReference = CreateReferenceDatabase();
+                    bool tempDatabaseDoesntExist;
 
-                    var tempDatabaseDoesntExist = !MasterDatabaseAgent.DatabaseExists(TempDatabaseName);
+                    try
+                    {
+                        tempDatabaseDoesntExist = !MasterDatabaseAgent.DatabaseExists(TempDatabaseName);
+                    }
+                    catch (SqlException ex)
+                    {
+                        throw new Exception("Your connection string seems to be incorrect.", ex);
+                    }
 
                     if (MustRenew || createdNewReference || tempDatabaseDoesntExist)
-                    {
                         RefreshTempDataWorld();
-                    }
                 }
 
                 return true;

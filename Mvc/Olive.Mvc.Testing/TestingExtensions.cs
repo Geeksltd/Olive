@@ -28,7 +28,8 @@ namespace Olive.Mvc.Testing
 
             app.UseMiddleware<WebTestMiddleware>();
 
-            Task.Factory.RunSync(() => TempDatabase.Create(enforceRestart: false, mustRenew: false));
+            Controller.OnFirstRequest += () =>
+             Task.Factory.RunSync(() => TempDatabase.Create(enforceRestart: false, mustRenew: false));
 
             return app;
         }
