@@ -1,9 +1,9 @@
 ﻿namespace Olive
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System;
 
     /// <summary>
     /// Provides a collection of ranges to simplify the manipulation of them.
@@ -79,20 +79,22 @@
             AddAsNewRange(item);
         }
 
+        Range<T> GetRange(int index) => (index >= 0 && index < ranges.Count) ? ranges.Values[index] : null;
+
         void AppendAt(T item, int index)
         {
-            var range = ranges.Values[index];
-            if (range.Contains(item)) return;
+            var range = GetRange(index);
+            if (range?.Contains(item) == true) return;
 
             var previousItem = GetPreviousItem(item);
 
-            if (range.To.Equals(previousItem))
+            if (range?.To?.Equals(previousItem) == true)
             {
                 ExtendFromUpperBound(item, range);
                 return;
             }
 
-            if (ranges.Count < index + 1)
+            if (index + 1 < ranges.Count)
             {
                 range = ranges.Values[index + 1];
 
@@ -116,7 +118,7 @@
 
             if (search.WhereItBelongs == 0) return false;
 
-            return ranges.Values[search.WhereItBelongs].Contains(item);
+            return GetRange(search.WhereItBelongs)?.Contains(item) ?? false;
         }
 
         public bool Lacks(T item) => !Contains(item);
@@ -128,35 +130,46 @@
             // The item equals one of ranges` from value;
             if (search.ExistingRangeStartingWith.HasValue)
             {
-                var range = ranges.Values[search.ExistingRangeStartingWith.Value];
-                var newRange = new Range<T>(GetNextItem(item), range.To);
-                ranges.Remove(item);
-                ranges.Add(newRange.From, newRange);
+                ShrinkFromLowerBound(item, search.ExistingRangeStartingWith.Value);
                 return true;
             }
 
             if (search.WhereItBelongs == 0) return false;
 
-            var range2 = ranges.Values[search.WhereItBelongs];
-            if (range2.Lacks(item)) return false;
+            var range = GetRange(search.WhereItBelongs);
+            if (range == null || range.Lacks(item)) return false;
 
-            if (range2.To.Equals(item))
-            {
-                var newRange = new Range<T>(range2.From, GetPreviousItem(range2.To));
-                ranges.Remove(range2.From);
-                ranges.Add(item, newRange);
-            }
+            if (range.To.Equals(item))
+                ShrinkFromUpperBound(range);
             else
-            {
-                var newRange1 = new Range<T>(range2.From, GetPreviousItem(item));
-                var newRange2 = new Range<T>(GetNextItem(item), range2.To);
-
-                ranges.Remove(range2.From);
-                ranges.Add(newRange1.From, newRange1);
-                ranges.Add(newRange2.From, newRange2);
-            }
+                Split(item, range);
 
             return true;
+        }
+
+        void Split(T item, Range<T> range)
+        {
+            var newRange1 = new Range<T>(range.From, GetPreviousItem(item));
+            var newRange2 = new Range<T>(GetNextItem(item), range.To);
+
+            ranges.Remove(range.From);
+            ranges.Add(newRange1.From, newRange1);
+            ranges.Add(newRange2.From, newRange2);
+        }
+
+        void ShrinkFromUpperBound(Range<T> range)
+        {
+            var newRange = new Range<T>(range.From, GetPreviousItem(range.To));
+            ranges.Remove(range.From);
+            ranges.Add(newRange.From, newRange);
+        }
+
+        void ShrinkFromLowerBound(T item, int index)
+        {
+            var range = ranges.Values[index];
+            var newRange = new Range<T>(GetNextItem(item), range.To);
+            ranges.Remove(item);
+            ranges.Add(newRange.From, newRange);
         }
 
         void AddAsNewRange(T item) => ranges.Add(item, new Range<T>(item, item));

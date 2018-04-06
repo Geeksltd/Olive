@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Olive.Entities;
 
 namespace Olive.Mvc
 {
@@ -12,6 +13,8 @@ namespace Olive.Mvc
         protected virtual TModel info => Model;
 
         public HttpRequest Request => Context.Request;
+
+        protected static IDatabase Database => Entities.Data.Database.Instance;
 
         /// <summary>
         /// Gets a file from its relative path.

@@ -87,8 +87,7 @@ namespace Olive.Mvc
 
         /// <summary>
         /// Creates a new instance of the specified view model type and binds it using the standard request data.
-        /// </summary>
-
+        /// </summary>         
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             await BindAttributeRunner.Run(context, next);
@@ -118,6 +117,7 @@ namespace Olive.Mvc
         [NonAction]
         protected JsonResult JsonActions() => Json(JavascriptActions);
 
+        [NonAction]
         public async Task<JsonResult> Json<TResult>(Task<TResult> data)
         {
             var result = await data;
@@ -210,8 +210,10 @@ namespace Olive.Mvc
         protected virtual ActionResult RedirectToLogin() =>
             Redirect("/login?ReturnUrl=" + HttpContext.GetUrlHelper().Current().UrlEncode());
 
+        [NonAction]
         public NotFoundTextActionResult NotFound(string message) => new NotFoundTextActionResult(message);
 
+        [NonAction]
         public UnauthorizedTextActionResult Unauthorized(string message) => new UnauthorizedTextActionResult(message);
 
         /// <summary>
