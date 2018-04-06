@@ -1,6 +1,9 @@
 # Olive compatibility change log
 
-## 29 March
+## 5 Apr 2018
+- MergedForm<...?() method is changed. Instead of generic, send the type of the sub-form class. Alternatively, use a new overload of the MergeForm class which takes the settings of the sub-form as a lambda expression, so you don't have to define a class for the subform.
+
+## 29 Mar 2018
 - Add a NuGet reference to *Olive.Mvc.Paging* in the *Website* project
 
 ## 15 Feb 2018
