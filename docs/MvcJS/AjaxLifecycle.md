@@ -14,6 +14,9 @@ TODO: Read https://github.com/Geeksltd/Olive.MvcJs/blob/master/src/olivePage.ts#
 TODO: Explain what happens when BACK is pressed in that case.
 TODO: Explain how the server side template supports this (i.e. splitting the Layout into two files, one of which is only <Main> and is returned when the request is Ajax.)
 
-TODO: Dev task: When processing a response which is \<MAIN/> we are currently replacing the content, but the meta title of the page is being ignored.
+## TODO: Dev task
+When processing a response which is \<MAIN/> we are currently replacing the content, but the meta title of the page is being ignored.
 This needs to be fixed somehow in the ajax processing logic.
 For example we can look for <meta> inside the \<main/> and apply that on the current page.
+
+## TODO: Explain how the ajax based form submission works in Olive
