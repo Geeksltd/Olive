@@ -5,6 +5,7 @@
 
 ## 29 Mar 2018
 - Add a NuGet reference to *Olive.Mvc.Paging* in the *Website* project
+- The View() and some other helper methods on the BaseController now return an ActionResult instead of Task<ActionResult>. 
 
 ## 15 Feb 2018
 - Change bower.json: *olive.mvc* to be *0.6.4* and **bootstrap-file-style** to be **2.1.0**
