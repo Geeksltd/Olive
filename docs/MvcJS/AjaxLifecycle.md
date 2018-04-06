@@ -2,7 +2,7 @@
 ...
 
 ## Ajax-based navigation
-- Normally when an <A href='...' /> tag is clicked, a full page request will run, which is slow because the whole Javascript, CSS, etc has to load.
+- Normally when an «A href='...' /» tag is clicked, a full page request will run, which is slow because the whole Javascript, CSS, etc has to load.
 - Most page navigations inside an application will share the same Javascript, template (footer, banner, etc) and css.
 - It's much more efficient to just replace the MAIN content using ajax.
 - This is what Mvc applications do, but only when the A tag has *data-redirect='ajax'*.
