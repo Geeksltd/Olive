@@ -47,6 +47,16 @@ namespace Olive.ApiProxy
             content.Insert(content.IndexOf(x => x.Trim().StartsWith("<TargetFramework")) + 1,
                 $@"    <DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile>"
                 );
+            var ItemGroup = @"
+  <ItemGroup>
+    <Content Include=""README.txt"">
+      <Pack>true</Pack>
+      <PackagePath>README.txt</PackagePath>
+    </Content>
+  </ItemGroup>".Split('\r', '\n');
+            var indexOf = content.IndexOf(x => x.Trim().StartsWith("</Project>"));
+            content.InsertRange(indexOf, ItemGroup);
+
             file.WriteAllText(content.ToLinesString());
         }
 
@@ -106,6 +116,7 @@ namespace Olive.ApiProxy
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
   </metadata>
   <files>
+    <file src=""README.txt"" target="""" />
     <file src=""{dll}.dll"" target=""lib\{Framework}\"" />
     {xml}
   </files>
