@@ -10,14 +10,16 @@ Each instance of a Blob object encapsulates the original file name, the entity t
 
 ## Configuration
 The default Olive project template provides the following settings in *appSettings.json*.
-`json
+
+```json
 ...
 "Blob": {
         "RootPath": "Blob",        
         "BaseUrl": "/file?",
         ...
 },
-`
+```
+
 By default, the physical files will be stored and read from the disk, from the specified root path. For example, let's say you have an entity named `Employee` with a property named `Resume`. You have an Employee instance with the id of *123...9*. If a file is uploaded named *MyResume.pdf* then the physical path of the blob storage will be \[Website root\]\\Blob\\Employee\\Resume\\123...9.pdf.
 
 ## IBlobStorageProvider
@@ -25,7 +27,7 @@ The actual storage requirement for the files may vary from project to project. B
 
 You can, however, change the storage implementation based on your requirements. You can create any class that implements the `IBlobStorageProvider` to achieve this. Then to register your implementation, you can use the built-in ASP.NET Core dependency injection service.
 
-`cshrp
+```cshrp
   ...
   public override void ConfigureServices(IServiceCollection services)
   {
@@ -33,12 +35,13 @@ You can, however, change the storage implementation based on your requirements. 
        ...
        services.AddSingleton(typeof(IBlobStorageProvider), new MyStorageProvider());
   }
-`
+```
 
 
 ### Using AWS S3
 Cloud storage is recommended for production applications, rather than a local file system. There are several implementations of `IBlobStorageProvider` on NuGet already. For example, you can install [Olive.BlobAws](https://www.nuget.org/packages/Olive.BlobAws/) via NuGet in your project, and then in your `ConfigreServices(...)` method simply call the extension method that sets your storage implementation to AWS S3:
-`cshrp
+
+```cshrp
   ...
   public override void ConfigureServices(IServiceCollection services)
   {
@@ -46,8 +49,8 @@ Cloud storage is recommended for production applications, rather than a local fi
        ...
        services.AddS3BlobStorageProvider();
   }
-`
-`csharp
+```
+
 
 
 
