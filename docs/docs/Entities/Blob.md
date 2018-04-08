@@ -14,13 +14,14 @@ The default Olive project template provides the following settings in *appSettin
 ```json
 ...
 "Blob": {
-        "RootPath": "Blob",        
-        "BaseUrl": "/file?",
+        "RootPath": "Blob",
         ...
 },
 ```
 
-By default, the physical files will be stored and read from the disk, from the specified root path. For example, let's say you have an entity named `Employee` with a property named `Resume`. You have an Employee instance with the id of *123...9*. If a file is uploaded named *MyResume.pdf* then the physical path of the blob storage will be \[Website root\]\\Blob\\Employee\\Resume\\123...9.pdf.
+By default, the physical files will be stored and read from the disk, from the specified root path. For example, let's say you have an entity named `Employee` with a property named `Resume`. You have an Employee instance with the id of *123...9*. If a file is uploaded named *MyResume.pdf* then the physical path of the blob storage will be: 
+
+>\[Website root\]\\Blob\\Employee.Resume\\123...9.pdf.
 
 ## IBlobStorageProvider
 The actual storage requirement for the files may vary from project to project. By default, in Olive the physical files will be stored and read from the disk, from the path specified in *appSettings.json* which is explained later.
@@ -37,7 +38,6 @@ You can, however, change the storage implementation based on your requirements. 
   }
 ```
 
-
 ### Using AWS S3
 Cloud storage is recommended for production applications, rather than a local file system. There are several implementations of `IBlobStorageProvider` on NuGet already. For example, you can install [Olive.BlobAws](https://www.nuget.org/packages/Olive.BlobAws/) via NuGet in your project, and then in your `ConfigreServices(...)` method simply call the extension method that sets your storage implementation to AWS S3:
 
@@ -51,7 +51,15 @@ Cloud storage is recommended for production applications, rather than a local fi
   }
 ```
 
-
-
-
-
+### Configuration
+For the above to work, you need to add the necessary S3 settings to *appSettings.json* file.
+```json
+...
+"Blob": {
+        "S3": {
+           "Bucket": "{your bucket name}",
+           "Region": "{your bucket region}"
+        }
+        ...
+},
+```
