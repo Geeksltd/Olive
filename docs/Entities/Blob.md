@@ -15,8 +15,7 @@ The default Olive project template provides the following settings in *appSettin
 ...
 "Blob": {
         "RootPath": "Blob",
-        ...
-        
+        ...        
 },
 ```
 
@@ -63,7 +62,6 @@ For the above to work, you need to add the necessary S3 settings to *appSettings
            "Bucket": "{your bucket name}",
            "Region": "{your bucket region}"
         }
-        ...
-        
+        ...        
 },
 ```
