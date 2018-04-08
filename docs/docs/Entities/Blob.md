@@ -34,6 +34,7 @@ You can, however, change the storage implementation based on your requirements. 
   {
        base.ConfigureServices(services);
        ...
+       
        services.AddSingleton(typeof(IBlobStorageProvider), new MyStorageProvider());
   }
 ```
@@ -47,6 +48,7 @@ Cloud storage is recommended for production applications, rather than a local fi
   {
        base.ConfigureServices(services);
        ...
+       
        services.AddS3BlobStorageProvider();
   }
 ```
