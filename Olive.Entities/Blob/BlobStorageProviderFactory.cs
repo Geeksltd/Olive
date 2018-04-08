@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
+    using System.Collections.Generic;
+
     public class BlobStorageProviderFactory
     {
         static IBlobStorageProvider DefaultProvider

@@ -390,7 +390,10 @@ namespace Olive.Mvc.Testing
         void CopyFiles()
         {
             DiskBlobStorageProvider.Root.DeleteIfExists(recursive: true);
-            var source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(Config.GetOrThrow("Blob:TestFilesOrigin"));
+
+            var path = Config.Get("Blob:WebTest:Origin", "..\\Test\\ReferenceFiles");
+
+            var source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(path);
             if (source.Exists())
                 source.CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
         }
