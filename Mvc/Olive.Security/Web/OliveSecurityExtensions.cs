@@ -33,7 +33,7 @@ namespace Olive
                 Subject = info.ToClaimsIdentity(),
                 Issuer = Context.Current.Request().RootUrl(),
                 Audience = Context.Current.Request().RootUrl(),
-                Expires = DateTime.UtcNow.Add(info.Timeout),
+                Expires = DateTime.UtcNow.Add(info.Timeout ?? 10000.Days()),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256),
             };
 
@@ -49,7 +49,7 @@ namespace Olive
             var prop = new AuthenticationProperties
             {
                 IsPersistent = remember,
-                ExpiresUtc = DateTimeOffset.UtcNow.Add(loginInfo.Timeout)
+                ExpiresUtc = DateTimeOffset.UtcNow.Add(loginInfo.Timeout ?? 10000.Days())
             };
 
             await Context.Current.Http().SignInAsync(new ClaimsPrincipal(loginInfo.ToClaimsIdentity()), prop);
