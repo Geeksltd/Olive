@@ -18,7 +18,7 @@ namespace Olive.Mvc
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public abstract partial class Controller : Microsoft.AspNetCore.Mvc.Controller
     {
-        static bool IsFirstRequest = false;
+        static bool IsFirstRequest = true;
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static event Action OnFirstRequest;
 
