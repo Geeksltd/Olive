@@ -14,11 +14,12 @@ namespace Olive.Entities
         const string NULL_ESCAPE = "[#-NULL-VALUE-#]", COLON_ESCAPE = "[#-SEPERATOR-#]";
 
         static readonly MethodInfo StringContainsMethod = typeof(string).GetMethod("Contains");
-        static readonly MethodInfo StringContainsExtensionMethod = typeof(OliveExtensions).GetMethod("Contains", new[] { typeof(string), typeof(string), typeof(bool) });
-        static readonly MethodInfo StringLacksExtensionMethod = typeof(OliveExtensions).GetMethod("Lacks", new[] { typeof(string), typeof(string), typeof(bool) });
-        static readonly MethodInfo StringIsEmptyExtensionMethod = typeof(OliveExtensions).GetMethod("IsEmpty", new[] { typeof(string) });
-        static readonly MethodInfo StringHasValueExtensionMethod = typeof(OliveExtensions).GetMethod("HasValue", new[] { typeof(string) });
-        static readonly MethodInfo IsAnyOfExtensionMethod = typeof(OliveExtensions).GetMethod("IsAnyOf", new[] { typeof(string), typeof(string[]) });
+        static readonly MethodInfo StringContainsExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("Contains", new[] { typeof(string), typeof(string), typeof(bool) });
+        static readonly MethodInfo StringLacksExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("Lacks", new[] { typeof(string), typeof(string), typeof(bool) });
+        static readonly MethodInfo StringIsEmptyExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("IsEmpty", new[] { typeof(string) });
+        static readonly MethodInfo StringHasValueExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("HasValue", new[] { typeof(string) });
+        static readonly MethodInfo IsAnyOfStringExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("IsAnyOf", new[] { typeof(string), typeof(string[]) });
+        static readonly MethodInfo IsAnyOfIntExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("IsAnyOf", new[] { typeof(int), typeof(IEnumerable<int>) });
         static readonly MethodInfo StringStartsWithMethod = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
         static readonly MethodInfo StringEndsWithMethod = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
 
@@ -212,7 +213,7 @@ namespace Olive.Entities
                 valueExpression = expression.Arguments[0];
                 filter = FilterFunction.EndsWith;
             }
-            else if (expression.Method == IsAnyOfExtensionMethod)
+            else if (expression.Method == IsAnyOfStringExtensionMethod || expression.Method == IsAnyOfIntExtensionMethod)
             {
                 propertyExpression = expression.Arguments.First() as MemberExpression;
                 valueExpression = expression.Arguments[1];
@@ -251,6 +252,10 @@ namespace Olive.Entities
             else
             {
                 var value = Expression.Lambda(valueExpression).Compile().DynamicInvoke();
+
+                if(value is IEnumerable<int> enumerable)
+                    value = $"({enumerable.ToString(",")})";
+
                 if (valueExpression.NodeType == ExpressionType.NewArrayInit)
                     value = $"({(value as string[]).Select(part => $"'{part}'").ToString(",")})";
 

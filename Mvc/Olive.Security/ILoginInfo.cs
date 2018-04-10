@@ -10,7 +10,7 @@ namespace Olive.Security
         string ID { get; }
         string Email { get; }
         IEnumerable<string> GetRoles();
-        TimeSpan Timeout { get; }
+        TimeSpan? Timeout { get; }
     }
 
     public class GenericLoginInfo : ILoginInfo
@@ -30,7 +30,7 @@ namespace Olive.Security
         public string DisplayName { get; set; }
         public string ID { get; set; }
         public string Email { get; set; }
-        public TimeSpan Timeout { get; set; }
+        public TimeSpan? Timeout { get; set; }
         IEnumerable<string> ILoginInfo.GetRoles() => Roles;
     }
 }
