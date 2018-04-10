@@ -96,13 +96,13 @@ namespace Olive.Email
 
         public static string GetEffectiveReplyToName(this IEmailMessage @this)
         {
-            return @this.ReplyToName.OrNullIfEmpty() ?? Config.Get("Email:ReplyTo:Name") ?? @this.GetEffectiveFromName();
+            return @this.ReplyToName.OrNullIfEmpty() ?? Config.Get("Email:ReplyTo:Name").OrNullIfEmpty() ?? @this.GetEffectiveFromName();
         }
 
         public static string GetEffectiveReplyToAddress(this IEmailMessage @this)
         {
             return @this.ReplyToAddress.OrNullIfEmpty() ??
-                       Config.Get("Email:ReplyTo:Address") ??
+                       Config.Get("Email:ReplyTo:Address").OrNullIfEmpty() ??
                        @this.GetEffectiveFromAddress();
         }
 
