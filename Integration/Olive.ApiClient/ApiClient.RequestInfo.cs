@@ -92,7 +92,7 @@ namespace Olive
                 {
                     var result = ResponseText;
                     if (typeof(TResponse) == typeof(string) && result.HasValue())
-                        result = ResponseText.ToString().EnsureStartsWith("\"").EnsureEndsWith("\"");
+                        result = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
                     return JsonConvert.DeserializeObject<TResponse>(result);
                 }
                 catch (Exception ex)
@@ -142,7 +142,8 @@ namespace Olive
                     string responseBody = null;
                     try
                     {
-                        var response = await Client.SendAsync(client, req).ConfigureAwait(false);
+                        var response = await Client.SendAsync(client, req)
+                            .ConfigureAwait(continueOnCapturedContext: false);
 
                         ResponseCode = response.StatusCode;
                         ResponseHeaders = response.Headers;

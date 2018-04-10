@@ -60,8 +60,10 @@ namespace Olive.Mvc
         /// <summary>
         /// Do not use this overload. Always provide a viewmodel as a parameter.
         /// </summary>
-        protected new internal ViewResult View() =>
+        protected new internal ViewResult View()
+        {
             throw new InvalidOperationException("View() method should not be called without specifying a view model.");
+        }
 
         /// <summary>
         /// Creates a ViewResult object by using the model that renders a view to the response.
@@ -145,8 +147,10 @@ namespace Olive.Mvc
         protected JsonResult Notify(object message, bool obstruct = true) => Notify(message, style: null, obstruct: obstruct);
 
         [NonAction]
-        protected JsonResult Notify(object message, string style, bool obstruct = true) =>
-            AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
+        protected JsonResult Notify(object message, string style, bool obstruct = true)
+        {
+            return AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
+        }
 
         [NonAction]
         public JsonResult JavaScript(string script, PageLifecycleStage stage = PageLifecycleStage.Init)

@@ -84,14 +84,10 @@ namespace Olive
         /// </summary>
         public static string ToUpperOrEmpty(this string text) => text.OrEmpty().ToUpper();
 
-        public static bool IsAnyOf(this string text, params string[] items)
-        {
-            if (text == null) return items.Any(x => x == null);
+        public static bool IsAnyOf(this string text, params string[] items) => items.Contains(text);
 
-            return items.Contains(text);
-        }
-
-        public static bool IsAnyOf(this string text, IEnumerable<string> items) => IsAnyOf(text, items.ToArray());
+        public static bool IsAnyOf(this string text, IEnumerable<string> items)
+            => IsAnyOf(text, items.ToArray());
 
         public static bool ContainsAll(this string text, string[] keywords, bool caseSensitive)
         {

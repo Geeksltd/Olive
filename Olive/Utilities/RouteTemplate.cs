@@ -100,7 +100,7 @@ namespace Olive
                         throw new Exception("The value of " + p.Parameter + " in the route " + Template + " is not provided.");
                     }
 
-                    result = result.Replace(p.Parameter, null);
+                    result = result.Remove(p.Parameter);
                 }
             }
 

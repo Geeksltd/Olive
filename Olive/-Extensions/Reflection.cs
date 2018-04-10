@@ -323,12 +323,7 @@ namespace Olive
             return true;
         }
 
-        internal static bool IsAnyOf(this Type type, params Type[] types)
-        {
-            if (type == null) return types.Any(x => x == null);
-
-            return types.Contains(type);
-        }
+        internal static bool IsAnyOf(this Type type, params Type[] types) => types.Contains(type);
 
         public static string GetCachedAssemblyQualifiedName(this Type type) =>
             AssemblyQualifiedNameCache.GetOrAdd(type, x => x.AssemblyQualifiedName);
@@ -336,8 +331,11 @@ namespace Olive
         public static MemberInfo GetPropertyOrField(this Type type, string name) =>
             type.GetProperty(name) ?? (MemberInfo)type.GetField(name);
 
-        public static PropertyInfo GetPropertyOrThrow(this Type type, string name) =>
-            type.GetProperty(name) ?? throw new Exception(type.FullName + " does not have a property named " + name);
+        public static PropertyInfo GetPropertyOrThrow(this Type @this, string name)
+        {
+            return @this.GetProperty(name)
+                ?? throw new Exception(@this.FullName + " does not have a property named " + name);
+        }
 
         public static IEnumerable<MemberInfo> GetPropertiesAndFields(this Type type, BindingFlags flags) =>
             type.GetProperties(flags).Cast<MemberInfo>().Concat(type.GetFields(flags));

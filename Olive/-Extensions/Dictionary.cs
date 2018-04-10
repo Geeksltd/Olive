@@ -53,10 +53,9 @@ namespace Olive
             return result;
         }
 
-        public static HttpContent AsHttpContent(this IDictionary<string, string> dictionary)
+        public static HttpContent AsHttpContent(this IDictionary<string, string> @this)
         {
-            HttpContent content = new FormUrlEncodedContent(dictionary);
-            return content;
+            return new FormUrlEncodedContent(@this);
         }
 
         /// <summary>

@@ -74,13 +74,7 @@ namespace Olive
         /// <summary>
         /// Executes this EXE file and returns the standard output.
         /// </summary>
-        public static string Execute(this FileInfo exeFile, string args, bool waitForExit = true) =>
-            Execute(exeFile, args, waitForExit, null);
-
-        /// <summary>
-        /// Executes this EXE file and returns the standard output.
-        /// </summary>
-        public static string Execute(this FileInfo exeFile, string args, bool waitForExit, Action<Process> configuration)
+        public static string Execute(this FileInfo exeFile, string args, bool waitForExit = true, Action<Process> configuration = null)
         {
             var output = new StringBuilder();
 

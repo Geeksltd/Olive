@@ -35,7 +35,7 @@ namespace Olive.Mvc.Testing
             foreach (var command in new[] { "start", "run", "ran", "cancel" })
                 config.Add(command, () => startDatabase());
 
-            config.Add("restart", () => startDatabase(true), "Restart DB");
+            config.Add("restart", () => startDatabase(shouldRedirect: true), "Restart DB");
 
             return config;
         }

@@ -12,8 +12,10 @@ namespace Olive.Mvc
     public class FileUploadService
     {
         public static DirectoryInfo GetFolder(string key = null)
-            => AppDomain.CurrentDomain.WebsiteRoot().GetOrCreateSubDirectory("@Temp.File.Uploads" +
-                key.WithPrefix("\\"));
+        {
+            return AppDomain.CurrentDomain.WebsiteRoot()
+                .GetOrCreateSubDirectory("@Temp.File.Uploads" + key.WithPrefix("\\"));
+        }
 
         internal async Task<Blob> Bind(string fileKey)
         {
@@ -60,7 +62,7 @@ namespace Olive.Mvc
             var id = Guid.NewGuid().ToString();
 
             var path = GetFolder(id).EnsureExists().GetFile(file.FileName.ToSafeFileName());
-            if (path.Length >= 260)
+            if (path.FullName.Length >= 260)
                 return new { Error = "File name length is too long." };
 
             using (var stream = new MemoryStream())
@@ -69,7 +71,10 @@ namespace Olive.Mvc
                 await File.WriteAllBytesAsync(path.FullName, stream.ToArray());
             }
 
-            return new { ID = id, Name = file.FileName.ToSafeFileName() };
+            return new
+            {
+                Result = new { ID = id, Name = file.FileName.ToSafeFileName() }
+            };
         }
     }
 }

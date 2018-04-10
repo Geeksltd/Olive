@@ -65,6 +65,16 @@ namespace Olive
           this Task<IEnumerable<TSource>> list, Func<TSource, bool> func)
             => (await list).OrEmpty().FirstOrDefault(func);
 
+        public static Task<TSource> First<TSource>(this Task<IEnumerable<TSource>> @this)
+        {
+            return @this.First(x => true);
+        }
+
+        public static Task<TSource> FirstOrDefault<TSource>(this Task<IEnumerable<TSource>> @this)
+        {
+            return @this.FirstOrDefault(x => true);
+        }
+
         public static async Task<IEnumerable<TSource>> Intersect<TSource>(
         this Task<IEnumerable<TSource>> list, IEnumerable<TSource> second)
             => (await list).OrEmpty().Intersect(second);

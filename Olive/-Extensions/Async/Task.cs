@@ -9,10 +9,11 @@ namespace Olive
     partial class OliveExtensions
     {
         /// <summary>
-        /// It works similar to calling .Result property, but it forces a context switch to prevent deadlocks in UI and ASP.NET context.
-        /// </summary>
-        [Obsolete("Use Task.Factory.RunSync() instead.", error: true)]
-        public static TResult AwaitResult<TResult>(this Task<TResult> task) => Task.Run(async () => await task).Result;
+        /// It's recommended to use Task.Factory.RunSync() instead.
+        /// If you can't, at then call this while making it explicit that you know what you're doing.
+        /// </summary>        
+        public static TResult RiskDeadlockAndAwaitResult<TResult>(this Task<TResult> task)
+            => Task.Run(async () => await task).Result;
 
         /// <summary>
         /// If the task is not completed already it throws an exception warning you to await the task.
@@ -82,7 +83,8 @@ namespace Olive
                          System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
                          throw t.Exception.InnerException;
                      })
-                     .Result.Result;
+                     .RiskDeadlockAndAwaitResult()
+                     .RiskDeadlockAndAwaitResult();
             }
             catch (AggregateException ex)
             {

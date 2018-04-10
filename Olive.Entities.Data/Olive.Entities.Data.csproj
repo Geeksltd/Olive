@@ -6,6 +6,10 @@
     <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GCop.Basics" Version="1.0.3" />
+  </ItemGroup>
   
   <ItemGroup>
     <Reference Include="Olive">

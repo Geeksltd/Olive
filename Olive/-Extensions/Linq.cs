@@ -255,10 +255,9 @@ namespace Olive
         /// </summary>
         public static async Task Do<T>(this IEnumerable<T> list, Func<T, Task> func)
         {
-            if (list == null) return;
+            if (list == null || func == null) return;
 
-            foreach (var item in list)
-                await func?.Invoke(item);
+            foreach (var item in list) await func(item);
         }
 
         /// <summary>
@@ -267,13 +266,13 @@ namespace Olive
         /// </summary>        
         public static void Do<T>(this IEnumerable<T> list, Action<T, int> action)
         {
-            if (list == null) return;
+            if (list == null || action == null) return;
 
             var index = 0;
 
             foreach (var item in list)
             {
-                action?.Invoke(item, index);
+                action(item, index);
                 index++;
             }
         }
@@ -284,13 +283,13 @@ namespace Olive
         /// </summary>        
         public static async Task DoAsync<T>(this IEnumerable<T> list, Func<T, int, Task> action)
         {
-            if (list == null) return;
+            if (list == null || action == null) return;
 
             var index = 0;
 
             foreach (var item in list)
             {
-                await (action?.Invoke(item, index) ?? Task.CompletedTask);
+                await action(item, index);
                 index++;
             }
         }
