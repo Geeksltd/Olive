@@ -297,7 +297,8 @@ namespace Olive.Mvc.Testing
             // Not explicitly specified. Take a guess:
             DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().Parent.GetSubDirectory("DB");
             if (!DbDirectory.Exists())
-                throw new Exception("Failed to find the DB folder from which to create the temp database.");
+                throw new Exception("Failed to find the DB folder from which to create the temp database: " +
+                    DbDirectory.FullName);
         }
 
         bool DoProcess()

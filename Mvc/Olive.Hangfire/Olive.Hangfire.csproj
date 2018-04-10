@@ -21,6 +21,9 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Olive.Mvc">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
       <Private>false</Private>
