@@ -167,8 +167,11 @@
         void ShrinkFromLowerBound(T item, int index)
         {
             var range = ranges.Values[index];
-            var newRange = new Range<T>(GetNextItem(item), range.To);
             ranges.Remove(item);
+
+            if (range.From.Equals(range.To)) return;
+
+            var newRange = new Range<T>(GetNextItem(item), range.To);
             ranges.Add(newRange.From, newRange);
         }
 
