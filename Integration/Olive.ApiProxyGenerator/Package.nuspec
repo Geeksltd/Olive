@@ -14,6 +14,7 @@
     </dependencies>
   </metadata>
   <files>
+    <file src="README.txt" target="" />
     <file src="bin\Debug\netcoreapp2.0\Olive.ApiProxyGenerator.dll" target="lib\netcoreapp2.0\" />
     <file src="bin\Debug\netcoreapp2.0\Olive.ApiProxyGenerator.runtimeconfig.json" target="lib\netcoreapp2.0\" />
   </files>

@@ -19,6 +19,10 @@ namespace Olive.ApiProxy
             Folder.GetFile($"{Context.ControllerName}.cs").WriteAllText(ProxyClassProgrammer.Generate());
             Console.WriteLine("Done");
 
+            Console.Write("Adding ReamMe.txt file ...");
+            Folder.GetFile($"README.txt").WriteAllText(ReadmeFileGenerator.Generate());
+            Console.WriteLine("Done");
+
             GenerateDtoClasses();
             GenerateDataProviderClasses();
         }
