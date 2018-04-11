@@ -28,7 +28,7 @@ The actual storage requirement for the files may vary from project to project. B
 
 You can, however, change the storage implementation based on your requirements. You can create any class that implements the `IBlobStorageProvider` to achieve this. Then to register your implementation, you can use the built-in ASP.NET Core dependency injection service.
 
-```cshrp
+```c#
   ...
   public override void ConfigureServices(IServiceCollection services)
   {
@@ -42,7 +42,7 @@ You can, however, change the storage implementation based on your requirements. 
 ### Using AWS S3
 Cloud storage is recommended for production applications, rather than a local file system. There are several implementations of `IBlobStorageProvider` on NuGet already. For example, you can install [Olive.BlobAws](https://www.nuget.org/packages/Olive.BlobAws/) via NuGet in your project, and then in your `ConfigreServices(...)` method simply call the extension method that sets your storage implementation to AWS S3:
 
-```cshrp
+```c#
   ...
   public override void ConfigureServices(IServiceCollection services)
   {
