@@ -11,6 +11,9 @@ namespace Olive.Entities
     /// </summary>
     public class Blob : IComparable<Blob>, IComparable
     {
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool HasFileDataInMemory(Blob blob) => blob?.FileData?.Length > 0;
+
         /// <summary>
         /// In Test projects particularly, having files save themselves on the disk can waste space.
         /// To prevent that, apply this setting in the config file.

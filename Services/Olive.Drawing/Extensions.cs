@@ -18,11 +18,12 @@ namespace Olive.Drawing
         /// </summary>
         public static async Task OptimizeImage(this Blob blob, int maxWidth, int maxHeight, int quality, bool toJpeg = true)
         {
-            if ((await blob.GetFileDataAsync()).Length > 10)
-            {
-                var optimizer = new ImageOptimizer(maxWidth, maxHeight, quality);
-                blob.SetData(optimizer.Optimize(await blob.GetFileDataAsync(), toJpeg));
-            }
+            if (!Blob.HasFileDataInMemory(blob)) return;
+            var data = await blob.GetFileDataAsync();
+            if (data.Length < 100) return;
+
+            var optimizer = new ImageOptimizer(maxWidth, maxHeight, quality);
+            blob.SetData(optimizer.Optimize(data, toJpeg));
         }
     }
 }
