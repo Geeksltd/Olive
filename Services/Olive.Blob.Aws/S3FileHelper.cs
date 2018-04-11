@@ -16,7 +16,7 @@ namespace Olive.BlobAws
     {
         const string FILE_NOT_FOUND = "NotFound";
 
-        static AmazonS3Client CreateClient() => new AmazonS3Client();
+        static AmazonS3Client CreateClient() => new AmazonS3Client(Config.Get("AWS:AccessKey"), Config.Get("AWS:SecretKey"), Amazon.RegionEndpoint.GetBySystemName(Config.Get("AWS:Region")));
 
         /// <summary>
         /// Uploads a document to the Amazon S3 Client.
