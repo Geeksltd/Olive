@@ -1,5 +1,22 @@
 # Olive compatibility change log
 
+## 11 Apr 2018
+- In *appSettings.Development.json* change the `Logging` section to:
+```json
+  "Logging": {
+    "IncludeScopes": true,
+    "LogLevel": {
+        "Default": "Debug",
+        "System": "Information",
+        "Microsoft": "Information",
+        "Microsoft.AspNetCore.Authentication": "Warning",
+        "Microsoft.AspNetCore.Authorization": "Warning",
+        "Microsoft.AspNetCore.Mvc.ViewFeatures.Internal.ViewResultExecutor": "Warning",
+        "Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker": "Warning"
+    }
+  }
+```
+
 ## 9 Apr 2018
 - The `Timeout` property of `ILoginInfo` has been changed from `TimeSpan` to `TimeSpan?`. Your user class should change accordingly to match the Api. 
 
