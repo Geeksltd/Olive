@@ -2,6 +2,7 @@
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Olive.Mvc;
 
 namespace Olive.Hangfire
 {
@@ -43,16 +44,20 @@ namespace Olive.Hangfire
         /// It will register the hangfire server.
         /// If a debugger is attached, it will also start the hangfire dashboard.
         /// </summary>      
-        public static IApplicationBuilder UseScheduledTasks(this IApplicationBuilder app, Action createAutomatedTasks)
+        public static IApplicationBuilder UseScheduledTasks(this IApplicationBuilder @this,
+            Action createAutomatedTasks)
         {
-            app.UseHangfireServer();
+            Controller.OnFirstRequest += () =>
+          {
+              @this.UseHangfireServer();
 
-            if (System.Diagnostics.Debugger.IsAttached)
-                app.UseHangfireDashboard();
+              if (System.Diagnostics.Debugger.IsAttached)
+                  @this.UseHangfireDashboard();
 
-            createAutomatedTasks();
+              createAutomatedTasks();
+          };
 
-            return app;
+            return @this;
         }
     }
 }

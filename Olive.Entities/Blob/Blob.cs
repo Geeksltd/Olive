@@ -15,7 +15,7 @@ namespace Olive.Entities
         /// In Test projects particularly, having files save themselves on the disk can waste space.
         /// To prevent that, apply this setting in the config file.
         /// </summary>
-        static bool SuppressPersistence = Config.Get("Blob:SuppressPersistence", defaultValue: false);
+        static bool SuppressPersistence = Config.Get("Blob:WebTest:SuppressPersistence", defaultValue: false);
 
         const string EMPTY_FILE = "NoFile.Empty";
         public const string DefaultEncryptionKey = "Default_ENC_Key:_This_Better_Be_Calculated_If_Possible";
@@ -25,7 +25,7 @@ namespace Olive.Entities
             "mst","obj", "config","ocx","pgm","pif","scr","sct","shb","shs", "smm", "sys","url","vb","vbe","vbs","vxd","wsc","wsf","wsh" , "php", "asmx", "cs", "jsl", "asax","mdf",
             "cdx","idc", "shtm", "shtml", "stm", "browser"};
 
-        internal Entity ownerEntity;
+        internal Entity OwnerEntity;
         bool IsEmptyBlob;
         byte[] FileData;
 
@@ -110,8 +110,8 @@ namespace Olive.Entities
             {
                 if (folderName == null)
                 {
-                    if (ownerEntity == null) return OwnerProperty;
-                    folderName = ownerEntity.GetType().Name + "." + OwnerProperty;
+                    if (OwnerEntity == null) return OwnerProperty;
+                    folderName = OwnerEntity.GetType().Name + "." + OwnerProperty;
                 }
 
                 return folderName;
@@ -134,7 +134,6 @@ namespace Olive.Entities
         /// <summary>
         /// Gets the content
         /// </summary>
-        /// <returns></returns>
         public async Task<string> GetContentTextAsync()
         {
             if (IsEmpty()) return string.Empty;
@@ -149,7 +148,7 @@ namespace Olive.Entities
             }
             catch (Exception ex)
             {
-                throw new Exception($"The {OwnerProperty} of the {ownerEntity?.GetType().FullName} entity ({ownerEntity?.GetId()}) cannot be converted to text.", ex);
+                throw new Exception($"The {OwnerProperty} of the {OwnerEntity?.GetType().FullName} entity ({OwnerEntity?.GetId()}) cannot be converted to text.", ex);
             }
         }
 
@@ -158,7 +157,7 @@ namespace Olive.Entities
         /// </summary>
         public string Url()
         {
-            if (ownerEntity == null) return null;
+            if (OwnerEntity == null) return null;
             return Config.Get("Blob:BaseUrl") + FolderName + "/" + OwnerId() + FileExtension;
         }
 
@@ -227,15 +226,15 @@ namespace Olive.Entities
 
             Blob result;
 
-            if (ownerEntity != null)
+            if (OwnerEntity != null)
             {
                 result = new Blob(await GetFileDataAsync(), FileName);
                 if (attach)
                 {
-                    if (!@readonly) Attach(ownerEntity, OwnerProperty);
+                    if (!@readonly) Attach(OwnerEntity, OwnerProperty);
                     else
                     {
-                        result.ownerEntity = ownerEntity;
+                        result.OwnerEntity = OwnerEntity;
                         result.OwnerProperty = OwnerProperty;
                     }
                 }
@@ -254,7 +253,7 @@ namespace Olive.Entities
         /// </summary>
         public Blob Attach(Entity owner, string propertyName)
         {
-            ownerEntity = owner;
+            OwnerEntity = owner;
             OwnerProperty = propertyName;
             if (owner is GuidEntity) owner.Saving.Handle(Owner_Saving);
             else owner.Saved.Handle(Owner_Saved);
@@ -268,11 +267,11 @@ namespace Olive.Entities
         /// </summary>
         public void Detach()
         {
-            if (ownerEntity == null) return;
+            if (OwnerEntity == null) return;
 
-            ownerEntity.Saving.RemoveHandler(Owner_Saving);
-            ownerEntity.Saved.RemoveHandler(Owner_Saved);
-            ownerEntity.Deleting.RemoveHandler(Delete);
+            OwnerEntity.Saving.RemoveHandler(Owner_Saving);
+            OwnerEntity.Saved.RemoveHandler(Owner_Saved);
+            OwnerEntity.Deleting.RemoveHandler(Delete);
         }
 
         // TODO: Deleting should be async and so on.
@@ -282,7 +281,7 @@ namespace Olive.Entities
         {
             if (SuppressPersistence) return Task.CompletedTask;
 
-            if (ownerEntity.GetType().Defines<SoftDeleteAttribute>()) return Task.CompletedTask;
+            if (OwnerEntity.GetType().Defines<SoftDeleteAttribute>()) return Task.CompletedTask;
 
             Delete();
 
@@ -291,7 +290,7 @@ namespace Olive.Entities
 
         void Delete()
         {
-            if (ownerEntity == null) throw new InvalidOperationException();
+            if (OwnerEntity == null) throw new InvalidOperationException();
 
             GetStorageProvider().DeleteAsync(this);
 
@@ -355,10 +354,10 @@ namespace Olive.Entities
 
         public string OwnerId()
         {
-            if (ownerEntity == null) return null;
-            if (ownerEntity is IntEntity && ownerEntity.IsNew) return null;
+            if (OwnerEntity == null) return null;
+            if (OwnerEntity is IntEntity && OwnerEntity.IsNew) return null;
 
-            return ownerEntity?.GetId().ToStringOrEmpty();
+            return OwnerEntity?.GetId().ToStringOrEmpty();
         }
 
         #region Unsafe Files Handling

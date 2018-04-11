@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Web;
+using System;
 
 namespace Olive.Mvc.Testing
 {
@@ -18,7 +19,17 @@ namespace Olive.Mvc.Testing
 
             var command = context?.Request?.Param("Web.Test.Command");
             if (command.HasValue())
-                terminate = await WebTestConfig.Run(command);
+            {
+                try
+                {
+                    terminate = await WebTestConfig.Run(command);
+                }
+                catch (Exception ex)
+                {
+                    await context.Response.EndWith(ex.ToLogString().ToHtmlLines());
+                    return;
+                }
+            }
 
             if (!terminate) await Next.Invoke(context);
         }

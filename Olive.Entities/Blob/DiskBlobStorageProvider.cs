@@ -11,6 +11,8 @@ namespace Olive.Entities
     {
         static DirectoryInfo root;
 
+        protected readonly ConcurrentDictionary<string, AsyncLock> StringKeyAsyncLock = new ConcurrentDictionary<string, AsyncLock>();
+
         /// <summary>
         /// Gets the physical path root.
         /// </summary>
@@ -26,21 +28,19 @@ namespace Olive.Entities
             return folder.AsDirectory();
         }
 
-        // TODO: It is a quick workaround for Intern which seems to be back in .Net Core 2
-        protected readonly ConcurrentDictionary<string, AsyncLock> StringKeyAsyncLock = new ConcurrentDictionary<string, AsyncLock>();
-
-        protected virtual AsyncLock GetAsyncLock(string key) => StringKeyAsyncLock.GetOrAdd(key, x => new AsyncLock());
+        protected virtual AsyncLock GetAsyncLock(string key)
+            => StringKeyAsyncLock.GetOrAdd(key, x => new AsyncLock());
 
         static FileInfo File(Blob blob)
         {
-            if (blob.ownerEntity == null) return null;
+            if (blob.OwnerEntity == null) return null;
             var folder = Folder(blob);
             return folder.GetFile(blob.OwnerId() + blob.FileExtension);
         }
 
         static DirectoryInfo Folder(Blob blob)
         {
-            if (blob.ownerEntity == null) return null;
+            if (blob.OwnerEntity == null) return null;
             return Root.GetOrCreateSubDirectory(blob.FolderName);
         }
 

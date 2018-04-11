@@ -104,7 +104,7 @@ namespace Olive
                     continue; // Already added in explicit mappings.
 
                 // Otherwise, if a column with that name is available, then that's it:
-                var potential = columnNames.Where(c => c.Replace(" ", "").ToLower() == property.Name.ToLower());
+                var potential = columnNames.Where(c => c.Remove(" ").ToLower() == property.Name.ToLower());
                 if (potential.IsSingle())
                     result[property.Name] = potential.Single();
 

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.3.14" />
+    <PackageReference Include="GCop.Basics" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
   </ItemGroup>
 

@@ -18,11 +18,21 @@ namespace Olive.Mvc
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public abstract partial class Controller : Microsoft.AspNetCore.Mvc.Controller
     {
+        static bool IsFirstRequest = true;
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static event Action OnFirstRequest;
+
         /// <summary>
         /// Initializes a new instance of the System.Web.Mvc.Controller class.
         /// </summary>
         protected Controller()
         {
+            if (IsFirstRequest)
+            {
+                IsFirstRequest = false;
+                OnFirstRequest?.Invoke();
+            }
+
             ModelState.Clear();
             HttpContext.Items["ViewBag"] = ViewBag;
         }
@@ -50,8 +60,10 @@ namespace Olive.Mvc
         /// <summary>
         /// Do not use this overload. Always provide a viewmodel as a parameter.
         /// </summary>
-        protected new internal ViewResult View() =>
+        protected new internal ViewResult View()
+        {
             throw new InvalidOperationException("View() method should not be called without specifying a view model.");
+        }
 
         /// <summary>
         /// Creates a ViewResult object by using the model that renders a view to the response.
@@ -87,8 +99,7 @@ namespace Olive.Mvc
 
         /// <summary>
         /// Creates a new instance of the specified view model type and binds it using the standard request data.
-        /// </summary>
-
+        /// </summary>         
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             await BindAttributeRunner.Run(context, next);
@@ -118,6 +129,7 @@ namespace Olive.Mvc
         [NonAction]
         protected JsonResult JsonActions() => Json(JavascriptActions);
 
+        [NonAction]
         public async Task<JsonResult> Json<TResult>(Task<TResult> data)
         {
             var result = await data;
@@ -135,8 +147,10 @@ namespace Olive.Mvc
         protected JsonResult Notify(object message, bool obstruct = true) => Notify(message, style: null, obstruct: obstruct);
 
         [NonAction]
-        protected JsonResult Notify(object message, string style, bool obstruct = true) =>
-            AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
+        protected JsonResult Notify(object message, string style, bool obstruct = true)
+        {
+            return AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
+        }
 
         [NonAction]
         public JsonResult JavaScript(string script, PageLifecycleStage stage = PageLifecycleStage.Init)
@@ -210,8 +224,10 @@ namespace Olive.Mvc
         protected virtual ActionResult RedirectToLogin() =>
             Redirect("/login?ReturnUrl=" + HttpContext.GetUrlHelper().Current().UrlEncode());
 
+        [NonAction]
         public NotFoundTextActionResult NotFound(string message) => new NotFoundTextActionResult(message);
 
+        [NonAction]
         public UnauthorizedTextActionResult Unauthorized(string message) => new UnauthorizedTextActionResult(message);
 
         /// <summary>

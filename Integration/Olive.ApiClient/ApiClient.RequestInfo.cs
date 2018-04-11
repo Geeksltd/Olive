@@ -92,7 +92,7 @@ namespace Olive
                 {
                     var result = ResponseText;
                     if (typeof(TResponse) == typeof(string) && result.HasValue())
-                        result = ResponseText.ToString().EnsureStartsWith("\"").EnsureEndsWith("\"");
+                        result = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
                     return JsonConvert.DeserializeObject<TResponse>(result);
                 }
                 catch (Exception ex)
@@ -105,53 +105,64 @@ namespace Olive
                 }
             }
 
+            HttpClient CreateHttpClient()
+            {
+                var container = new HttpClientHandler { CookieContainer = Client.RequestCookies };
+                var result = new HttpClient(container)
+                {
+                    Timeout = Config.Get("ApiClient:Timeout", 20).Seconds()
+                };
+
+                foreach (var config in Client.RequestHeadersCustomizers)
+                    config(result.DefaultRequestHeaders);
+
+                return result;
+            }
+
+            HttpRequestMessage CreateRequestMessage()
+            {
+                var result = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);
+
+                if (result.Method != System.Net.Http.HttpMethod.Get)
+                    result.Content = new StringContent(RequestData.OrEmpty(),
+                              System.Text.Encoding.UTF8, GetContentType());
+
+                return result;
+            }
+
             async Task<string> DoSend()
             {
                 if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url;
 
-                var client = new HttpClient(new HttpClientHandler { CookieContainer = Client.RequestCookies });
-                client.Timeout = Config.Get("ApiClient:Timeout", 10).Seconds();
-                using (client)
+                using (var client = CreateHttpClient())
                 {
-                    var req = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);
-
-                    foreach (var config in Client.RequestHeadersCustomizers)
-                        config(client.DefaultRequestHeaders);
-
-                    if (req.Method != System.Net.Http.HttpMethod.Get)
-                    {
-                        req.Content = new StringContent(RequestData.OrEmpty(),
-                                  System.Text.Encoding.UTF8,
-                                    GetContentType());
-                    }
+                    var req = CreateRequestMessage();
 
                     var errorMessage = "Connection to the server failed.";
                     string responseBody = null;
                     try
                     {
-                        var response = await Client.SendAsync(client, req).ConfigureAwait(false);
-                        var failed = false;
+                        var response = await Client.SendAsync(client, req)
+                            .ConfigureAwait(continueOnCapturedContext: false);
 
                         ResponseCode = response.StatusCode;
                         ResponseHeaders = response.Headers;
 
-                        if (LocalCachedVersion.HasValue() && ResponseCode == HttpStatusCode.NotModified)
-                            return null;
+                        if (ResponseCode == HttpStatusCode.NotModified)
+                            if (LocalCachedVersion.HasValue())
+                                return null;
 
                         if (((int)ResponseCode) >= HTTP_ERROR_STARTING_CODE)
                         {
                             errorMessage = "Connection to the server failed: " + ResponseCode;
-                            failed = true;
-                        }
-
-                        responseBody = await response.Content.ReadAsStringAsync();
-
-                        if (failed)
-                        {
+                            responseBody = await response.Content.ReadAsStringAsync();
                             Debug.WriteLine("Server Response: " + responseBody);
                             throw new Exception(errorMessage);
                         }
-                        else return responseBody;
+                        else
+                        {
+                            return await response.Content.ReadAsStringAsync();
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -173,7 +184,14 @@ namespace Olive
                             catch { /* No logging is needed */; }
                         }
                         // We are doing this in cases that error is not serialized in the SeverError format
-                        else errorMessage = responseBody.Or(errorMessage);
+                        else if (responseBody.Contains("<div class=\"titleerror\">"))
+                        {
+                            errorMessage += Environment.NewLine +
+                                responseBody.TrimBefore("<div class=\"titleerror\">", trimPhrase: true)
+                                 .TrimAfter("</div>").HtmlDecode();
+                        }
+                        else
+                            errorMessage += Environment.NewLine + responseBody;
 
                         await Client.ErrorAction.Apply(errorMessage);
 

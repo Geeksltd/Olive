@@ -1,7 +1,30 @@
 # Olive compatibility change log
 
-## 29 March
+## 9 Apr 2018
+- The `Timeout` property of `ILoginInfo` has been changed from `TimeSpan` to `TimeSpan?`. Your user class should change accordingly to match the Api. 
+
+## 8 Apr 2018
+- In appSettings.json the `Blob` section should change to:
+```json
+    "Blob": {
+        "RootPath": "Blob",
+        "BaseUrl": "/file?",
+        "WebTest": {
+            "SuppressPersistence": false,
+            "Origin": "..\\Test\\ReferenceFiles"
+        }
+    }
+```
+
+## 5 Apr 2018
+- MergedForm<...?() method is changed. Instead of generic, send the type of the sub-form class. Alternatively, use a new overload of the MergeForm class which takes the settings of the sub-form as a lambda expression, so you don't have to define a class for the subform.
+
+## 29 Mar 2018
 - Add a NuGet reference to *Olive.Mvc.Paging* in the *Website* project
+- The View() and some other helper methods on the BaseController now return an ActionResult instead of Task<ActionResult>. 
+  
+## 12 Mar 2018
+-If you have any Export to excels in your application, add a NuGet reference to *Olive.Export* in the *Website* project
 
 ## 15 Feb 2018
 - Change bower.json: *olive.mvc* to be *0.6.4* and **bootstrap-file-style** to be **2.1.0**

@@ -45,5 +45,28 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\GCop.Basics.1.0.3\analyzers\dotnet\cs\GCop.Basics.dll" />
+    <Analyzer Include="..\..\packages\GCop.Basics.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.Collections.1.0.3\analyzers\dotnet\cs\GCop.Collections.dll" />
+    <Analyzer Include="..\..\packages\GCop.Collections.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.Common.1.0.3\analyzers\dotnet\cs\GCop.Common.dll" />
+    <Analyzer Include="..\..\packages\GCop.Common.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.Conditional.1.0.3\analyzers\dotnet\cs\GCop.Conditional.dll" />
+    <Analyzer Include="..\..\packages\GCop.Conditional.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.ErrorHandling.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.ErrorHandling.1.0.3\analyzers\dotnet\cs\GCop.ErrorHandling.dll" />
+    <Analyzer Include="..\..\packages\GCop.IO.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.IO.1.0.3\analyzers\dotnet\cs\GCop.IO.dll" />
+    <Analyzer Include="..\..\packages\GCop.Linq.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.Linq.1.0.3\analyzers\dotnet\cs\GCop.Linq.dll" />
+    <Analyzer Include="..\..\packages\GCop.String.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.String.1.0.3\analyzers\dotnet\cs\GCop.String.dll" />
+    <Analyzer Include="..\..\packages\GCop.Thread.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
+    <Analyzer Include="..\..\packages\GCop.Thread.1.0.3\analyzers\dotnet\cs\GCop.Thread.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -10,6 +10,7 @@
   </PropertyGroup>
  
   <ItemGroup>
+    <PackageReference Include="GCop.Basics" Version="1.0.3" />
     <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
   </ItemGroup>
 

@@ -5,6 +5,7 @@ namespace Olive
     /// <summary>
     /// Provides a range of values.
     /// </summary>
+    [Serializable]
     public class Range<T> where T : IComparable, IComparable<T>
     {
         const int NINETEEN_HUNDRED = 1900;

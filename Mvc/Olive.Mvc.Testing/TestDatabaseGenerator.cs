@@ -297,7 +297,8 @@ namespace Olive.Mvc.Testing
             // Not explicitly specified. Take a guess:
             DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().Parent.GetSubDirectory("DB");
             if (!DbDirectory.Exists())
-                throw new Exception("Failed to find the DB folder from which to create the temp database.");
+                throw new Exception("Failed to find the DB folder from which to create the temp database: " +
+                    DbDirectory.FullName);
         }
 
         bool DoProcess()
@@ -317,13 +318,19 @@ namespace Olive.Mvc.Testing
                 lock (ProcessSyncLock)
                 {
                     var createdNewReference = CreateReferenceDatabase();
+                    bool tempDatabaseDoesntExist;
 
-                    var tempDatabaseDoesntExist = !MasterDatabaseAgent.DatabaseExists(TempDatabaseName);
+                    try
+                    {
+                        tempDatabaseDoesntExist = !MasterDatabaseAgent.DatabaseExists(TempDatabaseName);
+                    }
+                    catch (SqlException ex)
+                    {
+                        throw new Exception("Your connection string seems to be incorrect.", ex);
+                    }
 
                     if (MustRenew || createdNewReference || tempDatabaseDoesntExist)
-                    {
                         RefreshTempDataWorld();
-                    }
                 }
 
                 return true;
@@ -384,7 +391,10 @@ namespace Olive.Mvc.Testing
         void CopyFiles()
         {
             DiskBlobStorageProvider.Root.DeleteIfExists(recursive: true);
-            var source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(Config.GetOrThrow("Blob:TestFilesOrigin"));
+
+            var path = Config.Get("Blob:WebTest:Origin", "..\\Test\\ReferenceFiles");
+
+            var source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(path);
             if (source.Exists())
                 source.CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
         }

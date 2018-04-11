@@ -17,7 +17,9 @@ namespace Olive.Security
 
         public async Task LogOff()
         {
-            await Context.Current.Http()?.SignOutAsync();
+            var http = Context.Current.Http();
+            if (http != null) await http.SignOutAsync();
+
             Context.Current.Http()?.Session?.Clear();
         }
 
@@ -48,7 +50,7 @@ namespace Olive.Security
         {
             if (jwt.IsEmpty()) return null;
 
-            var validationParams = new TokenValidationParameters()
+            var validationParams = new TokenValidationParameters
             {
                 IssuerSigningKey = GetJwtSecurityKey(),
                 ValidateAudience = false,

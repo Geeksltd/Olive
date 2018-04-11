@@ -25,8 +25,8 @@ namespace Olive
             => list.Select(func).AwaitAll();
 
         public static async Task<IEnumerable<TResult>> SelectManyAsync<TSource, TResult>(
-          this IEnumerable<TSource> list, Func<TSource, Task<IEnumerable<TResult>>> func)
-            => (await list.SelectAsync(func)).SelectMany(x => x);
+          this IEnumerable<TSource> @this, Func<TSource, Task<IEnumerable<TResult>>> func)
+            => (await @this.SelectAsync(func)).SelectMany(x => x);
 
         public static Task<IEnumerable<TResult>> SelectManyAsync<TSource, TResult>(
           this IEnumerable<TSource> list, Func<TSource, IEnumerable<Task<TResult>>> func)
@@ -45,7 +45,7 @@ namespace Olive
             }).ToArray();
 
             // Run them in parallel
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Where(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -65,7 +65,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Distinct(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -79,7 +79,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.First(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
@@ -92,7 +92,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             var result = tasks.FirstOrDefault(x => x.Predicate.GetAlreadyCompletedResult());
 
@@ -115,7 +115,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Last(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
@@ -129,7 +129,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.LastOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
@@ -143,7 +143,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.OrderBy(x => x.OrderKey.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -157,7 +157,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.OrderByDescending(x => x.OrderKey.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -170,7 +170,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Single(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
@@ -183,7 +183,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.SingleOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
@@ -211,7 +211,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.SkipWhile(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -225,7 +225,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.TakeWhile(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -238,7 +238,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.All(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -251,7 +251,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Any(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -267,7 +267,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Average(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -280,7 +280,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Count(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -293,7 +293,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Sum(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -306,7 +306,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Max(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -320,7 +320,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(false);
+            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Min(x => x.Predicate.GetAlreadyCompletedResult());
         }
