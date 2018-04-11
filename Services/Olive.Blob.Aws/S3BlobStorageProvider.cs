@@ -16,7 +16,7 @@ namespace Olive.BlobAws
     {
         const string FILE_NOT_FOUND = "NotFound";
 
-        AmazonS3Client CreateClient() => new AmazonS3Client();
+        AmazonS3Client CreateClient() => new AmazonS3Client(Config.Get("AWS:AccessKey"), Config.Get("AWS:SecretKey"), Amazon.RegionEndpoint.GetBySystemName(Config.Get("AWS:Region")));
 
         public bool CostsToCheckExistence() => true;
 
