@@ -30,7 +30,15 @@ namespace Olive.Mvc
             if (IsFirstRequest)
             {
                 IsFirstRequest = false;
-                OnFirstRequest?.Invoke();
+                try
+                {
+                    OnFirstRequest?.Invoke();
+                }
+                catch
+                {
+                    IsFirstRequest = true;
+                    throw;
+                }
             }
 
             ModelState.Clear();

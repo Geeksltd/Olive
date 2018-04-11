@@ -11,7 +11,7 @@
     <description>Olive Framework</description>
     <dependencies>
       <!--<dependency id="Olive.Entities.Data" version="0.0.0" />-->
-      <dependency id="System.Data.SqlClient" version="4.4.2" />
+      <dependency id="System.Data.SqlClient" version="4.4.3" />
     </dependencies>
   </metadata>
   <files>
