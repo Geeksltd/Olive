@@ -12,7 +12,7 @@ namespace Olive.Entities
     public class Blob : IComparable<Blob>, IComparable
     {
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static bool HasFileDataInMemory(Blob blob) => blob?.FileData?.Length > 0;
+        public static bool HasFileDataInMemory(Blob blob) => blob?.NewFileData?.Length > 0;
 
         /// <summary>
         /// In Test projects particularly, having files save themselves on the disk can waste space.
@@ -30,7 +30,7 @@ namespace Olive.Entities
 
         internal Entity OwnerEntity;
         bool IsEmptyBlob;
-        byte[] FileData;
+        byte[] CachedFileData, NewFileData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Blob"/> class.
@@ -47,7 +47,7 @@ namespace Olive.Entities
         /// </summary>
         public Blob(byte[] data, string fileName)
         {
-            FileData = data;
+            NewFileData = data;
             this.fileName = fileName.ToSafeFileName();
         }
 
@@ -91,12 +91,10 @@ namespace Olive.Entities
         {
             if (IsEmpty()) return new byte[0];
 
-            if (FileData != null && FileData.Length > 0)
-                return FileData;
+            if (NewFileData != null && NewFileData.Length > 0)
+                return NewFileData;
 
-            FileData = await GetStorageProvider().LoadAsync(this);
-
-            return FileData;
+            return CachedFileData = await GetStorageProvider().LoadAsync(this);
         }
 
         public void SetData(byte[] data)
@@ -104,7 +102,7 @@ namespace Olive.Entities
             if ((data?.Length ?? 0) == 0)
                 throw new InvalidOperationException("Invalid value passed.");
 
-            FileData = data;
+            NewFileData = data;
         }
 
         public string FolderName
@@ -196,16 +194,15 @@ namespace Olive.Entities
 
             if (FileName == EMPTY_FILE) return true;
 
-            if (GetStorageProvider().CostsToCheckExistence() ||
-             Task.Factory.RunSync(() => GetStorageProvider().FileExistsAsync(this)))
+            if (GetStorageProvider().CostsToCheckExistence())
             {
-                hasValue = true;
-                return false;
+                // We don't want to incur cost. As the file name has value, we assume the file does exist.
+                return !(hasValue = true);
             }
+            else if (Task.Factory.RunSync(() => GetStorageProvider().FileExistsAsync(this)))
+                return !(hasValue = true);
 
-            if (FileData == null) return true;
-
-            return FileData.None();
+            return NewFileData.None();
         }
 
         /// <summary>
@@ -244,8 +241,8 @@ namespace Olive.Entities
             }
             else
             {
-                if (FileData != null && FileData.Any()) result = new Blob(FileData, FileName);
-                else result = new Blob(FileName);
+                if (NewFileData.None()) result = new Blob(FileName);
+                else result = new Blob(NewFileData, FileName);
             }
 
             return result;
@@ -297,7 +294,7 @@ namespace Olive.Entities
 
             GetStorageProvider().DeleteAsync(this);
 
-            FileData = null;
+            CachedFileData = NewFileData = null;
         }
 
         async Task Owner_Saving(System.ComponentModel.CancelEventArgs e)
@@ -313,7 +310,7 @@ namespace Olive.Entities
         /// <summary>Saves this file to the storage provider.</summary>
         public async Task Save()
         {
-            if (FileData != null && FileData.Length > 0)
+            if (!NewFileData.None())
                 await GetStorageProvider().SaveAsync(this);
 
             else if (IsEmptyBlob) Delete();
@@ -433,8 +430,8 @@ namespace Olive.Entities
             if (other.IsEmpty()) return 1;
             else
             {
-                var me = FileData?.Length;
-                var him = other.FileData?.Length;
+                var me = NewFileData?.Length;
+                var him = other.NewFileData?.Length;
                 if (me == him) return 0;
                 if (me > him) return 1;
                 else return -1;

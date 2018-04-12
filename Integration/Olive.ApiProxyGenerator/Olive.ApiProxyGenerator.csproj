@@ -30,9 +30,5 @@
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\Projects\Website\bin\Debug\netcoreapp2.0\" />
-  </Target>
 
 </Project>
