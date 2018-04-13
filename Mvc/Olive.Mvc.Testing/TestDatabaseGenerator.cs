@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Olive.Entities;
 using Olive.Entities.Data;
 
@@ -12,56 +13,41 @@ namespace Olive.Mvc.Testing
     public class TestDatabaseGenerator
     {
         static object SyncLock = new object();
-        static object ProcessSyncLock = new object();
 
         readonly string ConnectionString;
-        SqlServerManager MasterDatabaseAgent;
-        string TempDatabaseName, ReferenceDatabaseName;
+        string TempDatabaseName;
+        DatabaseManager Server;
 
-        FileInfo ReferenceMDFFile, ReferenceLDFFile;
-        DirectoryInfo ProjectTempRoot, DbDirectory, CurrentHashDirectory;
-
-        readonly bool IsTempDatabaseOptional, MustRenew;
-
-        public bool CreatedNewDatabase { get; private set; }
+        DirectoryInfo DbDirectory, DatabaseFilesPath;
 
         public static DirectoryInfo DatabaseStoragePath
         {
             get
             {
-                var key = "Database:StoragePath";
-                var result = Config.GetOrThrow(key);
+                var result = Config.GetOrThrow("Database:StoragePath").AsDirectory();
 
-                if (!result.AsDirectory().Exists())
+                if (!result.Exists())
                 {
                     // Try to build once:
-                    try { Directory.CreateDirectory(result); }
+                    try { result.Create(); }
                     catch
                     {
-                        throw new Exception($"Failed to create the folder '{result}'. " +
+                        throw new Exception($"Failed to create the folder '{result.FullName}'. " +
                             "Ensure it exists and is accessible to the current ASP.NET process. " +
-                            $"Otherwise specify a different location in AppSetting of '{key}'.");
+                            $"Otherwise specify a different location in AppSetting of 'Database:StoragePath'.");
                     }
                 }
 
-                return result.AsDirectory();
+                return result;
             }
         }
 
         /// <summary>
         /// Creates a new TestDatabaseGenerator instance.
-        /// <param name="isTempDatabaseOptional">Determines whether use of the temp database is optional.
-        /// When this class is used in a Unit Test project, then it must be set to false.
-        /// For Website project, it must be set to true.</param>
-        /// <param name="mustRenew">Specifies whether the temp database must be recreated on application start up even if it looks valid already.</param>
         /// </summary>
-        public TestDatabaseGenerator(bool isTempDatabaseOptional, bool mustRenew)
+        public TestDatabaseGenerator()
         {
             ConnectionString = Config.GetConnectionString("AppDatabase");
-
-            IsTempDatabaseOptional = isTempDatabaseOptional;
-
-            MustRenew = mustRenew;
         }
 
         FileInfo[] GetCreateDbFiles()
@@ -88,9 +74,33 @@ namespace Olive.Mvc.Testing
             var sources = potentialSources.Where(f => f.Exists()).ToArray();
 
             if (sources.None())
-                throw new Exception("No SQL creation script file was found. I checked:\r\n" + potentialSources.ToLinesString());
+                throw new Exception("Failed to find the SQL creation script files at:\r\n" + potentialSources.ToLinesString());
 
             return sources;
+        }
+
+        void CreateDatabaseFilesPath()
+        {
+            var createScript = GetCreateDbFiles().Select(f => File.ReadAllText(f.FullName)).ToLinesString();
+
+            var hash = createScript.ToSimplifiedSHA1Hash().Replace("/", "-").Replace("\\", "-");
+            Debug.WriteLine("Temp database: Hash of the current DB scripts -> " + hash);
+
+            DatabaseFilesPath = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName).GetOrCreateSubDirectory(hash);
+        }
+
+        void CreateDatabaseFromScripts()
+        {
+            Server.ClearConnectionPool();
+            Server.Delete(TempDatabaseName);
+
+            foreach (var file in GetExecutableCreateDbScripts())
+            {
+                try { Server.Execute(file.Value); }
+                catch (Exception ex)
+                { throw new Exception("Could not execute sql file '" + file.Key.FullName + "'", ex); }
+            }
+            Server.ClearConnectionPool();
         }
 
         Dictionary<FileInfo, string> GetExecutableCreateDbScripts()
@@ -109,17 +119,15 @@ namespace Olive.Mvc.Testing
                     if (index < 10)
                     {
                         return line
-                            .Replace("#DATABASE.NAME#", ReferenceDatabaseName)
-                            .Replace("#STORAGE.PATH#", CurrentHashDirectory.FullName);
+                            .Replace("#DATABASE.NAME#", TempDatabaseName)
+                            .Replace("#STORAGE.PATH#", DatabaseFilesPath.FullName);
                     }
 
                     return line;
                 }).ToLinesString();
 
                 if (file.Name.Lacks("Create.Database.sql", caseSensitive: false))
-                {
-                    script = "USE [" + ReferenceDatabaseName + "];\r\nGO\r\n" + script;
-                }
+                    script = "USE [" + TempDatabaseName + "];\r\nGO\r\n" + script;
 
                 result.Add(file, script);
             }
@@ -127,139 +135,28 @@ namespace Olive.Mvc.Testing
             return result;
         }
 
-        internal string GetCurrentDatabaseCreationHash()
+        public void Process(WebTestConfig config)
         {
-            var createScript = GetCreateDbFiles().Select(f => File.ReadAllText(f.FullName)).ToLinesString();
+            Server = config.DatabaseServer;
+            LoadMetaDirectory();
 
-            return createScript.ToSimplifiedSHA1Hash();
-        }
-
-        void CreateDatabaseFromScripts()
-        {
-            MasterDatabaseAgent.DeleteDatabase(ReferenceDatabaseName);
-
-            var newDatabaseAgent = MasterDatabaseAgent.CloneFor(ReferenceDatabaseName);
-
-            foreach (var file in GetExecutableCreateDbScripts())
+            TempDatabaseName = DatabaseManager.GetDatabaseName().Or("Default.Temp");
+            if (!TempDatabaseName.ToLower().EndsWith(".temp"))
             {
-                try
-                {
-                    MasterDatabaseAgent.ExecuteSql(file.Value);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Could not execute sql file '" + file.Key.FullName + "' becuase '" + ex.Message + "'", ex);
-                }
-            }
-        }
-
-        void CloneReferenceDatabaseToTemp()
-        {
-            // Make sure if it exists in database already, it's deleted first.
-            MasterDatabaseAgent.DeleteDatabase(TempDatabaseName);
-
-            var directory = ProjectTempRoot.GetOrCreateSubDirectory("Current");
-
-            var newMDFPath = directory.GetFile(TempDatabaseName + ".mdf");
-            var newLDFPath = directory.GetFile(TempDatabaseName + "_log.ldf");
-
-            try
-            {
-                File.Copy(ReferenceMDFFile.FullName, newMDFPath.FullName, overwrite: true);
-                File.Copy(ReferenceLDFFile.FullName, newLDFPath.FullName, overwrite: true);
-            }
-            catch (IOException ex)
-            {
-                if (ex.InnerException != null && ex.InnerException is UnauthorizedAccessException)
-                    throw new Exception("Consider setting the IIS Application Pool identity to LocalSystem.", ex);
-
-                throw;
-            }
-
-            var script = "CREATE DATABASE [{0}] ON (FILENAME = '{1}'), (FILENAME = '{2}') FOR ATTACH"
-                .FormatWith(TempDatabaseName, newMDFPath.FullName, newLDFPath.FullName);
-
-            try
-            {
-                MasterDatabaseAgent.ExecuteSql(script);
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception("Could not attach the database from file " + newMDFPath.FullName + "." + Environment.NewLine +
-                "Hint: Ensure SQL instance service has access to the folder. E.g. 'Local Service' may not have access to '{0}'" +
-                newMDFPath.Directory.FullName, ex);
-            }
-        }
-
-        internal void TryAccessNewTempDatabase()
-        {
-            Exception error = null;
-            for (var i = 0; i < 10; i++)
-            {
-                try
-                {
-                    System.Threading.Tasks.Task.Factory.RunSync(() => Database.Instance.GetAccess()
-                    .ExecuteQuery($"SELECT TABLE_NAME FROM [{TempDatabaseName}].INFORMATION_SCHEMA.TABLES"));
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    SqlConnection.ClearAllPools();
-                    error = ex;
-                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(0.5));
-                }
-            }
-
-            throw new Exception("Could not access the new database:" + error.Message, error);
-        }
-
-        public bool Process()
-        {
-            if (ConnectionString.IsEmpty())
-            {
-                Debug.WriteLine("Temp databae creation aborted. There is no connection string.");
-                return false;
-            }
-
-            var builder = new SqlConnectionStringBuilder(ConnectionString);
-            TempDatabaseName = builder.InitialCatalog.Or("").TrimStart("[").TrimEnd("]");
-
-            if (TempDatabaseName.IsEmpty())
-            {
-                Debug.WriteLine("Temp databae creation aborted. No database name was found in the connection string.");
-                return false;
-            }
-            else if (!TempDatabaseName.ToLower().EndsWith(".temp") && IsTempDatabaseOptional)
-            {
-                Debug.WriteLine($"Temp databae creation aborted. Database name '{TempDatabaseName}' does not end in '.Temp'.");
-                // Optional and irrelevant
-                return false;
+                Debug.WriteLine($"Temp databae creation aborted as '{TempDatabaseName}' does not end in '.Temp'.");
+                return;
             }
 
             EnsurePermissions();
+            CreateDatabaseFilesPath();
 
-            builder.InitialCatalog = "master";
-
-            MasterDatabaseAgent = new SqlServerManager(builder.ToString());
-
-            ProjectTempRoot = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName);
-            LoadMetaDirectory();
-
-            if (!IsTempDatabaseOptional)
+            lock (SyncLock)
             {
-                if (!IsExplicitlyTempDatabase())
-                {
-                    throw new Exception("For unit tests project the database name must end in '.Temp'.");
-                }
+                CreateDatabaseFromScripts();
+                CopyFiles();
             }
 
-            if (!IsExplicitlyTempDatabase())
-            {
-                // Not Temp mode:
-                return false;
-            }
-
-            return DoProcess();
+            Task.Factory.RunSync(() => Database.Instance.Refresh());
         }
 
         /// <summary>
@@ -294,99 +191,11 @@ namespace Olive.Mvc.Testing
 
         void LoadMetaDirectory()
         {
-            // Not explicitly specified. Take a guess:
             DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().Parent.GetSubDirectory("DB");
             if (!DbDirectory.Exists())
                 throw new Exception("Failed to find the DB folder from which to create the temp database: " +
                     DbDirectory.FullName);
         }
-
-        bool DoProcess()
-        {
-            var hash = (GetCurrentDatabaseCreationHash()).Replace("/", "-").Replace("\\", "-");
-
-            Debug.WriteLine("Temp database: Hash of the current DB scripts -> " + hash);
-
-            lock (SyncLock)
-            {
-                ReferenceDatabaseName = TempDatabaseName + ".Ref";
-
-                CurrentHashDirectory = ProjectTempRoot.GetOrCreateSubDirectory(hash);
-                ReferenceMDFFile = CurrentHashDirectory.GetFile(ReferenceDatabaseName + ".mdf");
-                ReferenceLDFFile = CurrentHashDirectory.GetFile(ReferenceDatabaseName + "_log.ldf");
-
-                lock (ProcessSyncLock)
-                {
-                    var createdNewReference = CreateReferenceDatabase();
-                    bool tempDatabaseDoesntExist;
-
-                    try
-                    {
-                        tempDatabaseDoesntExist = !MasterDatabaseAgent.DatabaseExists(TempDatabaseName);
-                    }
-                    catch (SqlException ex)
-                    {
-                        throw new Exception("Your connection string seems to be incorrect.", ex);
-                    }
-
-                    if (MustRenew || createdNewReference || tempDatabaseDoesntExist)
-                        RefreshTempDataWorld();
-                }
-
-                return true;
-            }
-        }
-
-        void RefreshTempDataWorld()
-        {
-            CloneReferenceDatabaseToTemp();
-
-            SqlConnection.ClearAllPools();
-
-            CopyFiles();
-
-            // Do we really need this?
-            TryAccessNewTempDatabase();
-
-            CreatedNewDatabase = true;
-        }
-
-        bool CreateReferenceDatabase()
-        {
-            if (ReferenceMDFFile.Exists() && ReferenceLDFFile.Exists())
-            {
-                Debug.WriteLine("Temp database. Aborted creating a new reference database for the current SQL Scripts. The DB file already exists: " + ReferenceMDFFile.FullName);
-                return false;
-            }
-
-            var error = false;
-
-            // create database + data
-            try
-            {
-                CreateDatabaseFromScripts();
-            }
-            catch
-            {
-                error = true;
-                throw;
-            }
-            finally
-            {
-                // Detach it
-                MasterDatabaseAgent.DetachDatabase(ReferenceDatabaseName);
-
-                if (error)
-                {
-                    ReferenceMDFFile.Delete(harshly: true);
-                    ReferenceLDFFile.Delete(harshly: true);
-                }
-            }
-
-            return true;
-        }
-
-        bool IsExplicitlyTempDatabase() => TempDatabaseName.ToLower().EndsWith(".temp");
 
         void CopyFiles()
         {

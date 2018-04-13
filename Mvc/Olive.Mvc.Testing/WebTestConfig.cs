@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Olive.Entities.Data;
 
 namespace Olive.Mvc.Testing
 {
@@ -26,22 +28,15 @@ namespace Olive.Mvc.Testing
         {
             if (isActive.HasValue) return isActive.Value;
 
-            var connectionString = Config.GetConnectionString("AppDatabase");
-            if (connectionString.IsEmpty())
-            {
-                isActive = false;
-                return false;
-            }
-
-            var db = new System.Data.SqlClient.SqlConnectionStringBuilder(connectionString).InitialCatalog
-                .ToLowerOrEmpty().TrimStart("[").TrimEnd("]").Trim('`');
-
-            isActive = db.EndsWith(".temp");
+            isActive = DatabaseManager.GetDatabaseName().ToLowerOrEmpty().EndsWith(".temp") ||
+                DatabaseManager.GetDataSource() == ":memory:";
 
             return isActive.Value;
         }
 
         public bool AddDefaultHandlers { get; set; } = true;
+
+        public DatabaseManager DatabaseServer { get; internal set; }
 
         public void Add(string command, Func<Task<bool>> handler, string userCommandText = null)
         {

@@ -5,12 +5,13 @@ using System.Reflection;
 using System.Text;
 using Microsoft.Data.Sqlite;
 
-namespace Olive.Entities.Data.SQLite
+namespace Olive.Entities.Data
 {
     public abstract class SqliteDataProvider<TTargetEntity> : SqliteDataProvider where TTargetEntity : IEntity
     {
         public override Type EntityType => typeof(TTargetEntity);
     }
+
     public abstract partial class SqliteDataProvider : DataProvider<SqliteConnection, SqliteParameter>
     {
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)

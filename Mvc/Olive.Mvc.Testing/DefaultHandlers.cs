@@ -46,35 +46,6 @@ namespace Olive.Mvc.Testing
             return config;
         }
 
-        internal static IDevCommandsConfig AddSnapshot(this IDevCommandsConfig config)
-        {
-            bool shared() => Context.Current.Request().Param("mode") == "shared";
-
-            config.Add("snap", () =>
-                  new Snapshot(Param("name"), shared()).Create());
-
-            config.Add("restore", () =>
-                 new Snapshot(Param("name"), shared()).Restore());
-
-            config.Add("remove_snapshots", () => Snapshot.RemoveSnapshots(), "Kill DB Snapshots");
-
-            config.Add("remove_snapshot", () => Snapshot.RemoveSnapshot(Param("name")));
-
-            config.Add("snapshots_list", async () =>
-            {
-                await Respond(JsonConvert.SerializeObject(Snapshot.GetList(shared())));
-                return true;
-            });
-
-            config.Add("snapExists", async () =>
-            {
-                await Respond(new Snapshot(Param("name"), shared()).Exists().ToString().ToLower());
-                return true;
-            });
-
-            return config;
-        }
-
         internal static IDevCommandsConfig AddSqlProfile(this IDevCommandsConfig config)
         {
             config.Add("Sql.Profile", async () =>

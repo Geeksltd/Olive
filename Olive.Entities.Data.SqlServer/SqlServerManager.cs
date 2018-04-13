@@ -6,69 +6,19 @@ using System.Text.RegularExpressions;
 
 namespace Olive.Entities.Data
 {
-    public class SqlServerManager
+    public class SqlServerManager : DatabaseManager
     {
-        readonly string ConnectionString;
-
-        public SqlServerManager() => ConnectionString = Config.GetConnectionString("AppDatabase");
-
-        public SqlServerManager(string connectionString) => ConnectionString = connectionString;
-
-        /// <summary>
-        /// Executes a specified SQL command.
-        /// </summary>
-        public void ExecuteSql(string sql)
+        SqlConnection CreateConnection()
         {
-            var lines = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
-
-            using (var connection = new SqlConnection(ConnectionString))
+            var connectionString = new SqlConnectionStringBuilder(DataAccess.GetCurrentConnectionString())
             {
-                try
-                {
-                    connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to open a DB connection.", ex);
-                }
+                InitialCatalog = "master"
+            }.ToString();
 
-                using (var cmd = connection.CreateCommand())
-                {
-                    cmd.CommandType = CommandType.Text;
-
-                    foreach (var line in lines.Trim())
-                    {
-                        cmd.CommandText = line;
-
-                        try { cmd.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw EnrichError(ex, line); }
-                    }
-                }
-            }
+            return new SqlConnection(connectionString);
         }
 
-        Exception EnrichError(Exception ex, string command) =>
-            throw new Exception($"Could not execute SQL command: \r\n-----------------------\r\n{command.Trim()}\r\n-----------------------\r\n Because:\r\n\r\n{ex.Message}");
-
-        public void DetachDatabase(string databaseName)
-        {
-            var script = @"
-ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-ALTER DATABASE [{0}] SET MULTI_USER;
-exec sp_detach_db '{0}'".FormatWith(databaseName);
-
-            try
-            {
-                ExecuteSql(script);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(
-                    $"Could not detach database '{databaseName}' becuase '{ex.Message}'", ex);
-            }
-        }
-
-        public void DeleteDatabase(string databaseName)
+        public override void Delete(string databaseName)
         {
             var script = @"
 IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'{0}')
@@ -78,47 +28,70 @@ BEGIN
     DROP DATABASE [{0}];
 END".FormatWith(databaseName);
 
-            try
-            {
-                ExecuteSql(script);
-            }
+            try { Execute(script); }
             catch (Exception ex)
-            {
-                throw new Exception("Could not drop database '" + databaseName + "'.", ex);
-            }
+            { throw new Exception("Could not drop database '" + databaseName + "'", ex); }
         }
 
-        public SqlServerManager CloneFor(string databaseName)
+        public override void Execute(string sql)
         {
-            var builder = new SqlConnectionStringBuilder(ConnectionString)
+            var command = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
+
+            using (var connection = CreateConnection())
             {
-                InitialCatalog = databaseName
-            };
-
-            return new SqlServerManager(builder.ToString());
-        }
-
-        public bool DatabaseExists(string databaseName)
-        {
-            var script = $"SELECT count(name) FROM master.dbo.sysdatabases WHERE name = N'{databaseName}'";
-
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
+                try { connection.Open(); }
+                catch (Exception ex) { throw new Exception("Failed to open a DB connection.", ex); }
 
                 using (var cmd = connection.CreateCommand())
                 {
                     cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = script;
 
-                    bool result;
-                    try { result = (int)cmd.ExecuteScalar() > 0; }
-                    catch (Exception ex) { throw EnrichError(ex, script); }
+                    foreach (var line in command.Trim())
+                    {
+                        cmd.CommandText = line;
 
-                    Debug.WriteLine($"Database '{databaseName}' already exists in '{connection.DataSource}' -> " + result);
-                    return result;
+                        try { cmd.ExecuteNonQuery(); }
+                        catch (Exception ex) { throw new Exception("Failed to run SQL command: " + line, ex); }
+                    }
                 }
             }
         }
+
+        public void Detach(string databaseName)
+        {
+            var script = @"
+ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+ALTER DATABASE [{0}] SET MULTI_USER;
+exec sp_detach_db '{0}'".FormatWith(databaseName);
+
+            try { Execute(script); }
+            catch (Exception ex)
+            { throw new Exception($"Could not detach database '{databaseName}'.", ex); }
+        }
+
+        //public bool Exists(string databaseName)
+        //{
+        //    var script = $"SELECT count(name) FROM master.dbo.sysdatabases WHERE name = N'{databaseName}'";
+
+        //    using (var connection = CreateConnection())
+        //    {
+        //        connection.Open();
+
+        //        using (var cmd = connection.CreateCommand())
+        //        {
+        //            cmd.CommandType = CommandType.Text;
+        //            cmd.CommandText = script;
+
+        //            bool result;
+        //            try { result = (int)cmd.ExecuteScalar() > 0; }
+        //            catch (Exception ex) { throw new Exception("Failed to run sql: " + script, ex); }
+
+        //            Debug.WriteLine($"Database '{databaseName}' already exists in '{connection.DataSource}' -> " + result);
+        //            return result;
+        //        }
+        //    }
+        //}
+
+        public override void ClearConnectionPool() => SqlConnection.ClearAllPools();
     }
 }

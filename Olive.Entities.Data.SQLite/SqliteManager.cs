@@ -1,74 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Data.Sqlite;
-using System.Text.RegularExpressions;
 using System.Data;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using Microsoft.Data.Sqlite;
 
-namespace Olive.Entities.Data.SQLite
+namespace Olive.Entities.Data
 {
-    public class SqliteManager
+    public class SqLiteManager : DatabaseManager
     {
-        readonly string SQLiteDBLocation;
-        public SqliteManager() => SQLiteDBLocation = Config.GetConnectionString("AppDatabase");
-        public SqliteManager(string sqliteConnection) => SQLiteDBLocation = sqliteConnection;
+        SqliteConnection CreateConnection() => new SqliteConnection(DataAccess.GetCurrentConnectionString());
 
-        public void ExecuteSql(string sql)
+        public override void Delete(string databaseName)
         {
-            var lines = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
-            using (var connection = new SqliteConnection(SQLiteDBLocation))
+            var script = @"
+IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'{0}')
+BEGIN
+    ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    ALTER DATABASE [{0}] SET MULTI_USER;
+    DROP DATABASE [{0}];
+END".FormatWith(databaseName);
+
+            try { Execute(script); }
+            catch (Exception ex)
+            { throw new Exception("Could not drop database '" + databaseName + "'", ex); }
+        }
+
+        public override void Execute(string sql)
+        {
+            var command = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
+
+            using (var connection = CreateConnection())
             {
-                try
-                {
-                    connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to open a DB connection.", ex);
-                }
+                try { connection.Open(); }
+                catch (Exception ex) { throw new Exception("Failed to open a DB connection.", ex); }
 
                 using (var cmd = connection.CreateCommand())
                 {
                     cmd.CommandType = CommandType.Text;
 
-                    foreach (var line in lines.Trim())
+                    foreach (var line in command.Trim())
                     {
                         cmd.CommandText = line;
-
                         try { cmd.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw EnrichError(ex, line); }
+                        catch (Exception ex) { throw new Exception("Failed to run SQL command: " + line, ex); }
                     }
                 }
             }
-
-
-
-        }
-        Exception EnrichError(Exception ex, string command) =>
-           throw new Exception($"Could not execute SQL command: \r\n-----------------------\r\n{command.Trim()}\r\n-----------------------\r\n Because:\r\n\r\n{ex.Message}");
-        public void DeleteDatabase()
-        {
-            using (var connection = new SqliteConnection(SQLiteDBLocation))
-            {
-                try
-                {
-                    connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to open a DB connection.", ex);
-                }
-                using (var cmd = connection.CreateCommand())
-                {
-                    cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = "VACUUM";
-                    try { cmd.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw EnrichError(ex, cmd.CommandText); }
-                    
-                }
-            }
         }
 
-
+        public override void ClearConnectionPool() { }
     }
 }
