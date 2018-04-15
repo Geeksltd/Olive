@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 13 Apr 2018
+- In StartUp.cs, change `app.UseWebTest(...` to `app.UseWebTest<SqlServerManager>(...`.
+
 ## 11 Apr 2018
 - In *appSettings.Development.json* change the `Logging` section to:
 ```json
