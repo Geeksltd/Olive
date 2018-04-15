@@ -7,10 +7,14 @@ namespace Olive.Mvc.Testing
 {
     class TempDatabase
     {
-        internal static bool IsDatabaseBeingCreated;
-        static WebTestConfig Config;
+        static AsyncLock SyncLock = new AsyncLock();
+        public enum CreationStatus { NotCreated, Creating, Created, Failed }
 
-        public static async Task Create(WebTestConfig config)
+        public static CreationStatus Status { get; internal set; }
+
+        internal static WebTestConfig Config;
+
+        public static async Task Create()
         {
             if (!WebTestConfig.IsActive())
             {
@@ -18,33 +22,48 @@ namespace Olive.Mvc.Testing
                 return;
             }
 
-            IsDatabaseBeingCreated = true;
-
-            try
-            { new TestDatabaseGenerator().Process(Config = config); }
-            finally { IsDatabaseBeingCreated = false; }
-
-            // A new database is created. Add the reference data
             try
             {
-                await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask);
+                new TestDatabaseGenerator().Process(Config);
+                try { await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask); }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to run the reference data.", ex);
+                }
+                Status = CreationStatus.Created;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Failed to run the reference data.", ex);
+                Status = CreationStatus.Failed;
+                throw;
             }
         }
 
-        public static async Task Start()
+        internal static async Task Restart()
         {
-            await Create(Config);
+            Status = CreationStatus.NotCreated;
+            await AwaitReadiness();
             DatabaseChangeWatcher.Restart();
         }
 
-        internal static void AwaitReadiness()
+        internal static async Task AwaitReadiness()
         {
-            while (IsDatabaseBeingCreated)
-                Thread.Sleep(100); // Wait until it's done.
+            using (await SyncLock.Lock())
+            {
+                switch (Status)
+                {
+                    case CreationStatus.Created: break;
+                    case CreationStatus.Failed:
+                    case CreationStatus.NotCreated:
+                        Status = CreationStatus.Creating;
+                        await Create();
+                        break;
+                    case CreationStatus.Creating:
+                        await Task.Delay(100);
+                        await AwaitReadiness();
+                        break;
+                }
+            }
         }
     }
 }

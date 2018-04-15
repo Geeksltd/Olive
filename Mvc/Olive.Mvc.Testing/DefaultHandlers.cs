@@ -21,7 +21,7 @@ namespace Olive.Mvc.Testing
                 var redirect = Context.Current.Request().ToAbsoluteUri().AsUri().RemoveQueryString("Web.Test.Command").ToString();
 
                 WebTestConfig.SetRunner();
-                await TempDatabase.Start();
+                await TempDatabase.Restart();
 
                 if (shouldRedirect)
                 {

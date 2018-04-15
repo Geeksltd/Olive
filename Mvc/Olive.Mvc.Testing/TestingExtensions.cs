@@ -31,9 +31,8 @@ namespace Olive.Mvc.Testing
                     .AddSqlProfile()
                     .AddClearDatabaseCache();
 
-            app.UseMiddleware<WebTestMiddleware>();
-
-            Controller.OnFirstRequest += () => Task.Factory.RunSync(() => TempDatabase.Create(settings));
+            app.UseMiddleware<WebTestMiddleware>(settings);
+            Controller.OnFirstRequest += () => Task.Factory.RunSync(TempDatabase.AwaitReadiness);
 
             return app;
         }
