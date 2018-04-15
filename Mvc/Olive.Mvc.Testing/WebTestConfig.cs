@@ -28,15 +28,16 @@ namespace Olive.Mvc.Testing
         {
             if (isActive.HasValue) return isActive.Value;
 
-            isActive = DatabaseManager.GetDatabaseName().ToLowerOrEmpty().EndsWith(".temp") ||
-                DatabaseManager.GetDataSource() == ":memory:";
+            var database = DatabaseManager.GetDatabaseName().ToLowerOrEmpty();
+            if (database == string.Empty || database.EndsWith(".temp")) isActive = true;
+            else if (DatabaseManager.GetDataSource() == ":memory:") isActive = true;
 
             return isActive.Value;
         }
 
         public bool AddDefaultHandlers { get; set; } = true;
 
-        public DatabaseManager DatabaseServer { get; internal set; }
+        internal DatabaseManager DatabaseManager { get; set; }
 
         public void Add(string command, Func<Task<bool>> handler, string userCommandText = null)
         {

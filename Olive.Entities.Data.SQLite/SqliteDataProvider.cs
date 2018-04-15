@@ -18,8 +18,7 @@ namespace Olive.Entities.Data
         {
             var value = data.Value;
 
-            var result = new SqliteParameter { Value = value, ParameterName = data.Key.Remove(" ") };
-            return result;
+            return new SqliteParameter { Value = value, ParameterName = data.Key.Remove(" ") };
         }
 
         public override string GenerateSelectCommand(IDatabaseQuery iquery)
@@ -31,10 +30,10 @@ namespace Olive.Entities.Data
 
             var r = new StringBuilder("SELECT");
 
-            r.Append(query.TakeTop.ToStringOrEmpty().WithPrefix(" TOP "));
             r.AppendLine($" {GetFields()} FROM {GetTables()}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
+            r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
 
             return r.ToString();
         }

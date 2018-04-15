@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Olive.Entities.Data
@@ -33,9 +34,15 @@ END".FormatWith(databaseName);
             { throw new Exception("Could not drop database '" + databaseName + "'", ex); }
         }
 
-        public override void Execute(string sql)
+        public override void Execute(string sql, string database = null)
         {
-            var command = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
+            sql = sql.TrimOrEmpty();
+            if (sql.IsEmpty()) return;
+
+            var command = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql).ToList();
+
+            if (database.HasValue() && sql.Lacks("CREATE DATABASE", caseSensitive: false))
+                command.Insert(0, "USE [" + database + "];");
 
             using (var connection = CreateConnection())
             {
@@ -68,29 +75,6 @@ exec sp_detach_db '{0}'".FormatWith(databaseName);
             catch (Exception ex)
             { throw new Exception($"Could not detach database '{databaseName}'.", ex); }
         }
-
-        //public bool Exists(string databaseName)
-        //{
-        //    var script = $"SELECT count(name) FROM master.dbo.sysdatabases WHERE name = N'{databaseName}'";
-
-        //    using (var connection = CreateConnection())
-        //    {
-        //        connection.Open();
-
-        //        using (var cmd = connection.CreateCommand())
-        //        {
-        //            cmd.CommandType = CommandType.Text;
-        //            cmd.CommandText = script;
-
-        //            bool result;
-        //            try { result = (int)cmd.ExecuteScalar() > 0; }
-        //            catch (Exception ex) { throw new Exception("Failed to run sql: " + script, ex); }
-
-        //            Debug.WriteLine($"Database '{databaseName}' already exists in '{connection.DataSource}' -> " + result);
-        //            return result;
-        //        }
-        //    }
-        //}
 
         public override void ClearConnectionPool() => SqlConnection.ClearAllPools();
     }

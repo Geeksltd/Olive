@@ -6,7 +6,7 @@ namespace Olive.Entities.Data
     public abstract class DatabaseManager
     {
         public abstract void Delete(string database);
-        public abstract void Execute(string script);
+        public abstract void Execute(string script, string database = null);
         public abstract void ClearConnectionPool();
 
         public static string GetDataSource() => GetConnectionStringSetting("data source", "server");

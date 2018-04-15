@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 namespace Olive.Entities.Data
@@ -12,22 +12,30 @@ namespace Olive.Entities.Data
 
         public override void Delete(string databaseName)
         {
-            var script = @"
-IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'{0}')
-BEGIN
-    ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    ALTER DATABASE [{0}] SET MULTI_USER;
-    DROP DATABASE [{0}];
-END".FormatWith(databaseName);
+            Task<IDataReader> read()
+            {
+                return new DataAccess<SqliteConnection>()
+                .ExecuteReader("SELECT NAME FROM sqlite_master where type = 'table'");
+            }
 
-            try { Execute(script); }
+            try
+            {
+                var tables = new List<string>();
+
+                using (var reader = Task.Factory.RunSync(read))
+                    while (reader.Read()) tables.Add(reader[0].ToString());
+
+                foreach (var table in tables) Execute("DROP TABLE `" + table + "`");
+            }
             catch (Exception ex)
             { throw new Exception("Could not drop database '" + databaseName + "'", ex); }
         }
 
-        public override void Execute(string sql)
+        public override void Execute(string sql, string database = null)
         {
-            var command = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
+            sql = sql.TrimOrEmpty();
+            if (sql.IsEmpty()) return;
+            if (sql.Contains("CREATE DATABASE", caseSensitive: false)) return; // not supported
 
             using (var connection = CreateConnection())
             {
@@ -38,12 +46,9 @@ END".FormatWith(databaseName);
                 {
                     cmd.CommandType = CommandType.Text;
 
-                    foreach (var line in command.Trim())
-                    {
-                        cmd.CommandText = line;
-                        try { cmd.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw new Exception("Failed to run SQL command: " + line, ex); }
-                    }
+                    cmd.CommandText = sql;
+                    try { cmd.ExecuteNonQuery(); }
+                    catch (Exception ex) { throw new Exception("Failed to run SQL command: " + sql, ex); }
                 }
             }
         }

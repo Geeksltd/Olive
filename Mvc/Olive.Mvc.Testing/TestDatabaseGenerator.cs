@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -96,7 +95,7 @@ namespace Olive.Mvc.Testing
 
             foreach (var file in GetExecutableCreateDbScripts())
             {
-                try { Server.Execute(file.Value); }
+                try { Server.Execute(file.Value, TempDatabaseName); }
                 catch (Exception ex)
                 { throw new Exception("Could not execute sql file '" + file.Key.FullName + "'", ex); }
             }
@@ -126,9 +125,6 @@ namespace Olive.Mvc.Testing
                     return line;
                 }).ToLinesString();
 
-                if (file.Name.Lacks("Create.Database.sql", caseSensitive: false))
-                    script = "USE [" + TempDatabaseName + "];\r\nGO\r\n" + script;
-
                 result.Add(file, script);
             }
 
@@ -137,7 +133,7 @@ namespace Olive.Mvc.Testing
 
         public void Process(WebTestConfig config)
         {
-            Server = config.DatabaseServer;
+            Server = config.DatabaseManager;
             LoadMetaDirectory();
 
             TempDatabaseName = DatabaseManager.GetDatabaseName().Or("Default.Temp");

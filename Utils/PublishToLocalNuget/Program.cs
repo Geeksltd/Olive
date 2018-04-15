@@ -18,7 +18,7 @@ namespace PushForLocalTesting
             if (HasError)
             {
                 Console.WriteLine("Press Enter key to continue....");
-                Console.ReadLine();
+                //   Console.ReadLine();
             }
         }
 

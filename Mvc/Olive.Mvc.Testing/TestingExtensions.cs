@@ -20,7 +20,7 @@ namespace Olive.Mvc.Testing
 
             var settings = new WebTestConfig
             {
-                DatabaseServer = new TDatabaseManager()
+                DatabaseManager = new TDatabaseManager()
             };
 
             config?.Invoke(settings);

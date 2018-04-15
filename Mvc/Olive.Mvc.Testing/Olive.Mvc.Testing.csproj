@@ -31,9 +31,6 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Olive.Entities.Data.SqlServer">
-      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="Olive.Export">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Export.dll</HintPath>
     </Reference>
