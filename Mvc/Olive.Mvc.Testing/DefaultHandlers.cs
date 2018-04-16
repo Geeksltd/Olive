@@ -21,7 +21,7 @@ namespace Olive.Mvc.Testing
                 var redirect = Context.Current.Request().ToAbsoluteUri().AsUri().RemoveQueryString("Web.Test.Command").ToString();
 
                 WebTestConfig.SetRunner();
-                await TempDatabase.Start();
+                await TempDatabase.Restart();
 
                 if (shouldRedirect)
                 {
@@ -35,7 +35,7 @@ namespace Olive.Mvc.Testing
             foreach (var command in new[] { "start", "run", "ran", "cancel" })
                 config.Add(command, () => startDatabase());
 
-            config.Add("restart", () => startDatabase(true), "Restart DB");
+            config.Add("restart", () => startDatabase(shouldRedirect: true), "Restart DB");
 
             return config;
         }
@@ -43,35 +43,6 @@ namespace Olive.Mvc.Testing
         internal static IDevCommandsConfig AddClearDatabaseCache(this IDevCommandsConfig config)
         {
             config.Add("clear-db-cache", () => Entities.Data.Database.Instance.Refresh(), "Clear DB cache");
-            return config;
-        }
-
-        internal static IDevCommandsConfig AddSnapshot(this IDevCommandsConfig config)
-        {
-            bool shared() => Context.Current.Request().Param("mode") == "shared";
-
-            config.Add("snap", () =>
-                  new Snapshot(Param("name"), shared()).Create());
-
-            config.Add("restore", () =>
-                 new Snapshot(Param("name"), shared()).Restore());
-
-            config.Add("remove_snapshots", () => Snapshot.RemoveSnapshots(), "Kill DB Snapshots");
-
-            config.Add("remove_snapshot", () => Snapshot.RemoveSnapshot(Param("name")));
-
-            config.Add("snapshots_list", async () =>
-            {
-                await Respond(JsonConvert.SerializeObject(Snapshot.GetList(shared())));
-                return true;
-            });
-
-            config.Add("snapExists", async () =>
-            {
-                await Respond(new Snapshot(Param("name"), shared()).Exists().ToString().ToLower());
-                return true;
-            });
-
             return config;
         }
 

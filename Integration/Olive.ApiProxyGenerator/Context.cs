@@ -33,7 +33,7 @@ namespace Olive.ApiProxy
             }
         }
 
-        internal static void Run(string command)
+        internal static string Run(string command)
         {
             var cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
@@ -50,6 +50,8 @@ namespace Olive.ApiProxy
             if (result.StartsWith("Could not ")) throw new Exception(result);
 
             if (result.Contains("Build FAILED")) throw new Exception(result.TrimBefore("Build FAILED"));
+
+            return result;
         }
 
         internal static void LoadAssembly()

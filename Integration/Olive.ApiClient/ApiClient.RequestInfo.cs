@@ -92,7 +92,7 @@ namespace Olive
                 {
                     var result = ResponseText;
                     if (typeof(TResponse) == typeof(string) && result.HasValue())
-                        result = ResponseText.ToString().EnsureStartsWith("\"").EnsureEndsWith("\"");
+                        result = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
                     return JsonConvert.DeserializeObject<TResponse>(result);
                 }
                 catch (Exception ex)
@@ -110,7 +110,7 @@ namespace Olive
                 var container = new HttpClientHandler { CookieContainer = Client.RequestCookies };
                 var result = new HttpClient(container)
                 {
-                    Timeout = Config.Get("ApiClient:Timeout", 10).Seconds()
+                    Timeout = Config.Get("ApiClient:Timeout", 20).Seconds()
                 };
 
                 foreach (var config in Client.RequestHeadersCustomizers)
@@ -142,7 +142,8 @@ namespace Olive
                     string responseBody = null;
                     try
                     {
-                        var response = await Client.SendAsync(client, req).ConfigureAwait(false);
+                        var response = await Client.SendAsync(client, req)
+                            .ConfigureAwait(continueOnCapturedContext: false);
 
                         ResponseCode = response.StatusCode;
                         ResponseHeaders = response.Headers;
@@ -183,7 +184,14 @@ namespace Olive
                             catch { /* No logging is needed */; }
                         }
                         // We are doing this in cases that error is not serialized in the SeverError format
-                        else errorMessage = responseBody.Or(errorMessage);
+                        else if (responseBody.Contains("<div class=\"titleerror\">"))
+                        {
+                            errorMessage += Environment.NewLine +
+                                responseBody.TrimBefore("<div class=\"titleerror\">", trimPhrase: true)
+                                 .TrimAfter("</div>").HtmlDecode();
+                        }
+                        else
+                            errorMessage += Environment.NewLine + responseBody;
 
                         await Client.ErrorAction.Apply(errorMessage);
 

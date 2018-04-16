@@ -19,31 +19,48 @@ namespace Olive
         /// </summary>
         public static async Task CopyToAsync(this FileInfo file, FileInfo destinationPath, bool overwrite = true)
         {
+            using (await destinationPath.GetSyncLock().Lock())
             using (await file.GetSyncLock().Lock())
             {
                 if (!overwrite && destinationPath.Exists()) return;
                 if (!file.Exists()) throw new Exception("File does not exist: " + file.FullName);
 
-                var content = await file.ReadAllBytesAsync();
-                await destinationPath.WriteAllBytesAsync(content);
+                var content = await DoReadAllBytesAsync(file);
+                await DoWriteAllBytesAsync(destinationPath, content);
             }
         }
 
         /// <summary>
         /// Gets the entire content of this file.
+        /// If the file does not exist, it will return an empty byte array.
         /// </summary>
         public static async Task<byte[]> ReadAllBytesAsync(this FileInfo file)
         {
             using (await file.GetSyncLock().Lock())
+                return await DoReadAllBytesAsync(file);
+        }
+
+        static async Task<byte[]> DoReadAllBytesAsync(FileInfo file)
+        {
+            if (!File.Exists(file.FullName)) return new byte[0];
+            byte[] result;
+            using (var stream = File.Open(file.FullName, FileMode.Open))
             {
-                byte[] result;
-                using (var stream = File.Open(file.FullName, FileMode.Open))
-                {
-                    result = new byte[stream.Length];
-                    await stream.ReadAsync(result, 0, (int)stream.Length);
-                    return result;
-                }
+                result = new byte[stream.Length];
+                await stream.ReadAsync(result, 0, (int)stream.Length);
+                return result;
             }
+        }
+
+        /// <summary>
+        /// Returns whether the file exists. If it's null, false will be returned.
+        /// It awaits any other concurrent file operations before checking the file's existence.
+        /// </summary>
+        public static async Task<bool> ExistsAsync(this FileInfo @this)
+        {
+            if (@this == null) return false;
+            using (await @this.GetSyncLock().Lock())
+                return File.Exists(@this.FullName);
         }
 
         /// <summary>
@@ -68,66 +85,69 @@ namespace Olive
         /// <param name="harshly">If set to true, then it will try multiple times, in case the file is temporarily locked.</param>
         public static async Task DeleteAsync(this FileInfo file, bool harshly)
         {
-            if (!file.Exists()) return;
+            if (file == null) return;
 
             using (await file.GetSyncLock().Lock())
-                await file.DeleteAsync(harshly);
+            {
+                var retry = 0;
+                while (true)
+                {
+                    try
+                    {
+                        if (File.Exists(file.FullName))
+                        {
+                            File.Delete(file.FullName);
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                        if (!harshly) throw;
+
+                        retry++;
+                        if (retry > 3) throw;
+                        await Task.Delay((int)Math.Pow(10, retry));
+                    }
+                }
+            }
         }
 
         /// <summary>
         /// Saves the specified content on this file.
         /// </summary>
-        public static async Task WriteAllBytesAsync(this FileInfo file, byte[] content)
+        public static async Task WriteAllBytesAsync(this FileInfo @this, byte[] content)
         {
-            if (!file.Directory.Exists()) file.Directory.Create();
+            using (await @this.GetSyncLock().Lock())
+                await DoWriteAllBytesAsync(@this, content);
+        }
 
-            using (await file.GetSyncLock().Lock())
-                await DoTryHardAsync(file, () => Task.Run(() => File.WriteAllBytes(file.FullName, content)),
-                "The system cannot write the specified content on the file: {0}");
+        static async Task DoWriteAllBytesAsync(FileInfo file, byte[] content)
+        {
+            file.Directory.EnsureExists();
+
+            using (var stream = new FileStream(file.FullName,
+                FileMode.OpenOrCreate, FileAccess.Write, FileShare.None,
+                0x4096, useAsync: true))
+                await stream.WriteAsync(content, 0, content.Length);
         }
 
         /// <summary>
         /// Saves the specified content on this file using the Western European Windows Encoding 1252.
         /// </summary>
-        public static Task WriteAllTextAsync(this FileInfo file, string content)
-            => WriteAllTextAsync(file, content, DefaultEncoding);
+        public static Task WriteAllTextAsync(this FileInfo @this, string content)
+            => WriteAllTextAsync(@this, content, DefaultEncoding);
 
         /// <summary>
         /// Saves the specified content on this file. 
         /// Note: For backward compatibility, for UTF-8 encoding, it will always add the BOM signature.
         /// </summary>
-        public static async Task WriteAllTextAsync(this FileInfo file, string content, Encoding encoding)
+        public static Task WriteAllTextAsync(this FileInfo @this, string content, Encoding encoding)
         {
             if (encoding == null) encoding = DefaultEncoding;
-            file.Directory.EnsureExists();
             if (encoding is UTF8Encoding) encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
-            using (await file.GetSyncLock().Lock())
-                await Task.Run(() => File.WriteAllText(file.FullName, content, encoding));
-        }
-
-        /// <summary>
-        /// Saves the specified content to the end of this file.
-        /// </summary>
-        public static Task AppendAllTextAsync(this FileInfo file, string content)
-            => AppendAllTextAsync(file, content, DefaultEncoding);
-
-        /// <summary>
-        /// Saves the specified content to the end of this file.
-        /// </summary>
-        public static Task AppendLineAsync(this FileInfo file, string content = null)
-            => AppendAllTextAsync(file, content + Environment.NewLine, DefaultEncoding);
-
-        /// <summary>
-        /// Saves the specified content to the end of this file.
-        /// </summary>
-        public static async Task AppendAllTextAsync(this FileInfo file, string content, Encoding encoding)
-        {
-            if (encoding == null) encoding = DefaultEncoding;
-            file.Directory.EnsureExists();
-
-            using (await file.GetSyncLock().Lock())
-                await Task.Run(() => File.AppendAllText(file.FullName, content, encoding));
+            var data = encoding.GetBytes(content);
+            return @this.WriteAllBytesAsync(data);
         }
     }
 }

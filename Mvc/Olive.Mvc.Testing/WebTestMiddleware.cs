@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Olive.Web;
-using System;
 
 namespace Olive.Mvc.Testing
 {
@@ -9,11 +8,15 @@ namespace Olive.Mvc.Testing
     {
         readonly RequestDelegate Next;
 
-        public WebTestMiddleware(RequestDelegate next) => Next = next;
+        public WebTestMiddleware(RequestDelegate next, WebTestConfig config)
+        {
+            Next = next;
+            TempDatabase.Config = config;
+        }
 
         public async Task Invoke(HttpContext context)
         {
-            TempDatabase.AwaitReadiness();
+            await TempDatabase.AwaitReadiness();
 
             var terminate = false;
 

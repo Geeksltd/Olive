@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Olive.Entities.Data;
 
 namespace Olive.Mvc.Testing
 {
     class TempDatabase
     {
-        internal static bool IsDatabaseBeingCreated;
-        internal static bool? TempDatabaseInitiated;
+        static AsyncLock SyncLock = new AsyncLock();
+        public enum CreationStatus { NotCreated, Creating, Created, Failed }
 
-        public static async Task Create(bool enforceRestart, bool mustRenew)
+        public static CreationStatus Status { get; internal set; }
+
+        internal static WebTestConfig Config;
+
+        public static async Task Create()
         {
             if (!WebTestConfig.IsActive())
             {
@@ -20,48 +22,48 @@ namespace Olive.Mvc.Testing
                 return;
             }
 
-            IsDatabaseBeingCreated = true;
-            var createdNew = false;
-
             try
             {
-                SqlConnection.ClearAllPools();
-                if (enforceRestart) TempDatabaseInitiated = null;
-                if (TempDatabaseInitiated.HasValue) return;
-
-                var generator = new TestDatabaseGenerator(isTempDatabaseOptional: true, mustRenew: mustRenew);
-                TempDatabaseInitiated = generator.Process();
-                createdNew = generator.CreatedNewDatabase;
-
-                await Database.Instance.Refresh();
-                SqlConnection.ClearAllPools();
-            }
-            finally { IsDatabaseBeingCreated = false; }
-
-            if (createdNew)
-            {
-                // A new database is created. Add the reference data
-                try
-                {
-                    await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask);
-                }
+                new TestDatabaseGenerator().Process(Config);
+                try { await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask); }
                 catch (Exception ex)
                 {
                     throw new Exception("Failed to run the reference data.", ex);
                 }
+                Status = CreationStatus.Created;
+            }
+            catch
+            {
+                Status = CreationStatus.Failed;
+                throw;
             }
         }
 
-        public static async Task Start()
+        internal static async Task Restart()
         {
-            await Create(enforceRestart: true, mustRenew: true);
+            Status = CreationStatus.NotCreated;
+            await AwaitReadiness();
             DatabaseChangeWatcher.Restart();
         }
 
-        internal static void AwaitReadiness()
+        internal static async Task AwaitReadiness()
         {
-            while (IsDatabaseBeingCreated)
-                Thread.Sleep(100); // Wait until it's done.
+            using (await SyncLock.Lock())
+            {
+                switch (Status)
+                {
+                    case CreationStatus.Created: break;
+                    case CreationStatus.Failed:
+                    case CreationStatus.NotCreated:
+                        Status = CreationStatus.Creating;
+                        await Create();
+                        break;
+                    case CreationStatus.Creating:
+                        await Task.Delay(100);
+                        await AwaitReadiness();
+                        break;
+                }
+            }
         }
     }
 }

@@ -30,7 +30,12 @@ namespace Olive.Entities
                 var result = type.IsDefined(typeof(SoftDeleteAttribute), inherit: true);
 
                 try { return Cache[type] = result; }
-                catch { return result; }
+                catch
+                {
+
+                    // No logging is needed
+                    return result;
+                }
             }
         }
 

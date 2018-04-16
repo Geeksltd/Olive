@@ -37,7 +37,7 @@ namespace Olive
             {
                 try
                 {
-                    await func?.Invoke();
+                    if (func != null) await func();
                     return;
                 }
                 catch (Exception ex)

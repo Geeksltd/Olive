@@ -29,10 +29,12 @@ namespace Olive.ApiProxy
             Console.WriteLine("-------------------");
             Console.ResetColor();
 
-            Console.Write("Creating a new class library project at " + Folder.FullName + "...");
-            Context.Run($"dotnet new classlib -o {Folder.FullName} -f {Framework} --force ");
-            foreach (var f in Folder.GetFiles("Class1.cs")) f.Delete();
-            Console.WriteLine("Done");
+            Console.WriteLine("Creating a new class library project at " + Folder.FullName + "...");
+
+            Folder.GetFile(Folder.Name + ".csproj").WriteAllText($@"<Project Sdk=""Microsoft.NET.Sdk"">
+  <PropertyGroup><TargetFramework>{Framework}</TargetFramework>
+<DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile></PropertyGroup>
+</Project>");
 
             Environment.CurrentDirectory = Folder.FullName;
             foreach (var item in References)
@@ -41,13 +43,6 @@ namespace Olive.ApiProxy
                 Context.Run("dotnet add package " + item);
                 Console.WriteLine("Done");
             }
-
-            var file = Folder.GetFiles("*.csproj").Single();
-            var content = file.ReadAllText().ToLines().ToList();
-            content.Insert(content.IndexOf(x => x.Trim().StartsWith("<TargetFramework")) + 1,
-                $@"    <DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile>"
-                );
-            file.WriteAllText(content.ToLinesString());
         }
 
         internal void Build()

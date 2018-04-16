@@ -13,20 +13,21 @@ namespace Olive
     partial class OliveExtensions
     {
         const int HTTP_PORT_NUMBER = 80, HTTPS_PORT_NUMBER = 443;
+        const int MINUTE = 60;
 
         /// <summary>
         /// Downloads the text in this URL.
         /// </summary>
-        public static async Task<string> Download(this Uri url, string cookieValue = null, double timeOutSeconds = 60)
+        public static async Task<string> Download(this Uri @this, string cookieValue = null, double timeOutSeconds = MINUTE)
         {
-            var request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(@this);
 
             request.Timeout = (int)(timeOutSeconds * 1000);
 
             if (cookieValue.HasValue())
             {
                 request.CookieContainer = new CookieContainer();
-                request.CookieContainer.SetCookies(url, cookieValue.OrEmpty());
+                request.CookieContainer.SetCookies(@this, cookieValue.OrEmpty());
             }
 
             using (var response = await request.GetResponseAsync())
@@ -39,16 +40,16 @@ namespace Olive
         /// <summary>
         /// Downloads the data in this URL.
         /// </summary>
-        public static async Task<byte[]> DownloadData(this Uri url, string cookieValue = null, double timeOutSeconds = 60)
+        public static async Task<byte[]> DownloadData(this Uri @this, string cookieValue = null, double timeOutSeconds = MINUTE)
         {
-            var request = (HttpWebRequest)HttpWebRequest.Create(url);
+            var request = (HttpWebRequest)HttpWebRequest.Create(@this);
 
             request.Timeout = (int)(timeOutSeconds * 1000);
 
             if (cookieValue.HasValue())
             {
                 request.CookieContainer = new CookieContainer();
-                request.CookieContainer.SetCookies(url, cookieValue.OrEmpty());
+                request.CookieContainer.SetCookies(@this, cookieValue.OrEmpty());
             }
 
             using (var response = await request.GetResponseAsync())
@@ -61,9 +62,9 @@ namespace Olive
         /// <summary>
         /// Posts the specified object as JSON data to this URL.
         /// </summary>
-        public static async Task<string> PostJson(this Uri url, object data)
+        public static async Task<string> PostJson(this Uri @this, object data)
         {
-            var req = (HttpWebRequest)WebRequest.Create(url);
+            var req = (HttpWebRequest)WebRequest.Create(@this);
 
             req.Method = WebRequestMethods.Http.Post;
             req.ContentType = "application/json";

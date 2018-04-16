@@ -57,9 +57,12 @@ namespace Olive
         internal static TEvent DoRemoveHandler<TEvent>(this TEvent @event, object handlerFunction)
             where TEvent : AbstractAsyncEvent
         {
+            var handler = (Delegate)handlerFunction;
+
             lock (@event.Handlers)
             {
-                var itemsToRemove = @event.Handlers.Where(x => ((IAsyncEventHandler)x).Action == handlerFunction).ToArray();
+                var itemsToRemove = @event.Handlers
+                    .Where(x => (Delegate)((IAsyncEventHandler)x).Action == handler).ToArray();
                 itemsToRemove.Do(x => x.Dispose());
                 @event.Handlers.Remove(itemsToRemove);
             }

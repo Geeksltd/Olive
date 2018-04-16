@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Auth0" Version="3.6.0" />
+    <PackageReference Include="GCop.Basics" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>

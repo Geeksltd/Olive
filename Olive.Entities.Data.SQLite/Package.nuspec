@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities.Data.SQLite</id>
-    <version>1.0.16</version>
+    <version>1.0.19</version>
     <title>Olive Entities Data Sqlite provider</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -15,8 +15,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.dll" target="lib\netstandard2.0\" />
-    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.pdb" target="lib\netstandard2.0\" />
-    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.xml" target="lib\netstandard2.0\" />
+    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.SQLite.dll" target="lib\netstandard2.0\" />
+    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.SQLite.pdb" target="lib\netstandard2.0\" />
+    <file src="..\@Assemblies\netstandard2.0\Olive.Entities.Data.SQLite.xml" target="lib\netstandard2.0\" />
   </files>
 </package>

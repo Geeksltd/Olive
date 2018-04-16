@@ -4,7 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\@Assemblies</OutputPath>
+    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.SQLite.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="GCop.Basics" Version="1.0.3" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="2.0.0" />
   </ItemGroup>
 

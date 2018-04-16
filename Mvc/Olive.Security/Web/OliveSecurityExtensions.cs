@@ -11,6 +11,8 @@ namespace Olive
 {
     public static class OliveSecurityExtensions
     {
+        readonly static TimeSpan DistantFuture = 10000.Days();
+
         public static ClaimsIdentity ToClaimsIdentity(this ILoginInfo info)
         {
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, info.DisplayName.OrEmpty()) };
@@ -33,7 +35,7 @@ namespace Olive
                 Subject = info.ToClaimsIdentity(),
                 Issuer = Context.Current.Request().RootUrl(),
                 Audience = Context.Current.Request().RootUrl(),
-                Expires = DateTime.UtcNow.Add(info.Timeout ?? 10000.Days()),
+                Expires = DateTime.UtcNow.Add(info.Timeout ?? DistantFuture),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256),
             };
 
@@ -49,7 +51,7 @@ namespace Olive
             var prop = new AuthenticationProperties
             {
                 IsPersistent = remember,
-                ExpiresUtc = DateTimeOffset.UtcNow.Add(loginInfo.Timeout ?? 10000.Days())
+                ExpiresUtc = DateTimeOffset.UtcNow.Add(loginInfo.Timeout ?? DistantFuture)
             };
 
             await Context.Current.Http().SignInAsync(new ClaimsPrincipal(loginInfo.ToClaimsIdentity()), prop);

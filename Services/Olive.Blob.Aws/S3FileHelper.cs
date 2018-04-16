@@ -12,18 +12,16 @@ namespace Olive.BlobAws
     /// <summary>
     /// A helper class for common S3 actions.
     /// </summary>
-    public class S3BlobStorageProvider : IBlobStorageProvider
+    static class S3Proxy
     {
         const string FILE_NOT_FOUND = "NotFound";
 
-        AmazonS3Client CreateClient() => new AmazonS3Client(Config.Get("AWS:AccessKey"), Config.Get("AWS:SecretKey"), Amazon.RegionEndpoint.GetBySystemName(Config.Get("AWS:Region")));
-
-        public bool CostsToCheckExistence() => true;
+        static AmazonS3Client CreateClient() => new AmazonS3Client(Config.Get("AWS:AccessKey"), Config.Get("AWS:SecretKey"), Amazon.RegionEndpoint.GetBySystemName(Config.Get("AWS:Region")));
 
         /// <summary>
         /// Uploads a document to the Amazon S3 Client.
         /// </summary>
-        public async Task SaveAsync(Blob document)
+        internal static async Task Upload(Blob document)
         {
             using (var client = CreateClient())
             {
@@ -39,7 +37,7 @@ namespace Olive.BlobAws
             }
         }
 
-        public async Task<bool> FileExistsAsync(Blob document)
+        internal static async Task<bool> FileExists(Blob document)
         {
             try
             {
@@ -56,29 +54,9 @@ namespace Olive.BlobAws
             }
         }
 
-        public Task<byte[]> LoadAsync(Blob document) => Load(GetKey(document));
+        internal static Task<byte[]> Load(Blob document) => Load(GetKey(document));
 
-        /// <summary>
-        /// Deletes a document with the specified key name on the Amazon S3 server.
-        /// </summary>
-        public async Task DeleteAsync(Blob document)
-        {
-            var key = GetKey(document);
-            using (var client = CreateClient())
-            {
-                var response = await client.DeleteObjectAsync(AWSInfo.S3BucketName, key);
-
-                switch (response.HttpStatusCode)
-                {
-                    case System.Net.HttpStatusCode.OK:
-                    case System.Net.HttpStatusCode.NoContent:
-                    case System.Net.HttpStatusCode.Accepted: return;
-                    default: throw new Exception("AWS DeleteObject for key " + key + " returned: " + response.HttpStatusCode);
-                }
-            }
-        }
-
-        async Task<byte[]> Load(string documentKey)
+        internal static async Task<byte[]> Load(string documentKey)
         {
             using (var client = CreateClient())
             {
@@ -95,7 +73,7 @@ namespace Olive.BlobAws
             }
         }
 
-        GetObjectRequest CreateGetObjectRequest(string objectKey)
+        static GetObjectRequest CreateGetObjectRequest(string objectKey)
         {
             return new GetObjectRequest
             {
@@ -104,7 +82,7 @@ namespace Olive.BlobAws
             };
         }
 
-        async Task DeleteOlds(Blob document)
+        internal static async Task DeleteOlds(Blob document)
         {
             var oldVersionKeys = await GetOldVersionKeys(document);
 
@@ -124,15 +102,35 @@ namespace Olive.BlobAws
                 }
         }
 
-        async Task<IEnumerable<KeyVersion>> GetOldVersionKeys(Blob document)
-          => await GetOldKeys(document).Select(s => new KeyVersion { Key = s });
+        static async Task<IEnumerable<KeyVersion>> GetOldVersionKeys(Blob document)
+            => await GetOldKeys(document).Select(s => new KeyVersion { Key = s });
 
-        string GetKey(Blob document)
+        /// <summary>
+        /// Deletes a document with the specified key name on the Amazon S3 server.
+        /// </summary>
+        internal static async Task Delete(Blob document)
+        {
+            var key = GetKey(document);
+            using (var client = CreateClient())
+            {
+                var response = await client.DeleteObjectAsync(AWSInfo.S3BucketName, key);
+
+                switch (response.HttpStatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                    case System.Net.HttpStatusCode.NoContent:
+                    case System.Net.HttpStatusCode.Accepted: return;
+                    default: throw new Exception("AWS DeleteObject for key " + key + " returned: " + response.HttpStatusCode);
+                }
+            }
+        }
+
+        static string GetKey(Blob document)
         {
             return (document.FolderName + "/" + document.OwnerId()).KeepReplacing("//", "/").TrimStart("/");
         }
 
-        DeleteObjectsRequest CreateDeleteOldsRequest(IEnumerable<KeyVersion> oldKeys)
+        static DeleteObjectsRequest CreateDeleteOldsRequest(IEnumerable<KeyVersion> oldKeys)
         {
             return new DeleteObjectsRequest
             {
@@ -141,7 +139,7 @@ namespace Olive.BlobAws
             };
         }
 
-        async Task<IEnumerable<string>> GetOldKeys(Blob document)
+        static async Task<IEnumerable<string>> GetOldKeys(Blob document)
         {
             var key = GetKey(document);
 
@@ -153,7 +151,7 @@ namespace Olive.BlobAws
             }
         }
 
-        ListObjectsRequest CreateGetObjectsRequest(Blob document)
+        static ListObjectsRequest CreateGetObjectsRequest(Blob document)
         {
             var key = GetKey(document);
             var prefix = key.TrimEnd(document.FileExtension);
@@ -168,7 +166,7 @@ namespace Olive.BlobAws
         /// <summary>
         /// Creates an Amazon PutObjectRequest for the specified Document and key name.
         /// </summary>
-        async Task<PutObjectRequest> CreateUploadRequest(Blob document)
+        static async Task<PutObjectRequest> CreateUploadRequest(Blob document)
         {
             return new PutObjectRequest
             {

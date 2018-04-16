@@ -17,18 +17,6 @@
         [NonSerialized]
         Func<T, T> getNextItem, getPreviousItem;
 
-        static T Invoke(Func<T, T> method, T arg)
-        {
-            if (method == null) throw new InvalidOperationException("Initialize() method is not called");
-            return method(arg);
-        }
-
-        T GetNextItem(T item) => Invoke(getNextItem, item);
-
-        T GetPreviousItem(T item) => Invoke(getPreviousItem, item);
-
-        public Range<T>[] Ranges => ranges.Values.ToArray();
-
         public RangeCollection() { }
 
         public RangeCollection(IEnumerable<Range<T>> ranges)
@@ -44,6 +32,18 @@
 
             ranges.Do(r => this.ranges.Add(r.From, r));
         }
+
+        static T Invoke(Func<T, T> method, T arg)
+        {
+            if (method == null) throw new InvalidOperationException("Initialize() method is not called");
+            return method(arg);
+        }
+
+        T GetNextItem(T item) => Invoke(getNextItem, item);
+
+        T GetPreviousItem(T item) => Invoke(getPreviousItem, item);
+
+        public Range<T>[] Ranges => ranges.Values.ToArray();
 
         public void Initialize(Func<T, T> getNextItem, Func<T, T> getPreviousItem)
         {
@@ -167,8 +167,11 @@
         void ShrinkFromLowerBound(T item, int index)
         {
             var range = ranges.Values[index];
-            var newRange = new Range<T>(GetNextItem(item), range.To);
             ranges.Remove(item);
+
+            if (range.From.Equals(range.To)) return;
+
+            var newRange = new Range<T>(GetNextItem(item), range.To);
             ranges.Add(newRange.From, newRange);
         }
 

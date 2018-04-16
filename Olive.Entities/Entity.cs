@@ -23,6 +23,7 @@ namespace Olive.Entities
 
         [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
         public Entity _ClonedFrom;
+        static IDatabase DatabaseInstance;
 
         /// <summary>
         /// Base constructor (called implicitly in all typed entity classes) to initialize an object.
@@ -299,17 +300,13 @@ namespace Olive.Entities
             else return string.Compare(ToString(), other.ToString(), ignoreCase: true);
         }
 
-        #region Database instance
-        static IDatabase DatabaseInstance;
-
         public static IDatabase Database => DatabaseInstance
-            ?? throw new InvalidOperationException("The database instance is not initialized.");
+                   ?? throw new InvalidOperationException("The database instance is not initialized.");
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void InitializeDatabase(IDatabase instance)
         {
             DatabaseInstance = instance ?? throw new ArgumentException("Database instance cannot be null.");
         }
-        #endregion
     }
 }
