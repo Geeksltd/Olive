@@ -246,8 +246,7 @@ namespace Olive
             lock (CacheSyncLock)
             {
                 var cacheDir = GetRootCacheDirectory();
-                if (cacheDir.Exists)
-                    cacheDir.Delete(true);
+                if (cacheDir.Exists) cacheDir.Delete(true);
             }
 
             // Desined as a task in case in the future we need it.

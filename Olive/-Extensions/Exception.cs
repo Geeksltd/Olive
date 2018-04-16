@@ -92,17 +92,23 @@ namespace Olive
             var err = @this ?? throw new NullReferenceException("This exception object is null");
 
             var resultBuilder = new StringBuilder();
-            resultBuilder.AppendLineIf(additionalMessage, additionalMessage.HasValue());
+            resultBuilder.AppendLineIf(additionalMessage);
 
             while (err != null)
             {
+                if (err is TargetInvocationException || err is AggregateException)
+                {
+                    err = err.InnerException;
+                    continue;
+                }
+
                 resultBuilder.AppendLine(err.Message);
+
                 if (includeData && err.Data != null && err.Data.Count > 0)
                 {
                     resultBuilder.AppendLine("\r\nException Data:\r\n{");
                     foreach (var i in err.Data)
                         resultBuilder.AppendLine(ToLogText(i).WithPrefix("    "));
-
                     resultBuilder.AppendLine("}");
                 }
 
@@ -111,9 +117,6 @@ namespace Olive
                     foreach (var loaderEx in (err as ReflectionTypeLoadException).LoaderExceptions)
                         resultBuilder.AppendLine("Type load exception: " + loaderEx.ToFullMessage());
                 }
-
-                if (err is TargetInvocationException)
-                    err = err.InnerException;
 
                 err = err.InnerException;
                 if (err != null)
@@ -125,14 +128,23 @@ namespace Olive
                 }
             }
 
-            if (includeStackTrace && @this.StackTrace.HasValue())
+            var stack = @this.GetUsefulStack().TrimOrEmpty();
+            if (includeStackTrace && stack.HasValue())
             {
-                var stackLines = @this.StackTrace.Or("").Trim().ToLines();
+                var stackLines = stack.ToLines();
                 stackLines = stackLines.Except(l => l.Trim().StartsWith("at System.Data.")).ToArray();
                 resultBuilder.AppendLine(stackLines.ToString("\r\n\r\n").WithPrefix("\r\n--------------------------------------\r\nSTACK TRACE:\r\n\r\n"));
             }
 
             return resultBuilder.ToString();
+        }
+
+        public static string GetUsefulStack(this Exception @this)
+        {
+            if (@this.InnerException == null) return @this.StackTrace;
+            if (@this is TargetInvocationException || @this is AggregateException)
+                return @this.InnerException.GetUsefulStack();
+            return @this.StackTrace;
         }
     }
 }

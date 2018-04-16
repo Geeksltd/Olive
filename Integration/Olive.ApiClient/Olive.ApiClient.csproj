@@ -23,4 +23,8 @@
     </Reference> 
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell start-process &quot;$(TargetDir)..\PublishToLocalNuget.exe&quot;" />
+  </Target>
+
 </Project>
