@@ -32,7 +32,7 @@ namespace Olive.Mvc.Testing
             if (database == string.Empty || database.EndsWith(".temp")) isActive = true;
             else if (DatabaseManager.GetDataSource() == ":memory:") isActive = true;
 
-            return isActive.Value;
+            return isActive ?? false;
         }
 
         public bool AddDefaultHandlers { get; set; } = true;
