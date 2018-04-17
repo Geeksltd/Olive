@@ -13,17 +13,13 @@ namespace Olive.Email
         /// <summary>
         /// Gets the Attachment objects to be attached to this email.
         /// </summary>
-        public static async Task<IEnumerable<Attachment>> GetAttachments(this IEmailMessage mail)
+        public static Task<IEnumerable<Attachment>> GetAttachments(this IEmailMessage @this)
         {
-            var result = new List<Attachment>();
+            var result = @this.Attachments.OrEmpty().Split('|').Trim()
+                 .Select(ParseAttachment)
+                 .ExceptNull().ToList();
 
-            foreach (var attachmentInfo in mail.Attachments.OrEmpty().Split('|').Trim())
-            {
-                var item = ParseAttachment(attachmentInfo);
-                if (item != null) result.Add(item);
-            }
-
-            return result;
+            return Task.FromResult((IEnumerable<Attachment>)result);
         }
 
         public static Attachment ParseAttachment(string attachmentInfo)

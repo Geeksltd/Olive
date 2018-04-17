@@ -34,7 +34,7 @@ namespace Olive.SMS
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"), ex);
+                    Log.Error(ex, "Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"));
                     return false;
                 }
 
@@ -46,7 +46,7 @@ namespace Olive.SMS
             catch (Exception ex)
             {
                 await SendError.Raise(new SmsSendingEventArgs(smsItem) { Error = ex });
-                Log.Error("Can not send the SMS queue item.", ex);
+                Log.Error(ex, "Can not send the SMS queue item.");
                 await smsItem.RecordRetry();
                 return false;
             }

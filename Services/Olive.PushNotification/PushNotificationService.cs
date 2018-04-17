@@ -226,21 +226,18 @@
                 description += error.Failed.Select(x => "ID=" + x.Key.MessageId + ", Desc=" + x.Value.Message)
                     .ToString(", ").WithWrappers("\r\n Failed:{", "}");
             }
-            else if (ex is DeviceSubscriptionExpiredException)
+            else if (ex is DeviceSubscriptionExpiredException error)
             {
-                var error = (DeviceSubscriptionExpiredException)ex;
-
                 description += $"Device RegistrationId Expired: {error.OldSubscriptionId}";
-
                 description += error.NewSubscriptionId.WithPrefix("\r\nDevice RegistrationId Changed To:");
             }
-            else if (ex is RetryAfterException error)
+            else if (ex is RetryAfterException raeError)
             {
                 // If you get rate limited, you should stop sending messages until after the RetryAfterUtc date
-                description += $"GCM Rate Limited, don't send more until after {error.RetryAfterUtc}";
+                description += $"GCM Rate Limited, don't send more until after {raeError.RetryAfterUtc}";
             }
 
-            Olive.Log.Error(description, ex);
+            Olive.Log.Error(ex, description);
         }
 
         /// <summary>

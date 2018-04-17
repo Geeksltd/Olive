@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="GCop.Basics" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,9 +24,6 @@
     </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Excel">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Excel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

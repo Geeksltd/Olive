@@ -1,9 +1,9 @@
 ﻿namespace Olive
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System;
 
     /// <summary>
     /// Provides a collection of ranges to simplify the manipulation of them.

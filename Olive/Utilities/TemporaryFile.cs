@@ -59,7 +59,7 @@ namespace Olive
             }
             catch (Exception ex)
             {
-                Log.Error("Can not dispose temporary file.", ex);
+                Log.Error(ex, "Can not dispose temporary file.");
             }
         }
     }
