@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 17 Apr 2018
+- Change all references to `Entity.Database` and `Database.Instance` to `Context.Current.Database()`
+
 ## 13 Apr 2018
 - In StartUp.cs, change `app.UseWebTest(...` to `app.UseWebTest<SqlServerManager>(...`.
 
