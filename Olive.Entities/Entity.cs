@@ -298,5 +298,10 @@ namespace Olive.Entities
             if (other == null) return 1;
             else return string.Compare(ToString(), other.ToString(), ignoreCase: true);
         }
+
+        /// <summary>
+        /// Gets the currently injected Datbase service.
+        /// </summary>
+        protected static IDatabase Database => Context.Current.Database();
     }
 }

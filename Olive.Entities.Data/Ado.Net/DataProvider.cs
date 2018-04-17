@@ -17,7 +17,7 @@ namespace Olive.Entities.Data
     {
         public IDataAccess Access { get; } = new DataAccess<TConnection>();
 
-        static IDatabase Database => Context.Current.Database();
+        public static IDatabase Database => Context.Current.Database();
 
         protected DataProvider() => connectionStringKey = GetDefaultConnectionStringKey();
 
