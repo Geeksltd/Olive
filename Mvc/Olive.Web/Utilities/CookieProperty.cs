@@ -14,6 +14,8 @@
     {
         const string BAR_SCAPE = "[#*^BAR_SCAPE^*#]";
 
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>
         /// Gets the value of the property sent from the client browser as a cookie.
         /// </summary>
@@ -44,16 +46,16 @@
         {
             var key = propertyName.Or("Default.Value.For." + typeof(T).FullName);
 
-            var value = Olive.Context.Current.Request().Cookies[key];
+            var value = Context.Current.Request().Cookies[key];
 
-            if (!Olive.Context.Current.Request().Cookies.ContainsKey(key))
+            if (!Context.Current.Request().Cookies.ContainsKey(key))
             {
                 return defaultValue;
             }
             else if (typeof(T).Implements<IEntity>())
             {
                 var id = value.Contains('/') ? value.Split('/')[1] : value; // Remove class name prefix if exists
-                return (T)await Entity.Database.GetOrDefault(id, typeof(T));
+                return (T)await Database.GetOrDefault(id, typeof(T));
             }
             else if (typeof(T) == typeof(string))
             {
@@ -131,7 +133,7 @@
         static T ExtractItem<T>(string valueExpression) where T : IEntity
         {
             var id = valueExpression.Contains('/') ? valueExpression.Split('/')[1] : valueExpression; // Remove class name prefix if exists
-            return (T)(object)Entity.Database.GetOrDefault(id, typeof(T));
+            return (T)(object)Database.GetOrDefault(id, typeof(T));
         }
 
         /// <summary>

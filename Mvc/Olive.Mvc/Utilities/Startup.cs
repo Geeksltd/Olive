@@ -28,10 +28,11 @@ namespace Olive.Mvc
         // visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            Context.Initialize(services);
-
             services.AddSingleton(typeof(IHttpContextAccessor), typeof(HttpContextAccessor))
                .AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
+
+            Context.Initialize(services);
+            services.AddSingleton<IDatabase>(new Entities.Data.Database());
 
             var mvc = services.AddMvc(o => o.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
             Context.Current.AddService(typeof(IMvcBuilder), mvc);
@@ -58,7 +59,7 @@ namespace Olive.Mvc
         {
             Context.Current.Configure(app.ApplicationServices).Configure(env);
             ConfigureExceptionPage(app, env);
-            InstantiateDatabase(app, env);
+
 
             app.UseMicroserviceAccessKeyAuthentication()
                 .UseAuthentication()
@@ -67,8 +68,7 @@ namespace Olive.Mvc
                 .UseMvc(ConfigureRoutes);
         }
 
-        protected virtual void InstantiateDatabase(IApplicationBuilder app, IHostingEnvironment env)
-            => Entity.InitializeDatabase(Entities.Data.Database.Instance);
+
 
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)
         {

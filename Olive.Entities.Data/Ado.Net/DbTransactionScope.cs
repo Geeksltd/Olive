@@ -88,7 +88,7 @@ namespace Olive.Entities.Data
         {
             if (Connections.LacksKey(connectionString))
             {
-                var access = Database.Instance.GetAccess(connectionString);
+                var access = Context.Current.Database().GetAccess(connectionString);
                 var connection = (DbConnection)await access.CreateConnection();
                 var transaction = connection.BeginTransaction(IsolationLevel);
 

@@ -11,9 +11,6 @@ namespace Olive.Entities
     /// </summary>
     public class Blob : IComparable<Blob>, IComparable
     {
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static bool HasFileDataInMemory(Blob blob) => blob?.NewFileData?.Length > 0;
-
         /// <summary>
         /// In Test projects particularly, having files save themselves on the disk can waste space.
         /// To prevent that, apply this setting in the config file.
@@ -31,6 +28,8 @@ namespace Olive.Entities
         internal Entity OwnerEntity;
         bool IsEmptyBlob;
         byte[] CachedFileData, NewFileData;
+        string fileName, folderName;
+        bool hasValue; // For performance, cache it
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Blob"/> class.
@@ -59,9 +58,10 @@ namespace Olive.Entities
 
         public string OwnerProperty { get; private set; }
 
-        string fileName, folderName;
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool HasFileDataInMemory(Blob blob) => blob?.NewFileData?.Length > 0;
 
-        bool hasValue; // For performance, cache it
+        static IDatabase Database => Context.Current.Database();
 
         public string FileName
         {
@@ -341,7 +341,7 @@ namespace Olive.Entities
             var id = parts[1];
             var propertyName = parts.Last();
 
-            var entity = await Entity.Database.GetOrDefault(id, type);
+            var entity = await Database.GetOrDefault(id, type);
             if (entity == null)
                 throw new ArgumentException($"Could not load an instance of '{parts.First()}' with the ID of '{id} from the database.");
 

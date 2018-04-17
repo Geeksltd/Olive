@@ -17,6 +17,8 @@ namespace Olive.Entities.Data
     {
         public IDataAccess Access { get; } = new DataAccess<TConnection>();
 
+        static IDatabase Database => Context.Current.Database();
+
         protected DataProvider() => connectionStringKey = GetDefaultConnectionStringKey();
 
         public abstract string MapColumn(string propertyName);
@@ -35,13 +37,13 @@ namespace Olive.Entities.Data
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
+                await Database.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task BulkUpdate(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
+                await Database.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task<int> Count(IDatabaseQuery query)

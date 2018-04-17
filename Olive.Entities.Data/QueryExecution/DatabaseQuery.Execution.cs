@@ -59,7 +59,7 @@
             result = await LoadFromDatabaseAndCache();
 
             // If there is no transaction open, cache it:
-            if (!Database.Instance.AnyOpenTransaction())
+            if (!Context.Current.Database().AnyOpenTransaction())
                 Cache.Current.AddList(EntityType, cacheKey, result);
 
             return result;
@@ -107,7 +107,7 @@
                 else
                 {
                     await EntityManager.RaiseOnLoaded(item);
-                    Database.Instance.TryCache(item, timestamp);
+                    (Context.Current.Database() as Database)?.TryCache(item, timestamp);
                     result.Add(item);
                 }
             }

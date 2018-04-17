@@ -9,6 +9,9 @@ namespace Olive.Entities.Data
 {
     partial class Database
     {
+        [Obsolete("Use Context.Current.Database() instead.", error: true)]
+        public static IDatabase Instance => Context.Current.Database();
+
         public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
             = new Dictionary<Assembly, IDataProviderFactory>();
 
@@ -16,19 +19,15 @@ namespace Olive.Entities.Data
 
         Dictionary<Type, IDataProviderFactory> TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
 
-        static readonly Database instance = new Database();
-
         public static DatabaseConfig Configuration { get; private set; }
 
-        Database()
+        public Database()
         {
             if (Configuration == null) Configuration = Config.Bind<DatabaseConfig>("Database");
 
             foreach (var factoryInfo in Configuration.Providers.OrEmpty())
                 RegisterDataProviderFactory(factoryInfo);
         }
-
-        public static Database Instance => instance;
 
         #region Updated event
         /// <summary>

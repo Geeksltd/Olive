@@ -8,27 +8,12 @@ using Olive.Web;
 namespace Olive.Security.Impersonation
 {
     /// <summary>
-    /// Defines an admin user who can impersonate other users.
-    /// </summary>
-    public interface IImpersonator : ILoginInfo, IEntity
-    {
-        /// <summary>
-        /// A unique single-use-only cookie-based token to specify the currently impersonated user session.
-        /// </summary>
-        string ImpersonationToken { get; set; }
-
-        /// <summary>
-        /// Determines if this user can impersonate the specified other user.
-        /// </summary>
-        bool CanImpersonate(ILoginInfo user);
-    }
-
-    /// <summary>
     /// Provides the business logic for ImpersonationContext class.
     /// </summary>
     public class ImpersonationSession
     {
         static HttpContext Context => Olive.Context.Current.Http();
+        static IDatabase Database => Olive.Context.Current.Database();
 
         /// <summary>
         /// Determines if the current user is impersonated.
@@ -51,7 +36,7 @@ namespace Olive.Security.Impersonation
 
             var token = Guid.NewGuid().ToString();
 
-            await Entity.Database.Update(admin, o => o.ImpersonationToken = token);
+            await Database.Update(admin, o => o.ImpersonationToken = token);
 
             SetImpersonationToken(token);
 
@@ -72,7 +57,7 @@ namespace Olive.Security.Impersonation
 
             var admin = await GetImpersonator();
 
-            await Entity.Database.Update(admin, o => o.ImpersonationToken = null);
+            await Database.Update(admin, o => o.ImpersonationToken = null);
 
             await admin.LogOn();
 
@@ -103,7 +88,7 @@ namespace Olive.Security.Impersonation
             var token = await ImpersonationToken;
             if (token.IsEmpty()) return null;
 
-            return await Entity.Database.FirstOrDefault<IImpersonator>(x => x.ImpersonationToken == token);
+            return await Database.FirstOrDefault<IImpersonator>(x => x.ImpersonationToken == token);
         }
 
         static Task<string> ImpersonationToken => CookieProperty.Get("Impersonation.Token");

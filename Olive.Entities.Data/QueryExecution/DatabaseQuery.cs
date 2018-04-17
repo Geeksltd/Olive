@@ -33,7 +33,7 @@
                 throw new ArgumentException(entityType.Name + " is not an IEntity.");
 
             EntityType = entityType;
-            Provider = Database.Instance.GetProvider(entityType);
+            Provider = Context.Current.Database().GetProvider(entityType);
         }
 
         public string Column(string propertyName, string alias = null)

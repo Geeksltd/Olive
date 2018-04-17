@@ -127,7 +127,7 @@ namespace Olive.Mvc
             {
                 var id = user.GetId();
                 if (id == null) return default(TUser);
-                return Task.Factory.RunSync(() => Database.Instance.GetOrDefault<TUser>(id));
+                return Task.Factory.RunSync(() => Context.Current.Database().GetOrDefault<TUser>(id));
             });
         }
 

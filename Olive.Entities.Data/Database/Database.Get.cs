@@ -121,6 +121,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed
                         continue;
                     }
                 }
@@ -154,7 +155,11 @@ namespace Olive.Entities.Data
             if (id.ToStringOrEmpty().IsEmpty()) return null;
 
             try { return await Get(id, type); }
-            catch { return null; }
+            catch
+            {
+                // No logging is needed.
+                return null;
+            }
         }
     }
 }

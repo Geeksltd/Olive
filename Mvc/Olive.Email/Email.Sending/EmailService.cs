@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
@@ -19,12 +18,6 @@ namespace Olive.Email
         static AsyncLock AsyncLock = new AsyncLock();
         static Random Random = new Random();
         public static int MaximumRetries => Config.Get("Email:MaximumRetries", 4);
-
-        /// <summary>
-        /// Provides a message which can dispatch an email message.
-        /// Returns whether the message was sent successfully.
-        /// </summary>
-        public static Func<IEmailMessage, MailMessage, Task<bool>> EmailDispatcher = SendViaSmtp;
 
         /// <summary>
         /// Occurs when the smtp mail message for this email is about to be sent.
@@ -54,12 +47,14 @@ namespace Olive.Email
             return permittedAddresses.Any() && new MailAddress(to).Address.IsAnyOf(permittedAddresses);
         }
 
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>Tries to sends all emails.</summary>
         public static async Task SendAll(TimeSpan? delayPerSend = null)
         {
             using (await AsyncLock.Lock())
             {
-                foreach (var mail in (await Entity.Database.GetList<IEmailMessage>()).OrderBy(e => e.SendableDate).ToArray())
+                foreach (var mail in (await Database.GetList<IEmailMessage>()).OrderBy(e => e.SendableDate).ToArray())
                 {
                     if (mail.Retries >= MaximumRetries) continue;
 
@@ -102,7 +97,13 @@ namespace Olive.Email
                 using (mail = await CreateMailMessage(mailItem))
                 {
                     if (mail == null) return false;
-                    return await EmailDispatcher(mailItem, mail);
+                    await Sending.Raise(new EmailSendingEventArgs(mailItem, mail));
+
+                    var dispatcher = Context.Current.GetOptionalService<IEmailDispatcher>() ??
+                        new DefaultEmailDispatcher();
+                    var result = await dispatcher.Dispatch(mailItem, mail);
+                    await Sent.Raise(new EmailSendingEventArgs(mailItem, mail));
+                    return result;
                 }
             }
             catch (Exception ex)
@@ -114,29 +115,6 @@ namespace Olive.Email
             }
         }
 
-        static async Task<bool> SendViaSmtp(IEmailMessage mailItem, MailMessage mail)
-        {
-            using (var smtpClient = new SmtpClient())
-            {
-                smtpClient.EnableSsl = mailItem.EnableSsl ?? Config.GetOrThrow("Email:EnableSsl").To<bool>();
-                smtpClient.Port = mailItem.SmtpPort ?? Config.GetOrThrow("Email:SmtpPort").To<int>();
-                smtpClient.Host = mailItem.SmtpHost.OrNullIfEmpty() ?? Config.GetOrThrow("Email:SmtpHost");
-
-                var userName = mailItem.Username.OrNullIfEmpty() ?? Config.GetOrThrow("Email:Username");
-                var password = mailItem.Password.OrNullIfEmpty() ?? Config.GetOrThrow("Email:Password");
-                smtpClient.Credentials = new NetworkCredential(userName, password);
-
-                await Sending.Raise(new EmailSendingEventArgs(mailItem, mail));
-                await smtpClient.SendMailAsync(mail);
-
-                if (!mailItem.IsNew) await Entity.Database.Delete(mailItem);
-
-                await Sent.Raise(new EmailSendingEventArgs(mailItem, mail));
-            }
-
-            return true;
-        }
-
         /// <summary>
         /// Gets the email items which have been sent (marked as soft deleted).
         /// </summary>
@@ -144,7 +122,7 @@ namespace Olive.Email
         {
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: false))
             {
-                return (await Entity.Database.GetList<T>())
+                return (await Database.GetList<T>())
                     .Where(x => EntityManager.IsSoftDeleted((Entity)(IEntity)x));
             }
         }

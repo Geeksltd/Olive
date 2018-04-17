@@ -25,7 +25,6 @@
     </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
-      <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>

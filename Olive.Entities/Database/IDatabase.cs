@@ -80,6 +80,8 @@ namespace Olive.Entities
 
         Task<IEnumerable<T>> GetList<T>(Expression<Func<T, bool>> criteria = null) where T : IEntity;
 
+        ITransactionScope CreateTransactionScope(DbTransactionScopeOption option = DbTransactionScopeOption.Required);
+
         #region ProviderManagement
 
         Dictionary<System.Reflection.Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
@@ -92,7 +94,11 @@ namespace Olive.Entities
 
         IDataProvider GetProvider(Type type);
 
-        ITransactionScope CreateTransactionScope(DbTransactionScopeOption option = DbTransactionScopeOption.Required);
+        IDataAccess GetAccess(Type type);
+
+        IDataAccess GetAccess<TEntity>() where TEntity : IEntity;
+
+        IDataAccess GetAccess(string connectionString = null);
 
         #endregion
 

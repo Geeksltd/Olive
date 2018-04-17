@@ -6,6 +6,8 @@ namespace Olive.SMS
 {
     public static class SmsExtensions
     {
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>
         /// Records an unsuccessful attempt to send this SMS.
         /// </summary>
@@ -13,7 +15,7 @@ namespace Olive.SMS
         {
             if (sms.IsNew) throw new InvalidOperationException();
 
-            await Entity.Database.Update(sms, s => s.Retries++);
+            await Database.Update(sms, s => s.Retries++);
 
             // Also update this local instance:
             sms.Retries++;
@@ -24,7 +26,7 @@ namespace Olive.SMS
         /// </summary>
         public static Task MarkSent(this ISmsQueueItem sms)
         {
-            return Entity.Database.EnlistOrCreateTransaction(() => Entity.Database.Update(sms, o => o.DateSent = LocalTime.Now));
+            return Database.EnlistOrCreateTransaction(() => Database.Update(sms, o => o.DateSent = LocalTime.Now));
         }
 
         /// <summary>

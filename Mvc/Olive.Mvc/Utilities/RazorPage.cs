@@ -16,7 +16,7 @@ namespace Olive.Mvc
 
         public HttpRequest Request => Context.Request;
 
-        protected static IDatabase Database => Entities.Data.Database.Instance;
+        protected static IDatabase Database => Olive.Context.Current.Database();
 
         /// <summary>
         /// Gets a file from its relative path.

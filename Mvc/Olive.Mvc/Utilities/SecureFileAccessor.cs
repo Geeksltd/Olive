@@ -16,6 +16,8 @@ namespace Olive.Mvc
         PropertyInfo PropertyInfo;
         IPrincipal CurrentUser;
 
+        static IDatabase Database => Context.Current.Database();
+
         public IEntity Instance { get; private set; }
 
         public Blob Blob { get; private set; }
@@ -56,7 +58,7 @@ namespace Olive.Mvc
         {
             var typeName = PathParts[0].Split('.')[0];
 
-            Type = Entity.Database.GetRegisteredAssemblies().Select(a => a.GetExportedTypes().SingleOrDefault(t => t.Name == typeName)).ExceptNull().FirstOrDefault();
+            Type = Database.GetRegisteredAssemblies().Select(a => a.GetExportedTypes().SingleOrDefault(t => t.Name == typeName)).ExceptNull().FirstOrDefault();
             if (Type == null) throw new Exception($"Invalid type name specified: '{typeName}'");
 
             Property = PathParts[0].Split('.')[1];
@@ -73,7 +75,7 @@ namespace Olive.Mvc
             foreach (var key in new[] { ".", "/" })
                 if (idData.Contains(key)) idData = idData.Substring(0, idData.IndexOf(key));
 
-            Instance = await Entity.Database.GetOrDefault(idData, Type);
+            Instance = await Database.GetOrDefault(idData, Type);
 
             if (Instance == null) throw new Exception($"Invalid {Type.FullName} ID specified: '{idData}'");
 

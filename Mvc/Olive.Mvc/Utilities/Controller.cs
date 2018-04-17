@@ -45,7 +45,7 @@ namespace Olive.Mvc
             HttpContext.Items["ViewBag"] = ViewBag;
         }
 
-        protected static IDatabase Database => Entities.Data.Database.Instance;
+        protected static IDatabase Database => Context.Current.Database();
 
         /// <summary>
         /// Provides a dummy Html helper.

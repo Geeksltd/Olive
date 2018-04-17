@@ -152,7 +152,7 @@ namespace Olive.Mvc.Testing
                 CopyFiles();
             }
 
-            Task.Factory.RunSync(() => Database.Instance.Refresh());
+            Task.Factory.RunSync(() => Context.Current.Database().Refresh());
         }
 
         /// <summary>

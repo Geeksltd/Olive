@@ -18,6 +18,8 @@ namespace Olive.Entities
         TEntity Value;
         TId? Id;
 
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>
         /// Gets the entity record from a specified database call expression.
         /// The first time it is loaded, all future calls will be immediately served.
@@ -44,9 +46,9 @@ namespace Olive.Entities
 
             if (id == null) return null;
 
-            var result = await Entity.Database.Get<TEntity>(id.ToString());
+            var result = await Database.Get<TEntity>(id.ToString());
 
-            if (!Entity.Database.AnyOpenTransaction())
+            if (!Database.AnyOpenTransaction())
             {
                 Value = result;
                 Value.RegisterCachedCopy(this);
@@ -60,7 +62,7 @@ namespace Olive.Entities
             Id = entity?.ID ?? throw new ArgumentNullException(nameof(entity));
             Value = entity;
 
-            if (!Entity.Database.AnyOpenTransaction())
+            if (!Database.AnyOpenTransaction())
                 Value.RegisterCachedCopy(this);
         }
 

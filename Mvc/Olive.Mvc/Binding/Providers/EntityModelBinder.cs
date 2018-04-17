@@ -13,6 +13,8 @@ namespace Olive.Mvc
     {
         static Dictionary<Type, Func<string, IEntity>> CustomParsers = new Dictionary<Type, Func<string, IEntity>>();
 
+        static IDatabase Database => Context.Current.Database();
+
         #region GuidEntityReadableTextParsers
 
         static Dictionary<Type, Func<string, GuidEntity>> GuidEntityReadableTextParsers = new Dictionary<Type, Func<string, GuidEntity>>();
@@ -107,7 +109,7 @@ namespace Olive.Mvc
             {
                 try
                 {
-                    bindingContext.Result = ModelBindingResult.Success((await Entity.Database.GetOrDefault(data, bindingContext.ModelType))
+                    bindingContext.Result = ModelBindingResult.Success((await Database.GetOrDefault(data, bindingContext.ModelType))
                         // Sometimes (e.g. in master detail binding) the view model data is written to the 'Item ', so it must be cloned.
                         ?.Clone());
                 }

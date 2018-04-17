@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Olive;
+using Olive.Entities;
 
-namespace Olive.Entities
+namespace Olive
 {
-    partial class OliveExtensions
+    partial class OliveEntitiesExtensions
     {
         /// <summary>
         /// Determines if this item is in a specified list of specified items.

@@ -33,6 +33,9 @@ namespace Olive.Audit
             return CreateInstance();
         }
 
-        public Task Log(IAuditEvent auditEvent) => Entity.Database.Save(auditEvent);
+        public Task Log(IAuditEvent auditEvent)
+        {
+            return Context.Current.Database().Save(auditEvent);
+        }
     }
 }

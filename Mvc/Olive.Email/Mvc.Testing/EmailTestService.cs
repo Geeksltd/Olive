@@ -107,9 +107,12 @@ namespace Olive.Email
         {
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
             {
-                var items = (await Entity.Database.GetList<IEmailMessage>()).Where(x => To.IsEmpty() || (x.To + "," + x.Cc + ", " + x.Bcc).ToLower().Contains(To));
+                var items = await Context.Current.Database()
+                    .GetList<IEmailMessage>()
+                    .Where(x => To.IsEmpty() || (x.To + "," + x.Cc + ", " + x.Bcc).ToLower().Contains(To))
+                    .OrderByDescending(x => x.SendableDate);
 
-                return items.OrderByDescending(x => x.SendableDate).Take(15).ToList();
+                return items.Take(15).ToList();
             }
         }
 
