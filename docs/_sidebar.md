@@ -1,5 +1,4 @@
 * Olive Core
-
     * [What is Olive?](README.md)
     * [.NET Extensions](Core/Extensions.md)
     * [Utility classes](Core/Utilities.md)
