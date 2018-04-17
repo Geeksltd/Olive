@@ -2,6 +2,7 @@
 
 ## 17 Apr 2018
 - Change all references to `Entity.Database` and `Database.Instance` to `Context.Current.Database()`
+- In *appSettings.json* file Change `AppDatabase` to `Default`
 
 ## 13 Apr 2018
 - In StartUp.cs, change `app.UseWebTest(...` to `app.UseWebTest<SqlServerManager>(...`.
