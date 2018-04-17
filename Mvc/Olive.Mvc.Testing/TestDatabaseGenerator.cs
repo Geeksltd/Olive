@@ -46,7 +46,7 @@ namespace Olive.Mvc.Testing
         /// </summary>
         public TestDatabaseGenerator()
         {
-            ConnectionString = Config.GetConnectionString("AppDatabase");
+            ConnectionString = Config.GetConnectionString("Default");
         }
 
         FileInfo[] GetCreateDbFiles()

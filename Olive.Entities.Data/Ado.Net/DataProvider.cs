@@ -15,11 +15,14 @@ namespace Olive.Entities.Data
         where TConnection : DbConnection, new()
         where TDataParameter : IDbDataParameter, new()
     {
+        string connectionString, connectionStringKey = "Default";
+        readonly static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
+
         public IDataAccess Access { get; } = new DataAccess<TConnection>();
 
         public static IDatabase Database => Context.Current.Database();
 
-        protected DataProvider() => connectionStringKey = GetDefaultConnectionStringKey();
+        protected DataProvider() { }
 
         public abstract string MapColumn(string propertyName);
 
@@ -27,12 +30,6 @@ namespace Olive.Entities.Data
         {
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }
-
-        static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
-
-        string connectionStringKey, connectionString;
-
-        static string GetDefaultConnectionStringKey() => "AppDatabase";
 
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
