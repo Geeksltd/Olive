@@ -53,7 +53,7 @@ namespace Olive
         /// </summary>
         public static List<T> CloneAll<T>(this IEnumerable<T> list) where T : IEntity
         {
-            return list.Select(i => (T)i.Clone()).ToList();
+            return list.Select(i => i.Clone()).Cast<T>().ToList();
         }
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace Olive
         /// </summary>
         public static bool IsImage(this Blob doc)
         {
-            return Olive.OliveExtensions.IsAnyOf(doc.FileExtension.ToLower().TrimStart("."),
-                "jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff");
+            return doc.FileExtension.ToLower().TrimStart(".")
+                .IsAnyOf("jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff");
         }
 
         /// <summary>

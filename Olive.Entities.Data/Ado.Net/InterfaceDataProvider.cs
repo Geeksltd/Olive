@@ -39,7 +39,7 @@ namespace Olive.Entities.Data
                 }
                 catch
                 {
-                    // Can't load assembly
+                    // Can't load assembly. No logging is needed.
                 }
             }
 
@@ -87,7 +87,11 @@ namespace Olive.Entities.Data
                 {
                     if (await Context.Current.Database().Get(objectID, actual) is Entity result) return result;
                 }
-                catch { continue; }
+                catch
+                {
+                    // No logging is needed.
+                    continue;
+                }
             }
 
             throw new Exception($"There is no {InterfaceType.Name} record with the ID of '{objectID}'");

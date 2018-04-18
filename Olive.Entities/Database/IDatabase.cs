@@ -137,5 +137,7 @@ namespace Olive.Entities
         IDatabaseQuery<TEntity> Of<TEntity>() where TEntity : IEntity;
 
         IDatabaseQuery Of(Type type);
+
+        void RegisterDataProvider(Type entityType, IDataProvider dataProvider);
     }
 }

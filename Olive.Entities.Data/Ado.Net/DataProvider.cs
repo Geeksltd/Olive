@@ -122,6 +122,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed.
                         continue;
                     }
                 }
@@ -135,6 +136,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed.
                         continue;
                     }
                 }

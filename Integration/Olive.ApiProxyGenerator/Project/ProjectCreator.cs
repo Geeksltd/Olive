@@ -13,6 +13,7 @@ namespace Olive.ApiProxy
 
         protected abstract string Framework { get; }
         protected abstract string[] References { get; }
+        protected virtual bool NeedsReadMe => false;
 
         protected ProjectCreator(string name)
         {
@@ -32,8 +33,10 @@ namespace Olive.ApiProxy
             Console.WriteLine("Creating a new class library project at " + Folder.FullName + "...");
 
             Folder.GetFile(Folder.Name + ".csproj").WriteAllText($@"<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup><TargetFramework>{Framework}</TargetFramework>
-<DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile></PropertyGroup>
+  <PropertyGroup>
+      <TargetFramework>{Framework}</TargetFramework>
+      <DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile>
+  </PropertyGroup>
 </Project>");
 
             Environment.CurrentDirectory = Folder.FullName;
@@ -87,8 +90,8 @@ namespace Olive.ApiProxy
         void CreateNuspec()
         {
             var dll = $@"bin\Debug\{Framework}\{Folder.Name}";
-
             var xml = $@"<file src=""{dll}.xml"" target=""lib\{Framework}\"" />";
+            var readme = @"<file src=""README.txt"" target="""" />".OnlyWhen(NeedsReadMe);
 
             var nuspec = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
@@ -101,6 +104,7 @@ namespace Olive.ApiProxy
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
   </metadata>
   <files>
+    {readme}
     <file src=""{dll}.dll"" target=""lib\{Framework}\"" />
     {xml}
   </files>

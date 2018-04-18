@@ -13,10 +13,16 @@ namespace Olive.ApiProxy
         protected override string[] References
             => new[] { "Olive", "Olive.Entities", "Olive.Entities.Data", "Olive.ApiClient", "Olive.Microservices" };
 
+        protected override bool NeedsReadMe => true;
+
         protected override void AddFiles()
         {
             Console.Write("Adding the proxy class...");
             Folder.GetFile($"{Context.ControllerName}.cs").WriteAllText(ProxyClassProgrammer.Generate());
+            Console.WriteLine("Done");
+
+            Console.Write("Adding ReamMe.txt file ...");
+            Folder.GetFile($"README.txt").WriteAllText(ReadmeFileGenerator.Generate());
             Console.WriteLine("Done");
 
             GenerateDtoClasses();

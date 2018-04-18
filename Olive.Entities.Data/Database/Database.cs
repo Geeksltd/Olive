@@ -63,7 +63,7 @@ namespace Olive.Entities.Data
                 catch (Exception ex)
                 {
                     throw new Exception("Database.Parse() failed. Calling ToString() throw an exception on the {0} object with ID of '{1}'"
-                        .FormatWith(typeof(T).Name, instance.GetId(), ex));
+                        .FormatWith(typeof(T).Name, instance.GetId()), ex);
                 }
 
                 if (toString == null && objectString == null) return instance;

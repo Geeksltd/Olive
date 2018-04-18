@@ -41,17 +41,18 @@ namespace Olive
         {
             if (task == null) throw new ArgumentNullException(nameof(task));
 
-            var actualTask = new Task<Task>(task);
-
-            try
+            using (var actualTask = new Task<Task>(task))
             {
-                actualTask.RunSynchronously();
-                actualTask.WaitAndThrow();
-                actualTask.Result.WaitAndThrow();
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
+                try
+                {
+                    actualTask.RunSynchronously();
+                    actualTask.WaitAndThrow();
+                    actualTask.Result.WaitAndThrow();
+                }
+                catch (AggregateException ex)
+                {
+                    throw ex.InnerException;
+                }
             }
         }
 
