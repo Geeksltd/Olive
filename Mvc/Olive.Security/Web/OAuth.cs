@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Olive.Security
@@ -19,8 +20,7 @@ namespace Olive.Security
         {
             var http = Context.Current.Http();
             if (http != null) await http.SignOutAsync();
-
-            Context.Current.Http()?.Session?.Clear();
+            Context.Current.GetOptionalService<ISession>()?.Clear();
         }
 
         public async Task LoginBy(string provider)

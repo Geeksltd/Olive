@@ -62,6 +62,7 @@ namespace Olive.Mvc.Testing
                         await Task.Delay(100);
                         await AwaitReadiness();
                         break;
+                    default: throw new NotSupportedException(Status + " is not handled");
                 }
             }
         }
