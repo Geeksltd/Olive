@@ -5,8 +5,8 @@ namespace Olive
     public static class MicroserviceExtensions
     {
         /// <summary>Adds a configuration for the ApiClient instance used to invoke this Api.</summary>
-        public static T Use<T>(this T proxy, Action<ApiClient> config) where T : StronglyTypedApiProxy
-            => (T)proxy.Configure(config);
+        public static T Use<T>(this T @this, Action<ApiClient> config) where T : StronglyTypedApiProxy
+            => (T)@this.Configure(config);
 
         /// <summary>
         /// Sets the cache choice for Get requests made by this proxy.

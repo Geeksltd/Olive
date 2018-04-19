@@ -104,19 +104,15 @@ namespace Olive.Entities.Data
             {
                 Root = null;
 
-                if (IsCompleted)
+                if (!IsCompleted)
                 {
-                    // Happy scenario:
-                    Connections.Do(x => x.Value.Item1.Close());
-                }
-                else // Root is not completed.
-                {
+                    // Root is not completed.
                     IsAborted = true;
-
                     Connections.Do(x => x.Value.Item2.Rollback());
                     Connections.Do(x => x.Value.Item2.Dispose());
-                    Connections.Do(x => x.Value.Item1.Close());
                 }
+
+                Connections.Do(x => x.Value.Item1.Close());
             }
             else
             {

@@ -12,8 +12,9 @@ namespace Olive
         /// It's recommended to use Task.Factory.RunSync() instead.
         /// If you can't, at then call this while making it explicit that you know what you're doing.
         /// </summary>        
+        [EscapeGCop("I AM the solution!")]
         public static TResult RiskDeadlockAndAwaitResult<TResult>(this Task<TResult> task)
-            => Task.Run(async () => await task).Result;
+              => Task.Run(async () => await task).Result;
 
         /// <summary>
         /// If the task is not completed already it throws an exception warning you to await the task.

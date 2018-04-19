@@ -19,7 +19,7 @@ namespace Olive.Mvc
             {
                 var request = context.Request;
                 var redirectUrl = $"https://{request.Host}{request.PathBase}{request.Path}{request.QueryString}";
-                context.Response.Redirect(redirectUrl, true);
+                context.Response.Redirect(redirectUrl, permanent: true);
             }
 
             return Next(context);

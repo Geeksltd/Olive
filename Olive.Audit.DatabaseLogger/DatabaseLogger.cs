@@ -20,7 +20,11 @@ namespace Olive.Audit
             var possible = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
             {
                 try { return a.GetExportedTypes().Where(t => t.Implements<IAuditEvent>() && !t.IsInterface).ToList(); }
-                catch { return new List<Type>(); }
+                catch
+                {
+                    // No logging is needed
+                    return new List<Type>();
+                }
             }).ToList();
 
             if (possible.Count == 0)
@@ -33,9 +37,6 @@ namespace Olive.Audit
             return CreateInstance();
         }
 
-        public Task Log(IAuditEvent auditEvent)
-        {
-            return Context.Current.Database().Save(auditEvent);
-        }
+        public Task Log(IAuditEvent auditEvent) => Context.Current.Database().Save(auditEvent);
     }
 }

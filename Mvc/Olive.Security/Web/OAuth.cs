@@ -12,6 +12,8 @@ namespace Olive.Security
 {
     public class OAuth
     {
+        const int JWT_SECRET_LENGTH = 21;
+
         public readonly static OAuth Instance = new OAuth();
 
         public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
@@ -63,7 +65,7 @@ namespace Olive.Security
         internal static SymmetricSecurityKey GetJwtSecurityKey()
         {
             var configKey = Config.GetOrThrow("Authentication:JWT:Secret");
-            if (configKey.Length != 21)
+            if (configKey.Length != JWT_SECRET_LENGTH)
                 throw new ArgumentException("Your config setting of 'Authentication:JWT:Secret' needs to be 21 characters.");
 
             var securityKey = configKey.ToBytes(encoding: Encoding.UTF8);

@@ -18,6 +18,7 @@ namespace Olive.Entities.Data
         bool NeedsTypeResolution(Type type) => type.IsInterface || type == typeof(Entity);
 
         public AsyncEvent CacheRefreshed { get; } = new AsyncEvent();
+
         /// <summary>
         /// Clears the cache of all items.
         /// </summary>
@@ -35,16 +36,18 @@ namespace Olive.Entities.Data
         /// </summary>
         public async Task EnlistOrCreateTransaction(Func<Task> func)
         {
-            if (AnyOpenTransaction()) await func?.Invoke();
-            else
-            {
-                using (var scope = CreateTransactionScope())
+            if (AnyOpenTransaction())
+                if (func != null) await func.Invoke();
+                else
                 {
-                    await func?.Invoke();
+                    using (var scope = CreateTransactionScope())
+                    {
+                        if (func != null)
+                            await func.Invoke();
 
-                    scope.Complete();
+                        scope.Complete();
+                    }
                 }
-            }
         }
 
         /// <summary>

@@ -45,7 +45,11 @@ namespace Olive.Entities
                 if (usage != null) result = usage.Enabled;
 
                 try { return Cache[type] = result; }
-                catch { return result; }
+                catch
+                {
+                    // No logging is needed
+                    return result;
+                }
             }
         }
     }

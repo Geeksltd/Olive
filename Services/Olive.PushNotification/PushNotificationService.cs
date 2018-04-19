@@ -212,18 +212,15 @@
                 description += $"ID={error.Notification.Identifier}, Code={error.ErrorStatusCode}";
             }
 
-            if (ex is GcmNotificationException)
+            if (ex is GcmNotificationException notificationError)
             {
-                var error = (GcmNotificationException)ex;
-                description += $"ID={error.Notification.MessageId}, Desc={error.Description}";
+                description += $"ID={notificationError.Notification.MessageId}, Desc={notificationError.Description}";
             }
-            else if (ex is GcmMulticastResultException)
+            else if (ex is GcmMulticastResultException multiCastError)
             {
-                var error = (GcmMulticastResultException)ex;
+                description += multiCastError.Succeeded.Select(x => "ID=" + x.MessageId).ToString(", ").WithWrappers("\r\n Succeeded:{", "}");
 
-                description += error.Succeeded.Select(x => "ID=" + x.MessageId).ToString(", ").WithWrappers("\r\n Succeeded:{", "}");
-
-                description += error.Failed.Select(x => "ID=" + x.Key.MessageId + ", Desc=" + x.Value.Message)
+                description += multiCastError.Failed.Select(x => "ID=" + x.Key.MessageId + ", Desc=" + x.Value.Message)
                     .ToString(", ").WithWrappers("\r\n Failed:{", "}");
             }
             else if (ex is DeviceSubscriptionExpiredException error)

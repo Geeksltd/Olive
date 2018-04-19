@@ -23,7 +23,7 @@ namespace Olive.Entities.Data
         internal void TryCache(IEntity item, DateTime? queryTime)
         {
             if (AnyOpenTransaction()) return;
-            if (queryTime != null && Cache.Current.IsUpdatedSince(item, queryTime.Value)) return;
+            if (queryTime.HasValue && Cache.Current.IsUpdatedSince(item, queryTime.Value)) return;
             Cache.Current.Add(item);
         }
 

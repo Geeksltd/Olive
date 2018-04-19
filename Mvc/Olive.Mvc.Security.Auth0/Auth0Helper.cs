@@ -34,11 +34,11 @@ namespace Olive.Security
             {
                 await ApiClient.UsernamePasswordLoginAsync(request);
                 // No error:
-                return new AuthenticationResult() { Success = true };
+                return new AuthenticationResult { Success = true };
             }
             catch (ApiException exception)
             {
-                return new AuthenticationResult() { Message = exception.Message };
+                return new AuthenticationResult { Message = exception.Message };
             }
         }
 
