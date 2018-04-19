@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -142,6 +143,11 @@ namespace Olive.Mvc
         {
             return (JavascriptActions)(context.Items["JavascriptActions"] ??
                   (context.Items["JavascriptActions"] = new JavascriptActions()));
+        }
+
+        public static IApplicationBuilder UseRedirectToHttps(this IApplicationBuilder @this)
+        {
+            return @this.UseMiddleware<RedirectToHttpsMiddleware>();
         }
     }
 }

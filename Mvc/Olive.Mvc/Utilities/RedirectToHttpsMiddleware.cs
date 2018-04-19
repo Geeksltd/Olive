@@ -25,13 +25,4 @@ namespace Olive.Mvc
             return Next(context);
         }
     }
-
-    public static class RedirectToHttpsArrMiddlewareExtensions
-    {
-        public static IApplicationBuilder UseRedirectToHttps(
-    this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<RedirectToHttpsMiddleware>();
-        }
-    }
 }
