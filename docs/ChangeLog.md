@@ -1,5 +1,16 @@
 # Olive compatibility change log
 
+## 20 Apr 2018
+- In references.js at the bottom of the file add the following:
+```javascript
+// Wait until Olive scripts are fully loaded before submitting any form
+for (let i = 0; i < document.forms.length; i++) {
+    document.forms[i].onsubmit = function (e) {
+        if (window["IsOliveMvcLoaded"] === undefined) return false;
+    };
+}
+```
+
 ## 17 Apr 2018
 - Change all references to `Entity.Database` and `Database.Instance` to `Context.Current.Database()`
 - In *appSettings.json* file Change `AppDatabase` to `Default`
