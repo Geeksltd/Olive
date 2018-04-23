@@ -76,15 +76,6 @@ namespace Olive.Mvc
         /// <summary>
         /// Creates a ViewResult object by using the model that renders a view to the response.
         /// </summary>
-        public override ViewResult View(object model)
-        {
-            JavascriptActions.ScheduleNotifications();
-            return base.View(model);
-        }
-
-        /// <summary>
-        /// Creates a ViewResult object by using the model that renders a view to the response.
-        /// </summary>
         public override ViewResult View(string viewName)
         {
             JavascriptActions.ScheduleNotifications();

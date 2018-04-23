@@ -60,15 +60,22 @@ namespace Olive.Mvc
             Context.Current.Configure(app.ApplicationServices).Configure(env);
             ConfigureExceptionPage(app, env);
 
-
-            app.UseMicroserviceAccessKeyAuthentication()
-                .UseAuthentication()
-                .UseStaticFiles()
-                .UseRequestLocalization(RequestLocalizationOptions)
-                .UseMvc(ConfigureRoutes);
+            ConfigureSecurity(app, env);
+            ConfigureRequestHandlers(app, env);
         }
 
+        protected virtual void ConfigureSecurity(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseMicroserviceAccessKeyAuthentication();
+            app.UseAuthentication();
+        }
 
+        protected virtual void ConfigureRequestHandlers(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseStaticFiles();
+            app.UseRequestLocalization(RequestLocalizationOptions);
+            app.UseMvc();
+        }
 
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)
         {
