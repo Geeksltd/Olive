@@ -77,5 +77,31 @@ exec sp_detach_db '{0}'".FormatWith(databaseName);
         }
 
         public override void ClearConnectionPool() => SqlConnection.ClearAllPools();
+
+        public override bool Exists(string database, string filePath)
+        {
+            using (var connection = CreateConnection())
+            {
+                try { connection.Open(); }
+                catch (Exception ex) { throw new Exception("Failed to open a DB connection.", ex); }
+
+                using (var cmd = connection.CreateCommand())
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = @"SELECT [filename] FROM master.dbo.sysdatabases WHERE name='" +
+                        database + "'";
+
+                    try
+                    {
+                        var file = cmd.ExecuteScalar()?.ToStringOrEmpty();
+                        return file.StartsWith(filePath);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
     }
 }

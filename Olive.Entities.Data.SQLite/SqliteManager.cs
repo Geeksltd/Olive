@@ -54,5 +54,7 @@ namespace Olive.Entities.Data
         }
 
         public override void ClearConnectionPool() { }
+
+        public override bool Exists(string database, string filePath) => false;
     }
 }

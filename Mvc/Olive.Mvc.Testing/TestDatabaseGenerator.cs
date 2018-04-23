@@ -15,6 +15,7 @@ namespace Olive.Mvc.Testing
 
         readonly string ConnectionString;
         string TempDatabaseName;
+        bool DropExisting;
         DatabaseManager Server;
 
         DirectoryInfo DbDirectory, DatabaseFilesPath;
@@ -88,6 +89,14 @@ namespace Olive.Mvc.Testing
             DatabaseFilesPath = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName).GetOrCreateSubDirectory(hash);
         }
 
+        void EstablishDatabaseFromScripts()
+        {
+            if (!DropExisting)
+                if (Server.Exists(TempDatabaseName, DatabaseFilesPath.FullName)) return;
+
+            CreateDatabaseFromScripts();
+        }
+
         void CreateDatabaseFromScripts()
         {
             Server.ClearConnectionPool();
@@ -131,8 +140,9 @@ namespace Olive.Mvc.Testing
             return result;
         }
 
-        public void Process(WebTestConfig config)
+        public void Process(WebTestConfig config, bool dropExisting)
         {
+            DropExisting = dropExisting;
             Server = config.DatabaseManager;
             LoadMetaDirectory();
 
@@ -148,7 +158,7 @@ namespace Olive.Mvc.Testing
 
             lock (SyncLock)
             {
-                CreateDatabaseFromScripts();
+                EstablishDatabaseFromScripts();
                 CopyFiles();
             }
 
