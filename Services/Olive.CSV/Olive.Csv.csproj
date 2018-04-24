@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="7.0.1" />
-    <PackageReference Include="GCop.Basics" Version="1.0.3" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>

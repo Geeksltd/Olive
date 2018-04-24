@@ -52,7 +52,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\GCop.Basics.1.0.3\analyzers\dotnet\cs\GCop.Basics.dll" />
     <Analyzer Include="..\..\packages\GCop.Collections.1.0.4\analyzers\dotnet\cs\GCop.Collections.dll" />
     <Analyzer Include="..\..\packages\GCop.Collections.1.0.4\analyzers\dotnet\cs\netstandard.dll" />
     <Analyzer Include="..\..\packages\GCop.Common.1.0.4\analyzers\dotnet\cs\GCop.Common.dll" />
@@ -67,7 +66,6 @@
     <Analyzer Include="..\..\packages\GCop.Linq.1.0.4\analyzers\dotnet\cs\netstandard.dll" />
     <Analyzer Include="..\..\packages\GCop.String.1.0.4\analyzers\dotnet\cs\GCop.String.dll" />
     <Analyzer Include="..\..\packages\GCop.String.1.0.4\analyzers\dotnet\cs\netstandard.dll" />
-    <Analyzer Include="..\..\packages\GCop.Thread.1.0.3\analyzers\dotnet\cs\GCop.Core.dll" />
     <Analyzer Include="..\..\packages\GCop.Thread.1.0.4\analyzers\dotnet\cs\GCop.Thread.dll" />
     <Analyzer Include="..\..\packages\GCop.Thread.1.0.4\analyzers\dotnet\cs\netstandard.dll" />
   </ItemGroup>
