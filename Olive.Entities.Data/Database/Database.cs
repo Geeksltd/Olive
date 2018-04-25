@@ -36,18 +36,17 @@ namespace Olive.Entities.Data
         /// </summary>
         public async Task EnlistOrCreateTransaction(Func<Task> func)
         {
-            if (AnyOpenTransaction())
-                if (func != null) await func.Invoke();
-                else
-                {
-                    using (var scope = CreateTransactionScope())
-                    {
-                        if (func != null)
-                            await func.Invoke();
+            if (func == null) return;
 
-                        scope.Complete();
-                    }
+            if (AnyOpenTransaction()) await func.Invoke();
+            else
+            {
+                using (var scope = CreateTransactionScope())
+                {
+                    await func.Invoke();
+                    scope.Complete();
                 }
+            }
         }
 
         /// <summary>
