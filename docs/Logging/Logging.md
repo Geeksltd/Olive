@@ -51,26 +51,12 @@ Output:
 ![image](https://user-images.githubusercontent.com/22152065/37423630-98bf95dc-27d3-11e8-9e92-f26cf9f82641.png)
 
 ## Log providers
-
-Currently Olive supports 3 types of Log providers:
+There are many standard and open source log providers. By default in Olive you will get:
 
 - **Console provider**: Logs information into a console
 - **Debug provider**: Logs information into debug window. Extreamly handy during development.
 - **File provider**: Logs data into a text file.
 
-Other types of providers will be added soon.
-
 ### How to use providers
 
-Everything is done in your **appsettings.json**! You don't need to edit your codebase of your application. The full pattern of logging which includes **Console**, **Debug** and **File** is shown below:
-
-```json
-"Log": {
-    "Console": true,
-    "Debug": true,
-    "File": {
-      "IsActive": true,
-      "Path": "somewhere.log"
-    }
-  }
-```
+Everything is done in your **appsettings.json**. In your project, check out the sample `Log` section provided. You can learn more about configuring this.
