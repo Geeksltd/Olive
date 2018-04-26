@@ -76,7 +76,8 @@ namespace Olive.Email
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "Could not send a queued email item " + mail.GetId());
+                        Log.For(typeof(EmailService))
+                            .Error(ex, "Could not send a queued email item " + mail.GetId());
                     }
                 }
             }
@@ -110,7 +111,8 @@ namespace Olive.Email
             {
                 await SendError.Raise(new EmailSendingEventArgs(mailItem, mail) { Error = ex });
                 await mailItem.RecordRetry();
-                Log.Error(ex, $"Error in sending an email for this EmailQueueItem of '{mailItem.GetId()}'");
+                Log.For(typeof(EmailService))
+                    .Error(ex, $"Error in sending an email for this EmailQueueItem of '{mailItem.GetId()}'");
                 return false;
             }
         }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Logging;
 using Olive.Entities;
 
 namespace Olive.Mvc
@@ -241,6 +242,8 @@ namespace Olive.Mvc
             var fullUrl = Request.GetAbsoluteUrl(relativePath);
             JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
         }
+
+        public ILogger Log => Olive.Log.For(this);
     }
 
     public enum WindowAction

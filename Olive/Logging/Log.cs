@@ -1,36 +1,40 @@
 ﻿using System;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Olive
 {
-    public static class Log
+    public static class LogExtensions
     {
-        /// <summary>
-        /// A shortcut to Context.Current.GetService«ILogger»().
-        /// </summary>
-        public static ILogger Current => Context.Current.GetService<ILogger>();
-
-        public static void Error(Exception ex, string message = null) => Current.LogError(ex, message);
-
-        public static void Warning(string message, object relatedObject = null, string userId = null, string userIp = null)
+        public static ILoggingBuilder AddFile(this ILoggingBuilder @this, Action<FileLoggerOptions> configure = null)
         {
-            Current.LogWarning(ToYaml(message, relatedObject, userId, userIp));
+            @this.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
+            if (configure != null) @this.Services.Configure(configure);
+            return @this;
         }
 
-        public static void Debug(string message, object relatedObject = null, string userId = null, string userIp = null)
+        public static void Error(this ILogger @this, Exception ex, string message = null)
+            => @this.LogError(ex, message);
+
+        public static void Warning(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
         {
-            Current.LogDebug(ToYaml(message, relatedObject, userId, userIp));
+            @this.LogWarning(ToYaml(message, relatedObject, userId, userIp));
         }
 
-        public static void Info(string message, object relatedObject = null, string userId = null, string userIp = null)
+        public static void Debug(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
         {
-            Current.LogInformation(ToYaml(message, relatedObject, userId, userIp));
+            @this.LogDebug(ToYaml(message, relatedObject, userId, userIp));
         }
 
-        public static void Audit(string message, object relatedObject = null, string userId = null, string userIp = null)
+        public static void Info(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
         {
-            Current.LogTrace(ToYaml(message, relatedObject, userId, userIp));
+            @this.LogInformation(ToYaml(message, relatedObject, userId, userIp));
+        }
+
+        public static void Audit(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
+        {
+            @this.LogTrace(ToYaml(message, relatedObject, userId, userIp));
         }
 
         static string ToYaml(string description, object relatedObject, string userId, string userIp)
@@ -38,7 +42,7 @@ namespace Olive
             var r = new StringBuilder();
             if (userId.HasValue()) r.AppendLine($"  UserId: {userId}");
             if (userIp.HasValue()) r.AppendLine($"  UserIP: {userIp}");
-            if (relatedObject != null) r.AppendLine($"  Object: {{ {relatedObject.GetType()}: {relatedObject.ToStringOrEmpty()} }}");
+            if (relatedObject != null) r.AppendLine($"  Object: {relatedObject.ToStringOrEmpty()}");
 
             if (description.HasValue())
             {
@@ -54,5 +58,23 @@ namespace Olive
 
             return r.ToString();
         }
+    }
+
+    public static class Log
+    {
+        static ILoggerFactory factory;
+        static ILoggerFactory Factory => factory ?? (factory = Context.Current.GetService<ILoggerFactory>());
+
+        /// <summary>
+        /// A shortcut to Context.Current.GetService«ILogger»().
+        /// </summary>
+        public static ILogger For(Type type) => factory.CreateLogger(type);
+
+        public static ILogger For<TType>() => For(typeof(TType));
+
+        /// <summary>
+        /// A shortcut to Context.Current.GetService«ILogger»().
+        /// </summary>
+        public static ILogger For(object useThis) => For(useThis?.GetType() ?? typeof(Log));
     }
 }

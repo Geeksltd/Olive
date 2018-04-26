@@ -89,7 +89,7 @@ namespace Olive
                 // Handle void calls
                 if (ResponseText.LacksAll() && typeof(TResponse) == typeof(bool))
                 {
-                    Log.Debug("ApiClient.ExtractResponse: ResponseText is empty for " + Url);
+                    Log.For(this).Debug("ExtractResponse: ResponseText is empty for " + Url);
                     return default(TResponse);
                 }
 
@@ -101,7 +101,7 @@ namespace Olive
 
                     var result = JsonConvert.DeserializeObject<TResponse>(response);
 
-                    Log.Debug("ApiClient.ExtractResponse: Deserialized Result: " + result);
+                    Log.For(this).Debug("ExtractResponse: Deserialized Result: " + result);
 
                     return result;
                 }
@@ -157,7 +157,7 @@ namespace Olive
                         ResponseCode = response.StatusCode;
                         ResponseHeaders = response.Headers;
 
-                        Log.Debug("ApiClient.DoSend ResponseCode:" + ResponseCode + " for " + Client.Url);
+                        Log.For(this).Debug("DoSend ResponseCode:" + ResponseCode + " for " + Client.Url);
 
                         if (ResponseCode == HttpStatusCode.NotModified)
                             if (LocalCachedVersion.HasValue()) return null;
@@ -172,7 +172,7 @@ namespace Olive
                         else
                         {
                             var result = await response.Content.ReadAsStringAsync();
-                            Log.Debug("ApiClient.DoSend Result: " + result);
+                            Log.For(this).Debug("DoSend Result: " + result);
                             return result;
                         }
                     }

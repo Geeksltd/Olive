@@ -84,7 +84,7 @@
 
             GcmBroker.OnNotificationSucceeded += notification =>
             {
-                Olive.Log.Debug("Notification has been sent successfully: " + notification);
+                Olive.Log.For<PushNotificationService>().Debug("Notification has been sent successfully: " + notification);
             };
 
             GcmBroker.Start();
@@ -234,7 +234,7 @@
                 description += $"GCM Rate Limited, don't send more until after {raeError.RetryAfterUtc}";
             }
 
-            Olive.Log.Error(ex, description);
+            Olive.Log.For<PushNotificationService>().Error(ex, description);
         }
 
         /// <summary>

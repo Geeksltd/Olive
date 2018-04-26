@@ -94,14 +94,14 @@ namespace Olive
         public async Task<TResponse> Get<TResponse>(object queryParams = null)
         {
             Url = GetFullUrl(queryParams);
-            Log.Debug("ApiClient.Get: Url = " + Url);
+            Log.For(this).Debug("Get: Url = " + Url);
 
             if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
             {
                 var result = await GetCachedResponse<TResponse>();
                 if (HasValue(result))
                 {
-                    Log.Debug("ApiClient.Get: Returning from Cache: " + result);
+                    Log.For(this).Debug("Get: Returning from Cache: " + result);
                     return result;
                 }
             }
@@ -120,7 +120,7 @@ namespace Olive
                 result = await GetCachedResponse<TResponse>();
                 if (HasValue(result))
                 {
-                    Log.Debug("ApiClient.ExecuteGet: Returning from Cache: " + result);
+                    Log.For(this).Debug("ExecuteGet: Returning from Cache: " + result);
                     return result;
                 }
             }
