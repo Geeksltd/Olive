@@ -118,6 +118,9 @@ namespace Olive
             HttpClient CreateHttpClient()
             {
                 var container = new HttpClientHandler { CookieContainer = Client.RequestCookies };
+
+                container.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+
                 HttpClient = new HttpClient(container)
                 {
                     Timeout = Config.Get("ApiClient:Timeout", 20).Seconds()

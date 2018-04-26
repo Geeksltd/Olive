@@ -94,7 +94,7 @@ namespace Olive.Mvc
         /// </summary>
         public static async Task BlockIfNecessary(HttpContext httpContext)
         {
-            if (await IsAllowed(httpContext.Connection.RemoteIpAddress.ToStringOrEmpty()))
+            if (!await IsAllowed(httpContext.Connection.RemoteIpAddress.ToStringOrEmpty()))
                 await OnBlockedAccessAttempt();
         }
 
