@@ -68,7 +68,7 @@ namespace Olive
         /// <summary>
         /// A shortcut to Context.Current.GetService«ILogger»().
         /// </summary>
-        public static ILogger For(Type type) => factory.CreateLogger(type);
+        public static ILogger For(Type type) => Factory.CreateLogger(type);
 
         public static ILogger For<TType>() => For(typeof(TType));
 
