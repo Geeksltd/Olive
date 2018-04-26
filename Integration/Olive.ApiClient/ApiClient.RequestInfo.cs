@@ -88,14 +88,22 @@ namespace Olive
             {
                 // Handle void calls
                 if (ResponseText.LacksAll() && typeof(TResponse) == typeof(bool))
+                {
+                    Log.Debug("ApiClient.ExtractResponse: ResponseText is empty for " + Url);
                     return default(TResponse);
+                }
 
                 try
                 {
-                    var result = ResponseText;
-                    if (typeof(TResponse) == typeof(string) && result.HasValue())
-                        result = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
-                    return JsonConvert.DeserializeObject<TResponse>(result);
+                    var response = ResponseText;
+                    if (typeof(TResponse) == typeof(string) && response.HasValue())
+                        response = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
+
+                    var result = JsonConvert.DeserializeObject<TResponse>(response);
+
+                    Log.Debug("ApiClient.ExtractResponse: Deserialized Result: " + result);
+
+                    return result;
                 }
                 catch (Exception ex)
                 {
@@ -149,6 +157,8 @@ namespace Olive
                         ResponseCode = response.StatusCode;
                         ResponseHeaders = response.Headers;
 
+                        Log.Debug("ApiClient.DoSend ResponseCode:" + ResponseCode + " for " + Client.Url);
+
                         if (ResponseCode == HttpStatusCode.NotModified)
                             if (LocalCachedVersion.HasValue()) return null;
 
@@ -161,7 +171,9 @@ namespace Olive
                         }
                         else
                         {
-                            return await response.Content.ReadAsStringAsync();
+                            var result = await response.Content.ReadAsStringAsync();
+                            Log.Debug("ApiClient.DoSend Result: " + result);
+                            return result;
                         }
                     }
                     catch (Exception ex)
