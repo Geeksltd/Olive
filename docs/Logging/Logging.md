@@ -59,4 +59,4 @@ There are many standard and open source log providers. By default in Olive you w
 
 ### How to use providers
 
-Everything is done in your **appsettings.json**. In your project, check out the sample `Log` section provided. You can learn more about configuring this.
+Everything is done in your **appsettings.json**. In your project, check out the sample `Log` section provided. You can learn more about [configuring this here](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.1&tabs=aspnetcore2x#log-filtering).
