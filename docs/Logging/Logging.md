@@ -8,10 +8,6 @@ To create a log message in your application you first need to obtain an `ILogger
 
 Once you obtain the logger instance, you then invoke the appropriate method, depending on your desired log level. For example `Olive.Log.For(this).Error("Hello World")`.
 
-Now hit **F5** and run the project. Now you should see the output in the console:
-
-![image](https://user-images.githubusercontent.com/22152065/37421584-e633502e-27ce-11e8-8838-a4c9ae993bba.png)
-
 ## Log Levels
 
 | Level | Description |
