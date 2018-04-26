@@ -52,7 +52,7 @@ var customers = await new ApiClient($"{baseUrl}/customers")
 ---
 
 ## Cache vs Fresh
-Remove services can be faulty, slow or unresponsive at times due to network, server or application problems.
+Remote services can be faulty, slow or unresponsive at times due to network, server or application problems.
 
 By default, Olive will cache the response of every Get request. The raw textual result (often Json data) will be saved upon every successful execution of that Api.
 The name of the cache file will come from the URL (HASHED) so that subsequent successful calls to the same url will simply overwrite the same file.
