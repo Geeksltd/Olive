@@ -181,6 +181,9 @@ namespace Olive
                     }
                     catch (Exception ex)
                     {
+                        if (ex.InnerException?.Message == "The HTTP redirect request failed")
+                            throw new Exception("The Api target seems misconfigured as it's trying to redirect! Consider using [AuthorizeApi] instead of [Authorize].", ex);
+
                         throw await ImproveException(ex, errorMessage, responseBody);
                     }
                 }
