@@ -89,12 +89,14 @@ namespace Olive.Mvc.Testing
             DatabaseFilesPath = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName).GetOrCreateSubDirectory(hash);
         }
 
-        void EstablishDatabaseFromScripts()
+        bool EstablishDatabaseFromScripts()
         {
             if (!DropExisting)
-                if (Server.Exists(TempDatabaseName, DatabaseFilesPath.FullName)) return;
+                if (Server.Exists(TempDatabaseName, DatabaseFilesPath.FullName))
+                    return false;
 
             CreateDatabaseFromScripts();
+            return true;
         }
 
         void CreateDatabaseFromScripts()
@@ -140,7 +142,7 @@ namespace Olive.Mvc.Testing
             return result;
         }
 
-        public void Process(WebTestConfig config, bool dropExisting)
+        public bool Process(WebTestConfig config, bool dropExisting)
         {
             DropExisting = dropExisting;
             Server = config.DatabaseManager;
@@ -150,7 +152,7 @@ namespace Olive.Mvc.Testing
             if (!TempDatabaseName.ToLower().EndsWith(".temp"))
             {
                 Debug.WriteLine($"Temp databae creation aborted as '{TempDatabaseName}' does not end in '.Temp'.");
-                return;
+                return false;
             }
 
             EnsurePermissions();
@@ -158,11 +160,13 @@ namespace Olive.Mvc.Testing
 
             lock (SyncLock)
             {
-                EstablishDatabaseFromScripts();
+                if (!EstablishDatabaseFromScripts()) return false;
                 CopyFiles();
             }
 
             Task.Factory.RunSync(() => Context.Current.Database().Refresh());
+
+            return true;
         }
 
         /// <summary>

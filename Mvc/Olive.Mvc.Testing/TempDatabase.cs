@@ -24,12 +24,12 @@ namespace Olive.Mvc.Testing
 
             try
             {
-                new TestDatabaseGenerator().Process(Config, dropExisting);
-                try { await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask); }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to run the reference data.", ex);
-                }
+                if (new TestDatabaseGenerator().Process(Config, dropExisting))
+                    try { await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask); }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Failed to run the reference data.", ex);
+                    }
                 Status = CreationStatus.Created;
             }
             catch
