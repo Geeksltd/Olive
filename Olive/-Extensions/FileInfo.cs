@@ -177,5 +177,22 @@ namespace Olive
 
             return folder.GetFiles(searchPattern);
         }
+
+        /// <summary>
+        /// Gets this file's original exact file name with the correct casing.
+        /// </summary>
+        public static string GetExactFullName(this FileSystemInfo @this)
+        {
+            var path = @this.FullName;
+            if (!File.Exists(path) && !Directory.Exists(path)) return path;
+
+            var asDirectory = new DirectoryInfo(path);
+            var parent = asDirectory.Parent;
+
+            if (parent == null) // Drive:
+                return asDirectory.Name.ToUpper();
+
+            return Path.Combine(parent.GetExactFullName(), parent.GetFileSystemInfos(asDirectory.Name)[0].Name);
+        }
     }
 }

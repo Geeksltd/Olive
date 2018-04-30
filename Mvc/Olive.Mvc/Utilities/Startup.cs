@@ -72,9 +72,15 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureRequestHandlers(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseStaticFiles();
+            UseStaticFiles(app, env);
             app.UseRequestLocalization(RequestLocalizationOptions);
             app.UseMvc();
+        }
+
+        protected virtual void UseStaticFiles(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment()) app.UseStaticFilesCaseSensitive();
+            else app.UseStaticFiles();
         }
 
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)

@@ -52,7 +52,7 @@ namespace Olive.Email
 
                 var stream = new MemoryStream(Convert.FromBase64String(contents));
                 var name = data["Name"] as string;
-                var contentId = data["ContentId"] as string;
+                var contentId = data.GetOrDefault("ContentId") as string;
 
                 return new Attachment(stream, name) { ContentId = contentId };
             }
