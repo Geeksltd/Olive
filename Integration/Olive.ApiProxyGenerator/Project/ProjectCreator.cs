@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace Olive.ApiProxy
         string Name;
         public DirectoryInfo Folder;
 
-        static string Version = DateTime.Now.ToString("yyMMdd.HH.mmss");
+        static string Version = LocalTime.Now.ToString("yyMMdd.HH.mmss");
 
         protected abstract string Framework { get; }
         protected abstract string[] References { get; }
@@ -87,6 +88,20 @@ namespace Olive.ApiProxy
             }
         }
 
+        protected virtual IEnumerable<string> GetNugetDependencies()
+        {
+            yield break;
+        }
+
+        string GetLatestNugetVersion(string package)
+        {
+            var html = $"https://www.nuget.org/packages/{package}".AsUri().Download()
+                .RiskDeadlockAndAwaitResult();
+
+            var pref = "<meta property=\"og:title\" content=\"" + package + " ";
+            return html.Substring(pref, "\"", inclusive: false);
+        }
+
         void CreateNuspec()
         {
             var dll = $@"bin\Debug\{Framework}\{Folder.Name}";
@@ -102,7 +117,9 @@ namespace Olive.ApiProxy
     <authors>Olive Api Proxy Generator</authors>
     <iconUrl>{IconUrl}</iconUrl>
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
-  </metadata>
+  <dependencies>
+    {GetNugetDependencies().Select(x => $"<dependency id=\"{x}\" version=\"{GetLatestNugetVersion(x)}\" />").ToLinesString()}
+  </dependencies>     
   <files>
     {readme}
     <file src=""{dll}.dll"" target=""lib\{Framework}\"" />

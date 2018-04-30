@@ -1,4 +1,6 @@
 ﻿using System;
+using Olive;
+using System.Collections.Generic;
 
 namespace Olive.ApiProxy
 {
@@ -55,6 +57,20 @@ namespace Olive.ApiProxy
 
                 Console.WriteLine("Done");
             }
+        }
+
+        protected override IEnumerable<string> GetNugetDependencies()
+        {
+            return new[]
+            {
+                "Olive",
+                "Olive.ApiClient",
+                "Olive.Entities",
+                "Olive.Microservices",
+                "Microsoft.Extensions.Logging",
+                "Microsoft.Extensions.DependencyInjection",
+                "Microsoft.Extensions.Configuration.Json"
+            };
         }
     }
 }
