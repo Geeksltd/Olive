@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="1.0.4" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.6" />
     <PackageReference Include="SkiaSharp" Version="1.59.3" />
   </ItemGroup>
 
