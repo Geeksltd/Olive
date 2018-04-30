@@ -24,7 +24,7 @@ namespace Olive.Mvc
                     if (!onDisk.EndsWith(requested))
                     {
                         throw new Exception("The requested file has incorrect casing and will fail on Linux servers." +
-                            Environment.NewLine + "Requested:" + requested + Environment.NewLine +
+                            Environment.NewLine + "Requested: " + requested + Environment.NewLine +
                             "On disk: " + onDisk.Right(requested.Length));
                     }
                 }
