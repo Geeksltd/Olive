@@ -117,9 +117,10 @@ namespace Olive.ApiProxy
     <authors>Olive Api Proxy Generator</authors>
     <iconUrl>{IconUrl}</iconUrl>
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
-  <dependencies>
+    <dependencies>
     {GetNugetDependencies().Select(x => $"<dependency id=\"{x}\" version=\"{GetLatestNugetVersion(x)}\" />").ToLinesString()}
-  </dependencies>     
+    </dependencies>   
+  </metadata>
   <files>
     {readme}
     <file src=""{dll}.dll"" target=""lib\{Framework}\"" />
