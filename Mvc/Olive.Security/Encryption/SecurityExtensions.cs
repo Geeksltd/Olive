@@ -8,19 +8,19 @@
     {
         static XmlSerializer RSAParametersSerializer = new XmlSerializer(typeof(RSAParameters));
 
-        public static string ToKey(this RSAParameters parameters)
+        public static string ToKey(this RSAParameters @this)
         {
-            var xml = RSAParametersSerializer.Serialize(parameters);
+            var xml = RSAParametersSerializer.Serialize(@this);
             return xml.ToBytes(Encoding.ASCII).GZip().ToBase64String();
         }
 
-        public static RSACryptoServiceProvider FromKey(this RSACryptoServiceProvider provider, string key)
+        public static RSACryptoServiceProvider FromKey(this RSACryptoServiceProvider @this, string key)
         {
             var xml = key.ToBytesFromBase64().UnGZip().ToString(Encoding.ASCII);
             var parameters = RSAParametersSerializer.Deserialize<RSAParameters>(xml);
-            provider.ImportParameters(parameters);
+            @this.ImportParameters(parameters);
 
-            return provider;
+            return @this;
         }
     }
 }

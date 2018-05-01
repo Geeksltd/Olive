@@ -15,9 +15,14 @@ namespace Olive.Entities.Data
         where TConnection : DbConnection, new()
         where TDataParameter : IDbDataParameter, new()
     {
+        string connectionString, connectionStringKey = "Default";
+        readonly static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
+
         public IDataAccess Access { get; } = new DataAccess<TConnection>();
 
-        protected DataProvider() => connectionStringKey = GetDefaultConnectionStringKey();
+        public static IDatabase Database => Context.Current.Database();
+
+        protected DataProvider() { }
 
         public abstract string MapColumn(string propertyName);
 
@@ -26,22 +31,16 @@ namespace Olive.Entities.Data
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }
 
-        static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
-
-        string connectionStringKey, connectionString;
-
-        static string GetDefaultConnectionStringKey() => "AppDatabase";
-
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
+                await Database.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task BulkUpdate(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
+                await Database.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task<int> Count(IDatabaseQuery query)
@@ -101,7 +100,14 @@ namespace Olive.Entities.Data
             var type = original.GetType();
             var propertyNames = type.GetProperties().Distinct().Select(p => p.Name.Trim()).ToArray();
 
-            Func<string, PropertyInfo> getProperty = name => type.GetProperties().Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic).Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic).OrderByDescending(x => x.DeclaringType == type).FirstOrDefault(p => p.Name == name);
+            PropertyInfo getProperty(string name)
+            {
+                return type.GetProperties()
+                    .Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic)
+                    .Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic)
+                    .OrderByDescending(x => x.DeclaringType == type)
+                    .FirstOrDefault(p => p.Name == name);
+            }
 
             var dataProperties = propertyNames.Select(getProperty).ExceptNull()
                 .Except(x => CalculatedAttribute.IsCalculated(x))
@@ -123,6 +129,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed.
                         continue;
                     }
                 }
@@ -136,6 +143,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed.
                         continue;
                     }
                 }
@@ -149,6 +157,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed
                         continue;
                     }
                 }

@@ -87,7 +87,10 @@ namespace Olive
 
                     // Remove attributes:
                     try { fileOrFolder.Attributes = FileAttributes.Normal; }
-                    catch { }
+                    catch
+                    {
+                        // No logging is needed
+                    }
 
                     attempt++;
 

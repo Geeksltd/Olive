@@ -82,7 +82,7 @@ namespace Olive.Email
             var retries = @this.Retries + 1;
 
             if (!@this.IsNew)
-                await Entity.Database.Update(@this, e => e.Retries = retries);
+                await Context.Current.Database().Update(@this, e => e.Retries = retries);
 
             // Also update this local instance:
             @this.Retries = retries;

@@ -1,15 +1,19 @@
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace Olive.Mvc
 {
     public class AuthorizeApiAttribute : TypeFilterAttribute
     {
-        public AuthorizeApiAttribute() : base(typeof(ClaimRequirementFilter))
+        string roles;
+
+        public AuthorizeApiAttribute(string roles = null) : base(typeof(ClaimRequirementFilter))
         {
-            Arguments = new object[0];
+            Roles = roles;
         }
 
         /// <summary>
@@ -17,27 +21,44 @@ namespace Olive.Mvc
         /// </summary>
         public string Roles
         {
-            set => Arguments = value.OrEmpty().Split(',').Trim().ToArray();
+            get => roles;
+            set
+            {
+                roles = value;
+                Arguments = new object[] { value };
+            }
         }
     }
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class ClaimRequirementFilter : IAuthorizationFilter
     {
         readonly string[] Roles;
+        ILogger Log;
 
-        public ClaimRequirementFilter(object[] roles) => Roles = roles.Select(x => x.ToString()).ToArray();
+        public ClaimRequirementFilter(string roles)
+        {
+            Roles = roles.OrEmpty().Split(',').Trim().ToArray();
+            Log = Olive.Log.For(this);
+        }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.User;
 
-            var allowed = user.Identity.IsAuthenticated;
+            void disallow()
+                => context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
 
-            if (Roles.Any() && Roles.None(x => user.IsInRole(x)))
-                allowed = false;
-
-            if (!allowed)
-                context.Result = new StatusCodeResult((int)HttpStatusCode.Unauthorized);
+            if (!user.Identity.IsAuthenticated)
+            {
+                Log.Debug("OnAuthorization: user.Identity.IsAuthenticated is FALSE");
+                disallow();
+            }
+            else if (Roles.Any() && Roles.None(x => user.IsInRole(x)))
+            {
+                Log.Debug("OnAuthorization: User does not have any role: " + Roles.ToString(", "));
+                disallow();
+            }
         }
     }
 }

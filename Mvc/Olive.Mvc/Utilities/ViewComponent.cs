@@ -7,7 +7,7 @@
 
     public abstract class ViewComponent : Microsoft.AspNetCore.Mvc.ViewComponent
     {
-        protected static IDatabase Database => Entities.Data.Database.Instance;
+        protected static IDatabase Database => Context.Current.Database();
 
         /// <summary>
         /// Gets HTTP-specific information about an individual HTTP request.

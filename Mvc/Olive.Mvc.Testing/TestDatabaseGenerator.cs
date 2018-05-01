@@ -15,6 +15,7 @@ namespace Olive.Mvc.Testing
 
         readonly string ConnectionString;
         string TempDatabaseName;
+        bool DropExisting;
         DatabaseManager Server;
 
         DirectoryInfo DbDirectory, DatabaseFilesPath;
@@ -46,7 +47,7 @@ namespace Olive.Mvc.Testing
         /// </summary>
         public TestDatabaseGenerator()
         {
-            ConnectionString = Config.GetConnectionString("AppDatabase");
+            ConnectionString = Config.GetConnectionString("Default");
         }
 
         FileInfo[] GetCreateDbFiles()
@@ -86,6 +87,16 @@ namespace Olive.Mvc.Testing
             Debug.WriteLine("Temp database: Hash of the current DB scripts -> " + hash);
 
             DatabaseFilesPath = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName).GetOrCreateSubDirectory(hash);
+        }
+
+        bool EstablishDatabaseFromScripts()
+        {
+            if (!DropExisting)
+                if (Server.Exists(TempDatabaseName, DatabaseFilesPath.FullName))
+                    return false;
+
+            CreateDatabaseFromScripts();
+            return true;
         }
 
         void CreateDatabaseFromScripts()
@@ -131,8 +142,9 @@ namespace Olive.Mvc.Testing
             return result;
         }
 
-        public void Process(WebTestConfig config)
+        public bool Process(WebTestConfig config, bool dropExisting)
         {
+            DropExisting = dropExisting;
             Server = config.DatabaseManager;
             LoadMetaDirectory();
 
@@ -140,7 +152,7 @@ namespace Olive.Mvc.Testing
             if (!TempDatabaseName.ToLower().EndsWith(".temp"))
             {
                 Debug.WriteLine($"Temp databae creation aborted as '{TempDatabaseName}' does not end in '.Temp'.");
-                return;
+                return false;
             }
 
             EnsurePermissions();
@@ -148,11 +160,13 @@ namespace Olive.Mvc.Testing
 
             lock (SyncLock)
             {
-                CreateDatabaseFromScripts();
+                if (!EstablishDatabaseFromScripts()) return false;
                 CopyFiles();
             }
 
-            Task.Factory.RunSync(() => Database.Instance.Refresh());
+            Task.Factory.RunSync(() => Context.Current.Database().Refresh());
+
+            return true;
         }
 
         /// <summary>

@@ -48,7 +48,8 @@ namespace Olive.Globalization
 
             try
             {
-                var response = (await new HttpClient().DownloadData(request, true)).ToString(Encoding.UTF8);
+                var response = (await new HttpClient().DownloadData(request, handleGzip: true))
+                    .ToString(Encoding.UTF8);
 
                 if (response.Contains(SuspectedAbuseMessage, caseSensitive: false))
                 {
@@ -90,7 +91,8 @@ namespace Olive.Globalization
 
             try
             {
-                var response = Encoding.UTF8.GetString(await new HttpClient().DownloadData(request, true));
+                var data = await new HttpClient().DownloadData(request, handleGzip: true);
+                var response = Encoding.UTF8.GetString(data);
 
                 if (response.Contains(SuspectedAbuseMessage, caseSensitive: false))
                 {

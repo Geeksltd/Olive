@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Logging;
 using Olive.Entities;
 
 namespace Olive.Mvc
@@ -45,7 +46,7 @@ namespace Olive.Mvc
             HttpContext.Items["ViewBag"] = ViewBag;
         }
 
-        protected static IDatabase Database => Entities.Data.Database.Instance;
+        protected static IDatabase Database => Context.Current.Database();
 
         /// <summary>
         /// Provides a dummy Html helper.
@@ -71,15 +72,6 @@ namespace Olive.Mvc
         protected new internal ViewResult View()
         {
             throw new InvalidOperationException("View() method should not be called without specifying a view model.");
-        }
-
-        /// <summary>
-        /// Creates a ViewResult object by using the model that renders a view to the response.
-        /// </summary>
-        public override ViewResult View(object model)
-        {
-            JavascriptActions.ScheduleNotifications();
-            return base.View(model);
         }
 
         /// <summary>
@@ -250,6 +242,8 @@ namespace Olive.Mvc
             var fullUrl = Request.GetAbsoluteUrl(relativePath);
             JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
         }
+
+        public ILogger Log => Olive.Log.For(this);
     }
 
     public enum WindowAction

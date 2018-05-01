@@ -39,7 +39,7 @@ namespace Olive.Entities.Data
                 }
                 catch
                 {
-                    // Can't load assembly
+                    // Can't load assembly. No logging is needed.
                 }
             }
 
@@ -56,7 +56,7 @@ namespace Olive.Entities.Data
         List<IDataProvider> FindProviders()
         {
             var implementers = GetImplementers();
-            return implementers.Select(x => Database.Instance.GetProvider(x)).ToList();
+            return implementers.Select(x => Context.Current.Database().GetProvider(x)).ToList();
         }
 
         public override async Task<int> Count(IDatabaseQuery query)
@@ -85,9 +85,13 @@ namespace Olive.Entities.Data
             {
                 try
                 {
-                    if (await Database.Instance.Get(objectID, actual) is Entity result) return result;
+                    if (await Context.Current.Database().Get(objectID, actual) is Entity result) return result;
                 }
-                catch { continue; }
+                catch
+                {
+                    // No logging is needed.
+                    continue;
+                }
             }
 
             throw new Exception($"There is no {InterfaceType.Name} record with the ID of '{objectID}'");

@@ -12,8 +12,7 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        const int HTTP_PORT_NUMBER = 80, HTTPS_PORT_NUMBER = 443;
-        const int MINUTE = 60;
+        const int HTTP_PORT_NUMBER = 80, HTTPS_PORT_NUMBER = 443, MINUTE = 60;
 
         /// <summary>
         /// Downloads the text in this URL.

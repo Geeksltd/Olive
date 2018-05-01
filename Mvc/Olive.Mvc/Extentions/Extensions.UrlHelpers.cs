@@ -15,6 +15,8 @@ namespace Olive.Mvc
     {
         static ConcurrentDictionary<string, List<RouteTemplate>> IndexActionRoutes = new ConcurrentDictionary<string, List<RouteTemplate>>();
 
+        static IDatabase Database => Context.Current.Database();
+
         public static string Current(this IUrlHelper url)
         {
             var result = url.ActionContext?.HttpContext.Request.Param("current.request.url");
@@ -128,7 +130,7 @@ namespace Olive.Mvc
 
         public static Task<IEnumerable<T>> GetList<T>(this HttpRequest request, string key, char separator = ',') where T : IEntity
         {
-            return request.Param(key).OrEmpty().Split(separator).Trim().SelectAsync(x => Entity.Database.Get<T>(x));
+            return request.Param(key).OrEmpty().Split(separator).Trim().SelectAsync(x => Database.Get<T>(x));
         }
 
         public static Dictionary<string, string> GetRequestParameters(this ActionContext actionContext)

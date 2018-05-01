@@ -56,8 +56,7 @@ namespace Olive.ApiProxy
             r.AppendLine($"public static void Register(Action<{Context.ControllerType.Name}> configurator = null)");
             r.AppendLine("{");
             r.AppendLine("Configurator = configurator;");
-            r.AppendLine("Olive.Entities.Data.Database.Instance");
-            r.AppendLine($".RegisterDataProvider(typeof({Type.Name}), {Type.Name}DataProvider.Current);");
+            r.AppendLine($"Context.Current.Database().RegisterDataProvider(typeof({Type.Name}), Current);");
             r.AppendLine("}");
 
             return r.ToString();

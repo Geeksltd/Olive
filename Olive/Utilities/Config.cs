@@ -13,19 +13,24 @@ namespace Olive
     /// </summary>
     public static class Config
     {
-        static IConfiguration Configuration;
-
         const string CONNECTION_STRINGS_CONFIG_ROOT = "ConnectionStrings";
 
-        static Config()
+        static object SyncLock = new object();
+        static IConfiguration configuration;
+        static IConfiguration Configuration => configuration ?? (configuration = LoadConfiguration());
+
+        static IConfiguration LoadConfiguration()
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            lock (SyncLock)
+            {
+                var builder = new ConfigurationBuilder()
+                  .SetBasePath(Directory.GetCurrentDirectory())
+                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            builder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
+                builder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 
-            Configuration = builder.Build();
+                return builder.Build();
+            }
         }
 
         /// <summary>

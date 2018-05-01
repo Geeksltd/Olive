@@ -8,7 +8,7 @@
     {
         List<IDataProvider> ResolveDataProviders()
         {
-            var factories = Database.Instance.AssemblyProviderFactories
+            var factories = Context.Current.Database().AssemblyProviderFactories
                 .Where(f => f.Value.SupportsPolymorphism())
                 .Where(f => f.Key.References(EntityType.GetTypeInfo().Assembly)).ToList();
 
@@ -18,7 +18,7 @@
                 result.Add(f.Value.GetProvider(EntityType));
 
             foreach (var type in EntityFinder.FindPossibleTypes(EntityType, mustFind: factories.None()))
-                result.Add(Database.Instance.GetProvider(type));
+                result.Add(Context.Current.Database().GetProvider(type));
 
             return result;
         }

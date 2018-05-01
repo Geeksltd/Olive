@@ -26,6 +26,8 @@ namespace Olive
             const int HTTP_ERROR_STARTING_CODE = 400;
             object jsonData;
             ApiClient Client;
+            HttpRequestMessage RequestMessage;
+            HttpClient HttpClient;
 
             string Url => Client.Url;
 
@@ -86,14 +88,22 @@ namespace Olive
             {
                 // Handle void calls
                 if (ResponseText.LacksAll() && typeof(TResponse) == typeof(bool))
+                {
+                    Log.For(this).Debug("ExtractResponse: ResponseText is empty for " + Url);
                     return default(TResponse);
+                }
 
                 try
                 {
-                    var result = ResponseText;
-                    if (typeof(TResponse) == typeof(string) && result.HasValue())
-                        result = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
-                    return JsonConvert.DeserializeObject<TResponse>(result);
+                    var response = ResponseText;
+                    if (typeof(TResponse) == typeof(string) && response.HasValue())
+                        response = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
+
+                    var result = JsonConvert.DeserializeObject<TResponse>(response);
+
+                    Log.For(this).Debug("ExtractResponse: Deserialized Result: " + result);
+
+                    return result;
                 }
                 catch (Exception ex)
                 {
@@ -108,49 +118,52 @@ namespace Olive
             HttpClient CreateHttpClient()
             {
                 var container = new HttpClientHandler { CookieContainer = Client.RequestCookies };
-                var result = new HttpClient(container)
+
+                container.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+
+                HttpClient = new HttpClient(container)
                 {
                     Timeout = Config.Get("ApiClient:Timeout", 20).Seconds()
                 };
 
                 foreach (var config in Client.RequestHeadersCustomizers)
-                    config(result.DefaultRequestHeaders);
+                    config(HttpClient.DefaultRequestHeaders);
 
-                return result;
+                return HttpClient;
             }
 
             HttpRequestMessage CreateRequestMessage()
             {
-                var result = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);
+                RequestMessage = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);
 
-                if (result.Method != System.Net.Http.HttpMethod.Get)
-                    result.Content = new StringContent(RequestData.OrEmpty(),
+                if (RequestMessage.Method != System.Net.Http.HttpMethod.Get)
+                    RequestMessage.Content = new StringContent(RequestData.OrEmpty(),
                               System.Text.Encoding.UTF8, GetContentType());
 
-                return result;
+                return RequestMessage;
             }
 
             async Task<string> DoSend()
             {
                 if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url;
 
-                using (var client = CreateHttpClient())
+                using (CreateHttpClient())
+                using (CreateRequestMessage())
                 {
-                    var req = CreateRequestMessage();
-
                     var errorMessage = "Connection to the server failed.";
                     string responseBody = null;
                     try
                     {
-                        var response = await Client.SendAsync(client, req)
+                        var response = await Client.SendAsync(HttpClient, RequestMessage)
                             .ConfigureAwait(continueOnCapturedContext: false);
 
                         ResponseCode = response.StatusCode;
                         ResponseHeaders = response.Headers;
 
+                        Log.For(this).Debug("DoSend ResponseCode:" + ResponseCode + " for " + Client.Url);
+
                         if (ResponseCode == HttpStatusCode.NotModified)
-                            if (LocalCachedVersion.HasValue())
-                                return null;
+                            if (LocalCachedVersion.HasValue()) return null;
 
                         if (((int)ResponseCode) >= HTTP_ERROR_STARTING_CODE)
                         {
@@ -161,43 +174,56 @@ namespace Olive
                         }
                         else
                         {
-                            return await response.Content.ReadAsStringAsync();
+                            var result = await response.Content.ReadAsStringAsync();
+                            Log.For(this).Debug("DoSend Result: " + result);
+                            return result;
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogTheError(ex);
+                        if (ex.InnerException?.Message == "The HTTP redirect request failed")
+                            throw new Exception("The Api target seems misconfigured as it's trying to redirect! Consider using [AuthorizeApi] instead of [Authorize].", ex);
 
-                        if (Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
-
-                        if (ex is WebException webEx)
-                            responseBody = await webEx.GetResponseBody();
-
-                        if (responseBody.OrEmpty().StartsWith("{\"Message\""))
-                        {
-                            try
-                            {
-                                var serverError = JsonConvert.DeserializeObject<ServerError>(responseBody);
-                                if (serverError != null)
-                                    errorMessage = serverError.Message.Or(serverError.ExceptionMessage).Or(errorMessage);
-                            }
-                            catch { /* No logging is needed */; }
-                        }
-                        // We are doing this in cases that error is not serialized in the SeverError format
-                        else if (responseBody.Contains("<div class=\"titleerror\">"))
-                        {
-                            errorMessage += Environment.NewLine +
-                                responseBody.TrimBefore("<div class=\"titleerror\">", trimPhrase: true)
-                                 .TrimAfter("</div>").HtmlDecode();
-                        }
-                        else
-                            errorMessage += Environment.NewLine + responseBody;
-
-                        await Client.ErrorAction.Apply(errorMessage);
-
-                        throw new Exception(errorMessage, ex);
+                        throw await ImproveException(ex, errorMessage, responseBody);
                     }
                 }
+            }
+
+            async Task<Exception> ImproveException(Exception ex, string errorMessage, string responseBody)
+            {
+                LogTheError(ex);
+
+                if (Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
+
+                if (ex is WebException webEx)
+                    responseBody = await webEx.GetResponseBody();
+
+                if (responseBody.HasValue())
+                {
+                    if (responseBody.StartsWith("{\"Message\""))
+                    {
+                        try
+                        {
+                            var serverError = JsonConvert.DeserializeObject<ServerError>(responseBody);
+                            if (serverError != null)
+                                errorMessage = serverError.Message.Or(serverError.ExceptionMessage).Or(errorMessage);
+                        }
+                        catch { /* No logging is needed */; }
+                    }
+                    // We are doing this in cases that error is not serialized in the SeverError format
+                    else if (responseBody.Contains("<div class=\"titleerror\">"))
+                    {
+                        errorMessage += Environment.NewLine +
+                            responseBody.TrimBefore("<div class=\"titleerror\">", trimPhrase: true)
+                             .TrimAfter("</div>").HtmlDecode();
+                    }
+                    else
+                        errorMessage += Environment.NewLine + responseBody;
+                }
+
+                await Client.ErrorAction.Apply(errorMessage);
+
+                return new Exception(errorMessage, ex);
             }
 
             void LogTheError(Exception ex)

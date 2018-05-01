@@ -2,12 +2,15 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Olive.Entities;
 using Olive.Export;
 
 namespace Olive.Mvc.Testing
 {
     static class DefaultHandlers
     {
+        static IDatabase Database => Context.Current.Database();
+
         static string Param(string key) => Context.Current.Request().Param(key);
 
         static Task Respond(string response) => Context.Current.Response().EndWith(response);
@@ -42,7 +45,7 @@ namespace Olive.Mvc.Testing
 
         internal static IDevCommandsConfig AddClearDatabaseCache(this IDevCommandsConfig config)
         {
-            config.Add("clear-db-cache", () => Entities.Data.Database.Instance.Refresh(), "Clear DB cache");
+            config.Add("clear-db-cache", () => Database.Refresh(), "Clear DB cache");
             return config;
         }
 

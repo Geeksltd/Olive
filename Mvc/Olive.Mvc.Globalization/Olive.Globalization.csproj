@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GCop.Basics" Version="1.0.3" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.6" />
     <PackageReference Include="HtmlAgilityPack" Version="1.6.15" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>

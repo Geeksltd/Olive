@@ -112,6 +112,19 @@ namespace Olive
         /// <summary>
         /// Saves the specified content to the end of this file.
         /// </summary>
+        public static async Task AppendAllTextAsync(this FileInfo file, string content)
+        {
+            using (await file.GetSyncLock().Lock())
+            {
+                file.Directory.EnsureExists();
+                using (var streamWriter = File.AppendText(file.FullName))
+                    await streamWriter.WriteAsync(content);
+            }
+        }
+
+        /// <summary>
+        /// Saves the specified content to the end of this file.
+        /// </summary>
         public static void AppendLine(this FileInfo file, string content = null)
             => AppendAllText(file, content + Environment.NewLine, DefaultEncoding);
 

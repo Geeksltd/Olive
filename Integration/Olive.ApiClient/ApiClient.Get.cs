@@ -94,11 +94,16 @@ namespace Olive
         public async Task<TResponse> Get<TResponse>(object queryParams = null)
         {
             Url = GetFullUrl(queryParams);
+            Log.For(this).Debug("Get: Url = " + Url);
 
             if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
             {
                 var result = await GetCachedResponse<TResponse>();
-                if (HasValue(result)) return result;
+                if (HasValue(result))
+                {
+                    Log.For(this).Debug("Get: Returning from Cache: " + result);
+                    return result;
+                }
             }
 
             // Not already cached:
@@ -113,7 +118,11 @@ namespace Olive
             if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
             {
                 result = await GetCachedResponse<TResponse>();
-                if (HasValue(result)) return result;
+                if (HasValue(result))
+                {
+                    Log.For(this).Debug("ExecuteGet: Returning from Cache: " + result);
+                    return result;
+                }
             }
 
             var request = new RequestInfo(this) { HttpMethod = "GET" };
@@ -130,12 +139,12 @@ namespace Olive
 
             if (request.Error != null)
             {
-                if (CachePolicy != CachePolicy.FreshOrFail)
-                {
-                    result = await GetCachedResponse<TResponse>();
-                    if (result == null) // No cache available
-                        throw request.Error;
-                }
+                if (CachePolicy == CachePolicy.FreshOrFail)
+                    throw request.Error;
+
+                result = await GetCachedResponse<TResponse>();
+                if (result == null) // No cache available
+                    throw request.Error;
             }
 
             return result;
@@ -246,8 +255,7 @@ namespace Olive
             lock (CacheSyncLock)
             {
                 var cacheDir = GetRootCacheDirectory();
-                if (cacheDir.Exists)
-                    cacheDir.Delete(true);
+                if (cacheDir.Exists) cacheDir.Delete(true);
             }
 
             // Desined as a task in case in the future we need it.

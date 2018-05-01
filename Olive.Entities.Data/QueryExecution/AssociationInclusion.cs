@@ -55,7 +55,7 @@ namespace Olive.Entities.Data
 
         Task<IEnumerable<IEntity>> LoadTheAssociatedObjects(DatabaseQuery query)
         {
-            return Database.Instance.Of(Association.PropertyType)
+            return Context.Current.Database().Of(Association.PropertyType)
                        .Where(query.Provider.GetAssociationInclusionCriteria(query, Association))
                        .Include(IncludedNestedAssociations)
                        .GetList();

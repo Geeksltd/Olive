@@ -10,8 +10,14 @@ namespace Olive.ApiProxy
 
         internal static void FindAll()
         {
-            All = Context.ActionMethods.SelectMany(x => x.GetArgAndReturnTypes()).Distinct()
-                .Select(x => GetDefinableType(x)).ExceptNull().Distinct().ToList();
+            All = Context.ActionMethods
+                .SelectMany(x => x.GetArgAndReturnTypes())
+                .ExceptNull()
+                .Distinct()
+                .Select(x => GetDefinableType(x))
+                .ExceptNull()
+                .Distinct()
+                .ToList();
 
             while (All.Any(t => Crawl(t))) continue;
         }

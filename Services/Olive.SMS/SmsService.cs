@@ -6,6 +6,8 @@ namespace Olive.SMS
 {
     public static class SmsService
     {
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>
         /// Occurs when an exception happens when sending an sms. Sender parameter will be the ISmsQueueItem instance that couldn't be sent.
         /// </summary>
@@ -34,19 +36,19 @@ namespace Olive.SMS
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"), ex);
+                    Log.For(typeof(SmsService)).Error(ex, "Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"));
                     return false;
                 }
 
                 sender.Deliver(smsItem);
 
-                await Entity.Database.Update(smsItem, o => o.DateSent = LocalTime.Now);
+                await Database.Update(smsItem, o => o.DateSent = LocalTime.Now);
                 return true;
             }
             catch (Exception ex)
             {
                 await SendError.Raise(new SmsSendingEventArgs(smsItem) { Error = ex });
-                Log.Error("Can not send the SMS queue item.", ex);
+                Log.For(typeof(SmsService)).Error(ex, "Can not send the SMS queue item.");
                 await smsItem.RecordRetry();
                 return false;
             }
@@ -54,7 +56,7 @@ namespace Olive.SMS
 
         public static async Task SendAll()
         {
-            foreach (var sms in await Entity.Database.GetList<ISmsQueueItem>(i => i.DateSent == null))
+            foreach (var sms in await Database.GetList<ISmsQueueItem>(i => i.DateSent == null))
                 await sms.Send();
         }
     }

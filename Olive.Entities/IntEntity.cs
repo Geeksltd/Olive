@@ -51,7 +51,8 @@
             {
                 if (TransientEntityAttribute.IsTransient(typ)) return 1;
 
-                var biggestId = await Database.Of(typ).OrderBy("ID", descending: true)
+                var biggestId = await Context.Current.Database()
+                    .Of(typ).OrderBy("ID", descending: true)
                 .Top(1).GetList().Select(x => x.GetId()).FirstOrDefault();
 
                 if (biggestId != null) return 1 + (int)biggestId;

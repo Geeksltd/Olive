@@ -21,16 +21,17 @@ namespace Olive.Security
             /// </summary>
             public static AsymmetricKeyPair Generate()
             {
-                var rsa = new RSACryptoServiceProvider();
-
-                var publicParams = rsa.ExportParameters(includePrivateParameters: false);
-                var privateParams = rsa.ExportParameters(includePrivateParameters: true);
-
-                return new AsymmetricKeyPair
+                using (var rsa = new RSACryptoServiceProvider())
                 {
-                    DecryptionKey = privateParams.ToKey(),
-                    EncryptionKey = publicParams.ToKey()
-                };
+                    var publicParams = rsa.ExportParameters(includePrivateParameters: false);
+                    var privateParams = rsa.ExportParameters(includePrivateParameters: true);
+
+                    return new AsymmetricKeyPair
+                    {
+                        DecryptionKey = privateParams.ToKey(),
+                        EncryptionKey = publicParams.ToKey()
+                    };
+                }
             }
         }
     }

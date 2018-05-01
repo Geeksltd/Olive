@@ -33,7 +33,7 @@ namespace Olive.Hangfire
         {
             services.AddHangfire(c =>
             {
-                c.UseSqlServerStorage(Config.GetConnectionString("AppDatabase"));
+                c.UseSqlServerStorage(Config.GetConnectionString("Default"));
                 config?.Invoke(c);
             });
 

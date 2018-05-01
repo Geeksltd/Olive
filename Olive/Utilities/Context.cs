@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Olive
 {
-    public class Context
+    public partial class Context
     {
         static Context current;
         public IServiceProvider ServiceProvider { get; private set; }

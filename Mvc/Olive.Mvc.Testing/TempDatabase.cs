@@ -14,7 +14,7 @@ namespace Olive.Mvc.Testing
 
         internal static WebTestConfig Config;
 
-        public static async Task Create()
+        public static async Task Create(bool dropExisting = false)
         {
             if (!WebTestConfig.IsActive())
             {
@@ -24,12 +24,12 @@ namespace Olive.Mvc.Testing
 
             try
             {
-                new TestDatabaseGenerator().Process(Config);
-                try { await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask); }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to run the reference data.", ex);
-                }
+                if (new TestDatabaseGenerator().Process(Config, dropExisting))
+                    try { await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask); }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Failed to run the reference data.", ex);
+                    }
                 Status = CreationStatus.Created;
             }
             catch
@@ -37,13 +37,19 @@ namespace Olive.Mvc.Testing
                 Status = CreationStatus.Failed;
                 throw;
             }
+            finally
+            {
+                DatabaseChangeWatcher.Restart();
+            }
         }
 
         internal static async Task Restart()
         {
-            Status = CreationStatus.NotCreated;
-            await AwaitReadiness();
-            DatabaseChangeWatcher.Restart();
+            using (await SyncLock.Lock())
+            {
+                Status = CreationStatus.Creating;
+                await Create(dropExisting: true);
+            }
         }
 
         internal static async Task AwaitReadiness()
@@ -62,6 +68,7 @@ namespace Olive.Mvc.Testing
                         await Task.Delay(100);
                         await AwaitReadiness();
                         break;
+                    default: throw new NotSupportedException(Status + " is not handled");
                 }
             }
         }

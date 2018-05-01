@@ -126,7 +126,7 @@ namespace Olive
             file.Directory.EnsureExists();
 
             using (var stream = new FileStream(file.FullName,
-                FileMode.OpenOrCreate, FileAccess.Write, FileShare.None,
+                FileMode.Create, FileAccess.Write, FileShare.None,
                 0x4096, useAsync: true))
                 await stream.WriteAsync(content, 0, content.Length);
         }

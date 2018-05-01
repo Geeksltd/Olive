@@ -9,6 +9,8 @@ namespace Olive.ApiProxy
     {
         Type Type;
 
+        static string[] CommonDefaultProperties = new[] { "title", "name", "subject", "description", "label", "text" };
+
         MemberInfo[] EffectiveProperties => Type.GetEffectiveProperties();
 
         public DtoProgrammer(Type type) => Type = type;
@@ -67,7 +69,6 @@ namespace Olive.ApiProxy
             return toStringField.Name;
         }
 
-        static string[] CommonDefaultProperties = new[] { "title", "name", "subject", "description", "label", "text" };
         MemberInfo SelectDefaultToStringField()
         {
             MemberInfo result;

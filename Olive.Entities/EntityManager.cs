@@ -10,31 +10,6 @@ namespace Olive.Entities
     /// </summary>
     public static class EntityManager
     {
-        /// <summary>
-        /// Determines whether the specified record is immutable, or closed for changes.        
-        /// An object marked as immutable is shared in the application cache. Therefore it must not be changed.        
-        /// </summary>
-        public static bool IsImmutable(IEntity entity)
-        {
-            var item = entity as Entity;
-
-            if (item == null)
-                throw new ArgumentNullException("entity must be a non-null instance inheriting from Entity.");
-
-            return item.IsImmutable && !entity.IsNew;
-        }
-
-        /// <summary>
-        /// Marks the specified object as immutable.
-        /// </summary>
-        public static void MarkImmutable(IEntity entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            (entity as Entity).IsImmutable = true;
-        }
-
         #region Entity static events
         /// <summary>
         /// This event is raised for the whole Entity type before "any" object is saved in the database.
@@ -67,6 +42,31 @@ namespace Olive.Entities
         /// </summary>
         public readonly static AsyncEvent<EventArgs> InstanceDeleted = new AsyncEvent<EventArgs>();
         #endregion
+
+        /// <summary>
+        /// Determines whether the specified record is immutable, or closed for changes.        
+        /// An object marked as immutable is shared in the application cache. Therefore it must not be changed.        
+        /// </summary>
+        public static bool IsImmutable(IEntity entity)
+        {
+            var item = entity as Entity;
+
+            if (item == null)
+                throw new ArgumentNullException("entity must be a non-null instance inheriting from Entity.");
+
+            return item.IsImmutable && !entity.IsNew;
+        }
+
+        /// <summary>
+        /// Marks the specified object as immutable.
+        /// </summary>
+        public static void MarkImmutable(IEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            (entity as Entity).IsImmutable = true;
+        }
 
         #region Raise events
 
