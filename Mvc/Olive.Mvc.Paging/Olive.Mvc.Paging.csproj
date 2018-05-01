@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework> 
     <OutputPath>..\..\@Assemblies\</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Paging.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

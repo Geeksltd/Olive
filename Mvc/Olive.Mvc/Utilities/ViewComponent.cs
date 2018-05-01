@@ -34,7 +34,7 @@
         public void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
         {
             var onLoaded = staticFunctionInvokation.WithPrefix(", m => m.default.");
-            var fullUrl = Request.GetAbsoluteUrl(relativePath);
+            var fullUrl = relativePath.EnsureStartsWith("/");
             Context.Current.Http().JavascriptActions().JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
         }
     }

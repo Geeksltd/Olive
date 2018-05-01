@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GCop.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GCop.Thread.1.0.5\lib\GCop.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,11 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\GCop.Collections.1.0.5\analyzers\dotnet\cs\GCop.Collections.dll" />
-    <Analyzer Include="..\..\packages\GCop.Collections.1.0.5\analyzers\dotnet\cs\GCop.Core.dll" />
-    <Analyzer Include="..\..\packages\GCop.Collections.1.0.5\analyzers\dotnet\cs\netstandard.dll" />
-    <Analyzer Include="..\..\packages\GCop.Common.1.0.5\analyzers\dotnet\cs\GCop.Common.dll" />
-    <Analyzer Include="..\..\packages\GCop.Common.1.0.5\analyzers\dotnet\cs\GCop.Core.dll" />
-    <Analyzer Include="..\..\packages\GCop.Common.1.0.5\analyzers\dotnet\cs\netstandard.dll" />
     <Analyzer Include="..\..\packages\GCop.Conditional.1.0.5\analyzers\dotnet\cs\GCop.Conditional.dll" />
     <Analyzer Include="..\..\packages\GCop.Conditional.1.0.5\analyzers\dotnet\cs\GCop.Core.dll" />
     <Analyzer Include="..\..\packages\GCop.Conditional.1.0.5\analyzers\dotnet\cs\netstandard.dll" />
@@ -71,7 +63,6 @@
     <Analyzer Include="..\..\packages\GCop.Linq.1.0.5\analyzers\dotnet\cs\GCop.Linq.dll" />
     <Analyzer Include="..\..\packages\GCop.Linq.1.0.5\analyzers\dotnet\cs\netstandard.dll" />
     <Analyzer Include="..\..\packages\GCop.String.1.0.5\analyzers\dotnet\cs\GCop.Core.dll" />
-    <Analyzer Include="..\..\packages\GCop.String.1.0.5\analyzers\dotnet\cs\GCop.String.dll" />
     <Analyzer Include="..\..\packages\GCop.String.1.0.5\analyzers\dotnet\cs\netstandard.dll" />
     <Analyzer Include="..\..\packages\GCop.Thread.1.0.5\analyzers\dotnet\cs\GCop.Core.dll" />
     <Analyzer Include="..\..\packages\GCop.Thread.1.0.5\analyzers\dotnet\cs\GCop.Thread.dll" />
