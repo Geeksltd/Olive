@@ -12,7 +12,7 @@ namespace Olive.Mvc.Testing
 
         public static CreationStatus Status { get; internal set; }
 
-        internal static WebTestConfig Config;
+        internal readonly static WebTestConfig Config = new WebTestConfig();
 
         public static async Task Create(bool dropExisting = false)
         {

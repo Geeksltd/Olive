@@ -47,15 +47,15 @@ namespace Olive.Hangfire
         public static IApplicationBuilder UseScheduledTasks(this IApplicationBuilder @this,
             Action createAutomatedTasks)
         {
-            Controller.OnFirstRequest += () =>
-          {
-              @this.UseHangfireServer();
+            Context.StartedUp.Handle(() =>
+            {
+                @this.UseHangfireServer();
 
-              if (System.Diagnostics.Debugger.IsAttached)
-                  @this.UseHangfireDashboard();
+                if (System.Diagnostics.Debugger.IsAttached)
+                    @this.UseHangfireDashboard();
 
-              createAutomatedTasks();
-          };
+                createAutomatedTasks();
+            });
 
             return @this;
         }

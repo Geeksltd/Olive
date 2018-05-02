@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,6 +26,10 @@ namespace Olive.ApiProxy
         internal static Type GetDefinableType(Type type)
         {
             if (type.IsArray) return GetDefinableType(type.GetElementType());
+
+            if (type.IsA<IEnumerable>() && type.GenericTypeArguments.IsSingle())
+                return GetDefinableType(type.GenericTypeArguments.Single());
+
             if (type.Assembly != Context.Assembly) return null;
             return type;
         }

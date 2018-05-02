@@ -9,31 +9,30 @@ namespace Olive.Mvc.Testing
 {
     public static class TestingExtensions
     {
-        public static IApplicationBuilder UseWebTest<TDatabaseManager>(this IApplicationBuilder app,
-            Func<Task> createReferenceData,
+        public static async Task InitializeTempDatabase<TDatabaseManager>(this IApplicationBuilder app, Func<Task> createReferenceData)
+          where TDatabaseManager : DatabaseManager, new() 
+        {
+            if (!WebTestConfig.IsActive()) return;
+
+            TempDatabase.Config.DatabaseManager = new TDatabaseManager();
+            WebTestConfig.ReferenceDataCreator = createReferenceData;
+            await TempDatabase.AwaitReadiness();
+        }
+
+        public static IApplicationBuilder UseWebTest(this IApplicationBuilder app,
             Action<IDevCommandsConfig> config = null)
-            where TDatabaseManager : DatabaseManager, new()
         {
             if (!WebTestConfig.IsActive()) return app;
 
-            WebTestConfig.ReferenceDataCreator = createReferenceData;
+            config?.Invoke(TempDatabase.Config);
 
-            var settings = new WebTestConfig
-            {
-                DatabaseManager = new TDatabaseManager()
-            };
-
-            config?.Invoke(settings);
-
-            if (settings.AddDefaultHandlers)
-                settings.AddDatabaseManager()
+            if (TempDatabase.Config.AddDefaultHandlers)
+                TempDatabase.Config.AddDatabaseManager()
                     .AddTimeInjector()
                     .AddSqlProfile()
                     .AddClearDatabaseCache();
 
-            app.UseMiddleware<WebTestMiddleware>(settings);
-            Controller.OnFirstRequest += () => Task.Factory.RunSync(TempDatabase.AwaitReadiness);
-
+            app.UseMiddleware<WebTestMiddleware>();
             return app;
         }
     }

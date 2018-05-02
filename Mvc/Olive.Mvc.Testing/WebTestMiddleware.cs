@@ -8,10 +8,9 @@ namespace Olive.Mvc.Testing
     {
         readonly RequestDelegate Next;
 
-        public WebTestMiddleware(RequestDelegate next, WebTestConfig config)
+        public WebTestMiddleware(RequestDelegate next)
         {
             Next = next;
-            TempDatabase.Config = config;
         }
 
         public async Task Invoke(HttpContext context)

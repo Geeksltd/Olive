@@ -11,6 +11,11 @@ namespace Olive
         public IServiceProvider ServiceProvider { get; private set; }
         public readonly IServiceCollection Services;
 
+        /// <summary>
+        /// Occurs when the StartUp.OnInitializedAsync is completed.
+        /// </summary>
+        public static readonly AsyncEvent StartedUp = new AsyncEvent();
+
         public static Context Current => current
             ?? throw new InvalidOperationException("Olive.Context is not initialized!");
 

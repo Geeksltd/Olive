@@ -19,29 +19,11 @@ namespace Olive.Mvc
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public abstract partial class Controller : Microsoft.AspNetCore.Mvc.Controller
     {
-        static bool IsFirstRequest = true;
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static event Action OnFirstRequest;
-
         /// <summary>
         /// Initializes a new instance of the System.Web.Mvc.Controller class.
         /// </summary>
         protected Controller()
         {
-            if (IsFirstRequest)
-            {
-                IsFirstRequest = false;
-                try
-                {
-                    OnFirstRequest?.Invoke();
-                }
-                catch
-                {
-                    IsFirstRequest = true;
-                    throw;
-                }
-            }
-
             ModelState.Clear();
             HttpContext.Items["ViewBag"] = ViewBag;
         }

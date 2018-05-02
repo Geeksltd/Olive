@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -58,10 +59,17 @@ namespace Olive.Mvc
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Context.Current.Configure(app.ApplicationServices).Configure(env);
-            ConfigureExceptionPage(app, env);
 
+            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app, env)));
+
+            ConfigureExceptionPage(app, env);
             ConfigureSecurity(app, env);
             ConfigureRequestHandlers(app, env);
+        }
+
+        public virtual Task OnStartUpAsync(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            return Task.CompletedTask;
         }
 
         protected virtual void ConfigureSecurity(IApplicationBuilder app, IHostingEnvironment env)
