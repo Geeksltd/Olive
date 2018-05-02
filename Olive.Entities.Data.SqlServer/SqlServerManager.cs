@@ -93,11 +93,12 @@ exec sp_detach_db '{0}'".FormatWith(databaseName);
 
                     try
                     {
-                        var file = cmd.ExecuteScalar()?.ToStringOrEmpty();
-                        return file.StartsWith(filePath);
+                        return cmd.ExecuteScalar().ToStringOrEmpty()
+                            .StartsWith(filePath, caseSensitive: false);
                     }
                     catch
                     {
+                        // No logging is needed
                         return false;
                     }
                 }
