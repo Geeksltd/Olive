@@ -21,7 +21,7 @@ namespace Olive.Mvc
                     if (requested.IsEmpty()) return;
 
                     var onDisk = x.File.PhysicalPath.AsFile().GetExactFullName().Replace("\\", "/");
-                    if (!onDisk.EndsWith(requested))
+                    if (!onDisk.ToLower().EndsWith(requested.ToLower()))
                     {
                         throw new Exception("The requested file has incorrect casing and will fail on Linux servers." +
                             Environment.NewLine + "Requested: " + requested + Environment.NewLine +
