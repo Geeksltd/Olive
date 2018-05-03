@@ -53,9 +53,24 @@ The namespace of your Api class should be the name of the microservice that publ
 
 The same namespace will be used in generating the proxy dll for use in the Api consumers. This way they know exactly which microservice they are calling the Api from.
 
-### Retruen type
 
-As you can see, the return type the return type(s) are *nested* classes. So what if we want to use a *real* class right here? The answer is easy, you can take advantage of polymorphism.
+### Controller class name: MyApi
+
+The controller class name should be the **logical name** of this particular Api followed by *"Api"* and named after the purpose that it serves for *one particular consumer*.
+
+> Aim to create **one Api controller class per consumer micro-service** and even name it after that consumer.
+
+**Warning:** Of course the are cases where multiple consumer microservices seem to need the same thing, and you might be tempted to generalise the Api to be used by all of them. However **beware** that:
+
+- Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B.
+- Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
+
+> Click [Here](https://geeksltd.github.io/Olive/#/Api/WebApi) for more information and practices.
+
+
+### Return type
+
+As you can see, the return types are *nested* classes. So what if we want to use a *real* class right here? The answer is easy, you can take advantage of polymorphism.
 So we can make a new nested class then inherit from the target class. Just like this:
 
 ```csharp
@@ -85,20 +100,7 @@ namespace MyPublisherService
 }
 ```
 
-### Controller class name: MyApi
-
-The controller class name should be the **logical name** of this particular Api followed by *"Api"* and named after the purpose that it serves for *one particular consumer*.
-
-> Aim to create **one Api controller class per consumer micro-service** and even name it after that consumer.
-
-**Warning:** Of course the are cases where multiple consumer microservices seem to need the same thing, and you might be tempted to generalise the Api to be used by all of them. However **beware** that:
-
-- Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B.
-- Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
-
-> Click [Here](https://geeksltd.github.io/Olive/#/Api/WebApi) for more information and practices.
-
-# Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
+## Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
 
 1. Ensure you have a NuGet reference to [Olive.ApiProxyGenerator](https://www.nuget.org/packages/Olive.ApiProxyGenerator/)
 2. Compile the website project (which includes the Api code)
@@ -108,7 +110,7 @@ The controller class name should be the **logical name** of this particular Api 
 
 > The Api.Proxy.dll tool will generate two class library projects, one called **Proxy** and one called **MSharp**. It will then compile them and generate a nuget package for each, and publish to the requested destination. The generated NuGet packages can then be referenced in the consuming microservices.
 
-## Using the generated proxy
+### Using the generated proxy
 
 In the consumer application (service) reference the generated NuGet package.
 You can then create a proxy object and then call the remote Api function. For example:
@@ -117,7 +119,7 @@ You can then create a proxy object and then call the remote Api function. For ex
 var result = await new MyPublisherService.MyApi().MyFunction(...);
 ```
 
-## Api input and output types (schema)
+### Api input and output types (schema)
 
 Your Api functions' arguments and return types may be void, simple .net types (string, int, DateTime, ...) or they may be classes with multiple fields. For example if you have an Api function called GetUserDetails() it will probably need to return a class with several fields.
 
@@ -136,7 +138,7 @@ These class definitions (aka schema) should be recognised in the consumer applic
 Of course it will also generate a proxy class which acts as an agent in the consumer app to connect to your Api. It will have the *same class name and namespace* as the Api controller.
 > **Tip: The generated proxy dll:** Feel free to inspect the generated proxy class's code to learn what is under the hood by looking inside the publisher service's Website\obj\api-proxy folder.
 
-## Security
+### Security
 
 When creating a proxy object, by default it will assume a **service identity**. It will read the *AccessKey* value from *appSettings.json* (*which is issued to it by the Api publisher service*) and send it using HTTP HEADER with the key of **"Microservice.AccessKey"**.
 
@@ -170,7 +172,7 @@ When a Http request is received by the Api host, it will read the header value u
 It will then create a Http Context user object with the fixed name of ***"Microservice.ApiUser"*** and the roles specified above.
 So you can use the standard ASP.NET role based security for your Api definition. For example you can use the usual *[Authorise(Roles=...)]* code in your Web Api class or Action method definition.
 
-### Impersonating the (human) user
+#### Impersonating the (human) user
 
 Sometimes you need to call an Api in a microservice, but you need the Api to be invoked with the identity of the current HTTP user, rather than the client service.
 
