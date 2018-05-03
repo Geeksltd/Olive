@@ -53,6 +53,38 @@ The namespace of your Api class should be the name of the microservice that publ
 
 The same namespace will be used in generating the proxy dll for use in the Api consumers. This way they know exactly which microservice they are calling the Api from.
 
+### Retruen type
+
+As you can see, the return type the return type(s) are *nested* classes. So what if we want to use a *real* class right here? The answer is easy, you can take advantage of polymorphism.
+So we can make a new nested class then inherit from the target class. Just like this:
+
+```csharp
+namespace MyPublisherService
+{
+    [Route("api")]
+    public class MyApi : BaseController
+    {
+        [HttpGet, Route("...")]
+        [Returns(typeof(MyReturnType)]
+        // Todo: add the required [Authorize(Role=...)] settings
+        public async Task<IActionResult> MyFunction(string someParameter1, stringsomeParameter2)
+        {
+            // TODO: Add any custom validation
+            if ({Some invalid condition}) return BadRequest();
+
+            MyReturnType result = new SomeClassOutHere("Some","Parameters");
+            // Or mabe a logic that returns a SomeClassOutHere typed object.
+            
+            return Json(result);
+        }
+        public class MyReturnType : SomeClassOutHere
+        {
+            
+        }
+    }
+}
+```
+
 ### Controller class name: MyApi
 
 The controller class name should be the **logical name** of this particular Api followed by *"Api"* and named after the purpose that it serves for *one particular consumer*.
@@ -63,6 +95,8 @@ The controller class name should be the **logical name** of this particular Api 
 
 - Sharing one Api with multiple consumers makes it hard to change and *adapt it overtime to suit the requirements of each particular consumer*, since a change that is desirable for consumer A could break consumer B.
 - Each consumer may need different fields of data. To satisfy everyone's need you may have to over-expose data in a shared Api to satisfy everyone. But that can cause security issues as well as inefficiency.
+
+> Click [Here](https://geeksltd.github.io/Olive/#/Api/WebApi) for more information and practices.
 
 # Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
 
