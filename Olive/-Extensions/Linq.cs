@@ -473,13 +473,15 @@ namespace Olive
         public static bool None<T>(this IEnumerable<T> list, Func<T, bool> criteria) => !list.Any(criteria);
 
         /// <summary>
+        /// A null safe alternative to Any(). If the source is null it will return false instead of throwing an exception.
+        /// </summary>
+        public static bool HasAny<TSource>(this IEnumerable<TSource> source)
+           => source != null && source.Any();
+
+        /// <summary>
         /// Determines if this is null or an empty list.
         /// </summary>
-        public static bool None<T>(this IEnumerable<T> list)
-        {
-            if (list == null) return true;
-            return !list.Any();
-        }
+        public static bool None<T>(this IEnumerable<T> list) => !list.HasAny();
 
         /// <summary>
         /// Determines if this list intersects with another specified list.

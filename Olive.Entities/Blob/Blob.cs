@@ -87,7 +87,7 @@ namespace Olive.Entities
         /// <summary>
         /// Gets the data of this blob.
         /// </summary>
-        public async Task<byte[]> GetFileDataAsync()
+        public virtual async Task<byte[]> GetFileDataAsync()
         {
             if (IsEmpty()) return new byte[0];
 
@@ -194,15 +194,21 @@ namespace Olive.Entities
 
             if (FileName == EMPTY_FILE) return true;
 
+            if (NewFileData.HasAny()) return false;
+
             if (GetStorageProvider().CostsToCheckExistence())
             {
-                // We don't want to incur cost. As the file name has value, we assume the file does exist.
-                return !(hasValue = true);
+                // We don't want to incur cost.
+                // As the file name has value, we assume the file does exist.
+                hasValue = true;
+                return false;
             }
             else if (Task.Factory.RunSync(() => GetStorageProvider().FileExistsAsync(this)))
-                return !(hasValue = true);
-
-            return NewFileData.None();
+            {
+                hasValue = true;
+                return false;
+            }
+            else return true;
         }
 
         /// <summary>
@@ -228,7 +234,9 @@ namespace Olive.Entities
 
             if (OwnerEntity != null)
             {
-                result = new Blob(await GetFileDataAsync(), FileName);
+                if (NewFileData.HasAny())
+                    result = new Blob(await GetFileDataAsync(), FileName);
+                else result = new ClonedDocument(this);
                 if (attach)
                 {
                     if (!@readonly) Attach(OwnerEntity, OwnerProperty);
@@ -308,9 +316,9 @@ namespace Olive.Entities
         }
 
         /// <summary>Saves this file to the storage provider.</summary>
-        public async Task Save()
+        public virtual async Task Save()
         {
-            if (!NewFileData.None())
+            if (NewFileData.HasAny())
                 await GetStorageProvider().SaveAsync(this);
 
             else if (IsEmptyBlob) Delete();
