@@ -218,11 +218,9 @@ namespace Olive.Mvc
         /// <param name="relativePath">The relative path of the module inside wwwroot (including the .js extension).
         /// E.g. /scripts/CustomModule1</param>
         /// <param name="staticFunctionInvokation">An expression to call [a static method] on the loaded module.</param>
-        public void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
+        public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
         {
-            var onLoaded = staticFunctionInvokation.WithPrefix(", m => m.default.");
-            var fullUrl = relativePath.EnsureStartsWith("/");
-            JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
+            JavascriptActions.LoadModule(relativePath, staticFunctionInvokation);
         }
 
         public ILogger Log => Olive.Log.For(this);
