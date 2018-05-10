@@ -4,13 +4,18 @@ Different microservices often need to reference Api proxies from other microserv
 
 ## Installing a Private Nuget server
 
-There are various tools for creating a private nuget server. You can download an example here.
+There are various tools for creating a private nuget server such as [NuGet Server](http://nugetserver.net/) and [JFrog's Artifactory](https://jfrog.com/artifactory/).
 You need to set this up once for your solution on a server that is available to the developers and also your build server.
 
-It is recommended to install it on your build server, next to Jenkins (or any other CI server that you use).
-Access to this should be restricted to the permitted developers on the project.
+in order to create a Nuget Server and package fee with **Nuget server** you need to fallow below steps:
+1.	Create a new Empty **Asp.Net Web Application**.
+2.	Choose a proper name for your project.
+3.	Install [Nuget.Server]( https://www.nuget.org/packages/NuGet.Server/) Package form Nuget Package Manager  or Package Manager Console
+4.	In the `web.config` set a unique value for **apiKey**. (It grants push access to the NuGet server )
+5.  Run the project and your Private Nuget package server is ready.   
 
-In the **web.config** of that application, you need to set a unique value for **apiKey** which grants push access to the nuget server.
+It is recommended to install your **Nuget Server** on your build server, next to Jenkins (or any other CI server that you use).
+Access to this should be restricted to the permitted developers on the project.
 
 ## PrivatePackages folder
 
@@ -28,3 +33,5 @@ Now every time that you generate a new Api proxy, you can just run this BATCH fi
 ```
 C:\...\MySolution\PrivatePackages> push {NewPackageName}.nupkg
 ```
+
+After pushing Nuget Packages to Nuget server it is time to add it as NuGet source and use it.
