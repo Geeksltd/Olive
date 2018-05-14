@@ -15,25 +15,33 @@ namespace Olive.Mvc.Testing
 
         public async Task Invoke(HttpContext context)
         {
-            await TempDatabase.AwaitReadiness();
-
-            var terminate = false;
-
-            var command = context?.Request?.Param("Web.Test.Command");
-            if (command.HasValue())
+            if (await ProcessAsWebCommand())
             {
-                try
-                {
-                    terminate = await WebTestConfig.Run(command);
-                }
-                catch (Exception ex)
-                {
-                    await context.Response.EndWith(ex.ToLogString().ToHtmlLines());
-                    return;
-                }
+                return;
             }
+            else
+            {
+                await Next.Invoke(context);
+            }
+        }
 
-            if (!terminate) await Next.Invoke(context);
+        async Task<bool> ProcessAsWebCommand()
+        {
+            if (TempDatabase.Config?.DatabaseManager == null) return false;
+
+            await TempDatabase.AwaitReadiness();
+            var command = Context.Current.Request().Param("Web.Test.Command");
+            if (command.IsEmpty()) return false;
+
+            try
+            {
+                return await WebTestConfig.Run(command);
+            }
+            catch (Exception ex)
+            {
+                await Context.Current.Response().EndWith(ex.ToLogString().ToHtmlLines());
+                return false;
+            }
         }
     }
 }

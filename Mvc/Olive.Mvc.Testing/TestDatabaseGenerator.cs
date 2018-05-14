@@ -145,7 +145,7 @@ namespace Olive.Mvc.Testing
         public bool Process(WebTestConfig config, bool dropExisting)
         {
             DropExisting = dropExisting;
-            Server = config.DatabaseManager;
+            Server = config.DatabaseManager ?? throw new Exception("Database manager is not specified for WebTestConfig");
             LoadMetaDirectory();
 
             TempDatabaseName = DatabaseManager.GetDatabaseName().Or("Default.Temp");
