@@ -69,11 +69,11 @@ namespace Olive.Entities
 
                 item = await Database.Reload(item);
                 above = await Database.Reload(above);
-
-                await JustifyOrders(item, saveBehaviour);
-
-                return true;
             }
+
+            await JustifyOrders(item, saveBehaviour);
+
+            return true;
         }
 
         /// <summary>
@@ -124,11 +124,11 @@ namespace Olive.Entities
                 if (below.Order == item.Order) item.Order++;
 
                 await Swap(item, below, saveBehaviour);
-
-                await JustifyOrders(item, saveBehaviour);
-
-                return true;
             }
+
+            await JustifyOrders(item, saveBehaviour);
+
+            return true;
         }
 
         /// <summary>
