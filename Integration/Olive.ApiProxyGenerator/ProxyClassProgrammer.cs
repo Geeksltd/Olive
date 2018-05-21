@@ -27,10 +27,27 @@ namespace Olive.ApiProxy
             r.AppendLine("</summary>");
             r.AppendLine($"public class {ClassName} : StronglyTypedApiProxy");
             r.AppendLine("{");
+            r.AppendLine("static Action<ApiClient> DefaultConfiguration = x => x.Retries(3).CircuitBreaker();");
+            r.AppendLine();
+            r.AppendLine("public static TimeSpan? DefaultCacheExpiry { get; set; }");
             r.AppendLine();
 
-            if (ServiceOnly())
-                r.AppendLine($"public {ClassName}() => this.AsServiceUser();");
+            r.AppendLine("/// <summary>Creates a new instance of this Api Proxy with the default configuration..</summary>");
+            r.AppendLine($"public {ClassName}() => this.Use(DefaultConfiguration){".AsServiceUser()".OnlyWhen(ServiceOnly())};");
+            r.AppendLine();
+
+            r.AppendLine("/// <summary>Sets the default configuration for instances of this Api proxy.</summary>");
+            r.AppendLine($"public static void DefaultConfig(Action<ApiClient> config)");
+            r.AppendLine("=> DefaultConfiguration = config;");
+            r.AppendLine();
+
+            r.AppendLine("/// <summary>Creates an Api proxy that prefers cache for quickest result.</summary>");
+            r.AppendLine($"public static {ClassName} Fast() => new {ClassName}().Cache(CachePolicy.CacheOrFreshOrFail, DefaultCacheExpiry);");
+            r.AppendLine();
+
+            r.AppendLine("/// <summary>Creates an Api proxy that prefers fresh cache policy for most up-to-date result.</summary>");
+            r.AppendLine($"public static {ClassName} Fresh() => new {ClassName}().Cache(CachePolicy.FreshOrCacheOrFail, DefaultCacheExpiry);");
+            r.AppendLine();
 
             foreach (var method in Context.ActionMethods)
             {
