@@ -6,8 +6,7 @@
     public class Microservice
     {
         public string Name { get; private set; }
-        string BaseUrl { get; set; }
-        string AccessKey { get; set; }
+        string BaseUrl, AccessKey;
 
         Microservice(string name) => Name = name;
 

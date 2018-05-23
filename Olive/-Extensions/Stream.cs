@@ -38,12 +38,12 @@ namespace Olive
         /// Reads all text in this stream as UTF8.
         /// </summary>
         /// <param name="encoding">If not specified (or NULL specified) then UTF8 will be used.</param>
-        public static async Task<string> ReadAllText(this Stream response, Encoding encoding = null)
+        public static async Task<string> ReadAllText(this Stream @this, Encoding encoding = null)
         {
             encoding = encoding ?? Encoding.UTF8;
 
             // Pipes the stream to a higher level stream reader with the required encoding format.
-            using (var readStream = new StreamReader(response, encoding))
+            using (var readStream = new StreamReader(@this, encoding))
             {
                 var result = "";
 

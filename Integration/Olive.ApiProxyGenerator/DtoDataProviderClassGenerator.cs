@@ -27,6 +27,8 @@ namespace Olive.ApiProxy
             r.AppendLine("{");
             r.AppendLine("using Olive;");
             r.AppendLine("using System;");
+            r.AppendLine("using System.Linq;");
+            r.AppendLine("using System.Collections.Generic;");
             r.AppendLine("using System.Threading.Tasks;");
             r.AppendLine("using Olive.Entities;");
             r.AppendLine();
@@ -37,6 +39,11 @@ namespace Olive.ApiProxy
             r.AppendLine($"public class {type} : LimitedDataProvider");
             r.AppendLine("{");
             r.AppendLine($"static Action<{Context.ControllerType.Name}> Configurator;");
+            if (ApiMethodReturnsList)
+            {
+                r.AppendLine($"static {Type.Name}[] LatestListResult;");
+                r.AppendLine($"static Dictionary<Guid, {Type.Name}> LatestListResultByIds;");
+            }
             r.AppendLine();
             r.AppendLine($"/// <summary>Gets a singleton instance of this data provider.</summary>");
             r.AppendLine($"public static {type} Current {{ get; }} = new {type}();");
@@ -56,8 +63,7 @@ namespace Olive.ApiProxy
             r.AppendLine($"public static void Register(Action<{Context.ControllerType.Name}> configurator = null)");
             r.AppendLine("{");
             r.AppendLine("Configurator = configurator;");
-            r.AppendLine("Olive.Entities.Data.Database.Instance");
-            r.AppendLine($".RegisterDataProvider(typeof({Type.Name}), {Type.Name}DataProvider.Current);");
+            r.AppendLine($"Context.Current.Database().RegisterDataProvider(typeof({Type.Name}), Current);");
             r.AppendLine("}");
 
             return r.ToString();
@@ -81,21 +87,29 @@ namespace Olive.ApiProxy
             r.AppendLine($"var api = new {Context.ControllerType.Name}();");
             r.AppendLine("Configurator?.Invoke(api);");
 
-            r.Append($"return await api.{ApiMethod.Name}(");
-
             if (ApiMethodReturnsList)
             {
-                r.Append(").FirstOrDefault(x => x.ID == guid");
+                r.AppendLine($"var listResult = await api.{ApiMethod.Name}();");
+                r.AppendLine("if (!ReferenceEquals(listResult, LatestListResult))");
+                r.AppendLine("{");
+                r.AppendLine("LatestListResult = listResult;");
+                r.AppendLine("LatestListResultByIds = listResult?.ToDictionary(x => x.ID, x => x);");
+                r.AppendLine("}");
+                r.AppendLine();
+                r.AppendLine("return LatestListResultByIds?.GetOrDefault(guid);");
             }
             else
             {
+                r.Append($"return await api.{ApiMethod.Name}(");
+
                 var paramType = ApiMethod.GetParameters().Single().ParameterType;
                 if (paramType == typeof(Guid)) r.Append("guid");
                 else if (paramType == typeof(string)) r.Append("id.ToString()");
                 else r.Append($"id.ToString().To<{paramType.Name}>()");
+                r.AppendLine(");");
             }
 
-            r.AppendLine(");");
+
 
             r.AppendLine("}");
             return r.ToString();

@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Olive.Web;
 
 namespace Olive.Mvc.Testing
 {
@@ -8,19 +8,40 @@ namespace Olive.Mvc.Testing
     {
         readonly RequestDelegate Next;
 
-        public WebTestMiddleware(RequestDelegate next) => Next = next;
+        public WebTestMiddleware(RequestDelegate next)
+        {
+            Next = next;
+        }
 
         public async Task Invoke(HttpContext context)
         {
-            TempDatabase.AwaitReadiness();
+            if (await ProcessAsWebCommand())
+            {
+                return;
+            }
+            else
+            {
+                await Next.Invoke(context);
+            }
+        }
 
-            var terminate = false;
+        async Task<bool> ProcessAsWebCommand()
+        {
+            if (TempDatabase.Config?.DatabaseManager == null) return false;
 
-            var command = context?.Request?.Param("Web.Test.Command");
-            if (command.HasValue())
-                terminate = await WebTestConfig.Run(command);
+            await TempDatabase.AwaitReadiness();
+            var command = Context.Current.Request().Param("Web.Test.Command");
+            if (command.IsEmpty()) return false;
 
-            if (!terminate) await Next.Invoke(context);
+            try
+            {
+                return await WebTestConfig.Run(command);
+            }
+            catch (Exception ex)
+            {
+                await Context.Current.Response().EndWith(ex.ToLogString().ToHtmlLines());
+                return false;
+            }
         }
     }
 }

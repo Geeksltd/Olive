@@ -3,7 +3,7 @@
 namespace Olive.Mvc
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class PushExpireClientCache : Attribute
+    public class PushExpireClientCacheAttribute : Attribute
     {
     }
 }

@@ -7,7 +7,7 @@
 
     public abstract class ViewComponent : Microsoft.AspNetCore.Mvc.ViewComponent
     {
-        protected static IDatabase Database => Entities.Data.Database.Instance;
+        protected static IDatabase Database => Context.Current.Database();
 
         /// <summary>
         /// Gets HTTP-specific information about an individual HTTP request.
@@ -31,11 +31,9 @@
         /// <param name="relativePath">The relative path of the module inside wwwroot (including the .js extension).
         /// E.g. /scripts/CustomModule1</param>
         /// <param name="staticFunctionInvokation">An expression to call [a static method] on the loaded module.</param>
-        public void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
+        public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
         {
-            var onLoaded = staticFunctionInvokation.WithPrefix(", m => m.default.");
-            var fullUrl = Request.GetAbsoluteUrl(relativePath);
-            Context.Current.Http().JavascriptActions().JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
+            Context.Current.Http().JavascriptActions().LoadModule(relativePath, staticFunctionInvokation);
         }
     }
 }

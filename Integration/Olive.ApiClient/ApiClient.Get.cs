@@ -34,11 +34,19 @@ namespace Olive
         {
             lock (CacheSyncLock)
             {
-                var appName = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent.Name;
-                var name = Path.Combine(Path.GetTempPath(), appName, CACHE_FOLDER, GetTypeName<TResponse>());
-
-                return name.AsDirectory().EnsureExists().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
+                return GetCacheDirectory<TResponse>().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
             }
+        }
+
+        static DirectoryInfo GetCacheDirectory<TResponse>()
+        {
+            return GetRootCacheDirectory().GetOrCreateSubDirectory(GetTypeName<TResponse>());
+        }
+
+        static DirectoryInfo GetRootCacheDirectory()
+        {
+            var appName = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent.Name;
+            return Path.Combine(Path.GetTempPath(), appName, CACHE_FOLDER).AsDirectory().EnsureExists();
         }
 
         static FileInfo[] GetTypeCacheFiles<TResponse>(TResponse modified)
@@ -86,11 +94,16 @@ namespace Olive
         public async Task<TResponse> Get<TResponse>(object queryParams = null)
         {
             Url = GetFullUrl(queryParams);
+            Log.For(this).Debug("Get: Url = " + Url);
 
             if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
             {
                 var result = await GetCachedResponse<TResponse>();
-                if (HasValue(result)) return result;
+                if (HasValue(result))
+                {
+                    Log.For(this).Debug("Get: Returning from Cache: " + result);
+                    return result;
+                }
             }
 
             // Not already cached:
@@ -105,7 +118,11 @@ namespace Olive
             if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
             {
                 result = await GetCachedResponse<TResponse>();
-                if (HasValue(result)) return result;
+                if (HasValue(result))
+                {
+                    Log.For(this).Debug("ExecuteGet: Returning from Cache: " + result);
+                    return result;
+                }
             }
 
             var request = new RequestInfo(this) { HttpMethod = "GET" };
@@ -122,12 +139,12 @@ namespace Olive
 
             if (request.Error != null)
             {
-                if (CachePolicy != CachePolicy.FreshOrFail)
-                {
-                    result = await GetCachedResponse<TResponse>();
-                    if (result == null) // No cache available
-                        throw request.Error;
-                }
+                if (CachePolicy == CachePolicy.FreshOrFail)
+                    throw request.Error;
+
+                result = await GetCachedResponse<TResponse>();
+                if (result == null) // No cache available
+                    throw request.Error;
             }
 
             return result;
@@ -233,12 +250,12 @@ namespace Olive
         /// <summary>
         /// Deletes all cached Get API results.
         /// </summary>
-        public Task DisposeCache()
+        public static Task DisposeCache()
         {
             lock (CacheSyncLock)
             {
-                if (Directory.Exists(CACHE_FOLDER))
-                    Directory.Delete(CACHE_FOLDER, true);
+                var cacheDir = GetRootCacheDirectory();
+                if (cacheDir.Exists) cacheDir.Delete(true);
             }
 
             // Desined as a task in case in the future we need it.

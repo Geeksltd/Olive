@@ -1,74 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Data.Sqlite;
-using System.Text.RegularExpressions;
 using System.Data;
+using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 
-namespace Olive.Entities.Data.SQLite
+namespace Olive.Entities.Data
 {
-    public class SqliteManager
+    public class SqLiteManager : DatabaseManager
     {
-        readonly string SQLiteDBLocation;
-        public SqliteManager() => SQLiteDBLocation = Config.GetConnectionString("AppDatabase");
-        public SqliteManager(string sqliteConnection) => SQLiteDBLocation = sqliteConnection;
+        SqliteConnection CreateConnection() => new SqliteConnection(DataAccess.GetCurrentConnectionString());
 
-        public void ExecuteSql(string sql)
+        public override void Delete(string databaseName)
         {
-            var lines = new Regex(@"^\s*GO\s*$", RegexOptions.Multiline).Split(sql);
-            using (var connection = new SqliteConnection(SQLiteDBLocation))
+            Task<IDataReader> read()
             {
-                try
-                {
-                    connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to open a DB connection.", ex);
-                }
-
-                using (var cmd = connection.CreateCommand())
-                {
-                    cmd.CommandType = CommandType.Text;
-
-                    foreach (var line in lines.Trim())
-                    {
-                        cmd.CommandText = line;
-
-                        try { cmd.ExecuteNonQuery(); }
-                        catch (Exception ex) { throw EnrichError(ex, line); }
-                    }
-                }
+                return new DataAccess<SqliteConnection>()
+                .ExecuteReader("SELECT NAME FROM sqlite_master where type = 'table'");
             }
 
-
-
-        }
-        Exception EnrichError(Exception ex, string command) =>
-           throw new Exception($"Could not execute SQL command: \r\n-----------------------\r\n{command.Trim()}\r\n-----------------------\r\n Because:\r\n\r\n{ex.Message}");
-        public void DeleteDatabase()
-        {
-            using (var connection = new SqliteConnection(SQLiteDBLocation))
+            try
             {
-                try
-                {
-                    connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to open a DB connection.", ex);
-                }
+                var tables = new List<string>();
+
+                using (var reader = Task.Factory.RunSync(read))
+                    while (reader.Read()) tables.Add(reader[0].ToString());
+
+                foreach (var table in tables) Execute("DROP TABLE `" + table + "`");
+            }
+            catch (Exception ex)
+            { throw new Exception("Could not drop database '" + databaseName + "'", ex); }
+        }
+
+        public override void Execute(string sql, string database = null)
+        {
+            sql = sql.TrimOrEmpty();
+            if (sql.IsEmpty()) return;
+            if (sql.Contains("CREATE DATABASE", caseSensitive: false)) return; // not supported
+
+            using (var connection = CreateConnection())
+            {
+                try { connection.Open(); }
+                catch (Exception ex) { throw new Exception("Failed to open a DB connection.", ex); }
+
                 using (var cmd = connection.CreateCommand())
                 {
                     cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = "VACUUM";
+
+                    cmd.CommandText = sql;
                     try { cmd.ExecuteNonQuery(); }
-                    catch (Exception ex) { throw EnrichError(ex, cmd.CommandText); }
-                    
+                    catch (Exception ex) { throw new Exception("Failed to run SQL command: " + sql, ex); }
                 }
             }
         }
 
+        public override void ClearConnectionPool() { }
 
+        public override bool Exists(string database, string filePath) => false;
     }
 }

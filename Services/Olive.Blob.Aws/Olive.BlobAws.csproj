@@ -5,13 +5,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <OutputPath>..\..\@Assemblies\</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.BlobAws.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.3.14" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
   </ItemGroup>
 

@@ -9,6 +9,8 @@ namespace Olive.ApiProxy
     {
         Type Type;
 
+        static string[] CommonDefaultProperties = new[] { "title", "name", "subject", "description", "label", "text" };
+
         MemberInfo[] EffectiveProperties => Type.GetEffectiveProperties();
 
         public DtoProgrammer(Type type) => Type = type;
@@ -36,6 +38,7 @@ namespace Olive.ApiProxy
         {
             var r = new StringBuilder();
             r.AppendLine($"/// <summary>The {Type.Name} DTO type (Data Transfer Object) to be used with {Context.ControllerType.Name} Api.</summary>");
+            r.AppendLine("[Olive.Entities.CacheObjects(false)]");
             r.AppendLine("public class " + Type.Name + " : Olive.Entities.GuidEntity");
             r.AppendLine("{");
 
@@ -67,7 +70,6 @@ namespace Olive.ApiProxy
             return toStringField.Name;
         }
 
-        static string[] CommonDefaultProperties = new[] { "title", "name", "subject", "description", "label", "text" };
         MemberInfo SelectDefaultToStringField()
         {
             MemberInfo result;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace Olive.ApiProxy
@@ -43,6 +44,12 @@ namespace Olive.ApiProxy
             var type = propertyType;
             if (type.IsArray) type = type.GetElementType();
 
+            bool isNullable;
+            if (isNullable = type.IsNullable())
+            {
+                type = type.GetGenericArguments().Single();
+            }
+
             var method = type.Name;
 
             if (type.Assembly == Context.Assembly)
@@ -60,6 +67,12 @@ namespace Olive.ApiProxy
 
             if (type.Assembly == Context.Assembly && propertyType.IsArray)
                 result += ".MaxCardinality(null)";
+
+            if (!isNullable)
+            {
+                if (type.IsValueType)
+                    result += ".Mandatory()";
+            }
 
             return result + ";";
         }

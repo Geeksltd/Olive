@@ -56,17 +56,6 @@ namespace Olive
         }
 
         /// <summary>
-        /// Gets all possible items in the range based on the specified intervals.
-        /// </summary>
-        public static IEnumerable<int> GetIntervals(this Range<int> range, int interval = 1)
-        {
-            if (interval <= 0) throw new Exception("Interval should be a positive number.");
-
-            for (var item = range.From; item <= range.To; item += interval)
-                yield return item;
-        }
-
-        /// <summary>
         /// Merges adjecant items in this list if their gap is within the specified tolerance.
         /// The result will be another list of ranges with potentially fewer (but larger) ranges.
         /// Consider sorting the items before calling this method.

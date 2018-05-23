@@ -23,7 +23,7 @@ namespace Olive.Entities.Data
         internal void TryCache(IEntity item, DateTime? queryTime)
         {
             if (AnyOpenTransaction()) return;
-            if (queryTime != null && Cache.Current.IsUpdatedSince(item, queryTime.Value)) return;
+            if (queryTime.HasValue && Cache.Current.IsUpdatedSince(item, queryTime.Value)) return;
             Cache.Current.Add(item);
         }
 
@@ -121,6 +121,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed
                         continue;
                     }
                 }
@@ -154,7 +155,11 @@ namespace Olive.Entities.Data
             if (id.ToStringOrEmpty().IsEmpty()) return null;
 
             try { return await Get(id, type); }
-            catch { return null; }
+            catch
+            {
+                // No logging is needed.
+                return null;
+            }
         }
     }
 }

@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.8" />
     <PackageReference Include="HangFire" Version="1.6.17" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.1" />
   </ItemGroup>
@@ -20,9 +21,8 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Olive.Mvc.Testing">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Testing.dll</HintPath>
-      <Private>false</Private>
+    <Reference Include="Olive.Mvc">
+      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>

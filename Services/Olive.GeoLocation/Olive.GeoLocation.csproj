@@ -1,12 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.GeoLocation</RootNamespace> 
     <OutputPath>..\..\@Assemblies\</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.GeoLocation.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.6" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Olive">

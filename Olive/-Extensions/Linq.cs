@@ -255,10 +255,9 @@ namespace Olive
         /// </summary>
         public static async Task Do<T>(this IEnumerable<T> list, Func<T, Task> func)
         {
-            if (list == null) return;
+            if (list == null || func == null) return;
 
-            foreach (var item in list)
-                await func?.Invoke(item);
+            foreach (var item in list) await func(item);
         }
 
         /// <summary>
@@ -267,13 +266,13 @@ namespace Olive
         /// </summary>        
         public static void Do<T>(this IEnumerable<T> list, Action<T, int> action)
         {
-            if (list == null) return;
+            if (list == null || action == null) return;
 
             var index = 0;
 
             foreach (var item in list)
             {
-                action?.Invoke(item, index);
+                action(item, index);
                 index++;
             }
         }
@@ -284,13 +283,13 @@ namespace Olive
         /// </summary>        
         public static async Task DoAsync<T>(this IEnumerable<T> list, Func<T, int, Task> action)
         {
-            if (list == null) return;
+            if (list == null || action == null) return;
 
             var index = 0;
 
             foreach (var item in list)
             {
-                await (action?.Invoke(item, index) ?? Task.CompletedTask);
+                await action(item, index);
                 index++;
             }
         }
@@ -474,13 +473,15 @@ namespace Olive
         public static bool None<T>(this IEnumerable<T> list, Func<T, bool> criteria) => !list.Any(criteria);
 
         /// <summary>
+        /// A null safe alternative to Any(). If the source is null it will return false instead of throwing an exception.
+        /// </summary>
+        public static bool HasAny<TSource>(this IEnumerable<TSource> source)
+           => source != null && source.Any();
+
+        /// <summary>
         /// Determines if this is null or an empty list.
         /// </summary>
-        public static bool None<T>(this IEnumerable<T> list)
-        {
-            if (list == null) return true;
-            return !list.Any();
-        }
+        public static bool None<T>(this IEnumerable<T> list) => !list.HasAny();
 
         /// <summary>
         /// Determines if this list intersects with another specified list.
@@ -883,7 +884,7 @@ namespace Olive
         /// Returns an empty collection if this collection is null.
         /// </summary>
         public static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> collection) => collection ?? Enumerable.Empty<T>();
-        
+
         /// <summary>
         /// Determines if the specified item exists in this list. 
         /// </summary>
@@ -908,6 +909,11 @@ namespace Olive
 
             return items.Contains(item.Value);
         }
+
+        /// <summary>
+        /// Determines if this item is in the specified list.
+        /// </summary>
+        public static bool IsAnyOf(this int item, IEnumerable<int> items) => items.Contains(item);
 
         /// <summary>
         /// Specifies whether this list contains any of the specified values.

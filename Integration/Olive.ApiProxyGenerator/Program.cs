@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace Olive.ApiProxy
 {
@@ -7,6 +9,13 @@ namespace Olive.ApiProxy
     {
         static int Main(string[] args)
         {
+            if (args.Contains("/debug"))
+            {
+                Console.Write("Waiting for debugger to attach...");
+                while (!Debugger.IsAttached) Thread.Sleep(100);
+                Console.WriteLine("Attached.");
+            }
+
             if (!ParametersParser.Start(args)) return Helper.ShowHelp();
 
             try
@@ -32,18 +41,19 @@ namespace Olive.ApiProxy
             }
             catch (Exception ex)
             {
-                ShowError(ex.Message);
+                ShowError(ex);
                 return -1;
             }
         }
 
-        public static void ShowError(string message)
+        public static void ShowError(Exception error)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("ERROR!");
-            Console.WriteLine(message);
+            Console.WriteLine(error.Message);
             Console.ResetColor();
-            Console.WriteLine("Press any key to end...");
+            Console.WriteLine(error.GetUsefulStack());
+            Console.WriteLine("Press any key to end, or rerun the command with /debug.");
             Console.ReadKey();
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -127,7 +128,7 @@ namespace Olive.Mvc
             {
                 var id = user.GetId();
                 if (id == null) return default(TUser);
-                return Task.Factory.RunSync(() => Database.Instance.GetOrDefault<TUser>(id));
+                return Task.Factory.RunSync(() => Context.Current.Database().GetOrDefault<TUser>(id));
             });
         }
 
@@ -143,5 +144,7 @@ namespace Olive.Mvc
             return (JavascriptActions)(context.Items["JavascriptActions"] ??
                   (context.Items["JavascriptActions"] = new JavascriptActions()));
         }
+
+
     }
 }

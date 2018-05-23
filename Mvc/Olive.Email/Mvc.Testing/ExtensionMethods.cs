@@ -1,10 +1,8 @@
-using Olive.Mvc.Testing;
-
 namespace Olive.Email
 {
     partial class EmailExtensions
     {
-        public static IWebTestConfig AddEmail(this IWebTestConfig config)
+        public static IDevCommandsConfig AddEmail(this IDevCommandsConfig config)
         {
             config.Add("testEmail", async () =>
             {

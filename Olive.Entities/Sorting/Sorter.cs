@@ -13,8 +13,8 @@ namespace Olive.Entities
     public static class Sorter
     {
         public const int INCREMENT = 10;
-
         static AsyncLock AsyncLock = new AsyncLock();
+        static IDatabase Database => Context.Current.Database();
 
         public static async Task<ISortable> FindItemAbove(ISortable item) =>
             (await FindSiblings(item)).Except(item).Where(o => o.Order <= item.Order).WithMax(o => o.Order);
@@ -35,7 +35,7 @@ namespace Olive.Entities
 
             if (newOrder < 0) newOrder = 0;
 
-            item = await Entity.Database.Update(item, o => o.Order = newOrder, saveBehaviour);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
 
             await JustifyOrders(item, saveBehaviour);
         }
@@ -47,7 +47,7 @@ namespace Olive.Entities
         {
             var newOrder = (after == null ? 0 : after.Order) + 1;
 
-            item = await Entity.Database.Update(item, o => o.Order = newOrder, saveBehaviour);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
 
             await JustifyOrders(item, saveBehaviour);
         }
@@ -67,13 +67,13 @@ namespace Olive.Entities
 
                 await Swap(item, above, saveBehaviour);
 
-                item = await Entity.Database.Reload(item);
-                above = await Entity.Database.Reload(above);
-
-                await JustifyOrders(item, saveBehaviour);
-
-                return true;
+                item = await Database.Reload(item);
+                above = await Database.Reload(above);
             }
+
+            await JustifyOrders(item, saveBehaviour);
+
+            return true;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Olive.Entities
 
                 if (first <= 0) return false;
 
-                await Entity.Database.Update(item, o => o.Order = first - 1, saveBehaviour);
+                await Database.Update(item, o => o.Order = first - 1, saveBehaviour);
             }
 
             await JustifyOrders(item, saveBehaviour);
@@ -103,7 +103,7 @@ namespace Olive.Entities
             {
                 var last = (await FindSiblings(item)).Max(o => o.Order);
 
-                await Entity.Database.Update(item, o => o.Order = last + 1, saveBehaviour);
+                await Database.Update(item, o => o.Order = last + 1, saveBehaviour);
             }
 
             await JustifyOrders(item, saveBehaviour);
@@ -124,11 +124,11 @@ namespace Olive.Entities
                 if (below.Order == item.Order) item.Order++;
 
                 await Swap(item, below, saveBehaviour);
-
-                await JustifyOrders(item, saveBehaviour);
-
-                return true;
             }
+
+            await JustifyOrders(item, saveBehaviour);
+
+            return true;
         }
 
         /// <summary>
@@ -138,13 +138,13 @@ namespace Olive.Entities
         {
             var somethingAboveAll = (await FindSiblings(one)).Max(i => i.Order) + 20;
 
-            await Entity.Database.EnlistOrCreateTransaction(async () =>
+            await Database.EnlistOrCreateTransaction(async () =>
             {
                 var order1 = two.Order;
                 var order2 = one.Order;
 
-                await Entity.Database.Update(one, i => i.Order = order1, saveBehaviour);
-                await Entity.Database.Update(two, i => i.Order = order2, saveBehaviour);
+                await Database.Update(one, i => i.Order = order1, saveBehaviour);
+                await Database.Update(two, i => i.Order = order2, saveBehaviour);
             });
         }
 
@@ -170,7 +170,7 @@ namespace Olive.Entities
                     changed.Add(clone);
                 }
 
-                await Entity.Database.Save(changed, saveBehaviour);
+                await Database.Save(changed, saveBehaviour);
             }
         }
 
@@ -191,7 +191,7 @@ namespace Olive.Entities
 
             if (!isAcceptable)
             {
-                result = (await Entity.Database.Of(item.GetType()).GetList()).Cast<ISortable>();
+                result = (await Database.Of(item.GetType()).GetList()).Cast<ISortable>();
             }
             else
             {

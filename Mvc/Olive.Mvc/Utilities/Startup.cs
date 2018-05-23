@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -28,10 +29,11 @@ namespace Olive.Mvc
         // visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            Context.Initialize(services);
-
             services.AddSingleton(typeof(IHttpContextAccessor), typeof(HttpContextAccessor))
                .AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
+
+            Context.Initialize(services);
+            services.AddSingleton<IDatabase>(new Entities.Data.Database());
 
             var mvc = services.AddMvc(o => o.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
             Context.Current.AddService(typeof(IMvcBuilder), mvc);
@@ -57,18 +59,37 @@ namespace Olive.Mvc
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Context.Current.Configure(app.ApplicationServices).Configure(env);
-            ConfigureExceptionPage(app, env);
-            InstantiateDatabase(app, env);
 
-            app.UseMicroserviceAccessKeyAuthentication()
-                .UseAuthentication()
-                .UseStaticFiles()
-                .UseRequestLocalization(RequestLocalizationOptions)
-                .UseMvc(ConfigureRoutes);
+            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app, env)));
+
+            ConfigureExceptionPage(app, env);
+            ConfigureSecurity(app, env);
+            ConfigureRequestHandlers(app, env);
         }
 
-        protected virtual void InstantiateDatabase(IApplicationBuilder app, IHostingEnvironment env)
-            => Entity.InitializeDatabase(Entities.Data.Database.Instance);
+        public virtual Task OnStartUpAsync(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual void ConfigureSecurity(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            app.UseMicroserviceAccessKeyAuthentication();
+            app.UseAuthentication();
+        }
+
+        protected virtual void ConfigureRequestHandlers(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            UseStaticFiles(app, env);
+            app.UseRequestLocalization(RequestLocalizationOptions);
+            app.UseMvc();
+        }
+
+        protected virtual void UseStaticFiles(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment()) app.UseStaticFilesCaseSensitive();
+            else app.UseStaticFiles();
+        }
 
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)
         {

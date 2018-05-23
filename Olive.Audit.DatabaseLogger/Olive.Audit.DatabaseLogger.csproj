@@ -7,8 +7,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\@Assemblies</OutputPath>
     <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Audit.DatabaseLogger.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Olive">
@@ -19,9 +24,6 @@
     </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Excel">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Excel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

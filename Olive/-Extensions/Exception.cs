@@ -13,58 +13,7 @@ namespace Olive
     {
         public static string ToFullMessage(this Exception ex)
         {
-            return ToFullMessage(ex, additionalMessage: null, includeStackTrace: false, includeSource: false, includeData: false);
-        }
-
-        /// <summary>
-        /// Returns a more complete text dump of this exception, than just its text.
-        /// </summary>
-		public static string ToFullMessage(this Exception error, string additionalMessage, bool includeStackTrace, bool includeSource, bool includeData)
-        {
-            if (error == null) throw new NullReferenceException("This exception object is null");
-
-            var resultBuilder = new StringBuilder();
-            resultBuilder.AppendLineIf(additionalMessage, additionalMessage.HasValue());
-            var err = error;
-            while (err != null)
-            {
-                resultBuilder.AppendLine(err.Message);
-                if (includeData && err.Data != null && err.Data.Count > 0)
-                {
-                    resultBuilder.AppendLine("\r\nException Data:\r\n{");
-                    foreach (var i in err.Data)
-                        resultBuilder.AppendLine(ToLogText(i).WithPrefix("    "));
-
-                    resultBuilder.AppendLine("}");
-                }
-
-                if (err is ReflectionTypeLoadException)
-                {
-                    foreach (var loaderEx in (err as ReflectionTypeLoadException).LoaderExceptions)
-                        resultBuilder.AppendLine("Type load exception: " + loaderEx.ToFullMessage());
-                }
-
-                if (err is TargetInvocationException)
-                    err = err.InnerException;
-
-                err = err.InnerException;
-                if (err != null)
-                {
-                    resultBuilder.AppendLine();
-                    if (includeStackTrace)
-                        resultBuilder.AppendLine("###############################################");
-                    resultBuilder.Append("Base issue: ");
-                }
-            }
-
-            if (includeStackTrace && error.StackTrace.HasValue())
-            {
-                var stackLines = error.StackTrace.Or("").Trim().ToLines();
-                stackLines = stackLines.Except(l => l.Trim().StartsWith("at System.Data.")).ToArray();
-                resultBuilder.AppendLine(stackLines.ToString("\r\n\r\n").WithPrefix("\r\n--------------------------------------\r\nSTACK TRACE:\r\n\r\n"));
-            }
-
-            return resultBuilder.ToString();
+            return ToFullMessage(ex, additionalMessage: null, includeStackTrace: false, includeData: false);
         }
 
         /// <summary>
@@ -85,15 +34,15 @@ namespace Olive
         }
 
         /// <summary>
-        /// <para>Creates a log-string from the Exception.</para>
-        /// <para>The result includes the stacktrace, innerexception et cetera, separated by <seealso cref = "Environment.NewLine"/>.</para>
+        /// Creates a log-string from the Exception.
+        /// The result includes the stacktrace, innerexception et cetera, separated by Environment.NewLine.
         /// </summary>
-        /// <param name = "ex">The exception to create the string from.</param>
-        /// <param name = "additionalMessage">Additional message to place at the top of the string, maybe be empty or null.</param>
-        public static string ToLogString(this Exception ex, string additionalMessage)
+        /// <param name="this">The exception to create the string from.</param>
+        /// <param name="additionalMessage">Additional message to place at the top of the string, maybe be empty or null.</param>
+        public static string ToLogString(this Exception @this, string additionalMessage)
         {
             var r = new StringBuilder();
-            r.AppendLine(ex.ToFullMessage(additionalMessage, includeStackTrace: true, includeSource: true, includeData: true));
+            r.AppendLine(@this.ToFullMessage(additionalMessage, includeStackTrace: true, includeData: true));
             return r.ToString();
         }
 
@@ -138,22 +87,28 @@ namespace Olive
         /// <summary>
         /// Returns a more complete text dump of this exception, than just its text.
         /// </summary>
-        public static string ToFullMessage(this Exception error, string additionalMessage, bool includeStackTrace, bool includeData)
+        public static string ToFullMessage(this Exception @this, string additionalMessage, bool includeStackTrace, bool includeData)
         {
-            if (error == null)
-                throw new NullReferenceException("This exception object is null");
+            var err = @this ?? throw new NullReferenceException("This exception object is null");
+
             var resultBuilder = new StringBuilder();
-            resultBuilder.AppendLineIf(additionalMessage, additionalMessage.HasValue());
-            var err = error;
+            resultBuilder.AppendLineIf(additionalMessage);
+
             while (err != null)
             {
+                if (err is TargetInvocationException || err is AggregateException)
+                {
+                    err = err.InnerException;
+                    continue;
+                }
+
                 resultBuilder.AppendLine(err.Message);
-                if (includeData && err.Data != null)
+
+                if (includeData && err.Data != null && err.Data.Count > 0)
                 {
                     resultBuilder.AppendLine("\r\nException Data:\r\n{");
                     foreach (var i in err.Data)
-                        resultBuilder.AppendLine(Olive.OliveExtensions.ToLogText(i).WithPrefix("    "));
-
+                        resultBuilder.AppendLine(ToLogText(i).WithPrefix("    "));
                     resultBuilder.AppendLine("}");
                 }
 
@@ -162,15 +117,6 @@ namespace Olive
                     foreach (var loaderEx in (err as ReflectionTypeLoadException).LoaderExceptions)
                         resultBuilder.AppendLine("Type load exception: " + loaderEx.ToFullMessage());
                 }
-
-                // try
-                // {
-                //    resultBuilder.AppendLineIf((err as HttpUnhandledException)?.GetHtmlErrorMessage().TrimBefore("Server Error"));
-                // }
-                // catch
-                // {
-                //    // No logging is needed
-                // }
 
                 err = err.InnerException;
                 if (err != null)
@@ -182,14 +128,23 @@ namespace Olive
                 }
             }
 
-            if (includeStackTrace && error.StackTrace.HasValue())
+            var stack = @this.GetUsefulStack().TrimOrEmpty();
+            if (includeStackTrace && stack.HasValue())
             {
-                var stackLines = error.StackTrace.Or("").Trim().ToLines();
+                var stackLines = stack.ToLines();
                 stackLines = stackLines.Except(l => l.Trim().StartsWith("at System.Data.")).ToArray();
                 resultBuilder.AppendLine(stackLines.ToString("\r\n\r\n").WithPrefix("\r\n--------------------------------------\r\nSTACK TRACE:\r\n\r\n"));
             }
 
             return resultBuilder.ToString();
+        }
+
+        public static string GetUsefulStack(this Exception @this)
+        {
+            if (@this.InnerException == null) return @this.StackTrace;
+            if (@this is TargetInvocationException || @this is AggregateException)
+                return @this.InnerException.GetUsefulStack();
+            return @this.StackTrace;
         }
     }
 }

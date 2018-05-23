@@ -117,7 +117,10 @@ namespace Olive.Entities.Data
                     if (result != null) return result;
                 }
             }
-            catch { }
+            catch
+            {
+                // No logging is needed.
+            }
 
             return null;
         }
@@ -253,7 +256,8 @@ namespace Olive.Entities.Data
             {
                 var lists = GetLists(parentType, autoCreate: false);
 
-                if (lists != null) lock (lists) lists.Clear();
+                if (lists != null)
+                    lock (lists) lists.Clear();
             }
 
             if (this != Current) Current.ExpireLists(type);

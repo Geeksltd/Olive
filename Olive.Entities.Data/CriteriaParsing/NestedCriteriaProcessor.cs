@@ -24,7 +24,7 @@ namespace Olive.Entities.Data
                 }
                 else
                 {
-                    var provider = Database.Instance.GetProvider(declaringType);
+                    var provider = Context.Current.Database().GetProvider(declaringType);
 
                     var mappedSubquery = provider.MapSubquery(part + ".*", TableAlias);
 

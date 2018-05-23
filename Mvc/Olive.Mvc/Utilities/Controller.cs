@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Logging;
 using Olive.Entities;
 
 namespace Olive.Mvc
@@ -27,7 +28,7 @@ namespace Olive.Mvc
             HttpContext.Items["ViewBag"] = ViewBag;
         }
 
-        protected static IDatabase Database => Entities.Data.Database.Instance;
+        protected static IDatabase Database => Context.Current.Database();
 
         /// <summary>
         /// Provides a dummy Html helper.
@@ -50,16 +51,9 @@ namespace Olive.Mvc
         /// <summary>
         /// Do not use this overload. Always provide a viewmodel as a parameter.
         /// </summary>
-        protected new internal ViewResult View() =>
-            throw new InvalidOperationException("View() method should not be called without specifying a view model.");
-
-        /// <summary>
-        /// Creates a ViewResult object by using the model that renders a view to the response.
-        /// </summary>
-        public override ViewResult View(object model)
+        protected new internal ViewResult View()
         {
-            JavascriptActions.ScheduleNotifications();
-            return base.View(model);
+            throw new InvalidOperationException("View() method should not be called without specifying a view model.");
         }
 
         /// <summary>
@@ -87,8 +81,7 @@ namespace Olive.Mvc
 
         /// <summary>
         /// Creates a new instance of the specified view model type and binds it using the standard request data.
-        /// </summary>
-
+        /// </summary>         
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             await BindAttributeRunner.Run(context, next);
@@ -118,6 +111,7 @@ namespace Olive.Mvc
         [NonAction]
         protected JsonResult JsonActions() => Json(JavascriptActions);
 
+        [NonAction]
         public async Task<JsonResult> Json<TResult>(Task<TResult> data)
         {
             var result = await data;
@@ -135,8 +129,10 @@ namespace Olive.Mvc
         protected JsonResult Notify(object message, bool obstruct = true) => Notify(message, style: null, obstruct: obstruct);
 
         [NonAction]
-        protected JsonResult Notify(object message, string style, bool obstruct = true) =>
-            AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
+        protected JsonResult Notify(object message, string style, bool obstruct = true)
+        {
+            return AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
+        }
 
         [NonAction]
         public JsonResult JavaScript(string script, PageLifecycleStage stage = PageLifecycleStage.Init)
@@ -210,8 +206,10 @@ namespace Olive.Mvc
         protected virtual ActionResult RedirectToLogin() =>
             Redirect("/login?ReturnUrl=" + HttpContext.GetUrlHelper().Current().UrlEncode());
 
+        [NonAction]
         public NotFoundTextActionResult NotFound(string message) => new NotFoundTextActionResult(message);
 
+        [NonAction]
         public UnauthorizedTextActionResult Unauthorized(string message) => new UnauthorizedTextActionResult(message);
 
         /// <summary>
@@ -220,14 +218,12 @@ namespace Olive.Mvc
         /// <param name="relativePath">The relative path of the module inside wwwroot (including the .js extension).
         /// E.g. /scripts/CustomModule1</param>
         /// <param name="staticFunctionInvokation">An expression to call [a static method] on the loaded module.</param>
-        public void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
+        public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
         {
-            var onLoaded = staticFunctionInvokation.WithPrefix(", m => m.default.");
-            var fullUrl = Request.GetAbsoluteUrl(relativePath);
-            JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
-
-            this.TryUpdateModelAsync
+            JavascriptActions.LoadModule(relativePath, staticFunctionInvokation);
         }
+
+        public ILogger Log => Olive.Log.For(this);
     }
 
     public enum WindowAction

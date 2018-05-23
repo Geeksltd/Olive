@@ -11,29 +11,31 @@ namespace Olive
 {
     public static class OliveSecurityExtensions
     {
-        public static ClaimsIdentity ToClaimsIdentity(this ILoginInfo info)
+        readonly static TimeSpan DistantFuture = 10000.Days();
+
+        public static ClaimsIdentity ToClaimsIdentity(this ILoginInfo @this)
         {
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, info.DisplayName.OrEmpty()) };
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, @this.DisplayName.OrEmpty()) };
 
-            if (info.ID.HasValue()) claims.Add(new Claim(ClaimTypes.NameIdentifier, info.ID));
-            if (info.Email.HasValue()) claims.Add(new Claim(ClaimTypes.Email, info.Email));
+            if (@this.ID.HasValue()) claims.Add(new Claim(ClaimTypes.NameIdentifier, @this.ID));
+            if (@this.Email.HasValue()) claims.Add(new Claim(ClaimTypes.Email, @this.Email));
 
-            foreach (var role in info.GetRoles().OrEmpty())
+            foreach (var role in @this.GetRoles().OrEmpty())
                 claims.Add(new Claim(ClaimTypes.Role, role));
 
             return new ClaimsIdentity(claims, "Olive");
         }
 
-        public static string CreateJwtToken(this ILoginInfo info)
+        public static string CreateJwtToken(this ILoginInfo @this)
         {
             var securityKey = OAuth.GetJwtSecurityKey();
 
             var descriptor = new SecurityTokenDescriptor
             {
-                Subject = info.ToClaimsIdentity(),
+                Subject = @this.ToClaimsIdentity(),
                 Issuer = Context.Current.Request().RootUrl(),
                 Audience = Context.Current.Request().RootUrl(),
-                Expires = DateTime.UtcNow.Add(info.Timeout),
+                Expires = DateTime.UtcNow.Add(@this.Timeout ?? DistantFuture),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256),
             };
 
@@ -42,33 +44,33 @@ namespace Olive
             return tokenHandler.WriteToken(token);
         }
 
-        public static async Task LogOn(this ILoginInfo loginInfo, bool remember = false)
+        public static async Task LogOn(this ILoginInfo @this, bool remember = false)
         {
             await Context.Current.Http().SignOutAsync();
 
             var prop = new AuthenticationProperties
             {
                 IsPersistent = remember,
-                ExpiresUtc = DateTimeOffset.UtcNow.Add(loginInfo.Timeout)
+                ExpiresUtc = DateTimeOffset.UtcNow.Add(@this.Timeout ?? DistantFuture)
             };
 
-            await Context.Current.Http().SignInAsync(new ClaimsPrincipal(loginInfo.ToClaimsIdentity()), prop);
+            await Context.Current.Http().SignInAsync(new ClaimsPrincipal(@this.ToClaimsIdentity()), prop);
         }
 
         /// <summary>
         /// Determines whether the ID of this user is the same as a specified loggin-in user.
         /// </summary>
-        public static bool Is(this ILoginInfo loginInfo, ClaimsPrincipal loggedInUser)
-            => loggedInUser.GetId() == loginInfo.ID;
+        public static bool Is(this ILoginInfo @this, ClaimsPrincipal loggedInUser)
+            => loggedInUser.GetId() == @this.ID;
 
         /// <summary>
         /// Determines whether the ID of this logged-in user is the same as a specified user.
         /// </summary>
-        public static bool Is(this ClaimsPrincipal loggedInUser, ILoginInfo loginInfo) => loginInfo.Is(loggedInUser);
+        public static bool Is(this ClaimsPrincipal @this, ILoginInfo loginInfo) => loginInfo.Is(@this);
 
-        public static GenericLoginInfo Clone(this ILoginInfo info, Action<GenericLoginInfo> change = null)
+        public static GenericLoginInfo Clone(this ILoginInfo @this, Action<GenericLoginInfo> change = null)
         {
-            var clone = new GenericLoginInfo(info);
+            var clone = new GenericLoginInfo(@this);
             change?.Invoke(clone);
             return clone;
         }

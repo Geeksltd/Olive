@@ -10,6 +10,8 @@ namespace Olive.Globalization
     {
         public readonly static List<ITranslationProvider> Providers = new List<ITranslationProvider>();
 
+        static IDatabase Database => Context.Current.Database();
+
         static Translator()
         {
             if (Config.Get("Globalization:GoogleTranslate:Enabled", defaultValue: false))
@@ -97,7 +99,7 @@ namespace Olive.Globalization
 
         static async Task<string> GetLocalTranslation(string phraseInDefaultLanguage, ILanguage language)
         {
-            var record = await Entity.Database.FirstOrDefault<IPhraseTranslation>(p =>
+            var record = await Database.FirstOrDefault<IPhraseTranslation>(p =>
                     p.Phrase == phraseInDefaultLanguage && p.Language == language);
 
             return record?.Translation;

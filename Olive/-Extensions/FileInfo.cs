@@ -74,13 +74,7 @@ namespace Olive
         /// <summary>
         /// Executes this EXE file and returns the standard output.
         /// </summary>
-        public static string Execute(this FileInfo exeFile, string args, bool waitForExit = true) =>
-            Execute(exeFile, args, waitForExit, null);
-
-        /// <summary>
-        /// Executes this EXE file and returns the standard output.
-        /// </summary>
-        public static string Execute(this FileInfo exeFile, string args, bool waitForExit, Action<Process> configuration)
+        public static string Execute(this FileInfo exeFile, string args, bool waitForExit = true, Action<Process> configuration = null)
         {
             var output = new StringBuilder();
 
@@ -182,6 +176,23 @@ namespace Olive
                 return Enumerable.Empty<FileInfo>();
 
             return folder.GetFiles(searchPattern);
+        }
+
+        /// <summary>
+        /// Gets this file's original exact file name with the correct casing.
+        /// </summary>
+        public static string GetExactFullName(this FileSystemInfo @this)
+        {
+            var path = @this.FullName;
+            if (!File.Exists(path) && !Directory.Exists(path)) return path;
+
+            var asDirectory = new DirectoryInfo(path);
+            var parent = asDirectory.Parent;
+
+            if (parent == null) // Drive:
+                return asDirectory.Name.ToUpper();
+
+            return Path.Combine(parent.GetExactFullName(), parent.GetFileSystemInfos(asDirectory.Name)[0].Name);
         }
     }
 }

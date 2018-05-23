@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Olive.Mvc
+﻿namespace Olive.Mvc
 {
+    using System;
+
     [AttributeUsage(AttributeTargets.Property)]
     public class CopyDataAttribute : Attribute
     {

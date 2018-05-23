@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Olive.Entities.Data
 {
-    partial class OliveExtensions
+    public static partial class DataExtensions
     {
         /// <summary>
         /// Casts this data table's records into a list of typed objects.        
@@ -187,5 +187,32 @@ namespace Olive.Entities.Data
         /// Gets the rows of this data table in a LINQ-able format..
         /// </summary>
         public static IEnumerable<DataRow> GetRows(this DataTable dataTable) => dataTable.Rows.Cast<DataRow>();
+
+        /// <summary>
+        /// Returns a DataTable with columns based on the public properties of type T and the rows
+        /// populated with the values in those properties for each item in this IEnumerable.
+        /// </summary>
+        /// <param name="tableName">Optional name for the DataTable (defaults to the plural of the name of type T).</param>
+        public static DataTable ToDataTable<T>(this IEnumerable<T> items, string tableName = null)
+        {
+            var properties = typeof(T).GetProperties();
+
+            var dataTable = new DataTable(tableName.Or(typeof(T).Name.ToPlural()));
+
+            foreach (var property in properties)
+                dataTable.Columns.Add(property.Name);
+
+            foreach (var item in items)
+            {
+                var row = dataTable.NewRow();
+
+                foreach (var property in properties)
+                    row[property.Name] = property.GetValue(item);
+
+                dataTable.Rows.Add(row);
+            }
+
+            return dataTable;
+        }
     }
 }

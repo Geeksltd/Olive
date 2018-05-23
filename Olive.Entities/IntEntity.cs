@@ -8,42 +8,34 @@
 
     public class IntEntity : Entity<int>
     {
-        // bool IsIdLoaded = false;
+        bool IsIdLoaded = false;
         int id;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static Func<Type, Task<int>> NewIdGenerator = DefaultNewIdGenerator;
 
-        // TODO: The ID property need to be reviewed and fixed.
         /// <summary>
-        /// Gets a unique Identifier for this instance. In the database, this will be the primary key of this object.
+        /// Gets a unique Identifier for this instance. In the database, 
+        /// this will be the primary key of this object.
         /// </summary>
         public override int ID
         {
             get
             {
-                if (IsNew)
-                    throw new InvalidOperationException($"ID is not avialable for instances of '{GetType().Name}' before being saved to the database.");
+                if (!IsIdLoaded)
+                    if (GetType().Defines<IdByDatabaseAttribute>(inherit: true))
+                        throw new InvalidOperationException($"ID is not avialable for instances of '{GetType().Name}' before being saved to the database.");
 
                 return id;
-                // if (IsIdLoaded) return id;
-                // else
-                // {
-                //    if (GetType().Defines<IdByDatabaseAttribute>(inherit: true))
-                //        throw new InvalidOperationException($"ID is not avialable for instances of '{GetType().Name}' before being saved to the database.");
-
-                //    id = NewIdGenerator(GetType());
-                //    IsIdLoaded = true;
-                //    return id;
-                // }
             }
             set
             {
-                if (IsNew)
+
+                if (IsNew && GetType().Defines<IdByDatabaseAttribute>(inherit: true))
                     throw new InvalidOperationException($"ID is not avialable for instances of '{GetType().Name}' before being saved to the database.");
 
                 id = value;
-                // IsIdLoaded = true;
+                IsIdLoaded = true;
             }
         }
 
@@ -55,16 +47,17 @@
             if (type.BaseType != typeof(IntEntity))
                 return await DefaultNewIdGenerator(type.BaseType);
 
-            var initialize = (Func<Type, Task<int>>)(async (t) =>
-           {
-               if (TransientEntityAttribute.IsTransient(t)) return 1;
+            async Task<int> initialize(Type typ)
+            {
+                if (TransientEntityAttribute.IsTransient(typ)) return 1;
 
-               var biggestId = ((await Database.Of(t).OrderBy("ID", descending: true)
-               .Top(1).GetList()).FirstOrDefault()?.GetId());
+                var biggestId = await Context.Current.Database()
+                    .Of(typ).OrderBy("ID", descending: true)
+                .Top(1).GetList().Select(x => x.GetId()).FirstOrDefault();
 
-               if (biggestId != null) return 1 + (int)biggestId;
-               else return 1;
-           });
+                if (biggestId != null) return 1 + (int)biggestId;
+                else return 1;
+            }
 
             var value = await initialize(type);
 

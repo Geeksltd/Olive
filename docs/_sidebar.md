@@ -1,5 +1,4 @@
 * Olive Core
-
     * [What is Olive?](README.md)
     * [.NET Extensions](Core/Extensions.md)
     * [Utility classes](Core/Utilities.md)
@@ -34,6 +33,7 @@
 
 * Olive Javascript Fx (MvcJS)
     * [Overview](MvcJS/Overview.md)
+    * [Ajax Lifecycle](MvcJS/AjaxLifecycle.md)
     * [Loading custom modules](MvcJS/Custom.md)
     * [Loading JS libraries](MvcJS/Library.md)
     

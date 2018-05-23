@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Olive;
+using Olive.Entities;
 
-namespace Olive.Entities
+namespace Olive
 {
-    partial class OliveExtensions
+    partial class OliveEntitiesExtensions
     {
         /// <summary>
         /// Determines if this item is in a specified list of specified items.
@@ -52,7 +53,7 @@ namespace Olive.Entities
         /// </summary>
         public static List<T> CloneAll<T>(this IEnumerable<T> list) where T : IEntity
         {
-            return list.Select(i => (T)i.Clone()).ToList();
+            return list.Select(i => i.Clone()).Cast<T>().ToList();
         }
 
         /// <summary>
@@ -60,8 +61,8 @@ namespace Olive.Entities
         /// </summary>
         public static bool IsImage(this Blob doc)
         {
-            return Olive.OliveExtensions.IsAnyOf(doc.FileExtension.ToLower().TrimStart("."),
-                "jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff");
+            return doc.FileExtension.ToLower().TrimStart(".")
+                .IsAnyOf("jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff");
         }
 
         /// <summary>

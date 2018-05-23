@@ -8,6 +8,8 @@ namespace Olive.Mvc
 {
     class EntityListModelBinder : IModelBinder
     {
+        static IDatabase Database => Context.Current.Database();
+
         Type EntityType, ListType;
         public EntityListModelBinder(Type entityType, Type listType)
         {
@@ -30,7 +32,7 @@ namespace Olive.Mvc
                 {
                     foreach (var id in idOrIds.OrEmpty().Split('|').Trim().Except("{NULL}", "-", Guid.Empty.ToString()))
                     {
-                        var item = await Entity.Database.GetOrDefault(id, EntityType);
+                        var item = await Database.GetOrDefault(id, EntityType);
 
                         if (item != null) result.Add(item);
                     }

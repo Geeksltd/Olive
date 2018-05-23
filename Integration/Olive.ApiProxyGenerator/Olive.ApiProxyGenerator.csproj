@@ -7,22 +7,16 @@
     <ApplicationIcon />
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
-    <Authors>Geeks Ltd</Authors>
-    <Company>Geeks Ltd.</Company>
-    <Version>1.0.61</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</PackageProjectUrl>
-    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
-    <Description>Generates Api Proxy packages for Olive microservice Apis</Description>
-    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath></OutputPath>
     <DocumentationFile></DocumentationFile>
+    <NoWarn>1701;1702;1705;NU1701</NoWarn>
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
   
@@ -38,11 +32,8 @@
     </Reference>
   </ItemGroup>
   
-  <ItemGroup>
-    <Content Include="README.txt">
-      <Pack>true</Pack>
-      <PackagePath>README.txt</PackagePath>
-    </Content>
-  </ItemGroup>
-  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\People\Website\bin\Debug\netcoreapp2.0" />
+  </Target>
+
 </Project>

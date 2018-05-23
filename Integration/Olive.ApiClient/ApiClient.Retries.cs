@@ -43,7 +43,7 @@ namespace Olive
                 throw new ArgumentException("breakDurationSeconds should be 1 or more.");
 
             ExceptionsBeforeBreakingCircuit = exceptionsBeforeBreaking;
-            CircuitBreakDuration = TimeSpan.FromSeconds(breakDurationSeconds);
+            CircuitBreakDuration = breakDurationSeconds.Seconds();
 
             return this;
         }

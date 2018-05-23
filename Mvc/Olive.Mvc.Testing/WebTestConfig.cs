@@ -1,24 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Olive.Entities.Data;
 
 namespace Olive.Mvc.Testing
 {
-    public interface IWebTestConfig
-    {
-        bool AddDefaultHandlers { get; set; }
-
-        /// <summary>Registers a web test command handler.</summary>
-        /// <param name="handler">A handler that is called when the command is received.
-        /// It should return whether the request should exit.</param>
-        void Add(string command, Func<Task<bool>> handler, string userCommandText = null);
-
-        /// <summary>Registers a web test command handler.</summary>
-        /// <param name="handler">A handler that is called when the command is received.</param>
-        void Add(string command, Func<Task> handler, string userCommandText = null);
-    }
-
-    public class WebTestConfig : IWebTestConfig
+    public class WebTestConfig : IDevCommandsConfig
     {
         internal static Dictionary<string, Func<Task<bool>>> Handlers = new Dictionary<string, Func<Task<bool>>>();
         internal static Dictionary<string, string> UserCommands = new Dictionary<string, string>();
@@ -40,22 +28,16 @@ namespace Olive.Mvc.Testing
         {
             if (isActive.HasValue) return isActive.Value;
 
-            var connectionString = Config.GetConnectionString("AppDatabase");
-            if (connectionString.IsEmpty())
-            {
-                isActive = false;
-                return false;
-            }
+            var database = DatabaseManager.GetDatabaseName().ToLowerOrEmpty();
+            if (database == string.Empty || database.EndsWith(".temp")) isActive = true;
+            else if (DatabaseManager.GetDataSource() == ":memory:") isActive = true;
 
-            var db = new System.Data.SqlClient.SqlConnectionStringBuilder(connectionString).InitialCatalog
-                .ToLowerOrEmpty().TrimStart("[").TrimEnd("]").Trim('`');
-
-            isActive = db.EndsWith(".temp");
-
-            return isActive.Value;
+            return isActive ?? false;
         }
 
         public bool AddDefaultHandlers { get; set; } = true;
+
+        internal DatabaseManager DatabaseManager { get; set; }
 
         public void Add(string command, Func<Task<bool>> handler, string userCommandText = null)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -84,14 +85,10 @@ namespace Olive
         /// </summary>
         public static string ToUpperOrEmpty(this string text) => text.OrEmpty().ToUpper();
 
-        public static bool IsAnyOf(this string text, params string[] items)
-        {
-            if (text == null) return items.Any(x => x == null);
+        public static bool IsAnyOf(this string text, params string[] items) => items.Contains(text);
 
-            return items.Contains(text);
-        }
-
-        public static bool IsAnyOf(this string text, IEnumerable<string> items) => IsAnyOf(text, items.ToArray());
+        public static bool IsAnyOf(this string text, IEnumerable<string> items)
+            => IsAnyOf(text, items.ToArray());
 
         public static bool ContainsAll(this string text, string[] keywords, bool caseSensitive)
         {
@@ -959,10 +956,34 @@ namespace Olive
         /// <summary>
         /// Converts this path into a file object.
         /// </summary>
-        public static System.IO.FileInfo AsFile(this string path)
+        public static FileInfo AsFile(this string path)
         {
             if (path.IsEmpty()) return null;
-            return new System.IO.FileInfo(path);
+            return new FileInfo(path);
+        }
+
+        /// <summary>
+        /// It will search in all environment PATH directories, as well as the current directory, to find this file.
+        /// For example for 'git.exe' it will return `C:\Program Files\Git\bin\git.exe`.
+        /// </summary>
+        public static FileInfo AsFile(this string @this, bool searchEnvironmentPath)
+        {
+            if (!searchEnvironmentPath) return @this.AsFile();
+
+            var result = Environment.ExpandEnvironmentVariables(@this).AsFile();
+            if (result.Exists()) return result;
+
+            if (Path.GetDirectoryName(@this).IsEmpty())
+            {
+                var environmentFolders = Environment.GetEnvironmentVariable("PATH").OrEmpty().Split(';').Trim();
+                foreach (var test in environmentFolders)
+                {
+                    result = Path.Combine(test, @this).AsFile();
+                    if (result.Exists()) return result;
+                }
+            }
+
+            throw new FileNotFoundException(new FileNotFoundException().Message, @this);
         }
 
         /// <summary>

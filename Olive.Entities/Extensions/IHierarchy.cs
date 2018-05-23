@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Olive.Entities;
 
-namespace Olive.Entities
+namespace Olive
 {
-    partial class OliveExtensions
+    partial class OliveEntitiesExtensions
     { /// <summary>
       /// Gets the full path of this hirarchical entity, seperated by " > ".
       /// </summary>

@@ -83,7 +83,7 @@ namespace Olive
             var value = request.Param(key);
             if (value.IsEmpty()) return default(T);
 
-            try { return (T)await Entity.Database.Get(value, typeof(T)); }
+            try { return (T)await Context.Current.Database().Get(value, typeof(T)); }
             catch (Exception ex)
             {
                 if (throwIfNotFound)
@@ -106,7 +106,7 @@ namespace Olive
             if (ids.IsEmpty()) yield break;
             else
                 foreach (var id in ids.Split(seperator))
-                    yield return Entity.Database.Get<T>(id);
+                    yield return Context.Current.Database().Get<T>(id);
         }
 
         /// <summary>

@@ -46,7 +46,7 @@ namespace Olive.Mvc
 
             response.Headers.Add("Content-Disposition", "attachment; filename=\"{0}\"".FormatWith(fileName.Remove("\"", ",")));
 
-            await response.Body.WriteAsync(responseData, 0, responseData.Length);
+            await response.Body.WriteAsync(responseData, 0, responseData.Length);            
         }
 
         /// <summary>

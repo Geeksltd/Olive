@@ -8,11 +8,14 @@ namespace Olive.Security
 {
     partial class Encryption
     {
+        const int AES_KEY_LENGTH = 32;
+        const int AES_IV_LENGTH = 16;
+
         static byte[] GetValidAesKey(string keyString)
         {
             var key = Encoding.UTF8.GetBytes(keyString);
-            if (key.Length == 32) return key;
-            return key = key.Take(32).ToArray().PadRight(32, (byte)0);
+            if (key.Length == AES_KEY_LENGTH) return key;
+            return key = key.Take(AES_KEY_LENGTH).ToArray().PadRight(AES_KEY_LENGTH, (byte)0);
         }
 
         public static byte[] Encrypt(byte[] raw, string password)
@@ -22,7 +25,7 @@ namespace Olive.Security
             using (var aesAlg = Aes.Create())
             {
                 aesAlg.Key = GetValidAesKey(password);
-                aesAlg.IV = aesAlg.Key.Take(16).ToArray();
+                aesAlg.IV = aesAlg.Key.Take(AES_IV_LENGTH).ToArray();
                 var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
                 using (var msEncrypt = new MemoryStream())
@@ -41,7 +44,7 @@ namespace Olive.Security
             using (var aesAlg = Aes.Create())
             {
                 aesAlg.Key = GetValidAesKey(password);
-                aesAlg.IV = aesAlg.Key.Take(16).ToArray();
+                aesAlg.IV = aesAlg.Key.Take(AES_IV_LENGTH).ToArray();
 
                 var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 

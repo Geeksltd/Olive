@@ -2,13 +2,13 @@
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Olive.Mvc.Testing;
+using Olive.Mvc;
 
 namespace Olive.Hangfire
 {
     public static class ExtensionMethods
     {
-        public static IWebTestConfig AddTasks(this IWebTestConfig config)
+        public static IDevCommandsConfig AddTasks(this IDevCommandsConfig config)
         {
             config.Add("tasks", async () =>
             {
@@ -33,7 +33,7 @@ namespace Olive.Hangfire
         {
             services.AddHangfire(c =>
             {
-                c.UseSqlServerStorage(Config.GetConnectionString("AppDatabase"));
+                c.UseSqlServerStorage(Config.GetConnectionString("Default"));
                 config?.Invoke(c);
             });
 
@@ -44,16 +44,20 @@ namespace Olive.Hangfire
         /// It will register the hangfire server.
         /// If a debugger is attached, it will also start the hangfire dashboard.
         /// </summary>      
-        public static IApplicationBuilder UseScheduledTasks(this IApplicationBuilder app, Action createAutomatedTasks)
+        public static IApplicationBuilder UseScheduledTasks(this IApplicationBuilder @this,
+            Action createAutomatedTasks)
         {
-            app.UseHangfireServer();
+            Context.StartedUp.Handle(() =>
+            {
+                @this.UseHangfireServer();
 
-            if (System.Diagnostics.Debugger.IsAttached)
-                app.UseHangfireDashboard();
+                if (System.Diagnostics.Debugger.IsAttached)
+                    @this.UseHangfireDashboard();
 
-            createAutomatedTasks();
+                createAutomatedTasks();
+            });
 
-            return app;
+            return @this;
         }
     }
 }

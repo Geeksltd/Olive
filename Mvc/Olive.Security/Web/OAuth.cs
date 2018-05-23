@@ -5,20 +5,24 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Olive.Security
 {
     public class OAuth
     {
+        const int JWT_SECRET_LENGTH = 21;
+
         public readonly static OAuth Instance = new OAuth();
 
         public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
 
         public async Task LogOff()
         {
-            await Context.Current.Http()?.SignOutAsync();
-            Context.Current.Http()?.Session?.Clear();
+            var http = Context.Current.Http();
+            if (http != null) await http.SignOutAsync();
+            Context.Current.GetOptionalService<ISession>()?.Clear();
         }
 
         public async Task LoginBy(string provider)
@@ -48,7 +52,7 @@ namespace Olive.Security
         {
             if (jwt.IsEmpty()) return null;
 
-            var validationParams = new TokenValidationParameters()
+            var validationParams = new TokenValidationParameters
             {
                 IssuerSigningKey = GetJwtSecurityKey(),
                 ValidateAudience = false,
@@ -61,7 +65,7 @@ namespace Olive.Security
         internal static SymmetricSecurityKey GetJwtSecurityKey()
         {
             var configKey = Config.GetOrThrow("Authentication:JWT:Secret");
-            if (configKey.Length != 21)
+            if (configKey.Length != JWT_SECRET_LENGTH)
                 throw new ArgumentException("Your config setting of 'Authentication:JWT:Secret' needs to be 21 characters.");
 
             var securityKey = configKey.ToBytes(encoding: Encoding.UTF8);

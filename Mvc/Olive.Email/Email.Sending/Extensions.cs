@@ -26,7 +26,7 @@ namespace Olive.Email
         /// Attaches a file to this email.
         /// </summary>
 		/// <param name="mail">The email queue item.</param>
-        /// <param name="filePath">The path of the attachment file.
+        /// <param name="file">The path of the attachment file.
         /// This must be the physical path of a file inside the running application.</param>
         public static void Attach(this IEmailMessage mail, FileInfo file)
         {
@@ -70,73 +70,77 @@ namespace Olive.Email
         /// <summary>
         /// Will send an email and returns true for successful sending.
         /// </summary>
-        public static Task<bool> Send(this IEmailMessage mailItem) => EmailService.Send(mailItem);
+        public static Task<bool> Send(this IEmailMessage @this) => EmailService.Send(@this);
 
         /// <summary>
         /// Records an unsuccessful attempt to send this email.
         /// </summary>
-        public static async Task RecordRetry(this IEmailMessage emailItem)
+        public static async Task RecordRetry(this IEmailMessage @this)
         {
-            if (emailItem.IsNew) throw new InvalidOperationException();
+            if (@this.IsNew) throw new InvalidOperationException();
 
-            var retries = emailItem.Retries + 1;
+            var retries = @this.Retries + 1;
 
-            if (!emailItem.IsNew)
-                await Entity.Database.Update(emailItem, e => e.Retries = retries);
+            if (!@this.IsNew)
+                await Context.Current.Database().Update(@this, e => e.Retries = retries);
 
             // Also update this local instance:
-            emailItem.Retries = retries;
+            @this.Retries = retries;
         }
 
-        public static string GetEffectiveFromName(this IEmailMessage mailItem)
-          => mailItem.FromName.OrNullIfEmpty() ?? Config.GetOrThrow("Email:From:Name");
+        public static string GetEffectiveFromName(this IEmailMessage @this)
+          => @this.FromName.OrNullIfEmpty() ?? Config.GetOrThrow("Email:From:Name");
 
-        public static string GetEffectiveFromAddress(this IEmailMessage mailItem)
-            => mailItem.FromAddress.OrNullIfEmpty() ?? Config.GetOrThrow("Email:From:Address");
+        public static string GetEffectiveFromAddress(this IEmailMessage @this)
+            => @this.FromAddress.OrNullIfEmpty() ?? Config.GetOrThrow("Email:From:Address");
 
-        public static string GetEffectiveReplyToName(this IEmailMessage mailItem)
-            => mailItem.ReplyToName.OrNullIfEmpty() ?? Config.Get("Email:ReplyTo:Name") ?? mailItem.GetEffectiveFromName();
-
-        public static string GetEffectiveReplyToAddress(this IEmailMessage mailItem)
-            => mailItem.ReplyToAddress.OrNullIfEmpty() ??
-            Config.Get("Email:ReplyTo:Address") ??
-            mailItem.GetEffectiveFromAddress();
-
-        public static string[] GetEffectiveToAddresses(this IEmailMessage mailItem)
-            => mailItem.To.OrEmpty().Split(',').Trim().Where(a => EmailService.IsSendingPermitted(a)).ToArray();
-
-        public static string[] GetEffectiveCcAddresses(this IEmailMessage mailItem)
+        public static string GetEffectiveReplyToName(this IEmailMessage @this)
         {
-            var cc = Config.Get("Email:AutoAddCc").WithSuffix(",") + mailItem.Cc;
+            return @this.ReplyToName.OrNullIfEmpty() ?? Config.Get("Email:ReplyTo:Name").OrNullIfEmpty() ?? @this.GetEffectiveFromName();
+        }
+
+        public static string GetEffectiveReplyToAddress(this IEmailMessage @this)
+        {
+            return @this.ReplyToAddress.OrNullIfEmpty() ??
+                       Config.Get("Email:ReplyTo:Address").OrNullIfEmpty() ??
+                       @this.GetEffectiveFromAddress();
+        }
+
+        public static string[] GetEffectiveToAddresses(this IEmailMessage @this)
+            => @this.To.OrEmpty().Split(',').Trim().Where(a => EmailService.IsSendingPermitted(a)).ToArray();
+
+        public static string[] GetEffectiveCcAddresses(this IEmailMessage @this)
+        {
+            var cc = Config.Get("Email:AutoAddCc").WithSuffix(",") + @this.Cc;
             return cc.OrEmpty().Split(',').Trim().Where(a => EmailService.IsSendingPermitted(a)).ToArray();
         }
 
-        public static string[] GetEffectiveBccAddresses(this IEmailMessage mailItem)
+        public static string[] GetEffectiveBccAddresses(this IEmailMessage @this)
         {
-            var bcc = Config.Get("Email:AutoAddBcc").WithSuffix(",") + mailItem.Bcc;
+            var bcc = Config.Get("Email:AutoAddBcc").WithSuffix(",") + @this.Bcc;
             return bcc.OrEmpty().Split(',').Trim().Where(a => EmailService.IsSendingPermitted(a)).ToArray();
         }
 
-        public static IEnumerable<AlternateView> GetEffectiveBodyViews(this IEmailMessage mailItem)
+        public static IEnumerable<AlternateView> GetEffectiveBodyViews(this IEmailMessage @this)
         {
-            yield return AlternateView.CreateAlternateViewFromString(mailItem.Body.RemoveHtmlTags(),
+            yield return AlternateView.CreateAlternateViewFromString(@this.Body.RemoveHtmlTags(),
             new ContentType("text/plain; charset=UTF-8"));
 
-            if (mailItem.Html)
+            if (@this.Html)
             {
                 var htmlView = AlternateView.CreateAlternateViewFromString(
-                    mailItem.Body, new ContentType("text/html; charset=UTF-8"));
-                htmlView.LinkedResources.AddRange(mailItem.GetLinkedResources());
+                    @this.Body, new ContentType("text/html; charset=UTF-8"));
+                htmlView.LinkedResources.AddRange(@this.GetLinkedResources());
                 yield return htmlView;
             }
 
-            if (mailItem.VCalendarView.HasValue())
+            if (@this.VCalendarView.HasValue())
             {
                 var calendarType = new ContentType("text/calendar");
                 calendarType.Parameters.Add("method", "REQUEST");
                 calendarType.Parameters.Add("name", "meeting.ics");
 
-                var calendarView = AlternateView.CreateAlternateViewFromString(mailItem.VCalendarView, calendarType);
+                var calendarView = AlternateView.CreateAlternateViewFromString(@this.VCalendarView, calendarType);
                 calendarView.TransferEncoding = TransferEncoding.SevenBit;
 
                 yield return calendarView;

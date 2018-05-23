@@ -11,13 +11,15 @@ namespace Olive.Audit
 {
     public class EntityProcessor
     {
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>
         /// Gets the changes XML for a specified object. That object should be in its OnSaving event state.
         /// </summary>
         public static async Task<string> GetChangesXml(IEntity entityBeingSaved)
         {
-            var original = await Entity.Database.Get(entityBeingSaved.GetId(), entityBeingSaved.GetType());
-            var changes = Entity.Database.GetProvider(entityBeingSaved.GetType()).GetUpdatedValues(original, entityBeingSaved);
+            var original = await Database.Get(entityBeingSaved.GetId(), entityBeingSaved.GetType());
+            var changes = Database.GetProvider(entityBeingSaved.GetType()).GetUpdatedValues(original, entityBeingSaved);
 
             return ToChangeXml(changes);
         }
@@ -116,7 +118,7 @@ namespace Olive.Audit
                 throw new Exception("Could not load the type " + applicationEvent.ItemType);
 
             if (applicationEvent.Event == "Update" || applicationEvent.Event == "Insert")
-                return await Entity.Database.Get(applicationEvent.ItemId.To<Guid>(), type);
+                return await Database.Get(applicationEvent.ItemId.To<Guid>(), type);
 
             if (applicationEvent.Event == "Delete")
             {
@@ -147,7 +149,7 @@ namespace Olive.Audit
             if (updated.GetType() != original.GetType())
                 throw new ArgumentException($"GetChanges() expects two instances of the same type, while {original.GetType().FullName} is not the same as {updated.GetType().FullName}.");
 
-            return Entity.Database.GetProvider(original.GetType()).GetUpdatedValues(original, updated);
+            return Database.GetProvider(original.GetType()).GetUpdatedValues(original, updated);
         }
     }
 }

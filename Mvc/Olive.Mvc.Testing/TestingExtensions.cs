@@ -3,30 +3,36 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Olive.Mvc.Testing;
+using Olive.Entities.Data;
 
 namespace Olive.Mvc.Testing
 {
     public static class TestingExtensions
     {
+        public static async Task InitializeTempDatabase<TDatabaseManager>(this IApplicationBuilder app, Func<Task> createReferenceData)
+          where TDatabaseManager : DatabaseManager, new() 
+        {
+            if (!WebTestConfig.IsActive()) return;
+
+            TempDatabase.Config.DatabaseManager = new TDatabaseManager();
+            WebTestConfig.ReferenceDataCreator = createReferenceData;
+            await TempDatabase.AwaitReadiness();
+        }
+
         public static IApplicationBuilder UseWebTest(this IApplicationBuilder app,
-            Func<Task> createReferenceData,
-            Action<IWebTestConfig> config = null)
+            Action<IDevCommandsConfig> config = null)
         {
             if (!WebTestConfig.IsActive()) return app;
 
-            WebTestConfig.ReferenceDataCreator = createReferenceData;
+            config?.Invoke(TempDatabase.Config);
 
-            var settings = new WebTestConfig();
-            config?.Invoke(settings);
-
-            if (settings.AddDefaultHandlers)
-                settings.AddDatabaseManager().AddSnapshot().AddTimeInjector().AddSqlProfile();
+            if (TempDatabase.Config.AddDefaultHandlers)
+                TempDatabase.Config.AddDatabaseManager()
+                    .AddTimeInjector()
+                    .AddSqlProfile()
+                    .AddClearDatabaseCache();
 
             app.UseMiddleware<WebTestMiddleware>();
-
-            Task.Factory.RunSync(() => TempDatabase.Create(enforceRestart: false, mustRenew: false));
-
             return app;
         }
     }
@@ -34,6 +40,8 @@ namespace Olive.Mvc.Testing
 
 namespace Olive.Mvc
 {
+    using Olive.Mvc.Testing;
+
     public static class TestingExtensions
     {
         public static HtmlString WebTestWidget(this IHtmlHelper html)

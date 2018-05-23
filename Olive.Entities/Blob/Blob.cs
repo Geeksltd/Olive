@@ -15,7 +15,7 @@ namespace Olive.Entities
         /// In Test projects particularly, having files save themselves on the disk can waste space.
         /// To prevent that, apply this setting in the config file.
         /// </summary>
-        static bool SuppressPersistence = Config.Get("Blob:SuppressPersistence", defaultValue: false);
+        static bool SuppressPersistence = Config.Get("Blob:WebTest:SuppressPersistence", defaultValue: false);
 
         const string EMPTY_FILE = "NoFile.Empty";
         public const string DefaultEncryptionKey = "Default_ENC_Key:_This_Better_Be_Calculated_If_Possible";
@@ -25,9 +25,11 @@ namespace Olive.Entities
             "mst","obj", "config","ocx","pgm","pif","scr","sct","shb","shs", "smm", "sys","url","vb","vbe","vbs","vxd","wsc","wsf","wsh" , "php", "asmx", "cs", "jsl", "asax","mdf",
             "cdx","idc", "shtm", "shtml", "stm", "browser"};
 
-        internal Entity ownerEntity;
+        internal Entity OwnerEntity;
         bool IsEmptyBlob;
-        byte[] FileData;
+        byte[] CachedFileData, NewFileData;
+        string fileName, folderName;
+        bool hasValue; // For performance, cache it
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Blob"/> class.
@@ -44,7 +46,7 @@ namespace Olive.Entities
         /// </summary>
         public Blob(byte[] data, string fileName)
         {
-            FileData = data;
+            NewFileData = data;
             this.fileName = fileName.ToSafeFileName();
         }
 
@@ -56,9 +58,10 @@ namespace Olive.Entities
 
         public string OwnerProperty { get; private set; }
 
-        string fileName, folderName;
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool HasFileDataInMemory(Blob blob) => blob?.NewFileData?.Length > 0;
 
-        bool hasValue; // For performance, cache it
+        static IDatabase Database => Context.Current.Database();
 
         public string FileName
         {
@@ -84,16 +87,14 @@ namespace Olive.Entities
         /// <summary>
         /// Gets the data of this blob.
         /// </summary>
-        public async Task<byte[]> GetFileDataAsync()
+        public virtual async Task<byte[]> GetFileDataAsync()
         {
             if (IsEmpty()) return new byte[0];
 
-            if (FileData != null && FileData.Length > 0)
-                return FileData;
+            if (NewFileData != null && NewFileData.Length > 0)
+                return NewFileData;
 
-            FileData = await GetStorageProvider().LoadAsync(this);
-
-            return FileData;
+            return CachedFileData = await GetStorageProvider().LoadAsync(this);
         }
 
         public void SetData(byte[] data)
@@ -101,7 +102,7 @@ namespace Olive.Entities
             if ((data?.Length ?? 0) == 0)
                 throw new InvalidOperationException("Invalid value passed.");
 
-            FileData = data;
+            NewFileData = data;
         }
 
         public string FolderName
@@ -110,8 +111,8 @@ namespace Olive.Entities
             {
                 if (folderName == null)
                 {
-                    if (ownerEntity == null) return OwnerProperty;
-                    folderName = ownerEntity.GetType().Name + "." + OwnerProperty;
+                    if (OwnerEntity == null) return OwnerProperty;
+                    folderName = OwnerEntity.GetType().Name + "." + OwnerProperty;
                 }
 
                 return folderName;
@@ -134,7 +135,6 @@ namespace Olive.Entities
         /// <summary>
         /// Gets the content
         /// </summary>
-        /// <returns></returns>
         public async Task<string> GetContentTextAsync()
         {
             if (IsEmpty()) return string.Empty;
@@ -149,7 +149,7 @@ namespace Olive.Entities
             }
             catch (Exception ex)
             {
-                throw new Exception($"The {OwnerProperty} of the {ownerEntity?.GetType().FullName} entity ({ownerEntity?.GetId()}) cannot be converted to text.", ex);
+                throw new Exception($"The {OwnerProperty} of the {OwnerEntity?.GetType().FullName} entity ({OwnerEntity?.GetId()}) cannot be converted to text.", ex);
             }
         }
 
@@ -158,7 +158,7 @@ namespace Olive.Entities
         /// </summary>
         public string Url()
         {
-            if (ownerEntity == null) return null;
+            if (OwnerEntity == null) return null;
             return Config.Get("Blob:BaseUrl") + FolderName + "/" + OwnerId() + FileExtension;
         }
 
@@ -194,16 +194,21 @@ namespace Olive.Entities
 
             if (FileName == EMPTY_FILE) return true;
 
-            if (GetStorageProvider().CostsToCheckExistence() ||
-             Task.Factory.RunSync(() => GetStorageProvider().FileExistsAsync(this)))
+            if (NewFileData.HasAny()) return false;
+
+            if (GetStorageProvider().CostsToCheckExistence())
+            {
+                // We don't want to incur cost.
+                // As the file name has value, we assume the file does exist.
+                hasValue = true;
+                return false;
+            }
+            else if (Task.Factory.RunSync(() => GetStorageProvider().FileExistsAsync(this)))
             {
                 hasValue = true;
                 return false;
             }
-
-            if (FileData == null) return true;
-
-            return FileData.None();
+            else return true;
         }
 
         /// <summary>
@@ -227,23 +232,25 @@ namespace Olive.Entities
 
             Blob result;
 
-            if (ownerEntity != null)
+            if (OwnerEntity != null)
             {
-                result = new Blob(await GetFileDataAsync(), FileName);
+                if (NewFileData.HasAny())
+                    result = new Blob(await GetFileDataAsync(), FileName);
+                else result = new ClonedDocument(this);
                 if (attach)
                 {
-                    if (!@readonly) Attach(ownerEntity, OwnerProperty);
+                    if (!@readonly) Attach(OwnerEntity, OwnerProperty);
                     else
                     {
-                        result.ownerEntity = ownerEntity;
+                        result.OwnerEntity = OwnerEntity;
                         result.OwnerProperty = OwnerProperty;
                     }
                 }
             }
             else
             {
-                if (FileData != null && FileData.Any()) result = new Blob(FileData, FileName);
-                else result = new Blob(FileName);
+                if (NewFileData.None()) result = new Blob(FileName);
+                else result = new Blob(NewFileData, FileName);
             }
 
             return result;
@@ -254,7 +261,7 @@ namespace Olive.Entities
         /// </summary>
         public Blob Attach(Entity owner, string propertyName)
         {
-            ownerEntity = owner;
+            OwnerEntity = owner;
             OwnerProperty = propertyName;
             if (owner is GuidEntity) owner.Saving.Handle(Owner_Saving);
             else owner.Saved.Handle(Owner_Saved);
@@ -268,11 +275,11 @@ namespace Olive.Entities
         /// </summary>
         public void Detach()
         {
-            if (ownerEntity == null) return;
+            if (OwnerEntity == null) return;
 
-            ownerEntity.Saving.RemoveHandler(Owner_Saving);
-            ownerEntity.Saved.RemoveHandler(Owner_Saved);
-            ownerEntity.Deleting.RemoveHandler(Delete);
+            OwnerEntity.Saving.RemoveHandler(Owner_Saving);
+            OwnerEntity.Saved.RemoveHandler(Owner_Saved);
+            OwnerEntity.Deleting.RemoveHandler(Delete);
         }
 
         // TODO: Deleting should be async and so on.
@@ -282,7 +289,7 @@ namespace Olive.Entities
         {
             if (SuppressPersistence) return Task.CompletedTask;
 
-            if (ownerEntity.GetType().Defines<SoftDeleteAttribute>()) return Task.CompletedTask;
+            if (OwnerEntity.GetType().Defines<SoftDeleteAttribute>()) return Task.CompletedTask;
 
             Delete();
 
@@ -291,11 +298,11 @@ namespace Olive.Entities
 
         void Delete()
         {
-            if (ownerEntity == null) throw new InvalidOperationException();
+            if (OwnerEntity == null) throw new InvalidOperationException();
 
             GetStorageProvider().DeleteAsync(this);
 
-            FileData = null;
+            CachedFileData = NewFileData = null;
         }
 
         async Task Owner_Saving(System.ComponentModel.CancelEventArgs e)
@@ -309,9 +316,9 @@ namespace Olive.Entities
         }
 
         /// <summary>Saves this file to the storage provider.</summary>
-        public async Task Save()
+        public virtual async Task Save()
         {
-            if (FileData != null && FileData.Length > 0)
+            if (NewFileData.HasAny())
                 await GetStorageProvider().SaveAsync(this);
 
             else if (IsEmptyBlob) Delete();
@@ -342,7 +349,7 @@ namespace Olive.Entities
             var id = parts[1];
             var propertyName = parts.Last();
 
-            var entity = await Entity.Database.GetOrDefault(id, type);
+            var entity = await Database.GetOrDefault(id, type);
             if (entity == null)
                 throw new ArgumentException($"Could not load an instance of '{parts.First()}' with the ID of '{id} from the database.");
 
@@ -355,10 +362,10 @@ namespace Olive.Entities
 
         public string OwnerId()
         {
-            if (ownerEntity == null) return null;
-            if (ownerEntity is IntEntity && ownerEntity.IsNew) return null;
+            if (OwnerEntity == null) return null;
+            if (OwnerEntity is IntEntity && OwnerEntity.IsNew) return null;
 
-            return ownerEntity?.GetId().ToStringOrEmpty();
+            return OwnerEntity?.GetId().ToStringOrEmpty();
         }
 
         #region Unsafe Files Handling
@@ -431,8 +438,8 @@ namespace Olive.Entities
             if (other.IsEmpty()) return 1;
             else
             {
-                var me = FileData?.Length;
-                var him = other.FileData?.Length;
+                var me = NewFileData?.Length;
+                var him = other.NewFileData?.Length;
                 if (me == him) return 0;
                 if (me > him) return 1;
                 else return -1;

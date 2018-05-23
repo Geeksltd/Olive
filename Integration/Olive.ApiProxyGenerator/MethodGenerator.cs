@@ -57,19 +57,26 @@ namespace Olive.ApiProxy
         {
             var r = new StringBuilder();
             r.Append($"return client.{HttpVerb()}");
-            if (HttpVerb() == "Get") r.Append($"<{ReturnType ?? "object"}>");
-            r.AppendLine("(" + Args().Trim().ToString(", ") + ");");
+            if (HttpVerb() == "Get") r.Append($"<{ReturnType.Or("object")}>");
+            r.AppendLine("(" + GetArg() + ");");
             return r.ToString();
         }
 
-        string[] Args()
+        string GetArg()
         {
             var args = new List<string>();
-            var queryString = Method.GetParameters().Select(x => x.Name)
-                  .Except(RouteParams).Trim().ToString(", ").WithWrappers("new { ", " }");
-            args.Add(queryString);
 
-            return args.ToArray();
+            var parameters = Method.GetParameters().Select(x => x.Name).Except(RouteParams).Trim();
+
+            if (parameters.None()) return null;
+
+            if (HttpVerb() == "GET")
+                return "new { " + parameters.ToString(", ") + "}";
+
+            if (parameters.HasMany())
+                throw new Exception(HttpVerb() + "-based Api methods can take only one argument.");
+
+            return parameters.Single();
         }
 
         string GetArgs()

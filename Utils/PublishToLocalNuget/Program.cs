@@ -18,7 +18,7 @@ namespace PushForLocalTesting
             if (HasError)
             {
                 Console.WriteLine("Press Enter key to continue....");
-                Console.ReadLine();
+                //   Console.ReadLine();
             }
         }
 
@@ -71,10 +71,7 @@ namespace PushForLocalTesting
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        static string ToVersion(string name)
-        {
-            return string.Join(".", name.Split('.').Select(x => x.PadLeft(4, '0')));
-        }
+        static string ToVersion(string name) => string.Join(".", name.Split('.').Select(x => x.PadLeft(4, '0')));
 
         static void Update(string package, DirectoryInfo sourceDirectory, DirectoryInfo target)
         {

@@ -174,7 +174,7 @@ namespace Olive.Compression
             if (customParameters.HasValue())
                 command.Arguments += " " + customParameters + " ";
 
-            if (excludedFilePatterns != null && excludedFilePatterns.Any())
+            if (excludedFilePatterns.HasAny())
                 foreach (var ex in excludedFilePatterns)
                     command.Arguments += " -xr!\"" + ex + "\" ";
 

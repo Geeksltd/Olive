@@ -9,6 +9,8 @@ namespace Olive
     {
         static ILanguage defaultLanguage;
 
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>
         /// The source default language in which the application is programmed. Normally this is English.
         /// </summary>
@@ -16,7 +18,7 @@ namespace Olive
         {
             if (defaultLanguage == null)
             {
-                defaultLanguage = await Entity.Database.FirstOrDefault<ILanguage>(l => l.IsDefault);
+                defaultLanguage = await Database.FirstOrDefault<ILanguage>(l => l.IsDefault);
 
                 if (defaultLanguage == null)
                     throw new Exception("There is no default language specified in the system.");

@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading.Tasks;
+using Olive.Entities;
 
-namespace Olive.Entities
+namespace Olive
 {
-    public static partial class OliveExtensions
+    public static partial class OliveEntitiesExtensions
     {
         /// <summary>
         /// Gets the root entity type of this type.
@@ -36,5 +40,16 @@ namespace Olive.Entities
 
             return new Blob(await url.DownloadData(cookieValue, timeOutSeconds), fileName);
         }
+
+        public static IDatabase Database(this Context @this) => @this.GetService<IDatabase>();
+
+        public static int? GetResultsToFetch(this IEnumerable<QueryOption> options) =>
+          options.OfType<TakeTopQueryOption>().FirstOrDefault()?.Number;
+
+        /// <summary>
+        /// Returns a MS T-SQL-safe DateTime value for use in queries (i.e. prevents date values earlier than 1/1/1753).
+        /// </summary>
+        public static DateTime GetSqlSafeValue(this DateTime value) =>
+            value < SqlDateTime.MinValue.Value ? SqlDateTime.MinValue.Value : value;
     }
 }

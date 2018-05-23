@@ -34,6 +34,8 @@ namespace Olive.Globalization
     /// </summary>
     public class GoogleAutodetectResponse
     {
+        static IDatabase Database => Context.Current.Database();
+
         /// <summary>ISO Code</summary>
         public string ISOCode { get; private set; }
         /// <summary>Confidence [0;1] about the detection</summary>
@@ -53,7 +55,7 @@ namespace Olive.Globalization
         public async Task<ILanguage> GetLanguage()
         {
             var iso6391Code = ISOCode.Substring(0, 2).ToLowerInvariant(); // ISO639-1 are two letters code, but for Chinese Google returns 2 different codes (zh-CN for simplified and zh-TW for traditional)
-            return await Entity.Database.FirstOrDefault<ILanguage>(l => l.IsoCode.ToLowerInvariant() == iso6391Code);
+            return await Database.FirstOrDefault<ILanguage>(l => l.IsoCode.ToLowerInvariant() == iso6391Code);
         }
     }
 }

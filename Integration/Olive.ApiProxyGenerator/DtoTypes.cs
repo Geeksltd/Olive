@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,8 +11,14 @@ namespace Olive.ApiProxy
 
         internal static void FindAll()
         {
-            All = Context.ActionMethods.SelectMany(x => x.GetArgAndReturnTypes()).Distinct()
-                .Select(x => GetDefinableType(x)).ExceptNull().Distinct().ToList();
+            All = Context.ActionMethods
+                .SelectMany(x => x.GetArgAndReturnTypes())
+                .ExceptNull()
+                .Distinct()
+                .Select(x => GetDefinableType(x))
+                .ExceptNull()
+                .Distinct()
+                .ToList();
 
             while (All.Any(t => Crawl(t))) continue;
         }
@@ -19,6 +26,10 @@ namespace Olive.ApiProxy
         internal static Type GetDefinableType(Type type)
         {
             if (type.IsArray) return GetDefinableType(type.GetElementType());
+
+            if (type.IsA<IEnumerable>() && type.GenericTypeArguments.IsSingle())
+                return GetDefinableType(type.GenericTypeArguments.Single());
+
             if (type.Assembly != Context.Assembly) return null;
             return type;
         }

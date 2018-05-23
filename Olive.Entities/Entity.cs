@@ -19,8 +19,10 @@ namespace Olive.Entities
         static object PrimitivePropertiesSyncLock = new object();
         object CachedCopiesLock = new object();
         internal List<ICachedReference> CachedCopies;
-        public Entity _ClonedFrom;
         internal bool IsImmutable;
+
+        [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        public Entity _ClonedFrom;
 
         /// <summary>
         /// Base constructor (called implicitly in all typed entity classes) to initialize an object.
@@ -83,6 +85,7 @@ namespace Olive.Entities
         /// <summary>
         /// Determines whether this object is already cloned and updated in the database without this instance being updated.
         /// </summary>
+        [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
         public bool IsStale;
 
         /// <summary>
@@ -182,12 +185,14 @@ namespace Olive.Entities
         /// <summary>
         /// This even is raised just after this instance is loaded from the database.
         /// </summary>
+        [XmlIgnore, JsonIgnore]
         public AsyncEvent Loaded { get; } = new AsyncEvent();
         protected internal virtual Task OnLoaded() => Loaded.Raise();
 
         /// <summary>
         /// This event is raised just before this instance is saved in the data repository.
         /// </summary>
+        [XmlIgnore, JsonIgnore]
         public AsyncEvent<CancelEventArgs> Saving { get; } = new AsyncEvent<CancelEventArgs>();
         protected internal virtual Task OnSaving(CancelEventArgs e) => Saving.Raise(e);
 
@@ -196,12 +201,14 @@ namespace Olive.Entities
         /// It will automatically be called in Database.Save() method before calling the Validate() method.
         /// Use this to do any last-minute object modifications, such as initializing complex values.
         /// </summary>
+        [XmlIgnore, JsonIgnore]
         public AsyncEvent<EventArgs> Validating { get; } = new AsyncEvent<EventArgs>();
         protected internal virtual Task OnValidating(EventArgs e) => Validating.Raise(e);
 
         /// <summary>
         /// This event is raised after this instance is saved in the database.
         /// </summary>
+        [XmlIgnore, JsonIgnore]
         public AsyncEvent<SaveEventArgs> Saved { get; } = new AsyncEvent<SaveEventArgs>();
 
         /// <summary>
@@ -219,12 +226,14 @@ namespace Olive.Entities
         /// <summary>
         /// This event is raised just before this instance is deleted from the database.
         /// </summary>
+        [XmlIgnore, JsonIgnore]
         public AsyncEvent<CancelEventArgs> Deleting { get; } = new AsyncEvent<CancelEventArgs>();
         protected internal virtual Task OnDeleting(CancelEventArgs e) => Deleting.Raise(e);
 
         /// <summary>
         /// This event is raised just after this instance is deleted from the database.
         /// </summary>
+        [XmlIgnore, JsonIgnore]
         public AsyncEvent Deleted { get; } = new AsyncEvent();
 
         protected internal virtual async Task OnDeleted(EventArgs e)
@@ -290,17 +299,9 @@ namespace Olive.Entities
             else return string.Compare(ToString(), other.ToString(), ignoreCase: true);
         }
 
-        #region Database instance
-        static IDatabase DatabaseInstance;
-
-        public static IDatabase Database => DatabaseInstance
-            ?? throw new InvalidOperationException("The database instance is not initialized.");
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void InitializeDatabase(IDatabase instance)
-        {
-            DatabaseInstance = instance ?? throw new ArgumentException("Database instance cannot be null.");
-        }
-        #endregion
+        /// <summary>
+        /// Gets the currently injected Datbase service.
+        /// </summary>
+        protected static IDatabase Database => Context.Current.Database();
     }
 }

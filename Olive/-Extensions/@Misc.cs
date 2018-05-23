@@ -37,7 +37,7 @@ namespace Olive
             {
                 try
                 {
-                    await func?.Invoke();
+                    if (func != null) await func();
                     return;
                 }
                 catch (Exception ex)
@@ -87,7 +87,10 @@ namespace Olive
 
                     // Remove attributes:
                     try { fileOrFolder.Attributes = FileAttributes.Normal; }
-                    catch { }
+                    catch
+                    {
+                        // No logging is needed
+                    }
 
                     attempt++;
 
