@@ -16,7 +16,7 @@ namespace Olive.ApiProxy
         protected override string[] References
             => new[] { "Olive", "Olive.Entities", "Olive.Entities.Data", "Olive.ApiClient", "Olive.Microservices" };
 
-        protected override bool NeedsReadMe => true;
+        protected bool NeedsReadMe => true;
 
         protected override void AddFiles()
         {
@@ -59,7 +59,7 @@ namespace Olive.ApiProxy
             }
         }
 
-        protected override IEnumerable<string> GetNugetDependencies()
+        protected IEnumerable<string> GetNugetDependencies()
         {
             return new[]
             {

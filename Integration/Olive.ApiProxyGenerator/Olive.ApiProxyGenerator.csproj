@@ -16,7 +16,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="1.0.8" />
+    <PackageReference Include="GCop.All.Common" Version="1.0.9" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.0.9" />
+    <PackageReference Include="GCop.Linq" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
   

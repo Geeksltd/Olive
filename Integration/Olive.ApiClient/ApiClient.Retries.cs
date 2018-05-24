@@ -3,25 +3,24 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Polly;
+using Polly.Retry;
 
 namespace Olive
 {
     partial class ApiClient
     {
         int retries, ExceptionsBeforeBreakingCircuit;
-        PolicyBuilder Policy = Polly.Policy.Handle<HttpRequestException>();
         TimeSpan CircuitBreakDuration, RetryPauseDuration;
 
-        static Dictionary<string, Polly.CircuitBreaker.CircuitBreakerPolicy> CircuitBreakers
-            = new Dictionary<string, Polly.CircuitBreaker.CircuitBreakerPolicy>();
+        static readonly Dictionary<string, Policy> CircuitBreakerPolicies = new Dictionary<string, Policy>();
 
         /// <summary>
         /// Sets the number of retries before giving up. Default is zero.
         /// </summary>
-        public ApiClient Retries(int retries, int pauseMilliseconds = 100)
+        public ApiClient Retries(int paramRetries, int pauseMilliseconds = 100)
         {
-            this.retries = retries;
-            RetryPauseDuration = pauseMilliseconds.Milliseconds();
+            this.retries = paramRetries;
+            this.RetryPauseDuration = pauseMilliseconds.Milliseconds();
             return this;
         }
 
@@ -50,24 +49,23 @@ namespace Olive
 
         async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request)
         {
-            var policyBuilder = Polly.Policy.Handle<HttpRequestException>();
+            Policy policy;
 
-            Policy policy = policyBuilder.WaitAndRetryAsync(retries, attempt => RetryPauseDuration);
+            var policyKey = request.RequestUri.Host + "|" + ExceptionsBeforeBreakingCircuit + "|" + CircuitBreakDuration;
 
-            if (ExceptionsBeforeBreakingCircuit > 0)
+            // Get a shared policy for the Api base url:
+            lock (CircuitBreakerPolicies)
             {
-                // Get a shared policy for the Api base url:
-                var breakKey = request.RequestUri.Host + ExceptionsBeforeBreakingCircuit + "|" + CircuitBreakDuration;
-
-                lock (CircuitBreakers)
+                if (!CircuitBreakerPolicies.TryGetValue(policyKey, out policy))
                 {
-                    if (!CircuitBreakers.TryGetValue(breakKey, out var breakPolicy))
-                    {
-                        CircuitBreakers[breakKey] = breakPolicy =
-                            policyBuilder.CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration);
-                    }
+                    if (ExceptionsBeforeBreakingCircuit <= 0)
+                        policy = Policy.Handle<HttpRequestException>()
+                            .WaitAndRetryAsync(retries, attempt => RetryPauseDuration);
+                    else
+                        policy = Policy.Handle<HttpRequestException>()
+                                   .CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration);
 
-                    policy = policy.WrapAsync(breakPolicy);
+                    CircuitBreakerPolicies.Add(policyKey, policy);
                 }
             }
 
