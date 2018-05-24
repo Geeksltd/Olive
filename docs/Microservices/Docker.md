@@ -10,6 +10,8 @@ Easily! We put every microservice and other required services (Such as database 
 
 First you need to install Docker and Docker toolbox in your machine. You can get Docker Docker toolbox from [HERE](https://www.docker.com/get-docker). You can install them in Linux and Windows 10 (Anniversary update or later). But it can't be installed in Windows server 2016.
 
+> Please note that Hyper-V and Visualization feature should be enabled before docker installation.
+
 ### Installation in Windows server 2016
 
 Docker and container is supported in Windows server 2016. But just windows containers. Here's instructions to add Linux Docker support to Windows server 2016.
@@ -47,6 +49,17 @@ Windows Registry Editor Version 5.00
 5- Restart the computer and run the PowerShell script `'C:\Program Files\Docker\Docker\Resources\MobyLinux.ps1' -create`
 
 6- Go to `C:\Program Files\Docker\` and run `Docker for Windows.exe`.
+
+## After installation
+
+In order to test your docker functionality you can open powershell and run `docker run hello-world`. if your docker is installed successfully it should downloads the image using internet and shows following message:
+
+```
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+...
+```
+Docker on windows supports both windows image and linux image and you can switch between them. In order to do that, you can right click the Docker tasktray icon and choose *Switch to Linux/Windows Containers...*.
 
 ## Running dockerized microservices
 
