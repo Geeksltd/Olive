@@ -30,7 +30,10 @@ namespace Olive.Mvc
             result.AppendHtmlLine("<div class=\"file-upload\">");
             result.AppendHtmlLine($"<span class=\"current-file\"{" style=\"display:none\"".OnlyWhen(blob.IsEmpty())}>" +
                 $"<a target=\"_blank\" href=\"{blob.Url().HtmlEncode()}\">{blob.FileName.OrEmpty().HtmlEncode()}</a></span>");
-            result.AppendHtmlLine($"<input type=\"file\" name=\"files\" {OliveMvcExtensions.ToHtmlAttributes(htmlAttributes)}/>");
+
+            result.AppendHtmlLine($"<label for=\"{propertyInfo.Name}_fileInput\" hidden>HiddenLabel</label>");
+            result.AppendHtmlLine($"<input type=\"file\" id=\"{propertyInfo.Name}_fileInput\" name=\"files\" {OliveMvcExtensions.ToHtmlAttributes(htmlAttributes)}/>");
+
             // For validation to work, this works instead of Hidden.
             if (value.ToString().IsEmpty() && blob.HasValue()) value = "KEEP";
             result.AppendHtml(html.TextBox(propertyInfo.Name, value.OrEmpty(), string.Empty,
