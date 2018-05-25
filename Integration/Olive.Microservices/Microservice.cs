@@ -23,10 +23,11 @@
         {
             get
             {
-                return new Microservice(Config.GetOrThrow("Microservice:Me:Name"))
-                {
-                    BaseUrl = Config.Get("Microservice:Me:Url").Or("Config value not specified for 'Microservice:Me:Url'")
-                };
+                var url = Config.Get("Microservice:Me:Url");
+                if (url.IsEmpty()) url = "Config value not specified for 'Microservice:Me:Url'";
+                else url = url.EnsureEndsWith("/");
+
+                return new Microservice(Config.GetOrThrow("Microservice:Me:Name")) { BaseUrl = url };
             }
         }
 
