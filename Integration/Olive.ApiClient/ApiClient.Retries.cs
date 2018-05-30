@@ -1,19 +1,19 @@
-﻿using System;
+﻿using Polly;
+using Polly.CircuitBreaker;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Polly;
 
 namespace Olive
 {
     partial class ApiClient
     {
-        int retries, ExceptionsBeforeBreakingCircuit;
-        PolicyBuilder Policy = Polly.Policy.Handle<HttpRequestException>();
-        TimeSpan CircuitBreakDuration, RetryPauseDuration;
+        static readonly Dictionary<string, CircuitBreakerPolicy> CircuitBreakerPolicies
+            = new Dictionary<string, CircuitBreakerPolicy>();
 
-        static Dictionary<string, Polly.CircuitBreaker.CircuitBreakerPolicy> CircuitBreakers
-            = new Dictionary<string, Polly.CircuitBreaker.CircuitBreakerPolicy>();
+        int retries, ExceptionsBeforeBreakingCircuit;
+        TimeSpan CircuitBreakDuration, RetryPauseDuration;
 
         /// <summary>
         /// Sets the number of retries before giving up. Default is zero.
@@ -48,30 +48,38 @@ namespace Olive
             return this;
         }
 
-        async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request)
+        Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request)
         {
-            var policyBuilder = Polly.Policy.Handle<HttpRequestException>();
+            return CreateExecutionPolicy(request).ExecuteAsync(() => client.SendAsync(request));
+        }
 
-            Policy policy = policyBuilder.WaitAndRetryAsync(retries, attempt => RetryPauseDuration);
+        Policy CreateExecutionPolicy(HttpRequestMessage request)
+        {
+            var retryPolicy = Policy.Handle<HttpRequestException>()
+                             .WaitAndRetryAsync(retries, attempt => RetryPauseDuration);
 
-            if (ExceptionsBeforeBreakingCircuit > 0)
+            if (ExceptionsBeforeBreakingCircuit <= 0) return retryPolicy;
+
+            var policyKey = request.RequestUri.Host + "|" + ExceptionsBeforeBreakingCircuit + "|" + CircuitBreakDuration;
+
+            return retryPolicy.WrapAsync(GetOrCreateCircuitBreakerPolicy(policyKey));
+        }
+
+        CircuitBreakerPolicy GetOrCreateCircuitBreakerPolicy(string policyKey)
+        {
+            if (CircuitBreakerPolicies.TryGetValue(policyKey, out var policy))
+                return policy;
+
+            lock (CircuitBreakerPolicies)
             {
-                // Get a shared policy for the Api base url:
-                var breakKey = request.RequestUri.Host + ExceptionsBeforeBreakingCircuit + "|" + CircuitBreakDuration;
+                if (CircuitBreakerPolicies.TryGetValue(policyKey, out policy))
+                    return policy;
 
-                lock (CircuitBreakers)
-                {
-                    if (!CircuitBreakers.TryGetValue(breakKey, out var breakPolicy))
-                    {
-                        CircuitBreakers[breakKey] = breakPolicy =
-                            policyBuilder.CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration);
-                    }
+                policy = Policy.Handle<HttpRequestException>().CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration);
 
-                    policy = policy.WrapAsync(breakPolicy);
-                }
+                CircuitBreakerPolicies.Add(policyKey, policy);
+                return policy;
             }
-
-            return await policy.ExecuteAsync(() => client.SendAsync(request));
         }
     }
 }
