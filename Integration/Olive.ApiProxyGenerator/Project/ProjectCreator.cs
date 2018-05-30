@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,11 +9,10 @@ namespace Olive.ApiProxy
         string Name;
         public DirectoryInfo Folder;
 
-        static string Version = LocalTime.Now.ToString("yyMMdd.HH.mmss");
+        static string Version = DateTime.Now.ToString("yyMMdd.HH.mmss");
 
         protected abstract string Framework { get; }
         protected abstract string[] References { get; }
-        protected virtual bool NeedsReadMe => false;
 
         protected ProjectCreator(string name)
         {
@@ -31,14 +29,10 @@ namespace Olive.ApiProxy
             Console.WriteLine("-------------------");
             Console.ResetColor();
 
-            Console.WriteLine("Creating a new class library project at " + Folder.FullName + "...");
-
-            Folder.GetFile(Folder.Name + ".csproj").WriteAllText($@"<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup>
-      <TargetFramework>{Framework}</TargetFramework>
-      <DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile>
-  </PropertyGroup>
-</Project>");
+            Console.Write("Creating a new class library project at " + Folder.FullName + "...");
+            Context.Run($"dotnet new classlib -o {Folder.FullName} -f {Framework} --force ");
+            foreach (var f in Folder.GetFiles("Class1.cs")) f.Delete();
+            Console.WriteLine("Done");
 
             Environment.CurrentDirectory = Folder.FullName;
             foreach (var item in References)
@@ -47,6 +41,23 @@ namespace Olive.ApiProxy
                 Context.Run("dotnet add package " + item);
                 Console.WriteLine("Done");
             }
+
+            var file = Folder.GetFiles("*.csproj").Single();
+            var content = file.ReadAllText().ToLines().ToList();
+            content.Insert(content.IndexOf(x => x.Trim().StartsWith("<TargetFramework")) + 1,
+                $@"    <DocumentationFile>bin\Debug\{Framework}\{Context.ControllerName}.{Name}.xml</DocumentationFile>"
+                );
+            var ItemGroup = @"
+  <ItemGroup>
+    <Content Include=""README.txt"">
+      <Pack>true</Pack>
+      <PackagePath>README.txt</PackagePath>
+    </Content>
+  </ItemGroup>".Split('\r', '\n');
+            var indexOf = content.IndexOf(x => x.Trim().StartsWith("</Project>"));
+            content.InsertRange(indexOf, ItemGroup);
+
+            file.WriteAllText(content.ToLinesString());
         }
 
         internal void Build()
@@ -88,25 +99,11 @@ namespace Olive.ApiProxy
             }
         }
 
-        protected virtual IEnumerable<string> GetNugetDependencies()
-        {
-            yield break;
-        }
-
-        string GetLatestNugetVersion(string package)
-        {
-            var html = $"https://www.nuget.org/packages/{package}".AsUri().Download()
-                .RiskDeadlockAndAwaitResult();
-
-            var pref = "<meta property=\"og:title\" content=\"" + package + " ";
-            return html.Substring(pref, "\"", inclusive: false);
-        }
-
         void CreateNuspec()
         {
             var dll = $@"bin\Debug\{Framework}\{Folder.Name}";
+
             var xml = $@"<file src=""{dll}.xml"" target=""lib\{Framework}\"" />";
-            var readme = @"<file src=""README.txt"" target="""" />".OnlyWhen(NeedsReadMe);
 
             var nuspec = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
@@ -117,12 +114,9 @@ namespace Olive.ApiProxy
     <authors>Olive Api Proxy Generator</authors>
     <iconUrl>{IconUrl}</iconUrl>
     <description>Provides an easy method to invoke the Api functions of {Context.ControllerName}</description>
-    <dependencies>
-    {GetNugetDependencies().Select(x => $"<dependency id=\"{x}\" version=\"{GetLatestNugetVersion(x)}\" />").ToLinesString()}
-    </dependencies>   
   </metadata>
   <files>
-    {readme}
+    <file src=""README.txt"" target="""" />
     <file src=""{dll}.dll"" target=""lib\{Framework}\"" />
     {xml}
   </files>
