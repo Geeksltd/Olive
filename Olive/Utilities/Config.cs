@@ -16,7 +16,7 @@ namespace Olive
         const string CONNECTION_STRINGS_CONFIG_ROOT = "ConnectionStrings";
 
         static object SyncLock = new object();
-        static IConfiguration configuration;
+        internal static IConfiguration configuration;
         static IConfiguration Configuration => configuration ?? (configuration = LoadConfiguration());
 
         static IConfiguration LoadConfiguration()
