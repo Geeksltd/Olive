@@ -60,6 +60,8 @@ namespace Olive.ApiProxy
             switch (method)
             {
                 case "Boolean": method = "Bool"; break;
+                case "Int32": method = "Int"; break;
+                case "Int64": method = "Decimal"; break;
                 default: break;
             }
 
