@@ -16,7 +16,8 @@ namespace Olive
             {
                 try { if (stream.CanSeek) stream.Position = 0; }
                 catch (NotSupportedException) { /*Not needed*/ }
-                stream.CopyTo(memoryStream);
+                try { stream.CopyTo(memoryStream); }
+                catch (System.IO.InvalidDataException) { /*Not needed*/ }
                 return memoryStream.ToArray();
             }
         }
