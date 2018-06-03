@@ -131,21 +131,6 @@ namespace Olive
         }
 
         /// <summary>
-        /// Returns a byte array of a file
-        /// </summary>
-        public static byte[] GetByteArray(this FileInfo fileName)
-        {
-            byte[] buff = null;
-            FileStream fs = new FileStream(fileName.FullName,
-                                           FileMode.Open,
-                                           FileAccess.Read);
-            BinaryReader br = new BinaryReader(fs);
-            long numBytes = new FileInfo(fileName.FullName).Length;
-            buff = br.ReadBytes((int)numBytes);
-            return buff;
-        }
-
-        /// <summary>
         /// Gets the mime type based on the file extension.
         /// </summary>
         public static string GetMimeType(this FileInfo file)
