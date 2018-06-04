@@ -10,7 +10,6 @@
     <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
     <description>Olive Framework</description>
     <dependencies>
-      <!--<dependency id="Olive" version="0.0.0" />-->
       <dependency id="SharpCompress" version="0.19.2" />
     </dependencies>
   </metadata>
