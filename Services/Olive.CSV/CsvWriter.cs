@@ -19,22 +19,20 @@ namespace Olive.Csv
         /// <summary>
         /// Converts a Dictionary object to CSV string
         /// </summary>
-        /// <param name="dictionary"></param>
         /// <returns>CSV string content</returns>
         public static string ToCsv(this Dictionary<string, string> dictionary)
         {
-            var CSV = new StringBuilder();
+            var csv = new StringBuilder();
             foreach (var pair in dictionary)
-                CSV.AppendLine(string.Format("{0},{1}", pair.Key, pair.Value));
+                csv.AppendLine(string.Format("{0},{1}", pair.Key, pair.Value));
 
-            return CSV.ToString();
+            return csv.ToString();
         }
 
         /// <summary>
         /// Converts an IEnumerable object to CSV string
         /// </summary>
-        /// <typeparam name="T">Type of IEnumerable</typeparam>
-        /// <param name="items"></param>
+        /// <typeparam name="T">Type of IEnumerable</typeparam> 
         /// <returns>CSV string content</returns>
         public static string ToCsv<T>(this IEnumerable<T> items)
             where T : class
@@ -67,7 +65,6 @@ namespace Olive.Csv
         /// <summary>
         /// Converts a DataTable object to CSV string
         /// </summary>
-        /// <param name="dtDataTable"></param>
         /// <returns>CSV string content</returns>
         public static string ToCsv(this DataTable dtDataTable)
         {
