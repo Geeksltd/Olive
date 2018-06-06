@@ -192,5 +192,20 @@ namespace Olive
             var item = await sourceTask.ConfigureAwait(continueOnCapturedContext: false);
             action(item);
         }
+
+        /// <summary>
+        /// Awaits this task. If the result was an exception,
+        /// it will return the default value of TResult rather than throwing the exception.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static async Task<TResult> ResultOrDefault<TResult>(this Task<TResult> @this)
+        {
+            try { return await @this.ConfigureAwait(continueOnCapturedContext: false); }
+            catch
+            {
+                // No logging is needed
+                return default(TResult);
+            }
+        }
     }
 }
