@@ -96,20 +96,23 @@ namespace Olive
             Url = GetFullUrl(queryParams);
             Log.For(this).Debug("Get: Url = " + Url);
 
-            if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
-            {
-                var result = await GetCachedResponse<TResponse>();
-                if (HasValue(result))
-                {
-                    Log.For(this).Debug("Get: Returning from Cache: " + result);
-                    return result;
-                }
-            }
-
-            // Not already cached:
             var urlLock = GetLocks.GetOrAdd(Url, x => new AsyncLock());
+
             using (await urlLock.Lock())
+            {
+                if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
+                {
+                    var result = await GetCachedResponse<TResponse>();
+                    if (HasValue(result))
+                    {
+                        Log.For(this).Debug("Get: Returning from Cache: " + result);
+                        return result;
+                    }
+                }
+
+                // Not already cached:
                 return await ExecuteGet<TResponse>();
+            }
         }
 
         async Task<TResponse> ExecuteGet<TResponse>()
@@ -244,7 +247,7 @@ namespace Olive
         bool IsCacheExpired(FileInfo file)
         {
             if (CacheExpiry == null) return false;
-            return file.CreationTimeUtc < LocalTime.UtcNow.Subtract(CacheExpiry.Value);
+            return file.LastWriteTimeUtc < LocalTime.UtcNow.Subtract(CacheExpiry.Value);
         }
 
         /// <summary>
