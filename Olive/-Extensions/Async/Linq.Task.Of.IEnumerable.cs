@@ -50,6 +50,10 @@ namespace Olive
           this Task<IEnumerable<TSource>> @this, IEnumerable<TSource> second)
             => (await @this).OrEmpty().Concat(second);
 
+        public static async Task<IEnumerable<TSource>> Concat<TSource>(
+          this Task<IEnumerable<TSource>> @this, TSource item)
+            => (await @this).OrEmpty().Concat(item);
+
         public static async Task<IEnumerable<TSource>> Distinct<TSource>(
           this Task<IEnumerable<TSource>> @this) => (await @this).OrEmpty().Distinct();
 
