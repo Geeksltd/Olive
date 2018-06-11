@@ -73,7 +73,7 @@ namespace Olive.ApiProxy
 
         //    Console.WriteLine("Processing " + websiteFolder.FullName + "...");
 
-        //    Context.AssemblyFile = websiteFolder.GetFile("bin\\Debug\\netcoreapp2.0\\Website.dll");
+        //    Context.AssemblyFile = websiteFolder.GetFile("bin\\Debug\\netcoreapp2.1\\Website.dll");
         //    Directory.SetCurrentDirectory(websiteFolder.FullName);
 
         //    Context.PublisherService = websiteFolder.GetFile("appSettings.json").ReadAllText().ToLines().Trim()

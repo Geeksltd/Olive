@@ -14,8 +14,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Security.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Security.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Security.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.dll" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.pdb" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.xml" target="lib\netcoreapp2.1\" />
   </files>
 </package>

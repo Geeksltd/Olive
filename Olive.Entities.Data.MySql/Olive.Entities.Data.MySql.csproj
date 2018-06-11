@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="1.0.6" />
-    <PackageReference Include="MySqlConnector" Version="0.35.0" />
+    <PackageReference Include="MySqlConnector" Version="0.42.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,8 +16,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Testing.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Testing.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.Testing.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.Testing.dll" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.Testing.pdb" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.Testing.xml" target="lib\netcoreapp2.1\" />
   </files>
 </package>
