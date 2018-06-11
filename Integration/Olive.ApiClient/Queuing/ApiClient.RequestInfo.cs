@@ -30,7 +30,7 @@ namespace Olive
                     {
                         // Add Queue status and properties
                         entity.RequestInfo = this;
-                        entity.TimeAdded = DateTime.Now;
+                        entity.TimeAdded = LocalTime.Now;
                         entity.Status = QueueStatus.Added;
 
                         // Add item to the Queue and write it to file
@@ -54,8 +54,8 @@ namespace Olive
                 var cachedFiles = GetTypeCacheFiles(modified);
                 foreach (var file in cachedFiles)
                 {
-                    var records = await Client.DeserializeResponse<IEnumerable<TResponse>>(file).ToList();
                     var changed = false;
+                    var records = await Client.DeserializeResponse<IEnumerable<TResponse>>(file).ToList();
 
                     // If the file contains the modified row, update it
                     if (httpMethod == "DELETE")
@@ -67,7 +67,7 @@ namespace Olive
                             changed = true;
                         }
                     }
-                    else if (httpMethod == "PATCH" || httpMethod == "PUT")
+                    else if (httpMethod.IsAnyOf("PATCH", "PUT"))
                         records?.Do(record =>
                         {
                             record = modified;

@@ -5,9 +5,9 @@ namespace Olive
 {
     public static class BlobAWSExtensions
     {
-        public static IServiceCollection AddS3BlobStorageProvider(this IServiceCollection services)
+        public static IServiceCollection AddS3BlobStorageProvider(this IServiceCollection @this)
         {
-            return services.AddSingleton(typeof(IBlobStorageProvider), new BlobAws.S3BlobStorageProvider());
+            return @this.AddSingleton(typeof(IBlobStorageProvider), new BlobAws.S3BlobStorageProvider());
         }
     }
 }

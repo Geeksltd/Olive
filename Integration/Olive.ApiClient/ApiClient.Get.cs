@@ -11,6 +11,9 @@ namespace Olive
 {
     partial class ApiClient
     {
+        static ConcurrentDictionary<string, object> DeserializedCache =
+         new ConcurrentDictionary<string, object>();
+
         static ConcurrentDictionary<string, AsyncLock> GetLocks =
             new ConcurrentDictionary<string, AsyncLock>();
 
@@ -54,12 +57,9 @@ namespace Olive
             lock (CacheSyncLock)
             {
                 var directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName(modified)));
-                if (directoryInfo.Exists)
-                {
-                    return directoryInfo.GetFiles();
-                }
+                if (directoryInfo.Exists) return directoryInfo.GetFiles();
 
-                return null;
+                return new FileInfo[0];
             }
         }
 
@@ -74,7 +74,7 @@ namespace Olive
 
             var queryString = queryParams as string;
 
-            if (queryString == null)
+            if (queryString is null)
                 queryString = queryParams.GetType().GetPropertiesAndFields(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance).Select(p => p.Name + "=" + p.GetValue(queryParams).ToStringOrEmpty().UrlEncode())
                      .Trim().ToString("&");
 
@@ -208,9 +208,6 @@ namespace Olive
             return await DeserializeResponse<TResponse>(file);
         }
 
-        static ConcurrentDictionary<string, object> DeserializedCache =
-            new ConcurrentDictionary<string, object>();
-
         async Task<TResponse> DeserializeResponse<TResponse>(FileInfo file)
         {
             if (!file.Exists() || IsCacheExpired(file)) return default(TResponse);
@@ -227,7 +224,7 @@ namespace Olive
             {
                 var result = JsonConvert.DeserializeObject<TResponse>(
                     await file.ReadAllTextAsync(),
-                    new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto }
+                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }
                 );
 
                 if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
@@ -258,7 +255,7 @@ namespace Olive
             lock (CacheSyncLock)
             {
                 var cacheDir = GetRootCacheDirectory();
-                if (cacheDir.Exists) cacheDir.Delete(true);
+                if (cacheDir.Exists) cacheDir.Delete(recursive: true);
             }
 
             // Desined as a task in case in the future we need it.

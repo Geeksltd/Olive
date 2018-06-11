@@ -59,6 +59,7 @@ namespace Olive.Entities
         public string OwnerProperty { get; private set; }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [EscapeGCop("This is to defined as extension method handle null as well.")]
         public static bool HasFileDataInMemory(Blob blob) => blob?.NewFileData?.Length > 0;
 
         static IDatabase Database => Context.Current.Database();
@@ -109,7 +110,7 @@ namespace Olive.Entities
         {
             get
             {
-                if (folderName == null)
+                if (folderName is null)
                 {
                     if (OwnerEntity == null) return OwnerProperty;
                     folderName = OwnerEntity.GetType().Name + "." + OwnerProperty;

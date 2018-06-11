@@ -18,24 +18,24 @@ namespace Olive.Mvc
 {
     partial class OliveMvcExtensions
     {
-        public static HtmlString ToJson(this IHtmlHelper html, object obj)
+        public static HtmlString ToJson(this IHtmlHelper @this, object obj)
         {
             if (obj == null) return new HtmlString("[]");
 
             return new HtmlString(JsonConvert.SerializeObject(obj));
         }
 
-        public static HtmlString GetActionsJson(this IHtmlHelper html)
+        public static HtmlString GetActionsJson(this IHtmlHelper @this)
         {
-            var data = html.ViewContext.HttpContext.JavascriptActions();
-            return html.ToJson(data);
+            var data = @this.ViewContext.HttpContext.JavascriptActions();
+            return @this.ToJson(data);
         }
 
-        public static IHtmlContent RadioButtonsFor<TModel, TProperty>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> property, IEnumerable<SelectListItem> selectList, object htmlAttributes)
+        public static IHtmlContent RadioButtonsFor<TModel, TProperty>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, TProperty>> property, IEnumerable<SelectListItem> selectList, object htmlAttributes)
         {
             var propertyInfo = property.GetProperty();
 
-            var value = propertyInfo.GetValue(html.ViewData.Model);
+            var value = propertyInfo.GetValue(@this.ViewData.Model);
 
             if (value is IEntity) value = (value as IEntity).GetId();
 
@@ -51,7 +51,7 @@ namespace Olive.Mvc
 
                 var id = propertyInfo.Name + "_" + selectList.IndexOf(item);
 
-                result.AppendHtml(html.RadioButton(propertyInfo.Name, item.Value, IsSelected(item, value),
+                result.AppendHtml(@this.RadioButton(propertyInfo.Name, item.Value, IsSelected(item, value),
                     new { id, @class = "form-check-input" }));
 
                 result.AppendHtmlLine($"<label for=\"{id}\" class=\"form-check-label\">{item.Text}</label>");
@@ -73,14 +73,18 @@ namespace Olive.Mvc
             return false;
         }
 
-        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> html, Expression<Func<TModel, IEnumerable<Blob>>> property, object htmlAttributes = null) =>
-            new DefaultFileUploadMarkupGenerator().Generate(html, html.ViewData.Model, property, htmlAttributes);
+        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, IEnumerable<Blob>>> property, object htmlAttributes = null)
+        {
+            return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
+        }
 
-        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> html, Expression<Func<TModel, Blob>> property, object htmlAttributes = null) =>
-            new DefaultFileUploadMarkupGenerator().Generate(html, html.ViewData.Model, property, htmlAttributes);
+        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, Blob>> property, object htmlAttributes = null)
+        {
+            return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
+        }
 
-        public static HtmlString CheckBoxesFor<TModel, TProperty>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> property, IEnumerable<SelectListItem> selectList, object htmlAttributes = null) =>
-            GenerateCheckBoxesFor(html, property, selectList, htmlAttributes, setContainerId: true);
+        public static HtmlString CheckBoxesFor<TModel, TProperty>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, TProperty>> property, IEnumerable<SelectListItem> selectList, object htmlAttributes = null) =>
+            GenerateCheckBoxesFor(@this, property, selectList, htmlAttributes, setContainerId: true);
 
         static HtmlString GenerateCheckBoxesFor<TModel, TProperty>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> property, IEnumerable<SelectListItem> selectList, object htmlAttributes, bool setContainerId)
         {
@@ -91,9 +95,9 @@ namespace Olive.Mvc
             return html.GenerateCheckBoxes(propertyInfo.Name, value as IEnumerable, selectList, htmlAttributes, propertyInfo, setContainerId);
         }
 
-        public static HtmlString CheckBoxes(this IHtmlHelper html, string name, IEnumerable selectedItems, IEnumerable<SelectListItem> selectList, object htmlAttributes = null, PropertyInfo property = null)
+        public static HtmlString CheckBoxes(this IHtmlHelper @this, string name, IEnumerable selectedItems, IEnumerable<SelectListItem> selectList, object htmlAttributes = null, PropertyInfo property = null)
         {
-            return GenerateCheckBoxes(html, name, selectedItems, selectList, htmlAttributes, property, setContainerId: true);
+            return GenerateCheckBoxes(@this, name, selectedItems, selectList, htmlAttributes, property, setContainerId: true);
         }
 
         static HtmlString GenerateCheckBoxes(this IHtmlHelper html, string name, IEnumerable selectedItems, IEnumerable<SelectListItem> selectList, object htmlAttributes = null, PropertyInfo property = null, bool setContainerId = true)
@@ -189,57 +193,57 @@ namespace Olive.Mvc
         /// <summary>
         /// Will join this with other Mvc Html String items;
         /// </summary>
-        public static IHtmlContent Concat(this IHtmlContent me, IHtmlContent first, params IHtmlContent[] others)
+        public static IHtmlContent Concat(this IHtmlContent @this, IHtmlContent first, params IHtmlContent[] others)
         {
             var result = new HtmlContentBuilder();
-            result.AppendHtml(me);
+            result.AppendHtml(@this);
             result.AppendHtml(first);
             others.Do(x => result.AppendHtml(x));
 
             return result;
         }
 
-        public static IHtmlContent RegisterStartupActions(this IHtmlHelper html)
+        public static IHtmlContent RegisterStartupActions(this IHtmlHelper @this)
         {
-            var startupActions = html.GetActionsJson().ToString().Unless("[]");
+            var startupActions = @this.GetActionsJson().ToString().Unless("[]");
 
-            var result = startupActions.HasValue() ? html.Hidden("Startup.Actions", startupActions) : HtmlString.Empty;
+            var result = startupActions.HasValue() ? @this.Hidden("Startup.Actions", startupActions) : HtmlString.Empty;
 
-            var request = html.ViewContext.HttpContext.Request;
+            var request = @this.ViewContext.HttpContext.Request;
 
             if (request.IsAjaxGet())
             {
-                var title = Context.Current.Http().Items["Page.Title"].ToStringOrEmpty().Or(html.ViewData["Title"].ToStringOrEmpty());
-                result = result.Concat(html.Hidden("page.meta.title", title));
+                var title = Context.Current.Http().Items["Page.Title"].ToStringOrEmpty().Or(@this.ViewData["Title"].ToStringOrEmpty());
+                result = result.Concat(@this.Hidden("page.meta.title", title));
             }
 
             return result;
         }
 
-        public static HttpRequest Request(this IHtmlHelper html) =>
-            html.ViewContext.HttpContext.Request;
+        public static HttpRequest Request(this IHtmlHelper @this) =>
+            @this.ViewContext.HttpContext.Request;
 
         /// <summary>
         /// Creates a hidden field to contain the json data for the start-up actions.
         /// </summary>
-        public static IHtmlContent StartupActionsJson(this IHtmlHelper html)
+        public static IHtmlContent StartupActionsJson(this IHtmlHelper @this)
         {
-            if (!html.Request().IsAjaxPost()) return null;
+            if (!@this.Request().IsAjaxPost()) return null;
 
-            var startupActions = html.GetActionsJson().ToString().Unless("[]");
+            var startupActions = @this.GetActionsJson().ToString().Unless("[]");
 
             if (startupActions.HasValue())
-                return html.Hidden("Startup.Actions", startupActions);
+                return @this.Hidden("Startup.Actions", startupActions);
 
             return HtmlString.Empty;
         }
 
-        public static HtmlString RunJavascript(this IHtmlHelper html, string script, PageLifecycleStage stage = PageLifecycleStage.Init) =>
-            RunJavascript(html, script, script, stage);
+        public static HtmlString RunJavascript(this IHtmlHelper @this, string script, PageLifecycleStage stage = PageLifecycleStage.Init) =>
+            RunJavascript(@this, script, script, stage);
 
-        public static HtmlString RunJavascript(this IHtmlHelper html, string key, string script, PageLifecycleStage stage = PageLifecycleStage.Init)
+        public static HtmlString RunJavascript(this IHtmlHelper @this, string key, string script, PageLifecycleStage stage = PageLifecycleStage.Init)
         {
-            var actions = html.ViewContext.HttpContext.JavascriptActions();
+            var actions = @this.ViewContext.HttpContext.JavascriptActions();
 
             // If already added, ignore:
             var exists = actions
@@ -254,10 +258,10 @@ namespace Olive.Mvc
             return HtmlString.Empty;
         }
 
-        public static HtmlString ReferenceScriptFile(this IHtmlHelper html, string scriptUrl)
+        public static HtmlString ReferenceScriptFile(this IHtmlHelper @this, string scriptUrl)
         {
-            var items = html.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] as List<string>;
-            if (items == null) html.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] = items = new List<string>();
+            var items = @this.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] as List<string>;
+            if (items == null) @this.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] = items = new List<string>();
 
             if (items.Lacks(scriptUrl)) items.Add(scriptUrl);
 
@@ -267,11 +271,11 @@ namespace Olive.Mvc
         /// <summary>
         /// Call this at the bottom of the layout file. It will register script tags to reference dynamically referenced script files.
         /// </summary>
-        public static HtmlString RegisterDynamicScriptFiles(this IHtmlHelper html)
+        public static HtmlString RegisterDynamicScriptFiles(this IHtmlHelper @this)
         {
             var result = new StringBuilder();
 
-            if (html.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] is List<string> items)
+            if (@this.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] is List<string> items)
                 return new HtmlString(items.Select(f => $"<script type='text/javascript' src='{f}'></script>").ToLinesString());
 
             return HtmlString.Empty;

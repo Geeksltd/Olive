@@ -17,19 +17,19 @@ namespace Olive.Mvc
 
         static IDatabase Database => Context.Current.Database();
 
-        public static string Current(this IUrlHelper url)
+        public static string Current(this IUrlHelper @this)
         {
-            var result = url.ActionContext?.HttpContext.Request.Param("current.request.url");
+            var result = @this.ActionContext?.HttpContext.Request.Param("current.request.url");
 
             if (result.IsEmpty()) result = Context.Current.Request().Param("current.request.url");
 
             if (result.HasValue())
             {
-                if (!url.IsLocalUrl(result)) throw new Exception("Invalid injected current url.");
+                if (!@this.IsLocalUrl(result)) throw new Exception("Invalid injected current url.");
             }
             else
             {
-                result = url.ActionContext?.HttpContext.Request.ToRawUrl();
+                result = @this.ActionContext?.HttpContext.Request.ToRawUrl();
 
                 if (result.IsEmpty()) result = Context.Current.Request().ToRawUrl();
             }
@@ -37,43 +37,42 @@ namespace Olive.Mvc
             return result;
         }
 
-        public static string Current(this IUrlHelper url, object queryParameters)
+        public static string Current(this IUrlHelper @this, object queryParameters)
         {
-            if (queryParameters == null) return Current(url);
+            if (queryParameters == null) return Current(@this);
 
             var settings = queryParameters.GetType().GetProperties()
                     .ToDictionary(x => x.Name, x => x.GetValue(queryParameters).ToStringOrEmpty());
 
-            return Current(url, settings);
+            return Current(@this, settings);
         }
 
-        public static string Current(this IUrlHelper url, IDictionary<string, string> queryParameters)
+        public static string Current(this IUrlHelper @this, IDictionary<string, string> queryParameters)
         {
-            var result = url.CurrentUri().RemoveEmptyQueryParameters();
-
             if (queryParameters == null) queryParameters = new Dictionary<string, string>();
 
+            var result = @this.CurrentUri().RemoveEmptyQueryParameters();
             foreach (var item in queryParameters)
                 result = result.RemoveQueryString(item.Key).AddQueryString(item.Key, item.Value);
 
             return result.PathAndQuery;
         }
 
-        public static Uri CurrentUri(this IUrlHelper urlHelper)
+        public static Uri CurrentUri(this IUrlHelper @this)
         {
-            var url = urlHelper.Current();
+            var url = @this.Current();
             if (url.StartsWith("http")) return url.AsUri().RemoveEmptyQueryParameters();
             return ($"http://domain.com{url}").AsUri().RemoveEmptyQueryParameters();
         }
 
-        public static string QueryString(this IUrlHelper url) => url.ActionContext.HttpContext.Request.QueryString.ToString();
+        public static string QueryString(this IUrlHelper @this) => @this.ActionContext.HttpContext.Request.QueryString.ToString();
 
-        public static string ReturnUrl(this IUrlHelper urlHelper)
+        public static string ReturnUrl(this IUrlHelper @this)
         {
-            var url = urlHelper.ActionContext.HttpContext.Request.Param("ReturnUrl");
+            var url = @this.ActionContext.HttpContext.Request.Param("ReturnUrl");
             if (url.IsEmpty()) return string.Empty;
 
-            if (urlHelper.IsLocalUrl(url)) return url;
+            if (@this.IsLocalUrl(url)) return url;
 
             throw new Exception(url + " is not a valid ReturnUrl as it's external and so unsafe.");
         }
@@ -81,12 +80,12 @@ namespace Olive.Mvc
         /// <summary>
         /// Returns the specified actionUrl. But it first adds the current route and query string query parameters, all as query string.
         /// </summary>
-        public static string ActionWithQuery(this IUrlHelper url, string actionUrl, IEntity listItem = null) =>
-            url.ActionWithQuery(actionUrl, new { list_item = listItem });
+        public static string ActionWithQuery(this IUrlHelper @this, string actionUrl, IEntity listItem = null) =>
+            @this.ActionWithQuery(actionUrl, new { list_item = listItem });
 
-        public static string ActionWithQuery(this IUrlHelper url, string actionUrl, object query)
+        public static string ActionWithQuery(this IUrlHelper @this, string actionUrl, object query)
         {
-            var data = url.ActionContext.GetRequestParameters();
+            var data = @this.ActionContext.GetRequestParameters();
 
             if (query != null)
             {
@@ -104,43 +103,43 @@ namespace Olive.Mvc
 
             var queryString = data.Where(x => x.Value.HasValue()).Select(x => x.Key + "=" + WebUtility.UrlEncode(x.Value)).ToString("&");
 
-            return url.Content("~/" + actionUrl + queryString.WithPrefix("?").Replace("?&", "?"));
+            return @this.Content("~/" + actionUrl + queryString.WithPrefix("?").Replace("?&", "?"));
         }
 
         /// <summary>
         /// Determines if a request parameter (route or query string) value exists for the specified key.
         /// </summary>
-        public static bool Has(this ActionContext actionContext, string key) => actionContext.Param(key).HasValue();
+        public static bool Has(this ActionContext @this, string key) => @this.Param(key).HasValue();
 
         /// <summary>
         /// Determines if a request parameter (route or query string) value does not exists for the specified key.
         /// </summary>
-        public static bool Lacks(this ActionContext actionContext, string key) => !actionContext.Has(key);
+        public static bool Lacks(this ActionContext @this, string key) => !@this.Has(key);
 
         /// <summary>
         /// Will get the value for the specified key in the current request whether it comes from Route or Query String.
         /// </summary>
-        public static string Param(this ActionContext actionContext, string key)
+        public static string Param(this ActionContext @this, string key)
         {
             if (key.IsEmpty()) throw new ArgumentNullException(nameof(key));
 
-            return actionContext.GetRequestParameters()
+            return @this.GetRequestParameters()
                 .FirstOrDefault(x => x.Key.OrEmpty().ToLower() == key.ToLower()).Value;
         }
 
-        public static Task<IEnumerable<T>> GetList<T>(this HttpRequest request, string key, char separator = ',') where T : IEntity
+        public static Task<IEnumerable<T>> GetList<T>(this HttpRequest @this, string key, char separator = ',') where T : IEntity
         {
-            return request.Param(key).OrEmpty().Split(separator).Trim().SelectAsync(x => Database.Get<T>(x));
+            return @this.Param(key).OrEmpty().Split(separator).Trim().SelectAsync(x => Database.Get<T>(x));
         }
 
-        public static Dictionary<string, string> GetRequestParameters(this ActionContext actionContext)
+        public static Dictionary<string, string> GetRequestParameters(this ActionContext @this)
         {
-            var result = actionContext.RouteData.Values.ToDictionary(x => x.Key, x => x.Value.ToStringOrEmpty());
+            var result = @this.RouteData.Values.ToDictionary(x => x.Key, x => x.Value.ToStringOrEmpty());
 
             result.Remove("controller");
             result.Remove("action");
 
-            var byQuerystring = actionContext.HttpContext.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
+            var byQuerystring = @this.HttpContext.Request.Query.ToDictionary(x => x.Key, x => x.Value.ToString());
 
             byQuerystring = byQuerystring.Except(x => result.ContainsKey(x.Key)).ToDictionary(x => x.Key, x => x.Value);
 
@@ -149,7 +148,7 @@ namespace Olive.Mvc
             return result;
         }
 
-        public static object RouteValue(this IUrlHelper url, string key) => url.ActionContext.RouteData.Values[key];
+        public static object RouteValue(this IUrlHelper @this, string key) => @this.ActionContext.RouteData.Values[key];
 
         static List<RouteTemplate> FindIndexRouteTemplates(string controllerName)
         {
@@ -180,10 +179,10 @@ namespace Olive.Mvc
             return attributes.Select(x => new RouteTemplate(x.Template)).ToList();
         }
 
-        public static string Index<TController>(this IUrlHelper url, object routeValues = null) where TController : Microsoft.AspNetCore.Mvc.Controller =>
-            url.Index(typeof(TController).Name.TrimEnd("Controller"), routeValues);
+        public static string Index<TController>(this IUrlHelper @this, object routeValues = null) where TController : Microsoft.AspNetCore.Mvc.Controller =>
+            @this.Index(typeof(TController).Name.TrimEnd("Controller"), routeValues);
 
-        public static string Index(this IUrlHelper url, string controllerName, object routeValues = null)
+        public static string Index(this IUrlHelper @this, string controllerName, object routeValues = null)
         {
             var routeParameters = new Dictionary<string, string>();
 
@@ -191,10 +190,10 @@ namespace Olive.Mvc
                 routeParameters = routeValues.GetType().GetProperties()
                     .ToDictionary(p => p.Name.ToCamelCaseId(), p => p.GetValue(routeValues).ToStringOrEmpty());
 
-            return url.Index(controllerName, routeParameters);
+            return @this.Index(controllerName, routeParameters);
         }
 
-        public static string Index(this IUrlHelper url, string controllerName, Dictionary<string, string> routeParameters)
+        public static string Index(this IUrlHelper @this, string controllerName, Dictionary<string, string> routeParameters)
         {
             if (!controllerName.EndsWith("Controller")) controllerName += "Controller";
 
@@ -238,7 +237,7 @@ namespace Olive.Mvc
                 .FirstOrDefault();
         }
 
-        public static string MergeRoute(this IUrlHelper url, string routeTemplate, Dictionary<string, string> routeData)
+        public static string MergeRoute(this IUrlHelper @this, string routeTemplate, Dictionary<string, string> routeData)
         {
             if (routeTemplate.IsEmpty())
                 throw new ArgumentNullException(nameof(routeTemplate));

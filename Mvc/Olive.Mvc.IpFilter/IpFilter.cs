@@ -10,7 +10,10 @@ namespace Olive.Mvc
 {
     public class IpFilter
     {
+        const int IP_4_SIZE = 8;
+        static AsyncLock SyncLock = new AsyncLock();
         static List<string> BlockedCountryCodes = new List<string>();
+
         static FileInfo CountryIpsFile
             => AppDomain.CurrentDomain.WebsiteRoot().GetOrCreateSubDirectory("--IPFilter").GetFile("dbip-country.csv");
 
@@ -114,19 +117,23 @@ namespace Olive.Mvc
 
         static async Task LoadBlockedIpRanges()
         {
-            var table = await CsvReader.ReadAsync(CountryIpsFile, isFirstRowHeaders: false);
-
-            BlockedIpRanges = new List<Range<BigInteger>>();
-
-            foreach (var row in table.GetRows())
+            using (await SyncLock.Lock())
             {
-                if (!BlockedCountryCodes.Contains((string)row[2]))
-                    continue;
+                if (BlockedIpRanges != null) return;
+                else BlockedIpRanges = new List<Range<BigInteger>>();
 
-                var from = ToIpValue((string)row[0]);
-                var to = ToIpValue((string)row[1]);
+                var table = await CsvReader.ReadAsync(CountryIpsFile, isFirstRowHeaders: false);
 
-                BlockedIpRanges.Add(new Range<BigInteger>(from, to));
+                foreach (var row in table.GetRows())
+                {
+                    if (!BlockedCountryCodes.Contains((string)row[2]))
+                        continue;
+
+                    var from = ToIpValue((string)row[0]);
+                    var to = ToIpValue((string)row[1]);
+
+                    BlockedIpRanges.Add(new Range<BigInteger>(from, to));
+                }
             }
         }
 
@@ -138,8 +145,8 @@ namespace Olive.Mvc
                 if (BitConverter.IsLittleEndian)
                     bytes = bytes.Reverse().ToArray();
 
-                if (bytes.Length > 8)
-                    return new BigInteger(BitConverter.ToUInt64(bytes, 8), BitConverter.ToUInt64(bytes, 0));
+                if (bytes.Length > IP_4_SIZE)
+                    return new BigInteger(BitConverter.ToUInt64(bytes, IP_4_SIZE), BitConverter.ToUInt64(bytes, 0));
 
                 return new BigInteger(0, BitConverter.ToUInt32(bytes, 0));
 
@@ -188,13 +195,6 @@ namespace Olive.Mvc
             }
 
             int IComparable.CompareTo(object obj) => CompareTo((BigInteger)obj);
-
-            static bool IsGreaterThan(BigInteger b1, BigInteger b2)
-            {
-                if (b1.Value1 > b2.Value1) return true;
-                else if (b1.Value1 == b2.Value1 && b1.Value2 > b2.Value2) return true;
-                return false;
-            }
 
             public static bool operator >=(BigInteger b1, BigInteger b2) => b1.CompareTo(b2) >= 0;
 

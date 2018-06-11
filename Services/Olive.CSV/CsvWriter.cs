@@ -12,18 +12,18 @@ namespace Olive.Csv
         /// <summary>
         /// Saves csv content into a file
         /// </summary>
-        /// <param name="csv">Csv string</param>
+        /// <param name="this">Csv string</param>
         /// <param name="path">File save path</param>
-        public static void Save(this string csv, FileInfo path) => File.WriteAllText(path.FullName, csv);
+        public static void Save(this string @this, FileInfo path) => File.WriteAllText(path.FullName, @this);
 
         /// <summary>
         /// Converts a Dictionary object to CSV string
         /// </summary>
         /// <returns>CSV string content</returns>
-        public static string ToCsv(this Dictionary<string, string> dictionary)
+        public static string ToCsv(this Dictionary<string, string> @this)
         {
             var csv = new StringBuilder();
-            foreach (var pair in dictionary)
+            foreach (var pair in @this)
                 csv.AppendLine(string.Format("{0},{1}", pair.Key, pair.Value));
 
             return csv.ToString();
@@ -34,13 +34,13 @@ namespace Olive.Csv
         /// </summary>
         /// <typeparam name="T">Type of IEnumerable</typeparam> 
         /// <returns>CSV string content</returns>
-        public static string ToCsv<T>(this IEnumerable<T> items)
+        public static string ToCsv<T>(this IEnumerable<T> @this)
             where T : class
         {
             var csvBuilder = new StringBuilder();
             var properties = typeof(T).GetProperties();
 
-            foreach (var item in items)
+            foreach (var item in @this)
             {
                 var line = string.Join(",", properties.Select(p => p.GetValue(item, null).ToCsvValue()).ToArray());
                 csvBuilder.AppendLine(line);
@@ -66,20 +66,20 @@ namespace Olive.Csv
         /// Converts a DataTable object to CSV string
         /// </summary>
         /// <returns>CSV string content</returns>
-        public static string ToCsv(this DataTable dtDataTable)
+        public static string ToCsv(this DataTable @this)
         {
             var sb = new StringBuilder();
             // headers
-            for (var i = 0; i < dtDataTable.Columns.Count; i++)
+            for (var i = 0; i < @this.Columns.Count; i++)
             {
-                sb.Append(dtDataTable.Columns[i]);
-                if (i < dtDataTable.Columns.Count - 1) sb.Append(",");
+                sb.Append(@this.Columns[i]);
+                if (i < @this.Columns.Count - 1) sb.Append(",");
             }
 
             sb.AppendLine();
-            foreach (var dr in dtDataTable.GetRows())
+            foreach (var dr in @this.GetRows())
             {
-                for (var i = 0; i < dtDataTable.Columns.Count; i++)
+                for (var i = 0; i < @this.Columns.Count; i++)
                 {
                     if (!Convert.IsDBNull(dr[i]))
                     {
@@ -88,7 +88,7 @@ namespace Olive.Csv
                         else sb.Append(dr[i].ToString());
                     }
 
-                    if (i < dtDataTable.Columns.Count - 1) sb.Append(",");
+                    if (i < @this.Columns.Count - 1) sb.Append(",");
                 }
 
                 sb.AppendLine();

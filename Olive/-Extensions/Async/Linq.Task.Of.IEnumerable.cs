@@ -168,8 +168,8 @@ namespace Olive
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
             => (await @this).OrEmpty().All(func);
 
-        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> list)
-            => (await list).OrEmpty().Any();
+        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this)
+            => (await @this).OrEmpty().Any();
 
         public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
             => (await @this).OrEmpty().Any(func);

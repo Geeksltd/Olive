@@ -15,25 +15,25 @@ namespace Olive
         /// <summary>
         /// Gets the cookies sent by the client.
         /// </summary>
-        public static IEnumerable<KeyValuePair<string, string>> GetCookies(this HttpRequest request)
+        public static IEnumerable<KeyValuePair<string, string>> GetCookies(this HttpRequest @this)
         {
-            if (request.Cookies == null) return Enumerable.Empty<KeyValuePair<string, string>>();
-            return request.Cookies.AsEnumerable();
+            if (@this.Cookies == null) return Enumerable.Empty<KeyValuePair<string, string>>();
+            return @this.Cookies.AsEnumerable();
         }
 
         /// <summary>
         /// Gets the record with the specified type. The ID of the record will be read from QueryString[key].
         /// </summary>
-        public static async Task<T> GetOrDefault<T>(this HttpRequest request, string key)
+        public static async Task<T> GetOrDefault<T>(this HttpRequest @this, string key)
         {
-            request = request ?? Olive.Context.Current.Request() ??
+            @this = @this ?? Olive.Context.Current.Request() ??
                     throw new InvalidOperationException("Request.GetOrDefault<T>() can only be called inside an Http context.");
 
             if (key == ".") key = "." + typeof(T).Name;
 
-            if (!request.Has(key)) return default(T);
+            if (!@this.Has(key)) return default(T);
 
-            try { return await request.DoGet<T>(key, throwIfNotFound: false); }
+            try { return await @this.DoGet<T>(key, throwIfNotFound: false); }
             catch
             {
                 // No Loging needed
@@ -45,8 +45,8 @@ namespace Olive
         /// Gets the data with the specified type from form, query string or route with the specified key.
         /// If the specified type is an entity, then the ID of that record will be read from the request and then fetched from database.
         /// </summary>
-        public static Task<T> Get<T>(this HttpRequest request, string key)
-            => DoGet<T>(request, key, throwIfNotFound: true);
+        public static Task<T> Get<T>(this HttpRequest @this, string key)
+            => DoGet<T>(@this, key, throwIfNotFound: true);
 
         static async Task<T> DoGet<T>(this HttpRequest request, string key, bool throwIfNotFound)
         {
@@ -59,15 +59,15 @@ namespace Olive
         /// <summary>
         /// Returns a string value specified in the request context (form, query string or route).
         /// </summary>
-        public static string Param(this HttpRequest request, string key)
+        public static string Param(this HttpRequest @this, string key)
         {
-            if (request.HasFormContentType && request.Form.ContainsKey(key))
-                return request.Form[key].ToStringOrEmpty();
+            if (@this.HasFormContentType && @this.Form.ContainsKey(key))
+                return @this.Form[key].ToStringOrEmpty();
 
-            if (request.Query.ContainsKey(key))
-                return request.Query[key].ToStringOrEmpty();
+            if (@this.Query.ContainsKey(key))
+                return @this.Query[key].ToStringOrEmpty();
 
-            return (request.GetRouteValues()?[key]).ToStringOrEmpty();
+            return (@this.GetRouteValues()?[key]).ToStringOrEmpty();
         }
 
         /// <summary>
@@ -93,16 +93,16 @@ namespace Olive
             }
         }
 
-        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest request, string key) where T : class, IEntity => GetList<T>(request, key, ',');
+        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest @this, string key) where T : class, IEntity => GetList<T>(@this, key, ',');
 
         /// <summary>
         /// Gets a list of objects of which Ids come in query string.
         /// </summary>
         /// <param name="key">The key of the query string element containing ids.</param>
         /// <param name="seperator">The sepeerator of Ids in the query string value. The default will be comma (",").</param>
-        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest request, string key, char seperator) where T : class, IEntity
+        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest @this, string key, char seperator) where T : class, IEntity
         {
-            var ids = request.Param(key);
+            var ids = @this.Param(key);
             if (ids.IsEmpty()) yield break;
             else
                 foreach (var id in ids.Split(seperator))
@@ -112,9 +112,9 @@ namespace Olive
         /// <summary>
         /// Finds the search keywords used by this user on Google that led to the current request.
         /// </summary>
-        public static string FindGoogleSearchKeyword(this HttpRequest request)
+        public static string FindGoogleSearchKeyword(this HttpRequest @this)
         {
-            var urlReferrer = request.Headers["Referer"].ToString();
+            var urlReferrer = @this.Headers["Referer"].ToString();
             if (urlReferrer.IsEmpty()) return null;
 
             // Note: Only Google is supported for now:
@@ -138,19 +138,19 @@ namespace Olive
         /// <summary>
         /// Gets the actual IP address of the user considering the Proxy and other HTTP elements.
         /// </summary>
-        public static string GetIPAddress(this HttpRequest request) => request.HttpContext.Connection.RemoteIpAddress.ToString();
+        public static string GetIPAddress(this HttpRequest @this) => @this.HttpContext.Connection.RemoteIpAddress.ToString();
 
         /// <summary>
         /// Determines if the specified argument exists in the request (form, query string or route).
         /// </summary>
-        public static bool Has(this HttpRequest request, string argument)
+        public static bool Has(this HttpRequest @this, string argument)
         {
-            if (request.HasFormContentType && request.Form.ContainsKey(argument)) return true;
-            else if (request.Query.ContainsKey(argument)) return true;
-            else return (request.GetRouteValues()?[argument]).ToStringOrEmpty().HasValue();
+            if (@this.HasFormContentType && @this.Form.ContainsKey(argument)) return true;
+            else if (@this.Query.ContainsKey(argument)) return true;
+            else return (@this.GetRouteValues()?[argument]).ToStringOrEmpty().HasValue();
         }
 
-        public static RouteValueDictionary GetRouteValues(this HttpRequest request)
+        public static RouteValueDictionary GetRouteValues(this HttpRequest @this)
         {
             return Olive.Context.Current.ActionContext()?.RouteData?.Values;
         }
@@ -158,60 +158,60 @@ namespace Olive
         /// <summary>
         /// Determines if the specified argument not exists in the request (query string or form).
         /// </summary>
-        public static bool Lacks(this HttpRequest request, string argument) => !request.Has(argument);
+        public static bool Lacks(this HttpRequest @this, string argument) => !@this.Has(argument);
 
         /// <summary>
         /// Gets the root of the requested website.
         /// </summary>
-        public static string RootUrl(this HttpRequest request) => $"{request.Scheme}://{request.Host}/";
+        public static string RootUrl(this HttpRequest @this) => $"{@this.Scheme}://{@this.Host}/";
 
         /// <summary>
         /// Gets the raw url of the request.
         /// </summary>
-        public static string ToRawUrl(this HttpRequest request) =>
-            $"{request.PathBase}{request.Path}{request.QueryString}";
+        public static string ToRawUrl(this HttpRequest @this) =>
+            $"{@this.PathBase}{@this.Path}{@this.QueryString}";
 
-        public static string ToPathAndQuery(this HttpRequest request) =>
-            $"{request.Path}{request.QueryString}";
+        public static string ToPathAndQuery(this HttpRequest @this) =>
+            $"{@this.Path}{@this.QueryString}";
 
         /// <summary>
         /// Gets the absolute Uri of the request.
         /// </summary>
-        public static string ToAbsoluteUri(this HttpRequest request) =>
-            $"{request.RootUrl().TrimEnd('/')}{request.PathBase}{request.Path}{request.QueryString}";
+        public static string ToAbsoluteUri(this HttpRequest @this) =>
+            $"{@this.RootUrl().TrimEnd('/')}{@this.PathBase}{@this.Path}{@this.QueryString}";
 
         /// <summary>
         /// Gets the absolute URL for a specified relative url.
         /// </summary>
-        public static string GetAbsoluteUrl(this HttpRequest request, string relativeUrl) =>
-            request.RootUrl() + relativeUrl.TrimStart("/");
+        public static string GetAbsoluteUrl(this HttpRequest @this, string relativeUrl) =>
+            @this.RootUrl() + relativeUrl.TrimStart("/");
 
         /// <summary>
         /// Determines whether this is an Ajax call.
         /// </summary>
-        public static bool IsAjaxRequest(this HttpRequest request) => request.IsAjaxCall();
+        public static bool IsAjaxRequest(this HttpRequest @this) => @this.IsAjaxCall();
 
         /// <summary>
         /// Determines whether this is an Ajax call.
         /// </summary>
-        public static bool IsAjaxCall(this HttpRequest request) => request.Headers["X-Requested-With"] == "XMLHttpRequest";
+        public static bool IsAjaxCall(this HttpRequest @this) => @this.Headers["X-Requested-With"] == "XMLHttpRequest";
 
         /// <summary>
         /// Determines if this is a GET http request.
         /// </summary>
-        public static bool IsGet(this HttpRequest request) => request.Method == System.Net.WebRequestMethods.Http.Get;
+        public static bool IsGet(this HttpRequest @this) => @this.Method == System.Net.WebRequestMethods.Http.Get;
 
         /// <summary>
         /// Determines if this is a POST http request.
         /// </summary>
-        public static bool IsPost(this HttpRequest request) => request.Method == System.Net.WebRequestMethods.Http.Post;
+        public static bool IsPost(this HttpRequest @this) => @this.Method == System.Net.WebRequestMethods.Http.Post;
 
         /// <summary>
         /// Gets the currently specified return URL.
         /// </summary>
-        public static string GetReturnUrl(this HttpRequest request)
+        public static string GetReturnUrl(this HttpRequest @this)
         {
-            var result = request.Param("ReturnUrl");
+            var result = @this.Param("ReturnUrl");
 
             if (result.IsEmpty()) return string.Empty;
 
@@ -223,9 +223,9 @@ namespace Olive
             return result;
         }
 
-        public static bool IsLocal(this HttpRequest req)
+        public static bool IsLocal(this HttpRequest @this)
         {
-            var connection = req.HttpContext.Connection;
+            var connection = @this.HttpContext.Connection;
             if (connection.RemoteIpAddress != null)
             {
                 if (connection.LocalIpAddress != null)
