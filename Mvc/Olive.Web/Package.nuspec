@@ -16,8 +16,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Web.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Web.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Web.dll" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Web.pdb" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Web.xml" target="lib\netcoreapp2.1\" />
   </files>
 </package>

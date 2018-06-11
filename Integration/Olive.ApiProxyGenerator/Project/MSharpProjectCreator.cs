@@ -6,7 +6,7 @@ namespace Olive.ApiProxy
     {
         public MSharpProjectCreator() : base("MSharp") { }
 
-        protected override string Framework => "netcoreapp2.0";
+        protected override string Framework => "netcoreapp2.1";
 
         protected override string IconUrl => "http://licensing.msharp.co.uk/images/icon.png";
 

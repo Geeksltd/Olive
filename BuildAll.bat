@@ -78,13 +78,7 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Mvc\Olive.Mvc.IpFilter
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Mvc.NLog
-if ERRORLEVEL 1 (goto error)
-
 dotnet build Mvc\Olive.Mvc.Security.Auth0
-if ERRORLEVEL 1 (goto error)
-
-dotnet build Mvc\Olive.Mvc.Globalization
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Integration\Olive.ApiProxyGenerator

@@ -15,8 +15,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.IpFilter.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.IpFilter.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.IpFilter.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.IpFilter.dll" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.IpFilter.pdb" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.IpFilter.xml" target="lib\netcoreapp2.1\" />
   </files>
 </package>

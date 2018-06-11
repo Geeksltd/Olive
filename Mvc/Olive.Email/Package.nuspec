@@ -14,8 +14,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Email.dll" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Email.pdb" target="lib\netcoreapp2.0\" />
-    <file src="..\..\@Assemblies\netcoreapp2.0\Olive.Email.xml" target="lib\netcoreapp2.0\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Email.dll" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Email.pdb" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Email.xml" target="lib\netcoreapp2.1\" />
   </files>
 </package>

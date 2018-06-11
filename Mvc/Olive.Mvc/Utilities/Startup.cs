@@ -94,7 +94,7 @@ namespace Olive.Mvc
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment() || env.IsStaging())
-                app.UseDeveloperExceptionPage().UseBrowserLink();
+                app.UseDeveloperExceptionPage();
             else app.UseExceptionHandler("/error");
         }
 

@@ -22,7 +22,7 @@
       <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
     </Reference>
   </ItemGroup>
-
+  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;" />
   </Target>

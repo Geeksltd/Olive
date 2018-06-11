@@ -12,7 +12,7 @@ namespace PushForLocalTesting
         {
             var root = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
 
-            foreach (var t in new[] { "netstandard2.0", "netcoreapp2.0" })
+            foreach (var t in new[] { "netstandard2.0", "netcoreapp2.1" })
                 Deploy(new DirectoryInfo(Path.Combine(root.FullName, t)));
 
             if (HasError)

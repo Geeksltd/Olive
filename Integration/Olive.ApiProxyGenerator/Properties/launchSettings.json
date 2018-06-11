@@ -2,7 +2,7 @@
   "profiles": {
     "WebApiClientSdkGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "/assembly:C:\\Users\\Farzad\\Source\\Repos\\MSharp.Mvc26\\MSharp.Mvc.Microservice1\\Website\\bin\\Debug\\netcoreapp2.0\\Website.dll /serviceName:MSharp.Mvc.Microservice1 /controller:MyConsumerApi /out:C:\\Temp\\"
+      "commandLineArgs": "/assembly:C:\\Users\\Farzad\\Source\\Repos\\MSharp.Mvc26\\MSharp.Mvc.Microservice1\\Website\\bin\\Debug\\netcoreapp2.1\\Website.dll /serviceName:MSharp.Mvc.Microservice1 /controller:MyConsumerApi /out:C:\\Temp\\"
     }
   }
 }

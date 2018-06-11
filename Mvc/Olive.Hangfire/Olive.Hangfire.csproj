@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework> 
+    <TargetFramework>netcoreapp2.1</TargetFramework> 
     <OutputPath>..\..\@Assemblies\</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.Hangfire.xml</DocumentationFile>
   </PropertyGroup>
@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="1.0.8" />
-    <PackageReference Include="HangFire" Version="1.6.17" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.1" />
+    <PackageReference Include="HangFire" Version="1.6.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,10 +22,10 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Olive.Mvc">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Mvc.dll</HintPath>
+      <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Web">
-      <HintPath>..\..\@Assemblies\netcoreapp2.0\Olive.Web.dll</HintPath>
+      <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Web.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
