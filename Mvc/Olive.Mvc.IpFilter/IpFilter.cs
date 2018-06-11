@@ -14,10 +14,10 @@ namespace Olive.Mvc
         static FileInfo CountryIpsFile
             => AppDomain.CurrentDomain.WebsiteRoot().GetOrCreateSubDirectory("--IPFilter").GetFile("dbip-country.csv");
 
-        static List<Range<uint>> BlockedIpRanges;
+        static List<Range<BigInteger>> BlockedIpRanges;
 
-        public static List<uint> SpecificallyAllowedIps = new List<uint>();
-        public static List<uint> SpecificallyDisallowedIps = new List<uint>();
+        public static List<BigInteger> SpecificallyAllowedIps = new List<BigInteger>();
+        public static List<BigInteger> SpecificallyDisallowedIps = new List<BigInteger>();
 
         public static string BlockedAttemptResponse = "This website is not available in your region.";
         public static Func<Task> OnBlockedAccessAttempt = EndWithMessage;
@@ -116,7 +116,7 @@ namespace Olive.Mvc
         {
             var table = await CsvReader.ReadAsync(CountryIpsFile, isFirstRowHeaders: false);
 
-            BlockedIpRanges = new List<Range<uint>>();
+            BlockedIpRanges = new List<Range<BigInteger>>();
 
             foreach (var row in table.GetRows())
             {
@@ -126,11 +126,11 @@ namespace Olive.Mvc
                 var from = ToIpValue((string)row[0]);
                 var to = ToIpValue((string)row[1]);
 
-                BlockedIpRanges.Add(new Range<uint>(from, to));
+                BlockedIpRanges.Add(new Range<BigInteger>(from, to));
             }
         }
 
-        static uint ToIpValue(string ipAddress)
+        static BigInteger ToIpValue(string ipAddress)
         {
             try
             {
@@ -138,7 +138,11 @@ namespace Olive.Mvc
                 if (BitConverter.IsLittleEndian)
                     bytes = bytes.Reverse().ToArray();
 
-                return BitConverter.ToUInt32(bytes, 0);
+                if (bytes.Length > 8)
+                    return new BigInteger(BitConverter.ToUInt64(bytes, 8), BitConverter.ToUInt64(bytes, 0));
+
+                return new BigInteger(0, BitConverter.ToUInt32(bytes, 0));
+
             }
             catch (Exception ex)
             {
@@ -157,6 +161,48 @@ namespace Olive.Mvc
             public readonly static string NorthAmerica = "NA";
             public readonly static string Oceania = "OC";
             public readonly static string SouthAmerica = "SA";
+        }
+
+        public struct BigInteger : IComparable, IComparable<BigInteger>
+        {
+            ulong Value1;
+            ulong Value2;
+
+            public BigInteger(ulong value1, ulong value2)
+            {
+                Value1 = value1;
+                Value2 = value2;
+            }
+
+            public int CompareTo(BigInteger other)
+            {
+                if (Value1 == other.Value1 && Value2 == other.Value2) return 0;
+                else return IsGreaterThan(other) ? 1 : -1;
+            }
+
+            bool IsGreaterThan(BigInteger other)
+            {
+                if (Value1 > other.Value1) return true;
+                else if (Value1 == other.Value1 && Value2 > other.Value2) return true;
+                return false;
+            }
+
+            int IComparable.CompareTo(object obj) => CompareTo((BigInteger)obj);
+
+            static bool IsGreaterThan(BigInteger b1, BigInteger b2)
+            {
+                if (b1.Value1 > b2.Value1) return true;
+                else if (b1.Value1 == b2.Value1 && b1.Value2 > b2.Value2) return true;
+                return false;
+            }
+
+            public static bool operator >=(BigInteger b1, BigInteger b2) => b1.CompareTo(b2) >= 0;
+
+            public static bool operator <=(BigInteger b1, BigInteger b2) => b1.CompareTo(b2) <= 0;
+
+            public static bool operator >(BigInteger b1, BigInteger b2) => b1.CompareTo(b2) > 0;
+
+            public static bool operator <(BigInteger b1, BigInteger b2) => b1.CompareTo(b2) < 0;
         }
     }
 }
