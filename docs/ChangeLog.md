@@ -1,5 +1,16 @@
 # Olive compatibility change log
 
+
+## 12 Jun 2018
+- In the dotnet core 2.1, former `Cookie.Expiration` was obsolete and we used `ExpireTimeSpan` property in the `Startup.cs`  
+
+## 11 Jun 2018
+- Upgrade `Olive` project from **dotnet core 2.0** to **dotnet core 2.1**
+    - Updated all nuget packages
+    - Updated all projects target framework
+    - Removed `.UseBrowserLink()` from `Startup.cs` class because it was no longer needed
+
+
 ## 02 May 2018
 - In `StartUp.cs` add the following method:
 ```csharp
