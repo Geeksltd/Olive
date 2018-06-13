@@ -135,7 +135,10 @@ namespace Olive.Mvc
             }
 
             options.SlidingExpiration = true;
-            options.Cookie.Expiration = TimeSpan.FromMinutes(Config.Get("Authentication:Cookie:Timeout", 20.0));
+
+            var expireTime = TimeSpan.FromMinutes(Config.Get("Authentication:Cookie:Timeout", 20.0));
+            options.ExpireTimeSpan = expireTime;
+            options.Cookie.MaxAge = expireTime;
         }
     }
 }
