@@ -26,11 +26,20 @@
             return result;
         }
 
-        public static Task CopyDataTo(this IViewModel @this, IEntity to, string sourcePrefix = null, string targetPrefix = null) =>
-            CopyData(@this, to, sourcePrefix, targetPrefix);
+        public static Task CopyDataTo(this IViewModel @this, IEntity to, string sourcePrefix = null, string targetPrefix = null)
+        {
+            return CopyData(@this, to, sourcePrefix, targetPrefix);
+        }
 
-        public static Task CopyDataTo(this IEntity @this, IViewModel to, string sourcePrefix = null, string targetPrefix = null) =>
-            CopyData(@this, to, sourcePrefix, targetPrefix);
+        public static Task CopyDataTo(this IEntity @this, IViewModel to, string sourcePrefix = null, string targetPrefix = null)
+        {
+            return CopyData(@this, to, sourcePrefix, targetPrefix);
+        }
+
+        public static async Task CopyDataTo<TItem>(this Task<TItem> @this, IViewModel to, string sourcePrefix = null, string targetPrefix = null) where TItem : IEntity
+        {
+            await CopyData(await @this, to, sourcePrefix, targetPrefix);
+        }
 
         static bool IsReadonly(PropertyInfo property) => property.GetCustomAttribute<ReadOnlyAttribute>()?.IsReadOnly == true;
 

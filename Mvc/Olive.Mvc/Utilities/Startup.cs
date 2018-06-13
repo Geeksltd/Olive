@@ -124,14 +124,9 @@ namespace Olive.Mvc
             options.Cookie.HttpOnly = true;
             options.Cookie.Name = ".myAuth";
 
-            if (Config.Get("Authentication:CookieEncryptionKey")
-                .Or(Config.Get("Authentication:CookieDecryptionKey")).HasValue())
+            if (Config.Get("Authentication:CookieDataProtectorKey").HasValue())
             {
-                options.DataProtectionProvider = new AsymmetricKeyDataProtector("AuthCookies");
-            }
-            else if (Config.Get("Authentication:CookieDataProtectorKey").HasValue())
-            {
-                options.DataProtectionProvider = new SymmetricKeyDataProtector("AuthCookies");
+                options.DataProtectionProvider = new SymmetricKeyDataProtector(Config.Get("Authentication:CookieDataProtectorKey"));
             }
 
             options.SlidingExpiration = true;
