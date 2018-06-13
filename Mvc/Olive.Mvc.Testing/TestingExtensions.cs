@@ -10,7 +10,7 @@ namespace Olive.Mvc.Testing
     public static class TestingExtensions
     {
         public static async Task InitializeTempDatabase<TDatabaseManager>(this IApplicationBuilder app, Func<Task> createReferenceData)
-          where TDatabaseManager : DatabaseManager, new() 
+          where TDatabaseManager : DatabaseManager, new()
         {
             if (!WebTestConfig.IsActive()) return;
 
@@ -44,14 +44,14 @@ namespace Olive.Mvc
 
     public static class TestingExtensions
     {
-        public static HtmlString WebTestWidget(this IHtmlHelper html)
+        public static HtmlString WebTestWidget(this IHtmlHelper @this)
         {
             if (!WebTestConfig.IsActive()) return null;
 
             if (Context.Current.Request().IsAjaxCall()) return null;
 
             if (WebTestConfig.IsAutoExecMode)
-                html.RunJavascript("page.skipNewWindows();");
+                @this.RunJavascript("loadModule('olive/plugins/sanityAdapter', m => m.default.enable());");
 
             return new HtmlString(WebTestManager.GetWebTestWidgetHtml());
         }

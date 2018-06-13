@@ -44,7 +44,7 @@
             foreach (var property in from.GetType().GetProperties(PropertyFlags))
             {
                 if (sourcePrefix.HasValue() && !property.Name.StartsWith(sourcePrefix)) continue;
-                if (property.PropertyType.IsA<Task>()) continue;
+                // if (property.PropertyType.IsA<Task>()) continue;
 
                 var inTarget = to.GetType().GetProperty(targetPrefix + property.Name.TrimStart(sourcePrefix.OrEmpty()), PropertyFlags);
 
@@ -66,6 +66,12 @@
                 }
 
                 var sourceValue = property.GetValue(from);
+                if (sourceValue is Task asTask)
+                {
+                    if (sourceValue.GetType().GenericTypeArguments.IsSingle())
+                        sourceValue = sourceValue.GetType().GetProperty("Result").GetValue(sourceValue);
+                    else continue;
+                }
 
                 if (from is IEntity && to is IViewModel)
                 {

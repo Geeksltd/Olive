@@ -25,7 +25,8 @@ namespace Olive.Mvc
 
             if (result.HasValue())
             {
-                if (!@this.IsLocalUrl(result)) throw new Exception("Invalid injected current url.");
+                if (!@this.IsLocalUrl(result) && result.Contains("//"))
+                    throw new Exception("Invalid injected current url.");
             }
             else
             {
