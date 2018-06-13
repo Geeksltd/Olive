@@ -1,102 +1,49 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Entities;
 using Olive.Web;
 
-namespace Olive.Security.Impersonation
+namespace Olive.Security
 {
-    /// <summary>
-    /// Provides the business logic for ImpersonationContext class.
-    /// </summary>
     public class ImpersonationSession
     {
         static HttpContext Context => Olive.Context.Current.Http();
         static IDatabase Database => Olive.Context.Current.Database();
 
+        const string IMPERSONATOR_ROLE = "Olive-IMPERSONATOR";
+
         /// <summary>
         /// Determines if the current user is impersonated.
         /// </summary>
-        public static async Task<bool> IsImpersonated() => await GetImpersonator() != null;
+        public static Task<bool> IsImpersonated()
+            => Task.FromResult(Context.User.IsInRole(IMPERSONATOR_ROLE));
 
         /// <summary>
         /// Impersonates the specified user by the current admin user.
-        /// </summary>
-        /// <param name="originalUrl">If not specified, the current HTTP request's URL will be used.</param>
-        public static async Task Impersonate(ILoginInfo user, bool redirectToHome = true, string originalUrl = null)
+        /// </summary> 
+        public static async Task Impersonate(ILoginInfo user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            var admin = GetCurrentUser() as IImpersonator
-                ?? throw new InvalidOperationException("The current user is not an IImpersonator.");
-
-            if (!admin.CanImpersonate(user))
-                throw new InvalidOperationException("The current user is not allowed to impersonate the specified user.");
-
-            var token = Guid.NewGuid().ToString();
-
-            await Database.Update(admin, o => o.ImpersonationToken = token);
-
-            SetImpersonationToken(token);
-
-            SetOriginalUrl(originalUrl.Or(Context.Request.ToRawUrl()));
+            user = new GenericLoginInfo
+            {
+                DisplayName = user.DisplayName,
+                Email = user.Email,
+                ID = user.ID,
+                Timeout = user.Timeout,
+                Roles = user.GetRoles().Concat(IMPERSONATOR_ROLE).ToArray()
+            };
 
             await user.LogOn();
-
-            if (redirectToHome && !Context.Request.IsAjaxCall())
-                Context.Response.Redirect("~/");
         }
 
-        /// <summary>
-        /// Ends the current impersonation session.
-        /// </summary>
-        public static async Task End()
+        public static async Task<string> GetWidget()
         {
-            if (!await IsImpersonated()) return;
-
-            var admin = await GetImpersonator();
-
-            await Database.Update(admin, o => o.ImpersonationToken = null);
-
-            await admin.LogOn();
-
-            var returnUrl = await GetOriginalUrl();
-            SetOriginalUrl(null);
-            SetImpersonationToken(null);
-
-            if (!Context.Request.IsAjaxCall())
-                Context.Response.Redirect(returnUrl);
+            if (!await IsImpersonated()) return string.Empty;
+            return "<div class='impersonation-note'>Impersonating <b>" + Context.User.Identity.Name + "</b></div>";
         }
-
-        static IPrincipal GetCurrentUser()
-        {
-            var result = Context.User as IPrincipal;
-            if (result == null || !result.Identity.IsAuthenticated) return null;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the original user who impersonated the current user.
-        /// </summary>
-        public static async Task<IImpersonator> GetImpersonator()
-        {
-            var user = GetCurrentUser();
-            if (user == null || user.IsInRole("Guest") || user.IsInRole("Anonymous")) return null;
-
-            var token = await ImpersonationToken;
-            if (token.IsEmpty()) return null;
-
-            return await Database.FirstOrDefault<IImpersonator>(x => x.ImpersonationToken == token);
-        }
-
-        static Task<string> ImpersonationToken => CookieProperty.Get("Impersonation.Token");
-
-        static void SetImpersonationToken(string value) => CookieProperty.Set("Impersonation.Token", value);
-
-        public static async Task<string> GetOriginalUrl() => (await CookieProperty.Get("Impersonation.Original.Url")).Or("~/");
-
-        public static void SetOriginalUrl(string value) => CookieProperty.Set("Impersonation.Original.Url", value);
     }
 }

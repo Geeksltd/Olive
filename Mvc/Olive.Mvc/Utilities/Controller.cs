@@ -81,7 +81,7 @@ namespace Olive.Mvc
 
         /// <summary>
         /// Creates a new instance of the specified view model type and binds it using the standard request data.
-        /// </summary>         
+        /// </summary>
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             await BindAttributeRunner.Run(context, next);
