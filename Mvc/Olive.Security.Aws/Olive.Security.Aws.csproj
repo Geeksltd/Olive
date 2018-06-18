@@ -13,11 +13,9 @@
 
   <ItemGroup>
     
-    <PackageReference Include="Amazon.Kms" Version="0.11.0" />
+    <PackageReference Include="AWSSDK.KeyManagementService" Version="3.3.5.6" />
     
     <PackageReference Include="GCop.All.Geeks" Version="1.1.4" />
-    
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0" />
     
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="2.1.0" />
   </ItemGroup>
