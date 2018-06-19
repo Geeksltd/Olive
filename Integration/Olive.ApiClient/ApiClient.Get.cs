@@ -75,14 +75,82 @@ namespace Olive
             }
             else
             {
-                if (CachePolicy == CachePolicy.FreshOrCacheOrFail && await cache.HasValidValue(/*Ignore expiry*/))
+                switch (CachePolicy)
                 {
-                    if (ErrorAction == OnApiCallError.IgnoreAndNotify)
-                        await UsingCacheInsteadOfFresh.Raise(cache);
+                    case CachePolicy.FreshOrCacheOrFail:
+                        {
+                            if (await cache.HasValidValue())
+                            {
+                                if (ErrorAction == OnApiCallError.IgnoreAndNotify)
+                                {
+                                    await UsingCacheInsteadOfFresh.Raise(cache);
+                                }
 
-                    return cache.Data;
+                                return cache.Data;
+                            }
+                            else
+                            {
+                                if (ErrorAction == OnApiCallError.Throw)
+                                {
+                                    throw request.Error;
+                                }
+
+                                if (ErrorAction == OnApiCallError.Ignore)
+                                {
+                                    break;
+                                }
+
+                                await UsingCacheInsteadOfFresh.Raise(new ApiResponseCache<TResponse>() { Message = request.Error.Message });
+                            }
+
+                            break;
+                        }
+
+                    case CachePolicy.CacheOrFreshOrFail:
+                        {
+                            if (await cache.HasValidValue())
+                            {
+                                return cache.Data;
+                            }
+                            else
+                            {
+                                if (ErrorAction == OnApiCallError.Throw)
+                                {
+                                    throw request.Error;
+                                }
+
+                                if (ErrorAction == OnApiCallError.Ignore)
+                                {
+                                    break;
+                                }
+
+                                await UsingCacheInsteadOfFresh.Raise(new ApiResponseCache<TResponse>() { Message = request.Error.Message });
+                            }
+
+                            break;
+                        }
+
+                    case CachePolicy.FreshOrFail:
+                        {
+                            if (ErrorAction == OnApiCallError.Throw)
+                            {
+                                throw request.Error;
+                            }
+
+                            if (ErrorAction == OnApiCallError.Ignore)
+                            {
+                                break;
+                            }
+
+                            await UsingCacheInsteadOfFresh.Raise(new ApiResponseCache<TResponse>() { Message = request.Error.Message });
+
+                            break;
+                        }
+
+                    default: throw new NotSupportedException($"{CachePolicy} is not implemented.");
                 }
-                else throw request.Error;
+
+                throw request.Error;
             }
         }
 
