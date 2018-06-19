@@ -30,6 +30,7 @@ namespace Olive
             HttpClient HttpClient;
 
             string Url => Client.Url;
+            int CacheDays => Client.CacheDays;
 
             public RequestInfo(ApiClient client) => Client = client;
 
@@ -110,7 +111,7 @@ namespace Olive
                     ex = new Exception("Failed to convert API response to " + typeof(TResponse).GetCSharpName(), ex);
                     LogTheError(ex);
 
-                    Client.ErrorAction.Apply("The server's response was unexpected");
+                    Client.ErrorAction.Apply("The server's response was unexpected", Url, CacheDays);
                     return default(TResponse);
                 }
             }
@@ -221,7 +222,7 @@ namespace Olive
                         errorMessage += Environment.NewLine + responseBody;
                 }
 
-                await Client.ErrorAction.Apply(errorMessage);
+                await Client.ErrorAction.Apply(errorMessage, Url, CacheDays);
 
                 return new Exception(errorMessage, ex);
             }

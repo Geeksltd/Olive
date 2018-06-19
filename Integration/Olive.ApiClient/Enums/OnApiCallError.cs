@@ -8,9 +8,9 @@ namespace Olive
 
     public static class EnumExtensions
     {
-        public static Task Apply(this OnApiCallError strategy, string error) => Apply(strategy, new Exception(error));
+        public static Task Apply(this OnApiCallError strategy, string error, string url, int age) => Apply(strategy, new Exception(error), url, age);
 
-        public static Task Apply(this OnApiCallError strategy, Exception error, string friendlyMessage = null)
+        public static Task Apply(this OnApiCallError strategy, Exception error, string url, int age, string friendlyMessage = null)
         {
             if (error == null) return Task.CompletedTask;
 
@@ -19,8 +19,17 @@ namespace Olive
             switch (strategy)
             {
                 case OnApiCallError.IgnoreAndNotify:
-                    // TODO: Log.NotifyByEmail...()
-                    return Task.CompletedTask;
+                    {
+                        ApiClient.UsingCacheInsteadOfFresh.Raise(new CachedApiUsageArgs
+                        {
+                            Message = $"The {url.AsUri().Host} service did not respond. Using the last data from {age} days ago.",
+                            OriginalErrorMessage = error.Message,
+                            FailedUrl = url,
+                            CacheAge = age
+                        });
+
+                        return Task.CompletedTask;
+                    }
                 case OnApiCallError.Ignore: return Task.CompletedTask;
                 case OnApiCallError.Throw: return Task.FromException(error);
                 default: throw new NotSupportedException(strategy + " is not implemented.");
