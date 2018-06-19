@@ -19,8 +19,11 @@ namespace Olive
             switch (strategy)
             {
                 case OnApiCallError.IgnoreAndNotify:
-                    // TODO: Log.NotifyByEmail...()
-                    return Task.CompletedTask;
+                    {
+                        ApiClient.PublishEvent.Raise(new ApiClientEventArg("Failed to get fresh results. Using the latest available cache."));
+
+                        return Task.CompletedTask;
+                    }
                 case OnApiCallError.Ignore: return Task.CompletedTask;
                 case OnApiCallError.Throw: return Task.FromException(error);
                 default: throw new NotSupportedException(strategy + " is not implemented.");

@@ -2,6 +2,7 @@ namespace Olive
 {
     public partial class ApiClient
     {
+        public static readonly AsyncEvent<ApiClientEventArg> PublishEvent = new AsyncEvent<ApiClientEventArg>();
         public string Url { get; private set; }
         public ApiClient(string apiUrl) => Url = apiUrl;
 
