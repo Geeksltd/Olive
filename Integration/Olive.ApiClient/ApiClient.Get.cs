@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Olive
 {
@@ -15,7 +12,6 @@ namespace Olive
             new ConcurrentDictionary<string, AsyncLock>();
 
         public string StaleDataWarning = "The latest data cannot be received from the server right now.";
-
 
         CachePolicy CachePolicy = CachePolicy.FreshOrCacheOrFail;
         TimeSpan? CacheExpiry;
@@ -43,8 +39,6 @@ namespace Olive
             return Url + "?" + queryString;
         }
 
-
-
         public async Task<TResponse> Get<TResponse>(object queryParams = null)
         {
             Url = GetFullUrl(queryParams);
@@ -52,7 +46,7 @@ namespace Olive
 
             var urlLock = GetLocks.GetOrAdd(Url, x => new AsyncLock());
 
-            var cache = CachedApiResponse<TResponse>.Create(Url);
+            var cache = ApiResponseCache<TResponse>.Create(Url);
 
             using (await urlLock.Lock())
             {
@@ -69,7 +63,7 @@ namespace Olive
 
         async Task<TResponse> ExecuteGet<TResponse>()
         {
-            var cache = CachedApiResponse<TResponse>.Create(Url);
+            var cache = ApiResponseCache<TResponse>.Create(Url);
 
             var request = new RequestInfo(this) { HttpMethod = "GET" };
 
@@ -95,12 +89,12 @@ namespace Olive
         /// <summary>
         /// Deletes all cached Get API results.
         /// </summary>
-        public static Task DisposeCache() => CachedApiResponse.DisposeAll();
+        public static Task DisposeCache() => ApiResponseCache.DisposeAll();
 
         /// <summary>
         /// Deletes the cached Get API result for the specified API url.
         /// </summary>
         public Task DisposeCache<TResponse>(string getApiUrl)
-            => CachedApiResponse<TResponse>.Create(getApiUrl).File.DeleteAsync(harshly: true);
+            => ApiResponseCache<TResponse>.Create(getApiUrl).File.DeleteAsync(harshly: true);
     }
 }

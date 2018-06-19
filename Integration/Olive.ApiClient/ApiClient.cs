@@ -2,7 +2,7 @@ namespace Olive
 {
     public partial class ApiClient
     {
-        public static readonly AsyncEvent<CachedApiResponse> UsingCacheInsteadOfFresh = new AsyncEvent<CachedApiResponse>();
+        public static readonly AsyncEvent<ApiResponseCache> UsingCacheInsteadOfFresh = new AsyncEvent<ApiResponseCache>();
         public string Url { get; private set; }
         public ApiClient(string apiUrl) => Url = apiUrl;
 

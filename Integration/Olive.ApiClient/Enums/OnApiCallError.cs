@@ -17,9 +17,9 @@ namespace Olive
             switch (strategy)
             {
                 case OnApiCallError.IgnoreAndNotify:
-                    {
-                        return Task.CompletedTask;
-                    }
+                    return Task.CompletedTask;
+
+
                 case OnApiCallError.Ignore: return Task.CompletedTask;
                 case OnApiCallError.Throw: return Task.FromException(error);
                 default: throw new NotSupportedException(strategy + " is not implemented.");

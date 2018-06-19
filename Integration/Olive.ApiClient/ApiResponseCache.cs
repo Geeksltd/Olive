@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 
 namespace Olive
 {
-    public class CachedApiResponse<TResponse> : CachedApiResponse
+    public class ApiResponseCache<TData> : ApiResponseCache
     {
-        static ConcurrentDictionary<string, TResponse> DeserializedCache =
-      new ConcurrentDictionary<string, TResponse>();
+        static ConcurrentDictionary<string, TData> DeserializedCache = new ConcurrentDictionary<string, TData>();
 
-
-        public TResponse Data { get; internal set; }
+        public TData Data { get; internal set; }
 
         internal async Task<bool> HasValidValue(TimeSpan? expiry = null)
         {
@@ -25,12 +23,12 @@ namespace Olive
             else await LoadData();
 
             if (ReferenceEquals(Data, null)) return false;
-            if (Data.Equals(default(TResponse))) return false;
+            if (Data.Equals(default(TData))) return false;
 
             return true;
         }
 
-        string Key => File.FullName + "|" + typeof(TResponse).FullName;
+        string Key => File.FullName + "|" + typeof(TData).FullName;
 
         async Task LoadData()
         {
@@ -41,24 +39,24 @@ namespace Olive
                 var text = await File.ReadAllTextAsync();
                 var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-                Data = JsonConvert.DeserializeObject<TResponse>(text, settings);
+                Data = JsonConvert.DeserializeObject<TData>(text, settings);
                 DeserializedCache.TryAdd(Key, Data);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to deserialize the cached file into " +
-                    typeof(TResponse).Name + " : " + ex.Message);
+                    typeof(TData).Name + " : " + ex.Message);
             }
         }
 
-        internal static CachedApiResponse<TResponse> Create(string url)
+        internal static ApiResponseCache<TData> Create(string url)
         {
             FileInfo file;
 
             lock (CacheSyncLock)
                 file = GetCacheDirectory().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
 
-            return new CachedApiResponse<TResponse>()
+            return new ApiResponseCache<TData>()
             {
                 Url = url,
                 File = file,
@@ -68,11 +66,11 @@ namespace Olive
 
         static DirectoryInfo GetCacheDirectory()
         {
-            return GetRootCacheDirectory().GetOrCreateSubDirectory(GetTypeName<TResponse>());
+            return GetRootCacheDirectory().GetOrCreateSubDirectory(GetTypeName<TData>());
         }
     }
 
-    public abstract class CachedApiResponse
+    public abstract class ApiResponseCache
     {
         const string CACHE_FOLDER = "-ApiCache";
         protected static object CacheSyncLock = new object();
