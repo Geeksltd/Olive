@@ -8,9 +8,9 @@ namespace Olive
 
     public static class EnumExtensions
     {
-        public static Task Apply(this OnApiCallError strategy, string error) => Apply(strategy, new Exception(error));
+        public static Task Apply(this OnApiCallError strategy, string error, string url, int age) => Apply(strategy, new Exception(error), url, age);
 
-        public static Task Apply(this OnApiCallError strategy, Exception error, string friendlyMessage = null)
+        public static Task Apply(this OnApiCallError strategy, Exception error, string url, int age, string friendlyMessage = null)
         {
             if (error == null) return Task.CompletedTask;
 
@@ -20,7 +20,13 @@ namespace Olive
             {
                 case OnApiCallError.IgnoreAndNotify:
                     {
-                        ApiClient.PublishEvent.Raise(new ApiClientEventArg("Failed to get fresh results. Using the latest available cache."));
+                        ApiClient.UsingCacheInsteadOfFresh.Raise(new CachedApiUsageArgs
+                        {
+                            Message = $"Failed to get fresh results from {url} Using the latest cache from {age} days ago.",
+                            OriginalErrorMessage = error.Message,
+                            FailedUrl = url,
+                            CacheAge = age
+                        });
 
                         return Task.CompletedTask;
                     }

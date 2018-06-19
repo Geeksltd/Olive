@@ -205,6 +205,7 @@ namespace Olive
         async Task<TResponse> GetCachedResponse<TResponse>()
         {
             var file = GetCacheFile<TResponse>();
+            CacheDays = LocalTime.UtcNow.Subtract(file.LastWriteTimeUtc).Days;
             return await DeserializeResponse<TResponse>(file);
         }
 
