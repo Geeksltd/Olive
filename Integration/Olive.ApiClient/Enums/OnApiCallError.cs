@@ -10,7 +10,7 @@ namespace Olive
     {
         public static Task Apply(this OnApiCallError strategy, string error) => Apply(strategy, new Exception(error));
 
-        public static Task Apply(this OnApiCallError strategy, Exception error, string friendlyMessage = null)
+        public static async Task Apply(this OnApiCallError strategy, Exception error, string friendlyMessage = null)
         {
             if (error == null) return Task.CompletedTask;
 
@@ -18,14 +18,11 @@ namespace Olive
 
             switch (strategy)
             {
-                case OnApiCallError.IgnoreAndNotify:
-                    {
-                        ApiClient.PublishEvent.Raise(new ApiClientEventArg("Failed to get fresh results. Using the latest available cache."));
-
-                        return Task.CompletedTask;
-                    }
-                case OnApiCallError.Ignore: return Task.CompletedTask;
-                case OnApiCallError.Throw: return Task.FromException(error);
+                case OnApiCallError.IgnoreAndNotify:                    
+                    await ApiClient.PublishEvent.Raise(new ApiClientEventArg("Failed to get fresh results. Using the latest available cache."));
+                    break;                    
+                case OnApiCallError.Ignore: return;
+                case OnApiCallError.Throw: throw new Exception(error);
                 default: throw new NotSupportedException(strategy + " is not implemented.");
             }
         }
