@@ -30,7 +30,6 @@ namespace Olive
             HttpClient HttpClient;
 
             string Url => Client.Url;
-            int CacheDays => Client.CacheDays;
 
             public RequestInfo(ApiClient client) => Client = client;
 
@@ -68,20 +67,22 @@ namespace Olive
             /// The error action will also apply.
             /// It will return whether the response was successfully received.
             /// </summary>
-            public async Task<bool> Send()
+            public async Task<TResponse> TrySend<TResponse>()
             {
                 try
                 {
                     ResponseText = (await DoSend()).OrEmpty();
-                    return true;
+                    return ExtractResponse<TResponse>();
                 }
                 catch (Exception ex)
                 {
-                    if ((int)ResponseCode >= 400 && (int)ResponseCode < 500)
-                        throw ex; // It contains user message.
-
                     LogTheError(ex);
-                    return false;
+
+                    if ((int)ResponseCode >= 400 && (int)ResponseCode < 500)
+                        throw ex; // It contains user message. Always throw.
+
+                    if (Client.ErrorAction == OnApiCallError.Throw) throw ex;
+                    return default(TResponse);
                 }
             }
 
@@ -108,11 +109,7 @@ namespace Olive
                 }
                 catch (Exception ex)
                 {
-                    ex = new Exception("Failed to convert API response to " + typeof(TResponse).GetCSharpName(), ex);
-                    LogTheError(ex);
-
-                    Client.ErrorAction.Apply("The server's response was unexpected", Url, CacheDays);
-                    return default(TResponse);
+                    throw new Exception("Failed to convert API response to " + typeof(TResponse).GetCSharpName(), ex);
                 }
             }
 
@@ -151,7 +148,6 @@ namespace Olive
                 using (CreateHttpClient())
                 using (CreateRequestMessage())
                 {
-                    var errorMessage = "Connection to the server failed.";
                     string responseBody = null;
                     try
                     {
@@ -166,18 +162,15 @@ namespace Olive
                         if (ResponseCode == HttpStatusCode.NotModified)
                             if (LocalCachedVersion.HasValue()) return null;
 
+                        responseBody = await response.Content.ReadAsStringAsync();
                         if (((int)ResponseCode) >= HTTP_ERROR_STARTING_CODE)
                         {
-                            errorMessage = "Connection to the server failed: " + ResponseCode;
-                            responseBody = await response.Content.ReadAsStringAsync();
-                            Debug.WriteLine("Server Response: " + responseBody);
-                            throw new Exception(errorMessage);
+                            throw new Exception("Server error " + ResponseCode);
                         }
                         else
                         {
-                            var result = await response.Content.ReadAsStringAsync();
-                            Log.For(this).Debug("DoSend Result: " + result);
-                            return result;
+                            Log.For(this).Debug("DoSend result: " + responseBody);
+                            return responseBody;
                         }
                     }
                     catch (Exception ex)
@@ -185,46 +178,44 @@ namespace Olive
                         if (ex.InnerException?.Message == "The HTTP redirect request failed")
                             throw new Exception("The Api target seems misconfigured as it's trying to redirect! Consider using [AuthorizeApi] instead of [Authorize].", ex);
 
-                        throw await ImproveException(ex, errorMessage, responseBody);
+                        throw await ImproveException(ex, responseBody);
                     }
                 }
             }
 
-            async Task<Exception> ImproveException(Exception ex, string errorMessage, string responseBody)
+            static string ExtractUserFriendlyErrorMessage(string responseBody)
             {
-                LogTheError(ex);
+                if (responseBody.StartsWith("{\"Message\""))
+                {
+                    try
+                    {
+                        var serverError = JsonConvert.DeserializeObject<ServerError>(responseBody);
+                        if (serverError != null)
+                            return serverError.Message.Or(serverError.ExceptionMessage);
+                    }
+                    catch { /* No logging is needed */; }
+                }
 
-                if (Debugger.IsAttached) errorMessage = $"Api call failed: {Url}";
+                if (responseBody.Contains("<div class=\"titleerror\">"))
+                {
+                    return responseBody.TrimBefore("<div class=\"titleerror\">", trimPhrase: true)
+                         .TrimAfter("</div>").HtmlDecode();
+                }
+
+                return responseBody;
+            }
+
+            async Task<Exception> ImproveException(Exception ex, string responseBody)
+            {
+                var errorMessage = $"Api call failed: {Url}";
 
                 if (ex is WebException webEx)
                     responseBody = await webEx.GetResponseBody();
 
                 if (responseBody.HasValue())
-                {
-                    if (responseBody.StartsWith("{\"Message\""))
-                    {
-                        try
-                        {
-                            var serverError = JsonConvert.DeserializeObject<ServerError>(responseBody);
-                            if (serverError != null)
-                                errorMessage = serverError.Message.Or(serverError.ExceptionMessage).Or(errorMessage);
-                        }
-                        catch { /* No logging is needed */; }
-                    }
-                    // We are doing this in cases that error is not serialized in the SeverError format
-                    else if (responseBody.Contains("<div class=\"titleerror\">"))
-                    {
-                        errorMessage += Environment.NewLine +
-                            responseBody.TrimBefore("<div class=\"titleerror\">", trimPhrase: true)
-                             .TrimAfter("</div>").HtmlDecode();
-                    }
-                    else
-                        errorMessage += Environment.NewLine + responseBody;
-                }
+                    errorMessage = ExtractUserFriendlyErrorMessage(responseBody);
 
-                await Client.ErrorAction.Apply(errorMessage, Url, CacheDays);
-
-                return new Exception(errorMessage, ex);
+                return new Exception(errorMessage.Or(ex.Message), ex);
             }
 
             void LogTheError(Exception ex)

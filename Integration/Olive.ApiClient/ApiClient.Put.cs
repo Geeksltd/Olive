@@ -42,9 +42,7 @@ namespace Olive
                 JsonData = jsonParams
             };
 
-            var result = default(TResponse);
-            if (await request.Send()) result = request.ExtractResponse<TResponse>();
-            return Tuple.Create(result, request);
+            return Tuple.Create(await request.TrySend<TResponse>(), request);
         }
     }
 }

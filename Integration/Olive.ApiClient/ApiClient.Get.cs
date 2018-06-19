@@ -11,15 +11,11 @@ namespace Olive
 {
     partial class ApiClient
     {
-        static ConcurrentDictionary<string, object> DeserializedCache =
-         new ConcurrentDictionary<string, object>();
-
         static ConcurrentDictionary<string, AsyncLock> GetLocks =
             new ConcurrentDictionary<string, AsyncLock>();
 
         public string StaleDataWarning = "The latest data cannot be received from the server right now.";
-        const string CACHE_FOLDER = "-ApiCache";
-        static object CacheSyncLock = new object();
+
 
         CachePolicy CachePolicy = CachePolicy.FreshOrCacheOrFail;
         TimeSpan? CacheExpiry;
@@ -30,43 +26,6 @@ namespace Olive
             CacheExpiry = cacheExpiry;
             return this;
         }
-
-        FileInfo GetCacheFile<TResponse>() => GetCacheFile<TResponse>(Url);
-
-        static FileInfo GetCacheFile<TResponse>(string url)
-        {
-            lock (CacheSyncLock)
-            {
-                return GetCacheDirectory<TResponse>().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
-            }
-        }
-
-        static DirectoryInfo GetCacheDirectory<TResponse>()
-        {
-            return GetRootCacheDirectory().GetOrCreateSubDirectory(GetTypeName<TResponse>());
-        }
-
-        static DirectoryInfo GetRootCacheDirectory()
-        {
-            var appName = AppDomain.CurrentDomain.BaseDirectory.AsDirectory().Parent.Name;
-            return Path.Combine(Path.GetTempPath(), appName, CACHE_FOLDER).AsDirectory().EnsureExists();
-        }
-
-        static FileInfo[] GetTypeCacheFiles<TResponse>(TResponse modified)
-        {
-            lock (CacheSyncLock)
-            {
-                var directoryInfo = new DirectoryInfo(Path.Combine(CACHE_FOLDER, GetTypeName(modified)));
-                if (directoryInfo.Exists) return directoryInfo.GetFiles();
-
-                return new FileInfo[0];
-            }
-        }
-
-        static string GetTypeName<T>()
-            => typeof(T).GetGenericArguments().SingleOrDefault()?.Name ?? typeof(T).Name.Replace("[]", "");
-
-        static string GetTypeName<T>(T modified) => modified.GetType().Name;
 
         string GetFullUrl(object queryParams = null)
         {
@@ -84,12 +43,7 @@ namespace Olive
             return Url + "?" + queryString;
         }
 
-        bool HasValue<TType>(TType value)
-        {
-            if (ReferenceEquals(value, null)) return false;
-            if (value.Equals(default(TType))) return false;
-            return true;
-        }
+
 
         public async Task<TResponse> Get<TResponse>(object queryParams = null)
         {
@@ -98,16 +52,14 @@ namespace Olive
 
             var urlLock = GetLocks.GetOrAdd(Url, x => new AsyncLock());
 
+            var cache = CachedApiResponse<TResponse>.Create(Url);
+
             using (await urlLock.Lock())
             {
-                if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
+                if (CachePolicy == CachePolicy.CacheOrFreshOrFail && await cache.HasValidValue(CacheExpiry))
                 {
-                    var result = await GetCachedResponse<TResponse>();
-                    if (HasValue(result))
-                    {
-                        Log.For(this).Debug("Get: Returning from Cache: " + result);
-                        return result;
-                    }
+                    Log.For(this).Debug("Get: Returning from Cache: " + cache.File.Name);
+                    return cache.Data;
                 }
 
                 // Not already cached:
@@ -117,156 +69,38 @@ namespace Olive
 
         async Task<TResponse> ExecuteGet<TResponse>()
         {
-            var result = default(TResponse);
-            if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
-            {
-                result = await GetCachedResponse<TResponse>();
-                if (HasValue(result))
-                {
-                    Log.For(this).Debug("ExecuteGet: Returning from Cache: " + result);
-                    return result;
-                }
-            }
+            var cache = CachedApiResponse<TResponse>.Create(Url);
 
             var request = new RequestInfo(this) { HttpMethod = "GET" };
 
-            if (await request.Send())
+            var result = await request.TrySend<TResponse>();
+            if (request.Error == null)
             {
-                result = request.ExtractResponse<TResponse>();
-
-                if (request.Error == null)
-                {
-                    await GetCacheFile<TResponse>().WriteAllTextAsync(request.ResponseText);
-                }
-            }
-
-            if (request.Error != null)
-            {
-                if (CachePolicy == CachePolicy.FreshOrFail)
-                    throw request.Error;
-
-                result = await GetCachedResponse<TResponse>();
-                if (result == null) // No cache available
-                    throw request.Error;
-            }
-
-            return result;
-        }
-
-        // async Task RefreshUponUpdatedResponse<TResponse>(Func<TResponse, Task> refresher)
-        // {
-        //    await Task.Delay(50);
-
-        //    string localCachedVersion;
-        //    try
-        //    {
-        //        localCachedVersion = (await GetCacheFile<TResponse>().ReadAllTextAsync()).CreateSHA1Hash();
-        //        if (localCachedVersion.IsEmpty())
-        //            throw new Exception("Local cached file's hash is empty!");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Debug.WriteLine("Strangely, there is no cache any more when running RefreshUponUpdatedResponse(...).");
-        //        Debug.WriteLine(ex);
-        //        return; // High concurrency perhaps.
-        //    }
-
-        //    Header(x => x.IfNoneMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue($"\"{localCachedVersion}\"")));
-
-        //    var request = new RequestInfo(this)
-        //    {
-        //        HttpMethod = "GET",
-        //        LocalCachedVersion = localCachedVersion
-        //    };
-
-        //    try
-        //    {
-        //        if (!await request.Send()) return;
-
-        //        if (localCachedVersion.HasValue() && request.ResponseCode == System.Net.HttpStatusCode.NotModified) return;
-
-        //        var newResponseCache = request.ResponseText.OrEmpty().CreateSHA1Hash();
-        //        if (newResponseCache == localCachedVersion)
-        //        {
-        //            // Same response. No update needed.
-        //            return;
-        //        }
-
-        //        var result = request.ExtractResponse<TResponse>();
-        //        if (request.Error == null)
-        //        {
-        //            await GetCacheFile<TResponse>().WriteAllTextAsync(request.ResponseText);
-        //            await refresher(result);
-        //        }
-        //    }
-        //    catch (Exception ex) { Debug.WriteLine(ex); }
-        // }
-
-        async Task<TResponse> GetCachedResponse<TResponse>()
-        {
-            var file = GetCacheFile<TResponse>();
-            CacheDays = LocalTime.UtcNow.Subtract(file.LastWriteTimeUtc).Days;
-            return await DeserializeResponse<TResponse>(file);
-        }
-
-        async Task<TResponse> DeserializeResponse<TResponse>(FileInfo file)
-        {
-            if (!file.Exists() || IsCacheExpired(file)) return default(TResponse);
-
-            var cacheKey = file.FullName + "|" + typeof(TResponse).FullName;
-            if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
-            {
-                // Already cached in memory?                
-                if (DeserializedCache.TryGetValue(cacheKey, out var result))
-                    return (TResponse)result;
-            }
-
-            try
-            {
-                var result = JsonConvert.DeserializeObject<TResponse>(
-                    await file.ReadAllTextAsync(),
-                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }
-                );
-
-                if (CachePolicy == CachePolicy.CacheOrFreshOrFail)
-                    DeserializedCache.TryAdd(cacheKey, result);
-
+                await cache.File.WriteAllTextAsync(request.ResponseText);
                 return result;
             }
-            catch (Exception ex)
+            else
             {
-                Debug.WriteLine("Failed to deserialize the cached file into " +
-                    typeof(TResponse).Name + " : " + ex.Message);
+                if (CachePolicy == CachePolicy.FreshOrCacheOrFail && await cache.HasValidValue(/*Ignore expiry*/))
+                {
+                    if (ErrorAction == OnApiCallError.IgnoreAndNotify)
+                        await UsingCacheInsteadOfFresh.Raise(cache);
 
-                return default(TResponse);
+                    return cache.Data;
+                }
+                else throw request.Error;
             }
-        }
-
-        bool IsCacheExpired(FileInfo file)
-        {
-            if (CacheExpiry == null) return false;
-            return file.LastWriteTimeUtc < LocalTime.UtcNow.Subtract(CacheExpiry.Value);
         }
 
         /// <summary>
         /// Deletes all cached Get API results.
         /// </summary>
-        public static Task DisposeCache()
-        {
-            lock (CacheSyncLock)
-            {
-                var cacheDir = GetRootCacheDirectory();
-                if (cacheDir.Exists) cacheDir.Delete(recursive: true);
-            }
-
-            // Desined as a task in case in the future we need it.
-            return Task.CompletedTask;
-        }
+        public static Task DisposeCache() => CachedApiResponse.DisposeAll();
 
         /// <summary>
         /// Deletes the cached Get API result for the specified API url.
         /// </summary>
         public Task DisposeCache<TResponse>(string getApiUrl)
-            => GetCacheFile<TResponse>(getApiUrl).DeleteAsync(harshly: true);
+            => CachedApiResponse<TResponse>.Create(getApiUrl).File.DeleteAsync(harshly: true);
     }
 }

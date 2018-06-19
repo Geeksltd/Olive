@@ -33,10 +33,7 @@ namespace Olive
             return (await DoPatch<TResponse>(null, jsonParams)).Item1;
         }
 
-        async Task<Tuple<TResponse, RequestInfo>> DoPatch<TResponse>(
-
-         string requestData,
-         object jsonParams)
+        async Task<Tuple<TResponse, RequestInfo>> DoPatch<TResponse>(string requestData, object jsonParams)
         {
             var request = new RequestInfo(this)
             {
@@ -45,9 +42,7 @@ namespace Olive
                 JsonData = jsonParams
             };
 
-            var result = default(TResponse);
-            if (await request.Send()) result = request.ExtractResponse<TResponse>();
-            return Tuple.Create(result, request);
+            return Tuple.Create(await request.TrySend<TResponse>(), request);
         }
     }
 }
