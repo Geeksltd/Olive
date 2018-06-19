@@ -18,12 +18,9 @@ namespace Olive.BlobAws
 
         AmazonS3Client CreateClient()
         {
-            var key = Config.Get("AWS:AccessKey");
-            var secret = Config.Get("AWS:SecretKey");
-            var region = Amazon.RegionEndpoint.GetBySystemName(Config.Get("AWS:Region"));
-
-            var credentials = new Amazon.Runtime.BasicAWSCredentials(key, secret);
-            return new AmazonS3Client(credentials, region);
+            var settings = S3Settings.Current;
+            var credentials = new Amazon.Runtime.BasicAWSCredentials(settings.AccessKey, settings.SecretKey);
+            return new AmazonS3Client(credentials, settings.RegionEndPoint);
         }
 
         public bool CostsToCheckExistence() => true;
