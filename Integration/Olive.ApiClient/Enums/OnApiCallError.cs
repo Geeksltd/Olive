@@ -22,7 +22,7 @@ namespace Olive
                     {
                         ApiClient.UsingCacheInsteadOfFresh.Raise(new CachedApiUsageArgs
                         {
-                            Message = $"Failed to get fresh results from {url} Using the latest cache from {age} days ago.",
+                            Message = $"The {url.AsUri().Host} service did not respond. Using the last data from {age} days ago.",
                             OriginalErrorMessage = error.Message,
                             FailedUrl = url,
                             CacheAge = age
