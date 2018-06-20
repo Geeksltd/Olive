@@ -13,8 +13,8 @@ echo {"runtimeOptions":{"tfm":"netcoreapp2.1","framework":{"name":"Microsoft.NET
 M#/lib/*
 !M#/lib/netcoreapp2.1/MSharp.DSL.runtimeconfig.json
 ```
-- In Visual Studio, for all 4 projects in the solution, go to **Properties** and change the Target Framework to **Core 2.1""
-In the - In the dotnet core 2.1, former `Cookie.Expiration` was obsolete and we used `ExpireTimeSpan` property in the `Startup.cs`  
+- In Visual Studio, for all 4 projects in the solution, go to **Properties** and change the Target Framework to **Core 2.1**
+- `Cookie.Expiration` is now obsolete. Use `ExpireTimeSpan` property in the `Startup.cs` instead.
 - Update all nuget packages
 - Remove the Nuget package **Microsoft.AspNetCore.All**.
 - Instead install **Microsoft.AspNetCore.App** in the *Domain* project.
