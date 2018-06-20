@@ -19,6 +19,7 @@ In the - In the dotnet core 2.1, former `Cookie.Expiration` was obsolete and we 
 - Remove the Nuget package **Microsoft.AspNetCore.All**.
 - Instead install **Microsoft.AspNetCore.App** in the *Domain* project.
 - Remove `.UseBrowserLink()` from `Startup.cs` class (if you have it)
+- Clean and then build every project
 
 
 ## 02 May 2018
