@@ -81,7 +81,7 @@ namespace Olive
                     if ((int)ResponseCode >= 400 && (int)ResponseCode < 500)
                         throw ex; // It contains user message. Always throw.
 
-                    if (Client.ErrorAction == OnApiCallError.Throw) throw ex;
+                    if (Client.FallBack == FallBack.Warn) throw ex;
                     return default(TResponse);
                 }
             }

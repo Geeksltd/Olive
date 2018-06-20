@@ -8,18 +8,15 @@ namespace Olive
 {
     partial class ApiClient
     {
-        static ConcurrentDictionary<string, AsyncLock> GetLocks =
-            new ConcurrentDictionary<string, AsyncLock>();
+        private static readonly ConcurrentDictionary<string, AsyncLock> GetLocks = new ConcurrentDictionary<string, AsyncLock>();
 
-        public string StaleDataWarning = "The latest data cannot be received from the server right now.";
-
-        CachePolicy CachePolicy = CachePolicy.FreshOrCacheOrFail;
-        TimeSpan? CacheExpiry;
+        CachePolicy _cachePolicy = CachePolicy.FreshOrCacheOrFail;
+        TimeSpan? _cacheExpiry;
 
         public ApiClient Cache(CachePolicy policy, TimeSpan? cacheExpiry = null)
         {
-            CachePolicy = policy;
-            CacheExpiry = cacheExpiry;
+            _cachePolicy = policy;
+            _cacheExpiry = cacheExpiry;
             return this;
         }
 
@@ -30,8 +27,10 @@ namespace Olive
             var queryString = queryParams as string;
 
             if (queryString is null)
+            {
                 queryString = queryParams.GetType().GetPropertiesAndFields(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance).Select(p => p.Name + "=" + p.GetValue(queryParams).ToStringOrEmpty().UrlEncode())
-                     .Trim().ToString("&");
+                    .Trim().ToString("&");
+            }
 
             if (queryString.LacksAll()) return Url;
 
@@ -42,117 +41,64 @@ namespace Olive
         public async Task<TResponse> Get<TResponse>(object queryParams = null)
         {
             Url = GetFullUrl(queryParams);
+
             Log.For(this).Debug("Get: Url = " + Url);
 
             var urlLock = GetLocks.GetOrAdd(Url, x => new AsyncLock());
 
-            var cache = ApiResponseCache<TResponse>.Create(Url);
-
             using (await urlLock.Lock())
             {
-                if (CachePolicy == CachePolicy.CacheOrFreshOrFail && await cache.HasValidValue(CacheExpiry))
+                //all available cache policy state
+                GetResponse<TResponse> getResponse = new FreshOrFail<TResponse>(this, Url, _cachePolicy);
+                GetResponse<TResponse> freshOrNull = new FreshOrNull<TResponse>(this, Url, _cachePolicy);
+                GetResponse<TResponse> freshOrCacheOrNull = new FreshOrCacheOrNull<TResponse>(this, Url, _cachePolicy, _cacheExpiry, FallBack, UsingCacheInsteadOfFreshEvent);
+                GetResponse<TResponse> freshOrCacheOrFail = new FreshOrCacheOrFail<TResponse>(this, Url, _cachePolicy, _cacheExpiry, FallBack, UsingCacheInsteadOfFreshEvent);
+                GetResponse<TResponse> cacheOrFreshOrFail = new CacheOrFreshOrFail<TResponse>(this, Url, _cachePolicy, _cacheExpiry);
+                GetResponse<TResponse> cacheOrFreshOrNull = new CacheOrFreshOrNull<TResponse>(this, Url, _cachePolicy, _cacheExpiry);
+                GetResponse<TResponse> cacheOrNull = new CacheOrNull<TResponse>(this, Url, _cachePolicy, _cacheExpiry);
+
+                getResponse.SetSuccessor(freshOrNull);
+                freshOrNull.SetSuccessor(freshOrCacheOrNull);
+                freshOrCacheOrNull.SetSuccessor(freshOrCacheOrFail);
+                freshOrCacheOrFail.SetSuccessor(cacheOrFreshOrFail);
+                cacheOrFreshOrFail.SetSuccessor(cacheOrFreshOrNull);
+                cacheOrFreshOrNull.SetSuccessor(cacheOrNull);
+
+                try
                 {
-                    Log.For(this).Debug("Get: Returning from Cache: " + cache.File.Name);
-                    return cache.Data;
+                    var result = await getResponse.Execute();
+
+                    if (FallBack == Olive.FallBack.Warn)
+                    {
+                        await ApiClientEvent.Raise(new ApiClientEvent { Url = Url, CacheAge = _cacheExpiry, FriendlyMessage = "Content loaded successfully" });
+                        //await UsingCacheInsteadOfFresh.Raise(new ApiResponseCache<TResponse>() { Message = "Sample ok result" });
+                    }
+
+                    return result;
+                }
+                catch (Exception exception)
+                {
+
+                    if (FallBack == Olive.FallBack.Warn)
+                    {
+                        await ApiClientEvent.Raise(new ApiClientEvent
+                        {
+                            Url = Url,
+                            CacheAge = _cacheExpiry,
+                            FriendlyMessage = "Error happend, please try again" + exception.Message,
+                            ExceptionMessage = exception.Message
+                        });
+                    }
+                    else
+                    {
+                        Log.For(this).Error(exception);
+                    }
                 }
 
-                // Not already cached:
-                return await ExecuteGet<TResponse>();
+                return default(TResponse);
             }
         }
 
-        async Task<TResponse> ExecuteGet<TResponse>()
-        {
-            var cache = ApiResponseCache<TResponse>.Create(Url);
-
-            var request = new RequestInfo(this) { HttpMethod = "GET" };
-
-            var result = await request.TrySend<TResponse>();
-            if (request.Error == null)
-            {
-                await cache.File.WriteAllTextAsync(request.ResponseText);
-                return result;
-            }
-            else
-            {
-                switch (CachePolicy)
-                {
-                    case CachePolicy.FreshOrCacheOrFail:
-                        {
-                            if (await cache.HasValidValue())
-                            {
-                                if (ErrorAction == OnApiCallError.IgnoreAndNotify)
-                                {
-                                    await UsingCacheInsteadOfFresh.Raise(cache);
-                                }
-
-                                return cache.Data;
-                            }
-                            else
-                            {
-                                if (ErrorAction == OnApiCallError.Throw)
-                                {
-                                    throw request.Error;
-                                }
-
-                                if (ErrorAction == OnApiCallError.Ignore)
-                                {
-                                    break;
-                                }
-
-                                await UsingCacheInsteadOfFresh.Raise(new ApiResponseCache<TResponse>() { Message = request.Error.Message });
-                            }
-
-                            break;
-                        }
-
-                    case CachePolicy.CacheOrFreshOrFail:
-                        {
-                            if (await cache.HasValidValue())
-                            {
-                                return cache.Data;
-                            }
-                            else
-                            {
-                                if (ErrorAction == OnApiCallError.Throw)
-                                {
-                                    throw request.Error;
-                                }
-
-                                if (ErrorAction == OnApiCallError.Ignore)
-                                {
-                                    break;
-                                }
-
-                                await UsingCacheInsteadOfFresh.Raise(new ApiResponseCache<TResponse>() { Message = request.Error.Message });
-                            }
-
-                            break;
-                        }
-
-                    case CachePolicy.FreshOrFail:
-                        {
-                            if (ErrorAction == OnApiCallError.Throw)
-                            {
-                                throw request.Error;
-                            }
-
-                            if (ErrorAction == OnApiCallError.Ignore)
-                            {
-                                break;
-                            }
-
-                            await UsingCacheInsteadOfFresh.Raise(new ApiResponseCache<TResponse>() { Message = request.Error.Message });
-
-                            break;
-                        }
-
-                    default: throw new NotSupportedException($"{CachePolicy} is not implemented.");
-                }
-
-                throw request.Error;
-            }
-        }
 
         /// <summary>
         /// Deletes all cached Get API results.
