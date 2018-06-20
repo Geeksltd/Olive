@@ -19,6 +19,8 @@ namespace Olive
         internal static IConfiguration configuration;
         static IConfiguration Configuration => configuration ?? (configuration = LoadConfiguration());
 
+        static List<Action<IConfigurationBuilder>> CustomBuilders = new List<Action<IConfigurationBuilder>>();
+
         static IConfiguration LoadConfiguration()
         {
             lock (SyncLock)
@@ -29,8 +31,16 @@ namespace Olive
 
                 builder.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true);
 
+                CustomBuilders.Do(x => x?.Invoke(builder));
+
                 return builder.Build();
             }
+        }
+
+        public static void AddConfiguration(Action<IConfigurationBuilder> config)
+        {
+            CustomBuilders.Add(config);
+            configuration = LoadConfiguration();
         }
 
         /// <summary>
