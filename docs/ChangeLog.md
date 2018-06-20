@@ -2,6 +2,7 @@
 
 
 ## 12 Jun 2018 - UPGRADE TO .NET CORE 2.1
+- Install the latest .NET Core SDK from [here](https://www.microsoft.com/net/download/windows)
 - In Initialize.bat, the second command should be changed to: 
 ```batch
 echo {"runtimeOptions":{"tfm":"netcoreapp2.1","framework":{"name":"Microsoft.NETCore.App","version": "2.1.0"}}} >  M#\lib\netcoreapp2.1\MSharp.DSL.runtimeconfig.json
