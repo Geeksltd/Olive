@@ -1,7 +1,7 @@
 # Olive compatibility change log
 
 
-## 12 Jun 2018 - UPGRADE TO .NET CORE 2.1
+## 20 Jun 2018 - UPGRADE TO .NET CORE 2.1
 - Install the latest .NET Core SDK from [here](https://www.microsoft.com/net/download/windows)
 - In Initialize.bat, the second command should be changed to: 
 ```batch
