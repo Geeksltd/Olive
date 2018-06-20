@@ -15,6 +15,8 @@ M#/lib/*
 - In Visual Studio, for all 4 projects in the solution, go to **Properties** and change the Target Framework to **Core 2.1""
 In the - In the dotnet core 2.1, former `Cookie.Expiration` was obsolete and we used `ExpireTimeSpan` property in the `Startup.cs`  
 - Update all nuget packages
+- Remove the Nuget package **Microsoft.AspNetCore.All**.
+- Instead install **Microsoft.AspNetCore.App** in the *Domain* project.
 - Remove `.UseBrowserLink()` from `Startup.cs` class (if you have it)
 
 
