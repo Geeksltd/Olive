@@ -18,8 +18,7 @@ namespace Olive.BlobAws
 
         static AmazonS3Client CreateClient()
         {
-            var settings = S3Settings.Current;
-            return new AmazonS3Client(settings.AccessKey, settings.SecretKey, settings.RegionEndPoint);
+            return new AmazonS3Client(Aws.RuntimeIdentity.AccessKey, Aws.RuntimeIdentity.SecretKey, Settings.RegionEndPoint);
         }
 
         /// <summary>

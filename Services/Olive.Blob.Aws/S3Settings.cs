@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Olive.BlobAws
+﻿namespace Olive.BlobAws
 {
-    public class S3Settings
+    class Settings
     {
-        public string AccessKey { get; set; }
-        public string SecretKey { get; set; }
-        public string Region { get; set; }
-
-        public Amazon.RegionEndpoint RegionEndPoint => Amazon.RegionEndpoint.GetBySystemName(Region);
-
-        public static S3Settings Current = Config.Bind<S3Settings>("Aws:S3");
+        public static Amazon.RegionEndpoint RegionEndPoint
+            => Amazon.RegionEndpoint.GetBySystemName(Config.Get("Aws:S3:Region"));
     }
 }
