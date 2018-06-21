@@ -7,7 +7,10 @@ namespace Olive
         [Obsolete("I Think this event is deprecated")]
         public static readonly AsyncEvent<ApiResponseCache> UsingCacheInsteadOfFresh = new AsyncEvent<ApiResponseCache>();
 
-        public static readonly AsyncEvent<FallBackEvent> FallBackEvent = new AsyncEvent<FallBackEvent>();
+        /// <summary>
+        /// Raised when a less desirable cache policy option is used. For example if for FreshOrCacheOrFail, there is no fresh data available, but data from cache is successfully returned, this event will be fired.
+        /// </summary>
+        public static readonly AsyncEvent<FallBackEvent> FallBack = new AsyncEvent<FallBackEvent>();
 
         public string Url { get; private set; }
         public ApiClient(string apiUrl) => Url = apiUrl;
