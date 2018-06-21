@@ -5,18 +5,17 @@ namespace Olive
     public partial class ApiClient
     {
         [Obsolete("I Think this event is deprecated")]
-        public static readonly AsyncEvent<ApiResponseCache> UsingCacheInsteadOfFresh = new AsyncEvent<ApiResponseCache>(); //TODO: Should be deleted
+        public static readonly AsyncEvent<ApiResponseCache> UsingCacheInsteadOfFresh = new AsyncEvent<ApiResponseCache>();
 
-        public static readonly AsyncEvent<ApiClientEvent> ApiClientEvent = new AsyncEvent<ApiClientEvent>();
-        public static readonly AsyncEvent<UsingCacheInsteadOfFreshEvent> UsingCacheInsteadOfFreshEvent = new AsyncEvent<UsingCacheInsteadOfFreshEvent>();
+        public static readonly AsyncEvent<FallBackEvent> FallBackEvent = new AsyncEvent<FallBackEvent>();
 
         public string Url { get; private set; }
         public ApiClient(string apiUrl) => Url = apiUrl;
 
-        [Obsolete("This property is deprecated, please use FallBack.")]
+        [Obsolete("This property is deprecated, please use FallBackEventPolicy.")]
         public OnApiCallError ErrorAction { get; private set; } = OnApiCallError.Throw;
 
-        public FallBack FallBack { get; private set; }
+        public FallBackEventPolicy FallBackEventPolicy { get; private set; }
 
         [Obsolete("This method is deprecated, please use OnFallBack()")]
         public ApiClient OnError(OnApiCallError onError)
@@ -26,9 +25,9 @@ namespace Olive
             return this;
         }
 
-        public ApiClient OnFallBack(FallBack fallBack)
+        public ApiClient OnFallBack(FallBackEventPolicy fallBackEventPolicy)
         {
-            FallBack = fallBack;
+            FallBackEventPolicy = fallBackEventPolicy;
             return this;
         }
     }

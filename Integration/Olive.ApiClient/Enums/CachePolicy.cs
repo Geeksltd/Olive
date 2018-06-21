@@ -1,4 +1,6 @@
-﻿namespace Olive
+﻿using System;
+
+namespace Olive
 {
     public enum CachePolicy
     {
@@ -44,5 +46,40 @@
         /// If it fails, an error will be thrown. 
         /// </summary>
         CacheOrFail
+    }
+
+    public static class CachePolicyExtention
+    {
+        public static IGetImplementation<T>[] GetImplementors<T>(this CachePolicy policy, FallBackEventPolicy fallBackEventPolicy, AsyncEvent<FallBackEvent> fallBackEvent)
+        {
+            switch (policy)
+            {
+                case CachePolicy.FreshOrNull:
+                    return new IGetImplementation<T>[] { new GetFresh<T>(fallBackEventPolicy, fallBackEvent), new GetNull<T>(null, null) };
+
+                case CachePolicy.FreshOrFail:
+                    return new IGetImplementation<T>[] { new GetFresh<T>(null, null), new GetFail<T>() };
+
+                case CachePolicy.FreshOrCacheOrNull:
+                    return new IGetImplementation<T>[] { new GetFresh<T>(null, null), new GetCache<T>(fallBackEventPolicy, fallBackEvent), new GetNull<T>(fallBackEventPolicy, fallBackEvent) };
+
+                case CachePolicy.FreshOrCacheOrFail:
+                    return new IGetImplementation<T>[] { new GetFresh<T>(null, null), new GetCache<T>(fallBackEventPolicy, fallBackEvent), new GetFail<T>() };
+
+                case CachePolicy.CacheOrNull:
+                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetNull<T>(fallBackEventPolicy, fallBackEvent) };
+
+                case CachePolicy.CacheOrFail:
+                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetFail<T>() };
+
+                case CachePolicy.CacheOrFreshOrNull:
+                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetFresh<T>(null, null), new GetNull<T>(fallBackEventPolicy, fallBackEvent) };
+
+                case CachePolicy.CacheOrFreshOrFail:
+                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetFresh<T>(null, null), new GetFail<T>() };
+
+                default: throw new Exception("Cache policy has not implemented yet!");
+            }
+        }
     }
 }

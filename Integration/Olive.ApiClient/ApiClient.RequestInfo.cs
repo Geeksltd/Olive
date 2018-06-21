@@ -81,7 +81,7 @@ namespace Olive
                     if ((int)ResponseCode >= 400 && (int)ResponseCode < 500)
                         throw ex; // It contains user message. Always throw.
 
-                    if (Client.FallBack == FallBack.Warn) throw ex;
+                    if (Client.FallBackEventPolicy == FallBackEventPolicy.Raise) throw ex;
                     return default(TResponse);
                 }
             }

@@ -1,8 +1,8 @@
 ﻿namespace Olive
 {
-    public enum FallBack
+    public enum FallBackEventPolicy
     {
         Silent,
-        Warn
+        Raise
     }
 }
