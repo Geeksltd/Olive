@@ -4,32 +4,17 @@ using static Olive.ApiClient;
 
 namespace Olive
 {
-    public class GetFresh<T> : IGetImplementation<T>
+    class GetFresh<T> : GetImplementation<T>
     {
-        readonly FallBackEventPolicy? fallBackEventPolicy;
-        readonly AsyncEvent<FallBackEvent> fallBackEvent;
+        public GetFresh(ApiClient client) : base(client) { }
 
-        public GetFresh(FallBackEventPolicy? fallBackEventPolicy, AsyncEvent<FallBackEvent> fallBackEvent)
-        {
-            this.fallBackEventPolicy = fallBackEventPolicy;
-            this.fallBackEvent = fallBackEvent;
-        }
-
-        public T Result { get; set; }
-
-        public async Task<bool> Attempt(ApiClient apiClient, string url, TimeSpan? cacheAge, FallBackEventPolicy fallBackEventPolicy) => await ExecuteGet(apiClient, url);
-
-        /// <summary>
-        /// Send request to the server and create its cache file
-        /// </summary>
-        /// <returns>Response</returns>
-        async Task<bool> ExecuteGet(ApiClient apiClient, string url)
+        public override async Task<bool> Attempt(string url)
         {
             try
             {
                 var cache = ApiResponseCache<T>.Create(url);
 
-                var requestInfo = new RequestInfo(apiClient) { HttpMethod = "GET" };
+                var requestInfo = new RequestInfo(ApiClient) { HttpMethod = "GET" };
 
                 Result = await requestInfo.TrySend<T>();
 
@@ -40,20 +25,9 @@ namespace Olive
                     return true;
                 }
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
                 Log.For(this).Error(exception);
-
-                if (fallBackEventPolicy.HasValue && fallBackEventPolicy == FallBackEventPolicy.Raise && fallBackEvent != null)
-                {
-                    await fallBackEvent.Raise(new FallBackEvent
-                    {
-                        Url = url,
-                        FriendlyMessage = $"Failed to get fresh results from {url.AsUri().Host}"
-                    });
-                }
-
-                return false;
             }
 
             return false;

@@ -50,33 +50,40 @@ namespace Olive
 
     public static class CachePolicyExtention
     {
-        public static IGetImplementation<T>[] GetImplementors<T>(this CachePolicy policy, FallBackEventPolicy fallBackEventPolicy, AsyncEvent<FallBackEvent> fallBackEvent)
+        internal static GetImplementation<T>[] GetImplementors<T>(this CachePolicy policy, ApiClient client)
         {
+            GetImplementation<T> fresh() => new GetFresh<T>(client);
+            GetImplementation<T> cache() => new GetCache<T>(client, silent: true);
+            GetImplementation<T> fail() => new GetFail<T>();
+            GetImplementation<T> @null() => new GetNull<T>(client);
+
+            GetImplementation<T> cacheRaise() => new GetCache<T>(client, silent: false);
+
             switch (policy)
             {
                 case CachePolicy.FreshOrNull:
-                    return new IGetImplementation<T>[] { new GetFresh<T>(fallBackEventPolicy, fallBackEvent), new GetNull<T>(null, null) };
+                    return new[] { fresh(), @null() };
 
                 case CachePolicy.FreshOrFail:
-                    return new IGetImplementation<T>[] { new GetFresh<T>(null, null), new GetFail<T>() };
+                    return new[] { fresh(), fail() };
 
                 case CachePolicy.FreshOrCacheOrNull:
-                    return new IGetImplementation<T>[] { new GetFresh<T>(null, null), new GetCache<T>(fallBackEventPolicy, fallBackEvent), new GetNull<T>(fallBackEventPolicy, fallBackEvent) };
+                    return new[] { fresh(), cacheRaise(), @null() };
 
                 case CachePolicy.FreshOrCacheOrFail:
-                    return new IGetImplementation<T>[] { new GetFresh<T>(null, null), new GetCache<T>(fallBackEventPolicy, fallBackEvent), new GetFail<T>() };
+                    return new[] { fresh(), cacheRaise(), fail() };
 
                 case CachePolicy.CacheOrNull:
-                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetNull<T>(fallBackEventPolicy, fallBackEvent) };
+                    return new[] { cache(), @null() };
 
                 case CachePolicy.CacheOrFail:
-                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetFail<T>() };
+                    return new[] { cache(), fail() };
 
                 case CachePolicy.CacheOrFreshOrNull:
-                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetFresh<T>(null, null), new GetNull<T>(fallBackEventPolicy, fallBackEvent) };
+                    return new[] { cache(), fresh(), @null() };
 
                 case CachePolicy.CacheOrFreshOrFail:
-                    return new IGetImplementation<T>[] { new GetCache<T>(null, null), new GetFresh<T>(null, null), new GetFail<T>() };
+                    return new[] { cache(), fresh(), fail() };
 
                 default: throw new Exception("Cache policy has not implemented yet!");
             }

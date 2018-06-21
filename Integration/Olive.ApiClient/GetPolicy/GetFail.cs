@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 
 namespace Olive
 {
-    public class GetFail<T> : IGetImplementation<T>
+    class GetFail<T> : GetImplementation<T>
     {
-        public T Result { get; set; }
-        public Task<bool> Attempt(ApiClient apiClient, string url, TimeSpan? cacheAge, FallBackEventPolicy fallBackEventPolicy)
+        public GetFail() : base(null) { }
+
+        public override Task<bool> Attempt(string url)
         {
             throw new Exception("Get request failed.");
         }

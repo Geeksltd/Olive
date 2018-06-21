@@ -11,7 +11,7 @@ namespace Olive
         static readonly ConcurrentDictionary<string, AsyncLock> GetLocks = new ConcurrentDictionary<string, AsyncLock>();
 
         CachePolicy CachePolicy = CachePolicy.FreshOrCacheOrFail;
-        TimeSpan? CacheExpiry;
+        internal TimeSpan? CacheExpiry;
 
         public ApiClient Cache(CachePolicy policy, TimeSpan? cacheExpiry = null)
         {
@@ -49,9 +49,9 @@ namespace Olive
             using (await urlLock.Lock())
             {
                 // get result according to the cache policy
-                foreach (var implementor in CachePolicy.GetImplementors<TResponse>(FallBackEventPolicy, FallBackEvent))
+                foreach (var implementor in CachePolicy.GetImplementors<TResponse>(this))
                 {
-                    if (await implementor.Attempt(this, Url, CacheExpiry, FallBackEventPolicy))
+                    if (await implementor.Attempt(Url))
                     {
                         return implementor.Result;
                     }

@@ -1,32 +1,21 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Olive
 {
-    public class GetNull<T> : IGetImplementation<T>
+    class GetNull<T> : GetImplementation<T>
     {
-        readonly FallBackEventPolicy? fallBackEventPolicy;
-        readonly AsyncEvent<FallBackEvent> fallBackEvent;
+        public GetNull(ApiClient client) : base(client) { }
 
-        public GetNull(FallBackEventPolicy? fallBackEventPolicy, AsyncEvent<FallBackEvent> fallBackEvent)
-        {
-            this.fallBackEventPolicy = fallBackEventPolicy;
-            this.fallBackEvent = fallBackEvent;
-        }
-
-        public T Result { get; set; }
-
-        public async Task<bool> Attempt(ApiClient apiClient, string url, TimeSpan? cacheAge, FallBackEventPolicy fallBackEventPolicy)
+        public override async Task<bool> Attempt(string url)
         {
             Result = default(T);
 
-            if (this.fallBackEventPolicy.HasValue && this.fallBackEventPolicy == FallBackEventPolicy.Raise && fallBackEvent != null)
+            if (FallBackEventPolicy == FallBackEventPolicy.Raise)
             {
-                await fallBackEvent.Raise(new FallBackEvent
+                await FallBackEvent.Raise(new FallBackEvent
                 {
                     Url = url,
-                    CacheAge = cacheAge,
-                    FriendlyMessage = $"Failed to get fresh or cache results from {url.AsUri().Host}."
+                    FriendlyMessage = $"Failed to get results from {url.AsUri().Host}."
                 });
             }
 

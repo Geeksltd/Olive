@@ -1,45 +1,32 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Olive
 {
-    public class GetCache<T> : IGetImplementation<T>
+    class GetCache<T> : GetImplementation<T>
     {
-        readonly FallBackEventPolicy? fallBackEventPolicy;
-        readonly AsyncEvent<FallBackEvent> fallBackEvent;
+        bool Silent;
 
-        public GetCache(FallBackEventPolicy? fallBackEventPolicy, AsyncEvent<FallBackEvent> fallBackEvent)
-        {
-            this.fallBackEventPolicy = fallBackEventPolicy;
-            this.fallBackEvent = fallBackEvent;
-        }
+        public GetCache(ApiClient client, bool silent) : base(client) { Silent = silent; }
 
-        public T Result { get; set; }
-
-        public async Task<bool> Attempt(ApiClient apiClient, string url, TimeSpan? cacheAge, FallBackEventPolicy fallBackEventPolicy)
+        public override async Task<bool> Attempt(string url)
         {
             var cache = ApiResponseCache<T>.Create(url);
 
-            if (await cache.HasValidValue(cacheAge))
+            if (!await cache.HasValidValue(CacheAge)) return false;
+
+            Result = cache.Data;
+
+            if (!Silent && FallBackEventPolicy == FallBackEventPolicy.Raise)
             {
-                Result = cache.Data;
-
-                if (this.fallBackEventPolicy.HasValue && this.fallBackEventPolicy == FallBackEventPolicy.Raise && fallBackEvent != null)
+                await FallBackEvent.Raise(new FallBackEvent
                 {
-                    var age = cacheAge.HasValue ? LocalTime.UtcNow.Subtract(cacheAge.Value).DaysInMonth() : 0;
-
-                    await fallBackEvent.Raise(new FallBackEvent
-                    {
-                        Url = url,
-                        CacheAge = cacheAge,
-                        FriendlyMessage = $"Failed to get fresh results from {url.AsUri().Host} .using the latest cache from {age} days ago."
-                    });
-                }
-
-                return true;
+                    Url = url,
+                    CacheAge = cache.Age,
+                    FriendlyMessage = $"Failed to get fresh results from {url.AsUri().Host}. Using the latest cache from {cache.Age.ToNaturalTime(1)} ago."
+                });
             }
 
-            return false;
+            return true;
         }
     }
 }
