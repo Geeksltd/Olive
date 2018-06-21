@@ -8,10 +8,7 @@ namespace Olive
 {
     partial class ApiClient
     {
-        static ConcurrentDictionary<string, AsyncLock> GetLocks =
-            new ConcurrentDictionary<string, AsyncLock>();
-
-        public string StaleDataWarning = "The latest data cannot be received from the server right now.";
+        static readonly ConcurrentDictionary<string, AsyncLock> GetLocks = new ConcurrentDictionary<string, AsyncLock>();
 
         CachePolicy CachePolicy = CachePolicy.FreshOrCacheOrFail;
         TimeSpan? CacheExpiry;
@@ -30,8 +27,10 @@ namespace Olive
             var queryString = queryParams as string;
 
             if (queryString is null)
+            {
                 queryString = queryParams.GetType().GetPropertiesAndFields(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance).Select(p => p.Name + "=" + p.GetValue(queryParams).ToStringOrEmpty().UrlEncode())
-                     .Trim().ToString("&");
+                    .Trim().ToString("&");
+            }
 
             if (queryString.LacksAll()) return Url;
 
@@ -42,47 +41,23 @@ namespace Olive
         public async Task<TResponse> Get<TResponse>(object queryParams = null)
         {
             Url = GetFullUrl(queryParams);
+
             Log.For(this).Debug("Get: Url = " + Url);
 
             var urlLock = GetLocks.GetOrAdd(Url, x => new AsyncLock());
 
-            var cache = ApiResponseCache<TResponse>.Create(Url);
-
             using (await urlLock.Lock())
             {
-                if (CachePolicy == CachePolicy.CacheOrFreshOrFail && await cache.HasValidValue(CacheExpiry))
+                // get result according to the cache policy
+                foreach (var implementor in CachePolicy.GetImplementors<TResponse>(FallBackEventPolicy, FallBackEvent))
                 {
-                    Log.For(this).Debug("Get: Returning from Cache: " + cache.File.Name);
-                    return cache.Data;
+                    if (await implementor.Attempt(this, Url, CacheExpiry, FallBackEventPolicy))
+                    {
+                        return implementor.Result;
+                    }
                 }
 
-                // Not already cached:
-                return await ExecuteGet<TResponse>();
-            }
-        }
-
-        async Task<TResponse> ExecuteGet<TResponse>()
-        {
-            var cache = ApiResponseCache<TResponse>.Create(Url);
-
-            var request = new RequestInfo(this) { HttpMethod = "GET" };
-
-            var result = await request.TrySend<TResponse>();
-            if (request.Error == null)
-            {
-                await cache.File.WriteAllTextAsync(request.ResponseText);
-                return result;
-            }
-            else
-            {
-                if (CachePolicy == CachePolicy.FreshOrCacheOrFail && await cache.HasValidValue(/*Ignore expiry*/))
-                {
-                    if (ErrorAction == OnApiCallError.IgnoreAndNotify)
-                        await UsingCacheInsteadOfFresh.Raise(cache);
-
-                    return cache.Data;
-                }
-                else throw request.Error;
+                return default(TResponse);
             }
         }
 
