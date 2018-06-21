@@ -8,7 +8,7 @@ namespace Olive
         protected ApiClient ApiClient;
         public TResponse Result { get; set; }
 
-        protected FallBackEventPolicy FallBackEventPolicy => ApiClient.FallBackEventPolicy;
+        protected ApiFallBackEventPolicy FallBackEventPolicy => ApiClient.FallBackEventPolicy;
         protected AsyncEvent<FallBackEvent> FallBackEvent => ApiClient.FallBack;
         protected TimeSpan? CacheAge => ApiClient.CacheExpiry;
 

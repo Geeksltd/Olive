@@ -16,7 +16,7 @@ namespace Olive
 
             Result = cache.Data;
 
-            if (!Silent && FallBackEventPolicy == FallBackEventPolicy.Raise)
+            if (!Silent && FallBackEventPolicy == ApiFallBackEventPolicy.Raise)
             {
                 await FallBackEvent.Raise(new FallBackEvent
                 {

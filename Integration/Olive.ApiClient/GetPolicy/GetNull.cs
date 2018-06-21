@@ -10,7 +10,7 @@ namespace Olive
         {
             Result = default(T);
 
-            if (FallBackEventPolicy == FallBackEventPolicy.Raise)
+            if (FallBackEventPolicy == ApiFallBackEventPolicy.Raise)
             {
                 await FallBackEvent.Raise(new FallBackEvent
                 {
