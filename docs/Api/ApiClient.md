@@ -186,7 +186,7 @@ Your choice here is relevant in relation to the cache policy and the actuality o
 | FreshOrCacheOrNull  | Raise | (from cache), toast message | *NULL*, toast message
 | CacheOrFreshOrNull  | Raise | (from cache) | *NULL*, toast message
 | FreshOrNull  | Raise | --- | *NULL*, toast message
-| CacheOrNull  | Raise | --- | *NULL*, toast message
+| CacheOrNull  | Raise | (from cache) | *NULL*, toast message
 
 #### Notification
 Notification here means *showing a toast message to the user*. This option is only applicable when:
