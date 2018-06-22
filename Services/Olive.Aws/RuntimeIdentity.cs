@@ -1,16 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Text;
-
-using Amazon;
-using Amazon.SecretsManager;
-using Amazon.SecretsManager.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Amazon;
 using Amazon.Runtime;
+using Amazon.SecurityToken;
+using Amazon.SecurityToken.Model;
+using System;
+using System.Threading.Tasks;
 
 namespace Olive.Aws
 {
@@ -20,43 +13,35 @@ namespace Olive.Aws
     /// </summary>
     public class RuntimeIdentity
     {
-        public static string AccessKey { get; private set; }
+        const string VARIABLE = "AWS_RUNTIME_ROLE_ARN";
 
-        public static string SecretKey { get; private set; }
+        public static AWSCredentials Credentials { get; private set; }
 
-        public static BasicAWSCredentials Credentials => new BasicAWSCredentials(AccessKey, SecretKey);
+        static string RegionName => Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION");
 
-        internal static void Load()
+        internal static async Task Load()
         {
-            AccessKey = Config.GetOrThrow("Aws:Identity:Runtime:AccessKey");
-
-            // Load the secret using startup identity
-
-
+            var region = RegionEndpoint.GetBySystemName(RegionName);
+            using (var client = new AmazonSecurityTokenServiceClient(region))
+            {
+                var response = await client.AssumeRoleAsync(CreateRequest());
+                Credentials = response.Credentials;
+            }
         }
 
-        static async Task<string> ObtainRuntimeIdentitiesSecret()
+        static AssumeRoleRequest CreateRequest()
         {
-            var startUpAccessKey = "Aws:Identity:Startup:AccessKey";
-            var startUpSecret = "Aws:Identity:Startup:SecretKey";
+            var roleArn = Environment.GetEnvironmentVariable(VARIABLE);
+            Environment.SetEnvironmentVariable(VARIABLE, null);
 
-            var region = RegionEndpoint.GetBySystemName("eu-west-1");
-            var startUpCredentials = new BasicAWSCredentials(startUpAccessKey, startUpSecret);
-            var secretName = "Runtime-Identities-Secrets";
-
-            try
+            return new AssumeRoleRequest
             {
-                using (var client = new AmazonSecretsManagerClient(startUpCredentials, region))
-                {
-                    var response = await client.GetSecretValueAsync(new GetSecretValueRequest { SecretId = secretName });
-                    if (response.SecretString.IsEmpty()) throw new Exception("AWS SecretString was empty!");
-                    return response.SecretString;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to obtain the Runtime-Identities-Secrets", ex);
-            }
+                RoleArn = roleArn,
+                DurationSeconds = (int)12.Hours().TotalSeconds,
+                ExternalId = "Pod",
+                RoleSessionName = "Pod",
+                Policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"Stmt1\",\"Effect\":\"Allow\",\"Action\":\"s3:*\",\"Resource\":\"*\"}]}"
+            };
         }
     }
 }

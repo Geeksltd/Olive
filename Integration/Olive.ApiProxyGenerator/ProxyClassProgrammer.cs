@@ -47,6 +47,9 @@ namespace Olive.ApiProxy
 
             r.AppendLine("/// <summary>Creates an Api proxy that prefers fresh cache policy for most up-to-date result.</summary>");
             r.AppendLine($"public static {ClassName} Fresh() => new {ClassName}().Cache(CachePolicy.FreshOrCacheOrFail, DefaultCacheExpiry);");
+
+            r.AppendLine("/// <summary>Creates an Api proxy with the specified cache policy.</summary>");
+            r.AppendLine($"public static {ClassName} As(CachePolicy policy) => new {ClassName}().Cache(policy, DefaultCacheExpiry);");
             r.AppendLine();
 
             foreach (var method in Context.ActionMethods)

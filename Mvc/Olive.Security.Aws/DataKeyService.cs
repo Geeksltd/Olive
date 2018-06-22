@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
 
@@ -9,9 +8,12 @@ namespace Olive.Security.Aws.Services
     {
         static readonly string MasterKeyArn = Config.GetOrThrow("Aws:Kms:MasterKeyArn");
 
+        static AmazonKeyManagementServiceClient CreateClient()
+            => new AmazonKeyManagementServiceClient(Olive.Aws.RuntimeIdentity.Credentials);
+
         internal static async Task<Key> GenerateKey()
         {
-            using (var kms = new AmazonKeyManagementServiceClient())
+            using (var kms = CreateClient())
             {
                 var dataKey = await kms.GenerateDataKeyAsync(new GenerateDataKeyRequest
                 {
@@ -27,10 +29,9 @@ namespace Olive.Security.Aws.Services
             }
         }
 
-
         internal static async Task<byte[]> GetPlainKey(byte[] cipher)
         {
-            using (var kms = new AmazonKeyManagementServiceClient())
+            using (var kms = CreateClient())
             {
                 var decryptedData = await kms.DecryptAsync(new DecryptRequest
                 {

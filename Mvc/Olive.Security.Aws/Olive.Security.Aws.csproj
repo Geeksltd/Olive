@@ -25,8 +25,13 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Olive.Aws">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Aws.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Olive.Security">
       <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Security.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 

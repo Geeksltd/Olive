@@ -38,7 +38,7 @@ namespace Olive
         CacheOrFreshOrNull,
         /// <summary>
         /// Choose this if you prefer fast, minimum crashing, resource efficient, but not up-to-date.
-        /// If there is no valid cache Null will be returned
+        /// If there is no valid cache, Null will be returned.
         /// </summary>
         CacheOrNull,
         /// <summary>
