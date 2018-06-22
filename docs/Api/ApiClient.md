@@ -62,7 +62,7 @@ To specify your choice, you simply call the Cache(...) method on ApiClient:
 
 ```csharp
 var customers = await new ApiClient($"{baseUrl}/customers")
-                         .Cache(CachePolicy.FreshOrCacheOrFail) // <- Default
+                         .Cache(CachePolicy.FreshOrCacheOrFail) // <- Default if not set
                          .Get<Customer[]>();
 ```
 
@@ -168,7 +168,7 @@ You can set a fallback policy on your ApiClient by using:
 
 ```csharp
 var customers = await new ApiClient($"{baseUrl}/customers")
-                         .OnFallBack(ApiFallBackEventPolicy.Raise) // <- Default
+                         .OnFallBack(ApiFallBackEventPolicy.Raise) // <- Default if not set
                          .Get<Customer[]>();
 ```
 
