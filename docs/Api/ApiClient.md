@@ -68,13 +68,18 @@ var customers = await new ApiClient($"{baseUrl}/customers")
 
 > The Cache() method also accepts an optional *TimeSpan* variable named **cacheExpiry**. When set, if the cached file (from a previous Api response) is older than that, then the cache will be ignored.
 
-You have 3 options:
+You have 8 options:
 
 | Option  | When your priorities are | And you're happy to accept
 | ------------- | ------------- | ----------
 | FreshOrCacheOrFail  | **Up-to-date** then **Minimum crashing** | *Lower speed**
+| FreshOrCacheOrNull  | **Up-to-date** then **No crashing** | *Lower speed**
 | CacheOrFreshOrFail  | **Speed** then **Minimum crashing** | *Relatively out-of-date result**
+| CacheOrFreshOrNull  | **Speed** then **No crashing** | *Relatively out-of-date result**
 | FreshOrFail  | **Must be up-to-date** | *Lower speed and more crashing**
+| FreshOrNull  | **Must be up-to-date** | *Lower speed, no crashing and maybe null result**
+| CacheOrFail  | **Speed** | *Relatively out-of-date result and more crashing**
+| CacheOrNull  | **Speed** | *Relatively out-of-date result, no crashing and maybe null result**
 
 #### CachePolicy.FreshOrCacheOrFail (default)
 
@@ -88,6 +93,17 @@ This is how it works:
      * Yes? Return from cache.
      * No? Throw the exception. 
 
+#### CachePolicy.FreshOrCacheOrNull
+
+This is exactly like **CachePolicy.FreshOrCacheOrFail** but if an error happens it doesn't throw an exception and just return *null*.
+This is how it works:
+ 
+* Make a fresh HTTP request and wait for the response.
+   * Successful? update the cache file, and return the response.
+   * Failed? Is there a cached file from before? 
+     * Yes? Return from cache.
+     * No? Return null. 
+
 #### CachePolicy.CacheOrFreshOrFail
 This is the fastest option, and is the least likely to crash.
 Use this if you can tolerate response data that may not be up-to-date.
@@ -99,6 +115,16 @@ This is how it works:
       * Successful? Update the cache file, and return the response.
       * Failed? Throw the exception. 
 
+#### CachePolicy.CacheOrFreshOrNull
+This is exactly like **CachePolicy.CacheOrFreshOrFail** but if an error happens it doesn't throw an exception and just return *null*.
+This is how it works:
+ 
+* Is there a cached file from before?
+   * Yes? return from cache.
+   * No? Make a fresh HTTP request and wait for the response.
+      * Successful? Update the cache file, and return the response.
+      * Failed? Return null. 
+
 #### CachePolicy.FreshOrFail
 Choose this if you only want up-to-date data and want to ignore the cache, even if it means crashing.
 This is how it works:
@@ -107,34 +133,62 @@ This is how it works:
    * Successful? update the cache file, and return the response.
    * Failed? Throw the exception.
 
-Note: The cache file will still be updated, in case you want to invoke the same Api with a different cache policy in the future.
+#### CachePolicy.FreshOrNull
+This is exactly like **CachePolicy.FreshOrFail** but if an error happens it doesn't throw an exception and just return *null*.
+This is how it works:
+ 
+* Make a fresh HTTP request and wait for the response.
+   * Successful? update the cache file, and return the response.
+   * Failed? Return null.
+
+#### CachePolicy.CacheOrFail
+This is the fastest option. Use this if you plan to get just cached data and never make any new request.
+This is how it works:
+ 
+* Is there a cached file from before?
+   * Yes? return from cache.
+   * No? Throw the exception.
+
+
+#### CachePolicy.CacheOrNull
+This is exactly like **CachePolicy.CacheOrFail** but if an error happens it doesn't throw an exception and just return *null*.
+This is how it works:
+ 
+* Is there a cached file from before?
+   * Yes? return from cache.
+   * No? Return null.
+
+*Note:* The cache file will still be updated, in case you want to invoke the same Api with a different cache policy in the future.
 
 ---
 
-## Error handling
-If a call to a Web Api results in an error, by default you will get an exception thrown with the correct error message.
-You can set an error policy on your ApiClient by using:
+## Show message
+If a call to a Web API results in an error or you want to inform the user about using cache result instead of fresh result you can use `.OnFallBack()` method. By default a toast message will be shown to the user that contain related information.
+You can set a fallback policy on your ApiClient by using:
+
 ```csharp
 var customers = await new ApiClient($"{baseUrl}/customers")
-                         .OnError(OnApiCallError.Throw) // <- Default if not set
+                         .OnFallBack(ApiFallBackEventPolicy.Raise) // <- Default if not set
                          .Get<Customer[]>();
 ```
 
+#### ApiFallBackEventPolicy.Raise
+This will bring a toast message to the user.
+
+#### ApiFallBackEventPolicy.Silent
+This will hide toast message and the user will not see any messages.
+
 Your choice here is relevant in relation to the cache policy and the actuality of the situation:
 
-| Cache Policy  | OnError | Api failed, cache available | Api failed, cache unavailable
+| Cache Policy  | OnFallBack | Api failed, cache available | Api failed, cache unavailable
 | ------------- | ------------- | ---------- | -------
-| FreshOrCacheOrFail  | Throw | (from cache) | **Exception**
-| FreshOrCacheOrFail  | Ignore | (from cache) | *NULL*
-| FreshOrCacheOrFail  | IgnoreAndNotify | (from cache), toast message | *NULL*, toast message
-| CacheOrFreshOrFail  | Throw | (from cache) | **Exception**
-| CacheOrFreshOrFail  | Ignore | (from cache) | *NULL*
-| CacheOrFreshOrFail  | IgnoreAndNotify | (from cache) | *NULL*, toast message
-| FreshOrFail  | Throw | **Exception** | **Exception**
-| FreshOrFail  | Ignore | *NULL* | *NULL*
-| FreshOrFail  | IgnoreAndNotify | *NULL*, toast message | *NULL*, toast message
+| FreshOrCacheOrFail  | Raise | (from cache), toast message | **Exception**
+| FreshOrCacheOrNull  | Raise | (from cache), toast message | *NULL*, toast message
+| CacheOrFreshOrNull  | Raise | (from cache) | *NULL*, toast message
+| FreshOrNull  | Raise | --- | *NULL*, toast message
+| CacheOrNull  | Raise | (from cache) | *NULL*, toast message
 
-#### IgnoreAndNotify
+#### Notification
 Notification here means *showing a toast message to the user*. This option is only applicable when:
 * The Api client app is an ASP.NET app itself.
 * The call to ApiClient is running within an active Http request. 
