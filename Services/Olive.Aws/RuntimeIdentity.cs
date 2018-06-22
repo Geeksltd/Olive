@@ -19,10 +19,11 @@ namespace Olive.Aws
 
         static string RegionName => Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION");
 
+        public static RegionEndpoint Region => RegionEndpoint.GetBySystemName(RegionName);
+
         internal static async Task Load()
         {
-            var region = RegionEndpoint.GetBySystemName(RegionName);
-            using (var client = new AmazonSecurityTokenServiceClient(region))
+            using (var client = new AmazonSecurityTokenServiceClient(Region))
             {
                 var response = await client.AssumeRoleAsync(CreateRequest());
                 Credentials = response.Credentials;
