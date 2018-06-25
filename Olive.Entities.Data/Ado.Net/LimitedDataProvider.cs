@@ -37,7 +37,7 @@ namespace Olive.Entities
 
         public virtual Task<IEntity> Get(object objectID) => throw NA();
 
-        public virtual DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association) => throw NA();
+        public virtual DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association) => throw NA();
 
         public virtual Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query) => throw NA();
 

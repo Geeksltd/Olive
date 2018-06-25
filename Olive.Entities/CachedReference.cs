@@ -57,7 +57,7 @@ namespace Olive.Entities
             else return result;
         }
 
-        void Bind(TEntity entity)
+        protected void Bind(TEntity entity)
         {
             Id = entity?.ID ?? throw new ArgumentNullException(nameof(entity));
             Value = entity;

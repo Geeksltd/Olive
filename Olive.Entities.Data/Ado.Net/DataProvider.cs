@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
@@ -253,11 +254,6 @@ namespace Olive.Entities.Data
             return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
         }
 
-        /// <summary>
-        /// Returns a direct database criterion used to eager load associated objects.
-        /// Gets the list of specified records.
-        /// </summary>        
-        public abstract DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association);
 
         #region Connection String
 
@@ -308,7 +304,12 @@ namespace Olive.Entities.Data
 
         public abstract IEntity Parse(IDataReader reader);
 
-        public abstract string GenerateSelectCommand(IDatabaseQuery iquery);
+        public virtual string GenerateSelectCommand(IDatabaseQuery iquery)
+        {
+            return GenerateSelectCommand(iquery, GetFields());
+        }
+
+        public abstract string GenerateSelectCommand(IDatabaseQuery iquery, string fields);
 
         public async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
         {
@@ -351,7 +352,7 @@ namespace Olive.Entities.Data
 
         public abstract string GenerateWhere(DatabaseQuery query);
 
-        public string GenerateSort(DatabaseQuery query)
+        public virtual string GenerateSort(DatabaseQuery query)
         {
             var parts = new List<string>();
 
@@ -364,5 +365,31 @@ namespace Olive.Entities.Data
             return parts.ToString(", ") + offset;
         }
         #endregion
+
+        /// <summary>
+        /// Returns a direct database criterion used to eager load associated objects.
+        /// Gets the list of specified records.
+        /// </summary>        
+        public virtual DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association)
+        {
+            var whereClause = GenerateAssociationLoadingCriteria((DatabaseQuery)masterQuery, association);
+
+            return new DirectDatabaseCriterion(whereClause)
+            {
+                Parameters = masterQuery.Parameters
+            };
+        }
+
+        string GenerateAssociationLoadingCriteria(DatabaseQuery masterQuery, PropertyInfo association)
+        {
+            if (masterQuery.PageSize.HasValue && masterQuery.OrderByParts.None())
+                throw new ArgumentException("PageSize cannot be used without OrderBy.");
+
+            var masterProvider = masterQuery.Provider as DataProvider<TConnection, TDataParameter>;
+
+            var uniqueItems = masterProvider.GenerateSelectCommand(masterQuery, masterQuery.Column(association.Name));
+
+            return $"{MapColumn("ID")} IN ({uniqueItems})";
+        }
     }
 }

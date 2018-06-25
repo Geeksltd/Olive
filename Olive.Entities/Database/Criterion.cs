@@ -13,7 +13,7 @@ namespace Olive.Entities
     {
         const string NULL_ESCAPE = "[#-NULL-VALUE-#]", COLON_ESCAPE = "[#-SEPERATOR-#]";
 
-        static readonly MethodInfo StringContainsMethod = typeof(string).GetMethod("Contains");
+        static readonly MethodInfo StringContainsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
         static readonly MethodInfo StringContainsExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("Contains", new[] { typeof(string), typeof(string), typeof(bool) });
         static readonly MethodInfo StringLacksExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("Lacks", new[] { typeof(string), typeof(string), typeof(bool) });
         static readonly MethodInfo StringIsEmptyExtensionMethod = typeof(Olive.OliveExtensions).GetMethod("IsEmpty", new[] { typeof(string) });
@@ -253,7 +253,7 @@ namespace Olive.Entities
             {
                 var value = Expression.Lambda(valueExpression).Compile().DynamicInvoke();
 
-                if(value is IEnumerable<int> enumerable)
+                if (value is IEnumerable<int> enumerable)
                     value = $"({enumerable.ToString(",")})";
 
                 if (valueExpression.NodeType == ExpressionType.NewArrayInit)

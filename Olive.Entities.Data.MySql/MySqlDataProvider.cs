@@ -29,7 +29,7 @@
             return result;
         }
 
-        public override string GenerateSelectCommand(IDatabaseQuery iquery)
+        public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields)
         {
             var query = (DatabaseQuery)iquery;
 
@@ -38,7 +38,7 @@
 
             var r = new StringBuilder("SELECT");
 
-            r.AppendLine($" {GetFields()} FROM {GetTables()}");
+            r.AppendLine($" {fields} FROM {GetTables()}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
             r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
@@ -62,31 +62,17 @@
             return r.ToString();
         }
 
-        public override DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association)
+        public override string GenerateSort(DatabaseQuery query)
         {
-            var whereClause = GenerateAssociationLoadingCriteria(query, association);
-            return new DirectDatabaseCriterion(whereClause) { Parameters = query.Parameters };
-        }
+            var parts = new List<string>();
 
-        string GenerateAssociationLoadingCriteria(IDatabaseQuery iquery, PropertyInfo association)
-        {
-            var query = (DatabaseQuery)iquery;
+            parts.AddRange(query.OrderByParts.Select(p => MapColumn(p.Property) + " DESC".OnlyWhen(p.Descending)));
 
-            if (query.PageSize.HasValue && query.OrderByParts.None())
-                throw new ArgumentException("PageSize cannot be used without OrderBy.");
+            var offset = string.Empty;
+            if (query.PageSize > 0)
+                offset = $" LIMIT {query.PageStartIndex},{query.PageSize}";
 
-            var r = new StringBuilder();
-
-            r.Append($"ID IN (");
-            r.Append("SELECT ");
-            r.AppendLine($" {association.Name} FROM {GetTables()}");
-            r.AppendLine(GenerateWhere(query));
-            r.AppendLine((query.PageSize.HasValue ? GenerateSort(query) : string.Empty).WithPrefix(" ORDER BY "));
-            r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
-
-            r.Append(")");
-
-            return r.ToString();
+            return parts.ToString(", ") + offset;
         }
     }
 }

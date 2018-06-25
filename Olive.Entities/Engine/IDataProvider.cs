@@ -16,7 +16,7 @@ namespace Olive.Entities
         /// <summary>
         /// Returns a direct database criterion used to eager load associated objects.
         /// </summary>
-        DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association);
+        DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association);
 
         IDataAccess Access { get; }
 

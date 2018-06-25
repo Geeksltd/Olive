@@ -48,15 +48,18 @@ namespace Olive.Entities.Data
         {
             var idProperty = Association.DeclaringType.GetProperty(Association.Name + "Id");
 
-            var groupedResult = mainObjects.GroupBy(item => idProperty.GetValue(item))
-           .ToDictionary(i => i.Key, i => i.ToArray());
-            return groupedResult;
+            return mainObjects
+                .GroupBy(item => idProperty.GetValue(item))
+                .ToDictionary(i => i.Key, i => i.ToArray());
         }
 
         Task<IEnumerable<IEntity>> LoadTheAssociatedObjects(DatabaseQuery query)
         {
-            return Context.Current.Database().Of(Association.PropertyType)
-                       .Where(query.Provider.GetAssociationInclusionCriteria(query, Association))
+            var nestedQuery = Context.Current.Database().Of(Association.PropertyType);
+            var provider = ((DatabaseQuery)nestedQuery).Provider;
+
+            return nestedQuery
+                       .Where(provider.GetAssociationInclusionCriteria(query, Association))
                        .Include(IncludedNestedAssociations)
                        .GetList();
         }

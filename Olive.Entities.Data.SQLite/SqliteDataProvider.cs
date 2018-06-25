@@ -21,7 +21,7 @@ namespace Olive.Entities.Data
             return new SqliteParameter { Value = value, ParameterName = data.Key.Remove(" ") };
         }
 
-        public override string GenerateSelectCommand(IDatabaseQuery iquery)
+        public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields)
         {
             var query = (DatabaseQuery)iquery;
 
@@ -30,7 +30,7 @@ namespace Olive.Entities.Data
 
             var r = new StringBuilder("SELECT");
 
-            r.AppendLine($" {GetFields()} FROM {GetTables()}");
+            r.AppendLine($" {fields} FROM {GetTables()}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
             r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
@@ -52,32 +52,6 @@ namespace Olive.Entities.Data
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
 
             return r.ToString();
-        }
-
-        public override DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association)
-        {
-            var whereClause = GenerateAssociationLoadingCriteria(query, association);
-            return new DirectDatabaseCriterion(whereClause) { Parameters = query.Parameters };
-        }
-
-        string GenerateAssociationLoadingCriteria(IDatabaseQuery iquery, PropertyInfo association)
-        {
-            var query = (DatabaseQuery)iquery;
-
-            if (query.PageSize.HasValue && query.OrderByParts.None())
-                throw new ArgumentException("PageSize cannot be used without OrderBy.");
-
-            var r = new StringBuilder();
-
-            r.Append($"ID IN (");
-            r.Append("SELECT ");
-            r.Append(query.TakeTop.ToStringOrEmpty().WithPrefix(" TOP "));
-            r.AppendLine($" {association.Name} FROM {GetTables()}");
-            r.AppendLine(GenerateWhere(query));
-            r.AppendLine((query.PageSize.HasValue ? GenerateSort(query) : string.Empty).WithPrefix(" ORDER BY "));
-            r.Append(")");
-
-            return r.ToString();
-        }
+        }       
     }
 }
