@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -30,8 +31,21 @@ namespace Olive.Entities.Data
 
             if (cachedField != null)
                 foreach (var associatedObject in await associatedObjects)
-                    foreach (var mainEntity in groupedObjects[associatedObject.GetId()])
+                {
+                    var group = groupedObjects.GetOrDefault(associatedObject.GetId());
+                    if (group == null)
+                    {
+                        if (query.PageSize.HasValue) continue;
+
+                        throw new Exception("Database include binding failed.\n" +
+                            "The loaded associated " + associatedObject.GetType().Name + " with id " + associatedObject.GetId() + "\n" + "is not referenced by any " + Association.DeclaringType.Name + "object!\n\n" +
+                            "All associated " + Association.Name + " Ids are:\n" +
+                            groupedObjects.Select(x => x.Key).ToLinesString());
+                    }
+
+                    foreach (var mainEntity in group)
                         BindToCachedField(cachedField, associatedObject, mainEntity);
+                }
         }
 
         void BindToCachedField(FieldInfo cachedField, IEntity associatedObject, IEntity mainEntity)

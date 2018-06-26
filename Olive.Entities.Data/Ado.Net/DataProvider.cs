@@ -389,7 +389,12 @@ namespace Olive.Entities.Data
 
             var uniqueItems = masterProvider.GenerateSelectCommand(masterQuery, masterQuery.Column(association.Name));
 
-            return $"{MapColumn("ID")} IN ({uniqueItems})";
+            return GenerateAssociationLoadingCriteria(MapColumn("ID"), uniqueItems, association);
+        }
+
+        protected virtual string GenerateAssociationLoadingCriteria(string id, string uniqueItems, PropertyInfo association)
+        {
+            return $"{id} IN ({uniqueItems})";
         }
     }
 }

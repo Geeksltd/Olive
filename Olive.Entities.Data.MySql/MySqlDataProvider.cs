@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
     using System.Reflection;
     using System.Text;
     using MySql.Data.MySqlClient;
@@ -60,6 +61,11 @@
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
 
             return r.ToString();
+        }
+
+        protected override string GenerateAssociationLoadingCriteria(string id, string uniqueItems, PropertyInfo association)
+        {
+            return $"{id} IN (SELECT `{association.Name}` FROM ({uniqueItems}) Alias)";
         }
 
         public override string GenerateSort(DatabaseQuery query)
