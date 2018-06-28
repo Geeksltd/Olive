@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Auth0" Version="3.6.0" />
-    <PackageReference Include="GCop.All.Geeks" Version="1.1.4" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

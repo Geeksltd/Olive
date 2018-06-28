@@ -94,25 +94,25 @@ namespace Olive
             if (period.TotalDays >= 1)
             {
                 parts.Add(name("day"), period.Days);
-                period -= TimeSpan.FromDays(period.Days);
+                period -= period.Days.Days();
             }
 
             if (period.TotalHours >= 1 && period.Hours > 0)
             {
                 parts.Add(name("hour"), period.Hours);
-                period = period.Subtract(TimeSpan.FromHours(period.Hours));
+                period = period.Subtract(period.Hours.Hours());
             }
 
             if (period.TotalMinutes >= 1 && period.Minutes > 0)
             {
                 parts.Add(name("minute"), period.Minutes);
-                period = period.Subtract(TimeSpan.FromMinutes(period.Minutes));
+                period = period.Subtract(period.Minutes.Minutes());
             }
 
             if (period.TotalSeconds >= 1 && period.Seconds > 0)
             {
                 parts.Add(name("second"), period.Seconds);
-                period = period.Subtract(TimeSpan.FromSeconds(period.Seconds));
+                period = period.Subtract(period.Seconds.Seconds());
             }
 
             else if (period.TotalSeconds > 0)

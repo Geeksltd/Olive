@@ -18,7 +18,7 @@ namespace Olive
         /// <summary>
         /// Shortens this GUID.
         /// </summary>
-        public static ShortGuid Shorten(this Guid guid) => new ShortGuid(guid);
+        public static ShortGuid Shorten(this Guid @this) => new ShortGuid(@this);
 
         static Task<T> TryHardAsync<T>(FileSystemInfo fileOrFolder, Func<Task<T>> func, string error)
         {
@@ -112,24 +112,24 @@ namespace Olive
             return @value;
         }
 
-        public static DirectoryInfo WebsiteRoot(this AppDomain applicationDomain)
+        public static DirectoryInfo WebsiteRoot(this AppDomain @this)
         {
-            var root = applicationDomain.BaseDirectory.AsDirectory();
+            var root = @this.BaseDirectory.AsDirectory();
             if (root.Name.StartsWith("netcoreapp")) return root.Parent.Parent.Parent;
             else return root;
         }
 
-        public static DirectoryInfo GetBaseDirectory(this AppDomain domain) => domain.BaseDirectory.AsDirectory();
+        public static DirectoryInfo GetBaseDirectory(this AppDomain @this) => @this.BaseDirectory.AsDirectory();
 
-        public static Assembly LoadAssembly(this AppDomain domain, string assemblyName)
+        public static Assembly LoadAssembly(this AppDomain @this, string assemblyName)
         {
-            var result = domain.GetAssemblies().FirstOrDefault(a => a.FullName == assemblyName);
+            var result = @this.GetAssemblies().FirstOrDefault(a => a.FullName == assemblyName);
             if (result != null) return result;
 
             // Nothing found with exact name. Try with file name.
             var fileName = assemblyName.EnsureEndsWith(".dll", caseSensitive: false);
 
-            var file = domain.GetBaseDirectory().GetFile(fileName);
+            var file = @this.GetBaseDirectory().GetFile(fileName);
             if (file.Exists())
                 return Assembly.Load(AssemblyName.GetAssemblyName(file.FullName));
 
