@@ -7,7 +7,7 @@ If you use *Email Sending* functionality in your application, to enable Sanity/P
 app.UseWebTest(config => config.AddTasks().AddEmail());
 ...
 ```
-
+When you restart the application, then, in the testing UI widget, at the bottom middle of the page, you will see a new menu item reading ```Outbox...```.
 
 ## 20 Jun 2018 - UPGRADE TO .NET CORE 2.1
 - Install the latest .NET Core SDK from [here](https://www.microsoft.com/net/download/windows)
