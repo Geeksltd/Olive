@@ -1,5 +1,13 @@
 # Olive compatibility change log
 
+## 28 June 2018
+If you use *Email Sending* functionality in your application, to enable Sanity/Pangolin outbox feature, you should add `.AddEmail()` to the **WebTest Config**, resulting in the following:
+```
+...
+app.UseWebTest(config => config.AddTasks().AddEmail());
+...
+```
+
 
 ## 20 Jun 2018 - UPGRADE TO .NET CORE 2.1
 - Install the latest .NET Core SDK from [here](https://www.microsoft.com/net/download/windows)
