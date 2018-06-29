@@ -1,15 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
+using Olive.Aws;
 
 namespace Olive.Security.Aws.Services
 {
     class DataKeyService
     {
-        static readonly string MasterKeyArn = Config.GetOrThrow("Aws:Kms:MasterKeyArn");
+        static readonly string MasterKeyArn = Config.Get("Aws:Kms:MasterKeyArn")
+            .Or(Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN"))
+            .OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified.");
 
         static AmazonKeyManagementServiceClient CreateClient()
-            => new AmazonKeyManagementServiceClient(Olive.Aws.RuntimeIdentity.Credentials);
+            => new AmazonKeyManagementServiceClient(RuntimeIdentity.Credentials, RuntimeIdentity.Region);
 
         internal static async Task<Key> GenerateKey()
         {

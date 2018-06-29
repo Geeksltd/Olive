@@ -9,7 +9,7 @@ namespace Olive
 {
     public static class AWSExtensions
     {
-        public static IServiceCollection UseAwsIdentity(this IServiceCollection @this)
+        public static IServiceCollection AddAwsIdentity(this IServiceCollection @this)
         {
             Task.Factory.RunSync(LoadIdentityAndSecrets);
             return @this;
@@ -30,7 +30,8 @@ namespace Olive
 
             try
             {
-                using (var client = new AmazonSecretsManagerClient(RuntimeIdentity.Credentials))
+                using (var client = new AmazonSecretsManagerClient(RuntimeIdentity.Credentials,
+                    RuntimeIdentity.Region))
                 {
                     var response = await client.GetSecretValueAsync(request);
                     if (response.SecretString.IsEmpty())

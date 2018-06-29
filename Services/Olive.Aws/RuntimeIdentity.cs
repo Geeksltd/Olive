@@ -3,6 +3,7 @@ using Amazon.Runtime;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Olive.Aws
@@ -15,34 +16,62 @@ namespace Olive.Aws
     {
         const string VARIABLE = "AWS_RUNTIME_ROLE_ARN";
 
+        static readonly string RegionName;
+        static string RoleArn;
+
         public static AWSCredentials Credentials { get; private set; }
 
-        static string RegionName => Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION");
+        static RuntimeIdentity()
+        {
+            RoleArn = Environment.GetEnvironmentVariable(VARIABLE);
+            Environment.SetEnvironmentVariable(VARIABLE, null);
+
+            RegionName = Config.Get("Aws:Region",
+                Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION"));
+        }
 
         public static RegionEndpoint Region => RegionEndpoint.GetBySystemName(RegionName);
 
         internal static async Task Load()
         {
-            using (var client = new AmazonSecurityTokenServiceClient(Region))
+            await Renew();
+
+            new Thread(KeepRenewing).Start();
+        }
+
+        [EscapeGCop("This is a background process")]
+        static async void KeepRenewing()
+        {
+            while (true)
             {
-                var response = await client.AssumeRoleAsync(CreateRequest());
-                Credentials = response.Credentials;
+                await Task.Delay(5.Hours());
+                try
+                {
+                    await Renew();
+                }
+                catch (Exception ex)
+                {
+                    Log.For<RuntimeIdentity>().Error(ex, "Failed to renew AWS credentials.");
+                    Environment.Exit(-1);
+                }
             }
         }
 
-        static AssumeRoleRequest CreateRequest()
+        static async Task Renew()
         {
-            var roleArn = Environment.GetEnvironmentVariable(VARIABLE);
-            Environment.SetEnvironmentVariable(VARIABLE, null);
-
-            return new AssumeRoleRequest
+            var request = new AssumeRoleRequest
             {
-                RoleArn = roleArn,
+                RoleArn = RoleArn,
                 DurationSeconds = (int)12.Hours().TotalSeconds,
                 ExternalId = "Pod",
-                RoleSessionName = "Pod",
-                Policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"Stmt1\",\"Effect\":\"Allow\",\"Action\":\"s3:*\",\"Resource\":\"*\"}]}"
+                RoleSessionName = "Pod"
             };
+
+            using (var client = new AmazonSecurityTokenServiceClient(Region))
+            {
+                var response = await client.AssumeRoleAsync(request);
+                Credentials = response.Credentials;
+            }
         }
     }
 }
