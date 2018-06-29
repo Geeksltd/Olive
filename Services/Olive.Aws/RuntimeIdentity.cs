@@ -30,7 +30,16 @@ namespace Olive.Aws
                 Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION"));
         }
 
-        public static RegionEndpoint Region => RegionEndpoint.GetBySystemName(RegionName);
+        public static RegionEndpoint Region
+        {
+            get
+            {
+                if (RegionName.IsEmpty())
+                    throw new Exception("Region name is not specified in either Environment Variable of 'AWS_RUNTIME_ROLE_REGION' or config value of 'Aws:Region'.");
+
+                return RegionEndpoint.GetBySystemName(RegionName);
+            }
+        }
 
         internal static async Task Load()
         {
