@@ -54,6 +54,7 @@ namespace Olive
                 }
                 catch (AggregateException ex)
                 {
+                    Log.For(typeof(TaskExtensions)).Error(ex);
                     throw ex.InnerException;
                 }
             }

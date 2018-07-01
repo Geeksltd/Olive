@@ -41,7 +41,7 @@ namespace OliveVSIX.NugetPacker
             NugetExe = Path.Combine(SolutionPath, NugetFileName);
             ApiKey = File.ReadAllText(ApiKeyContainingFile);
             NugetPackagesFolder = Path.Combine(SolutionPath, OutputFolder);
-            
+
             var start = new System.Threading.ThreadStart(() =>
             {
                 try
@@ -81,7 +81,13 @@ namespace OliveVSIX.NugetPacker
 
         static bool TryPush(string packageFilename, out string message)
         {
-            return ExecuteNuget($"push \"{NugetPackagesFolder}\\{packageFilename}\" {ApiKey} -NonInteractive -Source https://www.nuget.org/api/v2/package", out message);
+            if (!ExecuteNuget($"push \"{NugetPackagesFolder}\\{packageFilename}\" {ApiKey} -NonInteractive -Source https://www.nuget.org/api/v2/package", out message))
+                return false;
+
+            if (!ExecuteNuget($"push \"{NugetPackagesFolder}\\{packageFilename}\" thisIsMyApiKey -NonInteractive -Source http://nuget.geeksms.uat.co/nuget", out message))
+                return false;
+
+            return true;
         }
 
         static bool TryPack(string nuspecAddress, out string message) =>
