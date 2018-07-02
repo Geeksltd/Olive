@@ -16,7 +16,7 @@
         {
             base.Process(context, output);
 
-            var newName = $"{Prefix}.{output.Attributes.FirstOrDefault(att => att.Name == "name").Value}";
+            var newName = $"{Prefix}.{output.Attributes.LastOrDefault(att => att.Name == "name").Value}";
             output.ReplaceIdentificationAttributes(newName);
         }
     }

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Olive.Entities;
 using Olive.Entities.Data;
@@ -44,8 +45,8 @@ namespace Olive.Mvc
         {
             foreach (var att in new[] { "name", "id", "for" })
             {
-                var declared = output.Attributes.FirstOrDefault(a => a.Name == att);
-                if (declared == null) continue;
+                var declared = output.Attributes.Where(a => a.Name == att).ToArray();
+                if (declared.None()) continue;
 
                 output.Attributes.Remove(declared);
                 output.Attributes.Add(att, newValue);

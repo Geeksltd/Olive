@@ -22,8 +22,7 @@ namespace Olive.Mvc
         {
             await base.ProcessAsync(context, output);
 
-            var newName = output.Attributes.First(att => att.Name == "name").Value.ToString().Replace(ReplaceThis, WithThis);
-
+            var newName = output.Attributes.LastOrDefault(att => att.Name == "name").Value.ToStringOrEmpty().Replace(ReplaceThis, WithThis);
             output.ReplaceIdentificationAttributes(newName);
         }
     }
