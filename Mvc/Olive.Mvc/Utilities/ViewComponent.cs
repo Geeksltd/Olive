@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Olive.Entities;
 
-    public abstract class ViewComponent : Microsoft.AspNetCore.Mvc.ViewComponent
+    public abstract partial class ViewComponent : Microsoft.AspNetCore.Mvc.ViewComponent
     {
         protected static IDatabase Database => Context.Current.Database();
 
@@ -25,15 +25,5 @@
             return result;
         }
 
-        /// <summary>
-        /// Loads a Javascript (or Typescript) module upon page startup.
-        /// </summary>
-        /// <param name="relativePath">The relative path of the module inside wwwroot (including the .js extension).
-        /// E.g. /scripts/CustomModule1</param>
-        /// <param name="staticFunctionInvokation">An expression to call [a static method] on the loaded module.</param>
-        public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
-        {
-            Context.Current.Http().JavascriptActions().LoadModule(relativePath, staticFunctionInvokation);
-        }
-    }
+      }
 }

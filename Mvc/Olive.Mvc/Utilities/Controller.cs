@@ -46,7 +46,7 @@ namespace Olive.Mvc
             }
         }
 
-        JavascriptActions JavascriptActions => HttpContext.JavascriptActions();
+        
 
         /// <summary>
         /// Do not use this overload. Always provide a viewmodel as a parameter.
@@ -134,13 +134,7 @@ namespace Olive.Mvc
             return AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
         }
 
-        [NonAction]
-        public JsonResult JavaScript(string script, PageLifecycleStage stage = PageLifecycleStage.Init)
-        {
-            JavascriptActions.JavaScript(script, stage);
-            return JsonActions();
-        }
-
+       
         [NonAction]
         public ActionResult AjaxRedirect(string url)
         {
@@ -212,16 +206,7 @@ namespace Olive.Mvc
         [NonAction]
         public UnauthorizedTextActionResult Unauthorized(string message) => new UnauthorizedTextActionResult(message);
 
-        /// <summary>
-        /// Loads a Javascript (or Typescript) module upon page startup.
-        /// </summary>
-        /// <param name="relativePath">The relative path of the module inside wwwroot (including the .js extension).
-        /// E.g. /scripts/CustomModule1</param>
-        /// <param name="staticFunctionInvokation">An expression to call [a static method] on the loaded module.</param>
-        public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
-        {
-            JavascriptActions.LoadModule(relativePath, staticFunctionInvokation);
-        }
+       
 
         public ILogger Log => Olive.Log.For(this);
     }

@@ -35,23 +35,5 @@ namespace Olive.Mvc
 
         public void JavaScript(string script, PageLifecycleStage stage = PageLifecycleStage.Init)
             => Add(new { Script = script, Stage = stage.ToString() });
-
-        /// <summary>
-        /// Loads a Javascript (or Typescript) module upon page startup.
-        /// </summary>
-        /// <param name="relativePath">The relative path of the module inside wwwroot (including the .js extension).
-        /// E.g. /scripts/CustomModule1</param>
-        /// <param name="staticFunctionInvokation">An expression to call [a static method] on the loaded module.</param>
-        public void LoadModule(string relativePath, string staticFunctionInvokation = "run()")
-        {
-            string fullUrl;
-
-            var isAbsolute = relativePath.StartsWithAny("http://", "https://", "//");
-            if (isAbsolute) fullUrl = relativePath;
-            else fullUrl = relativePath.EnsureStartsWith("/");
-
-            var onLoaded = staticFunctionInvokation.WithPrefix(", m => m.default.");
-            JavaScript("loadModule('" + fullUrl + "'" + onLoaded + ");");
-        }
     }
 }
