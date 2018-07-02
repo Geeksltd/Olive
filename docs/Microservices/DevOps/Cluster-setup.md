@@ -1,4 +1,4 @@
-# Kubernetes setup on AWS
+# Cluster setup (Kubernetes and AWS)
 
 ## What is Kubernetes
 
