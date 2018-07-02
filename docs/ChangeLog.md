@@ -1,5 +1,9 @@
 # Olive compatibility change log
 
+## 02 July 2018
+- Install the latest Visual Studio update
+- Install .NET Core 2.1 [SDK version 2.1.301](https://www.microsoft.com/net/download/thank-you/dotnet-sdk-2.1.301-windows-x64-installer) (or the latest)
+
 ## 28 June 2018
 If you use *Email Sending* functionality in your application, to enable Sanity/Pangolin outbox feature, you should add `.AddEmail()` to the **WebTest Config**, resulting in the following:
 ```
