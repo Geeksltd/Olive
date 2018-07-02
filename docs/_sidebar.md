@@ -12,8 +12,10 @@
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
     * DevOps
-        * [Docker support](Microservices/Docker.md)
-        * [Build server: Jenkins](Microservices/Jenkins.md)
+        * [Docker support](Microservices/DevOps/Docker.md)
+        * [Jenkins](Microservices/DevOps/Jenkins.md)
+        * [Kubernetes](Microservices/DevOps/Kubernetes.md)
+        * [Security](Microservices/DevOps/Security.md)
         
 * Web Api and Integration
     * [RESTful WebApi](Api/WebApi.md)
