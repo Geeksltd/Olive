@@ -5,29 +5,34 @@ or running a containerized application you need to run all the containers for th
 ## Kubernetes Concepts
 Below is the list of elements we need to understand to be able to run and manage an application on Kubernetes.
 
-#### Node
-...
-
 #### Cluster
 For an application to run on Kubernetes we need to create a cluster which wraps all the Kubernetes elements required to keep all the application containers up and running. 
+
+#### Node
+Nodes are the actual servers (bear metal or VM) that host containers. Each cluster can have one or more nodes.
+
+#### Master
+The Kubernetes core elements run on a master. For high availability you can set up more than one master in your cluster and Kubernetes will distribute its jobs among the running masters.
 
 #### States
 For running an application you plan to run a certain number of instances of each service. For example you want your application to have 3 running instances of Service A and only one running instance of Service B. That is called your Desired State. When you set up your application on Kubernetes, you specify what your desired state is. There is another state called current State, which is the state of your cluster when your application is running on it. When the application is running, for one reason or another you may lose some containers, which results in your current state not to match your desired state. Kubernetes constantly monitors the cluster and trys to manage the resources to bring the current state to the desired state.
 
 #### Pod
-Pod is the runtime host of a container. All the environment elements (i.e. environment variables) that a container works with come from the hosting pod. When you create a container image you often want to specify how much resource that container is allowed to use which can be specified in the pod definition.
+Pod is the runtime host of a container. All the environment elements (i.e. environment variables) that a container works with come from the hosting pod. When you create a container image you often want to specify how much resource that container is allowed to use which can be specified in the pod definition. Like a normal virtual machine, when running, each pod will be allocated a cluster level IP address which can be used to connect to it.
 
 #### Deployments
-For making sure that a pod is up and running, how many of it should run at the same time or even where they should be running relative to other pods we can use deployments. In each deployment you specify the information (i.e. docker image, startup arguments, environment  variables ...) kubernetes needs when creating an instance of the pod.
+For making sure that a pod is up and running, how many of it should run at the same time or even where they should be running relative to other pods we can use deployments. In each deployment you specify the information (i.e. docker image, port binding, startup arguments, environment  variables ...) kubernetes needs when creating an instance of the pod.
 
 #### Services
-...
-
-#### Selectors
-...
+Containers run in pods, deployments make sure pods run as planned, but how do we access the containers? Yes you can use pod ip addresses but they change everytime a new pod is created. Kubernetes Services are abstractions for pods. You can define a service and map it to the pods that run specific containers.
 
 #### Labels
-...
+Each resource (pod, deployment, service etc) in 
+
+
+#### Selectors
+
+
 
 #### Kubectl
 ...
