@@ -14,13 +14,7 @@ namespace Olive.Mvc
 
             var result = $"requirejs(['{GetFullUrl()}']{onLoaded});";
 
-            if (Dependencies.Any())
-            {
-                var deps = Dependencies.Select(x => "'" + x.GetFullUrl() + "'").ToString(", ");
-                result = $"requirejs([{deps}], function () {{\n {result}\n}});";
-            }
-
-            return result;
+            return Dependencies.OnLoaded(result);
         }
 
         public new JavascriptModule Add(JavascriptDependency dependency)

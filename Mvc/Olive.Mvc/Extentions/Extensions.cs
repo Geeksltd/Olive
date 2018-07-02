@@ -145,6 +145,15 @@ namespace Olive.Mvc
                   (context.Items["JavascriptActions"] = new JavascriptActions()));
         }
 
+        internal static string OnLoaded(this IEnumerable<JavascriptDependency> dependencies, string javaScript)
+        {
+            if (dependencies.Any())
+            {
+                var deps = dependencies.Select(x => "'" + x.GetFullUrl() + "'").ToString(", ");
+                javaScript = $"requirejs([{deps}], function () {{\n {javaScript}\n}});";
+            }
 
+            return javaScript;
+        }
     }
 }

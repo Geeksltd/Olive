@@ -34,6 +34,20 @@ namespace Olive.Mvc
             return JavaScript(module.GenerateLoad(staticFunctionInvokation));
         }
 
+        /// <param name="javascriptCode">The code to run after a set of javascritp dependencies are loaded.</param>
+        [NonAction]
+        public JsonResult JavaScript(string[] dependencies, string javascriptCode)
+        {
+            return JavaScript(dependencies.Select(x => new JavascriptDependency(x)).OnLoaded(javascriptCode));
+        }
+
+        /// <param name="javascriptCode">The code to run after a set of javascritp dependencies are loaded.</param>
+        [NonAction]
+        public JsonResult JavaScript(JavascriptDependency[] dependencies, string javascriptCode)
+        {
+            return JavaScript(dependencies.OnLoaded(javascriptCode));
+        }
+
         [Obsolete("Instead, use JavaScript(new JavaScriptModule(...)).")]
         public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
         {
