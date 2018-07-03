@@ -80,7 +80,7 @@ Imagine that you are using a third party library and you don't want to change it
 The *map* config section is helpful when ever you see an error log in the Chrome console, complaining that a javascript file does not exist.
 
 ### shim
-Often javascript files have a dependency on other scripts and hence they need to be loaded in the correct order. The traditional solution (Without using requireJs) was to list the <script> tags in the correct order in the html file. But requireJs works in a different way, and tried to parallelise script loading for improving performance when there is no known dependencies. 
+Often javascript files have a dependency on other scripts and hence they need to be loaded in the correct order. The traditional solution (Without using requireJs) was to list the `<script>` tags in the correct order in the html file. But requireJs works in a different way, and tried to parallelise script loading for improving performance when there is no known dependencies. 
 
 What this means is that requireJs needs to know about those dependencies, or else it will load them in parallel, or in any random order, which can cause problems.
 
@@ -99,27 +99,3 @@ This means that to add a new Javascript file to the project (that you want loade
 1. Define it under **paths** in the config section.
 2. Add its aliais to this array.
 
-## Loading javascript modules dynamically
-Sometimes you need to create custom javascript modules that are loaded for specific pages as opposed to the whole application.
-
-For example if your script file is under wwwroot/scripts/components/myScript.js you can load it by running the following Javascript code:
-
-'''javascript
-window.loadModule('/scripts/components/myScript');
-```
-
-Or if you want to run a static function of your module named *Run* as soon as it's loaded, you can use:
-
-'''javascript
-window.loadModule('/scripts/components/myScript', m => m.default.Run());
-```
-To achieve this in M#, instead of writing the code shown above, in the Page definition file where you want this script to be loaded, ismply call the *LoadJavascriptModule()* method as shown below:
-```csharp
-public class SomePage : RootPage
-{
-    public SomePage()
-    {
-        LoadJavascriptModule("/scripts/components/projectTabs.js", "Run()");
-        ...
-    }
-}

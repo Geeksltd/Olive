@@ -36,8 +36,7 @@
 * Olive Javascript Fx (MvcJS)
     * [Overview](MvcJS/Overview.md)
     * [Ajax Lifecycle](MvcJS/AjaxLifecycle.md)
-    * [Loading custom modules](MvcJS/Custom.md)
-    * [Loading JS libraries](MvcJS/Library.md)
+    * [Loading custom modules and libraries](MvcJS/Library.md)
     
     
 * Olive Plugins
