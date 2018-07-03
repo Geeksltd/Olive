@@ -94,13 +94,13 @@ You either need to have a machine with Linux running on it or run a Linux virtua
 
 * You need to have kubectl installed on your machine.
 * Download the kops by running:
- * wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
-   chmod +x kops-linux-amd64
-   mv kops-linux-amd64 /usr/local/bin/kops
+    * wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
+      chmod +x kops-linux-amd64
+      mv kops-linux-amd64 /usr/local/bin/kops
 
 Now we have kops installed. The next step is to prepare the AWS environment so that kops can create the resource we require for our cluster. 
 
-#### Create a route53 domain for your cluster
+1. Create a route53 domain for your cluster
 
 
 TODO: https://docs.google.com/document/d/1CRvhWy5uN3dIw-agmqTjhdl8aC4bkWYsFPS45XLWick/edit
