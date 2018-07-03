@@ -118,13 +118,29 @@ There are different ways to install this on Windows. For example you can use [Ch
 ## Kops
 Kops helps you create, destroy, upgrade and maintain Kubernetes clusters from the command line. With a single command line and passing some configuration arguments kops can create a Kubernetes cluster.
 
-For our current production environment we are planning to have one master and 3 worker nodes. We want the worker nodes to be in different availability zones so that if one availability zone goes down the other nodes will be up and host our pods. 
-
 ### Installation
 At the time of creating this document, kops only works on Linux and there is no native support for Windows. Howerver, you can run it on a container, using [this docker file](https://github.com/kubernetes/kops/blob/master/docker/Dockerfile-light) (not tested).
 
 #### Linux
 You either need to have a machine with Linux running on it, or run a Linux virtual machine on windows. For the latter you can use the instrcution provided [here](https://www.windowscentral.com/how-run-linux-distros-windows-10-using-hyper-v). Once you install the virtual machine, you can install kops using the instruction [here](https://kubernetes.io/docs/setup/custom-cloud/kops/).
+
+### Creating the Cluster
+For our current production environment we are planning to have one master and 3 worker nodes. We want the worker nodes to be in different availability zones so that if one availability zone goes down the other nodes will be up and host our pods. Below is the command which creates our cluster :
+```shell 
+kops create cluster app.geeks.ltd --node-count 3 --zones eu-west-1a,eu-west-1b,eu-west-1c --master-size t2.medium --master-count 1 --node-size t2.small --cloud aws  --master-zones eu-west-1a --dns-zone app.geeks.ltd --yes
+```
+The above command creates :
+* Creates the cluster in eu-west-1 region on AWS
+* 3 X t2.small EC2 instanses as the worker nodes in eu-west-1a,eu-west-1b,eu-west-1c availability zones
+* 1 X t2.medium EC2 instance as the master node in eu-west-1a availability zones
+* Under the hood to make sure we always have a running master node in eu-west-1a AZ it creates an AutoScailing Group on AWS with min and max number of instances set 1. That essentially re-create the master node if for any reason the running one stops. It does the same thing for the 3 worker nodes to make sure we always have three instances running.
+
+
+
+***kops stores the state of the infrastructure in S3. It is important not to change the infrastructure directly on AWS. Changes should be made by kops to make sure the state of the infrastructure is valid and up to date. Any inconsistency between the infrastructure and its metadata in kops can cause serious problems. Some changes may not cause problems but it is recommended to double check everything with the system admin first.***
+
+
+
 
 
 ------------------
