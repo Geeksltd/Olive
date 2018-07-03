@@ -29,7 +29,6 @@ M# will generate this code:
 public async Task OnBound(vm.EventSourcesList info)
 {
     // Load module
-
     JavaScript(JavascriptModule.Relative("scripts/components/myScript.js"));
 	...    
 }
@@ -52,8 +51,8 @@ M# will generate this code:
 [NonAction, OnBound]
 public async Task OnBound(vm.EventSourcesList info)
 {
-    // Load FullCalendar dependency
-    var module = JavascriptModule.Absolute("scripts/FullCalendarModule.js")
+    // JS dependency
+    var module = JavascriptModule.Absolute("scripts/myScript.js")
 						.Add(JavascriptDependency.Absolute("lib/fullcalendar/dist/fullcalendar.js")); 
 	
 	JavaScript(module);
