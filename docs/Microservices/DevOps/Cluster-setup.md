@@ -42,14 +42,33 @@ apiVersion: extensions/v1beta1
        containers:
          - name: cnt-stock-reporting
            image: The url of the container image.           
-         
+           ports:
+           - containerPort: 9376
              
 ```
 
-As you can see in the example we have create a deployment called StockReporting (read from metadata.name), specified that we need 3 running pod (read from spec.replicas) and defined the pod spec in spec.spec section. When added to Kubernetes, 3 pods will be created from the container image specified in spec.spec.image.
+As you can see in the example we have create a deployment called StockReporting (read from metadata.name), specified that we need 3 running pod (read from spec.replicas) and defined the pod spec in spec.spec section. When added to Kubernetes, 3 pods will be created from the container image specified in spec.spec.image. It also assigns a label to the pods, read from spec.metadata.labels, which will be described later.
 
 #### Services
-Containers run in pods, deployments make sure pods run as planned, but how do we access the containers? Yes you can use pod ip addresses but they change everytime a new pod is created. Kubernetes Services are abstractions for pods. You can define a service and map it to the pods that run specific containers.
+Containers run in pods, deployments make sure pods run as planned, but how do we access the containers? Yes you can use pod ip addresses but they change everytime a new pod is created. The stock reporting service in the inventory application has to talk to the product management service to get the product information available in stock. We wouldn't want to use the ip address of the pod which runs the product management service. For some reason if the product management pod stops and a new pod is created for it the new pod will have a new virtual ip address and the existing stock management services will not be able to connect to the new pod as they have the old ip address of the product management service pod. To solve that problem, Kubernetes has introduced a concept called service. You can define a service, give it a name, a type and a pod selector, which is used by kubernetes to search among the running pods and map the matching ones to the service. Once mapped, you can use the service name, as opposed to a hard-coded ip address, to connect to pods. 
+Below is the definition of the StockManagement service in our inventory application on Kubernetes:
+
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: StockReporting
+spec:
+  selector:
+    microservice: stock-reporting
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9376
+
+```
+The template above creates a service named StockReporting (read form metadata.name) for the deployment we created in the previous section. Notice the spec.selector, it matches spec.template.metadata.labels. We will describe labels and selectors in more details in the next section. The service specification also tells Kubernetes to redirect the coming TCP traffic to StockReporting:80 to the 9376 port of its bound pods (defined in spec.ports).
+
 
 #### Labels
 Each resource (pod, deployment, service etc) in 
