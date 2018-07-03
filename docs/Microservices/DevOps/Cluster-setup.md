@@ -39,7 +39,11 @@ For example, for a container image you often want to specify `how much resource`
 Like a normal virtual machine, when running, each pod will be allocated a `cluster level IP address` which can be used to connect to it. For the desired state of the `Inventory applciation` described in the previous section, we would have a pod running the `product management` container and 3 pods running the `stock reporting` contianers.
 
 #### Deployments
-Based on the desire state of the inventory application we have to configure Kubernetes to make sure one reporting service and three stock reporting service pods run all the time. This configuration is defined in the form of deployments. Earlier we managed to define the runtime specification of our containers in the form of pod definitions. Now we have to define how many of those pods we want running. Because we have two different pod definitions (one for product management and one for stock reporting) we need to have to different deployments. Deployments encapsulate pod definitions as well as the replication specification of that pod. Based on the replication specification, each deployment can create zero or more pods. An example of a deployment is shown below :
+In the `pod definition` we defined the `runtime specification` of our containers. In `deployments` we define how many of those pods we want running.
+
+For example, based on the desired state of the `inventory application`, we have to configure Kubernetes to ensure one `reporting service` and 3 `stock reporting` service pods run all the time. This configuration is defined in the form of `deployments`. We need to define two different deployments.
+
+Deployments encapsulate pod definitions as well as the `replication specification` of that pod. Based on the replication specification, each deployment can create zero or more pods. An example of a deployment is shown below :
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -61,11 +65,16 @@ apiVersion: extensions/v1beta1
              
 ```
 
-As you can see in the example we have create a deployment called StockReporting (read from metadata.name), specified that we need 3 running pod (read from spec.replicas) and defined the pod spec in spec.spec section. When added to Kubernetes, 3 pods will be created from the container image specified in spec.spec.image. It also assigns a label to the pods, read from spec.metadata.labels, which will be described later.
+As you can see in this example, we have created a deployment called `StockReporting` (read from `metadata.name`), specified that we need 3 running pod (read from `spec.replicas`) and defined the pod spec in `spec.spec` section. When added to Kubernetes, 3 pods will be created from the container image specified in `spec.spec.image`. It also assigns a label to the pods, read from `spec.metadata.labels`, which will be described later.
 
 #### Services
-Containers run in pods, deployments make sure pods run as planned, but how do we access the containers? Yes you can use pod ip addresses but they change everytime a new pod is created. The stock reporting service in the inventory application has to talk to the product management service to get the product information available in stock. We wouldn't want to use the ip address of the pod which runs the product management service. For some reason if the product management pod stops and a new pod is created for it the new pod will have a new virtual ip address and the existing stock management services will not be able to connect to the new pod as they have the old ip address of the product management service pod. To solve that problem, Kubernetes has introduced a concept called service. You can define a service, give it a name, a type and a pod selector, which is used by kubernetes to search among the running pods and map the matching ones to the service. Once mapped, you can use the service name, as opposed to a hard-coded ip address, to connect to pods. 
-Below is the definition of the StockManagement service in our inventory application on Kubernetes:
+Containers run in pods. Deployments make sure pods run as planned. But, how do we access the containers? Yes, you can use the `pod ip addresses` directly, but they change everytime a new pod is created.
+
+The `stock reporting` service in the inventory application, has to talk to the `product management` service to get the product information available in stock. We wouldn't want to use the ip address of the pod which runs the product management service. For some reason, if the `product management` pod stops, and a new pod is created for it, the new pod will have a new virtual ip address and the existing `stock management` services will not be able to connect to the new pod.
+
+> To solve that problem, Kubernetes has introduced a concept called `service`. You can define a service, give it a name, a type and a pod selector, which is used by kubernetes to `search among the running pods` and map the matching ones to the service. Once mapped, you can use the service name, as opposed to a hard-coded ip address, to connect to pods.
+
+Below is the definition of the `StockManagement` service in our inventory application on Kubernetes:
 
 ```yaml
 kind: Service
@@ -81,7 +90,7 @@ spec:
     targetPort: 9376
 
 ```
-The template above creates a service named StockReporting (read form metadata.name) for the deployment we created in the previous section. Notice the spec.selector, it matches spec.template.metadata.labels. We will describe labels and selectors in more details in the next section. The service specification also tells Kubernetes to redirect the coming TCP traffic to StockReporting:80 to the 9376 port of its bound pods (defined in spec.ports).
+The template above creates a service named `StockReporting` (read form `metadata.name`) for the deployment we created in the previous section. Notice the `spec.selector`, it matches `spec.template.metadata.labels`. We will describe labels and selectors in more details in the next section. The service specification also tells Kubernetes to redirect the coming TCP traffic to `StockReporting:80` to the `9376 port` of its bound pods (defined in `spec.ports`).
 
 
 #### Labels and Selctors
