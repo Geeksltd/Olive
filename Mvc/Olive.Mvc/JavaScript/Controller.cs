@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Logging;
-using Olive.Entities;
+using System;
 
 namespace Olive.Mvc
 {
@@ -36,22 +27,15 @@ namespace Olive.Mvc
 
         /// <param name="javascriptCode">The code to run after a set of javascritp dependencies are loaded.</param>
         [NonAction]
-        public JsonResult JavaScript(string[] dependencies, string javascriptCode)
-        {
-            return JavaScript(dependencies.Select(x => new JavascriptDependency(x)).OnLoaded(javascriptCode));
-        }
-
-        /// <param name="javascriptCode">The code to run after a set of javascritp dependencies are loaded.</param>
-        [NonAction]
         public JsonResult JavaScript(JavascriptDependency[] dependencies, string javascriptCode)
         {
             return JavaScript(dependencies.OnLoaded(javascriptCode));
         }
 
-        [Obsolete("Instead, use JavaScript(new JavaScriptModule(...)).")]
+        [Obsolete("Instead, use JavaScript(new JavaScriptModule(...)).", error: true)]
         public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
         {
-            JavaScript(new JavascriptModule(relativePath), staticFunctionInvokation);
+            JavaScript(JavascriptModule.Relative(relativePath), staticFunctionInvokation);
         }
     }
 }

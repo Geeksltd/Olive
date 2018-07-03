@@ -150,7 +150,7 @@ namespace Olive.Mvc
         {
             if (dependencies.Any())
             {
-                var deps = dependencies.Select(x => "'" + x.GetFullUrl() + "'").ToString(", ");
+                var deps = dependencies.Select(x => "'" + x.Url + "'").ToString(", ");
                 javaScript = $"requirejs([{deps}], function () {{\n {javaScript}\n}});";
             }
 
