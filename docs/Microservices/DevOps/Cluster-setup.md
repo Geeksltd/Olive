@@ -90,17 +90,9 @@ For our current production environment we are planning to have one master and th
 At the time of creating this document kops only works on Linux and there is no native support for Windows. Howerver, you can run it on a container using [here](https://github.com/kubernetes/kops/blob/master/docker/Dockerfile-light) (not tested).
 
 #### Linux
-You either need to have a machine with Linux running on it or run a Linux virtual machine on windows. For the latter you can use the instrcution provided [here](https://www.windowscentral.com/how-run-linux-distros-windows-10-using-hyper-v). Once you install the virtual machine you can now install kops using the instruction below:
+You either need to have a machine with Linux running on it or run a Linux virtual machine on windows. For the latter you can use the instrcution provided [here](https://www.windowscentral.com/how-run-linux-distros-windows-10-using-hyper-v). Once you install the virtual machine you can now install kops using the instruction [here](https://kubernetes.io/docs/setup/custom-cloud/kops/).
 
-* You need to have kubectl installed on your machine.
-* Download the kops by running:
-    * wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
-      chmod +x kops-linux-amd64
-      mv kops-linux-amd64 /usr/local/bin/kops
 
-Now we have kops installed. The next step is to prepare the AWS environment so that kops can create the resource we require for our cluster. 
-
-1. Create a route53 domain for your cluster
 
 
 TODO: https://docs.google.com/document/d/1CRvhWy5uN3dIw-agmqTjhdl8aC4bkWYsFPS45XLWick/edit
