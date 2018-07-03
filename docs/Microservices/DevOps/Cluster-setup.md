@@ -1,19 +1,23 @@
 # Cluster setup (Kubernetes and AWS)
 
 ## Introduction
-This document describes what Kubernetes is and how it can be set up on AWS. We will try to use a simple imaginary inventory application as a usecase to run using Kubernetes to simplify the learning process. Our application is a microservice based, containerized system, consists of two services, Product Management and Stock Reporting. We assume that the Project Management service will not be used a lot but the Stock Reporting (which is a heavy process) is used frequently. 
+This document describes what Kubernetes is and how it can be set up on AWS. We will try to use a simple imaginary inventory application as a case study to run using Kubernetes to simplify the learning process.
+
+Our application is a microservice based, containerized system. It consists of two services, `Product Management` and `Stock Reportin`g. We assume that the `Project Management` service will not be used a lot, but the `Stock Reporting` (which is a heavy process) is used frequently. 
 
 ## What is Kubernetes
-For running a containerized application you need to run all the containers for the system to be fully functional. Generally speaking each container has a main process and if that process stops the whole container will stop which means the service that was running in the container will not be accessible. The only way to have that service back up and running is to run its container by running "docker run". However, this approach is not practical at all as you constantly have to monitor your containers and keep running different commands to make sure your application remains running. This process can be automated using a container orchestration. [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/) is a very popular open source container orchastrator developed by google. 
+For smooth running of a containerized application, you need to run all the containers for the system to be fully functional. Generally speaking, each container has a main process and if that **process stops, the whole container will stop**, which means the service that was running in the container will not be accessible. The only way to have that service back up and running is to run its container by running "docker run". However, this approach is not practical, as you will have to constantly monitor your containers and keep running different commands to make sure your application remains running! 
+
+To automate this process instead, you need a `container orchestration` system. [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/) is a very popular open source container orchastrator developed by Google. 
 
 ## Kubernetes Concepts
 Below is the list of elements we need to understand to be able to run and manage an application on Kubernetes.
 
 #### Cluster
-For an application to run on Kubernetes we need to create a cluster which wraps all the Kubernetes elements required to keep all the application containers up and running. 
+For an application to run on Kubernetes, we need to create a `cluster` which is a grouping of servers and other bits. A cluster wraps all the Kubernetes elements required to keep the application containers up and running.
 
 #### Node
-Nodes are the actual servers (bare metal or VM) that host containers. Each cluster can have one or more nodes.
+Nodes are the `actual servers` (bare metal or VM) that host containers. Each cluster can have one or more nodes.
 
 #### Master
 Just like nodes, masters are bare metal or VM machines. In order to manage the state of a cluster there should be [some processes](https://kubernetes.io/docs/concepts/overview/components/#master-components), with different responsibilities and taks, running all the time, which monitor the cluster and take actions (remove, add or update elements) accordingly to controll the overal state of the cluster. These process run on masters. For high availability you can set up more than one master in your cluster and Kubernetes will distribute its jobs among the running masters. When connecting to the cluster using the Kubernetes cli you actually connect to a master.
