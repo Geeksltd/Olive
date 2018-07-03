@@ -101,9 +101,16 @@ namespace Olive
                     if (typeof(TResponse) == typeof(string) && response.HasValue())
                         response = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
 
-                    var result = JsonConvert.DeserializeObject<TResponse>(response);
-
-                    Log.For(this).Debug("ExtractResponse: Deserialized Result: " + result);
+                    TResponse result;
+                    if (typeof(TResponse) == typeof(string))
+                    {
+                        result = (TResponse)(object)response;
+                    }
+                    else
+                    {
+                        result = JsonConvert.DeserializeObject<TResponse>(response);
+                        Log.For(this).Debug("ExtractResponse: Deserialized Result: " + result);
+                    }
 
                     return result;
                 }

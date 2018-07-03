@@ -20,8 +20,7 @@ namespace Olive
 
                 if (requestInfo.Error == null)
                 {
-                    await cache.File.WriteAllTextAsync(requestInfo.ResponseText);
-
+                    await cache.Update(requestInfo.ResponseText);
                     return true;
                 }
             }

@@ -164,7 +164,7 @@ namespace Olive
 
                 namePos = valueEnd + 1;
                 var value = UrlDecode(query.Substring(valuePos, valueEnd - valuePos));
-                if (name != null) result.Add(name, value);
+                if (!(name is null)) result.Add(name, value);
             }
 
             return result;
@@ -173,13 +173,13 @@ namespace Olive
         /// <summary>
         /// Removes the specified query string parameter.
         /// </summary>
-        public static Uri RemoveEmptyQueryParameters(this Uri url)
+        public static Uri RemoveEmptyQueryParameters(this Uri @this)
         {
-            var toRemove = url.GetQueryString().Where(x => x.Value.IsEmpty()).ToList();
+            var toRemove = @this.GetQueryString().Where(x => x.Value.IsEmpty()).ToList();
 
-            foreach (var item in toRemove) url = url.RemoveQueryString(item.Key);
+            foreach (var item in toRemove) @this = @this.RemoveQueryString(item.Key);
 
-            return url;
+            return @this;
         }
 
         /// <summary>

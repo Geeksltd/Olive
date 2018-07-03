@@ -39,7 +39,10 @@ namespace Olive
                 var text = await File.ReadAllTextAsync();
                 var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-                Data = JsonConvert.DeserializeObject<TData>(text, settings);
+                if (typeof(TData) == typeof(string))
+                    Data = (TData)(object)text;
+                else
+                    Data = JsonConvert.DeserializeObject<TData>(text, settings);
                 DeserializedCache.TryAdd(Key, Data);
             }
             catch (Exception ex)
@@ -68,6 +71,12 @@ namespace Olive
         {
             return GetRootCacheDirectory().GetOrCreateSubDirectory(GetTypeName<TData>());
         }
+
+        internal override async Task Update(string content)
+        {
+            await base.Update(content);
+            DeserializedCache.TryRemove(Key);
+        }
     }
 
     public abstract class ApiResponseCache
@@ -87,7 +96,14 @@ namespace Olive
 
         public string OriginalErrorMessage { get; internal set; }
 
-        public FileInfo File { get; internal set; }
+        protected FileInfo File { get; set; }
+
+        internal Task Delete() => File.DeleteAsync(harshly: true);
+
+        internal virtual Task Update(string content)
+        {
+            return File.WriteAllTextAsync(content);
+        }
 
         public DateTime CreationDate { get; internal set; }
 

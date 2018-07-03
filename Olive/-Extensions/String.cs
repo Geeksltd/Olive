@@ -108,13 +108,13 @@ namespace Olive
         /// <summary>
         /// Determines whether this instance of string is null or empty.
         /// </summary>
-
+        [EscapeGCop("I am the solution myself!")]
         public static bool IsEmpty(this string text) => string.IsNullOrEmpty(text);
 
         /// <summary>
         /// Determines whether this instance of string is not null or empty.
         /// </summary>
-
+        [EscapeGCop("I am the solution myself!")]
         public static bool HasValue(this string text) => !string.IsNullOrEmpty(text);
 
         /// <summary>

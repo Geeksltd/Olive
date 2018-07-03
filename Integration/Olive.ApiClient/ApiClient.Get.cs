@@ -70,6 +70,6 @@ namespace Olive
         /// Deletes the cached Get API result for the specified API url.
         /// </summary>
         public Task DisposeCache<TResponse>(string getApiUrl)
-            => ApiResponseCache<TResponse>.Create(getApiUrl).File.DeleteAsync(harshly: true);
+            => ApiResponseCache<TResponse>.Create(getApiUrl).Delete();
     }
 }

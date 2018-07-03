@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.SecretsManager" Version="3.3.0.11" />
     <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.4.5" />
-    <PackageReference Include="GCop.All.Geeks" Version="1.2.0" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.2.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
