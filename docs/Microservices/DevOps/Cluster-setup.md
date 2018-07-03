@@ -79,17 +79,29 @@ Earlier in this article we mentioned that Kubernetes needs some servers, to run 
 ## Installation
 There are two ways we can set up our infrastructure on AWS for Kubernetes. Either create all the servers on AWS and install Kubernetes on them, which trust me, it is very complicated and time consuming, or use Kops. In the future we should ideally use aws terraform to manage our infrastructe which enables us to utilize the benefits of infrastructure as code.
 
+## Kubectl
+Previously we mentioned that the Kubernetes core componetns run on master nodes. To be able to manage the cluster we need to send commands to the master node. The way to do that is to use the native Kubernetes command-line tool called kubectl. There are different ways to install this on Windows. You can either use Chocolatey by running _choco install kubernetes-cli_ or Homebrew by running _brew install kubernetes-cli_. Other installation options have been discussed [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 ## Kops
 Kops helps you create, destroy, upgrade and maintain production-grade, highly available, Kubernetes clusters from the command line. With a single command line and passing some configuration arguments kops can create a highly available Kubernetes cluster.
-For our current production environment we are planning to have one master and three worker nodes. We want the worker nodes to be in different availability zones so that if one availability zone goes down the other nodes will be up and host our pods.
+For our current production environment we are planning to have one master and three worker nodes. We want the worker nodes to be in different availability zones so that if one availability zone goes down the other nodes will be up and host our pods. 
 
 ### Installation
 At the time of creating this document kops only works on Linux and there is no native support for Windows. Howerver, you can run it on a container using [here](https://github.com/kubernetes/kops/blob/master/docker/Dockerfile-light) (not tested).
 
 #### Linux
+You either need to have a machine with Linux running on it or run a Linux virtual machine on windows. For the latter you can use the instrcution provided [here](https://www.windowscentral.com/how-run-linux-distros-windows-10-using-hyper-v). Once you install the virtual machine you can now install kops using the instruction below:
 
-## Kubectl
+* You need to have kubectl installed on your machine.
+* Download the kops by running:
+ * wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
+   chmod +x kops-linux-amd64
+   mv kops-linux-amd64 /usr/local/bin/kops
+
+Now we have kops installed. The next step is to prepare the AWS environment so that kops can create the resource we require for our cluster. 
+
+#### Create a route53 domain for your cluster
+
 
 TODO: https://docs.google.com/document/d/1CRvhWy5uN3dIw-agmqTjhdl8aC4bkWYsFPS45XLWick/edit
 
