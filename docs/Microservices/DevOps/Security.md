@@ -1,17 +1,37 @@
 # Securing your production environment with AWS
 
 ### Introduction
-This document describes the process of deploying the application from the development environment to deployment to production and runtime. Each microservice is treated as a separate project and the instructions on this document will be the same for all of them.
+This document describes the process of deploying the application from the *development* environment to *production*.
 
+Each microservice is treated as a separate project and the instructions on this document will be the same for all of them.
 
 ### Development
-These days it is common sense to use some sort of version control for projects to be able to keep track of and manage code changes. We have chosen Bitbucket as our repository TODO: reason?. For each application we create a project in Bitbucket and for each microservice in the application we create a separate repository in the project. Developers will have write access only to the repositories of the microservices they are assigned to. 
+Almost every project these days will use GIT (or some other version control) to keep track of, and manage code changes. This document will assume that you use `Bitbucket`, but you can use any other repository provider as well.
+
+For each application, we will create a project in Bitbucket. For each microservice in the application, we will create a separate repository in the project.
+
+Developers will have write access only to the repositories of the microservices they are assigned to. 
 
 #### _Security Caution_
-You need to make sure you do not put any sensitive information in the source code. Secure info such as connection strings, credentials, api keys etc, are injected to the application during the deployment process, which will be explained later in this article. 
+You must NEVER store any sensitive information in the source code. Secure info such as connection strings, credentials, api keys etc, are injected to the application during the `deployment process`, which will be explained later in this article. 
 
-### Build
-Microservice oriented architecture enables us to very reactive, meaning if there is a bug in a microservice, or if we need a new microservice we can take actions and update the application accordingly.However, this cannot be achived without automated deployment. Continious deployment enables us to rapidly deploy changes without the risk of human errors. Once designed and tested you can trust the deployment process way more than the most experienced developers. Also, scripting the deployment process is a form of documenting it that enables anybody to learn and do the process easily. There are many tools out there for deployment automation but we have chosen Jenkins because firstly, it is one of the most popular tools, which means there is a good community support for it, secondly, it is open source, so we don't have to pay for anything, and more importantly, has a rich library of plugins for different build and deployment tasks. Our build process has a fairly complex structure and chosing Jenkins has been nothing but benefitial for us (hopefully it will remain that way). Please make sure you review the Jenkins document [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Jenkins.md).
+### Continious Delivery
+`Continious Delivery` and `DevOps` have many well known operational benefits for the process of software development and management. But they are even more vital in a Microservice-oriented architecture. Why? Because with Microservices, you will typically have `10s of deployments per day`, after every small bug fix, or new feature. That makes it impossible to go about it manually.
+
+`Continious deployment` enables us to rapidly deploy changes without the risk of `human errors`. Once designed and tested, you can trust the deployment process way more than any developer, even the most experienced ones.
+
+Also, `scripting the deployment process` is a form of `documenting` it, that enables anybody to learn and do the process easily.
+
+### Jenkins
+There are many tools out there for deployment automation but we have chosen `Jenkins` because:
+
+- It is one of the most popular tools, which means there is a good community support for it.
+- It is open source, so we don't have to pay for anything.
+- It has a rich library of plugins for different build and deployment tasks.
+
+Our build process has a fairly complex structure and chosing Jenkins has been nothing but benefitial for us (hopefully it will remain that way). Please make sure you review the Jenkins document [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Jenkins.md).
+
+### Our Jenkins structure
 For our current Jenkins structure, we need to have two servers. One Windows instance to run Jenkins on and use it as the Windows build slave and a Linux instance to build our docker images. Our goal is to create the build environment in secure way that is only accessible from the company's network. It is important to give the Jenkins servers the permission the need to build and deploy the code and nothing more. In other words we want to keep the production environment away from the build environment. To achive that we have created a separate VPC on AWS which hosts the Jenkins servers. The Jenkins servers share a security group that has been updated to give access to port 80 to requests initiated from our local network address. That way people from outside our company network cannot access the Jenkins instance.
 We have defined secure info the Jenkins jobs require to build and deploy the code (i.e. git repository credentials, ECR repository credentials, Kubernetes api credentials etc.) in Jenkins' Credentials.
 TODO : We can use IAM Roles to give access to the build server to push images to ECR to avoid having to storing ECR credentials on Jenkins. Also, other secure info can be put on the AWS Secrets Manager and pulled by Jenkins when building to again avoid storing credentials on Jenkins.
