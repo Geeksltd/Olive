@@ -18,9 +18,20 @@ public class SomePage : RootPage
 {
     public SomePage()
     {
-		OnBound("JavascriptModule.Relative(\"scripts/components/myScript.js\"");
+		OnBound("Load module").Code("JavascriptModule.Relative(\"scripts/components/myScript.js\"");
         ...
     }
+}
+```
+M# will generate this code:
+```c#
+[NonAction, OnBound]
+public async Task OnBound(vm.EventSourcesList info)
+{
+    // Load module
+
+    JavaScript(JavascriptModule.Relative("scripts/components/myScript.js"));
+	...    
 }
 ```
 *JavascriptModule* has two important static methods, `Absolute` and `Relative`. If you are developing a micro-service and it has a JS file in its scripts folder, then you must use `Absolute` method to load this file from current micro-service, but if you want to load a JS file from *Hub* project, then you must use `Relative` method.
@@ -34,6 +45,19 @@ public class SomePage : RootPage
 		OnBound("JS dependency").Code("var module = JavascriptModule.Absolute(\"scripts/myScript.js\").Add(JavascriptDependency.Absolute(\"lib/fullcalendar/dist/fullcalendar.js\")); JavaScript(module);");
         ...
     }
+}
+```
+M# will generate this code:
+```c#
+[NonAction, OnBound]
+public async Task OnBound(vm.EventSourcesList info)
+{
+    // Load FullCalendar dependency
+    var module = JavascriptModule.Absolute("scripts/FullCalendarModule.js")
+						.Add(JavascriptDependency.Absolute("lib/fullcalendar/dist/fullcalendar.js")); 
+	
+	JavaScript(module);
+	...
 }
 ```
 here **Olive** will first load and inject JS dependency named `fullcalendar.js` and then run the module named `myScript.js`.
