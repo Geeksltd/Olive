@@ -70,20 +70,14 @@ spec:
 The template above creates a service named StockReporting (read form metadata.name) for the deployment we created in the previous section. Notice the spec.selector, it matches spec.template.metadata.labels. We will describe labels and selectors in more details in the next section. The service specification also tells Kubernetes to redirect the coming TCP traffic to StockReporting:80 to the 9376 port of its bound pods (defined in spec.ports).
 
 
-#### Labels
-Each resource (pod, deployment, service etc) in 
-
-
-#### Selectors
-
-
-
-#### Kubectl
-...
+#### Labels and Selctors
+Like any other software system Kubernetes resources get allocated a unique id when added to the cluster. Howerver, using long ids are difficult to remember and use. Also, normally when there are more than one instance of a reqource (i.e. pods) it is hard to refere to them by their ids when managing them (i.e. imagine you want to kill all the stock reporting pods). Kubernetes uses labels as a way to identify and query resources. We specified a label called microservice with the "stock-reporting" value to the deployment template in the Deployment section. When Kubernetes creates new pods using that deployment template it assigns that label to them. Later if you want to find all the pods created for the stock reporting service you can query the microservice label and pass "stock-reporting". Labels enable Kubernetes resources to find other resources too. For example in the Service section, the spec.selector part of the template specifies "microservice: stock-reporting". That configuration tells kubernetes to search for all the pods with that label/value and bind them to the service.
 
 ## AWS account setup
 
-## ...
+## Kops
+
+## Kubectl
 
 TODO: https://docs.google.com/document/d/1CRvhWy5uN3dIw-agmqTjhdl8aC4bkWYsFPS45XLWick/edit
 
