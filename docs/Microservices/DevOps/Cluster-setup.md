@@ -77,8 +77,17 @@ Like any other software system Kubernetes resources get allocated a unique id wh
 Earlier in this article we mentioned that Kubernetes needs some servers, to run as masters and nodes, to be able to function. There are different ways to create and manage servers for Kubernetes but for our environment we chose to use AWS. AWS is a well known IaaS provided in the market which provides some cloud computing features such as scailability, availability, security, good logging and monitoring systems that our production environment can benefit from. Compared to the other could providers we have more experience with AWS and that's another reason why we chose it.
 
 ## Installation
+There are two ways we can set up our infrastructure on AWS for Kubernetes. Either create all the servers on AWS and install Kubernetes on them, which trust me, it is very complicated and time consuming, or use Kops. In the future we should ideally use aws terraform to manage our infrastructe which enables us to utilize the benefits of infrastructure as code.
+
 
 ## Kops
+Kops helps you create, destroy, upgrade and maintain production-grade, highly available, Kubernetes clusters from the command line. With a single command line and passing some configuration arguments kops can create a highly available Kubernetes cluster.
+For our current production environment we are planning to have one master and three worker nodes. We want the worker nodes to be in different availability zones so that if one availability zone goes down the other nodes will be up and host our pods.
+
+### Installation
+At the time of creating this document kops only works on Linux and there is no native support for Windows. Howerver, you can run it on a container using [here](https://github.com/kubernetes/kops/blob/master/docker/Dockerfile-light) (not tested).
+
+#### Linux
 
 ## Kubectl
 
@@ -86,6 +95,7 @@ TODO: https://docs.google.com/document/d/1CRvhWy5uN3dIw-agmqTjhdl8aC4bkWYsFPS45X
 
 ## Application Node role
 The role of the Node which is created by Kubernetes. The EC2 servers natively have this role. This role should have the permission to assume other roles in general. Based on the following policy:
+
 ```json
 {
     "Version": "2012-10-17",
