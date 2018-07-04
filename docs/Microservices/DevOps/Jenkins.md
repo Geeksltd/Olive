@@ -338,6 +338,9 @@ pipeline
 }
 ```
 
+// TODO : We need to utilize some of the notification plugins Jenkins has to be able to give some feedback, whether a failure or a success, about the build process.
+// TODO: We can potentially add a manual confirmation process right before the finla step of the deployment process to avoid accidential live deployments.
+
 ## Build Steps
 
 ### Msharp
@@ -349,16 +352,170 @@ Each Msharp application has four projects. Two, `Model` and `UI`, used to define
 * UI
 * Website
 
-Because the UI project has to know what entities has been defined in the application it has a dependency to Domain. Once the Domain project is built, any changes to the entity structure - a new entity, new properties etc - made in Model will be visible to UI. The build process in Jenkins obviously has to follow the same order. Below are the steps taken to build and deploy an MSharp microservice in Jenkins
+Because the UI project has to know what entities has been defined in the application it has a dependency to Domain. Once the Domain project is built, any changes to the entity structure - a new entity, new properties etc - made in Model will be visible to UI. The build process in Jenkins obviously has to follow the same order.
+Below is the content of the Build.bat file. Comments have been added to explain each step. Bear in mind that the context in which this batch file is executed is the Jenkins workspace for the project, which looks similar to your local project directory. All paths are relative to the project workspace unless an absolute path is specified.
 
-### step 1
+```bat
 
 
+@echo off
 
+/// The first step to build the application is to build the Model project. For that the below script navigates to the M#\Model directory and runs "dotnet build" to build the project. Once built, the domain project will be generated. At any point if there is an error the whole execution will stop and the Jenkins build process will terminate.
+ECHO ::::::::: Building #Model :::::::::::::::::::::::::::::::::::::::::::::
+cd ..\..\M#\Model
+call dotnet build -v q
+call :cleanUp
 
+if ERRORLEVEL 1 (goto error)
+
+/// This step navigates to the Domain project and builds the project by running "dotnet build".
+ECHO.
+ECHO ::::::::: Building Domain :::::::::::::::::::::::::::::::::::::::::::::
+cd ..\..\Domain
+call dotnet build -v q
+call :cleanUp
+if ERRORLEVEL 1 (goto error)
+
+/// TODO: confirm the reasoning with Paymon.
+cd ..\Website
+ECHO.
+ECHO ::::::::: Installing YARN :::::::::::::::::::::::::::::::::::
+call yarn install
+if ERRORLEVEL 1 (goto error)
+
+/// This line makes sure that all the bower components (if any) referenced by the application are installed. Obviously bower components are not pushed to the repository and have to be pulled when publishing the application. 
+ECHO.
+ECHO ::::::::: Installing Bower components :::::::::::::::::::::::::::::::::
+if exist bower.json (
+call bower install
+if ERRORLEVEL 1 (goto error)
+)
+
+/// This line makes sure that all the TypeScript files (if any) referenced by the application are installed. We do not push any generated files to the repository so we have this line here to generate the js files for our TypeScripts.
+ECHO.
+ECHO ::::::::: Building typescript files :::::::::::::::::::::::::::::::::
+call tsc
+if ERRORLEVEL 1 (goto error)
+
+// Same as TypeScript files and Bower components the generated css files are not pushed to the repository. Sass files are compiled using the script below.
+ECHO.
+ECHO ::::::::: Building sass files :::::::::::::::::::::::::::::::::
+call wwwroot\Styles\build\SassCompiler.exe compilerconfig.json
+if ERRORLEVEL 1 (goto error)
+
+ECHO.
+ECHO ::::::::: Restoring Olive DLLs ::::::::::::::::::::::::::::::::::::
+call dotnet restore
+if ERRORLEVEL 1 (goto error)
+
+/// After compiling the Domain project we are ready to build UI. The script below navigates to the UI folder in M# directory and builds the code by running "dotnet build" which will generated the website for us.
+ECHO.
+ECHO ::::::::: Building #UI ::::::::::::::::::::::::::::::::::::::::::::::::
+ECHO.
+cd ..\M#\UI
+call dotnet build -v q
+if ERRORLEVEL 1 (goto error)
+
+/// At this stage, all the js, css and bower components have been generated and downloaded. The Website project has been generated and everything is ready for the final step which is publishing the website. The script below publishes the website into the "publish" directory. 
+ECHO.
+ECHO ::::::::: Publishing the website ::::::::::::::::::::::::::::::::::::::::::::::::
+ECHO.
+cd ..\..\Website
+call dotnet publish -o publish
+
+exit /b 0
+
+/// TODO: do we need this?
+:cleanUp
+echo ##################################
+echo Cleaning up!
+RMDIR "obj" /S /Q
+echo ##################################
+exit /b -1
+
+:error
+echo ##################################
+echo Error occured!!!
+echo Please run Initialize.bat again after fixing it.
+echo ##################################
+set /p cont= Press Enter to exit.
+exit /b -1
+
+```
 
 
 ## Build Servers
-### Preparing the server
-### TODO 
-...
+
+As mentioned earlier, the Build.bat file described above requires some tools to be available on the server. To automate that process, everything we need to have has been added as scripts to the PrepairServer.bat file. We run this file everytime we run a Jenkins build process. The script doesn't reinstall anything. It first checks the server to see if the tool is available, if not it installs it.
+This process can be removed once we create a build cluster using containers as all the build images will already have all the tools installed in them.
+
+The tools we need to have installed to execute a build process are:
+* yarn
+* bower
+* webpack
+* TypeScript
+
+Below is an example of a PreparirSserver.bat file which first installs `[Chocolatey](https://chocolatey.org/)` which is a package manager for Windows. It also adds the Chocolatey executable path to the PATH variable so that the "choco" command is available in the build process.
+It installs `yarn and bower` using Chocolatey. It then installs `webpack` using yarn and TypeScript using npm.
+
+
+```bat
+
+@echo off
+
+ECHO ::::::::: Ensuring Chocolatey is installed ::::::::::::::::::::::
+WHERE choco > nul
+if ERRORLEVEL 1 (
+	ECHO ::::::::: Installing Chocolatey  ::::::::::::::::::::::
+	call powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" 
+	call SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin;"
+	call choco feature enable -n allowGlobalConfirmation
+	ECHO ::::::::: Installed Chocolatey  ::::::::::::::::::::::
+) 
+
+
+ECHO ::::::::: Ensuring Yarn installed (globally) ::::::::::::::::::::::
+WHERE yarn > nul
+if ERRORLEVEL 1 (
+call choco install yarn
+)
+
+WHERE yarn > nul
+if ERRORLEVEL 1 (goto error)
+
+
+ECHO ::::::::: Ensuring Typescript compiler installed (globally) ::::::::::::::::::::::
+WHERE tsc > nul
+if ERRORLEVEL 1 (
+call npm install -g typescript
+)
+
+WHERE tsc > nul
+if ERRORLEVEL 1 (goto error)
+
+
+ECHO ::::::::: Ensuring WebPack is installed (globally) ::::::::::::::::::::::
+call yarn global add webpack
+if ERRORLEVEL 1 (goto error)
+
+ECHO ::::::::: Ensuring Bower (globally) ::::::::::::::::::::::
+WHERE bower > nul
+if ERRORLEVEL 1 (
+call choco install bower
+)
+
+WHERE bower > nul
+if ERRORLEVEL 1 (goto error)
+
+exit /b 0
+
+:error
+echo ##################################
+echo Error occured!!!
+echo Please run Initialize.bat again after fixing it.
+echo ##################################
+set /p cont= Press Enter to exit.
+PAUSE
+exit /b -1
+
+```
