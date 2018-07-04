@@ -28,109 +28,109 @@ Below is an example of a Jenkinsfile:
 ```groovy
 pipeline 
 {
-	parameters 
-	{
-		string(name: "authenticationDomain" , defaultValue : 'app.geeks.ltd')				
-		string(name: "ecrAddress", defaultValue: '669486994886.dkr.ecr.eu-west-1.amazonaws.com')		
-		string(name: "region", defaultValue: 'eu-west-1')						
-		string(name: "k8sSSHServer" , defaultValue : 'https://api.app.geeks.ltd')																			
-		string(name: "privateRepositoryAddress" , defaultValue : 'http://nuget.geeksms.uat.co/nuget')				
-	}
+    parameters 
+    {
+        string(name: "authenticationDomain" , defaultValue : 'app.geeks.ltd')               
+        string(name: "ecrAddress", defaultValue: '669486994886.dkr.ecr.eu-west-1.amazonaws.com')        
+        string(name: "region", defaultValue: 'eu-west-1')                       
+        string(name: "k8sSSHServer" , defaultValue : 'https://api.app.geeks.ltd')                                                                           
+        string(name: "privateRepositoryAddress" , defaultValue : 'http://nuget.geeksms.uat.co/nuget')               
+    }
     environment 
     {        
-        IMAGE = 'geeksms-hub'		
-		REGION_NAME = "${params.region}"
-		ECR_URL = "https://${params.ecrAddress}"
-		ECR_CRED = credentials('ECRCRED')
-		BUILD_VERSION="v_${BUILD_NUMBER}"
-		ECR_IMAGE_URL = "${params.ecrAddress}/${IMAGE}:${BUILD_VERSION}"        		
+        IMAGE = 'geeksms-hub'       
+        REGION_NAME = "${params.region}"
+        ECR_URL = "https://${params.ecrAddress}"
+        ECR_CRED = credentials('ECRCRED')
+        BUILD_VERSION="v_${BUILD_NUMBER}"
+        ECR_IMAGE_URL = "${params.ecrAddress}/${IMAGE}:${BUILD_VERSION}"                
         AWS_CREDENTIALS_ID = 'JenkinsECRAWSCredentials'
-		GIT_REPOSITORY = 'https://gitlab.com/Geeks.Microservices/accesshub.git'
-		GIT_CREDENTIALS_ID = '1ef3615c-8221-4d33-af6d-91b203d60c75'
-		BUILD_VERION_NUMBER = '0'				
-		K8S_SSH_SERVER = "${params.k8sSSHServer}"
-		K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
-		K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"				
-		K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"						
-		PRIVATE_REPOSITORY_ADDRESS = "${params.privateRepositoryAddress}"
-		PRIVATE_REPOSITORY_ADDRESS_NAME = "GeeksMS"
-		AUTHENTICATION_DOMAIN = "${params.authenticationDomain}"
-		HUB_SERVICE_URL = "https://hub.app.geeks.ltd"
+        GIT_REPOSITORY = 'https://gitlab.com/Geeks.Microservices/accesshub.git'
+        GIT_CREDENTIALS_ID = '1ef3615c-8221-4d33-af6d-91b203d60c75'
+        BUILD_VERION_NUMBER = '0'               
+        K8S_SSH_SERVER = "${params.k8sSSHServer}"
+        K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
+        K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"               
+        K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"                        
+        PRIVATE_REPOSITORY_ADDRESS = "${params.privateRepositoryAddress}"
+        PRIVATE_REPOSITORY_ADDRESS_NAME = "GeeksMS"
+        AUTHENTICATION_DOMAIN = "${params.authenticationDomain}"
+        HUB_SERVICE_URL = "https://hub.app.geeks.ltd"
     }
     agent any
     stages{    
-			
-			stage('Delete the old version') 
+            
+            stage('Delete the old version') 
             {
                 steps
                 {
                     script
-                        {						
-							deleteDir()
+                        {                       
+                            deleteDir()
                         }
                 }
             }
-			
-			stage('Add the private repository') 
+            
+            stage('Add the private repository') 
             {
                 steps
                 {
                     script
-                        {						
-							sh ''' 
-								if [[ ! $(nuget sources) = *"${PRIVATE_REPOSITORY_ADDRESS_NAME}"* ]]; then 
-									nuget sources Add -Name "${PRIVATE_REPOSITORY_ADDRESS_NAME}" -Source ${PRIVATE_REPOSITORY_ADDRESS} 
-									echo "Installed the private repository"
-								else
-									echo "The private repository already exists"
-								fi									
-							   '''
+                        {                       
+                            sh ''' 
+                                if [[ ! $(nuget sources) = *"${PRIVATE_REPOSITORY_ADDRESS_NAME}"* ]]; then 
+                                    nuget sources Add -Name "${PRIVATE_REPOSITORY_ADDRESS_NAME}" -Source ${PRIVATE_REPOSITORY_ADDRESS} 
+                                    echo "Installed the private repository"
+                                else
+                                    echo "The private repository already exists"
+                                fi                                  
+                               '''
                         }
                 }
             }
-				
+                
             stage('Clone sources') 
             {
                 steps
                 {
                     script
-                        {						
-							git credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPOSITORY
+                        {                       
+                            git credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPOSITORY
                         }
-                }				
+                }               
             }
-			
-			stage('Update settings') 
+            
+            stage('Update settings') 
             {
                 steps
                 {
                     script
-                        {			
-							echo "Update the application version"
-							sh ''' sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g" ./Website/appsettings.json '''													
-                        }										
+                        {           
+                            echo "Update the application version"
+                            sh ''' sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g" ./Website/appsettings.json '''                                                    
+                        }                                       
                 }
             }
 
-			stage('Update require js baseUrl') 
+            stage('Update require js baseUrl') 
             {
                 steps
                 {
-					script
-						{						
-							echo "Update require js baseUrl"
-							sh 'sed -i \'s#window\\[\\"BaseThemeUrl\\"\\] =.*;#window\\[\\"BaseThemeUrl\\"\\] = \\"\'${HUB_SERVICE_URL}\'\\";#gi;\' ./Website/wwwroot/scripts/references.js'
-						}
+                    script
+                        {                       
+                            echo "Update require js baseUrl"
+                            sh 'sed -i \'s#window\\[\\"BaseThemeUrl\\"\\] =.*;#window\\[\\"BaseThemeUrl\\"\\] = \\"\'${HUB_SERVICE_URL}\'\\";#gi;\' ./Website/wwwroot/scripts/references.js'
+                        }
                 }
-            }				
-			
-			stage('Delete the GCOP References')
+            }               
+            
+            stage('Delete the GCOP References')
             {
                 steps 
                 {
                     script 
                         {
-							bat 'nuget sources'
+                            bat 'nuget sources'
                             bat 'for /r %%i in (.\\*.csproj) do (type %%i | find /v "GCop" > %%i_temp && move /y %%i_temp %%i)'
                         }
                 }
@@ -159,69 +159,69 @@ pipeline
                         }
                 }
             }
-			
-			stage('Check build')
-			{
-				steps 
-				{
-					script 
-					{
-						bat '''if exist "%WORKSPACE%/Website/publish/website.dll" (
-							echo Build Succeeded.
-							) else (
-							echo Build Failed.
-							exit /b 1
-							)'''					  
-					}
-				}
-			}
-			
-			stage('Stashing artefacts')
-			{
-				steps
-				{
-					dir(WORKSPACE)
-					{
-						stash includes: 'Dockerfile', name: 'Dockerfile'
-						stash includes: 'Website/publish/**/*', name: 'Website'
-					}
-				}
-			}
-			
-			stage('Clear the workspace (on linux)')
-			{
-				steps 
+            
+            stage('Check build')
+            {
+                steps 
+                {
+                    script 
+                    {
+                        bat '''if exist "%WORKSPACE%/Website/publish/website.dll" (
+                            echo Build Succeeded.
+                            ) else (
+                            echo Build Failed.
+                            exit /b 1
+                            )'''                      
+                    }
+                }
+            }
+            
+            stage('Stashing artefacts')
+            {
+                steps
+                {
+                    dir(WORKSPACE)
+                    {
+                        stash includes: 'Dockerfile', name: 'Dockerfile'
+                        stash includes: 'Website/publish/**/*', name: 'Website'
+                    }
+                }
+            }
+            
+            stage('Clear the workspace (on linux)')
+            {
+                steps 
                 {
                     node('LinuxDocker')
                     {                        
                         script 
                             {   
-								cleanWs();
+                                cleanWs();
                             }
                     }
                 }
-			}
-			
+            }
+            
             stage('Unstash artefacts (on linux)')
             {
-				steps
-				{
-					node('LinuxDocker')
+                steps
+                {
+                    node('LinuxDocker')
                     { 
-						unstash 'Dockerfile'
-						unstash 'Website'
-					}
-				}
-			}			
+                        unstash 'Dockerfile'
+                        unstash 'Website'
+                    }
+                }
+            }           
             stage('Docker build (on linux)')
             {
-				steps 
+                steps 
                 {
                     node('LinuxDocker')
                     {                        
                         script 
                             {   
-								sh "docker build -t ${IMAGE} ."
+                                sh "docker build -t ${IMAGE} ."
                             }
                     }
                 }
@@ -231,63 +231,63 @@ pipeline
             {
                 steps 
                 {
-					node('LinuxDocker')
-					{        
-						script 
-						{
-							withAWS(credentials:AWS_CREDENTIALS_ID)
-							{
-								// login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
-								sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
-						
-								docker.withRegistry(ECR_URL, ECR_CRED) 
-								{
-									docker.image(IMAGE).push(BUILD_VERSION)
-								}						
-							}
-						}
-					}
+                    node('LinuxDocker')
+                    {        
+                        script 
+                        {
+                            withAWS(credentials:AWS_CREDENTIALS_ID)
+                            {
+                                // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
+                                sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
+                        
+                                docker.withRegistry(ECR_URL, ECR_CRED) 
+                                {
+                                    docker.image(IMAGE).push(BUILD_VERSION)
+                                }                       
+                            }
+                        }
+                    }
                 }
             }
 
-			stage('Update the K8s deployment file')
+            stage('Update the K8s deployment file')
             {
                 steps 
                 {        
                     script 
                     {
-						sh ''' sed "s#%DOCKER_IMAGE%#${ECR_IMAGE_URL}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT_TEMPLATE > $K8S_LATEST_DEPLOYMENT_FILE '''
+                        sh ''' sed "s#%DOCKER_IMAGE%#${ECR_IMAGE_URL}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT_TEMPLATE > $K8S_LATEST_DEPLOYMENT_FILE '''
                     }
                 }
-            }				
+            }               
 
-			stage('Deploy to cluster')
+            stage('Deploy to cluster')
             {
                 steps 
                 {
         
                     script 
                     {
-					
-						withCredentials([string(credentialsId: 'K8sCertificateAuthorityData', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'K8sClientCertificateData', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'K8sClientKeyData', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
-						{
-						
-						kubernetesDeploy(
-							credentialsType: 'Text',
-							textCredentials: 
-							[
-								serverUrl: K8S_SSH_SERVER,
-								certificateAuthorityData: K8s_CERTIFICATE_AUTHORITY_DATA,
-								clientCertificateData: K8s_CLIENT_AUTHORITY_DATA,
-								clientKeyData: K8s_CERTIFICATE_KEY_DATA,
-							],
-							configs: K8S_LATEST_CONFIG_FILE,
-							enableConfigSubstitution: true,
-						)
-						}
+                    
+                        withCredentials([string(credentialsId: 'K8sCertificateAuthorityData', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'K8sClientCertificateData', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'K8sClientKeyData', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
+                        {
+                        
+                        kubernetesDeploy(
+                            credentialsType: 'Text',
+                            textCredentials: 
+                            [
+                                serverUrl: K8S_SSH_SERVER,
+                                certificateAuthorityData: K8s_CERTIFICATE_AUTHORITY_DATA,
+                                clientCertificateData: K8s_CLIENT_AUTHORITY_DATA,
+                                clientKeyData: K8s_CERTIFICATE_KEY_DATA,
+                            ],
+                            configs: K8S_LATEST_CONFIG_FILE,
+                            enableConfigSubstitution: true,
+                        )
+                        }
                     }
                 }
-            }				
+            }               
 
         }
         
@@ -300,8 +300,6 @@ pipeline
         }
     }
 }
-
-
 ```
 
 ## Build Steps
