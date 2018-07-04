@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -11,7 +10,12 @@ namespace Olive
             this IEnumerable<TSource> @this, Func<TSource, Task<TResult>> selector)
         {
             var result = new List<TResult>();
-            foreach (var item in @this) result.Add(await selector(item));
+            foreach (var item in @this)
+            {
+                var sel = selector(item);
+                if (sel == null) continue;
+                result.Add(await sel);
+            }
             return result;
         }
 
@@ -19,7 +23,22 @@ namespace Olive
            this IEnumerable<TSource> @this, Func<TSource, Task<IEnumerable<TResult>>> selector)
         {
             var result = new List<TResult>();
-            foreach (var item in @this) result.AddRange(await selector(item));
+            foreach (var item in @this)
+            {
+                var sel = selector(item);
+                if (sel == null) continue;
+
+                try
+                {
+                    var awaited = await sel;
+                    if (awaited != null)
+                        result.AddRange(awaited);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
             return result;
         }
 
