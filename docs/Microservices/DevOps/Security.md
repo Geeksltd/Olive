@@ -23,13 +23,7 @@ You must NEVER store any sensitive information in the source code. Secure info s
 Also, `scripting the deployment process` is a form of `documenting` it, that enables anybody to learn and do the process easily.
 
 ### Jenkins
-There are many tools out there for deployment automation but we have chosen `Jenkins` because:
-
-- It is one of the most popular tools, which means there is a good community support for it.
-- It is open source, so we don't have to pay for anything.
-- It has a rich library of plugins for different build and deployment tasks.
-
-Our build process has a fairly complex structure and chosing Jenkins has been nothing but benefitial for us (hopefully it will remain that way). Please make sure you review the Jenkins document [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Jenkins.md).
+Our Jenkins build structure and processes have been described in details [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Jenkins.md).
 
 ### Our Jenkins structure
 For our current Jenkins structure, we have two servers:
