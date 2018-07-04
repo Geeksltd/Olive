@@ -12,7 +12,7 @@ For each application, we will create a project in Bitbucket. For each microservi
 
 Developers will have write access only to the repositories of the microservices they are assigned to. 
 
-#### _Security Caution_
+#### _-- Security Caution --_
 You must NEVER store any sensitive information in the source code. Secure info such as connection strings, credentials, api keys etc, are injected to the application during the `deployment process`, which will be explained later in this article. 
 
 ### Continious Delivery
