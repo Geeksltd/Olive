@@ -330,7 +330,8 @@ pipeline
     {
         always
         {
-            // make sure that the Docker image is removed
+            /// This step deletes the docker image created during the build process. Since the image has already been pushed to the 
+            /// remote repository, and specially from the security point of view, there is no point keeping a local version. 
             sh "docker rmi $IMAGE | true"
         }
     }
