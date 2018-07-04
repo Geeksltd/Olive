@@ -23,11 +23,12 @@ The first step to set up CI/CD in Jenkins we need to first create a `job`. There
 ### Jenkinsfiles 
 There are two ways to manage Jenkins' build scripts for Pipeline jobs. The default way is to add the script to Jenkins but like any other code we want to be able to version control the build scripts to have visibility to changes overtime. Jenkins fortunately has a feature in Pipeline projects to specify a repository and a path in it, from which the build scripts can be pulled from. The file containing Jenkins build scripts are call `Jenkinsfiles`. Jenkinsfile are written in [Groovy](http://groovy-lang.org/), a bit scary eh! For our application we have create a repository where we store all microservice jenkins files in separate directories. Instead of different directories we perhaps could put all of them in one place and just call them {Service}_Jenkinsfile but having them in different directories hasn't caused any issues so far. 
 
-Below is an example of a Jenkinsfile:
+Below is an example of a Jenkinsfile. Comments have been added to describe what each section is and does.
 
 ```groovy
 pipeline 
 {
+    /* Build scripts normally have variables which have to be populated before the process starts. Jenkins by default provides some useful ones such as BUILD_NUMBER or WORKSPACE (the physical path to where the project has been stored on the build server by Jennkins) etc. Further variables can be defined as parameters or environment variables in jenkinsfile. */
     parameters 
     {
         string(name: "ParameterName" , defaultValue : 'Default value')                                    
