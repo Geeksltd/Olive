@@ -30,32 +30,12 @@ pipeline
 {
     parameters 
     {
-        string(name: "authenticationDomain" , defaultValue : 'app.geeks.ltd')               
-        string(name: "ecrAddress", defaultValue: '669486994886.dkr.ecr.eu-west-1.amazonaws.com')        
-        string(name: "region", defaultValue: 'eu-west-1')                       
-        string(name: "k8sSSHServer" , defaultValue : 'https://api.app.geeks.ltd')                                                                           
-        string(name: "privateRepositoryAddress" , defaultValue : 'http://nuget.geeksms.uat.co/nuget')               
+        string(name: "ParameterName" , defaultValue : 'Default value')                                    
     }
     environment 
-    {        
-        IMAGE = 'geeksms-hub'       
-        REGION_NAME = "${params.region}"
-        ECR_URL = "https://${params.ecrAddress}"
-        ECR_CRED = credentials('ECRCRED')
-        BUILD_VERSION="v_${BUILD_NUMBER}"
-        ECR_IMAGE_URL = "${params.ecrAddress}/${IMAGE}:${BUILD_VERSION}"                
-        AWS_CREDENTIALS_ID = 'JenkinsECRAWSCredentials'
-        GIT_REPOSITORY = 'https://gitlab.com/Geeks.Microservices/accesshub.git'
-        GIT_CREDENTIALS_ID = '1ef3615c-8221-4d33-af6d-91b203d60c75'
-        BUILD_VERION_NUMBER = '0'               
-        K8S_SSH_SERVER = "${params.k8sSSHServer}"
-        K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
-        K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"               
-        K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"                        
-        PRIVATE_REPOSITORY_ADDRESS = "${params.privateRepositoryAddress}"
-        PRIVATE_REPOSITORY_ADDRESS_NAME = "GeeksMS"
-        AUTHENTICATION_DOMAIN = "${params.authenticationDomain}"
-        HUB_SERVICE_URL = "https://hub.app.geeks.ltd"
+    {   
+        VARIABLE_NAME = "Static value"
+        VARIABLE_NAME = "some static value + ${params.region}" // Value read from paramters       
     }
     agent any
     stages{    
