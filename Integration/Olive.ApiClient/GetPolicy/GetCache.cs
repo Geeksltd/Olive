@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -12,7 +13,11 @@ namespace Olive
         {
             var cache = ApiResponseCache<T>.Create(url);
 
-            if (!await cache.HasValidValue(CacheAge)) return false;
+            if (!await cache.HasValidValue(CacheAge))
+            {
+                Error = new Exception("No valid cache is available.");
+                return false;
+            }
 
             Result = cache.Data;
 

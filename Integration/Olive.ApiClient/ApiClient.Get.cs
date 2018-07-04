@@ -48,16 +48,18 @@ namespace Olive
 
             using (await urlLock.Lock())
             {
+                Exception firstError = null;
                 // get result according to the cache policy
                 foreach (var implementor in CachePolicy.GetImplementors<TResponse>(this))
                 {
                     if (await implementor.Attempt(Url))
-                    {
                         return implementor.Result;
-                    }
+
+                    firstError = firstError ?? implementor.Error;
                 }
 
-                return default(TResponse);
+                if (firstError != null) throw firstError;
+                else return default(TResponse);
             }
         }
 

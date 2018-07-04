@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -7,9 +6,6 @@ namespace Olive
     {
         public GetFail() : base(null) { }
 
-        public override Task<bool> Attempt(string url)
-        {
-            throw new Exception("Get request failed.");
-        }
+        public override Task<bool> Attempt(string url) => Task.FromResult(false);
     }
 }

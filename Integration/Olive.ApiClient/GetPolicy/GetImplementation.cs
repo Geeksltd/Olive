@@ -12,6 +12,8 @@ namespace Olive
         protected AsyncEvent<FallBackEvent> FallBackEvent => ApiClient.FallBack;
         protected TimeSpan? CacheAge => ApiClient.CacheExpiry;
 
+        internal Exception Error;
+
         protected GetImplementation(ApiClient apiClient)
         {
             ApiClient = apiClient;

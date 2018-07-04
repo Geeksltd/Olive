@@ -23,9 +23,11 @@ namespace Olive
                     await cache.Update(requestInfo.ResponseText);
                     return true;
                 }
+                else Error = requestInfo.Error;
             }
             catch (Exception exception)
             {
+                Error = exception;
                 Log.For(this).Error(exception);
             }
 
