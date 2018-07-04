@@ -64,7 +64,7 @@ Now that we have an IAM role for the service we need to assign it. For each perm
 
 The mandatory policies are :
 
-#### KMS Data Key Generation\Decryption 
+### KMS Data Key Generation\Decryption 
 In each application there is one service which provides "log in" to users in the system and other services will only need to authenticate users. The service that logs the users into the system needs to be able to generate KMS Data Key. If the service you are deploying is the login provider you need to create a policy which grants KMS Data Key Generation permission to the service and for that you can use the following template:
 
 ```json
