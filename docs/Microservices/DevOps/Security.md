@@ -16,11 +16,6 @@ Developers will have write access only to the repositories of the microservices 
 You must NEVER store any sensitive information in the source code. Secure info such as connection strings, credentials, api keys etc, are injected to the application during the `deployment process`, which will be explained later in this article. 
 
 ### Continious Delivery
-`Continious Delivery` and `DevOps` have many well known operational benefits for the process of software development and management. But they are even more vital in a Microservice-oriented architecture. Why? Because with Microservices, you will typically have `10s of deployments per day`, after every small bug fix, or new feature. That makes it impossible to go about it manually.
-
-`Continious deployment` enables us to rapidly deploy changes without the risk of `human errors`. Once designed and tested, you can trust the deployment process way more than any developer, even the most experienced ones.
-
-Also, `scripting the deployment process` is a form of `documenting` it, that enables anybody to learn and do the process easily.
 
 ### Jenkins
 Our Jenkins build structure and processes have been described in details [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Jenkins.md).
