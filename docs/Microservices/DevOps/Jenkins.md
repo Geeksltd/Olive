@@ -444,7 +444,7 @@ exit /b -1
 ```
 
 
-## Build Servers
+## Build Server
 
 As mentioned earlier, the Build.bat file described above requires some tools to be available on the server. To automate that process, everything we need to have has been added as scripts to the PrepairServer.bat file. We run this file everytime we run a Jenkins build process. The script doesn't reinstall anything. It first checks the server to see if the tool is available, if not it installs it.
 This process can be removed once we create a build cluster using containers as all the build images will already have all the tools installed in them.
