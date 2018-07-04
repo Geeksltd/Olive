@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 04 July 2018
+- Due to the conflict between jQuery-UI and Bootstrap, `jquery-validation-bootstrap-tooltip` package has been removed from `bower.json` and `references.js`
+
 ## 02 July 2018
 - Install the latest Visual Studio update
 - Install .NET Core 2.1 [SDK version 2.1.301](https://www.microsoft.com/net/download/thank-you/dotnet-sdk-2.1.301-windows-x64-installer) (or the latest)
