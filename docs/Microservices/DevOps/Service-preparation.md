@@ -13,7 +13,140 @@ We need the following files to be able to setup Jenkins.
 * Service.yaml (for Kubernetes)
 
 To automate, and possibly avoid human error, creating those files a script has been provided in the BigPicture repository in /DevOps called ContinuousDelivery.bat. In the same folder there are two other folders called Jenkins and Kubernetes which contains the templates used by ContinuousDelivery.bat script to generate the DevOps files. When running the script you need to provide your service name. This can be achived by passing the name with -serviceName argument when calling the script. Bear in mind that the name you provide here will be used in the CI/CD process and all the resources such as Service, Deployment, Labels on Kubernetes. 
-When you run the script it creates a directory called Generated in the same directory as the script file. You need to copy the Generated/YourServiceName folder to the root of the Jenkins repository and rename it to DevOps so that the Jenkins job we create later on in this document can have access to it.
+When you run the script it creates a directory called Generated in the same directory as the script file. You need to copy the Generated/YourServiceName folder to the root of the Jenkins repository and rename it to DevOps so that the Jenkins job we create later on in this document can have access to it. Commit the changes and push it to your remote repository.
+
+## Security 
+// TODO: We can create a script to do the followings.
+
+### Secrets
+As mentioned in the [Security](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Security.md) document, the production secure info should be stored in AWS Secrets Manager an be pulled during startup on the production. 
+Instruction :
+* Login to the AWS console. 
+* Make sure you are in the correct region
+* Navigate to Secrets Manager
+* Click "Create a new secret"
+* Select "Other type of secrets" as secret type
+* Select Plaintext and create the same json structure for your secure info as you would in the appsettings.Production.json
+* Leave Secret the encryption key as default.
+* Provide a name and description. 
+* Click Save
+
+Examle of a secret template :
+```json
+{
+  "Microservice": {
+    "Hub": {
+      "AccessKey": "%HUB_SERVICE_ACCESS_KEY%"
+    }
+  },
+  "ConnectionStrings": {
+    "Default": "%CONNECTION_STRING%"
+  }
+}
+
+```
+
+### IAM Role (Service Runtime Identity)
+To identify our service in our infrastructure we need to create an IAM Role for it as suggested [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Security.md). 
+Instruction :
+* Login to AWS
+* Navigate to IAM > Roles
+* Click "new role"
+* Select AWS service as the service type
+* Select EC2 as the service that will use this role
+* Click next
+* Click next, skip assigning policies for now.
+* Provide a name : {YourService}Runtime and description if needed.
+* Click Create role
+
+### IAM Role permissions
+Now that we have an IAM role for the service we need to assign it. For each permission we need to have a policy. There are some mandatory policies we have to have and if the service uses any of AWS resources such as S3 we have to create separate policies.
+
+The mandatory policies are :
+
+#### KMS Data Key Generation\Decryption 
+In each application there is one service which provides "log in" to users in the system and other services will only need to authenticate users. The service that logs the users into the system needs to be able to generate KMS Data Key. If the service you are deploying is the login provider you need to create a policy which grants KMS Data Key Generation permission to the service and for that you can use the following template:
+
+```json
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey"
+            ],
+            "Resource": "%KMS_ARN%"
+        }
+    ]
+}
+
+```
+
+If your service only needs to decrypt authentication tokens you can use :
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "kms:Decrypt",
+            "Resource": "%KMS_ARN%"
+        }
+    ]
+}
+```
+
+Before create a KMS policy, specially the one for decryption, make sure it doesn't exist to avoid duplication.
+
+Once you have a template, you should:
+* Login to the AWS console
+* Navigate to IAM > Policies
+* Click "Create policy"
+* Click on the Json tab
+* Paste your template
+* Click next
+* Provide a meaningful name based on wether it is for decryption or key generation
+* Click save
+
+### Secrets Manager Secure Info
+We also need to create a policy to grant permission to the service IAM role to be able to read the application secure info. The creation process is the same as above and the template is :
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "%SERVICE_SECURE_INFO_SERCRET_ARN%"
+        }
+    ]
+}
+
+```
+
+
+If you need any more permissions you may follow the same process.
+
+### Assigning
+Now that we have all the policies we need we can assign them to the service IAM role.
+
+* Go to IAM in AWS console
+* Navigate to Roles
+* Search for your service role and click on it
+* Click "Attach policies"
+* Select all the policies you have created. Make sure you have selected the correct filter type on the top left hand side.
+* Click Attach policy
+
+
+
 
 ## 1: Create a build script
 
