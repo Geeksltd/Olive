@@ -59,7 +59,7 @@ namespace Olive
             lock (CacheSyncLock)
                 file = GetCacheDirectory().GetFile(url.ToSimplifiedSHA1Hash() + ".txt");
 
-            return new ApiResponseCache<TData>()
+            return new ApiResponseCache<TData>
             {
                 Url = url,
                 File = file,

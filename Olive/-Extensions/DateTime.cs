@@ -605,13 +605,13 @@ new DateTime(2099,04,13)};
         public static string ToFriendlyDateString(this DateTime date)
         {
             string formattedDate;
-            if (date.Date == DateTime.Today)
+            if (date.Date == LocalTime.Today)
                 formattedDate = "Today";
 
-            else if (date.Date == DateTime.Today.AddDays(-1))
+            else if (date.Date == LocalTime.Today.AddDays(-1))
                 formattedDate = "Yesterday";
 
-            else if (date.Date > DateTime.Today.AddDays(MINUS_SIX))
+            else if (date.Date > LocalTime.Today.AddDays(MINUS_SIX))
                 // *** Show the Day of the week
                 formattedDate = date.ToString("dddd");
 

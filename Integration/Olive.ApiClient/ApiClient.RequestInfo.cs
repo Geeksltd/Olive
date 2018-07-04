@@ -23,7 +23,6 @@ namespace Olive
 
         public partial class RequestInfo
         {
-            const int HTTP_ERROR_STARTING_CODE = 400;
             object jsonData;
             ApiClient Client;
             HttpRequestMessage RequestMessage;
@@ -78,8 +77,7 @@ namespace Olive
                 {
                     LogTheError(ex);
 
-                    if ((int)ResponseCode >= 400 && (int)ResponseCode < 500)
-                        throw ex; // It contains user message. Always throw.
+                    if (ResponseCode.ContainsUserMessage()) throw ex;
 
                     if (Client.FallBackEventPolicy == ApiFallBackEventPolicy.Raise) throw ex;
                     return default(TResponse);
@@ -166,11 +164,11 @@ namespace Olive
 
                         Log.For(this).Debug("DoSend ResponseCode:" + ResponseCode + " for " + Client.Url);
 
-                        if (ResponseCode == HttpStatusCode.NotModified)
-                            if (LocalCachedVersion.HasValue()) return null;
+                        if (ResponseCode == HttpStatusCode.NotModified && LocalCachedVersion.HasValue())
+                            return null;
 
                         responseBody = await response.Content.ReadAsStringAsync();
-                        if (((int)ResponseCode) >= HTTP_ERROR_STARTING_CODE)
+                        if (ResponseCode.IsError())
                         {
                             throw new Exception("Server error " + ResponseCode);
                         }

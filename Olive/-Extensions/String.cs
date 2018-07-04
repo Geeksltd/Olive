@@ -37,14 +37,14 @@ namespace Olive
         /// <summary>
         /// Removes the specified text from the start of this string instance.
         /// </summary>
-        public static string TrimStart(this string text, string textToTrim)
+        public static string TrimStart(this string @this, string textToTrim)
         {
-            if (text == null) text = string.Empty;
+            @this = @this.OrEmpty();
 
-            if (textToTrim.IsEmpty() || text.IsEmpty()) return text;
+            if (textToTrim.IsEmpty() || @this.IsEmpty()) return @this;
 
-            if (text.StartsWith(textToTrim)) return text.Substring(textToTrim.Length).TrimStart(textToTrim);
-            else return text;
+            if (@this.StartsWith(textToTrim)) return @this.Substring(textToTrim.Length).TrimStart(textToTrim);
+            else return @this;
         }
 
         /// <summary>
@@ -66,41 +66,41 @@ namespace Olive
         /// <summary>
         /// If this string object is null, it will return null. Otherwise it will trim the text and return it.
         /// </summary>
-        public static string TrimOrNull(this string text) => text?.Trim();
+        public static string TrimOrNull(this string @this) => @this?.Trim();
 
         /// <summary>
         /// If this string object is null, it will return empty string. Otherwise it will trim the text and return it.
         /// </summary>
-        public static string TrimOrEmpty(this string text) => text.TrimOrNull().OrEmpty();
+        public static string TrimOrEmpty(this string @this) => @this.TrimOrNull().OrEmpty();
 
-        public static bool IsNoneOf(this string text, params string[] items) => !text.IsAnyOf(items);
+        public static bool IsNoneOf(this string @this, params string[] items) => !@this.IsAnyOf(items);
 
         /// <summary>
         /// Returns a copy of this text converted to lower case. If it is null it will return empty string.
         /// </summary>
-        public static string ToLowerOrEmpty(this string text) => text.OrEmpty().ToLower();
+        public static string ToLowerOrEmpty(this string @this) => @this.OrEmpty().ToLower();
 
         /// <summary>
         /// Returns a copy of this text converted to upper case. If it is null it will return empty string.
         /// </summary>
-        public static string ToUpperOrEmpty(this string text) => text.OrEmpty().ToUpper();
+        public static string ToUpperOrEmpty(this string @this) => @this.OrEmpty().ToUpper();
 
-        public static bool IsAnyOf(this string text, params string[] items) => items.Contains(text);
+        public static bool IsAnyOf(this string @this, params string[] items) => items.Contains(@this);
 
-        public static bool IsAnyOf(this string text, IEnumerable<string> items)
-            => IsAnyOf(text, items.ToArray());
+        public static bool IsAnyOf(this string @this, IEnumerable<string> items)
+            => IsAnyOf(@this, items.ToArray());
 
-        public static bool ContainsAll(this string text, string[] keywords, bool caseSensitive)
+        public static bool ContainsAll(this string @this, string[] keywords, bool caseSensitive)
         {
             if (!caseSensitive)
             {
-                text = (text ?? string.Empty).ToLower();
+                @this = (@this ?? string.Empty).ToLower();
 
                 for (var i = 0; i < keywords.Length; i++) keywords[i] = keywords[i].ToLower();
             }
 
             foreach (var key in keywords)
-                if (!text.Contains(key)) return false;
+                if (!@this.Contains(key)) return false;
 
             return true;
         }
@@ -120,55 +120,55 @@ namespace Olive
         /// <summary>
         /// Will replace all line breaks with a BR tag and return the result as a raw html.
         /// </summary>
-        public static string ToHtmlLines(this string text) => text.OrEmpty().ToLines().ToString("<br/>");
+        public static string ToHtmlLines(this string @this) => @this.OrEmpty().ToLines().ToString("<br/>");
 
         /// <summary>
         /// Will join all items with a BR tag and return the result as a raw html.
         /// </summary>
-        public static string ToHtmlLines<T>(this IEnumerable<T> items) => items.ToString("<br/>");
+        public static string ToHtmlLines<T>(this IEnumerable<T> @this) => @this.ToString("<br/>");
 
         /// <summary>
         /// Will join all items with a BR tag and return the result as a raw html.
         /// </summary>
-        public static Task<string> ToHtmlLines<T>(this Task<IEnumerable<T>> items) => items.ToString("<br/>");
+        public static Task<string> ToHtmlLines<T>(this Task<IEnumerable<T>> @this) => @this.ToString("<br/>");
 
         /// <summary>
         /// Gets the same string if it is not null or empty. Otherwise it returns the specified default value.
         /// </summary>
-        public static string Or(this string text, string defaultValue)
+        public static string Or(this string @this, string defaultValue)
         {
-            if (string.IsNullOrEmpty(text)) return defaultValue;
-            else return text;
+            if (@this.IsEmpty()) return defaultValue;
+            else return @this;
         }
 
         /// <summary>
         /// Gets the same string if it is not null or empty.
         /// Otherwise it invokes the specified default value provider and returns the result.
         /// </summary>
-        public static string Or(this string text, Func<string> defaultValueProvider)
+        public static string Or(this string @this, Func<string> defaultValueProvider)
         {
-            if (string.IsNullOrEmpty(text)) return defaultValueProvider?.Invoke();
-            else return text;
+            if (@this.IsEmpty()) return defaultValueProvider?.Invoke();
+            else return @this;
         }
 
         /// <summary>
         /// Gets the same string unless it is the same as the specified text. If they are the same, empty string will be returned.
         /// </summary>
-        public static string Unless(this string text, string unwantedText)
+        public static string Unless(this string @this, string unwantedText)
         {
-            if (text == unwantedText) return string.Empty;
-            else return text;
+            if (@this == unwantedText) return string.Empty;
+            else return @this;
         }
 
         /// <summary>
         /// Summarizes the specified source.
         /// </summary>
-        public static string Summarize(this string text, int maximumLength, bool enforceMaxLength)
+        public static string Summarize(this string @this, int maximumLength, bool enforceMaxLength)
         {
-            var result = Summarize(text, maximumLength);
+            var result = Summarize(@this, maximumLength);
 
             if (enforceMaxLength && result.Length > maximumLength)
-                result = text.Substring(0, maximumLength - 3) + "...";
+                result = @this.Substring(0, maximumLength - 3) + "...";
 
             return result;
         }
@@ -176,44 +176,44 @@ namespace Olive
         /// <summary>
         /// Summarizes the specified text.
         /// </summary>        
-        public static string Summarize(this string text, int maximumLength)
+        public static string Summarize(this string @this, int maximumLength)
         {
-            if (text.IsEmpty()) return text;
+            if (@this.IsEmpty()) return @this;
 
-            if (text.Length > maximumLength)
+            if (@this.Length > maximumLength)
             {
-                text = text.Substring(0, maximumLength);
+                @this = @this.Substring(0, maximumLength);
 
                 var lastSpace = -1;
 
                 foreach (var wordSeperator in " \r\n\t")
-                    lastSpace = Math.Max(text.LastIndexOf(wordSeperator), lastSpace);
+                    lastSpace = Math.Max(@this.LastIndexOf(wordSeperator), lastSpace);
 
                 if (lastSpace > maximumLength / 2)
-                    text = text.Substring(0, lastSpace);
+                    @this = @this.Substring(0, lastSpace);
 
-                text += "...";
+                @this += "...";
             }
 
-            return text;
+            return @this;
         }
 
         #region Count string
 
-        public static string Count<T>(this IEnumerable<T> list, string objectTitle)
+        public static string Count<T>(this IEnumerable<T> @this, string objectTitle)
         {
             if (objectTitle.IsEmpty())
                 objectTitle = SeparateAtUpperCases(typeof(T).Name);
 
-            return objectTitle.ToCountString(list.Count());
+            return objectTitle.ToCountString(@this.Count());
         }
 
-        public static string Count<T>(this IEnumerable<T> list, string objectTitle, string zeroQualifier)
+        public static string Count<T>(this IEnumerable<T> @this, string objectTitle, string zeroQualifier)
         {
             if (objectTitle.IsEmpty())
                 objectTitle = SeparateAtUpperCases(typeof(T).Name);
 
-            return objectTitle.ToCountString(list.Count(), zeroQualifier);
+            return objectTitle.ToCountString(@this.Count(), zeroQualifier);
         }
 
         public static string ToCountString(this string name, int count)
@@ -226,58 +226,58 @@ namespace Olive
             return ToCountString(name, count, zeroQualifier);
         }
 
-        public static string ToCountString(this string name, int count, string zeroQualifier)
+        public static string ToCountString(this string @this, int count, string zeroQualifier)
         {
-            name = name.Or("").Trim();
-            if (name.IsEmpty())
+            @this = @this.Or("").Trim();
+            if (@this.IsEmpty())
                 throw new Exception("'name' cannot be empty for ToCountString().");
 
             if (count < 0)
                 throw new ArgumentException("count should be greater than or equal to 0.");
 
-            if (count == 0) return zeroQualifier + " " + name;
-            else if (count == 1) return "1 " + name;
-            else return $"{count} {name.ToPlural()}";
+            if (count == 0) return zeroQualifier + " " + @this;
+            else if (count == 1) return "1 " + @this;
+            else return $"{count} {@this.ToPlural()}";
         }
 
-        public static string SeparateAtUpperCases(this string pascalCase)
+        public static string SeparateAtUpperCases(this string @this)
         {
             var sb = new StringBuilder();
-            for (var i = 0; i < pascalCase.Length; i++)
+            for (var i = 0; i < @this.Length; i++)
             {
-                if (char.IsUpper(pascalCase[i]) && i > 0)
+                if (char.IsUpper(@this[i]) && i > 0)
                     sb.Append(" ");
-                sb.Append(pascalCase[i]);
+                sb.Append(@this[i]);
             }
 
             return sb.ToString().ToLower();
         }
 
-        public static string ToPlural(this string singular)
+        public static string ToPlural(this string @this)
         {
-            if (singular.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
             // Only change the last word:
-            var phrase = singular;
+            var phrase = @this;
             var prefix = "";
             if (phrase.Split(' ').Length > 1)
             {
                 // Multi word, set prefix to anything but the last word:
                 prefix = phrase.Substring(0, phrase.LastIndexOf(" ")) + " ";
-                singular = phrase.Substring(phrase.LastIndexOf(" ") + 1);
+                @this = phrase.Substring(phrase.LastIndexOf(" ") + 1);
             }
 
             string plural;
-            var irregular = GetIrregularPlural(singular);
+            var irregular = GetIrregularPlural(@this);
 
-            if (irregular != "")
+            if (irregular.HasValue())
             {
-                if (prefix == "")
+                if (prefix.IsEmpty())
                     irregular = char.ToUpper(irregular[0]) + irregular.Substring(1);
 
                 plural = irregular;
             }
-            else plural = GetRegularPlural(singular);
+            else plural = GetRegularPlural(@this);
 
             return prefix + plural;
         }
@@ -426,22 +426,22 @@ namespace Olive
         /// <summary>
         /// Trims some unnecessary text from the end of this string, if it exists.
         /// </summary>
-        public static string TrimEnd(this string text, string unnecessaryText) => TrimEnd(text, unnecessaryText, caseSensitive: true);
+        public static string TrimEnd(this string @this, string unnecessaryText) => TrimEnd(@this, unnecessaryText, caseSensitive: true);
 
         /// <summary>
         /// Trims some unnecessary text from the end of this string, if it exists.
         /// </summary>
         /// <param name="caseSensitive">By default it's TRUE.</param>
-        public static string TrimEnd(this string text, string unnecessaryText, bool caseSensitive)
+        public static string TrimEnd(this string @this, string unnecessaryText, bool caseSensitive)
         {
-            if (unnecessaryText.IsEmpty() || text.IsEmpty())
-                return text.OrEmpty();
+            if (unnecessaryText.IsEmpty() || @this.IsEmpty())
+                return @this.OrEmpty();
 
-            else if (text.EndsWith(unnecessaryText, caseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase))
-                return text.TrimEnd(unnecessaryText.Length);
+            else if (@this.EndsWith(unnecessaryText, caseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase))
+                return @this.TrimEnd(unnecessaryText.Length);
 
             else
-                return text;
+                return @this;
         }
 
         /// <summary>
@@ -451,14 +451,14 @@ namespace Olive
         /// less an empty string is returned
         /// </summary>
         /// <param name="length">Number of characters to return</param>
-        public static string Right(this string text, int length)
+        public static string Right(this string @this, int length)
         {
             length = Math.Max(length, 0);
 
-            if (text.Length > length)
-                return text.Substring(text.Length - length, length);
+            if (@this.Length > length)
+                return @this.Substring(@this.Length - length, length);
             else
-                return text;
+                return @this;
         }
 
         /// <summary>
@@ -468,48 +468,48 @@ namespace Olive
         /// less an empty string is returned
         /// </summary>
         /// <param name="length">Number of characters to return</param>
-        public static string Left(this string text, int length)
+        public static string Left(this string @this, int length)
         {
             length = Math.Max(length, 0);
 
-            if (text.Length > length)
-                return text.Substring(0, length);
+            if (@this.Length > length)
+                return @this.Substring(0, length);
             else
-                return text;
+                return @this;
         }
 
-        public static string FormatWith(this string format, object arg, params object[] additionalArgs)
+        public static string FormatWith(this string @this, object arg, params object[] additionalArgs)
         {
             try
             {
                 if (additionalArgs == null || additionalArgs.Length == 0)
-                    return string.Format(format, arg);
+                    return string.Format(@this, arg);
                 else
-                    return string.Format(format, new object[] { arg }.Concat(additionalArgs).ToArray());
+                    return string.Format(@this, new object[] { arg }.Concat(additionalArgs).ToArray());
             }
             catch (Exception ex)
             {
-                throw new FormatException("Cannot format the string '{0}' with the specified arguments.".FormatWith(format), ex);
+                throw new FormatException("Cannot format the string '{0}' with the specified arguments.".FormatWith(@this), ex);
             }
         }
 
-        public static string GetLastChar(this string input)
+        public static string GetLastChar(this string @this)
         {
-            if (input.HasValue())
+            if (@this.HasValue())
             {
-                if (input.Length >= 1)
-                    return input.Substring(input.Length - 1, 1);
+                if (@this.Length >= 1)
+                    return @this.Substring(@this.Length - 1, 1);
                 else
-                    return input;
+                    return @this;
             }
             else
                 return null;
         }
 
-        public static bool StartsWithAny(this string input, params string[] listOfBeginnings)
+        public static bool StartsWithAny(this string @this, params string[] listOfBeginnings)
         {
             foreach (var option in listOfBeginnings)
-                if (input.StartsWith(option)) return true;
+                if (@this.StartsWith(option)) return true;
 
             return false;
         }
@@ -525,10 +525,10 @@ namespace Olive
         /// <summary>
         /// Gets whether this string item ends with any of the specified items.
         /// </summary>
-        public static bool EndsWithAny(this string input, params string[] listOfEndings)
+        public static bool EndsWithAny(this string @this, params string[] listOfEndings)
         {
             foreach (var option in listOfEndings)
-                if (input.EndsWith(option)) return true;
+                if (@this.EndsWith(option)) return true;
 
             return false;
         }
@@ -536,11 +536,11 @@ namespace Olive
         /// <summary>
         /// Removes all Html tags from this html string.
         /// </summary>
-        public static string RemoveHtmlTags(this string source)
+        public static string RemoveHtmlTags(this string @this)
         {
-            if (source.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
-            source = source
+            @this = @this
                 .Replace("<br/>", Environment.NewLine)
                 .Replace("<br />", Environment.NewLine)
                 .Replace("<br>", Environment.NewLine)
@@ -573,15 +573,15 @@ namespace Olive
             };
 
             for (var i = 0; i < from.Length; i++)
-                source = source.Replace(from[i], to[i]);
+                @this = @this.Replace(from[i], to[i]);
 
-            return Regex.Replace(source, @"<(.|\n)*?>", " ").Trim();
+            return Regex.Replace(@this, @"<(.|\n)*?>", " ").Trim();
         }
 
         /// <summary>
         /// Gets all indices of a specified string inside this text.
         /// </summary>
-        public static IEnumerable<int> AllIndicesOf(this string text, string pattern)
+        public static IEnumerable<int> AllIndicesOf(this string @this, string pattern)
         {
             if (pattern == null)
                 throw new ArgumentNullException(nameof(pattern));
@@ -592,7 +592,7 @@ namespace Olive
 
             do
             {
-                index = text.IndexOf(pattern, index + 1);
+                index = @this.IndexOf(pattern, index + 1);
                 if (index > -1) result.Add(index);
             }
             while (index > -1);
@@ -612,26 +612,26 @@ namespace Olive
         /// <summary>
         /// Returns this text with the specified suffix if this has a value. If this text is empty or null, it will return empty string.
         /// </summary>
-        public static string WithSuffix(this string text, string suffix)
+        public static string WithSuffix(this string @this, string suffix)
         {
-            if (text.IsEmpty()) return string.Empty;
-            else return text + suffix;
+            if (@this.IsEmpty()) return string.Empty;
+            else return @this + suffix;
         }
 
         /// <summary>
         /// Wraps this text between the left and right wrappers, only if this has a value.
         /// </summary>
-        public static string WithWrappers(this string text, string left, string right)
+        public static string WithWrappers(this string @this, string left, string right)
         {
-            if (text.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
-            return left + text + right;
+            return left + @this + right;
         }
 
         /// <summary>
         /// Repeats this text by the number of times specified.
         /// </summary>
-        public static string Repeat(this string text, int times) => Repeat(text, times, null);
+        public static string Repeat(this string @this, int times) => Repeat(@this, times, null);
 
         /// <summary>
         /// Repeats this text by the number of times specified, seperated with the specified seperator.
@@ -648,7 +648,7 @@ namespace Olive
             {
                 r.Append(text);
 
-                if (seperator != null) r.Append(seperator);
+                if (!(seperator is null)) r.Append(seperator);
             }
 
             return r.ToString();
@@ -657,26 +657,26 @@ namespace Olive
         /// <summary>
         /// Determines if this string value contains a specified substring.
         /// </summary>
-        public static bool Contains(this string text, string subString, bool caseSensitive)
+        public static bool Contains(this string @this, string subString, bool caseSensitive)
         {
-            if (text == null && subString == null)
+            if (@this is null && subString is null)
                 return true;
 
-            if (text == null) return false;
+            if (@this is null) return false;
 
             if (subString.IsEmpty()) return true;
 
             if (caseSensitive)
-                return text.Contains(subString);
+                return @this.Contains(subString);
             else
-                return text.ToUpper().Contains(subString?.ToUpper());
+                return @this.ToUpper().Contains(subString?.ToUpper());
         }
 
         /// <summary>
         /// Removes the specified substrings from this string object.
         /// </summary>
-        public static string Remove(this string text, string firstSubstringsToRemove, params string[] otherSubstringsToRemove) =>
-            text.Remove(firstSubstringsToRemove).Remove(otherSubstringsToRemove);
+        public static string Remove(this string @this, string firstSubstringsToRemove, params string[] otherSubstringsToRemove) =>
+            @this.Remove(firstSubstringsToRemove).Remove(otherSubstringsToRemove);
 
         [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static string Remove(this string text, string[] substringsToRemove)
@@ -706,62 +706,62 @@ namespace Olive
         /// <summary>
         /// Replaces all occurances of a specified phrase to a substitude, even if the original phrase gets produced again as the result of substitution. Note: It's an expensive call.
         /// </summary>
-        public static string KeepReplacing(this string text, string original, string substitute)
+        public static string KeepReplacing(this string @this, string original, string substitute)
         {
-            if (text.IsEmpty()) return text;
+            if (@this.IsEmpty()) return @this;
 
-            if (original == substitute) return text; // prevent loop
+            if (original == substitute) return @this; // prevent loop
 
-            while (text.Contains(original))
-                text = text.Replace(original, substitute);
+            while (@this.Contains(original))
+                @this = @this.Replace(original, substitute);
 
-            return text;
+            return @this;
         }
 
         /// <summary>
         /// Gets this same string when a specified condition is True, otherwise it returns empty string.
         /// </summary>
-        public static string OnlyWhen(this string text, bool condition)
+        public static string OnlyWhen(this string @this, bool condition)
         {
-            if (condition) return text;
+            if (condition) return @this;
             else return string.Empty;
         }
 
         /// <summary>
         /// Gets this same string when a specified condition is False, otherwise it returns empty string.
         /// </summary>
-        public static string Unless(this string text, bool condition)
+        public static string Unless(this string @this, bool condition)
         {
             if (condition) return string.Empty;
-            else return text;
+            else return @this;
         }
 
         /// <summary>
         /// Gets the lines of this string.
         /// </summary>
-        public static string[] ToLines(this string text)
+        public static string[] ToLines(this string @this)
         {
-            if (text == null) return new string[0];
+            if (@this is null) return new string[0];
 
-            return text.Split('\n').Select(l => l.Trim('\r')).ToArray();
+            return @this.Split('\n').Select(l => l.Trim('\r')).ToArray();
         }
 
         /// <summary>
         /// Indicates whether this character is categorized as an uppercase letter.
         /// </summary>
-        public static bool IsUpper(this char character) => char.IsUpper(character);
+        public static bool IsUpper(this char @this) => char.IsUpper(@this);
 
         /// <summary>
         /// Indicates whether this character is categorized as a lowercase letter.
         /// </summary>
-        public static bool IsLower(this char character) => char.IsLower(character);
+        public static bool IsLower(this char @this) => char.IsLower(@this);
 
         /// <summary>
         /// Indicates whether this character is categorized as a letter.
         /// </summary>
-        public static bool IsLetter(this char character) => char.IsLetter(character);
+        public static bool IsLetter(this char @this) => char.IsLetter(@this);
 
-        public static bool IsAnyOf(this char character, params char[] characters) => characters.Contains(character);
+        public static bool IsAnyOf(this char @this, params char[] characters) => characters.Contains(@this);
 
         /// <summary>
         /// Indicates whether this character is categorized as digit.
@@ -771,67 +771,67 @@ namespace Olive
         /// <summary>
         /// Indicates whether this character is categorized as White Space (space, tab, new line, etc).
         /// </summary>
-        public static bool IsWhiteSpace(this char character) => char.IsWhiteSpace(character);
+        public static bool IsWhiteSpace(this char @this) => char.IsWhiteSpace(@this);
 
         /// <summary>
         /// Indicates whether this character is categorized as a letter or digit.
         /// </summary>
-        public static bool IsLetterOrDigit(this char character) => char.IsLetterOrDigit(character);
+        public static bool IsLetterOrDigit(this char @this) => char.IsLetterOrDigit(@this);
 
         /// <summary>
         /// Converts the value of this character to its uppercase equivalent.
         /// </summary>
-        public static char ToUpper(this char character) => char.ToUpper(character);
+        public static char ToUpper(this char @this) => char.ToUpper(@this);
 
         /// <summary>
         /// Converts the value of this character to its lowercase equivalent.
         /// </summary>
-        public static char ToLower(this char character) => char.ToLower(character);
+        public static char ToLower(this char @this) => char.ToLower(@this);
 
         /// <summary>
         /// If this expression is null, returns an empty string. Otherwise, it returns the ToString() of this instance.
         /// </summary>
-        public static string ToStringOrEmpty(this object @object)
+        public static string ToStringOrEmpty(this object @this)
         {
-            if (@object == null) return string.Empty;
-            else return @object.ToString().Or(string.Empty);
+            if (@this == null) return string.Empty;
+            else return @this.ToString().Or(string.Empty);
         }
 
         /// <summary>
         /// Determines whether this string object does not contain the specified phrase.
         /// </summary>
-        public static bool Lacks(this string text, string phrase, bool caseSensitive = false)
+        public static bool Lacks(this string @this, string phrase, bool caseSensitive = false)
         {
-            if (text.IsEmpty()) return phrase.HasValue();
+            if (@this.IsEmpty()) return phrase.HasValue();
 
-            return !text.Contains(phrase, caseSensitive);
+            return !@this.Contains(phrase, caseSensitive);
         }
 
         /// <summary>
         /// Determines whether this string object does not contain any of the specified phrases.
         /// </summary>
-        public static bool LacksAll(this string text, params string[] phrases) =>
-            LacksAll(text, caseSensitive: false, phrases: phrases);
+        public static bool LacksAll(this string @this, params string[] phrases) =>
+            LacksAll(@this, caseSensitive: false, phrases: phrases);
 
         /// <summary>
         /// Determines whether this string object does not contain any of the specified phrases.
         /// </summary>
-        public static bool LacksAll(this string text, bool caseSensitive, params string[] phrases)
+        public static bool LacksAll(this string @this, bool caseSensitive, params string[] phrases)
         {
-            if (text.IsEmpty()) return true;
+            if (@this.IsEmpty()) return true;
 
-            return phrases.None(p => p.HasValue() && text.Contains(p, caseSensitive));
+            return phrases.None(p => p.HasValue() && @this.Contains(p, caseSensitive));
         }
 
         /// <summary>
         /// Returns natural English literal text for a specified pascal case string value.
         /// For example it coverts "ThisIsSomething" to "This is something".
         /// </summary>
-        public static string ToLiteralFromPascalCase(this string pascalCaseText)
+        public static string ToLiteralFromPascalCase(this string @this)
         {
-            if (pascalCaseText.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
-            return LiteralFromPascalCaseCache.GetOrAdd(pascalCaseText, source =>
+            return LiteralFromPascalCaseCache.GetOrAdd(@this, source =>
             {
                 var parts = new List<string>();
                 var lastPart = "";
@@ -857,19 +857,19 @@ namespace Olive
         /// <summary>
         /// Returns the all-lower-case version of this list.
         /// </summary>
-        public static IEnumerable<string> ToLower(this IEnumerable<string> list) => list.ExceptNull().Select(i => i.ToLower());
+        public static IEnumerable<string> ToLower(this IEnumerable<string> @this) => @this.ExceptNull().Select(i => i.ToLower());
 
         /// <summary>
         /// Returns the all-upper-case version of this list.
         /// </summary>
-        public static IEnumerable<string> ToUpper(this IEnumerable<string> list) => list.ExceptNull().Select(i => i.ToUpper());
+        public static IEnumerable<string> ToUpper(this IEnumerable<string> @this) => @this.ExceptNull().Select(i => i.ToUpper());
 
         /// <summary>
         /// Gets the UTF8-with-signature bytes of this text.
         /// </summary>
-        public static byte[] GetUtf8WithSignatureBytes(this string text)
+        public static byte[] GetUtf8WithSignatureBytes(this string @this)
         {
-            var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(@this);
 
             // Add signature:
             var result = new byte[bytes.Length + 3];
@@ -887,44 +887,44 @@ namespace Olive
         /// <summary>
         /// Converts this array of bytes to a Base64 string.
         /// </summary>
-        public static string ToBase64String(this byte[] value)
+        public static string ToBase64String(this byte[] @this)
         {
-            if (value == null) return null;
+            if (@this == null) return null;
 
-            return Convert.ToBase64String(value);
+            return Convert.ToBase64String(@this);
         }
 
         /// <summary>
         /// Converts this Base64 string to an array of bytes.
         /// </summary>
-        public static byte[] ToBytesFromBase64(this string value)
+        public static byte[] ToBytesFromBase64(this string @this)
         {
-            if (value.IsEmpty()) return new byte[0];
+            if (@this.IsEmpty()) return new byte[0];
 
-            return Convert.FromBase64String(value);
+            return Convert.FromBase64String(@this);
         }
 
         /// <summary>
         /// Converts this string to an array of bytes with the given encoding.
         /// </summary>
-        public static byte[] ToBytes(this string value, Encoding encoding) => encoding.GetBytes(value);
+        public static byte[] ToBytes(this string @this, Encoding encoding) => encoding.GetBytes(@this);
 
         /// <summary>
         /// Determines whether this text contains any of the specified keywords.
         /// If the keywords list contains a null or empty string, it throws an exception. If you wish to ignore those, use .Trim() on your keywords list.
         /// </summary>
-        public static bool ContainsAny(this string text, IEnumerable<string> keywords, bool caseSensitive = true)
+        public static bool ContainsAny(this string @this, IEnumerable<string> keywords, bool caseSensitive = true)
         {
             if (keywords == null)
                 throw new ArgumentNullException(nameof(keywords));
 
-            if (text.IsEmpty()) return false;
+            if (@this.IsEmpty()) return false;
 
             foreach (var key in keywords)
             {
                 if (key.IsEmpty()) throw new ArgumentException($"nameof(keywords) contains a null or empty string element.");
 
-                if (text.Contains(key, caseSensitive))
+                if (@this.Contains(key, caseSensitive))
                     return true;
             }
 
@@ -934,15 +934,15 @@ namespace Olive
         /// <summary>
         /// Splits this list of string items by a specified separator into a number of smaller lists of string.
         /// </summary>
-        public static IEnumerable<List<string>> Split(this IEnumerable<string> list, string separator)
+        public static IEnumerable<List<string>> Split(this IEnumerable<string> @this, string separator)
         {
             var currentArray = new List<string>();
 
-            foreach (var item in list)
+            foreach (var item in @this)
             {
                 if (item == separator)
                 {
-                    if (currentArray.Count > 0)
+                    if (currentArray.Any())
                     {
                         yield return currentArray;
                         currentArray = new List<string>();
@@ -956,10 +956,11 @@ namespace Olive
         /// <summary>
         /// Converts this path into a file object.
         /// </summary>
-        public static FileInfo AsFile(this string path)
+        [EscapeGCop("I AM the solution myself!")]
+        public static FileInfo AsFile(this string @this)
         {
-            if (path.IsEmpty()) return null;
-            return new FileInfo(path);
+            if (@this.IsEmpty()) return null;
+            return new FileInfo(@this);
         }
 
         /// <summary>
@@ -989,49 +990,49 @@ namespace Olive
         /// <summary>
         /// Converts this path into a Uri object.
         /// </summary>
-        public static Uri AsUri(this string path) => new Uri(path);
+        public static Uri AsUri(this string @this) => new Uri(@this);
 
         /// <summary>
         /// Converts this path into a directory object.
         /// </summary>
-        public static System.IO.DirectoryInfo AsDirectory(this string path)
+        public static System.IO.DirectoryInfo AsDirectory(this string @this)
         {
-            if (path.IsEmpty()) return null;
-            return new System.IO.DirectoryInfo(path);
+            if (@this.IsEmpty()) return null;
+            return new System.IO.DirectoryInfo(@this);
         }
 
         /// <summary>
         /// Gets the Xml Encoded version of this text.
         /// </summary>
-        public static string XmlEncode(this string text)
+        public static string XmlEncode(this string @this)
         {
-            if (text.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
             foreach (var set in XMLEscapingChars)
-                text = text.Replace(set[0], set[1]);
+                @this = @this.Replace(set[0], set[1]);
 
-            return text;
+            return @this;
         }
 
         /// <summary>
         /// Gets the Xml Decoded version of this text.
         /// </summary>
-        public static string XmlDecode(this string text)
+        public static string XmlDecode(this string @this)
         {
-            if (text.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
             foreach (var set in XMLEscapingChars)
-                text = text.Replace(set[1], set[0]);
+                @this = @this.Replace(set[1], set[0]);
 
-            return text;
+            return @this;
         }
 
         /// <summary>
         /// Creates a hash of a specified clear text with a mix of MD5 and SHA1.
         /// </summary>
-        public static string CreateHash(this string clearText, object salt = null)
+        public static string CreateHash(this string @this, object salt = null)
         {
-            var firstHash = clearText.CreateMD5Hash();
+            var firstHash = @this.CreateMD5Hash();
 
             firstHash = $"«6\"£k&36 2{firstHash}mmñÃ5d*";
 
@@ -1044,9 +1045,9 @@ namespace Olive
         /// Creates MD5 hash of this text
         /// <param name="asHex">Specifies whether a hex-compatible string is expected.</param>
         /// </summary>
-        public static string CreateMD5Hash(this string clearText, bool asHex = false)
+        public static string CreateMD5Hash(this string @this, bool asHex = false)
         {
-            var value = MD5.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(clearText));
+            var value = MD5.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(@this));
 
             if (asHex)
                 return BitConverter.ToString(value).Remove("-");
@@ -1057,27 +1058,27 @@ namespace Olive
         /// <summary>
         /// Creates MD5 hash of this text
         /// </summary>
-        public static string CreateMD5Hash(this string clearText) =>
-            Convert.ToBase64String(MD5.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(clearText)));
+        public static string CreateMD5Hash(this string @this) =>
+            Convert.ToBase64String(MD5.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(@this)));
 
         /// <summary>
         /// Creates SHA1 hash of this text
         /// </summary>
-        public static string CreateSHA1Hash(this string clearText)
+        public static string CreateSHA1Hash(this string @this)
         {
-            return Convert.ToBase64String(SHA1.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(clearText))).TrimEnd('=');
+            return Convert.ToBase64String(SHA1.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(@this))).TrimEnd('=');
         }
 
         /// <summary>
         /// Creates SHA256 hash of this text
         /// </summary>
-        public static string CreateSHA256Hash(this string inputString)
+        public static string CreateSHA256Hash(this string @this)
         {
             using (var hash = SHA256Managed.Create())
             {
                 return string.Concat(
                     hash
-                    .ComputeHash(Encoding.UTF8.GetBytes(inputString))
+                    .ComputeHash(Encoding.UTF8.GetBytes(@this))
                     .Select(item => item.ToString("x2").ToLower())
                 );
             }
@@ -1086,35 +1087,35 @@ namespace Olive
         /// <summary>
         /// Creates SHA512 hash of this text
         /// </summary>
-        public static string CreateSHA512Hash(this string inputString)
+        public static string CreateSHA512Hash(this string @this)
         {
             using (var hash = SHA512Managed.Create())
             {
                 return string.Concat(
                     hash
-                    .ComputeHash(Encoding.UTF8.GetBytes(inputString))
+                    .ComputeHash(Encoding.UTF8.GetBytes(@this))
                     .Select(item => item.ToString("x2").ToLower())
                 );
             }
         }
 
-        public static IEnumerable<string> Split(this string text, int chunkSize)
+        public static IEnumerable<string> Split(this string @this, int chunkSize)
         {
-            if (text.HasValue())
+            if (@this.HasValue())
             {
-                if (text.Length > chunkSize)
+                if (@this.Length > chunkSize)
                 {
-                    yield return text.Substring(0, chunkSize);
-                    foreach (var part in text.Substring(chunkSize).Split(chunkSize))
+                    yield return @this.Substring(0, chunkSize);
+                    foreach (var part in @this.Substring(chunkSize).Split(chunkSize))
                         yield return part;
                 }
-                else yield return text;
+                else yield return @this;
             }
         }
 
-        public static string Substring(this string text, int fromIndex, string toText)
+        public static string Substring(this string @this, int fromIndex, string toText)
         {
-            var toIndex = text.IndexOf(toText, fromIndex + 1);
+            var toIndex = @this.IndexOf(toText, fromIndex + 1);
 
             if (fromIndex == -1) return string.Empty;
 
@@ -1122,18 +1123,18 @@ namespace Olive
 
             if (toIndex < fromIndex) return string.Empty;
 
-            return text.Substring(fromIndex, toIndex - fromIndex);
+            return @this.Substring(fromIndex, toIndex - fromIndex);
         }
 
-        public static string Substring(this string text, string from, string to, bool inclusive) =>
-            Substring(text, from, to, inclusive, caseSensitive: true);
+        public static string Substring(this string @this, string from, string to, bool inclusive) =>
+            Substring(@this, from, to, inclusive, caseSensitive: true);
 
-        public static string Substring(this string text, string from, string to, bool inclusive, bool caseSensitive)
+        public static string Substring(this string @this, string from, string to, bool inclusive, bool caseSensitive)
         {
             var comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
-            var fromIndex = text.IndexOf(from, comparison);
-            var toIndex = text.IndexOf(to, fromIndex + from.Length + 1, comparison);
+            var fromIndex = @this.IndexOf(from, comparison);
+            var toIndex = @this.IndexOf(to, fromIndex + from.Length + 1, comparison);
 
             if (fromIndex == -1) return string.Empty;
 
@@ -1144,107 +1145,104 @@ namespace Olive
             if (inclusive) toIndex += to.Length;
             else fromIndex += from.Length;
 
-            return text.Substring(fromIndex, toIndex - fromIndex);
+            return @this.Substring(fromIndex, toIndex - fromIndex);
         }
 
-        public static string ToString(this byte[] data, Encoding encoding) => encoding.GetString(data);
+        public static string ToString(this byte[] @this, Encoding encoding) => encoding.GetString(@this);
 
         /// <summary>
         /// Escapes all invalid characters of this string to it's usable as a valid json constant.
         /// </summary>
-        public static string ToJsonText(this string source)
+        public static string ToJsonText(this string @this)
         {
-            if (source.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
-            return source.Replace("\\", "\\\\").Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\"", "\\\"");
+            return @this.Replace("\\", "\\\\").Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\"", "\\\"");
         }
 
         /// <summary>
         /// Getsa SHA1 hash of this text where all characters are alpha numeric.
         /// </summary>
-        public static string ToSimplifiedSHA1Hash(this string clearText) =>
-            new string(clearText.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray());
+        public static string ToSimplifiedSHA1Hash(this string @this) =>
+            new string(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray());
 
         /// <summary>
         /// Attempts to Parse this String as the given Enum type.
         /// </summary>
-        public static T? TryParseEnum<T>(this string text, T? @default = null) where T : struct
+        public static T? TryParseEnum<T>(this string @this, T? @default = null) where T : struct
         {
-            if (Enum.TryParse(text, ignoreCase: true, result: out T value)) return value;
+            if (Enum.TryParse(@this, ignoreCase: true, result: out T value)) return value;
             else return @default;
         }
 
         /// <summary>
         /// If it's null, it return empty string. Otherwise it returns this.
         /// </summary>
-        public static string OrEmpty(this string text)
-        {
-            if (text == null) return string.Empty;
-            else return text;
-        }
+        [EscapeGCop("I AM the solution myself!")]
+        public static string OrEmpty(this string @this) => @this ?? string.Empty;
 
         /// <summary>
         /// Returns the only matched string in the given text using this Regex pattern. 
         /// Returns null if more than one match found.
         /// </summary>
-        public static string GetSingleMatchedValueOrDefault(this Regex pattern, string text)
+        public static string GetSingleMatchedValueOrDefault(this Regex @this, string text)
         {
-            var matches = pattern.Matches(text).Cast<Match>()
+            var matches = @this.Matches(text).Cast<Match>()
                 .Except(m => !m.Success || string.IsNullOrWhiteSpace(m.Value))
                 .ToList();
-            return matches.Count == 1 ? matches[0].Value : null;
+            return matches.IsSingle() ? matches[0].Value : null;
         }
 
         /// <summary>
         /// Returns true if this collection has more than one item.
         /// </summary>
-        public static bool HasMany<T>(this IEnumerable<T> collection)
+        public static bool HasMany<T>(this IEnumerable<T> @this)
         {
-            using (var en = collection.GetEnumerator())
+            using (var en = @this.GetEnumerator())
                 return en.MoveNext() && en.MoveNext();
         }
 
         /// <summary>
         /// Returns a string value that can be saved in xml.
         /// </summary>
-        public static string XmlEscape(this string unescaped)
+        public static string XmlEscape(this string @this)
         {
-            if (unescaped.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
             foreach (var set in XMLEscapingChars.Take(4))
-                unescaped = unescaped.Replace(set[0], set[1]);
+                @this = @this.Replace(set[0], set[1]);
 
-            return unescaped;
+            return @this;
         }
 
         /// <summary>
         /// Returns a string value without any xml-escaped characters.
         /// </summary>
-        public static string XmlUnescape(this string escaped)
+        public static string XmlUnescape(this string @this)
         {
-            if (escaped.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
             foreach (var set in XMLEscapingChars.Take(4))
-                escaped = escaped.Replace(set[1], set[0]);
+                @this = @this.Replace(set[1], set[0]);
 
-            return escaped;
+            return @this;
         }
 
         /// <summary>
         /// Returns valid JavaScript string content with reserved characters replaced by encoded literals.
         /// </summary>
-        public static string JavascriptEncode(this string text)
+        public static string JavascriptEncode(this string @this)
         {
             foreach (var ch in JsUnsafeCharacters)
             {
                 var replace = new string(ch, 1);
                 var encoded = string.Format("\\x{0:X}", Convert.ToInt32(ch));
-                text = text.Replace(replace, encoded);
+                @this = @this.Replace(replace, encoded);
             }
 
-            text = text.Replace(Environment.NewLine, "\\n");
+            @this = @this.Replace(Environment.NewLine, "\\n");
 
-            return text;
+            return @this;
         }
 
         /// <summary>
@@ -1260,9 +1258,9 @@ namespace Olive
         /// <summary>
         /// Returns valid camelCase javaScript or C# string content.
         /// </summary>
-        public static string ToCamelCaseId(this string text)
+        public static string ToCamelCaseId(this string @this)
         {
-            var result = ToPascalCaseId(text);
+            var result = ToPascalCaseId(@this);
 
             if (result.IsEmpty()) return string.Empty;
 
@@ -1273,113 +1271,113 @@ namespace Olive
         /// <summary>
         /// Converts [hello world] to [Hello World].
         /// </summary>
-        public static string CapitaliseFirstLetters(this string name)
+        public static string CapitaliseFirstLetters(this string @this)
         {
-            if (name.IsEmpty()) return name;
+            if (@this.IsEmpty()) return @this;
 
-            return name.Split(' ').Trim().Select(x => x.First().ToUpper() + x.Substring(1)).ToString(" ");
+            return @this.Split(' ').Trim().Select(x => x.First().ToUpper() + x.Substring(1)).ToString(" ");
         }
 
         /// <summary>
         /// Trims all text before the specified search phrase.
         /// </summary>
-        public static string TrimBefore(this string text, string search, bool caseSensitive = false, bool trimPhrase = false)
+        public static string TrimBefore(this string @this, string search, bool caseSensitive = false, bool trimPhrase = false)
         {
-            if (text.IsEmpty()) return text;
+            if (@this.IsEmpty()) return @this;
 
             int index;
 
-            if (caseSensitive) index = text.IndexOf(search);
+            if (caseSensitive) index = @this.IndexOf(search);
             else
-                index = text.IndexOf(search, StringComparison.OrdinalIgnoreCase);
+                index = @this.IndexOf(search, StringComparison.OrdinalIgnoreCase);
 
-            if (index == -1) return text;
+            if (index == -1) return @this;
 
-            text = text.Substring(index);
+            @this = @this.Substring(index);
 
-            if (trimPhrase) text = text.TrimStart(search, caseSensitive);
+            if (trimPhrase) @this = @this.TrimStart(search, caseSensitive);
 
-            return text;
+            return @this;
         }
 
-        public static string TrimStart(this string text, string search, bool caseSensitive)
+        public static string TrimStart(this string @this, string search, bool caseSensitive)
         {
-            if (caseSensitive) return text.TrimStart(search);
+            if (caseSensitive) return @this.TrimStart(search);
 
-            if (text.StartsWith(search, caseSensitive: false))
-                return text.Substring(search.Length);
+            if (@this.StartsWith(search, caseSensitive: false))
+                return @this.Substring(search.Length);
 
-            return text;
+            return @this;
         }
 
-        public static string TrimAfter(this string text, string phrase, bool trimPhrase = true, bool caseSensitive = false)
+        public static string TrimAfter(this string @this, string phrase, bool trimPhrase = true, bool caseSensitive = false)
         {
-            if (text.IsEmpty()) return text;
+            if (@this.IsEmpty()) return @this;
 
             int index;
 
-            if (caseSensitive) index = text.IndexOf(phrase);
+            if (caseSensitive) index = @this.IndexOf(phrase);
             else
-                index = text.IndexOf(phrase, StringComparison.OrdinalIgnoreCase);
+                index = @this.IndexOf(phrase, StringComparison.OrdinalIgnoreCase);
 
-            if (index == -1) return text;
+            if (index == -1) return @this;
 
             if (!trimPhrase) index += phrase.Length;
 
-            return text.Substring(0, index);
+            return @this.Substring(0, index);
         }
 
         /// <summary>
         /// Returns this string. But if it's String.Empty, it returns NULL.
         /// </summary>
-        public static string OrNullIfEmpty(this string text)
+        public static string OrNullIfEmpty(this string @this)
         {
-            if (string.Equals(text, string.Empty)) return null;
+            if (string.Equals(@this, string.Empty)) return null;
 
-            return text;
+            return @this;
         }
 
         /// <summary>
         /// Capitalises the first letter and lower-cases the rest.
         /// </summary>
-        public static string ToProperCase(this string name)
+        public static string ToProperCase(this string @this)
         {
-            if (name.IsEmpty()) return name;
+            if (@this.IsEmpty()) return @this;
 
-            return name.First().ToUpper() + name.Substring(1).ToLower();
+            return @this.First().ToUpper() + @this.Substring(1).ToLower();
         }
 
         /// <summary>
         /// It will replace all occurances of a specified WHOLE WORD and skip occurances of the word with characters or digits attached to it.
         /// </summary>
-        public static string ReplaceWholeWord(this string text, string word, string replacement, bool caseSensitive = true)
+        public static string ReplaceWholeWord(this string @this, string word, string replacement, bool caseSensitive = true)
         {
             var pattern = "\\b" + Regex.Escape(word) + "\\b";
-            if (caseSensitive) return Regex.Replace(text, pattern, replacement);
-            else return Regex.Replace(text, pattern, replacement, RegexOptions.IgnoreCase);
+            if (caseSensitive) return Regex.Replace(@this, pattern, replacement);
+            else return Regex.Replace(@this, pattern, replacement, RegexOptions.IgnoreCase);
         }
 
         /// <summary>
         /// Returns if a specified WHOLE WORD is found in this text. It skips occurances of the word with characters or digits attached to it.
         /// </summary>
-        public static bool ContainsWholeWord(this string text, string word, bool caseSensitive = true)
+        public static bool ContainsWholeWord(this string @this, string word, bool caseSensitive = true)
         {
-            if (text.IsEmpty()) return false;
+            if (@this.IsEmpty()) return false;
 
             var pattern = "\\b" + Regex.Escape(word) + "\\b";
 
-            if (caseSensitive) return Regex.IsMatch(text, pattern);
-            else return Regex.IsMatch(text, pattern, RegexOptions.IgnoreCase);
+            if (caseSensitive) return Regex.IsMatch(@this, pattern);
+            else return Regex.IsMatch(@this, pattern, RegexOptions.IgnoreCase);
         }
 
         [EscapeGCop("It is an extension for boolean type")]
         public static string ToString(this bool value, string trueText, string falseText) =>
             ToString(value, trueText, falseText, nullText: null);
 
-        public static string ToString(this bool? value, string trueText, string falseText, string nullText = null)
+        public static string ToString(this bool? @this, string trueText, string falseText, string nullText = null)
         {
-            if (value == true) return trueText;
-            else if (value == false) return falseText;
+            if (@this == true) return trueText;
+            else if (@this == false) return falseText;
             else return nullText;
         }
 
@@ -1387,66 +1385,66 @@ namespace Olive
         /// Ensure that this string object starts with a specified other one.
         /// If it does not, then it prepends that and return the combined text.
         /// </summary>
-        public static string EnsureStartsWith(this string text, string expression, bool caseSensitive = true)
+        public static string EnsureStartsWith(this string @this, string expression, bool caseSensitive = true)
         {
-            if (expression.IsEmpty()) return text;
+            if (expression.IsEmpty()) return @this;
 
-            if (text.IsEmpty()) return expression;
+            if (@this.IsEmpty()) return expression;
 
-            if (text.StartsWith(expression, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return text;
+            if (@this.StartsWith(expression, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return @this;
 
-            return expression + text;
+            return expression + @this;
         }
 
         /// <summary>
         /// Ensure that this string object ends with a specified other one.
         /// If it does not, then it appends that and return the combined text.
         /// </summary>
-        public static string EnsureEndsWith(this string text, string expression, bool caseSensitive = true)
+        public static string EnsureEndsWith(this string @this, string expression, bool caseSensitive = true)
         {
-            if (expression.IsEmpty()) return text;
+            if (expression.IsEmpty()) return @this;
 
-            if (text.IsEmpty()) return expression;
+            if (@this.IsEmpty()) return expression;
 
-            if (text.EndsWith(expression, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return text;
+            if (@this.EndsWith(expression, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return @this;
 
-            return text + expression;
+            return @this + expression;
         }
 
         /// <summary>
         /// Gets the Html Encoded version of this text.
         /// </summary>
-        public static string HtmlEncode(this string text)
+        public static string HtmlEncode(this string @this)
         {
-            if (text.IsEmpty()) return string.Empty;
-            return System.Net.WebUtility.HtmlEncode(text);
+            if (@this.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.HtmlEncode(@this);
         }
 
         /// <summary>
         /// Gets the Html Decoded version of this text.
         /// </summary>
-        public static string HtmlDecode(this string text)
+        public static string HtmlDecode(this string @this)
         {
-            if (text.IsEmpty()) return string.Empty;
-            return System.Net.WebUtility.HtmlDecode(text);
+            if (@this.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.HtmlDecode(@this);
         }
 
         /// <summary>
         /// Gets the Url Encoded version of this text.
         /// </summary>
-        public static string UrlEncode(this string text)
+        public static string UrlEncode(this string @this)
         {
-            if (text.IsEmpty()) return string.Empty;
-            return System.Net.WebUtility.UrlEncode(text);
+            if (@this.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.UrlEncode(@this);
         }
 
         /// <summary>
         /// Gets the Url Decoded version of this text.
         /// </summary>
-        public static string UrlDecode(this string text)
+        public static string UrlDecode(this string @this)
         {
-            if (text.IsEmpty()) return string.Empty;
-            return System.Net.WebUtility.UrlDecode(text);
+            if (@this.IsEmpty()) return string.Empty;
+            return System.Net.WebUtility.UrlDecode(@this);
         }
     }
 }

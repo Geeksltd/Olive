@@ -97,7 +97,7 @@ namespace Olive.Logging
 
             try { OutputTask.Wait(Interval); }
             catch (TaskCanceledException) { }
-            catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
+            catch (AggregateException ex) when (ex.InnerExceptions.IsSingle() && ex.InnerExceptions[0] is TaskCanceledException) { }
         }
 
         ILogger ILoggerProvider.CreateLogger(string categoryName) => new BatchingLogger(this, categoryName);

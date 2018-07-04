@@ -118,6 +118,7 @@ namespace Olive
         /// <para> // Freezes the time to Datetime.Now.</para>
         /// <para>}</para>
         /// </summary>
+        [EscapeGCop("I AM the solution myself!")]
         public static IDisposable Stop() => Set(DateTime.Now);
 
         /// <summary>

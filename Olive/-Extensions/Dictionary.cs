@@ -12,42 +12,42 @@ namespace Olive
         /// <summary>
         /// Adds all items from a specified dictionary to this dictionary.
         /// </summary>
-        public static void Add<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IDictionary<TKey, TValue> items)
+        public static void Add<TKey, TValue>(this IDictionary<TKey, TValue> @this, IDictionary<TKey, TValue> items)
         {
             foreach (var item in items)
-                dictionary.Add(item.Key, item.Value);
+                @this.Add(item.Key, item.Value);
         }
 
         public static void RemoveWhere<TKey, TValue>(
-            this IDictionary<TKey, TValue> dictionary,
+            this IDictionary<TKey, TValue> @this,
             Func<KeyValuePair<TKey, TValue>, bool> selector)
         {
-            lock (dictionary)
+            lock (@this)
             {
-                var toRemove = dictionary.Where(selector).ToList();
+                var toRemove = @this.Where(selector).ToList();
 
-                foreach (var item in toRemove) dictionary.Remove(item.Key);
+                foreach (var item in toRemove) @this.Remove(item.Key);
             }
         }
 
-        public static void RemoveWhereKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Func<TKey, bool> selector)
+        public static void RemoveWhereKey<TKey, TValue>(this IDictionary<TKey, TValue> @this, Func<TKey, bool> selector)
         {
-            lock (dictionary)
+            lock (@this)
             {
-                var toRemove = dictionary.Where(x => selector(x.Key)).ToList();
+                var toRemove = @this.Where(x => selector(x.Key)).ToList();
 
-                foreach (var item in toRemove) dictionary.Remove(item.Key);
+                foreach (var item in toRemove) @this.Remove(item.Key);
             }
         }
 
         /// <summary>
         /// Converts this to a KeyValueCollection.
         /// </summary>
-        public static NameValueCollection ToNameValueCollection<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        public static NameValueCollection ToNameValueCollection<TKey, TValue>(this IDictionary<TKey, TValue> @this)
         {
             var result = new NameValueCollection();
 
-            foreach (var item in dictionary)
+            foreach (var item in @this)
                 result.Add(item.Key.ToStringOrEmpty(), item.Value.ToStringOrEmpty());
 
             return result;
@@ -62,14 +62,14 @@ namespace Olive
         /// Adds the properties of a specified [anonymous] object as items to this dictionary.
         /// It ignores duplicate entries and null values.
         /// </summary>
-        public static Dictionary<string, TValue> AddFromProperties<TValue>(this Dictionary<string, TValue> dictionary, object data)
+        public static Dictionary<string, TValue> AddFromProperties<TValue>(this Dictionary<string, TValue> @this, object data)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
             foreach (var property in data.GetType().GetProperties())
             {
-                if (dictionary.ContainsKey(property.Name)) continue;
+                if (@this.ContainsKey(property.Name)) continue;
 
                 var value = property.GetValue(data);
 
@@ -84,32 +84,32 @@ namespace Olive
                         .FormatWith(property.Name, value.GetType().FullName, typeof(TValue).FullName));
                 }
 
-                dictionary.Add(property.Name, (TValue)value);
+                @this.Add(property.Name, (TValue)value);
             }
 
-            return dictionary;
+            return @this;
         }
 
         /// <summary>
         /// Gets the keys of this dictionary.
         /// </summary>
-        public static IEnumerable<T> GetKeys<T, K>(this IDictionary<T, K> dictionary) => dictionary.Select(i => i.Key);
+        public static IEnumerable<T> GetKeys<T, K>(this IDictionary<T, K> @this) => @this.Select(i => i.Key);
 
         /// <summary>
         /// Gets all values from this dictionary.
         /// </summary>
-        public static IEnumerable<TValue> GetAllValues<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        public static IEnumerable<TValue> GetAllValues<TKey, TValue>(this IDictionary<TKey, TValue> @this)
         {
-            foreach (var item in dictionary)
+            foreach (var item in @this)
                 yield return item.Value;
         }
 
         /// <summary>
         /// Tries to the remove an item with the specified key from this dictionary.
         /// </summary>
-        public static K TryRemove<T, K>(this System.Collections.Concurrent.ConcurrentDictionary<T, K> list, T key)
+        public static K TryRemove<T, K>(this System.Collections.Concurrent.ConcurrentDictionary<T, K> @this, T key)
         {
-            if (list.TryRemove(key, out var result))
+            if (@this.TryRemove(key, out var result))
                 return result;
             else return default(K);
         }
@@ -117,11 +117,11 @@ namespace Olive
         /// <summary>
         /// Tries to the remove an item with the specified key from this dictionary.
         /// </summary>
-        public static K TryRemoveAt<T, K>(this System.Collections.Concurrent.ConcurrentDictionary<T, K> list, int index)
+        public static K TryRemoveAt<T, K>(this System.Collections.Concurrent.ConcurrentDictionary<T, K> @this, int index)
         {
             try
             {
-                return list.TryRemove(list.Keys.ElementAt(index));
+                return @this.TryRemove(@this.Keys.ElementAt(index));
             }
             catch
             {
@@ -133,38 +133,41 @@ namespace Olive
         /// <summary>
         /// Gets all values from this dictionary.
         /// </summary>
-        public static IEnumerable<TValue> GetAllValues<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dictionary)
+        public static IEnumerable<TValue> GetAllValues<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> @this)
         {
-            foreach (var item in dictionary)
+            foreach (var item in @this)
                 yield return item.Value;
         }
 
-        public static bool LacksKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key) =>
-            !dictionary.ContainsKey(key);
+        public static bool LacksKey<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key) =>
+            !@this.ContainsKey(key);
 
-        public static bool Lacks(this IDictionary dictionary, object key) => !dictionary.Contains(key);
+        public static bool Lacks(this IDictionary @this, object key) => !@this.Contains(key);
 
-        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+        public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key)
         {
+            if (@this is null) return default(TValue);
+
             var keyType = typeof(TKey);
 
             if (keyType.IsValueType || keyType == typeof(string) || keyType == typeof(Type))
             {
-                if (dictionary.TryGetValue(key, out var result)) return result;
+                if (@this.TryGetValue(key, out var result)) return result;
                 return default(TValue);
             }
             else
             {
-                return dictionary.FirstOrDefault(x => x.Key.Equals(key)).Value;
+                return @this.FirstOrDefault(x => x.Key.Equals(key)).Value;
             }
         }
 
         /// <summary>
         /// Gets the value with the specified key, or null.
         /// </summary>
-        public static TValue TryGet<TKey, TValue>(this IDictionary<TKey, TValue> list, TKey key)
+        public static TValue TryGet<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key)
         {
-            if (list.TryGetValue(key, out var result)) return result;
+            if (@this is null) return default(TValue);
+            if (@this.TryGetValue(key, out var result)) return result;
 
             return default(TValue);
         }
@@ -172,6 +175,7 @@ namespace Olive
         /// <summary>
         /// Adds the specified types pair to this type dictionary.
         /// </summary>
-        public static void Add<T, K>(this IDictionary<Type, Type> typeDictionary) => typeDictionary.Add(typeof(T), typeof(K));
+        public static void Add<T, K>(this IDictionary<Type, Type> @this)
+            => @this.Add(typeof(T), typeof(K));
     }
 }
