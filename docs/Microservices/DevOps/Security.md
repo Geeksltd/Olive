@@ -16,11 +16,9 @@ Developers will have write access only to the repositories of the microservices 
 You must NEVER store any sensitive information in the source code. Secure info such as connection strings, credentials, api keys etc, are injected to the application during the `deployment process`, which will be explained later in this article. 
 
 ### Continious Delivery
+Our continious delivery and Jenkins build structure and processes have been described in details [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Jenkins.md).
 
-### Jenkins
-Our Jenkins build structure and processes have been described in details [here](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/DevOps/Jenkins.md).
-
-### Our Jenkins structure
+### Jenkins structure
 For our current Jenkins structure, we have two servers:
 
 - **Windows VM**: to run Jenkins on, and use it as the Windows build slave.
