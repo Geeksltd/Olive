@@ -2,6 +2,7 @@
 
 ## 04 July 2018
 - Due to the conflict between jQuery-UI and Bootstrap, `jquery-validation-bootstrap-tooltip` package has been removed from `bower.json` and `references.js`
+- Now Olive.MvcJs handles and shows UI validation errors using `ALERTIFY JS`
 
 ## 02 July 2018
 - Install the latest Visual Studio update
