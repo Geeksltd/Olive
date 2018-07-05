@@ -137,7 +137,7 @@ If your service only needs to decrypt authentication tokens you can use :
 }
 ```
 
-Before create a KMS policy, specially the one for decryption, make sure it doesn't exist to avoid duplication.
+Before createing a KMS policy, specially the one for decryption, make sure it doesn't exist to avoid duplication.
 
 Once you have a template, you should:
 * Login to the AWS console
