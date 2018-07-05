@@ -180,14 +180,37 @@ Now that we have all the policies we need we can assign them to the service IAM 
 * Select all the policies you have created. Make sure you have selected the correct filter type on the top left hand side.
 * Click Attach policy
 
-
-
-
-## 1: Create a build script
-
-...
-Bat
-
-
-## 2: Define your service in AWS
-
+## Kubernetes Metadata
+// TODO : We should use Helm to create a package for each service to be able to organize its dependencies and linked resources.
+By now everything should be set up and we should be ready for the final step, which is introducing the service to Kubernetes.
+To do that we need to :
+* Add a secret for the service's runtime AWS IAM role.
+  * Go to LocalPathToService\DevOps\Kubernetes
+  * Update Secret.yaml and replace %ROLE_ARN% and %REGION% with the values of the IAM role we created earlier in this document. __IMPORTANT: Do not, I repeat, do not, and I repeat again, do not commit this change. Make sure you discard these changes after applying them to Kubernetes__
+  * Whilst you are in the DevOps folder, run "kubectl apply -f Secret.yaml". It should create the secret in Kubernetes. To check that, run "kubectl get secrets" and the secret should show up.
+* Add a service record for the application service
+  * Double check the Service.yaml file and make sure everthing is OK.
+  * Run "kubectl run apply -f Service.yaml"
+  * Double check the service has been created by running "kubectl get services" and check if the service exists.
+* Accessing the service
+  * We need to set up our Ingress configuraiton to be able to redirect the internet traffic to our service.
+  * Navigate to your local BigPicture repository > Cluster and edit 3_IngressRules.yaml
+  * Add a new rule for your service. Following the same naming convention as the other rules. You can find the rule template below:
+  ```yaml
+  - host: SERVICE_URL
+    http:
+      paths:
+      - backend:
+          serviceName: SERVCIE_NAME
+          servicePort: 80 
+  ```
+  This template tells our Ingress to redirect all the http request to SERVICE_URL:80 to the service we created in the previous step.
+  * Commit and push the changes.
+  * Run "kubectl apply -f path_to_your_local_BigPicture/Cluster/3_IngressRules.yaml"
+  
+You are all set. Now you should be able to run a build on Jenkins and once done you should be able to see your service on live. 
+  
+  
+  
+  
+  
