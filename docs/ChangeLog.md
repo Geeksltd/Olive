@@ -1,5 +1,9 @@
 # Olive compatibility change log
 
+## 09 July 2018
+- Remove the nuget package `Olive.Security`.
+- Add the nuget packages `Olive.Mvc.Security` and `Olive.Encryption` instead.
+
 ## 04 July 2018
 - Due to the conflict between jQuery-UI and Bootstrap, `jquery-validation-bootstrap-tooltip` package has been removed from `bower.json` and `references.js`
 - Now Olive.MvcJs handles and shows UI validation errors using `ALERTIFY JS`
