@@ -28,9 +28,8 @@
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Olive.Security">
-      <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Security.dll</HintPath>
-      <Private>false</Private>
+    <Reference Include="Olive.Mvc.Security">
+      <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.Security.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Web">
       <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Web.dll</HintPath>

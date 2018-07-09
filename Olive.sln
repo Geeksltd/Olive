@@ -73,7 +73,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SQLite"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PushNotification", "Services\Olive.PushNotification\Olive.PushNotification.csproj", "{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security", "Mvc\Olive.Security\Olive.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Security", "Mvc\Olive.Security\Olive.Mvc.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Mvc\Olive.Mvc.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
 EndProject
@@ -123,6 +123,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Aws", "Mvc\Olive.Security.Aws\Olive.Security.Aws.csproj", "{012CB6E2-AA00-4BEB-93A4-B6BBF5770341}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws", "Services\Olive.Aws\Olive.Aws.csproj", "{64B3426B-0ECF-4478-AD84-F29E5030AF15}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Encryption", "Services\Olive.Encryption\Olive.Encryption.csproj", "{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -281,6 +283,10 @@ Global
 		{64B3426B-0ECF-4478-AD84-F29E5030AF15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64B3426B-0ECF-4478-AD84-F29E5030AF15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64B3426B-0ECF-4478-AD84-F29E5030AF15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -313,6 +319,7 @@ Global
 		{A504705A-BAAA-447D-A15F-C99BEFF296F7} = {4EE1A9FA-1435-417C-B407-77E652959CE1}
 		{012CB6E2-AA00-4BEB-93A4-B6BBF5770341} = {4EE1A9FA-1435-417C-B407-77E652959CE1}
 		{64B3426B-0ECF-4478-AD84-F29E5030AF15} = {943E7871-2EEA-4C97-857B-16443CB240E6}
+		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
