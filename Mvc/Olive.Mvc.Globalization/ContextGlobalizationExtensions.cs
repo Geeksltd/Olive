@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Olive.Entities;
+﻿using Olive.Entities;
 using Olive.Globalization;
+using System;
+using System.Threading.Tasks;
 
 namespace Olive
 {

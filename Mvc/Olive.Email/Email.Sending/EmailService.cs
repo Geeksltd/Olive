@@ -1,3 +1,4 @@
+using Olive.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +7,6 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Olive.Entities;
 
 namespace Olive.Email
 {
@@ -125,7 +125,7 @@ namespace Olive.Email
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: false))
             {
                 return (await Database.GetList<T>())
-                    .Where(x => EntityManager.IsSoftDeleted((Entity)(IEntity)x));
+                    .Where(x => SoftDeleteAttribute.IsMarked((Entity)(IEntity)x));
             }
         }
 

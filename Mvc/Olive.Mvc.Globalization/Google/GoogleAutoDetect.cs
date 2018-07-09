@@ -1,6 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using Olive.Entities;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using Olive.Entities;
 
 namespace Olive.Globalization
 {

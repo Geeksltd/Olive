@@ -1,5 +1,5 @@
-﻿using System;
-using Olive.Entities;
+﻿using Olive.Entities;
+using System;
 
 namespace Olive.Email
 {

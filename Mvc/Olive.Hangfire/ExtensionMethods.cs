@@ -1,8 +1,7 @@
-﻿using System;
-using Hangfire;
+﻿using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Olive.Mvc;
+using System;
 
 namespace Olive.Hangfire
 {
