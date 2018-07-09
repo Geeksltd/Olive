@@ -1,6 +1,7 @@
 # Olive compatibility change log
 
 ## 09 July 2018
+- `EntityManager` class is retired. Instead, use `EntityGlobalEvents` or `Entity.Services.Xxx(...)`
 - Remove the nuget package `Olive.Security`.
 - Add the nuget packages `Olive.Mvc.Security` and `Olive.Encryption` instead.
 - Fix GCop build performance by adding `<PreserveCompilationContext>true</PreserveCompilationContext>` and `<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>` to the Hub and Olive project templates.
