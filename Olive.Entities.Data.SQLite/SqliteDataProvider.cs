@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
 using System.Text;
-using Microsoft.Data.Sqlite;
 
 namespace Olive.Entities.Data
 {
@@ -52,6 +51,6 @@ namespace Olive.Entities.Data
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
 
             return r.ToString();
-        }       
+        }
     }
 }

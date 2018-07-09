@@ -8,7 +8,7 @@
 
     public class IntEntity : Entity<int>
     {
-        bool IsIdLoaded = false;
+        bool IsIdLoaded;
         int id;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -30,7 +30,6 @@
             }
             set
             {
-
                 if (IsNew && GetType().Defines<IdByDatabaseAttribute>(inherit: true))
                     throw new InvalidOperationException($"ID is not avialable for instances of '{GetType().Name}' before being saved to the database.");
 

@@ -106,7 +106,7 @@
                 if (inCache != null) result.Add(inCache);
                 else
                 {
-                    await EntityManager.RaiseOnLoaded(item);
+                    await Entity.Services.RaiseOnLoaded(item);
                     (Context.Current.Database() as Database)?.TryCache(item, timestamp);
                     result.Add(item);
                 }

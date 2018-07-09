@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace Olive.Entities
 {
@@ -23,6 +23,8 @@ namespace Olive.Entities
 
         [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
         public Entity _ClonedFrom;
+
+        public static readonly EntityServices Services = new EntityServices();
 
         /// <summary>
         /// Base constructor (called implicitly in all typed entity classes) to initialize an object.
@@ -219,7 +221,7 @@ namespace Olive.Entities
         {
             InvalidateCachedReferences();
             await Saved.Raise(e);
-            await EntityManager.RaiseStaticOnSaved(e);
+            await GlobalEntityEvents.InstanceSaved.Raise(e);
             InvalidateCachedReferences();
         }
 
@@ -240,7 +242,7 @@ namespace Olive.Entities
         {
             InvalidateCachedReferences();
             await Deleted.Raise();
-            await EntityManager.RaiseStaticOnDeleted(e);
+            await GlobalEntityEvents.InstanceDeleted.Raise(e);
             InvalidateCachedReferences();
         }
 

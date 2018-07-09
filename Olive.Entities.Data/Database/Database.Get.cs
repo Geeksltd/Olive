@@ -31,7 +31,7 @@ namespace Olive.Entities.Data
         {
             var result = await GetProvider(concreteType).Get(entityID);
 
-            if (result != null) await EntityManager.RaiseOnLoaded(result as Entity);
+            if (result != null) await Entity.Services.RaiseOnLoaded(result as Entity);
 
             return result;
         }

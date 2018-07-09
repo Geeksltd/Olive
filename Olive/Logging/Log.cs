@@ -1,7 +1,7 @@
-﻿using System;
-using System.Text;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Text;
 
 namespace Olive
 {

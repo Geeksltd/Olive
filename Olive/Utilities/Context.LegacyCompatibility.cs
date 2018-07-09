@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Olive
@@ -51,7 +51,9 @@ namespace Olive
             public string this[string key] { get => AppSettings.GetOrDefault(key); set => AppSettings[key] = value; }
 
             public IChangeToken GetReloadToken() => new ReloadToken();
+
             public IEnumerable<IConfigurationSection> GetChildren() => throw new NotSupportedException();
+
             public IConfigurationSection GetSection(string key) => throw new NotSupportedException();
 
             class ReloadToken : IChangeToken, IDisposable
@@ -59,6 +61,7 @@ namespace Olive
                 public bool HasChanged => false;
                 public bool ActiveChangeCallbacks => false;
                 void IDisposable.Dispose() { }
+
                 public IDisposable RegisterChangeCallback(Action<object> callback, object state) => this;
             }
         }

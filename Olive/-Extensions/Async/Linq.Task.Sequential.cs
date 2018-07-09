@@ -16,6 +16,7 @@ namespace Olive
                 if (sel == null) continue;
                 result.Add(await sel);
             }
+
             return result;
         }
 
@@ -39,6 +40,7 @@ namespace Olive
                     throw;
                 }
             }
+
             return result;
         }
 

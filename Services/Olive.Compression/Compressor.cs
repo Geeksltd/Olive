@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
-using SharpCompress.Archives;
+﻿using SharpCompress.Archives;
 using SharpCompress.Archives.GZip;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 using SharpCompress.Readers;
+using System;
+using System.IO;
 
 namespace Olive
 {

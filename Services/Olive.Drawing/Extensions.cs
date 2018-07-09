@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Olive.Entities;
+﻿using Olive.Entities;
+using System.Threading.Tasks;
 
 namespace Olive.Drawing
 {

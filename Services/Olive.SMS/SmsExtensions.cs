@@ -1,6 +1,6 @@
+using Olive.Entities;
 using System;
 using System.Threading.Tasks;
-using Olive.Entities;
 
 namespace Olive.SMS
 {

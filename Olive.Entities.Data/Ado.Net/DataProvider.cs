@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
@@ -254,7 +253,6 @@ namespace Olive.Entities.Data
             return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
         }
 
-
         #region Connection String
 
         /// <summary>
@@ -364,6 +362,7 @@ namespace Olive.Entities.Data
 
             return parts.ToString(", ") + offset;
         }
+
         #endregion
 
         /// <summary>

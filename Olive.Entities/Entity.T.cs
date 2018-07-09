@@ -1,7 +1,7 @@
 ﻿namespace Olive.Entities
 {
-    using System.Xml.Serialization;
     using Newtonsoft.Json;
+    using System.Xml.Serialization;
 
     public class Entity<T> : Entity, IEntity<T>
     {

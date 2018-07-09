@@ -18,6 +18,16 @@ namespace Olive.Security
             return key = key.Take(AES_KEY_LENGTH).ToArray().PadRight(AES_KEY_LENGTH, (byte)0);
         }
 
+        /// <summary>Encrypts the specified text with the specified password.</summary>
+        /// <param name="encoding">If not specified, UTF8 will be used.</param>
+        public static string Encrypt(string raw, string password, Encoding encoding = null)
+        {
+            if (raw.IsEmpty()) throw new ArgumentNullException(nameof(raw));
+            if (encoding == null) encoding = Encoding.UTF8;
+
+            return Encrypt(encoding.GetBytes(raw), password).ToBase64String();
+        }
+
         public static byte[] Encrypt(byte[] raw, string password)
         {
             if (raw == null) throw new ArgumentNullException(nameof(raw));
@@ -37,6 +47,17 @@ namespace Olive.Security
                     return msEncrypt.ToArray();
                 }
             }
+        }
+
+        /// <summary>Decrypts the specified text with the specified password.</summary>
+        /// <param name="encoding">If not specified, UTF8 will be used.</param>
+        public static string Decrypt(string cipher, string password, Encoding encoding = null)
+        {
+            if (cipher.IsEmpty()) throw new ArgumentNullException(nameof(cipher));
+            var plainBytes = Decrypt(cipher.ToBytesFromBase64(), password);
+
+            if (encoding == null) encoding = Encoding.UTF8;
+            return encoding.GetString(plainBytes);
         }
 
         public static byte[] Decrypt(byte[] cipher, string password)

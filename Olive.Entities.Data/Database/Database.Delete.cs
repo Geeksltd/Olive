@@ -20,7 +20,7 @@ namespace Olive.Entities.Data
             if (!IsSet(behaviour, DeleteBehaviour.BypassDeleting))
             {
                 var deletingArgs = new System.ComponentModel.CancelEventArgs();
-                await EntityManager.RaiseOnDeleting(entity, deletingArgs);
+                await Entity.Services.RaiseOnDeleting(entity, deletingArgs);
 
                 if (deletingArgs.Cancel)
                 {
@@ -31,8 +31,7 @@ namespace Olive.Entities.Data
 
             if (SoftDeleteAttribute.IsEnabled(entity.GetType()) && !SoftDeleteAttribute.Context.ShouldByPassSoftDelete())
             {
-                // Soft delete:
-                EntityManager.MarkSoftDeleted(entity);
+                SoftDeleteAttribute.MarkDeleted(entity);
                 await GetProvider(entity).Save(entity);
             }
             else
@@ -68,7 +67,7 @@ namespace Olive.Entities.Data
             await OnUpdated(entity);
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassDeleted))
-                await EntityManager.RaiseOnDeleted(entity);
+                await Entity.Services.RaiseOnDeleted(entity);
         }
 
         /// <summary>

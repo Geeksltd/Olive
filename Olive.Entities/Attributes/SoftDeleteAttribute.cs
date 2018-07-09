@@ -32,7 +32,6 @@ namespace Olive.Entities
                 try { return Cache[type] = result; }
                 catch
                 {
-
                     // No logging is needed
                     return result;
                 }
@@ -46,6 +45,36 @@ namespace Olive.Entities
             if (!IsEnabled(type)) return false;
 
             return !Context.ShouldByPassSoftDelete();
+        }
+
+        /// <summary>
+        /// Marks a specified object as soft deleted. 
+        /// </summary>
+        public static void MarkDeleted(Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            entity.IsMarkedSoftDeleted = true;
+        }
+
+        /// <summary>
+        /// Unmarks a specified object as soft deleted. 
+        /// </summary>
+        public static void UnMark(Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            entity.IsMarkedSoftDeleted = false;
+        }
+
+        /// <summary>
+        /// Determines if a specified object is marked as soft deleted. 
+        /// </summary>
+        public static bool IsMarked(Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            return entity.IsMarkedSoftDeleted;
         }
 
         /// <summary>

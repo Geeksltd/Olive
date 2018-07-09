@@ -1,12 +1,12 @@
 ﻿namespace Olive.Entities.Data
 {
+    using MySql.Data.MySqlClient;
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using System.Reflection;
     using System.Text;
-    using MySql.Data.MySqlClient;
 
     public abstract class MySqlDataProvider<TTargetEntity> : MySqlDataProvider where TTargetEntity : IEntity
     {

@@ -473,5 +473,21 @@ namespace Olive
         {
             return @this.IsA(typeof(IEnumerable<>).MakeGenericType(typeofT));
         }
+
+        /// <summary>
+        /// Returns an instnce public property with the specified name.
+        /// It avoids AmbiguousMatchFoundException by searching the types one by one.
+        /// </summary> 
+        public static PropertyInfo SafeGetProperty(this Type @this, string propertyName)
+        {
+            if (@this == null) throw new ArgumentNullException(nameof(@this));
+            if (propertyName.IsEmpty()) throw new ArgumentNullException(nameof(propertyName));
+
+            var result = @this.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+
+            if (result != null) return result;
+
+            return @this.BaseType.SafeGetProperty(propertyName);
+        }
     }
 }

@@ -60,7 +60,7 @@ myObject = Database.Reload(myObject);
 Database.Update(myObject, x=> x.P2 = ...);");
             }
 
-            if (EntityManager.IsImmutable(entity))
+            if (Entity.Services.IsImmutable(entity))
                 throw new ArgumentException("An immutable record must be cloned before any modifications can be applied on it. " +
                     $"Type={entity.GetType().FullName}, Id={entity.GetId()}.");
 
@@ -68,7 +68,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             if (!IsSet(behaviour, SaveBehaviour.BypassValidation))
             {
-                await EntityManager.RaiseOnValidating(entity as Entity, EventArgs.Empty);
+                await Entity.Services.RaiseOnValidating(entity as Entity, EventArgs.Empty);
                 await entity.Validate();
             }
             else if (!dataProvider.SupportValidationBypassing())
@@ -81,7 +81,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
             if (!IsSet(behaviour, SaveBehaviour.BypassSaving))
             {
                 var savingArgs = new System.ComponentModel.CancelEventArgs();
-                await EntityManager.RaiseOnSaving(entity, savingArgs);
+                await Entity.Services.RaiseOnSaving(entity, savingArgs);
 
                 if (savingArgs.Cancel)
                 {
@@ -106,7 +106,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
             }
 
             if (mode == SaveMode.Insert)
-                EntityManager.SetSaved(entity);
+                Entity.Services.SetSaved(entity);
 
             Cache.Current.Remove(entity);
 
@@ -118,7 +118,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
             await OnUpdated(entity);
 
             if (!IsSet(behaviour, SaveBehaviour.BypassSaved))
-                await EntityManager.RaiseOnSaved(entity, new SaveEventArgs(mode));
+                await Entity.Services.RaiseOnSaved(entity, new SaveEventArgs(mode));
 
             // OnSaved event handler might have read the object again and put it in the cache, which would
             // create invalid CachedReference objects.
@@ -191,7 +191,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
                 // No need for an error. We can just get the fresh version here.
                 item = await Reload(item);
 
-            if (EntityManager.IsImmutable(item as Entity))
+            if (Entity.Services.IsImmutable(item as Entity))
             {
                 var clone = (T)((IEntity)item).Clone();
 

@@ -1,5 +1,5 @@
-﻿using System;
-using Olive.Logging;
+﻿using Olive.Logging;
+using System;
 
 namespace Olive
 {
