@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Olive.Mvc;
+using System;
 using System.Linq;
 using System.Reflection;
-using Olive.Mvc;
 
 namespace Olive.ApiProxy
 {

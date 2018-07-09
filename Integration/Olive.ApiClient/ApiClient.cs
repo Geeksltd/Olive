@@ -1,5 +1,3 @@
-using System;
-
 namespace Olive
 {
     public partial class ApiClient

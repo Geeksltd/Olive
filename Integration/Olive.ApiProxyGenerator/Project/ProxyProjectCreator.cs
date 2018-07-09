@@ -1,5 +1,4 @@
 ﻿using System;
-using Olive;
 using System.Collections.Generic;
 
 namespace Olive.ApiProxy

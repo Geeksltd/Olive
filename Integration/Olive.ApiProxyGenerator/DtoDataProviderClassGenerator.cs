@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Olive.Mvc;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Olive.Mvc;
 
 namespace Olive.ApiProxy
 {
@@ -44,6 +44,7 @@ namespace Olive.ApiProxy
                 r.AppendLine($"static {Type.Name}[] LatestListResult;");
                 r.AppendLine($"static Dictionary<Guid, {Type.Name}> LatestListResultByIds;");
             }
+
             r.AppendLine();
             r.AppendLine($"/// <summary>Gets a singleton instance of this data provider.</summary>");
             r.AppendLine($"public static {type} Current {{ get; }} = new {type}();");
@@ -108,8 +109,6 @@ namespace Olive.ApiProxy
                 else r.Append($"id.ToString().To<{paramType.Name}>()");
                 r.AppendLine(");");
             }
-
-
 
             r.AppendLine("}");
             return r.ToString();

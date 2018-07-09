@@ -100,10 +100,7 @@ namespace Olive
 
         internal Task Delete() => File.DeleteAsync(harshly: true);
 
-        internal virtual Task Update(string content)
-        {
-            return File.WriteAllTextAsync(content);
-        }
+        internal virtual Task Update(string content) => File.WriteAllTextAsync(content);
 
         public DateTime CreationDate { get; internal set; }
 
