@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Olive.Entities;
+using Olive.Entities.Data;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Olive.Entities;
-using Olive.Entities.Data;
 
 namespace Olive.Mvc.Testing
 {
@@ -110,6 +110,7 @@ namespace Olive.Mvc.Testing
                 catch (Exception ex)
                 { throw new Exception("Could not execute sql file '" + file.Key.FullName + "'", ex); }
             }
+
             Server.ClearConnectionPool();
         }
 

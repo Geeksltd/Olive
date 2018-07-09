@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Olive.Csv;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Olive.Csv;
 
 namespace Olive.Mvc
 {
@@ -149,7 +149,6 @@ namespace Olive.Mvc
                     return new BigInteger(BitConverter.ToUInt64(bytes, IP_4_SIZE), BitConverter.ToUInt64(bytes, 0));
 
                 return new BigInteger(0, BitConverter.ToUInt32(bytes, 0));
-
             }
             catch (Exception ex)
             {

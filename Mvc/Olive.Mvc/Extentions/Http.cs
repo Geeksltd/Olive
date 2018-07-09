@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Olive.Entities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Olive.Entities;
 
 namespace Olive.Mvc
 {
@@ -46,7 +46,7 @@ namespace Olive.Mvc
 
             response.Headers.Add("Content-Disposition", "attachment; filename=\"{0}\"".FormatWith(fileName.Remove("\"", ",")));
 
-            await response.Body.WriteAsync(responseData, 0, responseData.Length);            
+            await response.Body.WriteAsync(responseData, 0, responseData.Length);
         }
 
         /// <summary>

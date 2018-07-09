@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Olive.Entities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
@@ -45,8 +45,6 @@ namespace Olive.Mvc
                 // 	new TempDataDictionary(), TextWriter.Null), new ViewPage());
             }
         }
-
-        
 
         /// <summary>
         /// Do not use this overload. Always provide a viewmodel as a parameter.
@@ -134,7 +132,6 @@ namespace Olive.Mvc
             return AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), Style = style, Obstruct = obstruct });
         }
 
-       
         [NonAction]
         public ActionResult AjaxRedirect(string url)
         {
@@ -205,8 +202,6 @@ namespace Olive.Mvc
 
         [NonAction]
         public UnauthorizedTextActionResult Unauthorized(string message) => new UnauthorizedTextActionResult(message);
-
-       
 
         public ILogger Log => Olive.Log.For(this);
     }

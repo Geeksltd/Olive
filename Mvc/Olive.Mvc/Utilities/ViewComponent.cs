@@ -1,9 +1,9 @@
 ﻿namespace Olive.Mvc
 {
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Olive.Entities;
+    using System.Threading.Tasks;
 
     public abstract partial class ViewComponent : Microsoft.AspNetCore.Mvc.ViewComponent
     {
@@ -24,6 +24,5 @@
             if (settings != null) await ViewModelServices.CopyData(settings, result);
             return result;
         }
-
-      }
+    }
 }

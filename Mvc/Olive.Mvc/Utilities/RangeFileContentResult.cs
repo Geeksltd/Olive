@@ -1,9 +1,9 @@
 ﻿namespace Olive.Mvc
 {
-    using System;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Olive.Entities;
+    using System;
+    using System.Threading.Tasks;
 
     public class RangeFileContentResult : RangeFileResult
     {

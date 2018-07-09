@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using Amazon.KeyManagementService;
+﻿using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
 using Olive.Aws;
+using System;
+using System.Threading.Tasks;
 
 namespace Olive.Security.Aws.Services
 {

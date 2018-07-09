@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc.Testing
@@ -30,6 +29,7 @@ namespace Olive.Mvc.Testing
                     {
                         throw new Exception("Failed to run the reference data.", ex);
                     }
+
                 Status = CreationStatus.Created;
             }
             catch

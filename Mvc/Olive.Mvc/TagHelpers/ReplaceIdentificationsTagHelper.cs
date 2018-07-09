@@ -1,6 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Olive.Mvc
 {

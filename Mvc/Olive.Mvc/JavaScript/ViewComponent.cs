@@ -31,6 +31,7 @@ namespace Olive.Mvc
         {
             JavascriptActions.JavaScript(script, stage);
         }
+
         /// <param name="javascriptCode">The code to run after a set of javascritp dependencies are loaded.</param>       
         public void JavaScript(JavascriptDependency[] dependencies, string javascriptCode)
         {

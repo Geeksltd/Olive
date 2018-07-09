@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Olive.Entities;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Olive.Entities;
 
 namespace Olive.Mvc
 {
@@ -79,7 +79,10 @@ namespace Olive.Mvc
 
             if (Instance == null) throw new Exception($"Invalid {Type.FullName} ID specified: '{idData}'");
 
-            Blob = EntityManager.ReadProperty(Instance, Property) as Blob;
+            Blob = Instance.GetType().SafeGetProperty(Property)?.GetValue(Instance) as Blob;
+            if (Blob == null)
+                throw new Exception("Failed to find a Blob property named '" + Property
+                + "' on " + Instance.GetType().FullName + ".");
         }
 
         bool NeedsSecureAccess() => PropertyInfo.GetCustomAttribute<SecureFileAttribute>() != null;

@@ -1,5 +1,7 @@
 ﻿namespace Olive
 {
+    using Entities;
+    using Mvc;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -7,8 +9,6 @@
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Entities;
-    using Mvc;
 
     public static class ViewModelServices
     {

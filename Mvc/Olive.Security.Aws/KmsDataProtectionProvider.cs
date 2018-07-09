@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Olive.Security.Aws.Services;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Olive.Security.Aws
 {

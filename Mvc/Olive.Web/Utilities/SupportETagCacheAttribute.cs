@@ -1,13 +1,13 @@
 ﻿namespace Olive.Mvc
 {
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Security.Cryptography;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
     using Microsoft.Extensions.Primitives;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Security.Cryptography;
 
     /// <summary>
     /// When applied on a controller or action, it will become aware of client eTag headers in GET requests

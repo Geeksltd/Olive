@@ -1,10 +1,9 @@
-﻿using System;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Olive.Entities;
+using System;
+using System.Security.Claims;
 
 namespace Olive
 {

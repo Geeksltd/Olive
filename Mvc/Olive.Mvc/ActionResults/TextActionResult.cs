@@ -1,8 +1,8 @@
 ﻿namespace Olive.Mvc
 {
+    using Microsoft.AspNetCore.Mvc;
     using System.Net;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
 
     public abstract class TextActionResult : IActionResult
     {

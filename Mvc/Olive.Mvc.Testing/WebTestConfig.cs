@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using Olive.Entities.Data;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Olive.Entities.Data;
 
 namespace Olive.Mvc.Testing
 {

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Olive.Entities;
-using Olive.Web;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Olive.Security
 {

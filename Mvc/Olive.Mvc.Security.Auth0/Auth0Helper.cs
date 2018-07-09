@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using Auth0.AuthenticationApi;
+﻿using Auth0.AuthenticationApi;
 using Auth0.AuthenticationApi.Models;
 using Auth0.Core.Exceptions;
+using System;
+using System.Threading.Tasks;
 
 namespace Olive.Security
 {
