@@ -3,6 +3,7 @@
 ## 09 July 2018
 - Remove the nuget package `Olive.Security`.
 - Add the nuget packages `Olive.Mvc.Security` and `Olive.Encryption` instead.
+- Fix GCop build performance by adding `<PreserveCompilationContext>true</PreserveCompilationContext>` and `<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>` to the Hub and Olive project templates.
 
 ## 04 July 2018
 - Due to the conflict between jQuery-UI and Bootstrap, `jquery-validation-bootstrap-tooltip` package has been removed from `bower.json` and `references.js`
