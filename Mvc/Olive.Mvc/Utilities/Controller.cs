@@ -90,7 +90,7 @@ namespace Olive.Mvc
         {
             if (await base.TryUpdateModelAsync(model))
             {
-                await BindAttributeRunner.BindOn(this, (IViewModel)model);
+                await BindAttributeRunner.BindOn(KeyValuePair.Create((IViewModel)model, (object)this));
                 return true;
             }
 

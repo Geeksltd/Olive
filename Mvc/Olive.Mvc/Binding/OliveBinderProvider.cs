@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Olive.Entities;
 using System;
@@ -19,6 +20,7 @@ namespace Olive.Mvc
         {
             var modelType = context.Metadata.ModelType;
 
+            if (modelType.Defines<ModelBinderAttribute>()) return null;
             if (modelType.IsA<IViewModel>())
             {
                 var propertyBinders = GetProperties(context.Metadata).ToDictionary(property => property, context.CreateBinder);

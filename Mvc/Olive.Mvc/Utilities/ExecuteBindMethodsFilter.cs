@@ -17,19 +17,33 @@ namespace Olive.Mvc
         public static Task Run(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var args = context.ActionArguments.Select(x => x.Value).OfType<IViewModel>().ToArray();
-            return BindOn(context.Controller, args);
+
+            var items = args.Select(x => KeyValuePair.Create(x,
+                GetController(x, (Controller)context.Controller))).ToArray();
+
+            return BindOn(items);
         }
 
-        public static async Task BindOn(object controller, params IViewModel[] items)
+        static object GetController(IViewModel item, Controller controller)
+        {
+            var type = item?.GetType().GetCustomAttribute<BindingControllerAttribute>()?.Type;
+            if (type == null) return controller;
+
+            var result = type.CreateInstance() as Controller;
+            result.ControllerContext = controller.ControllerContext;
+            return result;
+        }
+
+        public static async Task BindOn(params KeyValuePair<IViewModel, object>[] items)
         {
             foreach (var item in items)
-                await Run<OnPreBindingAttribute>(item, controller);
+                await Run<OnPreBindingAttribute>(item.Key, item.Value);
 
             foreach (var item in items)
-                await Run<OnPreBoundAttribute>(item, controller);
+                await Run<OnPreBoundAttribute>(item.Key, item.Value);
 
             foreach (var item in items)
-                await Run<OnBoundAttribute>(item, controller);
+                await Run<OnBoundAttribute>(item.Key, item.Value);
         }
 
         internal static async Task Run<TAttribute>(IViewModel viewModel, object controller)
@@ -59,9 +73,13 @@ namespace Olive.Mvc
         {
             foreach (var info in viewModel.GetType().GetProperties())
             {
-                var nestedValue = info.GetValue(viewModel);
-                if (info.PropertyType.IsA<IViewModel>() && nestedValue != null)
-                    InvokeMethods(methods, controller, nestedValue);
+                if (!info.CanWrite) continue;
+                if (info.PropertyType.IsA<IViewModel>())
+                {
+                    var nestedValue = info.GetValue(viewModel);
+                    if (nestedValue != null)
+                        InvokeMethods(methods, controller, nestedValue);
+                }
             }
 
             var tasks = new List<Task>();
