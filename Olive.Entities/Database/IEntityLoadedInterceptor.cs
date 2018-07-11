@@ -6,9 +6,4 @@ namespace Olive.Entities.Data
     {
         Task Process(IEntity entity);
     }
-
-    public interface IEntitySavingInterceptor
-    {
-        Task Process(IEntity entity);
-    }
 }
