@@ -14,7 +14,7 @@ namespace Olive.Mvc
         static ConcurrentDictionary<string, MethodInfo[]> PreBoundCache = new ConcurrentDictionary<string, MethodInfo[]>();
         static ConcurrentDictionary<string, MethodInfo[]> BoundCache = new ConcurrentDictionary<string, MethodInfo[]>();
 
-        public static Task Run(ActionExecutingContext context, ActionExecutionDelegate next)
+        public static Task Run(ActionExecutingContext context)
         {
             var args = context.ActionArguments.Select(x => x.Value).OfType<IViewModel>().ToArray();
 
@@ -24,7 +24,13 @@ namespace Olive.Mvc
             return BindOn(items);
         }
 
-        static object GetController(IViewModel item, Controller controller)
+        public static Task Bind(IViewModel item, Controller controller)
+        {
+            if (item is null) return Task.CompletedTask;
+            return BindOn(KeyValuePair.Create(item, GetController(item, controller)));
+        }
+
+        static Controller GetController(IViewModel item, Controller controller)
         {
             var type = item?.GetType().GetCustomAttribute<BindingControllerAttribute>()?.Type;
             if (type == null) return controller;
@@ -34,7 +40,7 @@ namespace Olive.Mvc
             return result;
         }
 
-        public static async Task BindOn(params KeyValuePair<IViewModel, object>[] items)
+        static async Task BindOn(params KeyValuePair<IViewModel, Controller>[] items)
         {
             foreach (var item in items)
                 await Run<OnPreBindingAttribute>(item.Key, item.Value);

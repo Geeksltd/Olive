@@ -17,7 +17,8 @@ namespace Olive
         /// Creates a compressed file from this directory.
         /// </summary>        
         /// <param name="destination">Path of the target zip file to generate.</param>
-        public static void Compress(this DirectoryInfo source, CompressionFormat format, FileInfo destination, bool overwrite = false)
+        public static void Compress(this DirectoryInfo @this, FileInfo destination,
+            CompressionFormat format = CompressionFormat.Zip, bool overwrite = false)
         {
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 
@@ -44,7 +45,7 @@ namespace Olive
 
             using (archive)
             {
-                archive.AddAllFromDirectory(source.FullName);
+                archive.AddAllFromDirectory(@this.FullName);
                 archive.SaveTo(destination.FullName, type);
             }
         }
@@ -53,13 +54,13 @@ namespace Olive
         /// Decompresses this file into a specified directory.
         /// </summary>
         /// <param name="destination">Desired decompression desination path.</param>
-        public static void Decompress(this FileInfo compressedFile, DirectoryInfo destination,
+        public static void Decompress(this FileInfo @this, DirectoryInfo destination,
             bool extractFullPath = true, bool overwrite = false)
         {
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 
-            if (!compressedFile.Exists())
-                throw new IOException("File does not exist: " + compressedFile.FullName);
+            if (!@this.Exists())
+                throw new IOException("File does not exist: " + @this.FullName);
 
             if (destination.Exists() && !overwrite)
                 throw new Exception("Destination file already exists: " + destination.FullName);
@@ -70,11 +71,13 @@ namespace Olive
                 Overwrite = overwrite
             };
 
-            using (var stream = File.OpenRead(compressedFile.FullName))
+            using (var stream = File.OpenRead(@this.FullName))
             using (var reader = ReaderFactory.Open(stream))
                 while (reader.MoveToNextEntry())
                     if (!reader.Entry.IsDirectory)
                         reader.WriteEntryToDirectory(destination.FullName, options);
         }
+
+
     }
 }

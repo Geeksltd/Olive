@@ -26,6 +26,7 @@ namespace Olive.Mvc
         {
             ModelState.Clear();
             HttpContext.Items["ViewBag"] = ViewBag;
+            HttpContext.Items["Controller"] = this;
         }
 
         protected static IDatabase Database => Context.Current.Database();
@@ -82,19 +83,24 @@ namespace Olive.Mvc
         /// </summary>
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            await BindAttributeRunner.Run(context, next);
+            await BindAttributeRunner.Run(context);
             await base.OnActionExecutionAsync(context, next);
         }
 
         public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model)
         {
-            if (await base.TryUpdateModelAsync(model))
+            var result = await base.TryUpdateModelAsync(model);
+
+            try
             {
-                await BindAttributeRunner.BindOn(KeyValuePair.Create((IViewModel)model, (object)this));
-                return true;
+                await BindAttributeRunner.Bind(model as IViewModel, this);
+            }
+            catch
+            {
+                return false;
             }
 
-            return false;
+            return result;
         }
 
         protected new HttpRequest Request => HttpContext.Request;

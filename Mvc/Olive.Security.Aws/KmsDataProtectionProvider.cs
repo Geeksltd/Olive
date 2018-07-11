@@ -26,11 +26,14 @@ namespace Olive.Security.Aws
             if (cipher.Length > byte.MaxValue)
                 throw new Exception("Cipher key is longer than a byte!");
 
-            return new byte[] { (byte)cipher.Length }.Concat(cipher, encryptedData).ToArray();
+            return new byte[] { (byte)cipher.Length }
+            .Concat(cipher, encryptedData).ToArray().GZip();
         }
 
         public byte[] Unprotect(byte[] protectedData)
         {
+            protectedData = protectedData.UnGZip();
+
             var cacheKey = protectedData.ToBase64String();
             return CachedDecrptedData.GetOrAdd(cacheKey, (key) =>
             {

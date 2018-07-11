@@ -21,9 +21,9 @@ namespace Olive.Security
             => new SymmetricKeyDataProtector(EncryptionKey, purpose);
 
         public byte[] Protect(byte[] plaintext)
-            => Encryption.Encrypt(plaintext, EncryptionKey + Purpose);
+            => Encryption.Encrypt(plaintext, EncryptionKey + Purpose).GZip();
 
         public byte[] Unprotect(byte[] protectedData)
-            => Encryption.Decrypt(protectedData, EncryptionKey + Purpose);
+            => Encryption.Decrypt(protectedData.UnGZip(), EncryptionKey + Purpose);
     }
 }
