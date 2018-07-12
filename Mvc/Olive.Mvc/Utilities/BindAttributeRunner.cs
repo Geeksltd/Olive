@@ -55,7 +55,7 @@ namespace Olive.Mvc
                 await Run<OnBoundAttribute>(item.Key, item.Value);
         }
 
-        internal static async Task Run<TAttribute>(IViewModel viewModel, Controller[] controllers)
+         static async Task Run<TAttribute>(IViewModel viewModel, Controller[] controllers)
         where TAttribute : Attribute
         {
             foreach (var controller in controllers)
