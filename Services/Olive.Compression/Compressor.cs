@@ -5,7 +5,9 @@ using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Olive
 {
@@ -13,6 +15,44 @@ namespace Olive
 
     public static class CompressionIOExtensions
     {
+        /// <summary>
+        /// Creates a temporary compressed file from these files and returns the bytes from the generated zip file.
+        /// </summary>         
+        public static byte[] Compress(this IEnumerable<FileInfo> @this,
+            CompressionFormat format = CompressionFormat.Zip)
+        {
+            if (@this.None()) return new byte[0];
+            foreach (var sameName in @this.GroupBy(x => x.Name.ToLower()))
+                if (sameName.HasMany())
+                    throw new Exception("Failed to compress files. Duplicate file names: " + sameName.Key);
+
+            var tempFolder = Path.GetTempPath().AsDirectory().CreateSubdirectory(Guid.NewGuid().ToString());
+
+            try
+            {
+                @this.Do(x => x.CopyTo(tempFolder.GetFile(x.Name).FullName));
+                return tempFolder.Compress(format);
+            }
+            finally
+            {
+                tempFolder.DeleteIfExists();
+            }
+        }
+
+        /// <summary>
+        /// Creates a temporary compressed file from this directory and returns its bytes.
+        /// </summary>         
+        public static byte[] Compress(this DirectoryInfo @this, CompressionFormat format = CompressionFormat.Zip)
+        {
+            using (var zipFile = new TemporaryFile("zip"))
+            {
+                var file = zipFile.FilePath.AsFile();
+                @this.Compress(file, format);
+
+                return file.ReadAllBytes();
+            }
+        }
+
         /// <summary>
         /// Creates a compressed file from this directory.
         /// </summary>        
@@ -77,7 +117,5 @@ namespace Olive
                     if (!reader.Entry.IsDirectory)
                         reader.WriteEntryToDirectory(destination.FullName, options);
         }
-
-
     }
 }
