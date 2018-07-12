@@ -19,7 +19,7 @@ namespace Olive.Mvc
             var args = context.ActionArguments.Select(x => x.Value).OfType<IViewModel>().ToArray();
 
             var items = args.Select(x => KeyValuePair.Create(x,
-                GetController(x, (Controller)context.Controller))).ToArray();
+                GetControllers(x, (Controller)context.Controller).ToArray())).ToArray();
 
             return BindOn(items);
         }
@@ -27,20 +27,23 @@ namespace Olive.Mvc
         public static Task Bind(IViewModel item, Controller controller)
         {
             if (item is null) return Task.CompletedTask;
-            return BindOn(KeyValuePair.Create(item, GetController(item, controller)));
+            return BindOn(KeyValuePair.Create(item, GetControllers(item, controller).ToArray()));
         }
 
-        static Controller GetController(IViewModel item, Controller controller)
+        static IEnumerable<Controller> GetControllers(IViewModel item, Controller controller)
         {
-            var type = item?.GetType().GetCustomAttribute<BindingControllerAttribute>()?.Type;
-            if (type == null) return controller;
+            yield return controller;
 
-            var result = type.CreateInstance() as Controller;
-            result.ControllerContext = controller.ControllerContext;
-            return result;
+            var type = item?.GetType().GetCustomAttribute<BindingControllerAttribute>()?.Type;
+            if (type != null)
+            {
+                var result = type.CreateInstance() as Controller;
+                result.ControllerContext = controller.ControllerContext;
+                yield return result;
+            }
         }
 
-        static async Task BindOn(params KeyValuePair<IViewModel, Controller>[] items)
+        static async Task BindOn(params KeyValuePair<IViewModel, Controller[]>[] items)
         {
             foreach (var item in items)
                 await Run<OnPreBindingAttribute>(item.Key, item.Value);
@@ -52,14 +55,17 @@ namespace Olive.Mvc
                 await Run<OnBoundAttribute>(item.Key, item.Value);
         }
 
-        internal static async Task Run<TAttribute>(IViewModel viewModel, object controller)
+        internal static async Task Run<TAttribute>(IViewModel viewModel, Controller[] controllers)
         where TAttribute : Attribute
         {
-            var methods = FindMethods<TAttribute>(viewModel, controller);
-            await InvokeMethods(methods, controller, viewModel);
+            foreach (var controller in controllers)
+            {
+                var methods = FindMethods<TAttribute>(viewModel, controller);
+                await InvokeMethods(methods, controller, viewModel);
+            }
         }
 
-        static MethodInfo[] FindMethods<TAtt>(IViewModel viewModel, object controller)
+        static MethodInfo[] FindMethods<TAtt>(IViewModel viewModel, Controller controller)
             where TAtt : Attribute
         {
             var key = GetKey(controller, viewModel);
@@ -75,7 +81,7 @@ namespace Olive.Mvc
                   });
         }
 
-        static Task InvokeMethods(MethodInfo[] methods, object controller, object viewModel)
+        static Task InvokeMethods(MethodInfo[] methods, Controller controller, object viewModel)
         {
             foreach (var info in viewModel.GetType().GetProperties())
             {
@@ -107,7 +113,7 @@ namespace Olive.Mvc
             else throw new NotSupportedException(typeof(TAttribute) + " is not supported!!");
         }
 
-        static string GetKey(object controller, IViewModel viewModel)
+        static string GetKey(Controller controller, IViewModel viewModel)
         {
             return controller.GetType().FullName + "|" + viewModel.GetType().FullName;
         }
