@@ -66,7 +66,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Olive.MvcJs", "Olive.MvcJs\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "61844"
-		SlnRelativePath = "Olive.MvcJs\"
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SQLite", "Olive.Entities.Data.SQLite\Olive.Entities.Data.SQLite.csproj", "{EE70F844-B284-42D1-8565-45B153727A1B}"
@@ -125,6 +124,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws", "Services\Olive.Aws\Olive.Aws.csproj", "{64B3426B-0ECF-4478-AD84-F29E5030AF15}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Encryption", "Services\Olive.Encryption\Olive.Encryption.csproj", "{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Aws.Ses", "Olive.Aws.Ses\Olive.Aws.Ses.csproj", "{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -287,6 +288,10 @@ Global
 		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -320,6 +325,7 @@ Global
 		{012CB6E2-AA00-4BEB-93A4-B6BBF5770341} = {4EE1A9FA-1435-417C-B407-77E652959CE1}
 		{64B3426B-0ECF-4478-AD84-F29E5030AF15} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341} = {943E7871-2EEA-4C97-857B-16443CB240E6}
+		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

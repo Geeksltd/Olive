@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.Aws.Ses</id>
+    <version>1.0.0</version>
+    <title>Olive AWS SES </title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
+    <description>A plugin for Olive Framework</description>
+    <dependencies>
+      <dependency id="AWSSDK.SimpleEmail" version="3.3.6.11" />
+    </dependencies>
+  </metadata>
+</package>
