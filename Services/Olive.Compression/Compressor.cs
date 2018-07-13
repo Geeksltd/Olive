@@ -105,7 +105,7 @@ namespace Olive
             if (destination.Exists() && !overwrite)
                 throw new Exception("Destination file already exists: " + destination.FullName);
 
-            var options = new ExtractionOptions()
+            var options = new ExtractionOptions
             {
                 ExtractFullPath = extractFullPath,
                 Overwrite = overwrite

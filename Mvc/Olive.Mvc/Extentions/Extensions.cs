@@ -125,14 +125,14 @@ namespace Olive.Mvc
             return HttpContextCache.GetOrAdd("Olive.Principal.ExtractedUser", () =>
             {
                 var id = user.GetId();
-                if (id == null) return default(TUser);
+                if (id.IsEmpty()) return default(TUser);
                 return Task.Factory.RunSync(() => Context.Current.Database().GetOrDefault<TUser>(id));
             });
         }
 
         public static HtmlString ToIcon(this Exception @this, string errorMessage = null)
         {
-            if (errorMessage == null) errorMessage = @this.Message;
+            if (errorMessage.IsEmpty()) errorMessage = @this.Message;
 
             return ($"<error title=\"{errorMessage.HtmlEncode()}\" class=\"soft-error-icon\" />").Raw();
         }

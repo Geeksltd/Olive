@@ -53,15 +53,25 @@ namespace Olive.Entities
         /// Gets a list of entities of the given type from the database with the specified type matching the specified criteria.
         /// If no criteria is specified, the count of all instances will be returned.
         /// </summary>        
-        Task<TOutput?> Aggregate<TProperty, TOutput>(AggregateFunction function, Expression<Func<TEntity, TProperty>> property)
-            where TOutput : struct;
+        Task<TOutput?> Aggregate<TProperty, TOutput>(AggregateFunction function,
+            Expression<Func<TEntity, TProperty?>> property)
+            where TOutput : struct
+            where TProperty : struct;
 
+        Task<TProperty?> Max<TProperty>(Expression<Func<TEntity, TProperty?>> property) where TProperty : struct;
         Task<TProperty?> Max<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
+
+        Task<TProperty?> Min<TProperty>(Expression<Func<TEntity, TProperty?>> property) where TProperty : struct;
         Task<TProperty?> Min<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
+
+        Task<TProperty?> Sum<TProperty>(Expression<Func<TEntity, TProperty?>> property) where TProperty : struct;
         Task<TProperty?> Sum<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
+        Task<decimal?> Sum(Expression<Func<TEntity, int?>> property);
+
+        Task<TProperty?> Average<TProperty>(Expression<Func<TEntity, TProperty?>> property) where TProperty : struct;
         Task<TProperty?> Average<TProperty>(Expression<Func<TEntity, TProperty>> property) where TProperty : struct;
-        Task<decimal?> Average<TProperty>(Expression<Func<TEntity, int>> property) where TProperty : struct;
-        Task<decimal?> Average(Expression<Func<TEntity, int>> property);
+        Task<decimal?> Average(Expression<Func<TEntity, int?>> property);
+
         Task<bool> Contains(TEntity item);
         Task<bool> ContainsAny(TEntity[] items);
         Task<bool> Any(Expression<Func<TEntity, bool>> criteria);
