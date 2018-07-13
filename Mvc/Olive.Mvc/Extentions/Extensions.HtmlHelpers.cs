@@ -260,8 +260,10 @@ namespace Olive.Mvc
 
         public static HtmlString ReferenceScriptFile(this IHtmlHelper @this, string scriptUrl)
         {
-            var items = @this.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] as List<string>;
-            if (items == null) @this.ViewContext.HttpContext.Items["MVC.Registered.Script.Files"] = items = new List<string>();
+            var context = @this.ViewContext.HttpContext;
+
+            if (!(context.Items["MVC.Registered.Script.Files"] is List<string> items))
+                context.Items["MVC.Registered.Script.Files"] = items = new List<string>();
 
             if (items.Lacks(scriptUrl)) items.Add(scriptUrl);
 
