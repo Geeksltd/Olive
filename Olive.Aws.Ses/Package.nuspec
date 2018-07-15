@@ -11,6 +11,7 @@
     <description>A plugin for Olive Framework</description>
     <dependencies>
       <dependency id="AWSSDK.SimpleEmail" version="3.3.6.11" />
+      <dependency id="Microsoft.Extensions.DependencyModel" version="2.1.0" />
     </dependencies>
   </metadata>
 </package>
