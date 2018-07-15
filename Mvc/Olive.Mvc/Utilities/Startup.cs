@@ -49,10 +49,8 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(options =>
                 options.ViewLocationExpanders.Add(GetViewLocationExpander()));
 
-            services.ConfigureApplicationCookie(ConfigureApplicationCookie);
-
             AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies")
-                .AddCookie(ConfigureApplicationCookie);
+                .AddCookie(ConfigureAuthCookie);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -117,7 +115,7 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureRoutes(IRouteBuilder routes) { }
 
-        protected virtual void ConfigureApplicationCookie(CookieAuthenticationOptions options)
+        protected virtual void ConfigureAuthCookie(CookieAuthenticationOptions options)
         {
             options.AccessDeniedPath = options.LoginPath = "/login";
             options.LogoutPath = "/lLogout";
