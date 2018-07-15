@@ -2,12 +2,15 @@
 using Amazon.KeyManagementService.Model;
 using Olive.Aws;
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace Olive.Security.Aws.Services
+namespace Olive.Security.Aws
 {
     class DataKeyService
     {
+        readonly static ConcurrentDictionary<string, byte[]> EncryptionKeys = new ConcurrentDictionary<string, byte[]>();
+
         static readonly string MasterKeyArn = Config.Get("Aws:Kms:MasterKeyArn")
             .Or(Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN"))
             .OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified.");
@@ -27,19 +30,27 @@ namespace Olive.Security.Aws.Services
 
                 return new Key
                 {
-                    Cipher = dataKey.CiphertextBlob.ReadAllBytes(),
-                    Plain = dataKey.Plaintext.ReadAllBytes()
+                    EncryptionKeyReference = dataKey.CiphertextBlob.ReadAllBytes(),
+                    EncryptionKey = dataKey.Plaintext.ReadAllBytes()
                 };
             }
         }
 
-        internal static async Task<byte[]> GetPlainKey(byte[] cipher)
+        internal static byte[] GetEncryptionKey(byte[] encryptionKeyReference)
+        {
+            var keyRef = encryptionKeyReference.ToBase64String();
+
+            return EncryptionKeys.GetOrAdd(keyRef,
+                x => Task.Factory.RunSync(() => DownloadEncryptionKey(encryptionKeyReference)));
+        }
+
+        static async Task<byte[]> DownloadEncryptionKey(byte[] encryptionKeyReference)
         {
             using (var kms = CreateClient())
             {
                 var decryptedData = await kms.DecryptAsync(new DecryptRequest
                 {
-                    CiphertextBlob = cipher.AsStream()
+                    CiphertextBlob = encryptionKeyReference.AsStream()
                 });
 
                 return decryptedData.Plaintext.ReadAllBytes();
@@ -48,8 +59,9 @@ namespace Olive.Security.Aws.Services
 
         internal class Key
         {
-            public byte[] Cipher { get; set; }
-            public byte[] Plain { get; set; }
+            public byte[] EncryptionKeyReference { get; set; }
+
+            public byte[] EncryptionKey { get; set; }
         }
     }
 }
