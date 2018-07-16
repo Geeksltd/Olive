@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -46,7 +47,7 @@ namespace Olive.Hangfire
         public static IApplicationBuilder UseScheduledTasks(this IApplicationBuilder @this,
             Action createAutomatedTasks)
         {
-            Context.StartedUp.Handle(() =>
+            void start()
             {
                 @this.UseHangfireServer();
 
@@ -54,7 +55,10 @@ namespace Olive.Hangfire
                     @this.UseHangfireDashboard();
 
                 createAutomatedTasks();
-            });
+            }
+
+            if (Context.Current.Environment().IsProduction()) start();
+            else Context.StartedUp.Handle(() => start());
 
             return @this;
         }

@@ -20,7 +20,10 @@ namespace Olive.Aws.Ses
             using (var client = new AmazonSimpleEmailServiceClient(RuntimeIdentity.Credentials, RuntimeIdentity.Region))
             {
                 var response = await client.SendEmailAsync(request);
-                return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                if (response.HttpStatusCode != System.Net.HttpStatusCode.OK) return false;
+
+                if (!email.IsNew) await Context.Current.Database().Delete(email); ;
+                return true;
             }
         }
 
