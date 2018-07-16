@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 15 July 2018
+- In `Startup.cs` rename `ConfigureApplicationCookie` to `ConfigureAuthCookie`.
+
 ## 09 July 2018
 - `EntityManager` class is retired. Instead, use `GlobalEntityEvents` or `Entity.Services.Xxx(...)`
 - Remove the nuget package `Olive.Security`.
