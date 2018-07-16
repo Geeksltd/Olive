@@ -15,7 +15,7 @@ namespace Olive.Aws.Ses
         // RuntimeIdentity.Credentials
         public async Task<bool> Dispatch(IEmailMessage email, MailMessage mail)
         {
-            var request = CreateEmailRequest(mail);
+            var request = CreateEmailRequest(email, mail);
 
             using (var client = new AmazonSimpleEmailServiceClient(RuntimeIdentity.Credentials, RuntimeIdentity.Region))
             {
@@ -24,24 +24,24 @@ namespace Olive.Aws.Ses
             }
         }
 
-        private SendEmailRequest CreateEmailRequest(MailMessage email)
+        private SendEmailRequest CreateEmailRequest(IEmailMessage email, MailMessage mail)
         {
             return new SendEmailRequest
             {
-                Source = email.From.Address,
+                Source = mail.From.Address,
                 Destination = new Destination
                 {
-                    ToAddresses = email.To.Select(t => t.Address).ToList()
+                    ToAddresses = mail.To.Select(t => t.Address).ToList()
                 },
                 Message = new Message
                 {
-                    Subject = new Content(email.Subject),
+                    Subject = new Content(mail.Subject),
                     Body = new Body
                     {
                         Html = new Content
                         {
                             Charset = "UTF-8",
-                            Data = email.Body
+                            Data = mail.Body.Or(email.Body)
                         }
                     }
                 }

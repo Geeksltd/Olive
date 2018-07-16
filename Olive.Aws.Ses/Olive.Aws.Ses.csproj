@@ -16,6 +16,9 @@
     <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+    </Reference>
     <Reference Include="Olive.Aws">
       <HintPath>..\@Assemblies\netstandard2.0\Olive.Aws.dll</HintPath>
     </Reference>
