@@ -151,6 +151,7 @@ namespace Olive.Email
             mail.AlternateViews.AddRange(mailItem.GetEffectiveBodyViews());
 
             mail.From = new MailAddress(mailItem.GetEffectiveFromAddress(), mailItem.GetEffectiveFromName());
+            mail.Body = mailItem.Body;
 
             mail.ReplyToList.Add(new MailAddress(mailItem.GetEffectiveReplyToAddress(),
                 mailItem.GetEffectiveReplyToName()));
