@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
@@ -49,16 +50,19 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(options =>
                 options.ViewLocationExpanders.Add(GetViewLocationExpander()));
 
-            services.ConfigureApplicationCookie(ConfigureApplicationCookie);
+            services.AddResponseCompression(ConfigureResponseCompressionOptions);
 
             AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies")
-                .AddCookie(ConfigureApplicationCookie);
+                .AddCookie(ConfigureAuthCookie);
         }
+
+        protected virtual void ConfigureResponseCompressionOptions(ResponseCompressionOptions options) { }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Context.Current.Configure(app.ApplicationServices).Configure(env);
+            app.UseResponseCompression();
 
             app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app, env)));
 
@@ -117,7 +121,7 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureRoutes(IRouteBuilder routes) { }
 
-        protected virtual void ConfigureApplicationCookie(CookieAuthenticationOptions options)
+        protected virtual void ConfigureAuthCookie(CookieAuthenticationOptions options)
         {
             options.AccessDeniedPath = options.LoginPath = "/login";
             options.LogoutPath = "/lLogout";
