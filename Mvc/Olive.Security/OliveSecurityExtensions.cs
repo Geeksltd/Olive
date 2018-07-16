@@ -20,8 +20,9 @@ namespace Olive
             if (@this.ID.HasValue()) claims.Add(new Claim(ClaimTypes.NameIdentifier, @this.ID));
             if (@this.Email.HasValue()) claims.Add(new Claim(ClaimTypes.Email, @this.Email));
 
-            foreach (var role in @this.GetRoles().OrEmpty())
-                claims.Add(new Claim(ClaimTypes.Role, role));
+            var roles = @this.GetRoles().OrEmpty().ToString(",");
+            if (roles.HasValue())
+                claims.Add(new Claim(ClaimTypes.Role, roles));
 
             return new ClaimsIdentity(claims, "Olive");
         }

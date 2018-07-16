@@ -80,6 +80,7 @@ namespace Olive.Mvc
         {
             app.UseMicroserviceAccessKeyAuthentication();
             app.UseAuthentication();
+            app.UseMiddleware<SplitRoleClaimsMiddleware>();
         }
 
         protected virtual void ConfigureRequestHandlers(IApplicationBuilder app, IHostingEnvironment env)

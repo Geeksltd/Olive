@@ -18,7 +18,7 @@ namespace Olive.Mvc
                 var clientId = context.Request.Headers["Microservice.AccessKey"].ToString("|");
                 if (clientId.HasValue())
                 {
-                    var claims = GetRoles(clientId)
+                    var claims = GetRoles(clientId).SelectMany(x => x.Split(',')).Trim()
                     .Select(r => new Claim(ClaimTypes.Role, r))
                     .Concat(new Claim(ClaimTypes.Name, "Microservice.ApiUser"));
                     context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Service"));

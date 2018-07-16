@@ -6,16 +6,19 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        public static string GetEmail(this ClaimsPrincipal principal)
-            => principal?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+        public static string GetEmail(this ClaimsPrincipal @this)
+            => @this?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
 
-        public static string GetId(this ClaimsPrincipal principal)
-            => principal?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        public static string GetId(this ClaimsPrincipal @this)
+            => @this?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
-        public static IEnumerable<string> GetRoles(this ClaimsPrincipal principal)
-            => principal?.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).Trim();
+        public static IEnumerable<string> GetRoles(this ClaimsPrincipal @this)
+        {
+            return @this?.Claims.Where(x => x.Type == ClaimTypes.Role)
+            .SelectMany(x => x.Value.OrEmpty().Split(',')).Trim();
+        }
 
-        public static string GetFirstIssuer(this ClaimsPrincipal principal)
-            => principal?.Claims?.Select(x => x.Issuer).Trim().FirstOrDefault();
+        public static string GetFirstIssuer(this ClaimsPrincipal @this)
+            => @this?.Claims?.Select(x => x.Issuer).Trim().FirstOrDefault();
     }
 }
