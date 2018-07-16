@@ -41,7 +41,7 @@ namespace Olive.Aws.Ses
                         Html = new Content
                         {
                             Charset = "UTF-8",
-                            Data = mail.Body.Or(email.Body)
+                            Data = mail.Body
                         }
                     }
                 }
