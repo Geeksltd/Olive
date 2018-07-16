@@ -17,7 +17,7 @@ namespace Olive.Aws.Ses
         {
             var request = CreateEmailRequest(mail);
 
-            using (var client = new AmazonSimpleEmailServiceClient(RuntimeIdentity.Region))
+            using (var client = new AmazonSimpleEmailServiceClient(RuntimeIdentity.Credentials, RuntimeIdentity.Region))
             {
                 var response = await client.SendEmailAsync(request);
                 return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
