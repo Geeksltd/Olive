@@ -163,7 +163,13 @@ namespace Olive
         /// <summary>
         /// Gets the root of the requested website.
         /// </summary>
-        public static string RootUrl(this HttpRequest @this) => $"{@this.Scheme}://{@this.Host}/";
+        public static string RootUrl(this HttpRequest @this)
+        {
+            var forwarded = @this.Headers["X-Forwarded-Proto"].FirstOrDefault();
+            var scheme = forwarded.Or(@this.Scheme);
+
+            return $"{scheme}://{@this.Host}/";
+        }
 
         /// <summary>
         /// Gets the raw url of the request.
