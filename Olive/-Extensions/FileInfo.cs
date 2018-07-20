@@ -100,11 +100,11 @@ namespace Olive
 
             process.ErrorDataReceived += (sender, e) =>
             {
-                if (e.Data.HasValue()) output.AppendLine(e.Data);
+                if (e.Data.HasValue()) lock (output) output.AppendLine(e.Data);
             };
             process.OutputDataReceived += (sender, e) =>
             {
-                if (e.Data != null) output.AppendLine(e.Data);
+                if (e.Data != null) lock (output) output.AppendLine(e.Data);
             };
 
             process.Start();
@@ -116,9 +116,8 @@ namespace Olive
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
-                {
                     throw new Exception($"Error running '{exeFile.FullName}':{output}");
-                }
+                else process.Dispose();
             }
 
             return output.ToString();
