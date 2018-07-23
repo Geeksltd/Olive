@@ -200,7 +200,14 @@ namespace Olive
         /// <summary>
         /// Determines whether this is an Ajax call.
         /// </summary>
-        public static bool IsAjaxCall(this HttpRequest @this) => @this.Headers["X-Requested-With"] == "XMLHttpRequest";
+        public static bool IsAjaxCall(this HttpRequest @this)
+        {
+            if (@this.Headers["X-Requested-With"] == "XMLHttpRequest") return true;
+
+            if (@this.IsGet()) return false;
+
+            return @this.Form[".Olive-Requested-With"] == "XMLHttpRequest";
+        }
 
         /// <summary>
         /// Determines if this is a GET http request.
