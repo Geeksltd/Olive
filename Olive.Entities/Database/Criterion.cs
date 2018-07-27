@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -18,8 +19,6 @@ namespace Olive.Entities
         static readonly MethodInfo StringLacksExtensionMethod = typeof(OliveExtensions).GetMethod("Lacks", new[] { typeof(string), typeof(string), typeof(bool) });
         static readonly MethodInfo StringIsEmptyExtensionMethod = typeof(OliveExtensions).GetMethod("IsEmpty", new[] { typeof(string) });
         static readonly MethodInfo StringHasValueExtensionMethod = typeof(OliveExtensions).GetMethod("HasValue", new[] { typeof(string) });
-        static readonly MethodInfo IsAnyOfStringExtensionMethod = typeof(OliveExtensions).GetMethod("IsAnyOf", new[] { typeof(string), typeof(string[]) });
-        static readonly MethodInfo IsAnyOfIntExtensionMethod = typeof(OliveExtensions).GetMethod("IsAnyOf", new[] { typeof(int), typeof(IEnumerable<int>) });
         static readonly MethodInfo StringStartsWithMethod = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
         static readonly MethodInfo StringEndsWithMethod = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
 
@@ -106,6 +105,10 @@ namespace Olive.Entities
             if (Value is IEntity)
             {
                 return (Value as IEntity).GetId().ToString();
+            }
+            else if (Value is IEnumerable asEnum && !(Value is string))
+            {
+                return asEnum.ToString("|");
             }
             else
             {
@@ -213,7 +216,7 @@ namespace Olive.Entities
                 valueExpression = expression.Arguments[0];
                 filter = FilterFunction.EndsWith;
             }
-            else if (expression.Method == IsAnyOfStringExtensionMethod || expression.Method == IsAnyOfIntExtensionMethod)
+            else if (expression.Method.Name == "IsAnyOf")
             {
                 propertyExpression = expression.Arguments.First() as MemberExpression;
                 valueExpression = expression.Arguments[1];
@@ -253,11 +256,17 @@ namespace Olive.Entities
             {
                 var value = Expression.Lambda(valueExpression).Compile().DynamicInvoke();
 
-                if (value is IEnumerable<int> enumerable)
-                    value = $"({enumerable.ToString(",")})";
+                if (!(value is string) && value is IEnumerable asEnum)
+                {
+                    Func<object, string> escape = x => $"'{x}'";
+                    if (asEnum.GetType().GetEnumerableItemType().IsBasicNumeric())
+                        escape = x => x.ToString();
 
-                if (valueExpression.NodeType == ExpressionType.NewArrayInit)
-                    value = $"({(value as string[]).Select(part => $"'{part}'").ToString(",")})";
+                    if (asEnum.GetType().GetEnumerableItemType().Implements<IEntity>())
+                        escape = x => $"'{(x as IEntity).GetId()}'";
+
+                    value = $"({asEnum.Cast<object>().Select(escape).ToString(",")})";
+                }
 
                 return new Criterion(property, filter, value);
             }

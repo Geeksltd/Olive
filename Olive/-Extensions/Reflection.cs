@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -488,6 +489,27 @@ namespace Olive
             if (result != null) return result;
 
             return @this.BaseType.SafeGetProperty(propertyName);
+        }
+
+        public static Type GetEnumerableItemType(this Type type)
+        {
+            if (!type.Implements<IEnumerable>()) return null;
+
+            if (type.IsArray) return type.GetElementType();
+            if (type.IsGenericType) return type.GetGenericArguments().Single();
+            return null;
+        }
+
+        public static bool IsBasicNumeric(this Type type)
+        {
+            if (type == typeof(int)) return true;
+            if (type == typeof(float)) return true;
+            if (type == typeof(double)) return true;
+            if (type == typeof(short)) return true;
+            if (type == typeof(decimal)) return true;
+            if (type == typeof(long)) return true;
+
+            return false;
         }
     }
 }
