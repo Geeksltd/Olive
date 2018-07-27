@@ -14,6 +14,7 @@ If using AWS for your production environment, do the following steps in AWS cons
    1. Grant applicable permissions.
       - If the service has a UI, add your authentication policy, e.g. `KMS_GeeksMS-Authentication_DecryptDataKey`
       - Add Secret Manager (read access) to the secret URI you created earlier.
+      
 
 ## Application secrets
 1. In AWS, 
