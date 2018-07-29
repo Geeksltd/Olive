@@ -11,6 +11,12 @@ namespace Olive.Mvc
 
         protected JavascriptDependency(string url) => Url = url;
 
+        /// <summary>Creates a javascript module reference from its requireJs alias (defined in references.js).</summary>        
+        public static JavascriptDependency Alias(string alias)
+        {
+            return new JavascriptDependency(alias);
+        }
+
         /// <summary>Creates a javascript dependency that will be referenced as a relative path on the client side.
         /// So the final address will be resolved relative to the browser's current url.</summary>
         /// <param name="relativePath">The relative path of the javascript module or library inside wwwroot.

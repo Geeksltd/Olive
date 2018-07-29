@@ -491,12 +491,24 @@ namespace Olive
             return @this.BaseType.SafeGetProperty(propertyName);
         }
 
+        /// <summary>
+        /// If this type implements IEnumerable«T» it returns typeof(T).
+        /// </summary>
         public static Type GetEnumerableItemType(this Type type)
         {
             if (!type.Implements<IEnumerable>()) return null;
 
             if (type.IsArray) return type.GetElementType();
-            if (type.IsGenericType) return type.GetGenericArguments().Single();
+
+            if (type.IsGenericType)
+            {
+                var implementedIEnumerableT = type.GetInterfaces().FirstOrDefault(x =>
+                x.GetGenericArguments().IsSingle() &&
+                x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+                return implementedIEnumerableT?.GetGenericArguments().Single();
+            }
+
             return null;
         }
 

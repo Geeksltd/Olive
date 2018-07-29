@@ -4,6 +4,12 @@
     {
         JavascriptModule(string url) : base(url) { }
 
+        /// <summary>Creates a javascript module reference from its requireJs alias (defined in references.js).</summary>        
+        public static new JavascriptModule Alias(string alias)
+        {
+            return new JavascriptModule(alias);
+        }
+
         /// <summary>Creates a javascript module reference that will be referenced as a relative path on the client side.
         /// The final address will be resolved relative to the browser's current url.</summary>
         /// <param name="relativePath">The relative path of the javascript module or library inside wwwroot.
