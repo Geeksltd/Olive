@@ -9,7 +9,19 @@
 
 ## Production environment: AWS
 If using AWS for your production environment, do the following steps in AWS console:
-1. Create a new secret named `{my-solution}/{my-service}`. Make a note of its URI.
+1. Create a new secret named `{my-solution}/{my-service}`.
+   - Choose `Other type of secrets` as the secret type.
+   - Choose `Plaintext` and paste the following:
+
+```json
+   {
+  "ConnectionStrings": {
+    "Default": "Server=.....rds.amazonaws.com,1433; Database={My-Solution>.{My-service}; User ID={My-Service}Service; Password=...; Persist Security Info=True;  MultipleActiveResultSets=True;"
+  }
+}
+```
+
+Make a note of its URI.
 1. Create a role named `{my-service}Runtime`
    1. Under IAM, create a Role
    1. Choose 'AWS Service' and then `EC2`
