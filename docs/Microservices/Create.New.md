@@ -2,8 +2,8 @@
 
 1. Create a new GIT repository named `{my-solution}.{my-service}`
 1. In Visual Studio, click to create a new project with the template ***M# ASP.NET Core - MVC Microservice***.
-1. Choose a brief short name to only specify the role of that service. Don't worry about the overall solution. For example if you're creating the **Calendar** microservice for the **Lorem** solution for **Ipsum** company, just name the new project *Calendar".
-1. Choose *Sql Server* and click **Create**
+   1. Choose a brief short name to only specify the role of that service. Don't worry about the overall solution. For example if you're creating the **Calendar** microservice for the **Lorem** solution for **Ipsum** company, just name the new project *Calendar".
+   1. Choose *Sql Server* and click **Create**
 
 ## Production environment: AWS
 If using AWS for your production environment, do the following steps in AWS console:
