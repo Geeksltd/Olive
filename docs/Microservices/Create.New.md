@@ -9,25 +9,32 @@
 
 ## Production environment: AWS
 If using AWS for your production environment, do the following steps in AWS console:
-1. Create a new secret named `{my-solution}/{my-service}`.
+#### 1. Create a new secret.
    - Choose `Other type of secrets` as the secret type.
-   - Choose `Plaintext` and paste the following:
+   - Choose `Plaintext` and paste the following: `{ "ConnectionStrings": { "Default": "..." } }`
+   - Name the secret `{my-solution}/{my-service}`   
 
-```json
-   {
-  "ConnectionStrings": {
-    "Default": "Server=.....rds.amazonaws.com,1433; Database={My-Solution>.{My-service}; User ID={My-Service}Service; Password=...; Persist Security Info=True;  MultipleActiveResultSets=True;"
-  }
+
+#### 2. Create a Runtime Role 
+1. Under IAM, [create a Role](https://console.aws.amazon.com/iam/home?region=eu-west-1#/roles)
+1. Choose 'AWS Service' and then `EC2`
+1. Grant applicable permissions.
+   - If the service has a UI, add your authentication policy, e.g. `KMS_GeeksMS-Authentication_DecryptDataKey`
+   - Add an inline policy for accessing the secret you created earlier:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "{YOUR-Secret-URI}"
+        }
+    ]
 }
 ```
-
-Make a note of its URI.
-1. Create a role named `{my-service}Runtime`
-   1. Under IAM, create a Role
-   1. Choose 'AWS Service' and then `EC2`
-   1. Grant applicable permissions.
-      - If the service has a UI, add your authentication policy, e.g. `KMS_GeeksMS-Authentication_DecryptDataKey`
-      - Add Secret Manager (read access) to the secret URI you created earlier.
+1. Give it a name as `{my-service}Runtime`
       
 
 ## Application secrets
