@@ -38,6 +38,20 @@ If using AWS for your production environment, do the following steps in AWS cons
     ]
 }
 ```
+1. Edit the `Trust relationships` and change it to the following (set the correct value for `{Kubernetes-Node-Role-URN}`):
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "AWS": [ "{Kubernetes-Node-Role-URN}"] },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
 
 #### Blob Storage (optional)
 Do the following steps only if your service needs file storage.
@@ -65,13 +79,6 @@ Do the following steps only if your service needs file storage.
     ]
 }
 ```
-
-## Website\appSettings.json
-
-1. Open appSettings.json file
-2. Set *"Authentication:CookieDataProtectorKey"* to the secret value that you use in your Auth service.
-
-
 
 ## Website\Properties\LaunchSettings.json
 
