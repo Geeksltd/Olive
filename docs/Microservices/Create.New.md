@@ -9,18 +9,22 @@
 
 ## Production environment: AWS
 If using AWS for your production environment, do the following steps in AWS console:
-#### 1. Create a new secret.
+
+#### Create a secret
+1. In AWS, create a new secret
    - Choose `Other type of secrets` as the secret type.
    - Choose `Plaintext` and paste the following: `{ "ConnectionStrings": { "Default": "..." } }`
-   - Name the secret `{my-solution}/{my-service}`   
+   - Name the secret `{my-solution}/{my-service}`  
+2. In `appSettings.Production.json` set the value of `Aws:Secrets:Id` to `{my-solution}/{my-service}`.
 
 
-#### 2. Create a Runtime Role 
+#### Create a Runtime Role 
 1. Under IAM, [create a Role](https://console.aws.amazon.com/iam/home?region=eu-west-1#/roles)
-1. Choose 'AWS Service' and then `EC2`
-1. Grant applicable permissions.
-   - If the service has a UI, add your authentication policy, e.g. `KMS_GeeksMS-Authentication_DecryptDataKey`
-   - Add an inline policy for accessing the secret you created earlier:
+1. Choose `AWS Service` and then `EC2`
+1. Give it a name as `{my-service}Runtime` and save.
+1. Edit it and grant applicable permissions:
+   - If the service has a UI, add your authentication policy, e.g. `KMS_GeeksMS-Authentication_DecryptDataKey`   
+   - Add an inline policy for accessing the secret you created earlier. Name it `ReadSecret-{My-Solution}.{My-Service}`
 ```
 {
     "Version": "2012-10-17",
@@ -34,16 +38,33 @@ If using AWS for your production environment, do the following steps in AWS cons
     ]
 }
 ```
-1. Give it a name as `{my-service}Runtime`
-      
 
-## Application secrets
-1. In AWS, 
-2. In `appSettings.Production.json` set the value of `Aws:Secrets:Id` to `{my-solution}/{my-service}`.
+#### Blob Storage (optional)
+Do the following steps only if your service needs file storage.
 
-## Blob storage
-Do the following only if your service needs file storage.
-1. If your service needs file storage, in AWS S3, create
+1. In AWS, create a new bucket named `{my-solution}.{my-service}`
+1. In `appSettings.Production.json` set the value of `Blob:S3:Bucket` to the that name also.
+1. Edit the `Runtime Role` that you created before. Add another inline policy to access the created bucket:
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:DeleteObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::{my-solution}.{my-service}",
+                "arn:aws:s3:::{my-solution}.{my-service}/*"
+            ]
+        }
+    ]
+}
+```
 
 ## Website\appSettings.json
 
