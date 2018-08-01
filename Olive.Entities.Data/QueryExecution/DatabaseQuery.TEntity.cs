@@ -48,7 +48,7 @@
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
 
-            var ids = items.Where(x => !ReferenceEquals(null, x)).Select(x => x.GetId()).ToArray();
+            var ids = items.Except(x => ReferenceEquals(null, x)).Select(x => x.GetId()).ToArray();
 
             if (ids.None()) throw new ArgumentException("ContainsAny() requires at least one item");
 

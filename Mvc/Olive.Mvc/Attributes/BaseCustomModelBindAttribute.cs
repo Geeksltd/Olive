@@ -56,8 +56,7 @@ namespace Olive.Mvc
         protected static void Enqueue(ControllerContext cContext, object model, string actionsKey, Type attributeType,
             ConcurrentDictionary<Type, List<MethodInfo>> cache)
         {
-            var queue = cContext.HttpContext.Items[actionsKey] as List<Action>;
-            if (queue == null)
+            if (!(cContext.HttpContext.Items[actionsKey] is List<Action> queue))
             {
                 queue = new List<Action>();
                 cContext.HttpContext.Items[actionsKey] = queue;
@@ -86,7 +85,7 @@ namespace Olive.Mvc
                 else httpContext.Items[key] = "true";
             }
 
-            var actions = httpContext.Items[actionsKey] as List<Action>;
+            var actions = (List<Action>)httpContext.Items[actionsKey];
 
             httpContext.Items[rootKey] = httpContext.Items[actionsKey] = null;
 

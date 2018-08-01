@@ -21,6 +21,8 @@ namespace Olive.Mvc
 {
     public abstract class Startup
     {
+        const int DEFAULT_SESSION_TIMEOUT = 20;
+
         protected AuthenticationBuilder AuthenticationBuilder;
 
         protected virtual IViewLocationExpander GetViewLocationExpander() => new ViewLocationExpander();
@@ -136,7 +138,7 @@ namespace Olive.Mvc
 
             options.SlidingExpiration = true;
 
-            var expireTime = TimeSpan.FromMinutes(Config.Get("Authentication:Cookie:Timeout", 20.0));
+            var expireTime = Config.Get("Authentication:Cookie:Timeout", DEFAULT_SESSION_TIMEOUT).Minutes();
             options.ExpireTimeSpan = expireTime;
             options.Cookie.MaxAge = expireTime;
         }

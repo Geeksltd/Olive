@@ -11,70 +11,70 @@ namespace Olive
     {
         static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-        public static string NameWithoutExtension(this FileInfo file) => Path.GetFileNameWithoutExtension(file.FullName);
+        public static string NameWithoutExtension(this FileInfo @this) => Path.GetFileNameWithoutExtension(@this.FullName);
 
         /// <summary>
         /// Determines whether or not this directory exists.
         /// Note: The standard Exists property has a caching bug, so use this for accurate result.
         /// </summary>
-        public static bool Exists(this DirectoryInfo folder)
+        public static bool Exists(this DirectoryInfo @this)
         {
-            if (folder == null) return false;
-            return Directory.Exists(folder.FullName);
+            if (@this == null) return false;
+            return Directory.Exists(@this.FullName);
         }
 
         /// <summary>
         /// Determines whether or not this file exists. 
         /// Note: The standard Exists property has a caching bug, so use this for accurate result.
         /// </summary>
-        public static bool Exists(this FileInfo file)
+        public static bool Exists(this FileInfo @this)
         {
-            if (file == null) return false;
-            return File.Exists(file.FullName);
+            if (@this == null) return false;
+            return File.Exists(@this.FullName);
         }
 
         /// <summary>
         /// Gets the total size of all files in this directory.
         /// </summary>
-        public static long GetSize(this DirectoryInfo folder, bool includeSubDirectories = true)
-            => folder.GetFiles(includeSubDirectories).Sum(x => x.AsFile().Length);
+        public static long GetSize(this DirectoryInfo @this, bool includeSubDirectories = true)
+            => @this.GetFiles(includeSubDirectories).Sum(x => x.AsFile().Length);
 
         /// <summary>
         /// Gets the size of this folder in human readable text.
         /// </summary>
-        public static string GetSizeText(this DirectoryInfo folder, bool includeSubDirectories = true, int round = 1) =>
-            folder.GetSize(includeSubDirectories).ToFileSizeString(round);
+        public static string GetSizeText(this DirectoryInfo @this, bool includeSubDirectories = true, int round = 1) =>
+            @this.GetSize(includeSubDirectories).ToFileSizeString(round);
 
         /// <summary>
         /// Gets the size of this file in human readable text.
         /// </summary>
-        public static string GetSizeText(this FileInfo file, int round = 1) => file.Length.ToFileSizeString(round);
+        public static string GetSizeText(this FileInfo @this, int round = 1) => @this.Length.ToFileSizeString(round);
 
         /// <summary>
         /// Detects the characters which are not acceptable in File System and replaces them with a hyphen.
         /// </summary>
         /// <param name="replacement">The character with which to replace invalid characters in the name.</param>
-        public static string ToSafeFileName(this string name, char replacement = '-')
+        public static string ToSafeFileName(this string @this, char replacement = '-')
         {
-            if (name.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
-            var controlCharacters = name.Where(c => char.IsControl(c));
+            var controlCharacters = @this.Where(c => char.IsControl(c));
 
             var invalidChars = new[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*' }.Concat(controlCharacters);
 
             foreach (var c in invalidChars)
-                name = name.Replace(c, replacement);
+                @this = @this.Replace(c, replacement);
 
             if (replacement.ToString().HasValue())
-                name = name.KeepReplacing(replacement.ToString() + replacement, replacement.ToString());
+                @this = @this.KeepReplacing(replacement.ToString() + replacement, replacement.ToString());
 
-            return name.Summarize(255).TrimEnd("...");
+            return @this.Summarize(255).TrimEnd("...");
         }
 
         /// <summary>
         /// Executes this EXE file and returns the standard output.
         /// </summary>
-        public static string Execute(this FileInfo exeFile, string args, bool waitForExit = true, Action<Process> configuration = null)
+        public static string Execute(this FileInfo @this, string args, bool waitForExit = true, Action<Process> configuration = null)
         {
             var output = new StringBuilder();
 
@@ -84,9 +84,9 @@ namespace Olive
 
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = exeFile.FullName,
+                    FileName = @this.FullName,
                     Arguments = args,
-                    WorkingDirectory = exeFile.Directory.FullName,
+                    WorkingDirectory = @this.Directory.FullName,
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
@@ -116,7 +116,7 @@ namespace Olive
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
-                    throw new Exception($"Error running '{exeFile.FullName}':{output}");
+                    throw new Exception($"Error running '{@this.FullName}':{output}");
                 else process.Dispose();
             }
 
@@ -126,9 +126,9 @@ namespace Olive
         /// <summary>
         /// Gets the mime type based on the file extension.
         /// </summary>
-        public static string GetMimeType(this FileInfo file)
+        public static string GetMimeType(this FileInfo @this)
         {
-            switch (file.Extension.OrEmpty().TrimStart("."))
+            switch (@this.Extension.OrEmpty().TrimStart("."))
             {
                 case "doc": case "docx": return "application/msword";
                 case "pdf": return "application/pdf";
@@ -169,12 +169,12 @@ namespace Olive
         /// <summary>
         /// Gets the files in this folder. If this folder is null or non-existent it will return an empty array.
         /// </summary>
-        public static IEnumerable<FileInfo> GetFilesOrEmpty(this DirectoryInfo folder, string searchPattern)
+        public static IEnumerable<FileInfo> GetFilesOrEmpty(this DirectoryInfo @this, string searchPattern)
         {
-            if (folder == null || !folder.Exists())
+            if (@this == null || !@this.Exists())
                 return Enumerable.Empty<FileInfo>();
 
-            return folder.GetFiles(searchPattern);
+            return @this.GetFiles(searchPattern);
         }
 
         /// <summary>

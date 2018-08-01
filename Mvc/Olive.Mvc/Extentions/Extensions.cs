@@ -17,12 +17,12 @@ namespace Olive.Mvc
 {
     public static partial class OliveMvcExtensions
     {
-        public static HtmlString Replace(this IHtmlContent content, string oldText, string newText) =>
-            new HtmlString(GetString(content).KeepReplacing(oldText, newText));
+        public static HtmlString Replace(this IHtmlContent @this, string oldText, string newText) =>
+            new HtmlString(GetString(@this).KeepReplacing(oldText, newText));
 
-        public static HtmlString PrefixName(this IHtmlContent content, string prefix)
+        public static HtmlString PrefixName(this IHtmlContent @this, string prefix)
         {
-            var code = GetString(content)
+            var code = GetString(@this)
                 .Replace(" name=\"", $" name=\"{prefix}.")
                 .Replace(" id=\"", $" id=\"{prefix}.")
                 .Replace(" for=\"", $" for=\"{prefix}.");
@@ -54,33 +54,33 @@ namespace Olive.Mvc
         /// Looks for a property named propertyName_Visible on this object. If it finds one and find it to be false it returns true.
         /// Otherwise false.
         /// </summary>
-        public static bool IsInvisible(this IViewModel viewModel, string propertyName)
+        public static bool IsInvisible(this IViewModel @this, string propertyName)
         {
-            var visibleProperty = viewModel.GetType().GetProperty(propertyName + "_Visible");
+            var visibleProperty = @this.GetType().GetProperty(propertyName + "_Visible");
 
             if (visibleProperty == null) return false;
 
-            return !(bool)visibleProperty.GetValue(viewModel);
+            return !(bool)visibleProperty.GetValue(@this);
         }
 
-        public static bool IsValid(this ModelStateDictionary modelState, IViewModel viewModel)
+        public static bool IsValid(this ModelStateDictionary @this, IViewModel viewModel)
         {
-            foreach (var item in modelState)
+            foreach (var item in @this)
                 if (viewModel.IsInvisible(item.Key))
                 {
                     item.Value.Errors.Clear();
                     item.Value.ValidationState = ModelValidationState.Skipped;
                 }
 
-            return modelState.IsValid;
+            return @this.IsValid;
         }
 
         /// <summary>
         /// Gets all errors for all values in this model state instance.
         /// </summary>
-        public static IEnumerable<string> GetErrors(this ModelStateDictionary modelState, bool errorStack = false)
+        public static IEnumerable<string> GetErrors(this ModelStateDictionary @this, bool errorStack = false)
         {
-            foreach (var item in modelState.Values)
+            foreach (var item in @this.Values)
                 foreach (var error in item.Errors)
                 {
                     if (error.ErrorMessage.HasValue()) yield return error.ErrorMessage;
@@ -92,18 +92,18 @@ namespace Olive.Mvc
         /// <summary>
         /// Will convert this html string into a 
         /// </summary>
-        public static HtmlString Raw(this string text) => new HtmlString(text.OrEmpty());
+        public static HtmlString Raw(this string @this) => new HtmlString(@this.OrEmpty());
 
         /// <summary>
         /// Gets access to the current ViewBag.
         /// </summary>
-        public static dynamic ViewBag(this HttpContext context) => (dynamic)context.Items["ViewBag"];
+        public static dynamic ViewBag(this HttpContext @this) => (dynamic)@this.Items["ViewBag"];
 
         /// <summary>
         /// Gets the name of the currently requested controller.
         /// </summary>
-        public static string GetCurrentControllerName(this ActionContext context) =>
-            context.RouteData.Values["controller"].ToString();
+        public static string GetCurrentControllerName(this ActionContext @this) =>
+            @this.RouteData.Values["controller"].ToString();
 
         public static T OrderBy<T>(this T query, ListSortExpression sort)
          where T : IDatabaseQuery
@@ -112,19 +112,19 @@ namespace Olive.Mvc
             return query;
         }
 
-        public static IMvcBuilder Mvc(this Context context) => context.GetService<IMvcBuilder>();
+        public static IMvcBuilder Mvc(this Context @this) => @this.GetService<IMvcBuilder>();
 
-        public static TAttribute GetAttribute<TAttribute>(this ModelMetadata metadata) where TAttribute : System.Attribute
+        public static TAttribute GetAttribute<TAttribute>(this ModelMetadata @this) where TAttribute : System.Attribute
         {
-            return (metadata as DefaultModelMetadata)?.Attributes.Attributes.OfType<TAttribute>().FirstOrDefault();
+            return (@this as DefaultModelMetadata)?.Attributes.Attributes.OfType<TAttribute>().FirstOrDefault();
         }
 
-        public static TUser Extract<TUser>(this ClaimsPrincipal user)
+        public static TUser Extract<TUser>(this ClaimsPrincipal @this)
            where TUser : IEntity
         {
             return HttpContextCache.GetOrAdd("Olive.Principal.ExtractedUser", () =>
             {
-                var id = user.GetId();
+                var id = @this.GetId();
                 if (id.IsEmpty()) return default(TUser);
                 return Task.Factory.RunSync(() => Context.Current.Database().GetOrDefault<TUser>(id));
             });

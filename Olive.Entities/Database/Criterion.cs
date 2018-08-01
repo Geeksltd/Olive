@@ -156,11 +156,11 @@ namespace Olive.Entities
             if (criterion == null)
                 throw new ArgumentNullException(nameof(criterion));
 
-            var methodCallExpression = criterion.Body as MethodCallExpression;
-            if (methodCallExpression != null) return From(methodCallExpression);
+            if (criterion.Body is MethodCallExpression methodCallExpression)
+                return From(methodCallExpression);
 
-            var binaryExpression = criterion.Body as BinaryExpression;
-            if (binaryExpression != null) return From(binaryExpression);
+            if (criterion.Body is BinaryExpression binaryExpression)
+                return From(binaryExpression);
 
             return CriteriaExtractor<T>.CreateCriterion(criterion.Body);
         }
@@ -225,14 +225,12 @@ namespace Olive.Entities
             else
             {
                 if (!throwOnError) return null;
-
                 throw new ArgumentException("Invalid database criteria. The provided filter expression cannot be evaluated and converted into a SQL condition.");
             }
 
             if (propertyExpression == null || !(propertyExpression.Member is PropertyInfo))
             {
                 if (!throwOnError) return null;
-
                 throw new ArgumentException("Invalid database criteria. The provided filter expression cannot be evaluated and converted into a SQL condition." + expression.ToString() +
                     Environment.NewLine + Environment.NewLine + "Consider using application level filter using the \".Where(...)\" clause.");
             }
@@ -242,14 +240,13 @@ namespace Olive.Entities
             // Middle properties?
             while (propertyExpression.Expression is MemberExpression)
             {
-                propertyExpression = (propertyExpression.Expression as MemberExpression);
+                propertyExpression = propertyExpression.Expression as MemberExpression;
                 property = propertyExpression.Member.Name + "." + property;
             }
 
             if (sql.HasValue())
             {
                 if (property.Contains(".")) return null; // Nesting is not supported.
-
                 return new DirectDatabaseCriterion(sql.Replace("#PROPERTY#", property)) { PropertyName = property };
             }
             else
@@ -291,7 +288,7 @@ namespace Olive.Entities
             // Middle properties?
             while (propertyExpression.Expression is MemberExpression)
             {
-                propertyExpression = (propertyExpression.Expression as MemberExpression);
+                propertyExpression = propertyExpression.Expression as MemberExpression;
                 property = propertyExpression.Member.Name + "." + property;
             }
 
