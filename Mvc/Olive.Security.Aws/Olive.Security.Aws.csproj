@@ -15,7 +15,7 @@
     
     <PackageReference Include="AWSSDK.KeyManagementService" Version="3.3.5.6" />
     
-    <PackageReference Include="GCop.All.Geeks" Version="1.2.1" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.2.3" />
     
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="2.1.0" />
   </ItemGroup>

@@ -79,14 +79,19 @@ namespace Olive.Mvc
             // Don't invoke if it's not for the root item.
             if (!ReferenceEquals(httpContext.Items[rootKey], model)) return;
 
+            if (model.ModelType?.IsA<IViewModel>() == true)
+            {
+                var key = "AlreadyRan." + actionsKey + model.ModelType.FullName;
+                if (httpContext.Items[key].ToStringOrEmpty() == "true") return;
+                else httpContext.Items[key] = "true";
+            }
+
             var actions = httpContext.Items[actionsKey] as List<Action>;
 
-            httpContext.Items[rootKey] = null;
-            httpContext.Items[actionsKey] = null;
+            httpContext.Items[rootKey] = httpContext.Items[actionsKey] = null;
 
-            if (actions == null) return;
-
-            foreach (var action in actions.ToArray()) action();
+            if (actions != null)
+                foreach (var action in actions.ToArray()) action();
         }
     }
 }

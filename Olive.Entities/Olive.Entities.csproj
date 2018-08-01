@@ -16,7 +16,7 @@
   </ItemGroup>
  
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="1.2.1" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.2.3" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
