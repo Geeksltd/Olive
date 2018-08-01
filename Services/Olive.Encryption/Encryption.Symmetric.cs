@@ -8,8 +8,7 @@ namespace Olive.Security
 {
     partial class Encryption
     {
-        const int AES_KEY_LENGTH = 32;
-        const int AES_IV_LENGTH = 16;
+        const int AES_KEY_LENGTH = 32, AES_IV_LENGTH = 16;
 
         static byte[] GetValidAesKey(string keyString)
         {

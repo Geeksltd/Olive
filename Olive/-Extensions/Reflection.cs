@@ -370,8 +370,7 @@ namespace Olive
                         if (type == @this) continue;
                         if (!type.IsClass) continue;
 
-                        if (type.Implements(@this))
-                            result.Add(type);
+                        if (type.Implements(@this)) result.Add(type);
                     }
                 }
                 catch

@@ -72,8 +72,7 @@ namespace Olive.ApiProxy
 
             if (!isNullable)
             {
-                if (type.IsValueType)
-                    result += ".Mandatory()";
+                if (type.IsValueType) result += ".Mandatory()";
             }
 
             return result + ";";

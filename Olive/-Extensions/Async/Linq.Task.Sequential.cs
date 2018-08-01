@@ -32,8 +32,7 @@ namespace Olive
                 try
                 {
                     var awaited = await sel;
-                    if (awaited != null)
-                        result.AddRange(awaited);
+                    if (awaited != null) result.AddRange(awaited);
                 }
                 catch (Exception ex)
                 {

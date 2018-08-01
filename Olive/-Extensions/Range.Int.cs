@@ -37,8 +37,7 @@ namespace Olive
                 var lowerBound = @this.From + counter * chunkSize;
                 var upperBound = @this.From + (counter + 1) * chunkSize - 1;
 
-                if (counter == count - 1)
-                    upperBound = @this.To;
+                if (counter == count - 1) upperBound = @this.To;
 
                 result[counter] = new Range<int>(lowerBound, upperBound);
             }

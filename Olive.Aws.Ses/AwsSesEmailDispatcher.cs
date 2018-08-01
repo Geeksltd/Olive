@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.SimpleEmail;
+﻿using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Olive.Email;
+using System.Linq;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace Olive.Aws.Ses
 {
@@ -27,7 +24,7 @@ namespace Olive.Aws.Ses
             }
         }
 
-        private SendEmailRequest CreateEmailRequest(IEmailMessage email, MailMessage mail)
+        SendEmailRequest CreateEmailRequest(IEmailMessage email, MailMessage mail)
         {
             return new SendEmailRequest
             {
