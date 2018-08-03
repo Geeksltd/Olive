@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 3 August 2018
+- By default, all Modals are now based on Ajax call. if you want to used iFrame Modal please add `data-mode="iframe"` to you element and if you experience CSS issue with your form please add this line of code to the project CSS : `form { .group-control { flex: auto; } }`
+
 ## 15 July 2018
 - In `Startup.cs` rename `ConfigureApplicationCookie` to `ConfigureAuthCookie`.
 
