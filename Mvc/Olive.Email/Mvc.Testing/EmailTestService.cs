@@ -169,7 +169,7 @@ namespace Olive.Email
                     r.AddFormattedLine("<td><a href='/?Web.Test.Command=testEmail&id={0}&to={1}&ReturnUrl={2}'>{3}</a></td>",
                         item.GetId(), To, ReturnUrl.UrlEncode(), item.Subject.Or("[NO SUBJECT]").HtmlEncode());
 
-                    r.AddFormattedLine("<td>{0}</td>", GetAttachmentLinks(item));
+                    r.AddFormattedLine("<td>{0}</td>", await GetAttachmentLinks(item));
 
                     r.AppendLine("</tr>");
                 }
