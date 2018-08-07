@@ -100,11 +100,15 @@ namespace Olive
 
         internal Task Delete() => File.DeleteAsync(harshly: true);
 
-        internal virtual Task Update(string content) => File.WriteAllTextAsync(content);
+        internal virtual async Task Update(string content)
+        {
+            CreationDate = LocalTime.UtcNow;
+            await File.WriteAllTextAsync(content);
+        }
 
         public DateTime CreationDate { get; internal set; }
 
-        public TimeSpan Age => LocalTime.Now.Subtract(CreationDate);
+        public TimeSpan Age => LocalTime.UtcNow.Subtract(CreationDate);
 
         protected static string GetTypeName<T>()
            => typeof(T).GetGenericArguments().SingleOrDefault()?.Name ?? typeof(T).Name.Replace("[]", "");
