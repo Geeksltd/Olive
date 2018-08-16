@@ -326,7 +326,7 @@ namespace Olive
             return true;
         }
 
-        internal static bool IsAnyOf(this Type type, params Type[] types) => types.Contains(type);
+        public static bool IsAnyOf(this Type type, params Type[] types) => types.Contains(type);
 
         public static string GetCachedAssemblyQualifiedName(this Type @this) =>
             AssemblyQualifiedNameCache.GetOrAdd(@this, x => x.AssemblyQualifiedName);

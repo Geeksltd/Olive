@@ -291,7 +291,7 @@ namespace Olive.Export
                     }
                     else
                     {
-                        if (value.HasValue()) value = value.XmlEncode();
+                        if (value.HasValue()) value = value.Remove("\r").XmlEncode().Replace("\n", "&#10;");
 
                         r.Append("<Cell");
 

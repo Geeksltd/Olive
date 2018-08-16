@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.Extensions.DependencyInjection;
@@ -152,6 +153,22 @@ namespace Olive.Mvc
             }
 
             return javaScript;
+        }
+
+        /// <summary>
+        /// Gets the specified view model object from the current context's action parameters.
+        /// </summary>
+        /// <param name="key">If there is no item with the specified key, it will also attempt the special key 'info'.</param>
+        public static T GetViewModel<T>(this ActionExecutingContext @this, string key = "info")
+            where T : class, IViewModel
+        {
+            var result = @this?.ActionArguments?.GetOrDefault(key);
+            if (result != null) return (T)result;
+
+            if (key != "info")
+                return @this?.ActionArguments?.GetOrDefault("info") as T;
+
+            return null;
         }
     }
 }

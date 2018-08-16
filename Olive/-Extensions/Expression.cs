@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -56,6 +57,55 @@ namespace Olive
             if (expression is UnaryExpression u) return u.Operand.GetPropertyPath();
 
             throw new Exception("Failed to get the property name from this expression: " + expression);
+        }
+
+        public static object CompileAndInvoke(this Expression expression)
+        {
+            return Expression.Lambda(typeof(Func<>).MakeGenericType(expression.Type),
+                expression).Compile().DynamicInvoke();
+        }
+
+        public static object ExtractValue(this Expression expression)
+        {
+            if (expression == null) return null;
+
+            if (expression is ConstantExpression)
+                return (expression as ConstantExpression).Value;
+
+            if (expression is MemberExpression memberExpression)
+            {
+                var member = memberExpression.Member;
+
+                if (member is PropertyInfo prop)
+                    return prop.GetValue(memberExpression.Expression.ExtractValue());
+
+                else if (member is FieldInfo field)
+                    return field.GetValue(memberExpression.Expression.ExtractValue());
+
+                else
+                    return expression.CompileAndInvoke();
+            }
+            else if (expression is MethodCallExpression methodExpression)
+            {
+                var method = methodExpression.Method;
+                var instance = methodExpression.Object.ExtractValue();
+
+                return method.Invoke(instance, methodExpression.Arguments.Select(a => ExtractValue(a)).ToArray());
+            }
+            else
+            {
+                return expression.CompileAndInvoke();
+            }
+        }
+
+        public static bool IsSimpleParameter(this Expression @this)
+        {
+            if (@this is ParameterExpression) return true;
+
+            if (@this is UnaryExpression && (@this.NodeType == ExpressionType.Convert))
+                return true;
+
+            return false;
         }
     }
 }

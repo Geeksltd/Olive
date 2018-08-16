@@ -13,7 +13,7 @@
         IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Where(Expression<Func<TEntity, bool>> criteria)
         {
             if (criteria == null) return this;
-            Criteria.AddRange(CriteriaExtractor<TEntity>.Parse(criteria));
+            Criteria.AddRange(new CriteriaExtractor<TEntity>(criteria, throwOnNonConversion: true).Extract());
             return this;
         }
 
