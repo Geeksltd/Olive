@@ -37,7 +37,7 @@ namespace Olive.Entities.Data
             if (criterion.PropertyName.IsEmpty() || criterion.PropertyName == "N/A")
                 return criterion.SqlCriteria;
 
-            return criterion.SqlCriteria.Replace($"{{{{{criterion.PropertyName}}}}}",
+            return criterion.SqlCriteria.Replace($"${{{{{criterion.PropertyName}}}}}",
               Query.Column(criterion.PropertyName));
         }
 
