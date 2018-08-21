@@ -2,7 +2,7 @@
 
 ## 21 August 2018
 - The previous reference to the whole jQuery-UI has been removed and just Widget Component that was needed is referenced in RequiredJS. To update your current project please do as below:
-1. Open `reference.js` and change `"jquery-ui": "jqueryui/jquery-ui"` to "jquery-ui/ui/widget": "jquery-ui/ui/widget" then remove `"jquery-ui/ui/widget": "jquery-ui",` from map section and change `"file-upload": ['jquery', 'jquery-ui']` to "file-upload": ['jquery', 'jquery-ui/ui/widget'] and finally in requirejs method change `"jquery-ui"` to `"jquery-ui/ui/widget"` 
+1. Open `reference.js` and change `"jquery-ui": "jqueryui/jquery-ui"` to `"jquery-ui/ui/widget": "jquery-ui/ui/widget"` then remove `"jquery-ui/ui/widget": "jquery-ui"` from map section and change `"file-upload": ['jquery', 'jquery-ui']` to `"file-upload": ['jquery', 'jquery-ui/ui/widget']` and finally in requirejs method change `"jquery-ui"` to `"jquery-ui/ui/widget"` 
 2. Open `bower.json`and change `"jqueryui": "1.12.1"` to `"jquery-ui": "^1.12.1"`
 
 ## 3 August 2018
