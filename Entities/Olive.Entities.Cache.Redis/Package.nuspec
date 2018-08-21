@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Entities.Cache.Redis</id>
-    <version>1.0.63</version>
+    <version>1.0.64</version>
     <title>Olive Entities Cache Redis</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
@@ -11,7 +11,6 @@
     <description>Olive Framework</description>
     <dependencies>
       <dependency id="StackExchange.Redis" version="1.2.6" />
-      <dependency id="Jil" version="2.16.0" />
     </dependencies>
   </metadata>
   <files>

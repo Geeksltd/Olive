@@ -1,8 +1,4 @@
-﻿using StackExchange.Redis;
-using System;
-using System.Collections;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Olive.Entities.Data
@@ -15,14 +11,7 @@ namespace Olive.Entities.Data
             if (result.IsNullOrEmpty) return null;
 
             using (var mem = new MemoryStream((byte[])result))
-            {
-                var deserialized = new BinaryFormatter().Deserialize(mem);
-                return deserialized;
-                //if (deserialized is Serialized ser) return ser.Extract();
-                //if (deserialized is Serialized[] sers)
-                //    return sers.Select(x => x.Extract()).ToArray();
-                //throw new NotSupportedException();
-            }
+                return new BinaryFormatter().Deserialize(mem);
         }
 
         void Set(string key, object value)
@@ -33,6 +22,5 @@ namespace Olive.Entities.Data
                 Db.StringSet(key, mem.ToArray());
             }
         }
-
     }
 }

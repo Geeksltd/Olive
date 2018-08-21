@@ -1,9 +1,7 @@
 ﻿using StackExchange.Redis;
 using System;
 using System.Collections;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Olive.Entities.Data
 {
@@ -21,7 +19,6 @@ namespace Olive.Entities.Data
         }
 
         StackExchange.Redis.IDatabase Db => Redis.GetDatabase();
-
 
         string GetKey(IEntity entity) => entity.GetType().FullName + "|" + entity.GetId();
 
