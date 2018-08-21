@@ -5,16 +5,23 @@ namespace Olive.Entities
 {
     internal interface ICachedReference { void Invalidate(); }
 
-    /// <summary>
+    /// <summary> 
     /// Provides immediate access to retrieved entities. It is aware of deletes and updates.
     /// </summary>
-    public class CachedReference<TEntity> : CachedReference<Guid, TEntity> where TEntity : GuidEntity { }
+    [Serializable]
+    public class CachedReference<TEntity> : CachedReference<Guid, TEntity>
+        where TEntity : GuidEntity
+    { }
 
     /// <summary>
     /// Provides immediate access to retrieved entities. It is aware of deletes and updates.
     /// </summary>
-    public class CachedReference<TId, TEntity> : ICachedReference where TEntity : Entity<TId> where TId : struct
+    [Serializable]
+    public class CachedReference<TId, TEntity> : ICachedReference
+         where TEntity : Entity<TId>
+         where TId : struct
     {
+        [NonSerialized]
         TEntity Value;
         TId? Id;
 

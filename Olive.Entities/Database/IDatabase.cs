@@ -22,8 +22,6 @@ namespace Olive.Entities
 
         Task<T> Parse<T>(string toString, bool caseSensitive = false) where T : IEntity;
 
-        int CountAllObjectsInCache();
-
         Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property);
 
         Task<T> Reload<T>(T instance) where T : IEntity;

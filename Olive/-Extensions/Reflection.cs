@@ -15,6 +15,7 @@ namespace Olive
         static SortedDictionary<string, object> CacheData = new SortedDictionary<string, object>();
 
         static ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> SubTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
+        static ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> DescendantsTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
 
         static ConcurrentDictionary<Type, string> ProgrammingNameCache = new ConcurrentDictionary<Type, string>();
 
@@ -252,17 +253,21 @@ namespace Olive
         #region Sub-Types
 
         /// <summary>
-        /// Gets all types in this assembly that are directly inherited from a specified base type.
+        /// Gets all types in this assembly that inherit from a specified base type.
         /// </summary>
-        public static IEnumerable<Type> GetSubTypes(this Assembly @this, Type baseType)
+        public static IEnumerable<Type> GetSubTypes(this Assembly @this, Type baseType, bool withDescendants = false)
         {
-            var cache = SubTypesCache.GetOrAdd(@this, a => new ConcurrentDictionary<Type, IEnumerable<Type>>());
+            var bag = withDescendants ? DescendantsTypesCache : SubTypesCache;
+
+            var cache = bag.GetOrAdd(@this, a => new ConcurrentDictionary<Type, IEnumerable<Type>>());
 
             return cache.GetOrAdd(baseType, bt =>
             {
                 try
                 {
-                    return @this.GetTypes().Where(t => t.BaseType == bt).ToArray();
+                    var result = @this.GetTypes().Where(t => t.BaseType == bt).ToArray();
+                    if (!withDescendants) return result;
+                    return result.Concat(result.SelectMany(x => x.Assembly.GetSubTypes(x, withDescendants))).ToArray();
                 }
                 catch (ReflectionTypeLoadException ex)
                 {

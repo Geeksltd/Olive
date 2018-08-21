@@ -66,6 +66,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Olive.MvcJs", "Olive.MvcJs\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "61844"
+		SlnRelativePath = "Olive.MvcJs\"
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SQLite", "Olive.Entities.Data.SQLite\Olive.Entities.Data.SQLite.csproj", "{EE70F844-B284-42D1-8565-45B153727A1B}"
@@ -125,7 +126,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws", "Services\Olive
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Encryption", "Services\Olive.Encryption\Olive.Encryption.csproj", "{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Aws.Ses", "Olive.Aws.Ses\Olive.Aws.Ses.csproj", "{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Ses", "Olive.Aws.Ses\Olive.Aws.Ses.csproj", "{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entities", "Entities", "{29DB8290-B5E9-41A3-9B57-E778694C59FC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Cache.Redis", "Entities\Olive.Entities.Cache.Redis\Olive.Entities.Cache.Redis.csproj", "{C001382C-3FB6-4CAA-8A28-D469D867B7ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -292,6 +297,10 @@ Global
 		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C001382C-3FB6-4CAA-8A28-D469D867B7ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C001382C-3FB6-4CAA-8A28-D469D867B7ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C001382C-3FB6-4CAA-8A28-D469D867B7ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C001382C-3FB6-4CAA-8A28-D469D867B7ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -326,6 +335,7 @@ Global
 		{64B3426B-0ECF-4478-AD84-F29E5030AF15} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{AC924CEE-42AD-4E5C-BDEA-D100DDBF9341} = {943E7871-2EEA-4C97-857B-16443CB240E6}
 		{AA08CBC6-3923-491D-A9E3-22BA46E56DA1} = {943E7871-2EEA-4C97-857B-16443CB240E6}
+		{C001382C-3FB6-4CAA-8A28-D469D867B7ED} = {29DB8290-B5E9-41A3-9B57-E778694C59FC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

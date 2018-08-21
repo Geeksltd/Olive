@@ -78,11 +78,6 @@ namespace Olive.Entities.Data
             return default(T);
         }
 
-        /// <summary>
-        /// Gets the total number of objects in cache.
-        /// </summary>
-        public int CountAllObjectsInCache() => Cache.Current.CountAllObjects();
-
         public async Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));

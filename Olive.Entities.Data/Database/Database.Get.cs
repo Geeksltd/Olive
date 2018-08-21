@@ -113,8 +113,11 @@ namespace Olive.Entities.Data
                 {
                     try
                     {
-                        result = Cache.Current.Get(entityID.ToString());
-                        if (result != null) return result;
+                        if (!provider.EntityType.IsInterface && !provider.EntityType.IsAbstract)
+                        {
+                            result = Cache.Current.Get(provider.EntityType, entityID.ToString());
+                            if (result != null) return result;
+                        }
 
                         result = await provider.Get(entityID);
                         if (result != null) break;

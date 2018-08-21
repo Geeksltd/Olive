@@ -6,150 +6,34 @@ using System.Linq;
 
 namespace Olive.Entities.Data
 {
-    /// <summary>
-    /// Provides a cache of objects retrieved from the database.
-    /// </summary>
-    public partial class Cache
+    public abstract class Cache
     {
-        object SyncLock = new object();
-        public static Cache Instance = new Cache();
-        Dictionary<Type, Dictionary<string, IEntity>> Types = new Dictionary<Type, Dictionary<string, IEntity>>();
-        Dictionary<Type, Dictionary<string, IEnumerable>> Lists = new Dictionary<Type, Dictionary<string, IEnumerable>>();
-
-        internal static DateTime? GetQueryTimestamp()
-            => Database.Configuration.Cache.ConcurrencyAware ? DateTime.UtcNow : default(DateTime?);
-
-        public static bool CanCache(Type type)
-            => CacheObjectsAttribute.IsEnabled(type) ?? Database.Configuration.Cache.Enabled;
+        public static Cache Instance = new InMemoryCache();
 
         /// <summary>
         /// Gets the current cache.
         /// </summary>
         public static Cache Current => Instance;
 
-        Dictionary<string, IEntity> GetEntities(Type type)
-        {
-            var result = Types.TryGet(type);
+        public static bool CanCache(Type type)
+          => CacheObjectsAttribute.IsEnabled(type) ?? Database.Configuration.Cache.Enabled;
 
-            if (result == null)
-            {
-                lock (SyncLock)
-                {
-                    result = Types.TryGet(type);
-
-                    if (result == null)
-                    {
-                        result = new Dictionary<string, IEntity>();
-                        Types.Add(type, result);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        Dictionary<string, IEnumerable> GetLists(Type type, bool autoCreate = true)
-        {
-            var result = Lists.TryGet(type);
-
-            if (result == null && autoCreate)
-            {
-                lock (SyncLock)
-                {
-                    result = Lists.TryGet(type);
-                    if (result == null)
-                    {
-                        result = new Dictionary<string, IEnumerable>();
-                        Lists.Add(type, result);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets an entity from cache. Returns null if not found.
-        /// </summary>
-        public virtual IEntity Get(string id)
-        {
-            try
-            {
-                foreach (var type in Types.Keys.ToArray().Where(t => t.IsA<GuidEntity>()))
-                {
-                    var result = Get(type, id);
-                    if (result != null) return result;
-                }
-            }
-            catch
-            {
-                // No logging is needed.
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Gets an entity from cache. Returns null if not found.
-        /// </summary>
-        public virtual TEntity Get<TEntity>(object id) where TEntity : IEntity => (TEntity)Get(typeof(TEntity), id.ToStringOrEmpty());
-
-        /// <summary>
-        /// Gets an entity from cache. Returns null if not found.
-        /// </summary>
-        public virtual IEntity Get(Type entityType, string id)
-        {
-            if (!CanCache(entityType)) return null;
-
-            var entities = GetEntities(entityType);
-
-            if (entities.ContainsKey(id))
-            {
-                try
-                {
-                    return entities[id];
-                }
-                catch (KeyNotFoundException)
-                {
-                    // A threading issue.
-                    return Get(entityType, id);
-                }
-            }
-            else
-            {
-                foreach (var type in entityType.Assembly.GetSubTypes(entityType))
-                {
-                    var result = Get(type, id);
-                    if (result != null) return result;
-                }
-
-                return null;
-            }
-        }
+        internal static DateTime? GetQueryTimestamp()
+           => Database.Configuration.Cache.ConcurrencyAware ? DateTime.UtcNow : default(DateTime?);
 
         /// <summary>
         /// Adds a given entity to the cache.
         /// </summary>
-        public virtual void Add(IEntity entity)
+        public void Add(IEntity entity)
         {
-            if (!CanCache(entity.GetType())) return;
-
-            var entities = GetEntities(entity.GetType());
-
-            lock (entities)
+            if (CanCache(entity.GetType()))
             {
-                var id = entity.GetId().ToString();
-                if (entities.ContainsKey(id))
-                {
-                    entities.GetOrDefault(id)?.InvalidateCachedReferences();
-                    entities.Remove(id);
-                }
-
-                entities.Add(id, entity);
-
+                DoAdd(entity);
                 ExpireLists(entity.GetType());
             }
         }
+
+        protected abstract void DoAdd(IEntity entity);
 
         /// <summary>
         /// Removes a given entity from the cache.
@@ -157,24 +41,20 @@ namespace Olive.Entities.Data
         public virtual void Remove(IEntity entity)
         {
             entity.InvalidateCachedReferences();
+
             foreach (var type in CacheDependentAttribute.GetDependentTypes(entity.GetType()))
                 Remove(type, invalidateCachedReferences: true);
 
-            if (!CanCache(entity.GetType())) return;
-
-            var entities = GetEntities(entity.GetType());
-
-            lock (entities)
+            if (CanCache(entity.GetType()))
             {
-                var id = entity.GetId().ToString();
-
-                if (entities.ContainsKey(id)) entities.Remove(id);
-
                 ExpireLists(entity.GetType());
+                DoRemove(entity);
             }
 
             if (this != Current) Current.Remove(entity);
         }
+
+        protected abstract void DoRemove(IEntity entity);
 
         /// <summary>
         /// Removes all entities of a given types from the cache.
@@ -183,34 +63,18 @@ namespace Olive.Entities.Data
         {
             if (!CanCache(type)) return;
 
-            lock (SyncLock)
-            {
-                foreach (var inherited in Types.Keys.Where(t => t.BaseType == type).ToList())
-                    Remove(inherited, invalidateCachedReferences);
-            }
+            ExpireLists(type);
 
-            if (Types.ContainsKey(type))
-            {
-                lock (SyncLock)
-                {
-                    if (Types.ContainsKey(type))
-                    {
-                        var entities = Types[type];
-                        lock (entities)
-                        {
-                            Types.Remove(type);
-                            ExpireLists(type);
+            DoRemove(type, invalidateCachedReferences);
 
-                            if (invalidateCachedReferences)
-                                entities.Do(e => e.Value.InvalidateCachedReferences());
-                        }
-                    }
-                }
-            }
+            foreach (var inherited in type.Assembly.GetSubTypes(type, withDescendants: true))
+                DoRemove(inherited, invalidateCachedReferences);
 
             if (this != Current)
                 Current.Remove(type, invalidateCachedReferences);
         }
+
+        protected abstract void DoRemove(Type type, bool invalidateCachedReferences = false);
 
         public virtual void ExpireLists(Type type)
         {
@@ -218,45 +82,56 @@ namespace Olive.Entities.Data
 
             for (var parentType = type; parentType != typeof(Entity); parentType = parentType.BaseType)
             {
-                var lists = GetLists(parentType, autoCreate: false);
-
-                if (lists != null) lock (lists) lists.Clear();
+                DoExpireLists(type);
             }
 
             if (this != Current) Current.ExpireLists(type);
         }
 
+        protected abstract void DoExpireLists(Type type);
+
         public virtual IEnumerable GetList(Type type, string key)
         {
             if (!CanCache(type)) return null;
-
-            var lists = GetLists(type);
-            lock (lists)
-            {
-                if (lists.ContainsKey(key)) return lists[key];
-                else return null;
-            }
+            return DoGetList(type, key);
         }
 
-        public virtual void AddList(Type type, string key, IEnumerable list)
+        protected abstract IEnumerable DoGetList(Type type, string key);
+
+        public abstract void ClearAll();
+
+        public void AddList(Type type, string key, IEnumerable list)
         {
-            if (!CanCache(type)) return;
-
-            var lists = GetLists(type);
-
-            lock (lists) lists[key] = list;
+            if (CanCache(type)) DoAddList(type, key, list);
         }
 
-        public virtual void ClearAll()
+        protected abstract void DoAddList(Type type, string key, IEnumerable list);
+
+        public abstract bool IsUpdatedSince(IEntity instance, DateTime since);
+
+        public abstract void UpdateRowVersion(IEntity entity);
+
+        public virtual TEntity Get<TEntity>(object id) where TEntity : IEntity
+            => (TEntity)Get(typeof(TEntity), id.ToStringOrEmpty());
+
+        /// <summary>
+        /// Gets an entity from cache. Returns null if not found.
+        /// </summary>
+        public IEntity Get(Type type, string id)
         {
-            lock (SyncLock)
+            if (!CanCache(type)) return null;
+            var result = DoGet(type, id);
+            if (!(result is null)) return result;
+
+            foreach (var t in type.Assembly.GetSubTypes(type))
             {
-                RowVersionCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
-                Types.Clear();
-                Lists.Clear();
+                result = Get(t, id);
+                if (result != null) return result;
             }
+
+            return null;
         }
 
-        internal int CountAllObjects() => Types.Sum(t => t.Value.Count);
+        protected abstract IEntity DoGet(Type entityType, string id);
     }
 }

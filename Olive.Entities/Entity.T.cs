@@ -1,13 +1,13 @@
 ﻿namespace Olive.Entities
 {
     using Newtonsoft.Json;
+    using System;
     using System.Xml.Serialization;
 
+    [Serializable]
     public class Entity<T> : Entity, IEntity<T>
     {
-        /// <summary>
-        /// Gets or sets the ID of this object.
-        /// </summary>
+        /// <summary>Gets or sets the ID of this object.</summary>
         public virtual T ID { get; set; }
 
         /// <summary>

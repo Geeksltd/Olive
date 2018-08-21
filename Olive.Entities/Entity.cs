@@ -13,15 +13,26 @@ namespace Olive.Entities
     /// <summary>
     /// Entity, a persistent object in the application.
     /// </summary>
+    [Serializable]
     public abstract class Entity : IEntity
     {
+        [NonSerialized]
+        AsyncEvent validating, loaded, deleted;
+        [NonSerialized]
+        AsyncEvent<CancelEventArgs> deleting, saving;
+        [NonSerialized]
+        AsyncEvent<SaveEventArgs> saved;
+
         static Dictionary<Type, PropertyInfo[]> PrimitiveProperties = new Dictionary<Type, PropertyInfo[]>();
         static object PrimitivePropertiesSyncLock = new object();
+
         object CachedCopiesLock = new object();
+
+        [NonSerialized]
         internal List<ICachedReference> CachedCopies;
         internal bool IsImmutable;
 
-        [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
         public Entity _ClonedFrom;
 
         public static readonly EntityServices Services = new EntityServices();
@@ -87,7 +98,7 @@ namespace Olive.Entities
         /// <summary>
         /// Determines whether this object is already cloned and updated in the database without this instance being updated.
         /// </summary>
-        [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
         public bool IsStale;
 
         /// <summary>
@@ -186,16 +197,16 @@ namespace Olive.Entities
 
         /// <summary>
         /// This even is raised just after this instance is loaded from the database.
-        /// </summary>
+        /// </summary>        
         [XmlIgnore, JsonIgnore]
-        public AsyncEvent Loaded { get; } = new AsyncEvent();
+        public AsyncEvent Loaded => loaded ?? (loaded = new AsyncEvent());
         protected internal virtual Task OnLoaded() => Loaded.Raise();
 
         /// <summary>
         /// This event is raised just before this instance is saved in the data repository.
         /// </summary>
         [XmlIgnore, JsonIgnore]
-        public AsyncEvent<CancelEventArgs> Saving { get; } = new AsyncEvent<CancelEventArgs>();
+        public AsyncEvent<CancelEventArgs> Saving => saving ?? (saving = new AsyncEvent<CancelEventArgs>());
         protected internal virtual Task OnSaving(CancelEventArgs e) => Saving.Raise(e);
 
         /// <summary>
@@ -204,19 +215,14 @@ namespace Olive.Entities
         /// Use this to do any last-minute object modifications, such as initializing complex values.
         /// </summary>
         [XmlIgnore, JsonIgnore]
-        public AsyncEvent<EventArgs> Validating { get; } = new AsyncEvent<EventArgs>();
-        protected internal virtual Task OnValidating(EventArgs e) => Validating.Raise(e);
+        public AsyncEvent Validating => validating ?? (validating = new AsyncEvent());
+        protected internal virtual Task OnValidating(EventArgs e) => Validating.Raise();
 
         /// <summary>
         /// This event is raised after this instance is saved in the database.
         /// </summary>
         [XmlIgnore, JsonIgnore]
-        public AsyncEvent<SaveEventArgs> Saved { get; } = new AsyncEvent<SaveEventArgs>();
-
-        /// <summary>
-        /// Raises the <see cref = "E:Saved"/> event.
-        /// </summary>
-        /// <param name = "e">The <see cref = "SaveEventArgs"/> instance containing the event data.</param>
+        public AsyncEvent<SaveEventArgs> Saved => saved ?? (saved = new AsyncEvent<SaveEventArgs>());
         protected internal virtual async Task OnSaved(SaveEventArgs e)
         {
             InvalidateCachedReferences();
@@ -229,15 +235,14 @@ namespace Olive.Entities
         /// This event is raised just before this instance is deleted from the database.
         /// </summary>
         [XmlIgnore, JsonIgnore]
-        public AsyncEvent<CancelEventArgs> Deleting { get; } = new AsyncEvent<CancelEventArgs>();
+        public AsyncEvent<CancelEventArgs> Deleting => deleting ?? (deleting = new AsyncEvent<CancelEventArgs>());
         protected internal virtual Task OnDeleting(CancelEventArgs e) => Deleting.Raise(e);
 
         /// <summary>
         /// This event is raised just after this instance is deleted from the database.
         /// </summary>
         [XmlIgnore, JsonIgnore]
-        public AsyncEvent Deleted { get; } = new AsyncEvent();
-
+        public AsyncEvent Deleted => deleted ?? (deleted = new AsyncEvent());
         protected internal virtual async Task OnDeleted(EventArgs e)
         {
             InvalidateCachedReferences();
@@ -274,10 +279,14 @@ namespace Olive.Entities
         public static bool operator ==(Entity left, object right)
         {
             if (right == null) return left == null;
-            var rightEntity = right as Entity;
-            if (rightEntity == null) return false;
 
-            return left == rightEntity;
+            if (right is Entity rightEntity)
+                return left == rightEntity;
+
+            if (right is Task)
+                throw new Exception("You cannot compare an entity object with a Task object. Await the task before comparing.");
+
+            return false;
         }
 
         public static bool operator !=(Entity left, object right) => !(left == right);
