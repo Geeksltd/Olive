@@ -28,6 +28,7 @@ namespace Olive
         public static object GetValue(this Expression @this)
         {
             var result = @this.ExtractValue();
+            if (result is IntEntity intEnt && intEnt.IsNew) return -1;
             if (result is Entity ent) return ent.GetId();
             return result;
         }

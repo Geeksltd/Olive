@@ -10,23 +10,23 @@ namespace Olive
         /// <summary>
         /// Determines whether this property info is the specified property (in lambda expression).
         /// </summary>
-        public static bool Is<T>(this PropertyInfo property, Expression<Func<T, object>> expression)
+        public static bool Is<T>(this PropertyInfo @this, Expression<Func<T, object>> expression)
         {
-            if (!typeof(T).IsA(property.DeclaringType)) return false;
-            return expression.GetPropertyPath() == property.Name;
+            if (!typeof(T).IsA(@this.DeclaringType)) return false;
+            return expression.GetPropertyPath() == @this.Name;
         }
 
         /// <summary>
         /// Gets the property name for a specified expression.
         /// </summary>
-        public static MemberInfo GetMember<T, K>(this Expression<Func<T, K>> memberExpression)
+        public static MemberInfo GetMember<T, K>(this Expression<Func<T, K>> @this)
         {
-            var asMemberExpression = memberExpression.Body as MemberExpression;
+            var asMemberExpression = @this.Body as MemberExpression;
 
             if (asMemberExpression == null)
             {
                 // Maybe Unary:
-                asMemberExpression = (memberExpression.Body as UnaryExpression)?.Operand as MemberExpression;
+                asMemberExpression = (@this.Body as UnaryExpression)?.Operand as MemberExpression;
             }
 
             if (asMemberExpression == null) throw new Exception("Invalid expression");
@@ -34,15 +34,15 @@ namespace Olive
             return asMemberExpression.Member;
         }
 
-        public static PropertyInfo GetProperty<TModel, TProperty>(this Expression<Func<TModel, TProperty>> property) =>
-            property.GetMember<TModel, TProperty>() as PropertyInfo;
+        public static PropertyInfo GetProperty<TModel, TProperty>(this Expression<Func<TModel, TProperty>> @this) =>
+            @this.GetMember<TModel, TProperty>() as PropertyInfo;
 
         /// <summary>
         /// For example if the expression is (x => x.A.B) it will return A.B.
         /// </summary>
-        public static string GetPropertyPath(this Expression expression)
+        public static string GetPropertyPath(this Expression @this)
         {
-            if (expression is MemberExpression m)
+            if (@this is MemberExpression m)
             {
                 var result = m.Member.Name;
 
@@ -52,27 +52,27 @@ namespace Olive
                 return result;
             }
 
-            if (expression is LambdaExpression l) return l.Body.GetPropertyPath();
+            if (@this is LambdaExpression l) return l.Body.GetPropertyPath();
 
-            if (expression is UnaryExpression u) return u.Operand.GetPropertyPath();
+            if (@this is UnaryExpression u) return u.Operand.GetPropertyPath();
 
-            throw new Exception("Failed to get the property name from this expression: " + expression);
+            throw new Exception("Failed to get the property name from this expression: " + @this);
         }
 
-        public static object CompileAndInvoke(this Expression expression)
+        public static object CompileAndInvoke(this Expression @this)
         {
-            return Expression.Lambda(typeof(Func<>).MakeGenericType(expression.Type),
-                expression).Compile().DynamicInvoke();
+            return Expression.Lambda(typeof(Func<>).MakeGenericType(@this.Type),
+                @this).Compile().DynamicInvoke();
         }
 
-        public static object ExtractValue(this Expression expression)
+        public static object ExtractValue(this Expression @this)
         {
-            if (expression == null) return null;
+            if (@this == null) return null;
 
-            if (expression is ConstantExpression)
-                return (expression as ConstantExpression).Value;
+            if (@this is ConstantExpression)
+                return (@this as ConstantExpression).Value;
 
-            if (expression is MemberExpression memberExpression)
+            if (@this is MemberExpression memberExpression)
             {
                 var member = memberExpression.Member;
 
@@ -83,9 +83,9 @@ namespace Olive
                     return field.GetValue(memberExpression.Expression.ExtractValue());
 
                 else
-                    return expression.CompileAndInvoke();
+                    return @this.CompileAndInvoke();
             }
-            else if (expression is MethodCallExpression methodExpression)
+            else if (@this is MethodCallExpression methodExpression)
             {
                 var method = methodExpression.Method;
                 var instance = methodExpression.Object.ExtractValue();
@@ -94,7 +94,7 @@ namespace Olive
             }
             else
             {
-                return expression.CompileAndInvoke();
+                return @this.CompileAndInvoke();
             }
         }
 
