@@ -44,11 +44,6 @@ namespace Olive
         public static string ToString<T>(this IEnumerable<T> list, string seperator)
             => ToString(list, seperator, seperator);
 
-        public static T LastOrDefault<T>(this IEnumerable<T> @this) => @this.Reverse().FirstOrDefault();
-
-        public static T LastOrDefault<T>(this IEnumerable<T> @this, Func<T, bool> pred)
-            => @this.Reverse().FirstOrDefault(pred);
-
         public static string ToString<T>(this IEnumerable<T> list, string seperator, string lastSeperator)
         {
             var result = new StringBuilder();

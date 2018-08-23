@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
+
+
     /// <summary>
     /// Provides a DataProvider for accessing data from the database using ADO.NET.
     /// </summary>
@@ -179,6 +181,8 @@ namespace Olive.Entities.Data
             else if (value is Blob blob) value = blob.FileName;
 
             return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value };
+
+            
         }
 
         /// <summary>

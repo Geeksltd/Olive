@@ -15,7 +15,7 @@ namespace Olive.Mvc
             if (value == null)
                 bindingContext.Result = ModelBindingResult.Success(null);
 
-            else if (value.FirstValue == "{NULL}" || value.FirstValue == Guid.Empty.ToString())
+            else if (value.FirstValue.IsAnyOf("{NULL}", Guid.Empty.ToString()))
                 bindingContext.Result = ModelBindingResult.Success(null);
 
             else
@@ -24,7 +24,7 @@ namespace Olive.Mvc
 
                 // It is possible that data is sent as a single value but in pipeline seperated format.
                 foreach (var idOrIds in value.Values)
-                    result.AddRange(idOrIds.Split('|').Trim().Select(x => x.To<T>()));
+                    result.AddRange(idOrIds.Split('|', ',').Trim().Select(x => x.To<T>()));
 
                 bindingContext.Result = ModelBindingResult.Success(result);
             }

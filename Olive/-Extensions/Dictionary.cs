@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -177,5 +178,16 @@ namespace Olive
         /// </summary>
         public static void Add<T, K>(this IDictionary<Type, Type> @this)
             => @this.Add(typeof(T), typeof(K));
+
+        /// <summary>
+        /// Converts this key value pair list into a Json object.
+        /// </summary>
+        public static JObject ToJson(this IEnumerable<KeyValuePair<string, string>> @this)
+        {
+            var result = new JObject();
+            foreach (var item in @this)
+                result.Add(item.Key, item.Value);
+            return result;
+        }
     }
 }
