@@ -10,12 +10,11 @@ namespace Olive.ApiProxy
         protected override string Framework => "netstandard2.0";
 
         [EscapeGCop]
-        protected override string IconUrl => "https://raw.githubusercontent.com/Geeksltd/Olive/master/Integration/Olive.ApiProxyGenerator/ProxyIcon.png";
+        internal override string IconUrl
+            => "https://raw.githubusercontent.com/Geeksltd/Olive/master/Integration/Olive.ApiProxyGenerator/ProxyIcon.png";
 
         protected override string[] References
             => new[] { "Olive", "Olive.Entities", "Olive.Entities.Data", "Olive.ApiClient", "Olive.Microservices" };
-
-        protected override bool NeedsReadMe => true;
 
         protected override void AddFiles()
         {
@@ -24,7 +23,7 @@ namespace Olive.ApiProxy
             Console.WriteLine("Done");
 
             Console.Write("Adding ReamMe.txt file ...");
-            Folder.GetFile($"README.txt").WriteAllText(ReadmeFileGenerator.Generate());
+            Folder.GetFile("README.txt").WriteAllText(ReadmeFileGenerator.Generate());
             Console.WriteLine("Done");
 
             GenerateDtoClasses();
@@ -58,7 +57,13 @@ namespace Olive.ApiProxy
             }
         }
 
-        protected override IEnumerable<string> GetNugetDependencies()
+        public override IEnumerable<string> GetTargetFiles()
+        {
+            var readme = Folder.GetFile("README.txt").FullName;
+            return base.GetTargetFiles().Concat($@"<file src=""{readme}"" target="""" />");
+        }
+
+        internal override IEnumerable<string> GetNugetDependencies()
         {
             return new[]
             {

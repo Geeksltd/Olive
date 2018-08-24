@@ -33,7 +33,7 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\People\Website\bin\Debug\netcoreapp2.0" />
+    <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\People\Website\bin\Debug\netcoreapp2.1" />
   </Target>
 
 </Project>

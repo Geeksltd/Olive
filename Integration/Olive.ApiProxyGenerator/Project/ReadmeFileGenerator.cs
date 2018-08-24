@@ -40,7 +40,7 @@ namespace Olive.ApiProxy
                     r.Append(returnType.GetProgrammingName() + " result = ");
 
                 r.Append("await ");
-                r.Append("new " + Context.ControllerType.FullName + "().");
+                r.Append(Context.ControllerType.FullName + ".Fresh().");
                 r.Append(method.Name);
                 r.Append("(");
                 r.Append(method.GetParameters().Select(x => "my" + x.Name).ToString(", "));
@@ -61,12 +61,22 @@ namespace Olive.ApiProxy
             r.AppendLine("You can configure the proxy's behaviour when you create an Api proxy instance, before invoking the Api method.");
             r.AppendLine("For example:");
             r.AppendLine();
-            r.AppendLine("new " + Context.ControllerType.FullName + "()");
+            r.AppendLine(Context.ControllerType.FullName);
+            r.AppendLine(".As(CachePolicy.CacheOrFreshOrFail)");
             r.AppendLine("   .Retries(5)");
-            r.AppendLine("   .Cache(CachePolicy.CacheOrFreshOrFail)");
             r.AppendLine("   .CircuitBreaker(exceptionsBeforeBreaking: 5, breakDurationSeconds: 10)");
             r.AppendLine("   ...;");
             r.AppendLine();
+
+            r.AppendLine("Tip: Performance vs freshness");
+            r.AppendLine("======================================");
+            r.AppendLine("The cache policy of «CacheOrFreshOrFail» gives you the best performance. It's ideal for most scenarios.");
+            r.AppendLine("You can obtain an instance of the Api that is preconfigured for that by using:");
+            r.AppendLine("    " + Context.ControllerType.FullName + ".Fast()");
+            r.AppendLine();
+            r.AppendLine("On the other hand, the cache policy of «FreshOrCacheOrFail» gives you the most up to date data. It's ideal for the source of drop-downs.");
+            r.AppendLine("You can obtain an instance of the Api that is preconfigured for that by using:");
+            r.AppendLine("    " + Context.ControllerType.FullName + ".Fresh()");
             return r.ToString();
         }
 

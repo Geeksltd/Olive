@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -33,8 +34,18 @@ namespace Olive.ApiProxy
                 DtoTypes.FindAll();
                 DtoDataProviderClassGenerator.ValidateRemoteDataProviderAttributes();
 
-                new ProxyProjectCreator().Build();
-                if (DtoTypes.All.Any()) new MSharpProjectCreator().Build();
+                new List<ProjectCreator> { new ProxyProjectCreator() };
+
+                var proxyCreator = new ProxyProjectCreator();
+                proxyCreator.Build();
+                new NugetCreator(proxyCreator).Create();
+
+                if (DtoTypes.All.Any())
+                {
+                    var projectCreators = new[] { new MSharpProjectCreator(), new MSharp46ProjectCreator() };
+                    projectCreators.AsParallel().Do(x => x.Build());
+                    new NugetCreator(projectCreators).Create();
+                }
 
                 Console.WriteLine("Add done");
                 return 0;
