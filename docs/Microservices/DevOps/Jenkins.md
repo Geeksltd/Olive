@@ -180,7 +180,7 @@ pipeline
                     }
                 }
             }
-            
+            /// *** Only if building linux docker images ***
             /// Our production environment runs on Linux nodes which means we need to generate linux docker images. For that we
             /// have to run the Linux version of docker. Because of this we have created a new Linux EC2 instance and added it
             /// as a slave node to Jenkins.
@@ -200,6 +200,7 @@ pipeline
                 }
             }
             
+	    /// *** Only if building linux docker images ***
             /// As mentioned in the previous stage, Docker images are generated on Linux instances. This stage executes on
             /// the Linux instances, as specified by `node('LinuxDocker')`. Like the begining of the build process we want to make
             /// sure that the workspace is clean and this step does that for us.
@@ -217,7 +218,7 @@ pipeline
                     }
                 }
             }
-            
+            /// *** Only if building linux docker images ***
             /// This stage is executed on the Linux node. In the previous stage we cleared the workspace. Now we want to unstash
             /// the files we need to build the docker image.
             stage('Unstash artefacts (on linux)')
@@ -234,29 +235,29 @@ pipeline
             
             /// This stage builds the docker image and tags it with IMAGE_NAME, provided as an environment variable 
             /// defined in the begining of this file.
-            stage('Docker build (on linux)')
+            stage('Docker build (on linux)') /// *** Update the stage name to match the build environment ***
             {
                 steps 
                 {
-                    node('LinuxDocker')
-                    {                        
+                    node('LinuxDocker')/// *** Add this line Only if building linux docker images ***
+                    {/// *** Add this line Only if building linux docker images ***                        
                         script 
                             {   
                                 sh "docker build -t ${IMAGE_NAME} ."
                             }
-                    }
+                    }/// *** Add this line Only if building linux docker images ***
                 }
             }
             
             /// This stage uses the Jenkins AWS Credentials plugin to login using the aws credentials that has write
             /// access to `AWS ECR (Amazon Elastic Container Registry)`. Once logged in, it uses the docker plugin to push the docker image created in the 
             /// previous stage to the ECR repository.
-            stage('Push to ECR (on linux)')
+            stage('Push to ECR (on linux)') /// *** Update the stage name to match the build environment ***
             {
                 steps 
                 {
-                    node('LinuxDocker')
-                    {        
+                    node('LinuxDocker')/// *** Add this line Only if building linux docker images ***
+                    {        /// *** Add this line Only if building linux docker images ***
                         script 
                         {
                             withAWS(credentials:AWS_CREDENTIALS_ID)
@@ -270,7 +271,7 @@ pipeline
                                 }                       
                             }
                         }
-                    }
+                    } /// *** Add this line Only if building linux docker images ***
                 }
             }
 
