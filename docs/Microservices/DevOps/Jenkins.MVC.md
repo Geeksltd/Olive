@@ -157,24 +157,16 @@ pipeline
         
             }
         // To be able to update the Kubernetes cluster we need to upload a deployment template. There is a deployment file with some placeholders in the source code repository which is populated by this stage with the build information such as build version and the new docker image reference.
-            stage('Update the K8s deployment file')
+            stage('Update the K8s deployment file') { steps { script  {
+                 sh ''' sed "s#%DOCKER_IMAGE%#${IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT_TEMPLATE > $K8S_LATEST_DEPLOYMENT_FILE '''
+            }}}
+            
+            stage('Deploy to cluster')
             {
                 steps 
                 {        
                     script 
-                    {
-                        sh ''' sed "s#%DOCKER_IMAGE%#${IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT_TEMPLATE > $K8S_LATEST_DEPLOYMENT_FILE '''
-                    }
-                }
-            }
-            stage('Deploy to cluster')
-            {
-                steps 
-                {
-        
-                    script 
-                    {
-                    
+                    {                    
                         withCredentials([string(credentialsId: '#K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_CREDENTILAS_ID#', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
                         {
                         
@@ -204,8 +196,6 @@ pipeline
         }
     }
 }
-
-
 ```
 
 ### Tips
