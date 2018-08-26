@@ -45,7 +45,7 @@ pipeline
                         
             stage('Git clone sources') { steps { script {
                  git branch:"#BRANCH_NAME#", credentialsId: "#GIT_CREDENTIALS_ID#", url: GIT_REPOSITORY
-            } } }
+            }}}
             
             stage('Prepare the server') { steps { dir("\\DevOps\\Jenkins") { bat 'PrepairServer.bat' } } }
             
@@ -53,13 +53,13 @@ pipeline
            stage('Update settings') { steps { script {
                 dir(WEBSITE_PATH)       
                 { sh """ sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g;s/%CONNECTION_STRING%/${CONNECTION_STRING}/g;" web.config """ }
-           } } }
+           }}}
             
            stage('Remove GCOP') { steps { script {
                 bat 'nuget sources'
                 powershell 'DevOps/DeleteGCopReferences.ps1'
                 bat 'for /r %%i in (.\\*.config) do (type %%i | find /v "GCop" > %%i_temp && move /y %%i_temp %%i)'
-           } } } 
+           }}} 
             
             stage('Restore nuget packages') { steps { bat 'nuget restore' } }
             
@@ -68,28 +68,9 @@ pipeline
                 steps 
                 {
                     script { dir("\\MsharpBuild") { bat 'msbuild' } }
-                    script
-                        {
-                            dir("\\MsharpBuild\\Msharp")
-                            {
-                                bat 'Msharp.DSL.exe /build /model %workspace%'     
-                            }
-                        }
-                    script
-                        {
-                            dir("\\MsharpBuild\\Msharp")
-                            {
-                                bat 'Msharp.exe /build /model %workspace%'      
-                            }
-                        }
-                    script
-                        {
-                            dir("\\MsharpBuild\\Msharp")
-                            {
-                                bat 'Msharp.exe /build /ui %workspace%'     
-                            }
-                        }                       
-                        
+                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.DSL.exe /build /model %workspace%' } }
+                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /model %workspace%' } }
+                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /ui %workspace%' } }                        
                 }
             }          
             stage('Prepare runtime resources (bower components, scripts, css)')
@@ -98,14 +79,9 @@ pipeline
                 {
                     dir(WEBSITE_PATH)
                     {
+                        script { bat 'bower install' }
                         script 
-                        {
-                    
-                            bat 'bower install'                                             
-                        }
-                        script 
-                        {
-                    
+                        {                    
                             bat 'npm install gulp'
                             bat 'gulp less-to-css'                          
                             bat 'gulp fonts'
@@ -117,19 +93,9 @@ pipeline
             // This stage is mandatory only for MVC projects.
             stage('Publish the website')
             {
-
-                steps 
-                {
-                    script
-                        {
-                            dir(WEBSITE_PATH)
-                            {
-                                bat 'MSBuild'                       
-                            }
-                        }                       
-                        
-                }
+                steps { script { dir(WEBSITE_PATH) { bat 'MSBuild' } } }
             }
+            
             // This stage checks to see if the build process has successfully created the webiste dll. It checks the website binary folder path for [#WEBSITE.DDL.NAME#].dll
             stage('Check build')
             {
