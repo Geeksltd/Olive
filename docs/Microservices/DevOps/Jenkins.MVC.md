@@ -4,17 +4,24 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 
 > Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository.
 
+## Variables
+
+| Variable  | Value to set |
+| ------------- | ------------- |
+| `GIT_REPO_SSH` | The SSH address of the git repository. |
+| `GIT_BRANCH` | The name of the branch that will be used to build and deploy the application. |
+| `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
+| `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
+
 ## Placeholders
-In the following file, replace the following placeholders with the correct values for your project:
+Replace the following placeholders in the jenkinsfile with the correct values for your project:
 
 | Placeholder  | Value to use |
 | ------------- | ------------- |
 | `#DOCKER_REPOSITORY_NAME#`  | The name of the container repository, on the container registry, where the docker images will be stored.  |
-| `#KUBERNETES_CLUSTER_URL#`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
+
 | `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
-| `#GIT_REPOSITORY_SSH_ADDRESS#` | The SSH address of the git repository. |
-| `#BRANCH_NAME#` | The name of the branch that will be used to build and deploy the application. |
-| `#GIT_CREDENTIALS_ID#` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
+
 | `#WEBSITE_DDL_NAME#` | The name of the website compiliation output. |
 | `#CONTAINER_REPOSITORY_CREDENTIALS_ID#` | The ID of the container repository credentials. It should be a username/password credentials in Jenkins. |
 | `#AWS_CREDENTIALS_ID#` | The ID of the AWS credentials. It should be a username/password credentials in Jenkins.|
@@ -27,11 +34,14 @@ pipeline
 {
     environment 
     {   
+        GIT_REPO_SSH = "..."
+        GIT_CREDENTIALS_ID = "..."
+        GIT_BRANCH = "..."
+        
         BUILD_VERSION = "v_${BUILD_NUMBER}"
-        IMAGE = "#DOCKER_REPOSITORY_NAME#:${BUILD_VERSION}"     
-        WEBSITE_PATH="Website"
-        GIT_REPOSITORY = "#GIT_REPOSITORY_SSH_ADDRESS#"                         
-        K8S_SSH_SERVER = "#KUBERNETES_CLUSTER_URL#"
+        IMAGE = "#DOCKER_REPOSITORY_NAME#:${BUILD_VERSION}" 
+
+        K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
         K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"               
         K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"
@@ -44,14 +54,14 @@ pipeline
             stage('Delete prev build folder') { steps { script { deleteDir() } } }
                         
             stage('Git clone sources') { steps { script {
-                 git branch:"#BRANCH_NAME#", credentialsId: "#GIT_CREDENTIALS_ID#", url: GIT_REPOSITORY
+                 git branch: GIT_BRANCH, credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPO_SSH
             }}}
             
             stage('Prepare the server') { steps { dir("\\DevOps\\Jenkins") { bat 'PrepairServer.bat' } } }
             
            // This stage populates dynamic placeholders (application version number, connection strings etc) in the source code. 
            stage('Update settings') { steps { script {
-                dir(WEBSITE_PATH)       
+                dir("Website")       
                 { sh """ sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g;s/%CONNECTION_STRING%/${CONNECTION_STRING}/g;" web.config """ }
            }}}
             
@@ -77,7 +87,7 @@ pipeline
             {
                 steps 
                 {
-                    dir(WEBSITE_PATH)
+                    dir("Website")
                     {
                         script { bat 'bower install' }
                         script 
@@ -93,7 +103,7 @@ pipeline
             // This stage is mandatory only for MVC projects.
             stage('Publish the website')
             {
-                steps { script { dir(WEBSITE_PATH) { bat 'MSBuild' } } }
+                steps { script { dir("Website") { bat 'MSBuild' } } }
             }
             
             // This stage checks to see if the build process has successfully created the webiste dll. It checks the website binary folder path for [#WEBSITE.DDL.NAME#].dll
@@ -103,7 +113,7 @@ pipeline
                 {
                     script 
                     {
-                        dir(WEBSITE_PATH)
+                        dir("Website")
                         {
                             bat '''if exist "bin\\[#WEBSITE_DDL_NAME#].dll" (
                                 echo Build Succeeded.
