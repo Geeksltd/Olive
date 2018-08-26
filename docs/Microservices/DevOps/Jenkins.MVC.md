@@ -1,6 +1,8 @@
-The [Jenkins.md](Olive/docs/Microservices/DevOps/Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating an ASP.net MVC project.
+# Ci/CD for Legacy ASP.NET apps
 
-*** Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository. ***
+The [Jenkins.md](../Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating a `ASP.Net MVC 5` and `Web Forms` projects.
+
+> Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository.
 
 ```groovy
 pipeline 
