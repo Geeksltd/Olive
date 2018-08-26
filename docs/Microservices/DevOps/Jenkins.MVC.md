@@ -1,6 +1,6 @@
 # Ci/CD for Legacy ASP.NET apps
 
-The [Jenkins.md](../Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating a `ASP.Net MVC 5` and `Web Forms` projects.
+The [Jenkins.md](Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating a `ASP.Net MVC 5` and `Web Forms` projects.
 
 > Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository.
 
