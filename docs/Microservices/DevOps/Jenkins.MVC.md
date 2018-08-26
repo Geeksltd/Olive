@@ -10,13 +10,13 @@ pipeline
     	BUILD_VERSION = "v_${BUILD_NUMBER}"
     	IMAGE = "#DOCKER_REPOSITORY_NAME#:${BUILD_VERSION}"		
     	WEBSITE_PATH="Website"
-		  GIT_REPOSITORY = "#GIT_REPOSITORY_SSH_ADDRESS#"							
-		  K8S_SSH_SERVER = "#KUBERNETES_CLUSTER_URL#"
-		  K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
-		  K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"				
-		  K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"
-		  PATH = "C:\\Nuget;C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\;$PATH"
-		  CONNECTION_STRING = credentials('CONNECTION_STRING');		
+		GIT_REPOSITORY = "#GIT_REPOSITORY_SSH_ADDRESS#"							
+		K8S_SSH_SERVER = "#KUBERNETES_CLUSTER_URL#"
+		K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
+		K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"				
+		K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"
+		PATH = "C:\\Nuget;C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\;$PATH"
+		CONNECTION_STRING = credentials('#CONNECTION_STRING_CREDENTIALS_ID#');		
     }
     agent any
     stages
@@ -38,7 +38,7 @@ pipeline
 					{
 						script
 							{						
-								git branch:"#BRANCH_NAME#", credentialsId: "SSC_GIT_CREDENTIALS", url: GIT_REPOSITORY
+								git branch:"#BRANCH_NAME#", credentialsId: "#GIT_CREDENTIALS_ID#", url: GIT_REPOSITORY
 							}
 					}				
 			}
@@ -150,8 +150,9 @@ pipeline
 					}
 				}			
 			}
-			 
-			  stage('Publish the website')
+			
+			// This stage is mandatory only for MVC projects.
+			stage('Publish the website')
             {
 
                 steps 
@@ -166,7 +167,7 @@ pipeline
 						
                 }
             }
-	    // This stage checks to see if the build process has successfully created the webiste dll. It checks the website binary folder path for [#WEBSITE.DDL.NAME#].dll
+	        // This stage checks to see if the build process has successfully created the webiste dll. It checks the website binary folder path for [#WEBSITE.DDL.NAME#].dll
 			stage('Check build')
 			{
 				steps 
@@ -175,7 +176,7 @@ pipeline
 					{
 						dir(WEBSITE_PATH)
 						{
-							bat '''if exist "bin\\[#WEBSITE.DDL.NAME#].dll" (
+							bat '''if exist "bin\\[#WEBSITE_DDL_NAME#].dll" (
 								echo Build Succeeded.
 								) else (
 								echo Build Failed.
@@ -186,7 +187,7 @@ pipeline
 				}
 			}
 			// This stage builds and pushes the docker image to a docker repository. Below are different scripts for pushing the Docker image to Docker Hub and AWS Contianer Registry
-			// Make sure you have a credentials created in Jenkins with "REPOSITORY_CREDENTIALS" ID. 
+			// Make sure you have a credentials created in Jenkins with "CONTAINER_REPOSITORY_CREDENTIALS_ID" ID. 
 		 	stage('Build and publish the docker images') 
 		 	{
     			
@@ -195,18 +196,18 @@ pipeline
       				script 
 						{
 						// Docker Hub
-	   						docker.withRegistry("","REPOSITORY_CREDENTIALS") 
+	   						docker.withRegistry("","CONTAINER_REPOSITORY_CREDENTIALS_ID") 
     						{   
           						docker.build(IMAGE).push();          						        				}
 						// AWS Docker Registry
 						 script 
                         {
-                            withAWS(credentials:AWS_CREDENTIALS_ID)
+                            withAWS(credentials:#AWS_CREDENTIALS_ID#)
                             {
                                 // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
                                 sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
                         
-                                docker.withRegistry(ECR_URL, "REPOSITORY_CREDENTIALS") 
+                                docker.withRegistry(#ECR_URL#, "CONTAINER_REPOSITORY_CREDENTIALS_ID") 
                                 {
                                    docker.build(IMAGE).push();
                                 }                       
@@ -235,7 +236,7 @@ pipeline
                     script 
                     {
 					
-						withCredentials([string(credentialsId: 'SSC_CertificateAuthorityData', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'SSC_ClientCertificateData', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'SSC_ClientKeyData', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
+						withCredentials([string(credentialsId: '#K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_CREDENTILAS_ID#', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
 						{
 						
 							kubernetesDeploy(
