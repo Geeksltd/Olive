@@ -2,6 +2,11 @@
 
 Below is an example of a Jenkinsfile. Comments have been added to describe what each section is and does.
 
+## TODO: 
+- Utilize some of the notification plugins Jenkins has to be able to give some feedback, whether a failure or a success, about the build process.
+- Add a manual confirmation process right before the final step of the deployment process to avoid accidential live deployments?
+
+
 ```groovy
 pipeline 
 {
