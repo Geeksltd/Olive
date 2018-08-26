@@ -12,8 +12,9 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_BRANCH` | The name of the branch that will be used to build and deploy the application. |
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
-| `ECR_URL` | The url of the AWS container registry. |
-| `#WEBSITE_DLL_NAME#` | The name of the website compiliation output. |
+| `WEBSITE_DLL_NAME` | The name of the website compiliation output. |
+| `CONTAINER_REGISTRY_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
+| `CONTAINER_REGISTRY_CREDENTIALS_ID` | Whether you use AWS ECR, or Docker Hub, create a Jenkins username/pass credentials and store its ID here. |
 
 ## Placeholders
 Replace the following placeholders in the jenkinsfile with the correct values for your project:
@@ -22,8 +23,7 @@ Replace the following placeholders in the jenkinsfile with the correct values fo
 | ------------- | ------------- |
 | `#DOCKER_REPOSITORY_NAME#`  | The name of the container repository, on the container registry, where the docker images will be stored.  |
 | `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
-| `#CONTAINER_REPOSITORY_CREDENTIALS_ID#` | The ID of the container repository credentials. It should be a username/password credentials in Jenkins. |
-| `#AWS_CREDENTIALS_ID#` | The ID of the AWS credentials. It should be a username/password credentials in Jenkins.|
+
 
 
 ## The Jenkinsfile
@@ -37,6 +37,9 @@ pipeline
         GIT_CREDENTIALS_ID = "..."
         GIT_BRANCH = "..."
         ECR_URL = "..."
+        CONTAINER_REGISTRY_URL = "..."
+        CONTAINER_REPOSITORY_CREDENTIALS_ID = "..."
+        
         WEBSITE_DLL_NAME = "..."
         
         BUILD_VERSION = "v_${BUILD_NUMBER}"
@@ -130,33 +133,31 @@ pipeline
             // Make sure you have a credentials created in Jenkins with "CONTAINER_REPOSITORY_CREDENTIALS_ID" ID. 
             stage('Build and publish the docker images') 
             {
-                
                 steps 
                 {
                     script 
-                        {
-                        // Docker Hub
-                            docker.withRegistry("","CONTAINER_REPOSITORY_CREDENTIALS_ID") 
-                            {   
-                                docker.build(IMAGE).push();                                                         }
-                        // AWS Docker Registry
-                         script 
-                        {
-                            withAWS(credentials:#AWS_CREDENTIALS_ID#)
+                        {                            
+                            docker.withRegistry(CONTAINER_REGISTRY_URL, CONTAINER_REPOSITORY_CREDENTIALS_ID)
+                            { 
+                               docker.build(IMAGE).push();
+                            }
+                            
+                            // If using AWS ECR, wrap the above code in the following:
+                            withAWS(credentials:CONTAINER_REPOSITORY_CREDENTIALS_ID)
                             {
-                                // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
+                                // login to ECR
+                                // For now it seems that that the ECR Jenkins plugin is not performing the login as expected.
+                                // I hope it will in the future.
+                                
                                 sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
                         
-                                docker.withRegistry(ECR_URL, "CONTAINER_REPOSITORY_CREDENTIALS_ID") 
-                                {
-                                   docker.build(IMAGE).push();
-                                }                       
+                                ###                     
                             }
                         }
-                        }    
-                }   
+                  }    
+            }   
         
-            }
+           
         // To be able to update the Kubernetes cluster we need to upload a deployment template. There is a deployment file with some placeholders in the source code repository which is populated by this stage with the build information such as build version and the new docker image reference.
             stage('Update the K8s deployment file') { steps { script  {
                  sh ''' sed "s#%DOCKER_IMAGE%#${IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT_TEMPLATE > $K8S_LATEST_DEPLOYMENT_FILE '''
