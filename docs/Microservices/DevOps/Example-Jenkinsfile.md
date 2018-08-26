@@ -7,14 +7,17 @@ Below is an example of a Jenkinsfile. Comments have been added to describe what 
 - Add a manual confirmation process right before the final step of the deployment process to avoid accidential live deployments?
 
 
+## Parameters vs Environment Variables
+Build scripts normally have variables which should be populated before the build process starts.
+
+Jenkins injects some by default, such as `BUILD_NUMBER` or `WORKSPACE` (the physical path to where the project has been stored on the 
+build server by Jennkins).
+
+Further variables can be defined as either `parameters` or `environment variables` in your jenkinsfile. The main difference between parameters and environment variables is that for parameters, when you build a job, Jenkins will display a form where you can change the default values for each build.
+
 ```groovy
 pipeline 
 {
-    /// Build scripts normally have variables which have to be populated before the process starts. Jenkins by default provides
-    ///  some useful ones such as BUILD_NUMBER or WORKSPACE (the physical path to where the project has been stored on the 
-    /// build server by Jennkins) etc. Further variables can be defined as parameters or environment variables in jenkinsfile.
-    /// The main difference between parameters and environment variables is that for parameters when you build a job Jenkins will 
-    /// render a form where you can change the default values for each build.
     parameters 
     {
         string(name: "ParameterName" , defaultValue : 'Default value')                                    
