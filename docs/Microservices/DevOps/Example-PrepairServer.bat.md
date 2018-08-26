@@ -1,5 +1,11 @@
 # Example PrepairServer.bat file
 
+- It first installs `[Chocolatey](https://chocolatey.org/)` which is a package manager for Windows. It also adds the Chocolatey executable path to the PATH variable so that the "choco" command is available in the build process.
+
+- It installs `yarn` and `bower` using `Chocolatey`.
+- It installs `webpack` using `yarn`
+- It installs `TypeScript` using `npm`.
+
 ```bat
 
 @echo off
