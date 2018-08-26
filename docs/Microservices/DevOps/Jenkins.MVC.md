@@ -4,6 +4,24 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 
 > Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository.
 
+## Placeholders
+In the following file, replace the following placeholders with the correct values for your project:
+
+| Placeholder  | Value to use |
+| ------------- | ------------- |
+| `#DOCKER_REPOSITORY_NAME#`  | The name of the container repository, on the container registry, where the docker images will be stored.  |
+| `#KUBERNETES_CLUSTER_URL#`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
+| `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
+| `#GIT_REPOSITORY_SSH_ADDRESS#` | The SSH address of the git repository. |
+| `#BRANCH_NAME#` | The name of the branch that will be used to build and deploy the application. |
+| `#GIT_CREDENTIALS_ID#` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
+| `#WEBSITE_DDL_NAME#` | The name of the website compiliation output. |
+| `#CONTAINER_REPOSITORY_CREDENTIALS_ID#` | The ID of the container repository credentials. It should be a username/password credentials in Jenkins. |
+| `#AWS_CREDENTIALS_ID#` | The ID of the AWS credentials. It should be a username/password credentials in Jenkins.|
+| `#ECR_URL#` | The url of the AWS container registry. |
+
+## The Jenkinsfile
+
 ```groovy
 pipeline 
 {
@@ -23,18 +41,9 @@ pipeline
     agent any
     stages
         {   
-            stage('Delete the old version') 
-            {
-                steps
-                    {
-                        script
-                            {                       
-                                deleteDir()
-                            }
-                    }
-            }
+            stage('Delete prev build folder') { steps { script { deleteDir() } } }
                         
-            stage('Clone sources') 
+            stage('Git clone sources') 
             {
                 steps
                     {
@@ -45,18 +54,8 @@ pipeline
                     }               
             }
             
-            stage('Prepare the server')
-            {
-                steps 
-                {   
-                    dir("\\DevOps\\Jenkins")
-                    {
-            // This file installs all the tolls required to biuld the application. Dockerising the Jenkins server will eliminate this stage from the build process and shorten it.                      
-                        bat 'PrepairServer.bat'  
-                    }
-                                                
-                }
-            }
+            stage('Prepare the server') { steps { dir("\\DevOps\\Jenkins") { bat 'PrepairServer.bat' } } }
+            
         // This stage populates dynamic placeholders (application version number, connection strings etc) in the source code. 
         stage('Update settings') // This sate
             {
@@ -271,27 +270,11 @@ pipeline
 
 ```
 
-### Placeholders
-- DOCKER_REPOSITORY_NAME
-  - The name of the container repository, on the container registry, where the docker images will be stored.  
-- KUBERNETES_CLUSTER_URL
-  - The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config
-- CONNECTION_STRING_CREDENTIALS_ID
-  - The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins.
-- GIT_REPOSITORY_SSH_ADDRESS
-  - The SSH address of the git repository.
-- BRANCH_NAME
-  - The name of the branch that will be used to build and deploy the application.
-- GIT_CREDENTIALS_ID
-  - The ID of the SSH credentials record in Jenkins.The details will be provided below.
-- WEBSITE_DDL_NAME
-  - The name of the website compiliation output.
-- CONTAINER_REPOSITORY_CREDENTIALS_ID
-  - The ID of the container repository credentials. It should be a username/password credentials in Jenkins.
-- AWS_CREDENTIALS_ID  
-  - The ID of the AWS credentials. It should be a username/password credentials in Jenkins.
-- ECR_URL
-  - The url of the AWS container registry.
+### Tips
+
+- `PrepairServer.bat` - This file installs all the tolls required to biuld the application. Dockerising the Jenkins server will eliminate this stage from the build process and shorten it.
+
+
   
 #### Kubernetes Cluster Placeholders.
 To be able to connect to Kubernetes you need to extract the certificate information of the use you want to connect to the cluster with. The credentials details can be found in ~/.kube/config. There are three parts you need to extract from the config file and import as *"text credentials"* in Jenkins.
