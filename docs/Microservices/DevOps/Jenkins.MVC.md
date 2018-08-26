@@ -19,9 +19,7 @@ Replace the following placeholders in the jenkinsfile with the correct values fo
 | Placeholder  | Value to use |
 | ------------- | ------------- |
 | `#DOCKER_REPOSITORY_NAME#`  | The name of the container repository, on the container registry, where the docker images will be stored.  |
-
 | `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
-
 | `#WEBSITE_DDL_NAME#` | The name of the website compiliation output. |
 | `#CONTAINER_REPOSITORY_CREDENTIALS_ID#` | The ID of the container repository credentials. It should be a username/password credentials in Jenkins. |
 | `#AWS_CREDENTIALS_ID#` | The ID of the AWS credentials. It should be a username/password credentials in Jenkins.|
