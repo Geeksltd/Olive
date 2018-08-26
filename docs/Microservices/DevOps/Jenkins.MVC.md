@@ -43,74 +43,36 @@ pipeline
         {   
             stage('Delete prev build folder') { steps { script { deleteDir() } } }
                         
-            stage('Git clone sources') 
-            {
-                steps
-                    {
-                        script
-                            {                       
-                                git branch:"#BRANCH_NAME#", credentialsId: "#GIT_CREDENTIALS_ID#", url: GIT_REPOSITORY
-                            }
-                    }               
-            }
+            stage('Git clone sources') { steps { script {
+                 git branch:"#BRANCH_NAME#", credentialsId: "#GIT_CREDENTIALS_ID#", url: GIT_REPOSITORY
+            } } }
             
             stage('Prepare the server') { steps { dir("\\DevOps\\Jenkins") { bat 'PrepairServer.bat' } } }
             
-        // This stage populates dynamic placeholders (application version number, connection strings etc) in the source code. 
-        stage('Update settings') // This sate
-            {
-                steps
-                {
-                    script
-                        {   
-                            dir(WEBSITE_PATH)       
-                            {                           
-                 sh """ sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g;s/%CONNECTION_STRING%/${CONNECTION_STRING}/g;" web.config """                                                 
-                                  }
-                        }
-                }
-            }
+           // This stage populates dynamic placeholders (application version number, connection strings etc) in the source code. 
+           stage('Update settings') { steps { script {
+                dir(WEBSITE_PATH)       
+                { sh """ sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g;s/%CONNECTION_STRING%/${CONNECTION_STRING}/g;" web.config """ }
+           } } }
             
-        stage('Delete the GCOP References')
-            {
-                steps 
-                {
-                    script 
-                        {
-                           bat 'nuget sources'
-                           powershell 'DevOps/DeleteGCopReferences.ps1'
-                           bat 'for /r %%i in (.\\*.config) do (type %%i | find /v "GCop" > %%i_temp && move /y %%i_temp %%i)'
-                        }
-                        
-                            
-                }
-            } 
+           stage('Remove GCOP') { steps { script {
+                bat 'nuget sources'
+                powershell 'DevOps/DeleteGCopReferences.ps1'
+                bat 'for /r %%i in (.\\*.config) do (type %%i | find /v "GCop" > %%i_temp && move /y %%i_temp %%i)'
+           } } } 
             
-            stage('Restore nuget packages')
-            {
-                steps 
-                {
-                    bat 'nuget restore'
-                    
-                }
-            }
+            stage('Restore nuget packages') { steps { bat 'nuget restore' } }
             
             stage('Build the source code')
             {
                 steps 
                 {
-                    script 
-                        {
-                            dir("\\MsharpBuild")
-                            {
-                                bat 'msbuild'
-                            }                           
-                        }   
+                    script { dir("\\MsharpBuild") { bat 'msbuild' } }
                     script
                         {
                             dir("\\MsharpBuild\\Msharp")
                             {
-                                bat 'Msharp.DSL.exe /build /model %workspace%'                                                              
+                                bat 'Msharp.DSL.exe /build /model %workspace%'     
                             }
                         }
                     script
