@@ -1,6 +1,6 @@
 The [Jenkins.md](Olive/docs/Microservices/DevOps/Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating an ASP.net MVC project.
 
-
+*** Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository. ***
 
 ```groovy
 pipeline 
@@ -49,13 +49,14 @@ pipeline
                 {	
                     dir("\\DevOps\\Jenkins")
                     {
-                        bat 'PrepairServer.bat'								
+		    // This file installs all the tolls required to biuld the application. Dockerising the Jenkins server will eliminate this stage from the build process and shorten it.						
+                        bat 'PrepairServer.bat'	 
                     }
                      							
                 }
             }
-				
-			stage('Update settings') 
+	    // This stage populates dynamic placeholders (application version number, connection strings etc) in the source code. 
+	    stage('Update settings') // This sate
             {
                 steps
                 {
@@ -63,16 +64,13 @@ pipeline
                         {	
     	                    dir(WEBSITE_PATH)		
 	                        {                        	
-								withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'SSC_DB_CREDENTIALS',usernameVariable: 'SSC_DB_USER', passwordVariable: 'SSC_DB_USER_PASSWORD']]) 
-                                {
-								    sh """ sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g;s/%SSC_DB_SERVER%/${SSC_DB_SERVER}/g;s/%SSC_DB_USER%/${SSC_DB_USER}/g;s/%SSC_DB_USER_PASSWORD%/$SSC_DB_USER_PASSWORD/g;" web.config """													
-                                }
-							}
+				 sh """ sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g;s/%CONNECTION_STRING%/${CONNECTION_STRING}/g;" web.config """													
+                                  }
                         }
                 }
             }
 			
-		    stage('Delete the GCOP References')
+	    stage('Delete the GCOP References')
             {
                 steps 
                 {
@@ -152,21 +150,7 @@ pipeline
 					}
 				}			
 			}
-			stage('Create App_Data')
-            {
-
-                steps 
-                {
-					script
-						{
-							dir(WEBSITE_PATH)
-							{
-								bat 'mkdir App_Data'						
-							}
-						}						
-						
-                }
-            }
+			 
 			  stage('Publish the website')
             {
 
@@ -182,6 +166,7 @@ pipeline
 						
                 }
             }
+	    // This stage checks to see if the build process has successfully created the webiste dll. It checks the website binary folder path for [#WEBSITE.DDL.NAME#].dll
 			stage('Check build')
 			{
 				steps 
@@ -190,7 +175,7 @@ pipeline
 					{
 						dir(WEBSITE_PATH)
 						{
-							bat '''if exist "bin\\ShootingStarChase.Website.dll" (
+							bat '''if exist "bin\\[#WEBSITE.DDL.NAME#].dll" (
 								echo Build Succeeded.
 								) else (
 								echo Build Failed.
@@ -200,6 +185,8 @@ pipeline
 					}
 				}
 			}
+			// This stage builds and pushes the docker image to a docker repository. Below are different scripts for pushing the Docker image to Docker Hub and AWS Contianer Registry
+			// Make sure you have a credentials created in Jenkins with "REPOSITORY_CREDENTIALS" ID. 
 		 	stage('Build and publish the docker images') 
 		 	{
     			
@@ -207,15 +194,29 @@ pipeline
       			{
       				script 
 						{
-	   						docker.withRegistry("","SSC_DOCKER_HUB_CREDENTIALS") 
+						// Docker Hub
+	   						docker.withRegistry("","REPOSITORY_CREDENTIALS") 
     						{   
-          						def img = docker.build(IMAGE);
-          						img.push();          						        						
-        					}
+          						docker.build(IMAGE).push();          						        				}
+						// AWS Docker Registry
+						 script 
+                        {
+                            withAWS(credentials:AWS_CREDENTIALS_ID)
+                            {
+                                // login to ECR - for now it seems that that the ECR Jenkins plugin is not performing the login as expected. I hope it will in the future.
+                                sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
+                        
+                                docker.withRegistry(ECR_URL, "REPOSITORY_CREDENTIALS") 
+                                {
+                                   docker.build(IMAGE).push();
+                                }                       
+                            }
+                        }
       					}    
 				}	
         
     		}
+		// To be able to update the Kubernetes cluster we need to upload a deployment template. There is a deployment file with some placeholders in the source code repository which is populated by this stage with the build information such as build version and the new docker image reference.
     		stage('Update the K8s deployment file')
             {
                 steps 
