@@ -268,3 +268,62 @@ pipeline
 
 
 ```
+
+### Placeholders
+- DOCKER_REPOSITORY_NAME
+  - The name of the container repository, on the container registry, where the docker images will be stored.  
+- KUBERNETES_CLUSTER_URL
+  - The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config
+- CONNECTION_STRING_CREDENTIALS_ID
+  - The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins.
+- GIT_REPOSITORY_SSH_ADDRESS
+  - The SSH address of the git repository.
+- BRANCH_NAME
+  - The name of the branch that will be used to build and deploy the application.
+- GIT_CREDENTIALS_ID
+  - The ID of the SSH credentials record in Jenkins.The details will be provided below.
+- WEBSITE_DDL_NAME
+  - The name of the website compiliation output.
+- CONTAINER_REPOSITORY_CREDENTIALS_ID
+  - The ID of the container repository credentials. It should be a username/password credentials in Jenkins.
+- AWS_CREDENTIALS_ID  
+  - The ID of the AWS credentials. It should be a username/password credentials in Jenkins.
+- ECR_URL
+  - The url of the AWS container registry.
+  
+#### Kubernetes Cluster Placeholders.
+To be able to connect to Kubernetes you need to extract the certificate information of the use you want to connect to the cluster with. The credentials details can be found in ~/.kube/config. There are three parts you need to extract from the config file and import as *"text credentials"* in Jenkins.
+- K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_ID
+  - The value of "certificate-authority-data" key in the config file.
+- K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID
+  - The value of "client-certificate-data" key in the config file.
+- K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID
+  - The value of the "client-key-data" key in the config file.
+
+
+### Access Git via SSH
+A safe way to pull the source code from the git repository is to use SSH. For that we need to generate a keypair on the build server and import the private key in Jenkins as a "SSH username and private key" record. You can easily generate a key pair by running the "ssh-keygen -t rsa -b 4096". You then need to provide a filepath you want the generated keys to be stored as and a password (make a note of the password as you will need it shortly) . Once generated, go to Jenkins > Credentilas and add a new "SSH username and private key" record. Put "git" as the username and select "Enter directly" for the Private Key option. This allows you to put the content of the private key file generated earlier. The next field is the password you specified during the key generation process, and finally you need to set an ID and description for the key. 
+The next step is to import the public key to the git repository. Depending on what repository you use there will be different instructions. For example you can follow the below instruction if you use Bitbucket.
+
+- Go to Bitbucket and select "Bitbucket settings" from your avatar in the lower left.
+- The Account settings page opens.
+- Click SSH keys.
+- If you've already added keys, you'll see them on this page.
+- Click Add key.
+- Enter a Label for your new key, for example, Default public key.
+- Paste the copied public key into the SSH Key field.
+
+
+### Docker files
+Docker requires a dockerfile with the instructions needed to build a docker image. You can use the template below as the starting point and customize it if needed. You need to create a file called "Dockerfile" and save the content below to it. **The Dockerfile should be save in the root directory of the project.**
+
+```
+FROM microsoft/aspnet:4.7.2-windowsservercore-ltsc2016
+
+COPY Website /inetpub/wwwroot
+```
+
+The first line of the script above sets the base image of the your docker image. Depending on the framework you have used in your application the base image may vary. Having a wrong base image might result in not being able to run your application in a container. The second line copies the Website folder into /inetpub/wwwroot folder in the container. The default IIS in microsoft/aspnet docker image points to /inetpub/wwwroot. 
+
+**Important**
+Just like a git repository, you should avoid adding unnecessary files to your docker image. Copying only the files you require to run the application reduces the size of the docker image and make it more efficient and faster to pull and run it. To avoid copying everything you can use .dockerignore files. It has the same pattern as .gitignore. One of the most import folders you need to ignore is "node_modules". It is a bit directory and will increase your docker image dramatically.
