@@ -1,4 +1,5 @@
-# Continious Integration
+# Continious Integration using Jenkins
+
 `Continious Delivery` and `DevOps` have many well known operational benefits for the process of software development and management. But they are even more vital in a `Microservice-oriented` architecture. Why? Because with Microservices, you will typically have `tens of deployments per day`, after every small bug fix, or new feature. That makes it impossible to go about it manually.
 
 `Continious deployment` enables us to rapidly deploy changes without the risk of `human errors`. Once designed and tested, you can trust the deployment process way more than any developer, even the most experienced ones.
