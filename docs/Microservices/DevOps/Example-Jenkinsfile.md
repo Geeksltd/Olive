@@ -29,9 +29,9 @@ pipeline
     }
     agent any
     stages{    
-            /// To be able to make sure a 100% clean build we run this stage to clear the workspace if there is anything in there.
-            /// Later on we will try to create a serverless cluster for our build process and use containers as our agents which means
-            /// this stage can be eliminated.
+            // To be able to make sure a 100% clean build we run this stage to clear the workspace if there is anything in there.
+            // Later on we will try to create a serverless cluster for our build process and use containers as our agents which means
+            // this stage can be eliminated.
             stage('Delete the old version') 
             {
                 steps
@@ -43,9 +43,9 @@ pipeline
                 }
             }
             
-            /// We have a private repository for storing microservice specific api packages. Since it is a private repository
-            /// it has to be introduced to nuget in the Jenkins executor.
-            /// Same as the previous stage, once moved to a cluster our Jenkins slaves will not need to have this stage.
+            // We have a private repository for storing microservice specific api packages. Since it is a private repository
+            // it has to be introduced to nuget in the Jenkins executor.
+            // Same as the previous stage, once moved to a cluster our Jenkins slaves will not need to have this stage.
             stage('Add the private repository') 
             {
                 steps
@@ -64,8 +64,8 @@ pipeline
                 }
             }
                 
-            /// As the name suggests it closes the repository to local. For debugging purposes it helps to know that Jenkins pulls and 
-            /// builds projects in %JENKINS_HOME%/workspaces/%PROJECT_NAME% where %JENKINS_HOME% can be found in the Jenkins Settings               /// menu of the Settings section of admin in Jenkins.
+            // As the name suggests it closes the repository to local. For debugging purposes it helps to know that Jenkins pulls and 
+            // builds projects in %JENKINS_HOME%/workspaces/%PROJECT_NAME% where %JENKINS_HOME% can be found in the Jenkins Settings                 // menu of the Settings section of admin in Jenkins.
             stage('Clone sources') 
             {
                 steps
