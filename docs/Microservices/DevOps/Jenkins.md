@@ -48,13 +48,7 @@ You can find the contents of the [Build.bat file here](Example-build.bat.md).
 
 ## Build Server
 
-The `Build.bat` file requires some tools to be available on the server such as:
-
-* Chocolatey
-* yarn
-* bower
-* webpack
-* TypeScript
+The `Build.bat` file requires some tools to be available on the server such as yarn, bower, webpack, TypeScript, ...
 
 To automate that process, we have created a file named [PrepairServer.bat](Example-PrepairServer.bat.md). You should run it with every Jenkins build. But to avoid unnecessary reinstalling, it first checks to see if each tool is available on the server already, and if not it installs it.
 
