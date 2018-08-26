@@ -13,6 +13,7 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 | `ECR_URL` | The url of the AWS container registry. |
+| `#WEBSITE_DLL_NAME#` | The name of the website compiliation output. |
 
 ## Placeholders
 Replace the following placeholders in the jenkinsfile with the correct values for your project:
@@ -21,7 +22,6 @@ Replace the following placeholders in the jenkinsfile with the correct values fo
 | ------------- | ------------- |
 | `#DOCKER_REPOSITORY_NAME#`  | The name of the container repository, on the container registry, where the docker images will be stored.  |
 | `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
-| `#WEBSITE_DDL_NAME#` | The name of the website compiliation output. |
 | `#CONTAINER_REPOSITORY_CREDENTIALS_ID#` | The ID of the container repository credentials. It should be a username/password credentials in Jenkins. |
 | `#AWS_CREDENTIALS_ID#` | The ID of the AWS credentials. It should be a username/password credentials in Jenkins.|
 
@@ -37,6 +37,7 @@ pipeline
         GIT_CREDENTIALS_ID = "..."
         GIT_BRANCH = "..."
         ECR_URL = "..."
+        WEBSITE_DLL_NAME = "..."
         
         BUILD_VERSION = "v_${BUILD_NUMBER}"
         IMAGE = "#DOCKER_REPOSITORY_NAME#:${BUILD_VERSION}" 
@@ -115,7 +116,7 @@ pipeline
                     {
                         dir("Website")
                         {
-                            bat '''if exist "bin\\[#WEBSITE_DDL_NAME#].dll" (
+                            bat '''if exist "bin\\%WEBSITE_DLL_NAME%.dll" (
                                 echo Build Succeeded.
                                 ) else (
                                 echo Build Failed.
