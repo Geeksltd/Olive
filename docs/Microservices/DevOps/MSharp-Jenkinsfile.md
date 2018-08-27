@@ -54,8 +54,7 @@ pipeline
         
         DOCKER_REPO_NAME = "..."
         DOCKER_REG_URL = "..."
-        DOCKER_REG_CREDENTIALS_ID = "..."
-                
+        DOCKER_REG_CREDENTIALS_ID = "..."                
         DOCKER_IMAGE = "${DOCKER_REPO_NAME}:v_${BUILD_NUMBER}" 
 
         K8S_SSH_SERVER = "..."
@@ -68,8 +67,6 @@ pipeline
         
         PATH = "C:\\Nuget;C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\;$PATH"
         CONNECTION_STRING = credentials('#CONNECTION_STRING_CREDENTIALS_ID#');
-        
-        
     }
     agent any
     stages
