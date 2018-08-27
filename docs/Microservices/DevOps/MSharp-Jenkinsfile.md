@@ -16,8 +16,19 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
 | `WEBSITE_DLL_NAME` | The name of the website compiliation output. |
 | `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
-| `DOCKER_REG_CREDENTIALS_ID` | Whether you use AWS ECR, or Docker Hub, create a Jenkins username/pass credentials and store its ID here. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
+
+## Credentials
+
+The following should be added as `text credentials` in Jenkins.
+
+| Variable  | Description |
+| ------------- | ------------- |
+| `DOCKER_REG_CREDENTIALS_ID` | Whether you use AWS ECR, or Docker Hub, create a Jenkins username/pass credentials and store its ID here. |
+| `K8S_CERT_AUTH_CREDENTIALS_ID` |  The value of `certificate-authority-data` key in the config file. |
+| `K8S_CLIENT_CERT_CREDENTIALS_ID` |  The value of `client-certificate-data` key in the config file. |
+| `K8S_CLIENT_KEY_CREDENTIALS_ID` | The value of the `client-key-data` key in the config file. |
+
 
 ## Placeholders
 Replace the following placeholders in the jenkinsfile with the correct values for your project:
@@ -48,10 +59,16 @@ pipeline
 
         K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
-        K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"
+        K8S_DEPLOYMENT1 = "DevOps/Kubernetes/Deployment.yaml"
+        
+        K8S_CERT_AUTH_CREDENTIALS_ID = "..."
+        K8S_CLIENT_CERT_CREDENTIALS_ID = "..."
+        K8S_CLIENT_KEY_CREDENTIALS_ID = "..."
         
         PATH = "C:\\Nuget;C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\;$PATH"
-        CONNECTION_STRING = credentials('#CONNECTION_STRING_CREDENTIALS_ID#');      
+        CONNECTION_STRING = credentials('#CONNECTION_STRING_CREDENTIALS_ID#');
+        
+        
     }
     agent any
     stages
@@ -124,17 +141,20 @@ pipeline
             }}}
             
             stage('Deploy to cluster') { steps { script {                    
-                 withCredentials([string(credentialsId: '#K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_CREDENTILAS_ID#', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
+                 withCredentials([
+                     string(credentialsId: K8S_CERT_AUTH_CREDENTIALS_ID, variable: 'K8S_CERT_AUTH'),
+                     string(credentialsId: K8S_CLIENT_CERT_CREDENTIALS_ID, variable: 'K8S_CLIENT_CERT'),
+                     string(credentialsId: K8S_CLIENT_KEY_CREDENTIALS_ID, variable: 'K8S_CLIENT_KEY')]) 
                  {                        
                       kubernetesDeploy(
                           credentialsType: 'Text',
                           textCredentials: [
                                     serverUrl: K8S_SSH_SERVER,
-                                    certificateAuthorityData: K8s_CERTIFICATE_AUTHORITY_DATA,
-                                    clientCertificateData: K8s_CLIENT_AUTHORITY_DATA,
-                                    clientKeyData: K8s_CERTIFICATE_KEY_DATA,
+                                    certificateAuthorityData: K8S_CERT_AUTH,
+                                    clientCertificateData: K8S_CLIENT_CERT,
+                                    clientKeyData: K8S_CLIENT_KEY,
                           ],
-                          configs: K8S_LATEST_CONFIG_FILE,
+                          configs: K8S_DEPLOYMENT1,
                           enableConfigSubstitution: true,
                       )
                   }
@@ -166,13 +186,6 @@ pipeline
 #### Kubernetes Cluster Placeholders.
 To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. 
 
-There are three parts you need to extract from the config file and import as `text credentials` in Jenkins.
-
-| Parameter | Description |
-| ------------- | ------------- |
-| `K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_ID`  |  The value of `certificate-authority-data` key in the config file. |
-| `K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID` |  The value of `client-certificate-data` key in the config file. |
-| `K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID` | The value of the `client-key-data` key in the config file. |
 
 
 ### Accessing Git via SSH
