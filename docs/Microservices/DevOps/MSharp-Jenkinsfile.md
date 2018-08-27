@@ -97,51 +97,28 @@ pipeline
             
             stage('Publish website') { steps { script { dir("Website") { bat 'MSBuild' }}}}
             
-            stage('Verify build')
-            {
-                steps 
-                {
-                    script 
-                    {
-                        dir("Website")
-                        {
-                            bat '''if exist "bin\\%WEBSITE_DLL_NAME%.dll" (
-                                        echo Build Succeeded.
-                                   ) else (
-                                        echo Build Failed.
-                                        exit /b %errorlevel%
-                                   )'''                        
-                        }
-                    }
-                }
-            }
-            // This stage builds and pushes the docker image to a docker repository. Below are different scripts for pushing the Docker image to Docker Hub and AWS Contianer Registry
-            // Make sure you have a credentials created in Jenkins with "CONTAINER_REPOSITORY_CREDENTIALS_ID" ID. 
-            stage('Build and publish the docker images') 
-            {
-                steps 
-                {
-                    script 
-                        {                            
-                            docker.withRegistry(CONTAINER_REGISTRY_URL, CONTAINER_REPOSITORY_CREDENTIALS_ID)
-                            { 
-                               docker.build(IMAGE).push();
-                            }
+            stage('Verify build') { steps { script { dir("Website") {
+                 bat '''if exist "bin\\%WEBSITE_DLL_NAME%.dll" (
+                            echo Build Succeeded.
+                        ) else (
+                            echo Build Failed.
+                            exit /b %errorlevel%
+                        )'''                        
+            }}}}
+            
+          
+            stage('Publish as docker image') { steps { script {                            
+                docker.withRegistry(CONTAINER_REGISTRY_URL, CONTAINER_REPOSITORY_CREDENTIALS_ID)
+                { docker.build(IMAGE).push(); }
                             
-                            // If using AWS ECR, wrap the above code in the following:
-                            withAWS(credentials:CONTAINER_REPOSITORY_CREDENTIALS_ID)
-                            {
-                                // login to ECR
-                                // For now it seems that that the ECR Jenkins plugin is not performing the login as expected.
-                                // I hope it will in the future.
-                                
-                                sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
-                        
-                                ###                     
-                            }
-                        }
-                  }    
-            }   
+                // Using AWS ECR? Wrap the above code in the following.
+                withAWS(credentials:CONTAINER_REPOSITORY_CREDENTIALS_ID)
+                {
+                    // Workaround (as the ECR Jenkins plugin is faulty):
+                    sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
+                    ###                     
+                }
+             }}}
         
            
         // To be able to update the Kubernetes cluster we need to upload a deployment template. There is a deployment file with some placeholders in the source code repository which is populated by this stage with the build information such as build version and the new docker image reference.
@@ -193,7 +170,7 @@ pipeline
 | `Update settings` | Populates dynamic placeholders (application version number, connection strings etc) in the source code. |
 | `Publish website` | Required only for MVC projects. For WebForms projects it can be removed. |
 | `Verify build` | Verifies if the `website dll` was successfully created. |
-
+| `Publish as docker image` | Builds and pushes the docker image to the docker repository. |
 
 
   
