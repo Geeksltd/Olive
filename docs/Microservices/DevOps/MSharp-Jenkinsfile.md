@@ -182,16 +182,26 @@ pipeline
 
 
 ### Accessing Git via SSH
-A safe way to pull the source code from the git repository is to use SSH. For that we need to generate a keypair on the build server and import the private key in Jenkins as a "SSH username and private key" record. You can easily generate a key pair by running the "ssh-keygen -t rsa -b 4096". You then need to provide a filepath you want the generated keys to be stored as and a password (make a note of the password as you will need it shortly) . Once generated, go to Jenkins > Credentilas and add a new "SSH username and private key" record. Put "git" as the username and select "Enter directly" for the Private Key option. This allows you to put the content of the private key file generated earlier. The next field is the password you specified during the key generation process, and finally you need to set an ID and description for the key. 
-The next step is to import the public key to the git repository. Depending on what repository you use there will be different instructions. For example you can follow the below instruction if you use Bitbucket.
+A safe way to pull the source code from the git repository is to use SSH. For that we need to:
 
-- Go to Bitbucket and select "Bitbucket settings" from your avatar in the lower left.
-- The Account settings page opens.
-- Click SSH keys.
+1. Generate a keypair on the build server by running the command `ssh-keygen -t rsa -b 4096`.
+   - When prompted, provide a filepath you want the generated keys to be stored
+   - When prompted, provide a password (and make a note of it)
+2. Import the private key in Jenkins.
+   - Go to `Jenkins > Credentilas` and add a new `SSH username and private key` record.
+     - Set username to `git`.
+     - Select `Enter directly` for the `Private Key option` (this allows you to put the content of the private key file generated earlier.
+     - Set password to the same password that you used before
+     - Set an ID and description for the key. 
+     
+The next step is to import the public key to the git repository. Depending on what repository you use there will be different instructions. For example you can follow the below instruction if you use **Bitbucket**.
+
+- Log in to Bitbucket and select `Bitbucket settings` (from your avatar in the lower left).
+- When the `Account settings` page opens, click on `SSH keys`.
 - If you've already added keys, you'll see them on this page.
-- Click Add key.
-- Enter a Label for your new key, for example, Default public key.
-- Paste the copied public key into the SSH Key field.
+- Click `Add key`.
+- Enter a Label for your new key, for example, "Default public key".
+- Paste the copied public key into the `SSH Key` field.
 
 
 ### Docker files
