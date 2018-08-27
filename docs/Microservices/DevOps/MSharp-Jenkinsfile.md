@@ -17,6 +17,7 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `WEBSITE_DLL_NAME` | The name of the website compiliation output. |
 | `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
+| `K8S_DEPLOYMENT` | To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. |
 
 ## Credentials
 
@@ -181,11 +182,6 @@ pipeline
 | `Verify build` | Verifies if the `website dll` was successfully created. |
 | `Publish as docker image` | Builds and pushes the docker image to the docker repository. |
 | `Update K8s deployment file` | Inject the parameters (e.g. build version, the new docker image reference...) into the Kubernetes deployment file. (used to update the Kubernetes cluster). |
-
-  
-#### Kubernetes Cluster Placeholders.
-To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. 
-
 
 
 ### Accessing Git via SSH
