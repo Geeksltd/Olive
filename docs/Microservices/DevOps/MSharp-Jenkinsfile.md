@@ -47,8 +47,7 @@ pipeline
         IMAGE = "#DOCKER_REPO_NAME#:${BUILD_VERSION}" 
 
         K8S_SSH_SERVER = "..."
-        K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
-        K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"               
+        K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
         K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"
         
         PATH = "C:\\Nuget;C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\;$PATH"
@@ -121,7 +120,7 @@ pipeline
             }}}
       
             stage('Update K8s deployment file') { steps { script  {
-                 sh ''' sed "s#%DOCKER_IMAGE%#${IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT_TEMPLATE > $K8S_LATEST_DEPLOYMENT_FILE '''
+                 sh ''' sed "s#%DOCKER_IMAGE%#${IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT > $K8S_DEPLOYMENT '''
             }}}
             
             stage('Deploy to cluster') { steps { script {                    
