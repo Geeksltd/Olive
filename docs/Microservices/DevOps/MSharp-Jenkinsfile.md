@@ -30,7 +30,7 @@ Replace the following placeholders in the jenkinsfile with the correct values fo
 
 ## The Jenkinsfile
 
-```groovy
+```javascript
 pipeline 
 {
     environment 
