@@ -14,17 +14,17 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_REPO_SSH` | The SSH address of the git repository. |
 | `GIT_BRANCH` | The name of the branch that will be used to build and deploy the application. |
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
-| `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 | `WEBSITE_DLL_NAME` | The name of the website compiliation output. |
 | `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
 | `DOCKER_REG_CREDENTIALS_ID` | Whether you use AWS ECR, or Docker Hub, create a Jenkins username/pass credentials and store its ID here. |
+| `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 
 ## Placeholders
 Replace the following placeholders in the jenkinsfile with the correct values for your project:
 
 | Placeholder  | Value to use |
 | ------------- | ------------- |
-| `#DOCKER_REPOSITORY_NAME#`  | The name of the container repo on the container registry, where the docker images will be stored. |
+| `#DOCKER_REPO_NAME#`  | The name of the container repo on the container registry, where the docker images will be stored. |
 | `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
 
 
@@ -35,22 +35,22 @@ pipeline
 {
     environment 
     {   
+        WEBSITE_DLL_NAME = "..."
         GIT_REPO_SSH = "..."
         GIT_CREDENTIALS_ID = "..."
         GIT_BRANCH = "..."
-        ECR_URL = "..."
-        Docker_REG_URL = "..."
-        CONTAINER_REPOSITORY_CREDENTIALS_ID = "..."
         
-        WEBSITE_DLL_NAME = "..."
-        
+        DOCKER_REG_URL = "..."
+        DOCKER_REG_CREDENTIALS_ID = "..."
+                
         BUILD_VERSION = "v_${BUILD_NUMBER}"
-        IMAGE = "#DOCKER_REPOSITORY_NAME#:${BUILD_VERSION}" 
+        IMAGE = "#DOCKER_REPO_NAME#:${BUILD_VERSION}" 
 
         K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT_TEMPLATE = ".\\DevOps\\Kubernetes\\Deployment.yaml"
         K8S_LATEST_DEPLOYMENT_FILE = ".\\DevOps\\Kubernetes\\Deployment${BUILD_VERSION}.yaml"               
         K8S_LATEST_CONFIG_FILE = "DevOps/Kubernetes/Deployment${BUILD_VERSION}.yaml"
+        
         PATH = "C:\\Nuget;C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\;$PATH"
         CONNECTION_STRING = credentials('#CONNECTION_STRING_CREDENTIALS_ID#');      
     }
@@ -165,16 +165,18 @@ pipeline
 
   
 #### Kubernetes Cluster Placeholders.
-To be able to connect to Kubernetes you need to extract the certificate information of the use you want to connect to the cluster with. The credentials details can be found in ~/.kube/config. There are three parts you need to extract from the config file and import as *"text credentials"* in Jenkins.
-- K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_ID
-  - The value of "certificate-authority-data" key in the config file.
-- K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID
-  - The value of "client-certificate-data" key in the config file.
-- K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID
-  - The value of the "client-key-data" key in the config file.
+To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. 
+
+There are three parts you need to extract from the config file and import as `text credentials` in Jenkins.
+
+| Parameter | Description |
+| ------------- | ------------- |
+| `K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_ID`  |  The value of `certificate-authority-data` key in the config file. |
+| `K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID` |  The value of `client-certificate-data` key in the config file. |
+| `K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID` | The value of the `client-key-data` key in the config file. |
 
 
-### Access Git via SSH
+### Accessing Git via SSH
 A safe way to pull the source code from the git repository is to use SSH. For that we need to generate a keypair on the build server and import the private key in Jenkins as a "SSH username and private key" record. You can easily generate a key pair by running the "ssh-keygen -t rsa -b 4096". You then need to provide a filepath you want the generated keys to be stored as and a password (make a note of the password as you will need it shortly) . Once generated, go to Jenkins > Credentilas and add a new "SSH username and private key" record. Put "git" as the username and select "Enter directly" for the Private Key option. This allows you to put the content of the private key file generated earlier. The next field is the password you specified during the key generation process, and finally you need to set an ID and description for the key. 
 The next step is to import the public key to the git repository. Depending on what repository you use there will be different instructions. For example you can follow the below instruction if you use Bitbucket.
 
@@ -198,5 +200,7 @@ COPY Website /inetpub/wwwroot
 
 The first line of the script above sets the base image of the your docker image. Depending on the framework you have used in your application the base image may vary. Having a wrong base image might result in not being able to run your application in a container. The second line copies the Website folder into /inetpub/wwwroot folder in the container. The default IIS in microsoft/aspnet docker image points to /inetpub/wwwroot. 
 
-**Important**
-Just like a git repository, you should avoid adding unnecessary files to your docker image. Copying only the files you require to run the application reduces the size of the docker image and make it more efficient and faster to pull and run it. To avoid copying everything you can use .dockerignore files. It has the same pattern as .gitignore. One of the most import folders you need to ignore is "node_modules". It is a bit directory and will increase your docker image dramatically.
+#### Tip: Efficient Docker images
+Just like a git repository, you should avoid adding unnecessary files to your docker image. Copying `only` the files you require to `run the application` reduces the size of the docker image and make it more efficient and faster to pull and run it.
+
+To avoid copying everything, you can use `.dockerignore` files. It has the same pattern as `.gitignore`. One of the most import folders you need to ignore is `node_modules` which is too large large.
