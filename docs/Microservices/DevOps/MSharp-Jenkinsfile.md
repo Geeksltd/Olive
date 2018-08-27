@@ -1,6 +1,6 @@
-# Ci/CD for Legacy ASP.NET apps
+# Jenkinsfile for Legacy M# ASP.NET apps
 
-The [Jenkins.md](Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating a `ASP.Net MVC 5` and `Web Forms` projects.
+The [Jenkins.md](Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating a `ASP.Net MVC 5` and `Web Forms` projects used by the earlier versions of M#.
 
 > Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository.
 
@@ -21,9 +21,8 @@ Replace the following placeholders in the jenkinsfile with the correct values fo
 
 | Placeholder  | Value to use |
 | ------------- | ------------- |
-| `#DOCKER_REPOSITORY_NAME#`  | The name of the container repository, on the container registry, where the docker images will be stored.  |
+| `#DOCKER_REPOSITORY_NAME#`  | The name of the container repo on the container registry, where the docker images will be stored. |
 | `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
-
 
 
 ## The Jenkinsfile
