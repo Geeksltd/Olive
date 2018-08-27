@@ -41,7 +41,9 @@ Here you can see a [jenkinsfile template for M# projects]((Example-Jenkinsfile.m
 #### Location of the jenkinsfile
 When creating a pipeline job, you should provide the jenkinsfile for it. Rather than uploading it to Jenkins directly, you can specify a GIT repository and a path within it, from which the build script (jenkinsfile) can be pulled.
 
-You can store the jenkinsfile for your project in the same GIT repo of the project, or in a separate repo. We recommend creating a `separate repository` where you store all jenkins files for all of your microservices. There you can have a `folder per microservice`, with a jenkinsfile inside it. 
+Of course you can store the jenkinsfile for your project in the same GIT repo of the project. But for security reasons, we recommend creating a `separate repository` which is available only to users with the highest previlage.
+
+In a microservice-oriented project, you can have a single repo to store all jenkins files for all of your microservices. There, you can have a `folder per microservice`, with a jenkinsfile inside it.
 
 
 ## Build Server
