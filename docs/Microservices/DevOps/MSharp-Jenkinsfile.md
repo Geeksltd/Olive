@@ -15,6 +15,7 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_BRANCH` | The name of the branch that will be used to build and deploy the application. |
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
 | `WEBSITE_DLL_NAME` | The name of the website compiliation output. |
+| `DOCKER_REPO_NAME`  | The name of the container repo on the container registry, where the docker images will be stored. |
 | `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 | `K8S_DEPLOYMENT` | To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. |
@@ -36,7 +37,6 @@ Replace the following placeholders in the jenkinsfile with the correct values fo
 
 | Placeholder  | Value to use |
 | ------------- | ------------- |
-| `#DOCKER_REPO_NAME#`  | The name of the container repo on the container registry, where the docker images will be stored. |
 | `#CONNECTION_STRING_CREDENTIALS_ID#` | The ID of the credentials record created for the connectionstring. You can store connectionstrings as a text credentials record in Jenkins. |
 
 
@@ -52,11 +52,12 @@ pipeline
         GIT_CREDENTIALS_ID = "..."
         GIT_BRANCH = "..."
         
+        DOCKER_REPO_NAME = "..."
         DOCKER_REG_URL = "..."
         DOCKER_REG_CREDENTIALS_ID = "..."
                 
         BUILD_VERSION = "v_${BUILD_NUMBER}"
-        IMAGE = "#DOCKER_REPO_NAME#:${BUILD_VERSION}" 
+        DOCKER_IMAGE = "${DOCKER_REPO_NAME}:${BUILD_VERSION}" 
 
         K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
@@ -126,7 +127,7 @@ pipeline
           
             stage('Publish as docker image') { steps { script {                            
                 docker.withRegistry(DOCKER_REG_URL, DOCKER_REG_CREDENTIALS_ID)
-                { docker.build(IMAGE).push(); }
+                { docker.build(DOCKER_IMAGE).push(); }
                             
                 // Using AWS ECR? Wrap the above code in the following.
                 withAWS(credentials:DOCKER_REG_CREDENTIALS_ID)
@@ -138,7 +139,7 @@ pipeline
             }}}
       
             stage('Update K8s deployment file') { steps { script  {
-                 sh ''' sed "s#%DOCKER_IMAGE%#${IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT > $K8S_DEPLOYMENT '''
+                 sh ''' sed "s#%DOCKER_IMAGE%#${DOCKER_IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT > $K8S_DEPLOYMENT '''
             }}}
             
             stage('Deploy to cluster') { steps { script {                    
