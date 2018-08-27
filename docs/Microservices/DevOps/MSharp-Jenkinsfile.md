@@ -16,8 +16,8 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 | `WEBSITE_DLL_NAME` | The name of the website compiliation output. |
-| `CONTAINER_REGISTRY_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
-| `CONTAINER_REGISTRY_CREDENTIALS_ID` | Whether you use AWS ECR, or Docker Hub, create a Jenkins username/pass credentials and store its ID here. |
+| `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
+| `DOCKER_REG_CREDENTIALS_ID` | Whether you use AWS ECR, or Docker Hub, create a Jenkins username/pass credentials and store its ID here. |
 
 ## Placeholders
 Replace the following placeholders in the jenkinsfile with the correct values for your project:
@@ -39,7 +39,7 @@ pipeline
         GIT_CREDENTIALS_ID = "..."
         GIT_BRANCH = "..."
         ECR_URL = "..."
-        CONTAINER_REGISTRY_URL = "..."
+        Docker_REG_URL = "..."
         CONTAINER_REPOSITORY_CREDENTIALS_ID = "..."
         
         WEBSITE_DLL_NAME = "..."
@@ -108,60 +108,50 @@ pipeline
             
           
             stage('Publish as docker image') { steps { script {                            
-                docker.withRegistry(CONTAINER_REGISTRY_URL, CONTAINER_REPOSITORY_CREDENTIALS_ID)
+                docker.withRegistry(DOCKER_REG_URL, DOCKER_REG_CREDENTIALS_ID)
                 { docker.build(IMAGE).push(); }
                             
                 // Using AWS ECR? Wrap the above code in the following.
-                withAWS(credentials:CONTAINER_REPOSITORY_CREDENTIALS_ID)
+                withAWS(credentials:DOCKER_REG_CREDENTIALS_ID)
                 {
                     // Workaround (as the ECR Jenkins plugin is faulty):
                     sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
                     ###                     
                 }
-             }}}
-        
-           
-        // To be able to update the Kubernetes cluster we need to upload a deployment template. There is a deployment file with some placeholders in the source code repository which is populated by this stage with the build information such as build version and the new docker image reference.
-            stage('Update the K8s deployment file') { steps { script  {
+            }}}
+      
+            stage('Update K8s deployment file') { steps { script  {
                  sh ''' sed "s#%DOCKER_IMAGE%#${IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT_TEMPLATE > $K8S_LATEST_DEPLOYMENT_FILE '''
             }}}
             
-            stage('Deploy to cluster')
-            {
-                steps 
-                {        
-                    script 
-                    {                    
-                        withCredentials([string(credentialsId: '#K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_CREDENTILAS_ID#', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
-                        {
-                        
-                            kubernetesDeploy(
-                                credentialsType: 'Text',
-                                textCredentials: 
-                                [
+            stage('Deploy to cluster') { steps { script {                    
+                 withCredentials([string(credentialsId: '#K8S_CLUSTER_CERTIFICATE_AUTHORITY_DATA_CREDENTILAS_ID#', variable: 'K8S_CERTIFICATE_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_CERTIFICATE_DATA_CREDENTIALS_ID', variable: 'K8s_CLIENT_AUTHORITY_DATA'), string(credentialsId: 'K8S_CLUSTER_CLIENT_KEY_DATA_CREDENTIALS_ID', variable: 'K8s_CERTIFICATE_KEY_DATA')]) 
+                 {                        
+                      kubernetesDeploy(
+                          credentialsType: 'Text',
+                          textCredentials: [
                                     serverUrl: K8S_SSH_SERVER,
                                     certificateAuthorityData: K8s_CERTIFICATE_AUTHORITY_DATA,
                                     clientCertificateData: K8s_CLIENT_AUTHORITY_DATA,
                                     clientKeyData: K8s_CERTIFICATE_KEY_DATA,
-                                ],
-                                configs: K8S_LATEST_CONFIG_FILE,
-                                enableConfigSubstitution: true,
-                            )
-                        }
-                    }
-                }
-            }       
-        }
+                          ],
+                          configs: K8S_LATEST_CONFIG_FILE,
+                          enableConfigSubstitution: true,
+                      )
+                  }
+            }}}
+    }
     post
     {
         always
         {
-            // make sure that the Docker image is removed
+            // Remove the Docker image
             sh "docker rmi $IMAGE | true"
         }
     }
 }
 ```
+
 ### Stage descriptions
 
 | Stage  | Notes |
@@ -171,7 +161,7 @@ pipeline
 | `Publish website` | Required only for MVC projects. For WebForms projects it can be removed. |
 | `Verify build` | Verifies if the `website dll` was successfully created. |
 | `Publish as docker image` | Builds and pushes the docker image to the docker repository. |
-
+| `Update K8s deployment file` | Inject the parameters (e.g. build version, the new docker image reference...) into the Kubernetes deployment file. (used to update the Kubernetes cluster). |
 
   
 #### Kubernetes Cluster Placeholders.
