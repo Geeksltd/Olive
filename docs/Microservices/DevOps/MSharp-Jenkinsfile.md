@@ -1,4 +1,7 @@
-# Jenkinsfile for Legacy M# ASP.NET apps
+# TODO: Remove the [old file and merge with this](Old-Jenkinsfile.md) and also [this one](Example-build.bat.md).
+---
+
+# Jenkinsfile for M# ASP.NET apps
 
 The [Jenkins.md](Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating a `ASP.Net MVC 5` and `Web Forms` projects used by the earlier versions of M#.
 
