@@ -57,63 +57,47 @@ pipeline
     agent any
     stages
         {   
+            stage('Prepare the server') { steps { dir("\\DevOps\\Jenkins") { bat 'PrepairServer.bat' } } }
+            
             stage('Delete prev build folder') { steps { script { deleteDir() } } }
                         
             stage('Git clone sources') { steps { script {
                  git branch: GIT_BRANCH, credentialsId: GIT_CREDENTIALS_ID, url: GIT_REPO_SSH
-            }}}
-            
-            stage('Prepare the server') { steps { dir("\\DevOps\\Jenkins") { bat 'PrepairServer.bat' } } }
-            
-           // This stage populates dynamic placeholders (application version number, connection strings etc) in the source code. 
-           stage('Update settings') { steps { script {
+            }}}                       
+           
+            stage('Update settings') { steps { script {
                 dir("Website")       
                 { sh """ sed -i "s/%APP_VERSION%/${BUILD_NUMBER}/g;s/%CONNECTION_STRING%/${CONNECTION_STRING}/g;" web.config """ }
-           }}}
+            }}}
             
-           stage('Remove GCOP') { steps { script {
+            stage('Remove GCOP') { steps { script {
                 bat 'nuget sources'
                 powershell 'DevOps/DeleteGCopReferences.ps1'
                 bat 'for /r %%i in (.\\*.config) do (type %%i | find /v "GCop" > %%i_temp && move /y %%i_temp %%i)'
-           }}} 
+            }}} 
             
             stage('Restore nuget packages') { steps { bat 'nuget restore' } }
-            
-            stage('Build the source code')
-            {
-                steps 
-                {
+
+            stage('Update bower, scripts, css') { steps { dir("Website") {
+                script { bat 'bower install' }
+                script 
+                {                    
+                    bat 'npm install gulp'
+                    bat 'gulp less-to-css'                          
+                    bat 'gulp fonts'
+                }
+             }}}
+             
+            stage('Compile source') { steps  {
                     script { dir("\\MsharpBuild") { bat 'msbuild' } }
                     script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.DSL.exe /build /model %workspace%' } }
                     script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /model %workspace%' } }
-                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /ui %workspace%' } }                        
-                }
-            }          
-            stage('Prepare runtime resources (bower components, scripts, css)')
-            {
-                steps 
-                {
-                    dir("Website")
-                    {
-                        script { bat 'bower install' }
-                        script 
-                        {                    
-                            bat 'npm install gulp'
-                            bat 'gulp less-to-css'                          
-                            bat 'gulp fonts'
-                        }
-                    }
-                }           
-            }
+                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /ui %workspace%' } }                
+            }}
             
-            // This stage is mandatory only for MVC projects.
-            stage('Publish the website')
-            {
-                steps { script { dir("Website") { bat 'MSBuild' } } }
-            }
+            stage('Publish website') { steps { script { dir("Website") { bat 'MSBuild' }}}}
             
-            // This stage checks to see if the build process has successfully created the webiste dll. It checks the website binary folder path for [#WEBSITE.DDL.NAME#].dll
-            stage('Check build')
+            stage('Verify build')
             {
                 steps 
                 {
@@ -122,11 +106,11 @@ pipeline
                         dir("Website")
                         {
                             bat '''if exist "bin\\%WEBSITE_DLL_NAME%.dll" (
-                                echo Build Succeeded.
-                                ) else (
-                                echo Build Failed.
-                                exit /b %errorlevel%
-                                )'''                        
+                                        echo Build Succeeded.
+                                   ) else (
+                                        echo Build Failed.
+                                        exit /b %errorlevel%
+                                   )'''                        
                         }
                     }
                 }
@@ -201,10 +185,15 @@ pipeline
     }
 }
 ```
+### Stage descriptions
 
-### Tips
+| Stage  | Notes |
+| ------------- | ------------- |
+| `Prepare the server` | Runs `PrepairServer.bat` to install all the tools required to biuld the application. Tip: Dockerising the Jenkins server will eliminate this stage from the build process and shorten it. |
+| `Update settings` | Populates dynamic placeholders (application version number, connection strings etc) in the source code. |
+| `Publish website` | Required only for MVC projects. For WebForms projects it can be removed. |
+| `Verify build` | Verifies if the `website dll` was successfully created. |
 
-- `PrepairServer.bat` - This file installs all the tolls required to biuld the application. Dockerising the Jenkins server will eliminate this stage from the build process and shorten it.
 
 
   
