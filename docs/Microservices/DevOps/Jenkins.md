@@ -6,36 +6,8 @@
 
 Also, `scripting the deployment process` is a form of `documenting` it, that enables anybody to learn and do the process easily.
 
-## Jenkins
-There are many tools out there for deployment automation. We have chosen `Jenkins` because:
+## M# Apps: Basic Build Steps
 
-- It's very popular, with a strong community support.
-- It's open source and free.
-- It has a rich library of plugins for different build and deployment tasks.
-
-### This guide
-Our microservices commonly use the same technology stack (.net core, MS SQL) and are developed by [M#](http://learn.msharp.co.uk/#/Overview/README). This guide is intended to get you up and running with Jenkins for such projects quickly.
-
-Though, you are not limited to use .net core or M#. You may choose whatever tech stack you need but the build process has to be adjusted for the new stack.
-
-### Jenkins Job
-The first step to set up CI/CD in Jenkins we need to first create a `job`. There are different types of jobs in Jenkins. We choose `Pipeline` jobs, because of their flexibility:
-
-- They allow us to `script the build process`
-- Pipelines provide `stages`, which split different build steps for better organization.
-- Jenkins provides a very good presentation for different stages and their time elapsed.
-
-### Jenkinsfiles 
-Pipeline jobs are described using `Jenkinsfiles` which are based on the [Groovy](http://groovy-lang.org/) language. Here is an [example of a jenkinsfile](Example-Jenkinsfile.md).
-
-#### Location of the jenkinsfile
-Jenkins' pipeline jobs allow you to to specify a repository and a path in it, from which the build scripts can be pulled from. 
-You can store the jenkinsfile for your project in the same GIT repo of the project, or in a separate repo. We recommend creating a `separate repository` where we store all microservice jenkins files. There you can have a `folder per microservice`, with a jenkinsfile inside it. 
-
-
-## Build Steps
-
-### M# build script (build.bat)
 > This guide is applicable to MC# projects. If you M# project is not converted to MC#, you should first do that.
 
 The build process of MC# applications is [described here](http://learn.msharp.co.uk/#/Structure/README). Long story short, there is a build sequence, provided below, which your Jenkins file needs to follow to generate the application property: 
@@ -45,7 +17,32 @@ The build process of MC# applications is [described here](http://learn.msharp.co
 3. Build `#UI`
 4. Build `Website`
 
-You can find the contents of the [Build.bat file here](Example-build.bat.md). 
+Of course your application can have any other custom build steps. 
+
+## Jenkins
+There are many tools out there for deployment automation. We have chosen `Jenkins` because:
+
+- It's very popular, with a strong community support.
+- It's open source and free.
+- It has a rich library of plugins for different build and deployment tasks.
+
+### Jenkins Job
+The first step to set up CI/CD in Jenkins is to create a `job` for the project. There are different types of jobs in Jenkins. We choose `Pipeline` jobs, because of their flexibility:
+
+- They allow us to `script the build process`
+- Pipelines provide `stages`, which split different build steps for better organization.
+- Jenkins provides a very good presentation for different stages and their time elapsed.
+
+### Jenkinsfile
+A pipeline jobs is described using a `Jenkinsfile` which is based on the [Groovy](http://groovy-lang.org/) language.
+
+Here you can see a [jenkinsfile template for M# projects]((Example-Jenkinsfile.md) along with a full description.
+
+#### Location of the jenkinsfile
+When creating a pipeline job, you should provide the jenkinsfile for it. Rather than uploading it to Jenkins directly, you can specify a GIT repository and a path within it, from which the build script (jenkinsfile) can be pulled.
+
+You can store the jenkinsfile for your project in the same GIT repo of the project, or in a separate repo. We recommend creating a `separate repository` where you store all jenkins files for all of your microservices. There you can have a `folder per microservice`, with a jenkinsfile inside it. 
+
 
 ## Build Server
 
