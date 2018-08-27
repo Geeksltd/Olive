@@ -56,8 +56,7 @@ pipeline
         DOCKER_REG_URL = "..."
         DOCKER_REG_CREDENTIALS_ID = "..."
                 
-        BUILD_VERSION = "v_${BUILD_NUMBER}"
-        DOCKER_IMAGE = "${DOCKER_REPO_NAME}:${BUILD_VERSION}" 
+        DOCKER_IMAGE = "${DOCKER_REPO_NAME}:v_${BUILD_NUMBER}" 
 
         K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
@@ -139,7 +138,7 @@ pipeline
             }}}
       
             stage('Update K8s deployment file') { steps { script  {
-                 sh ''' sed "s#%DOCKER_IMAGE%#${DOCKER_IMAGE}#g; s#%BUILD_VERSION%#${BUILD_VERSION}#g" < $K8S_DEPLOYMENT > $K8S_DEPLOYMENT '''
+                 sh ''' sed "s#%DOCKER_IMAGE%#${DOCKER_IMAGE}#g; s#%BUILD_VERSION%#v_${BUILD_NUMBER}#g" < $K8S_DEPLOYMENT > $K8S_DEPLOYMENT '''
             }}}
             
             stage('Deploy to cluster') { steps { script {                    
