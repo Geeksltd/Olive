@@ -204,18 +204,30 @@ The next step is to import the public key to the git repository. Depending on wh
 - Paste the copied public key into the `SSH Key` field.
 
 
-### Docker files
-Docker requires a dockerfile with the instructions needed to build a docker image. You can use the template below as the starting point and customize it if needed. You need to create a file called "Dockerfile" and save the content below to it. **The Dockerfile should be save in the root directory of the project.**
+## Docker files
+To use Docker, you need a file named `Dockerfile` in the root directory of your source repository.
 
+#### Dockerfile for .NET Core apps (Olive)
+
+```docker
+# Create a container for runtime
+FROM microsoft/dotnet:2.1.2-aspnetcore-runtime
+WORKDIR /app
+COPY ./Website/publish/ .
+ENTRYPOINT ["dotnet", "website.dll"]
 ```
-FROM microsoft/aspnet:4.7.2-windowsservercore-ltsc2016
+#### Dockerfile for .NET Framework 4.X apps
 
+```docker
+FROM microsoft/aspnet:4.7.2-windowsservercore-ltsc2016
 COPY Website /inetpub/wwwroot
 ```
-
-The first line of the script above sets the base image of the your docker image. Depending on the framework you have used in your application the base image may vary. Having a wrong base image might result in not being able to run your application in a container. The second line copies the Website folder into /inetpub/wwwroot folder in the container. The default IIS in microsoft/aspnet docker image points to /inetpub/wwwroot. 
+Notes:
+- Depending on the framework you have used in your application the base image may vary.
+- The default IIS in microsoft/aspnet docker image points to `/inetpub/wwwroot`. 
 
 #### Tip: Efficient Docker images
 Just like a git repository, you should avoid adding unnecessary files to your docker image. Copying `only` the files you require to `run the application` reduces the size of the docker image and make it more efficient and faster to pull and run it.
 
-To avoid copying everything, you can use `.dockerignore` files. It has the same pattern as `.gitignore`. One of the most import folders you need to ignore is `node_modules` which is too large large.
+- To avoid copying everything, use `.dockerignore` files which have the same pattern as `.gitignore`.
+- One of the most import folders you need to ignore is `node_modules` which is too large large.
