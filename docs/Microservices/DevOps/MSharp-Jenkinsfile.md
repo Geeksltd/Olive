@@ -1,4 +1,4 @@
-# TODO: Remove the [old file and merge with this](Old-Jenkinsfile.md) and also [this one](Example-build.bat.md).
+# TODO: Remove the [old file and merge with this](Old-Jenkinsfile.md).
 ---
 
 # Jenkinsfile for M# ASP.NET apps
@@ -255,14 +255,10 @@ stage('Add private nuget repo') { steps { script {
 ```
 
 ### Tip: Changes for .NET Core (Olive) apps
-
-Change the `Compile source` step to the following:
+For Olive apps, change the `Compile source` step to the following:
 
 ```javascript
-stage('Compile source') { steps  {
-                    script { dir("\\MsharpBuild") { bat 'msbuild' } }
-                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.DSL.exe /build /model %workspace%' } }
-                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /model %workspace%' } }
-                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /ui %workspace%' } }                
-            }}
+stage('Compile source') { steps  { script { dir("\\DevOps\\Jenkins") { bat 'Build.bat' } } } }
 ```
+
+Make sure to include the [Build.bat file](Example-build.bat.md) in your source repository under `DevOps\Jenkins` folder.
