@@ -260,5 +260,16 @@ For Olive apps, change the `Compile source` step to the following:
 ```javascript
 stage('Compile source') { steps  { script { dir("\\DevOps\\Jenkins") { bat 'Build.bat' } } } }
 ```
-
 Make sure to include the [Build.bat file](Example-build.bat.md) in your source repository under `DevOps\Jenkins` folder.
+
+Also, change the `Verify build` step to the following
+```javascript
+stage('Verify build') { steps { script { dir("Website\\publish") {
+    bat '''if exist "%WEBSITE_DLL_NAME%.dll" (
+        echo Build Succeeded.
+    ) else (
+        echo Build Failed.
+        exit /b %errorlevel%
+    )'''
+}}}}
+```
