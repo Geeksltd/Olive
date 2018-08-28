@@ -180,8 +180,13 @@ pipeline
 | `Publish as docker image` | Builds and pushes the docker image to the docker repository. |
 | `Update K8s deployment file` | Inject the parameters (e.g. build version, the new docker image reference...) into the Kubernetes deployment file. (used to update the Kubernetes cluster). |
 
+### Tip: Notifications
+You can utilize some of the notification plugins Jenkins has to be able to give some feedback, whether a failure or a success, about the build process.
 
-### Accessing Git via SSH
+### Tip: Parameters vs Environment Variables
+In the above template, all parameters are defined under the `environment` node. Alternatively, you can define any parameter under `parameters` node. In that case, when you want to start a build for the job using Jenkins web ui, Jenkins will display a form where you can change the value of that parameter.
+
+### Tip: Accessing Git via SSH
 A safe way to pull the source code from the git repository is to use SSH. For that we need to:
 
 1. Generate a keypair on the build server by running the command `ssh-keygen -t rsa -b 4096`.
@@ -204,7 +209,7 @@ The next step is to import the public key to the git repository. Depending on wh
 - Paste the copied public key into the `SSH Key` field.
 
 
-## Docker files
+## Tip: Creating Docker files
 To use Docker, you need a file named `Dockerfile` in the root directory of your source repository.
 
 #### Dockerfile for .NET Core apps (Olive)
