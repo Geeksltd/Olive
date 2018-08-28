@@ -50,17 +50,17 @@ namespace Olive
         /// <summary>
         /// Trims the end of this instance of string with the specified number of characters.
         /// </summary>
-        public static string TrimEnd(this string text, int numberOfCharacters)
+        public static string TrimEnd(this string @this, int numberOfCharacters)
         {
             if (numberOfCharacters < 0)
                 throw new ArgumentException("numberOfCharacters must be greater than 0.");
 
-            if (numberOfCharacters == 0) return text;
+            if (numberOfCharacters == 0) return @this;
 
-            if (text.IsEmpty() || text.Length <= numberOfCharacters)
+            if (@this.IsEmpty() || @this.Length <= numberOfCharacters)
                 return string.Empty;
 
-            return text.Substring(0, text.Length - numberOfCharacters);
+            return @this.Substring(0, @this.Length - numberOfCharacters);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Olive
         {
             if (!caseSensitive)
             {
-                @this = (@this ?? string.Empty).ToLower();
+                @this = @this.ToLowerOrEmpty();
 
                 for (var i = 0; i < keywords.Length; i++) keywords[i] = keywords[i].ToLower();
             }
@@ -216,14 +216,14 @@ namespace Olive
             return objectTitle.ToCountString(@this.Count(), zeroQualifier);
         }
 
-        public static string ToCountString(this string name, int count)
+        public static string ToCountString(this string @this, int count)
         {
             var zeroQualifier = "no";
 
-            if (name.HasValue() && char.IsUpper(name[0]))
+            if (@this.HasValue() && char.IsUpper(@this[0]))
                 zeroQualifier = "No";
 
-            return ToCountString(name, count, zeroQualifier);
+            return ToCountString(@this, count, zeroQualifier);
         }
 
         public static string ToCountString(this string @this, int count, string zeroQualifier)
@@ -292,7 +292,7 @@ namespace Olive
             else
                 secondEnding = char.MinValue;
 
-            if (ending == 's' || (secondEnding.ToString() + ending) == "ch" || (secondEnding.ToString() + ending) == "sh")
+            if (ending == 's' || (secondEnding.ToString() + ending).IsAnyOf("ch", "sh"))
                 return singular + "es";
 
             else if (ItNeedsIESForPlural(ending, secondEnding))
@@ -514,12 +514,12 @@ namespace Olive
             return false;
         }
 
-        public static bool StartsWith(this string input, string other, bool caseSensitive)
+        public static bool StartsWith(this string @this, string other, bool caseSensitive)
         {
             if (other.IsEmpty()) return false;
 
-            if (caseSensitive) return input.StartsWith(other);
-            else return input.StartsWith(other, StringComparison.OrdinalIgnoreCase);
+            if (caseSensitive) return @this.StartsWith(other);
+            else return @this.StartsWith(other, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -583,7 +583,7 @@ namespace Olive
         /// </summary>
         public static IEnumerable<int> AllIndicesOf(this string @this, string pattern)
         {
-            if (pattern == null)
+            if (pattern.IsEmpty())
                 throw new ArgumentNullException(nameof(pattern));
 
             var result = new List<int>();
@@ -603,10 +603,10 @@ namespace Olive
         /// <summary>
         /// Returns this text with the specified prefix if this has a value. If this text is empty or null, it will return empty string.
         /// </summary>
-        public static string WithPrefix(this string text, string prefix)
+        public static string WithPrefix(this string @this, string prefix)
         {
-            if (text.IsEmpty()) return string.Empty;
-            else return prefix + text;
+            if (@this.IsEmpty()) return string.Empty;
+            else return prefix + @this;
         }
 
         /// <summary>
@@ -636,7 +636,7 @@ namespace Olive
         /// <summary>
         /// Repeats this text by the number of times specified, seperated with the specified seperator.
         /// </summary>
-        public static string Repeat(this string text, int times, string seperator)
+        public static string Repeat(this string @this, int times, string seperator)
         {
             if (times < 0) throw new ArgumentOutOfRangeException(nameof(times), $"{nameof(times)} should be 0 or more.");
 
@@ -646,7 +646,7 @@ namespace Olive
 
             for (var i = 1; i <= times; i++)
             {
-                r.Append(text);
+                r.Append(@this);
 
                 if (!(seperator is null)) r.Append(seperator);
             }
@@ -766,7 +766,7 @@ namespace Olive
         /// <summary>
         /// Indicates whether this character is categorized as digit.
         /// </summary>
-        public static bool IsDigit(this char character) => char.IsDigit(character);
+        public static bool IsDigit(this char @this) => char.IsDigit(@this);
 
         /// <summary>
         /// Indicates whether this character is categorized as White Space (space, tab, new line, etc).
@@ -922,7 +922,8 @@ namespace Olive
 
             foreach (var key in keywords)
             {
-                if (key.IsEmpty()) throw new ArgumentException($"nameof(keywords) contains a null or empty string element.");
+                if (key.IsEmpty())
+                    throw new ArgumentException($"{nameof(keywords)} contains a null or empty string element.");
 
                 if (@this.Contains(key, caseSensitive))
                     return true;
@@ -1248,11 +1249,11 @@ namespace Olive
         /// <summary>
         /// Returns valid PascalCase JavaScript or C# string content.
         /// </summary>
-        public static string ToPascalCaseId(this string text)
+        public static string ToPascalCaseId(this string @this)
         {
-            if (text.IsEmpty()) return text;
+            if (@this.IsEmpty()) return @this;
 
-            return new PascalCaseIdGenerator(text).Build();
+            return new PascalCaseIdGenerator(@this).Build();
         }
 
         /// <summary>

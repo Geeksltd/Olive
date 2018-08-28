@@ -28,7 +28,7 @@ namespace Olive.Export
             var result = exporter.Generate(Format.Csv);
 
             var file = AppDomain.CurrentDomain.WebsiteRoot().GetOrCreateSubDirectory("--Sql-Profiler")
-                .GetFile(DateTime.Now.ToOADate() + ".csv");
+                .GetFile(LocalTime.Now.ToOADate() + ".csv");
 
             await file.WriteAllTextAsync(result);
 

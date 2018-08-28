@@ -17,9 +17,10 @@ namespace Olive.Entities.Data
 
         internal static Watch Start(string command) => new Watch(command);
 
+        [EscapeGCop("The rule does not apply to this as it's a system level calculation item.")]
         internal static void Complete(Watch watch)
         {
-            watch.Duration = DateTime.Now.Subtract(watch.Start);
+            watch.Duration = DateTime.UtcNow.Subtract(watch.Start);
 
             Watches.Add(watch);
         }
@@ -30,10 +31,11 @@ namespace Olive.Entities.Data
             internal DateTime Start;
             internal TimeSpan Duration;
 
+            [EscapeGCop("The rule does not apply to this as it's a system level calculation item.")]
             public Watch(string command)
             {
                 Command = command.ToLines().ToString(" ");
-                Start = DateTime.Now;
+                Start = DateTime.UtcNow;
             }
         }
 

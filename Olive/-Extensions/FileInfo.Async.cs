@@ -34,10 +34,10 @@ namespace Olive
         /// Gets the entire content of this file.
         /// If the file does not exist, it will return an empty byte array.
         /// </summary>
-        public static async Task<byte[]> ReadAllBytesAsync(this FileInfo file)
+        public static async Task<byte[]> ReadAllBytesAsync(this FileInfo @this)
         {
-            using (await file.GetSyncLock().Lock())
-                return await DoReadAllBytesAsync(file);
+            using (await @this.GetSyncLock().Lock())
+                return await DoReadAllBytesAsync(@this);
         }
 
         static async Task<byte[]> DoReadAllBytesAsync(FileInfo file)
@@ -66,15 +66,15 @@ namespace Olive
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
-        public static Task<string> ReadAllTextAsync(this FileInfo file) => ReadAllTextAsync(file, DefaultEncoding);
+        public static Task<string> ReadAllTextAsync(this FileInfo @this) => ReadAllTextAsync(@this, DefaultEncoding);
 
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
-        public static async Task<string> ReadAllTextAsync(this FileInfo file, Encoding encoding)
+        public static async Task<string> ReadAllTextAsync(this FileInfo @this, Encoding encoding)
         {
-            using (await file.GetSyncLock().Lock())
-            using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (await @this.GetSyncLock().Lock())
+            using (var stream = new FileStream(@this.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var reader = new StreamReader(stream, encoding))
                 return await reader.ReadToEndAsync();
         }
@@ -83,20 +83,20 @@ namespace Olive
         /// Will try to delete a specified directory by first deleting its sub-folders and files.
         /// </summary>
         /// <param name="harshly">If set to true, then it will try multiple times, in case the file is temporarily locked.</param>
-        public static async Task DeleteAsync(this FileInfo file, bool harshly)
+        public static async Task DeleteAsync(this FileInfo @this, bool harshly)
         {
-            if (file == null) return;
+            if (@this == null) return;
 
-            using (await file.GetSyncLock().Lock())
+            using (await @this.GetSyncLock().Lock())
             {
                 var retry = 0;
                 while (true)
                 {
                     try
                     {
-                        if (File.Exists(file.FullName))
+                        if (File.Exists(@this.FullName))
                         {
-                            File.Delete(file.FullName);
+                            File.Delete(@this.FullName);
                             return;
                         }
                     }

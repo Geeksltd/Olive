@@ -12,23 +12,23 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Casts this data table's records into a list of typed objects.        
         /// </summary>
-        public static IEnumerable<T> CastTo<T>(this DataTable dataTable) where T : new() =>
-            CastTo<T>(dataTable, null);
+        public static IEnumerable<T> CastTo<T>(this DataTable @this) where T : new() =>
+            CastTo<T>(@this, null);
 
         /// <summary>
         /// Casts this data table's records into a list of typed objects.
         /// <param name="propertyMappings">An anonymouse object containing property mapping information.
         /// e.g.: new {Property1 = "Property name in CSV", Property2 = "...", set_Property1 = new Func&lt;string, object&gt;(text => Client.Parse(value)) }</param>
         /// </summary>
-        public static IEnumerable<T> CastTo<T>(this DataTable dataTable, object propertyMappings) where T : new() =>
-            CastAsDictionary<T>(dataTable, propertyMappings).Select(i => i.Key).ToList();
+        public static IEnumerable<T> CastTo<T>(this DataTable @this, object propertyMappings) where T : new() =>
+            CastAsDictionary<T>(@this, propertyMappings).Select(i => i.Key).ToList();
 
         /// <summary>
         /// Casts this data table's records into a list of typed objects.
         /// <param name="propertyMappings">An anonymouse object containing property mapping information.
         /// e.g.: new {Property1 = "Property name in CSV", Property2 = "...", set_Property1 = new Func&lt;string, object&gt;(text => Client.Parse(value)) }</param>
         /// </summary>
-        public static Dictionary<T, DataRow> CastAsDictionary<T>(this DataTable data, object propertyMappings) where T : new()
+        public static Dictionary<T, DataRow> CastAsDictionary<T>(this DataTable @this, object propertyMappings) where T : new()
         {
             if (propertyMappings != null)
                 foreach (var p in propertyMappings.GetType().GetProperties())
@@ -46,7 +46,7 @@ namespace Olive.Entities.Data
                     throw new ArgumentException($"Unrecognized value for the property {p.PropertyType} of the specified propertyMappings");
                 }
 
-            var mappings = FindPropertyMappings(typeof(T), data.Columns, propertyMappings);
+            var mappings = FindPropertyMappings(typeof(T), @this.Columns, propertyMappings);
 
             var convertors = new Dictionary<string, Func<string, object>>();
             if (propertyMappings != null)
@@ -55,7 +55,7 @@ namespace Olive.Entities.Data
 
             var result = new Dictionary<T, DataRow>();
 
-            foreach (DataRow record in data.Rows)
+            foreach (DataRow record in @this.Rows)
             {
                 var item = ParseObject<T>(record, mappings, convertors);
                 result.Add(item, record);
@@ -105,7 +105,7 @@ namespace Olive.Entities.Data
                     continue; // Already added in explicit mappings.
 
                 // Otherwise, if a column with that name is available, then that's it:
-                var potential = columnNames.Where(c => c.Replace(" ", "").ToLower() == property.Name.ToLower());
+                var potential = columnNames.Where(c => c.Remove(" ").ToLower() == property.Name.ToLower());
                 if (potential.IsSingle())
                 {
                     result[property.Name] = potential.Single();
@@ -162,21 +162,21 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Gets the CSV data equivalent to this data table.
         /// </summary>
-        public static string ToCSV(this DataTable table)
+        public static string ToCSV(this DataTable @this)
         {
             var result = new StringBuilder();
-            for (var i = 0; i < table.Columns.Count; i++)
+            for (var i = 0; i < @this.Columns.Count; i++)
             {
-                result.Append(table.Columns[i].ColumnName);
-                result.Append(i == table.Columns.Count - 1 ? "\n" : ",");
+                result.Append(@this.Columns[i].ColumnName);
+                result.Append(i == @this.Columns.Count - 1 ? "\n" : ",");
             }
 
-            foreach (DataRow row in table.Rows)
+            foreach (DataRow row in @this.Rows)
             {
-                for (var i = 0; i < table.Columns.Count; i++)
+                for (var i = 0; i < @this.Columns.Count; i++)
                 {
                     result.Append(row[i].ToString());
-                    result.Append(i == table.Columns.Count - 1 ? "\n" : ",");
+                    result.Append(i == @this.Columns.Count - 1 ? "\n" : ",");
                 }
             }
 
@@ -186,14 +186,14 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Gets the rows of this data table in a LINQ-able format..
         /// </summary>
-        public static IEnumerable<DataRow> GetRows(this DataTable dataTable) => dataTable.Rows.Cast<DataRow>();
+        public static IEnumerable<DataRow> GetRows(this DataTable @this) => @this.Rows.Cast<DataRow>();
 
         /// <summary>
         /// Returns a DataTable with columns based on the public properties of type T and the rows
         /// populated with the values in those properties for each item in this IEnumerable.
         /// </summary>
         /// <param name="tableName">Optional name for the DataTable (defaults to the plural of the name of type T).</param>
-        public static DataTable ToDataTable<T>(this IEnumerable<T> items, string tableName = null)
+        public static DataTable ToDataTable<T>(this IEnumerable<T> @this, string tableName = null)
         {
             var properties = typeof(T).GetProperties();
 
@@ -202,7 +202,7 @@ namespace Olive.Entities.Data
             foreach (var property in properties)
                 dataTable.Columns.Add(property.Name);
 
-            foreach (var item in items)
+            foreach (var item in @this)
             {
                 var row = dataTable.NewRow();
 

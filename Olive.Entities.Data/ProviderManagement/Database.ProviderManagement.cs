@@ -9,6 +9,8 @@ namespace Olive.Entities.Data
 {
     partial class Database
     {
+        object DataProviderSyncLock = new object();
+
         [Obsolete("Use Context.Current.Database() instead.", error: true)]
         public static IDatabase Instance => Context.Current.Database();
 
@@ -39,7 +41,6 @@ namespace Olive.Entities.Data
 
         #endregion
 
-        object DataProviderSyncLock = new object();
         public void RegisterDataProviderFactory(DatabaseConfig.Provider factoryInfo)
         {
             if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));

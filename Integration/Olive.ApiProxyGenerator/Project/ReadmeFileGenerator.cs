@@ -93,7 +93,7 @@ namespace Olive.ApiProxy
             r.AppendLine("If you want to create local entity associations to the following types, add the following in your application StartUp (and set your desired cache policy):");
             r.AppendLine();
 
-            r.AppendLine($@"public override void Configure(IApplicationBuilder app, IHostingEnvironment env)");
+            r.AppendLine(@"public override void Configure(IApplicationBuilder app, IHostingEnvironment env)");
             r.AppendLine("{");
             r.AppendLine("...");
             r.AppendLine();

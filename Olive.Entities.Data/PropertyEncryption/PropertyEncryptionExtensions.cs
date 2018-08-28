@@ -5,7 +5,7 @@
 
     public static class PropertyEncryptionExtensions
     {
-        public static void AddPropertyEncryption(this IServiceCollection services, Assembly domainAssembly)
+        public static void AddPropertyEncryption(this IServiceCollection @this, Assembly domainAssembly)
         {
             EncryptedEntityInterceptor.Initialize(domainAssembly);
         }

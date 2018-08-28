@@ -37,10 +37,11 @@ namespace Olive.Entities.Data
                     {
                         if (query.PageSize.HasValue) continue;
 
-                        throw new Exception("Database include binding failed.\n" +
-                            "The loaded associated " + associatedObject.GetType().Name + " with id " + associatedObject.GetId() + "\n" + "is not referenced by any " + Association.DeclaringType.Name + "object!\n\n" +
-                            "All associated " + Association.Name + " Ids are:\n" +
-                            groupedObjects.Select(x => x.Key).ToLinesString());
+                        throw new Exception($@"Database include binding failed.
+The loaded associated {associatedObject.GetType().Name} with the id {associatedObject.GetId()},
+is not referenced by any {Association.DeclaringType.Name} object!
+Hint: All associated {Association.Name} Ids are:
+{groupedObjects.Select(x => x.Key).ToLinesString()}");
                     }
 
                     foreach (var mainEntity in group)

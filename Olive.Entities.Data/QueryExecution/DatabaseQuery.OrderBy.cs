@@ -37,10 +37,11 @@ namespace Olive.Entities.Data
     {
         public IDatabaseQuery<TEntity> ThenBy(Expression<Func<TEntity, object>> property, bool descending = false)
         {
-            var propertyExpression = (property.Body as UnaryExpression)?.Operand as MemberExpression;
-            if (propertyExpression == null || !(propertyExpression.Expression is ParameterExpression))
+            var propertyPath = property.Body.GetPropertyPath();
+            if (propertyPath.IsEmpty() || propertyPath.Contains("."))
                 throw new Exception($"Unsupported OrderBy expression. The only supported format is \"x => x.Property\". You provided: {property}");
-            return this.ThenBy(propertyExpression.Member.Name, descending);
+
+            return this.ThenBy(propertyPath, descending);
         }
 
         public IDatabaseQuery<TEntity> OrderByDescending(Expression<Func<TEntity, object>> property) => OrderBy(property, DESC);

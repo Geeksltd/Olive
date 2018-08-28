@@ -37,7 +37,7 @@ namespace Olive.ApiProxy
             r.AppendLine();
 
             r.AppendLine("/// <summary>Sets the default configuration for instances of this Api proxy.</summary>");
-            r.AppendLine($"public static void DefaultConfig(Action<ApiClient> config)");
+            r.AppendLine("public static void DefaultConfig(Action<ApiClient> config)");
             r.AppendLine("=> DefaultConfiguration = config;");
             r.AppendLine();
 

@@ -27,6 +27,7 @@ namespace Olive.Entities.Data
             Cache.Current.Add(item);
         }
 
+        [EscapeGCop("I am the solution to this GCop warning")]
         async Task<IEntity> FromDatabase(object entityID, Type concreteType)
         {
             var result = await GetProvider(concreteType).Get(entityID);

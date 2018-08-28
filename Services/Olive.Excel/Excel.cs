@@ -126,7 +126,7 @@ namespace Olive.Export
             if (sheets == null || sheets.None())
                 throw new ArgumentException("No excel sheets specified.");
 
-            if (sheets.GroupBy(s => s.DocumentName).Any(x => x.Count() > 1))
+            if (sheets.GroupBy(s => s.DocumentName).Any(x => x.HasMany()))
                 throw new ArgumentException("Sheet names should be unique. At least 2 sheets in the provided list have the same DocumentName.");
 
             var r = new StringBuilder();

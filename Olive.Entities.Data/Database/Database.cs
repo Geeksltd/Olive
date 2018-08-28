@@ -68,9 +68,9 @@ namespace Olive.Entities.Data
                         .FormatWith(typeof(T).Name, instance.GetId()), ex);
                 }
 
-                if (toString == null && objectString == null) return instance;
+                if (toString is null && objectString is null) return instance;
 
-                if (toString == null || objectString == null) continue;
+                if (toString is null || objectString is null) continue;
 
                 if (objectString.Equals(toString, comparison)) return instance;
             }

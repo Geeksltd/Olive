@@ -27,17 +27,10 @@ namespace Olive
             foreach (var item in @this)
             {
                 var sel = selector(item);
-                if (sel == null) continue;
+                if (sel is null) continue;
 
-                try
-                {
-                    var awaited = await sel;
-                    if (awaited != null) result.AddRange(awaited);
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+                var awaited = await sel;
+                if (awaited != null) result.AddRange(awaited);
             }
 
             return result;

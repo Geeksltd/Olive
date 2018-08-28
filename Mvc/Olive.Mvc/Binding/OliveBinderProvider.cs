@@ -23,7 +23,8 @@ namespace Olive.Mvc
             if (modelType.Defines<ModelBinderAttribute>()) return null;
             if (modelType.IsA<IViewModel>())
             {
-                var propertyBinders = GetProperties(context.Metadata).ToDictionary(property => property, context.CreateBinder);
+                var propertyBinders = GetProperties(context.Metadata)
+                    .ToDictionary(property => property, context.CreateBinder);
 
                 return new OliveModelBinder(propertyBinders);
             }

@@ -15,7 +15,7 @@
         internal static void Initialize(Assembly domainAssembly)
         {
             if (EncryptionKey.HasValue())
-                throw new InvalidOperationException($"Inizialize");
+                throw new InvalidOperationException("Inizialize");
 
             EncryptionKey = Config.GetOrThrow("Database:DataEncryption:Key");
 

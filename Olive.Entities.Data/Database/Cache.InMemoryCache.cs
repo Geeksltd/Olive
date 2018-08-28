@@ -62,7 +62,7 @@ namespace Olive.Entities.Data
             }
             catch
             {
-                // A threading issue.
+                // A threading issue. No logging is needed.
                 return DoGet(entityType, id);
             }
 

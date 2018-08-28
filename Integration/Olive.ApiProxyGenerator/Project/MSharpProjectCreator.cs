@@ -8,6 +8,7 @@ namespace Olive.ApiProxy
 
         protected override string Framework => "netcoreapp2.1";
 
+        [EscapeGCop]
         internal override string IconUrl => "http://licensing.msharp.co.uk/images/icon.png";
 
         protected override string[] References => new[] { "Olive", "MSharp" };
