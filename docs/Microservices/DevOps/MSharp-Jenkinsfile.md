@@ -88,6 +88,7 @@ pipeline
                 bat 'nuget sources'
                 powershell 'DevOps/DeleteGCopReferences.ps1'
                 bat 'for /r %%i in (.\\*.config) do (type %%i | find /v "GCop" > %%i_temp && move /y %%i_temp %%i)'
+                bat 'for /r %%i in (.\\*.csproj) do (type %%i | find /v "GCop" > %%i_temp && move /y %%i_temp %%i)'
             }}} 
             
             stage('Restore nuget packages') { steps { bat 'nuget restore' } }
@@ -251,3 +252,17 @@ stage('Add private nuget repo') { steps { script {
                echo "The private repository already exists"
           fi'''
 }}}
+```
+
+### Tip: Changes for .NET Core (Olive) apps
+
+Change the `Compile source` step to the following:
+
+```javascript
+stage('Compile source') { steps  {
+                    script { dir("\\MsharpBuild") { bat 'msbuild' } }
+                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.DSL.exe /build /model %workspace%' } }
+                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /model %workspace%' } }
+                    script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.exe /build /ui %workspace%' } }                
+            }}
+```
