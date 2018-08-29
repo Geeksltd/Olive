@@ -47,7 +47,7 @@ pipeline
     {   
         GIT_REPO_SSH = "..."
         GIT_BRANCH = "master"
-	GIT_CREDENTIALS_ID = "MyApp_CREDENTIALS_ID"
+	GIT_CREDENTIALS_ID = "MyApp_GIT_CREDENTIALS"
               
         DOCKER_REG_URL = "..."
         DOCKER_REG_CREDENTIALS_ID = "ECRCRED"
