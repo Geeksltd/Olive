@@ -19,6 +19,7 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 | `K8S_DEPLOYMENT` | To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. |
+| `DOCKER_BUILD_NODE` | The Jenkins node (server) responsible for creating container images. For .NET Fx projects, use 'master'. For .NET Core apps, use 'LinuxDocker' |
 
 ## Credentials
 
@@ -50,13 +51,14 @@ pipeline
         WEBSITE_DLL_NAME = "..."
         GIT_REPO_SSH = "..."
         GIT_CREDENTIALS_ID = "..."
-        GIT_BRANCH = "..."
+        GIT_BRANCH = "master"
         
         DOCKER_REPO_NAME = "..."
         DOCKER_REG_URL = "..."
         DOCKER_REG_CREDENTIALS_ID = "..."                
-        DOCKER_IMAGE = "${DOCKER_REPO_NAME}:v_${BUILD_NUMBER}" 
-
+        DOCKER_BUILD_NODE = "master"
+	DOCKER_IMAGE = "${DOCKER_REPO_NAME}:v_${BUILD_NUMBER}"
+	
         K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
         K8S_DEPLOYMENT1 = "DevOps/Kubernetes/Deployment.yaml"
@@ -121,10 +123,13 @@ pipeline
                         )'''                        
             }}}}
             
+	    ######## .NET CORE DOCKER-BUILD #######
           
-            stage('Publish as docker image') { steps { script {                            
+	    stage('Docker build') { steps { node(DOCKER_BUILD_NODE) { script { docker.build(DOCKER_IMAGE) } } } }
+	  
+            stage('Publish docker image') { steps { script {                            
                 docker.withRegistry(DOCKER_REG_URL, DOCKER_REG_CREDENTIALS_ID)
-                { docker.build(DOCKER_IMAGE).push(); }
+                { docker.image(DOCKER_IMAGE).push(); }
                             
                 // Using AWS ECR? Wrap the above code in the following.
                 withAWS(credentials:DOCKER_REG_CREDENTIALS_ID)
@@ -181,51 +186,7 @@ pipeline
 | `Publish as docker image` | Builds and pushes the docker image to the docker repository. |
 | `Update K8s deployment file` | Inject the parameters (e.g. build version, the new docker image reference...) into the Kubernetes deployment file. (used to update the Kubernetes cluster). |
 
-## To Replace #### Docker stuff #####
-
-### For .NET Framework 4.X
-If you're using the full .NET framework, then your docker generation code can be simply the continuation of your jenkinsfile. It's because a Windows-based Docker image can be created from Windows (your Jenkins server) directly.
-
-```javascript
-stage('Publish as docker image') { steps { script {                            
-    docker.withRegistry(DOCKER_REG_URL, DOCKER_REG_CREDENTIALS_ID)
-    { docker.build(DOCKER_IMAGE).push(); }
-                
-    // Using AWS ECR? Wrap the above code in the following.
-    withAWS(credentials:DOCKER_REG_CREDENTIALS_ID)
-    {
-        // Workaround (as the ECR Jenkins plugin is faulty):
-        sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
-        ###                     
-    }
-}}}
-
-stage('Update K8s deployment file') { steps { script  {
-     sh ''' sed "s#%DOCKER_IMAGE%#${DOCKER_IMAGE}#g; s#%BUILD_VERSION%#v_${BUILD_NUMBER}#g" < $K8S_DEPLOYMENT > $K8S_DEPLOYMENT '''
-}}}
-
-stage('Deploy to cluster') { steps { script {                    
-     withCredentials([
-         string(credentialsId: K8S_CERT_AUTH_CREDENTIALS_ID, variable: 'K8S_CERT_AUTH'),
-         string(credentialsId: K8S_CLIENT_CERT_CREDENTIALS_ID, variable: 'K8S_CLIENT_CERT'),
-         string(credentialsId: K8S_CLIENT_KEY_CREDENTIALS_ID, variable: 'K8S_CLIENT_KEY')]) 
-     {                        
-          kubernetesDeploy(
-              credentialsType: 'Text',
-              textCredentials: [
-                        serverUrl: K8S_SSH_SERVER,
-                        certificateAuthorityData: K8S_CERT_AUTH,
-                        clientCertificateData: K8S_CLIENT_CERT,
-                        clientKeyData: K8S_CLIENT_KEY,
-              ],
-              configs: K8S_DEPLOYMENT1,
-              enableConfigSubstitution: true,
-          )
-      }
-}}}
-```
-
-### For .NET Core
+## To Replace -> ######## .NET CORE DOCKER-BUILD #######
 If using .NET Core, you will probably want to use a Linux container which is more cost efficient. But to create a Linux dontainer image, you will need a Linux based Jenkins agent server. In that case use the following code:
 
 ```javascript
@@ -238,7 +199,7 @@ stage('Transfer files to Linux')
             stash includes: 'Dockerfile', name: 'Dockerfile'                       
             stash includes: 'Website/publish/**/*', name: 'Website'
         }
-        node('LinuxDocker')
+        node(DOCKER_BUILD_NODE)
         {
              script { cleanWs(); }
              unstash 'Dockerfile'
@@ -246,8 +207,6 @@ stage('Transfer files to Linux')
         }
     }
 }
-			
-stage('Docker build on Linux') { steps { node('LinuxDocker') { script { docker.build(IMAGE); } } } }
 ```
 
 ### Tip: Notifications
