@@ -129,15 +129,7 @@ pipeline
 	  
             stage('Publish docker image') { steps { script {                            
                 docker.withRegistry(DOCKER_REG_URL, DOCKER_REG_CREDENTIALS_ID)
-                { docker.image(DOCKER_IMAGE).push(); }
-                            
-                // Using AWS ECR? Wrap the above code in the following.
-                withAWS(credentials:DOCKER_REG_CREDENTIALS_ID)
-                {
-                    // Workaround (as the ECR Jenkins plugin is faulty):
-                    sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
-                    ###                     
-                }
+                { docker.image(DOCKER_IMAGE).push(); }                 
             }}}
       
             stage('Update K8s deployment file') { steps { script  {
@@ -206,6 +198,18 @@ stage('Transfer files to Linux')
              unstash 'Website'                    
         }
     }
+}
+```
+
+### Using AWS ECR instead of Docker Hub?
+If you are using the AWS Elastic Container Registry service, then in the step of `Publish docker imag` you should wrap the script body in the following code (replace `###` with the contents of the `script` node).
+
+```javascript
+withAWS(credentials:DOCKER_REG_CREDENTIALS_ID)
+{
+    // Workaround (as the ECR Jenkins plugin is faulty):
+    sh("eval \$(aws ecr get-login --no-include-email --region eu-west-1 | sed 's|https://||')")
+    ###
 }
 ```
 
