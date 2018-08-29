@@ -72,9 +72,7 @@ pipeline
     }
     agent any
     stages
-        {   
-            stage('Prepare the server') { steps { dir("\\DevOps\\Jenkins") { bat 'PrepairServer.bat' } } }
-            
+        {            
             stage('Delete prev build folder') { steps { script { deleteDir() } } }
                         
             stage('Git clone sources') { steps { script {
@@ -105,6 +103,8 @@ pipeline
                 }
              }}}
              
+	    stage('Install build tools') { steps { script { ${workspace}/InstallBuildTools.bat } } }
+    	     
             stage('Compile source') { steps  {
                     script { dir("\\MsharpBuild") { bat 'msbuild' } }
                     script { dir("\\MsharpBuild\\Msharp") { bat 'Msharp.DSL.exe /build /model %workspace%' } }
@@ -122,9 +122,7 @@ pipeline
                             exit /b %errorlevel%
                         )'''                        
             }}}}
-            
-	    ######## .NET CORE DOCKER-BUILD #######
-          
+                      
 	    stage('Docker build') { steps { node(DOCKER_BUILD_NODE) { script { docker.build(DOCKER_IMAGE) } } } }
 	  
             stage('Publish docker image') { steps { script {                            
@@ -181,9 +179,27 @@ pipeline
 | `Publish as docker image` | Builds and pushes the docker image to the docker repository. |
 | `Update K8s deployment file` | Inject the parameters (e.g. build version, the new docker image reference...) into the Kubernetes deployment file. (used to update the Kubernetes cluster). |
 
-## To Replace -> ######## .NET CORE DOCKER-BUILD #######
-If using .NET Core, you will probably want to use a Linux container which is more cost efficient. But to create a Linux dontainer image, you will need a Linux based Jenkins agent server. In that case use the following code:
 
+## Using .NET Core (Olive)?
+For Olive apps, apply the following changes:
+
+#### Replace the step `Compile source`:
+```javascript
+stage('Compile source') { steps { script { ${workspace}/Initialize.bat } } }
+```
+#### Replace the step `Verify build`:
+```javascript
+stage('Verify build') { steps { script { dir("Website\\publish") {
+    bat '''if exist "%WEBSITE_DLL_NAME%.dll" (
+        echo Build Succeeded.
+    ) else (
+        echo Build Failed.
+        exit /b %errorlevel%
+    )'''
+}}}}
+```
+
+#### Insert before step `Docker build`:
 ```javascript
 stage('Transfer files to Linux')
 {
@@ -203,6 +219,7 @@ stage('Transfer files to Linux')
     }
 }
 ```
+If using .NET Core, you will probably want to use a Linux container which is more cost efficient. But to create a Linux dontainer image, you will need a Linux based Jenkins agent server.
 
 ### Using AWS ECR instead of Docker Hub?
 If you are using the AWS Elastic Container Registry service, then in the step of `Publish docker imag` you should wrap the script body in the following code (replace `###` with the contents of the `script` node).
@@ -289,22 +306,3 @@ stage('Add private nuget repo') { steps { script {
 }}}
 ```
 
-### Tip: Changes for .NET Core (Olive) apps
-For Olive apps, change the `Compile source` step to the following:
-
-```javascript
-stage('Compile source') { steps  { script { dir("\\DevOps\\Jenkins") { bat 'Build.bat' } } } }
-```
-Make sure to include the [Build.bat file](Example-build.bat.md) in your source repository under `DevOps\Jenkins` folder.
-
-Also, change the `Verify build` step to the following
-```javascript
-stage('Verify build') { steps { script { dir("Website\\publish") {
-    bat '''if exist "%WEBSITE_DLL_NAME%.dll" (
-        echo Build Succeeded.
-    ) else (
-        echo Build Failed.
-        exit /b %errorlevel%
-    )'''
-}}}}
-```
