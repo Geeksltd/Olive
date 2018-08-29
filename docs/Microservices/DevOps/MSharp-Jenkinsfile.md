@@ -219,6 +219,22 @@ stage('Transfer files to Linux')
 ```
 If using .NET Core, you will probably want to use a Linux container which is more cost efficient. But to create a Linux dontainer image, you will need a Linux based Jenkins agent server.
 
+### Tip: Private NuGet repository
+In a microservice-based architecture, it's common to have a private nuget repository for storing microservice-specific api packages. By default, only `nuget.org` is configured as a nuget source.
+
+So you will need to introduce your private nuget source to your Jenkins server. This can be considered a `server preparation` step.
+
+```javascript
+stage('Add private nuget repo') { steps { script {
+    sh '''if [[ ! $(nuget sources) = *"${PRIVATE_NUGET_REPO}"* ]]; then 
+          nuget sources Add -Name "${PRIVATE_NUGET_REPO}" -Source ${PRIVATE_NUGET_REPO} 
+               echo "Installed the private repository"
+          else
+               echo "The private repository already exists"
+          fi'''
+}}}
+```
+
 ### Using AWS ECR instead of Docker Hub?
 If you are using the AWS Elastic Container Registry service, then in the step of `Publish docker imag` you should wrap the script body in the following code (replace `###` with the contents of the `script` node).
 
@@ -288,19 +304,4 @@ Just like a git repository, you should avoid adding unnecessary files to your do
 - To avoid copying everything, use `.dockerignore` files which have the same pattern as `.gitignore`.
 - One of the most import folders you need to ignore is `node_modules` which is too large large.
 
-### Tip: Private NuGet repository
-In a microservice-based architecture, it's common to have a private nuget repository for storing microservice-specific api packages. By default, only `nuget.org` is configured as a nuget source.
-
-So you will need to introduce your private nuget source to your Jenkins server. This can be considered a `server preparation` step.
-
-```javascript
-stage('Add private nuget repo') { steps { script {
-    sh '''if [[ ! $(nuget sources) = *"${PRIVATE_NUGET_REPO}"* ]]; then 
-          nuget sources Add -Name "${PRIVATE_NUGET_REPO}" -Source ${PRIVATE_NUGET_REPO} 
-               echo "Installed the private repository"
-          else
-               echo "The private repository already exists"
-          fi'''
-}}}
-```
 
