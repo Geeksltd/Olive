@@ -12,7 +12,7 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_REPO_SSH` | The SSH address of the git repository. |
 | `GIT_BRANCH` | The name of the branch that will be used to build and deploy the application. |
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
-| `WEBSITE_DLL_NAME` | The name of the website compiliation output. For .NET Core apps it's usually just `Website` |
+| `WEBSITE_DLL` | The relative path of the website compiliation output. |
 | `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 | `K8S_DEPLOYMENT` | To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. |
@@ -54,7 +54,7 @@ pipeline
         DOCKER_BUILD_NODE = "master"
 	DOCKER_IMAGE = "MyApp:v_${BUILD_NUMBER}"
 	
-	WEBSITE_DLL_NAME = "MyApp.Website.dll"
+	WEBSITE_DLL = "bin\\MyApp.Website.dll" // For Olive apps, use: Publish\\Website.dll
 	
         K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
@@ -112,7 +112,7 @@ pipeline
             stage('Publish website') { steps { script { dir("Website") { bat 'MSBuild' }}}}
             
             stage('Verify build') { steps { script { dir("Website") {
-                 bat '''if exist "bin\\%WEBSITE_DLL_NAME%.dll" (
+                 bat '''if exist "%WEBSITE_DLL%" (
                             echo Build Succeeded.
                         ) else (
                             echo Build Failed.
@@ -183,17 +183,6 @@ For Olive apps, apply the following changes:
 #### Replace the step `Compile source`:
 ```javascript
 stage('Compile source') { steps { script { ${workspace}/Initialize.bat } } }
-```
-#### Replace the step `Verify build`:
-```javascript
-stage('Verify build') { steps { script { dir("Website\\publish") {
-    bat '''if exist "%WEBSITE_DLL_NAME%.dll" (
-        echo Build Succeeded.
-    ) else (
-        echo Build Failed.
-        exit /b %errorlevel%
-    )'''
-}}}}
 ```
 
 #### Insert before step `Docker build`:
