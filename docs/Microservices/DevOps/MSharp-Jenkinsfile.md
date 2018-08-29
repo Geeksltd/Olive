@@ -112,12 +112,7 @@ pipeline
             stage('Publish website') { steps { script { dir("Website") { bat 'MSBuild' }}}}
             
             stage('Verify build') { steps { script { dir("Website") {
-                 bat '''if exist "%WEBSITE_DLL%" (
-                            echo Build Succeeded.
-                        ) else (
-                            echo Build Failed.
-                            exit /b %errorlevel%
-                        )'''                        
+                 bat '''if exist "%WEBSITE_DLL%" ( echo Build Succeeded. ) else ( echo Build Failed. && exit /b %errorlevel%)'''                        
             }}}}
                       
 	    stage('Docker build') { steps { node(DOCKER_BUILD_NODE) { script { docker.build(DOCKER_IMAGE) } } } }
