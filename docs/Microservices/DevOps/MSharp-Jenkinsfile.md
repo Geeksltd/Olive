@@ -1,5 +1,3 @@
-# TODO: Remove the [old file and merge with this](Old-Jenkinsfile.md).
----
 
 # Jenkinsfile for M# ASP.NET apps
 
