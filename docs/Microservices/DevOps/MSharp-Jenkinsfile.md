@@ -12,8 +12,7 @@ The [Jenkins.md](Jenkins.md) describes the build process in details. This docume
 | `GIT_REPO_SSH` | The SSH address of the git repository. |
 | `GIT_BRANCH` | The name of the branch that will be used to build and deploy the application. |
 | `GIT_CREDENTIALS_ID` | The ID of the SSH credentials record in Jenkins. The details will be provided below. |
-| `WEBSITE_DLL_NAME` | The name of the website compiliation output. |
-| `DOCKER_REPO_NAME`  | The name of the container repo on the container registry, where the docker images will be stored. |
+| `WEBSITE_DLL_NAME` | The name of the website compiliation output. For .NET Core apps it's usually just `Website` |
 | `DOCKER_REG_URL` | If using Docker Hub, set to "". Otherwise (e.g. if using AWS ECR, the url of the AWS container registry. |
 | `K8S_SSH_SERVER`  | The url of the cluster. Can be found in the kubernetes config file in ~/.kube/.config  |
 | `K8S_DEPLOYMENT` | To connect to Kubernetes you need to extract the certificate information of the user credentials, which is stored in `~/.kube/config`. |
@@ -46,16 +45,16 @@ pipeline
 {
     environment 
     {   
-        WEBSITE_DLL_NAME = "..."
         GIT_REPO_SSH = "..."
-        GIT_CREDENTIALS_ID = "..."
         GIT_BRANCH = "master"
-        
-        DOCKER_REPO_NAME = "..."
+	GIT_CREDENTIALS_ID = "MyApp_CREDENTIALS_ID"
+              
         DOCKER_REG_URL = "..."
         DOCKER_REG_CREDENTIALS_ID = "..."                
         DOCKER_BUILD_NODE = "master"
-	DOCKER_IMAGE = "${DOCKER_REPO_NAME}:v_${BUILD_NUMBER}"
+	DOCKER_IMAGE = "MyApp:v_${BUILD_NUMBER}"
+	
+	WEBSITE_DLL_NAME = "MyApp.Website.dll"
 	
         K8S_SSH_SERVER = "..."
         K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
