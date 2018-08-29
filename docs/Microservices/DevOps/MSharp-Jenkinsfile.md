@@ -160,8 +160,11 @@ pipeline
     {
         always
         {
-            // Remove the Docker image
-            sh "docker rmi $IMAGE | true"
+	    node(DOCKER_BUILD_NODE)
+            {
+                // Remove the Docker image
+                sh "docker rmi $IMAGE | true"
+	    }
         }
     }
 }
