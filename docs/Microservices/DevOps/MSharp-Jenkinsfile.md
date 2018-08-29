@@ -50,7 +50,7 @@ pipeline
 	GIT_CREDENTIALS_ID = "MyApp_CREDENTIALS_ID"
               
         DOCKER_REG_URL = "..."
-        DOCKER_REG_CREDENTIALS_ID = "..."                
+        DOCKER_REG_CREDENTIALS_ID = "ECRCRED"
         DOCKER_BUILD_NODE = "master"
 	DOCKER_IMAGE = "MyApp:v_${BUILD_NUMBER}"
 	
@@ -60,9 +60,9 @@ pipeline
         K8S_DEPLOYMENT = ".\\DevOps\\Kubernetes\\Deployment.yaml"        
         K8S_DEPLOYMENT1 = "DevOps/Kubernetes/Deployment.yaml"
         
-        K8S_CERT_AUTH_CREDENTIALS_ID = "..."
-        K8S_CLIENT_CERT_CREDENTIALS_ID = "..."
-        K8S_CLIENT_KEY_CREDENTIALS_ID = "..."
+        K8S_CERT_AUTH_CREDENTIALS_ID = "K8sCertificateAuthorityData"
+        K8S_CLIENT_CERT_CREDENTIALS_ID = "K8sClientCertificateData"
+        K8S_CLIENT_KEY_CREDENTIALS_ID = "K8sClientKeyData"
         
         PATH = "C:\\Nuget;C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin\\;$PATH"
         CONNECTION_STRING = credentials('#CONNECTION_STRING_CREDENTIALS_ID#');
