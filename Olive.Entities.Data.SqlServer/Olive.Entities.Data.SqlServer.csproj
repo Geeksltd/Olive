@@ -10,7 +10,8 @@
   </PropertyGroup>
  
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="1.2.3" />
+    <PackageReference Include="GCop.All.Geeks" Version="1.2.6" />
+    <PackageReference Include="GCop.UAT" Version="1.2.6" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
   </ItemGroup>
 

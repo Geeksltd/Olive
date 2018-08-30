@@ -42,36 +42,44 @@ namespace Olive
             return name;
         }
 
-        public static string GetDatabaseColumnPath(this MemberExpression @this)
+        public static PropertyInfo[] GetPropertiesInPath(this MemberExpression @this)
         {
+            var empty = new PropertyInfo[0];
+
             // Handle the member:
             var property = @this.Member as PropertyInfo;
-            if (property == null) return null;
+            if (property == null) return empty;
 
             // Fix for overriden properties:
             try { property = @this.Expression.Type.GetProperty(property.Name) ?? property; }
             catch { }
 
-            if (CalculatedAttribute.IsCalculated(property)) return null;
+            if (CalculatedAttribute.IsCalculated(property)) return empty;
 
-            if (@this.Expression.IsSimpleParameter()) return GetColumnName(property);
+            if (@this.Expression.IsSimpleParameter()) return new[] { property };
 
             if (@this.Expression is MemberExpression exp)
             {
                 // The expression is itself a member of something.
-                var parentProperty = exp.GetDatabaseColumnPath();
-                if (parentProperty == null) return null;
+                var parentProperty = exp.GetPropertiesInPath();
+                if (parentProperty.None()) return empty;
 
-                return $"{parentProperty}.{GetColumnName(property)}";
+                return parentProperty.Concat(property).ToArray();
             }
 
-            if (@this.Expression.Type.IsNullable())
-            {
-                return GetColumnName(property);
-            }
-            if (!property.DeclaringType.Implements<IEntity>()) return null;
+            if (@this.Expression.Type.IsNullable()) return new[] { property };
 
-            return null;
+            return empty;
+        }
+
+        public static string GetDatabaseColumnPath(this MemberExpression @this)
+        {
+            var path = @this.GetPropertiesInPath();
+            if (path.None()) return null;
+
+            if (path.ExceptLast().Any(x => !x.PropertyType.Implements<IEntity>())) return null;
+
+            return path.Select(GetColumnName).ToString(".");
         }
     }
 }
