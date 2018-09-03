@@ -18,28 +18,30 @@ namespace Olive.Mvc.Testing
         {
             config.Add("dbChanges", () => DatabaseChangeWatcher.DispatchChanges());
 
-            async Task<bool> startDatabase(bool shouldRedirect = false)
-            {
-                var redirect = Context.Current.Request().ToAbsoluteUri().AsUri().RemoveQueryString("Web.Test.Command").ToString();
-
-                WebTestConfig.SetRunner();
-                await TempDatabase.Restart();
-
-                if (shouldRedirect)
-                {
-                    Debug.WriteLine("All done. Redirecting to: " + redirect);
-                    Context.Current.Response().Redirect(redirect);
-                }
-
-                return shouldRedirect;
-            }
-
             foreach (var command in new[] { "start", "run", "ran", "cancel" })
-                config.Add(command, () => startDatabase());
+                config.Add(command, () => StartDatabase());
 
-            config.Add("restart", () => startDatabase(shouldRedirect: true), "Restart DB");
+            config.Add("restart", () => StartDatabase(shouldRedirect: true), "Restart DB");
+
+            config.Add("runChanges", () => DatabaseChangeWatcher.RunChanges());
 
             return config;
+        }
+
+        static async Task<bool> StartDatabase(bool shouldRedirect = false)
+        {
+            var redirect = Context.Current.Request().ToAbsoluteUri().AsUri().RemoveQueryString("Web.Test.Command").ToString();
+
+            WebTestConfig.SetRunner();
+            await TempDatabase.Restart();
+
+            if (shouldRedirect)
+            {
+                Debug.WriteLine("All done. Redirecting to: " + redirect);
+                Context.Current.Response().Redirect(redirect);
+            }
+
+            return shouldRedirect;
         }
 
         internal static IDevCommandsConfig AddClearDatabaseCache(this IDevCommandsConfig config)

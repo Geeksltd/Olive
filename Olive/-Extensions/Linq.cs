@@ -19,16 +19,16 @@ namespace Olive
             return ToString(@this.Cast<object>(), seperator);
         }
 
-        public static async Task<string> ToString(this Task<IEnumerable> @this, string seperator)
+        public static Task<string> ToString(this Task<IEnumerable> @this, string seperator)
         {
-            if (@this == null) return "{NULL}";
-            return (await @this)?.ToString(seperator);
+            if (@this == null) return Task.FromResult("{NULL}");
+            return @this.Get(x => x.ToString(seperator));
         }
 
-        public static async Task<string> ToString<T>(this Task<IEnumerable<T>> @this, string seperator)
+        public static Task<string> ToString<T>(this Task<IEnumerable<T>> @this, string seperator)
         {
-            if (@this == null) return "{NULL}";
-            return (await @this)?.ToString(seperator);
+            if (@this == null) return Task.FromResult("{NULL}");
+            return @this.Get(x => x.ToString(seperator));
         }
 
         public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string seperator, string lastSeperator) =>

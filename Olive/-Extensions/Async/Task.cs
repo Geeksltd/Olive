@@ -114,20 +114,19 @@ namespace Olive
             if (await Task.WhenAny(@this, Task.Delay(timeout)) == @this)
             {
                 success?.Invoke();
-                await @this;
-                return @this.GetAwaiter().GetResult();
+                return @this.GetAlreadyCompletedResult();
             }
 
-            else
-            {
-                if (timeoutAction == null) throw new TimeoutException("The task didn't complete within " + timeout + "ms");
-                else { return timeoutAction(); }
-            }
+            if (timeoutAction == null)
+                throw new TimeoutException("The task didn't complete within " + timeout + "ms");
+            else return timeoutAction();
         }
 
-        public static async Task<List<T>> ToList<T>(this Task<IEnumerable<T>> @this) => (await @this).ToList();
+        public static Task<List<T>> ToList<T>(this Task<IEnumerable<T>> @this)
+            => @this.Get(x => x.OrEmpty().ToList());
 
-        public static async Task<T[]> ToArray<T>(this Task<IEnumerable<T>> @this) => (await @this).ToArray();
+        public static Task<T[]> ToArray<T>(this Task<IEnumerable<T>> @this)
+            => @this.Get(x => x.OrEmpty().ToArray());
 
         public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> @this)
             => await Task.WhenAll(@this);
@@ -174,8 +173,12 @@ namespace Olive
         /// A shorter more readable alternative to ContinueWith().
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task<TResult> Get<TSource, TResult>(this Task<TSource> @this, Func<TSource, TResult> expression)
-            => expression(await @this.ConfigureAwait(continueOnCapturedContext: false));
+        public static async Task<TResult> Get<TSource, TResult>(this Task<TSource> @this,
+            Func<TSource, TResult> expression)
+        {
+            if (@this == null) return expression(default(TSource));
+            return expression(await @this.ConfigureAwait(continueOnCapturedContext: false));
+        }
 
         /// <summary>
         /// A shorter more readable alternative to nested ContinueWith() methods.

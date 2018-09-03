@@ -174,10 +174,10 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<TSource[]> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static async Task<IEnumerable<TResult>> Cast<TResult>(this Task<Array> @this)
-            => (await @this)?.Cast<TResult>();
+        public static Task<IEnumerable<TResult>> Cast<TResult>(this Task<Array> @this)
+          => @this.Get(x => x.Cast<TResult>());
 
-        public static async Task<IEnumerable<TResult>> OfType<TResult>(this Task<Array> @this)
-            => (await @this)?.OfType<TResult>();
+        public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<Array> @this)
+            => @this.Get(x => x.OfType<TResult>());
     }
 }

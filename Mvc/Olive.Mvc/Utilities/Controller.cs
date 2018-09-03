@@ -78,15 +78,6 @@ namespace Olive.Mvc
         /// </summary>
         public new HttpContext HttpContext => base.HttpContext ?? Context.Current.Http();
 
-        /// <summary>
-        /// Creates a new instance of the specified view model type and binds it using the standard request data.
-        /// </summary>
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-        {
-            await BindAttributeRunner.Run(context);
-            await base.OnActionExecutionAsync(context, next);
-        }
-
         public override async Task<bool> TryUpdateModelAsync<TModel>(TModel model)
         {
             var result = await base.TryUpdateModelAsync(model);

@@ -16,219 +16,246 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, TResult> func)
-            => (await @this).OrEmpty().Select(func);
+            => @this.Get(x => x.OrEmpty().Select(func));
 
-        public static async Task<IEnumerable<TResult>> Select<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<TResult>> func)
-            => await (await @this).OrEmpty().Select(func).AwaitAll();
+            => @this.Get(x => x.OrEmpty().Select(func).AwaitAll());
 
-        public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<TResult>> func)
-            => (await @this).OrEmpty().SelectMany(func);
+            => @this.Get(x => x.OrEmpty().SelectMany(func));
 
-        public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<Task<TResult>>> func)
-            => await (await @this).OrEmpty().SelectMany(func).AwaitAll();
+            => @this.Get(x => x.OrEmpty().SelectMany(func).AwaitAll());
 
-        public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<IEnumerable<TResult>>> func)
-            => await (await @this).OrEmpty().Select(func).AwaitAll().SelectMany(x => x);
+            => @this.Get(x => x.OrEmpty().Select(func).AwaitAll().SelectMany(v => v));
 
-        public static async Task<IEnumerable<TSource>> Except<TSource>(
+        public static Task<IEnumerable<TSource>> Except<TSource>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().Except(func);
+            => @this.Get(x => x.OrEmpty().Except(func));
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(
+         this Task<IEnumerable<TSource>> @this, Func<TSource, Task<bool>> func)
+           => @this.Get(x => x.OrEmpty().Except(func));
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(
+        this Task<IEnumerable<TSource>> @this, IEnumerable<TSource> exclusion)
+          => @this.Get(x => x.OrEmpty().Except(exclusion));
 
         public static Task<IEnumerable<TSource>> ExceptNull<TSource>(
          this Task<IEnumerable<TSource>> @this) => @this.Where(x => !ReferenceEquals(x, null));
 
-        public static async Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IEnumerable<TSource>> @this)
-            => (await @this).OrEmpty().Cast<TResult>();
+        public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.OrEmpty().Cast<TResult>());
 
-        public static async Task<IEnumerable<TSource>> Concat<TSource>(
+        public static Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<IEnumerable<TSource>> @this, IEnumerable<TSource> second)
-            => (await @this).OrEmpty().Concat(second);
+            => @this.Get(x => x.OrEmpty().Concat(second));
 
-        public static async Task<IEnumerable<TSource>> Concat<TSource>(
+        public static Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<IEnumerable<TSource>> @this, TSource item)
-            => (await @this).OrEmpty().Concat(item);
+            => @this.Get(x => x.OrEmpty().Concat(item));
 
-        public static async Task<IEnumerable<TSource>> Distinct<TSource>(
-          this Task<IEnumerable<TSource>> @this) => (await @this).OrEmpty().Distinct();
+        public static Task<IEnumerable<TSource>> Distinct<TSource>(
+          this Task<IEnumerable<TSource>> @this) => @this.Get(x => x.OrEmpty().Distinct());
 
-        public static async Task<IEnumerable<TSource>> Distinct<TSource, TResult>(
+        public static Task<IEnumerable<TSource>> Distinct<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, TResult> func)
-            => (await @this).OrEmpty().Distinct(func);
+            => @this.Get(x => x.OrEmpty().Distinct(func));
 
-        public static async Task<TSource> First<TSource>(
+        public static Task<TSource> First<TSource>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().First(func);
+            => @this.Get(x => x.OrEmpty().First(func));
 
-        public static async Task<TSource> FirstOrDefault<TSource>(
+        public static Task<TSource> FirstOrDefault<TSource>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().FirstOrDefault(func);
+            => @this.Get(x => x.OrEmpty().FirstOrDefault(func));
 
         public static Task<TSource> First<TSource>(this Task<IEnumerable<TSource>> @this)
-        {
-            return @this.First(x => true);
-        }
+            => @this.Get(x => x.OrEmpty().First());
 
         public static Task<TSource> FirstOrDefault<TSource>(this Task<IEnumerable<TSource>> @this)
-        {
-            return @this.FirstOrDefault(x => true);
-        }
+            => @this.Get(x => x.OrEmpty().FirstOrDefault());
 
-        public static async Task<IEnumerable<TSource>> Intersect<TSource>(
+        public static Task<IEnumerable<TSource>> Intersect<TSource>(
         this Task<IEnumerable<TSource>> @this, IEnumerable<TSource> second)
-            => (await @this).OrEmpty().Intersect(second);
+            => @this.Get(x => x.OrEmpty().Intersect(second));
 
-        public static async Task<TSource> Last<TSource>(
+        public static Task<TSource> Last<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().Last(func);
+            => @this.Get(x => x.OrEmpty().Last(func));
 
-        public static async Task<TSource> LastOrDefault<TSource>(
+        public static Task<TSource> LastOrDefault<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().LastOrDefault(func);
+            => @this.Get(x => x.OrEmpty().LastOrDefault(func));
 
-        public static async Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, TKey> func)
-            => (await @this).OrEmpty().OrderBy(func);
+            => @this.Get(x => x.OrEmpty().OrderBy(func));
 
-        public static async Task<IOrderedEnumerable<TSource>> OrderByDescending<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderByDescending<TSource, TKey>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, TKey> func)
-            => (await @this).OrEmpty().OrderByDescending(func);
+            => @this.Get(x => x.OrEmpty().OrderByDescending(func));
 
-        public static async Task<IEnumerable<TSource>> Reverse<TSource>(
-        this Task<IEnumerable<TSource>> @this) => (await @this).OrEmpty().Reverse();
+        public static Task<IEnumerable<TSource>> Reverse<TSource>(
+        this Task<IEnumerable<TSource>> @this) => @this.Get(x => x.OrEmpty().Reverse());
 
-        public static async Task<TSource> Single<TSource>(
+        public static Task<TSource> Single<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().Single(func);
+            => @this.Get(x => x.OrEmpty().Single(func));
 
-        public static async Task<TSource> SingleOrDefault<TSource>(
+        public static Task<TSource> SingleOrDefault<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().SingleOrDefault(func);
+            => @this.Get(x => x.OrEmpty().SingleOrDefault(func));
 
-        public static async Task<IEnumerable<TSource>> Union<TSource>(
+        public static Task<IEnumerable<TSource>> Union<TSource>(
         this Task<IEnumerable<TSource>> @this, IEnumerable<TSource> second)
-            => (await @this).OrEmpty().Union(second);
+            => @this.Get(x => x.OrEmpty().Union(second));
 
-        public static async Task<IEnumerable<TSource>> Where<TSource>(
+        public static Task<IEnumerable<TSource>> Where<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().Where(func);
+            => @this.Get(x => x.OrEmpty().Where(func));
 
-        public static async Task<IEnumerable<TSource>> Where<TSource>(
+        public static Task<IEnumerable<TSource>> Where<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, int, bool> func)
-            => (await @this).OrEmpty().Where(func);
+            => @this.Get(x => x.OrEmpty().Where(func));
 
-        public static async Task<IEnumerable<TResult>> Zip<TSource, TSecond, TResult>(
+        public static Task<IEnumerable<TResult>> Zip<TSource, TSecond, TResult>(
         this Task<IEnumerable<TSource>> @this, IEnumerable<TSecond> second, Func<TSource, TSecond, TResult> func)
-            => (await @this).OrEmpty().Zip(second, func);
+            => @this.Get(x => x.OrEmpty().Zip(second, func));
 
-        public static async Task<IEnumerable<TSource>> Skip<TSource>(
-        this Task<IEnumerable<TSource>> @this, int count) => (await @this).OrEmpty().Skip(count);
+        public static Task<IEnumerable<TSource>> Skip<TSource>(
+        this Task<IEnumerable<TSource>> @this, int count) => @this.Get(x => x.OrEmpty().Skip(count));
 
-        public static async Task<IEnumerable<TSource>> SkipWhile<TSource>(
+        public static Task<IEnumerable<TSource>> SkipWhile<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().SkipWhile(func);
+            => @this.Get(x => x.OrEmpty().SkipWhile(func));
 
-        public static async Task<IEnumerable<TSource>> SkipWhile<TSource>(
+        public static Task<IEnumerable<TSource>> SkipWhile<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, int, bool> func)
-            => (await @this).OrEmpty().SkipWhile(func);
+            => @this.Get(x => x.OrEmpty().SkipWhile(func));
 
-        public static async Task<IEnumerable<TSource>> Take<TSource>(
+        public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<IEnumerable<TSource>> @this, int count)
-            => (await @this).OrEmpty().Take(count);
+            => @this.Get(x => x.OrEmpty().Take(count));
 
-        public static async Task<IEnumerable<TSource>> Take<TSource>(
+        public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<IEnumerable<TSource>> @this, int lower, int count)
-            => (await @this).OrEmpty().Take(lower, count);
+            => @this.Get(x => x.OrEmpty().Take(lower, count));
 
-        public static async Task<IEnumerable<TSource>> TakeWhile<TSource>(
+        public static Task<IEnumerable<TSource>> TakeWhile<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().TakeWhile(func);
+            => @this.Get(x => x.OrEmpty().TakeWhile(func));
 
-        public static async Task<IEnumerable<TSource>> TakeWhile<TSource>(
+        public static Task<IEnumerable<TSource>> TakeWhile<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, int, bool> func)
-            => (await @this).OrEmpty().TakeWhile(func);
+            => @this.Get(x => x.OrEmpty().TakeWhile(func));
 
-        public static async Task<TSource> Aggregate<TSource>(
+        public static Task<TSource> Aggregate<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, TSource, TSource> func)
-            => (await @this).OrEmpty().Aggregate(func);
+            => @this.Get(x => x.OrEmpty().Aggregate(func));
 
-        public static async Task<TAccumulate> Aggregate<TSource, TAccumulate>(
+        public static Task<TAccumulate> Aggregate<TSource, TAccumulate>(
         this Task<IEnumerable<TSource>> @this, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
-            => (await @this).OrEmpty().Aggregate(seed, func);
+            => @this.Get(x => x.OrEmpty().Aggregate(seed, func));
 
-        public static async Task<TResult> Aggregate<TSource, TAccumulate, TResult>(
-        this Task<IEnumerable<TSource>> @this, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func1, Func<TAccumulate, TResult> func2) => (await @this).OrEmpty().Aggregate(seed, func1, func2);
+        public static Task<TResult> Aggregate<TSource, TAccumulate, TResult>(
+        this Task<IEnumerable<TSource>> @this, TAccumulate seed,
+        Func<TAccumulate, TSource, TAccumulate> func1,
+        Func<TAccumulate, TResult> func2)
+            => @this.Get(x => x.OrEmpty().Aggregate(seed, func1, func2));
 
-        public static async Task<bool> All<TSource>(
+        public static Task<bool> All<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().All(func);
+            => @this.Get(x => x.OrEmpty().All(func));
 
-        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this)
-            => (await @this).OrEmpty().Any();
+        public static Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.OrEmpty().Any());
 
-        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().Any(func);
+        public static Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this,
+            Func<TSource, bool> func)
+            => @this.Get(x => x.OrEmpty().Any(func));
 
-        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, Task<bool>> func)
-            => await (await @this).OrEmpty().Any(func);
+        public static Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this,
+            Func<TSource, Task<bool>> func)
+            => @this.Get(x => x.OrEmpty().Any(func));
 
-        public static async Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, int, bool> func)
-            => (await @this).OrEmpty().Any(func);
+        public static Task<bool> Any<TSource>(this Task<IEnumerable<TSource>> @this,
+            Func<TSource, int, bool> func)
+            => @this.Get(x => x.OrEmpty().Any(func));
 
-        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this)
-          => (await @this).OrEmpty().None();
+        public static Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this)
+          => @this.Get(x => x.OrEmpty().None());
 
-        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().None(func);
+        public static Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this,
+            Func<TSource, bool> func)
+            => @this.Get(x => x.OrEmpty().None(func));
 
-        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, Task<bool>> func)
-            => await (await @this).OrEmpty().None(func);
+        public static Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this,
+            Func<TSource, Task<bool>> func)
+            => @this.Get(x => x.OrEmpty().None(func));
 
-        public static async Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, int, bool> func)
-            => (await @this).OrEmpty().None(func);
+        public static Task<bool> None<TSource>(this Task<IEnumerable<TSource>> @this,
+            Func<TSource, int, bool> func)
+            => @this.Get(x => x.OrEmpty().None(func));
 
-        public static async Task<bool> Contains<TSource>(this Task<IEnumerable<TSource>> @this, TSource item)
-            => (await @this).OrEmpty().Contains(item);
+        public static Task<bool> Contains<TSource>(this Task<IEnumerable<TSource>> @this, TSource item)
+            => @this.Get(x => x.OrEmpty().Contains(item));
 
-        public static async Task<bool> Contains<TSource>(this Task<IEnumerable<TSource>> @this, Task<TSource> item)
-            => (await @this).OrEmpty().Contains(await item);
+        public static Task<bool> Contains<TSource>(this Task<IEnumerable<TSource>> @this,
+            Task<TSource> item)
+            => @this.Get(x => x.OrEmpty().Contains(item));
 
-        public static async Task<decimal> Average<TSource>(this Task<IEnumerable<TSource>> @this, Func<TSource, decimal> func)
-            => (await @this).OrEmpty().Average(func);
+        public static Task<decimal> Average<TSource>(this Task<IEnumerable<TSource>> @this,
+            Func<TSource, decimal> func)
+            => @this.Get(x => x.OrEmpty().Average(func));
 
-        public static async Task<int> Count<TSource>(
+        public static Task<int> Count<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
-            => (await @this).OrEmpty().Count(func);
+            => @this.Get(x => x.OrEmpty().Count(func));
 
-        public static async Task<int> Count<TSource>(
+        public static Task<int> Count<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, int, bool> func)
-            => (await @this).OrEmpty().Count(func);
+            => @this.Get(x => x.OrEmpty().Count(func));
 
-        public static async Task<decimal> Sum<TSource>(
+        public static Task<decimal> Sum<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, decimal> func)
-            => (await @this).OrEmpty().Sum(func);
+            => @this.Get(x => x.OrEmpty().Sum(func));
 
-        public static async Task<TimeSpan> Sum<TSource>(
+        public static Task<TimeSpan> Sum<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, TimeSpan> func)
-            => (await @this).OrEmpty().Sum(func);
+            => @this.Get(x => x.OrEmpty().Sum(func));
 
-        public static async Task<TResult> Max<TSource, TResult>(
+        public static Task<TResult> Max<TSource, TResult>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, TResult> func)
-            => (await @this).OrEmpty().Max(func);
+            => @this.Get(x => x.OrEmpty().Max(func));
 
-        public static async Task<TResult> Min<TSource, TResult>(
+        public static Task<TResult> Min<TSource, TResult>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, TResult> func)
-            => (await @this).OrEmpty().Min(func);
+            => @this.Get(v => v.OrEmpty().Min(func));
 
-        public static async Task<IEnumerable<TResult>> Cast<TResult>(this Task<IEnumerable> @this)
-            => (await @this).Cast<TResult>();
+        /// <summary>
+        /// Selects the item with minimum of the specified value.
+        /// </summary>
+        public static Task<T> WithMin<T, TKey>(this Task<IEnumerable<T>> @this, Func<T, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMin(keySelector));
 
-        public static async Task<IEnumerable<TResult>> OfType<TResult>(this Task<IEnumerable> @this)
-            => (await @this).OfType<TResult>();
+        /// <summary>
+        /// Selects the item with maximum of the specified value.
+        /// </summary>
+        public static Task<T> WithMax<T, TKey>(this Task<IEnumerable<T>> @this, Func<T, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMax(keySelector));
+
+        public static Task<IEnumerable<TResult>> Cast<TResult>(this Task<IEnumerable> @this)
+            => @this.Get(x => x.Cast<TResult>());
+
+        public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<IEnumerable> @this)
+            => @this.Get(x => x.OfType<TResult>());
     }
 }

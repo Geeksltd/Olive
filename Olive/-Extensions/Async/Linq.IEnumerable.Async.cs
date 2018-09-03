@@ -24,9 +24,9 @@ namespace Olive
           this IEnumerable<TSource> @this, Func<TSource, Task<TResult>> func)
             => @this.Select(func).AwaitAll();
 
-        public static async Task<IEnumerable<TResult>> SelectManyAsync<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> SelectManyAsync<TSource, TResult>(
           this IEnumerable<TSource> @this, Func<TSource, Task<IEnumerable<TResult>>> func)
-            => (await @this.SelectAsync(func)).SelectMany(x => x);
+            => @this.SelectAsync(func).Get(v => v.SelectMany(x => x));
 
         public static Task<IEnumerable<TResult>> SelectManyAsync<TSource, TResult>(
           this IEnumerable<TSource> @this, Func<TSource, IEnumerable<Task<TResult>>> func)
@@ -256,7 +256,7 @@ namespace Olive
         }
 
         public static async Task<bool> None<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
-            => !await @this.Any(func);
+            => !await @this.Any(func).ConfigureAwait(false);
 
         public static async Task<decimal> Average<T>(this IEnumerable<T> @this, Func<T, Task<decimal>> func)
         {
@@ -325,6 +325,6 @@ namespace Olive
         }
 
         public static async Task<bool> Contains<TSource>(this IEnumerable<TSource> @this, Task<TSource> item)
-            => @this.Contains(await item);
+            => @this.Contains(await item.ConfigureAwait(false));
     }
 }

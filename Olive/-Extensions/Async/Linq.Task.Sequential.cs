@@ -14,7 +14,7 @@ namespace Olive
             {
                 var sel = selector(item);
                 if (sel == null) continue;
-                result.Add(await sel);
+                result.Add(await sel.ConfigureAwait(false));
             }
 
             return result;
@@ -29,19 +29,19 @@ namespace Olive
                 var sel = selector(item);
                 if (sel is null) continue;
 
-                var awaited = await sel;
+                var awaited = await sel.ConfigureAwait(false);
                 if (awaited != null) result.AddRange(awaited);
             }
 
             return result;
         }
 
-        public static async Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
            this Task<IEnumerable<TSource>> @this, Func<TSource, Task<TResult>> selector)
-            => await (await @this).SequentialSelect(selector);
+            => @this.Get(x => x.SequentialSelect(selector));
 
-        public static async Task<IEnumerable<TResult>> SequentialSelectMany<TSource, TResult>(
+        public static Task<IEnumerable<TResult>> SequentialSelectMany<TSource, TResult>(
            this Task<IEnumerable<TSource>> @this, Func<TSource, Task<IEnumerable<TResult>>> selector)
-            => await (await @this).SequentialSelectMany(selector);
+            => @this.Get(v => v.SequentialSelectMany(selector));
     }
 }
