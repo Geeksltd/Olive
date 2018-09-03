@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using Olive.Entities;
 using System.IO;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc
@@ -17,9 +17,9 @@ namespace Olive.Mvc
         {
             if (cacheControl != null)
             {
-                Response.Headers.Remove(HeaderNames.Pragma);
-                Response.Headers.Remove(HeaderNames.CacheControl);
-                Response.Headers.Add(HeaderNames.CacheControl, cacheControl.ToString());
+                Response.Headers.Remove(Microsoft.Net.Http.Headers.HeaderNames.Pragma);
+                Response.Headers.Remove(Microsoft.Net.Http.Headers.HeaderNames.CacheControl);
+                Response.Headers.Add(Microsoft.Net.Http.Headers.HeaderNames.CacheControl, cacheControl.ToString());
             }
 
             return File(await file.GetFileDataAsync(), file.GetMimeType(), downloadFileName.Or(file.FileName));
