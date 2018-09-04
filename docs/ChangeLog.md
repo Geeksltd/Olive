@@ -1,5 +1,15 @@
 # Olive compatibility change log
 
+## 04 Sep 2018
+- In Domain\ReferenceData.cs, change the implementation of the `Create<T>()` method to the following:
+```csharp
+static async Task<T> Create<T>(T item) where T : IEntity
+{
+    await Context.Current.Database().Save(item, SaveBehaviour.BypassAll);
+    return item;
+}
+```
+
 ## 21 August 2018
 - The previous reference to the whole jQuery-UI has been removed and just Widget Component that was needed is referenced in RequiredJS. To update your current project please do as below:
 1. Open `reference.js` and change `"jquery-ui": "jqueryui/jquery-ui"` to `"jquery-ui/ui/widget": "jquery-ui/ui/widget"` then remove `"jquery-ui/ui/widget": "jquery-ui"` from map section and change `"file-upload": ['jquery', 'jquery-ui']` to `"file-upload": ['jquery', 'jquery-ui/ui/widget']` and finally in requirejs method change `"jquery-ui"` to `"jquery-ui/ui/widget"` 
