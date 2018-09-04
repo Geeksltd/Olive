@@ -201,6 +201,31 @@ namespace Olive.Mvc
         public UnauthorizedTextActionResult Unauthorized(string message) => new UnauthorizedTextActionResult(message);
 
         public ILogger Log => Olive.Log.For(this);
+
+        /// <summary>
+        /// Creates a new instance of the specified view model type and binds it using the standard request data.
+        /// </summary>
+        [NonAction]
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        {
+            await BindAttributeRunner.Run(context);
+
+            if (!await AuthorizeRequestParams(context))
+            {
+                context.Result = Unauthorized();
+            }
+            else
+            {
+                await base.OnActionExecutionAsync(context, next);
+            }
+        }
+
+        /// <summary>
+        /// Complements role based authorization.
+        /// Returns false if the request parameters aren't authorized for the current user (e.g. if query string is tampered with).
+        /// </summary>
+        [NonAction]
+        protected virtual Task<bool> AuthorizeRequestParams(ActionExecutingContext context) => Task.FromResult(true);
     }
 
     public enum WindowAction
