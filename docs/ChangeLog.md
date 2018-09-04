@@ -1,7 +1,7 @@
 # Olive compatibility change log
 
 ## 04 Sep 2018
-- In Domain\ReferenceData.cs, change the implementation of the `Create<T>()` method to the following:
+In Domain\ReferenceData.cs, change the implementation of the `Create<T>()` method to the following:
 ```csharp
 static async Task<T> Create<T>(T item) where T : IEntity
 {
@@ -9,6 +9,7 @@ static async Task<T> Create<T>(T item) where T : IEntity
     return item;
 }
 ```
+*Note: The ContinueWith() method used previously hides exceptions.*
 
 ## 21 August 2018
 - The previous reference to the whole jQuery-UI has been removed and just Widget Component that was needed is referenced in RequiredJS. To update your current project please do as below:
