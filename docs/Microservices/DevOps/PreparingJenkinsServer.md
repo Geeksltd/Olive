@@ -29,6 +29,7 @@ After the instance is launched and running, RDP to it and install the following.
      - mklink "C:\Program Files\Git\cmd\msys-iconv-2.dll" "C:\Program Files\git\usr\bin\msys-iconv-2.dll"
      - mklink "C:\Program Files\Git\cmd\msys-intl-8.dll" "C:\Program Files\git\usr\bin\msys-intl-8.dll"
      - mklink "C:\Program Files\Git\cmd\sh.exe" "C:\Program Files\git\usr\bin\sh.exe"
+   - Add C:\Program Files\Git\bin to the PATH variable  
 - Nuget
 - Install Hyper-v
 - Jenkins 
