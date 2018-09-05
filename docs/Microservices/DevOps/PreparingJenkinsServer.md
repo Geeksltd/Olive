@@ -31,6 +31,7 @@ After the instance is launched and running, RDP to it and install the following.
      - mklink "C:\Program Files\Git\cmd\sh.exe" "C:\Program Files\git\usr\bin\sh.exe"
    - Add C:\Program Files\Git\usr\bin to the PATH variable  
 - Make sure the correct version of your framework (.net framework or .net core) is installed.
+- For .Net Framework, make sure you have installed MSBuild and added the path to the msbuild.exe to the PATH environment variable.
 - Nuget
    - Make sure it is accessible in cmd by typing nuget in a command prompt.
 - Install Hyper-v
