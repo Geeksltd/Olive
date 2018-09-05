@@ -30,6 +30,7 @@ After the instance is launched and running, RDP to it and install the following.
      - mklink "C:\Program Files\Git\cmd\msys-intl-8.dll" "C:\Program Files\git\usr\bin\msys-intl-8.dll"
      - mklink "C:\Program Files\Git\cmd\sh.exe" "C:\Program Files\git\usr\bin\sh.exe"
    - Add C:\Program Files\Git\usr\bin to the PATH variable  
+- Make sure the correct version of your framework (.net framework or .net core) is installed.
 - Nuget
    - Make sure it is accessible in cmd by typing nuget in a command prompt.
 - Install Hyper-v
