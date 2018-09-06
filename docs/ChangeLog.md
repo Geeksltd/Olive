@@ -1,5 +1,12 @@
 # Olive compatibility change log
 
+## 05 Sep 2018
+We have added an overload to `File()` method and now you can let pictures or files to be cached on the client side.
+```csharp
+return await File(accessor.Blob, cacheControl: new CacheControlHeaderValue { Public = true });
+```
+by setting cache header value to the public we let browsers to cache the file/picture.
+
 ## 04 Sep 2018
 In Domain\ReferenceData.cs, change the implementation of the `Create<T>()` method to the following:
 ```csharp
