@@ -1,5 +1,11 @@
 # Olive compatibility change log
 
+## 07 Sep 2018
+There was an issue with [the chosen library](https://github.com/harvesthq/chosen/issues/515) and jQuery Validation. To fix this issue we make these changes in the `select.ts` file of the Olive.MvcJs project as shown below:
+```javascript
+selectControl.attr("style", "display:visible; position:absolute; clip:rect(0,0,0,0)");
+```
+
 ## 05 Sep 2018
 We have added an overload to `File()` method and now you can let pictures or files to be cached on the client side.
 ```csharp
