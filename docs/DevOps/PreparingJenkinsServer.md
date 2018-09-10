@@ -12,6 +12,8 @@ If the production envirnoment only has windows instances you can ignore the part
 Preparing The Build Cluster
 Below is the instruction for preparing the Windows master and Linux worker node. The master node is being used as a worker node, so we don’t need to add any more EC2 instances.
 
+This document is based on AWS but the same instructions applys to other cloud providers such as Azure and Google Cloud.
+
 
 ### Master
 First create a EC2 instance (Windows) on AWS. Make sure you store the keypair somewhere safe. 
