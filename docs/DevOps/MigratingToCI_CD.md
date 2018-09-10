@@ -1,5 +1,5 @@
 # Migrating to CI/CD
-This document covers the steps needed to migrate an existing project to the new CI/CD pipeline. Each step has been described in more details in their own documents which have been referenced here. Depening on what framework the project has been implemented by different steps/configurations should be done which have been highlighted.
+This document covers the steps needed to migrate an existing project to the new CI/CD pipeline. Each step has been described in more details in their own documents which have been referenced here. Depening on what framework the project has been implemented by different steps/configurations should be done which have been highlighted. All the referenced documents explain everything for a microservice based application, which are applied to a monolith application assume that the application only has one big service.
 It is assumed that you already have set up a VM as the build server.
 
 
