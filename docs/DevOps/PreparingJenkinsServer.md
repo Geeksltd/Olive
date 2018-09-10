@@ -7,7 +7,7 @@ If you choose, or even have to, run your application in Linux servers there are 
 Running Linux Docker engine on Windows is achieved by running a Linux VM. Unfortunately since AWS EC2 instances are virtual machines, it is not possible to run another VM on top of them (at least not easily). 
 To have access to both Windows and Linux environments on the build server we need to add a Linux worker node to Jenkins. Fortunately Jenkins pipeline supports running stages on different nodes which enables us to build the application on a Windows node and use the generated artefacts on a Linux node and generate the Linux docker image.
 
-If the production envirnoment only has windows instances you can ignore the parts related to Linux worker nodes.
+If the production envirnoment only has windows instances you can ignore the parts related to Linux worker nodes. Your Windows master node works as a worker node by default so you don't have to set up a separate worker node.
 
 Preparing The Build Cluster
 Below is the instruction for preparing the Windows master and Linux worker node. The master node is being used as a worker node, so we don’t need to add any more EC2 instances.
