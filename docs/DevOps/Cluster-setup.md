@@ -1,7 +1,7 @@
 # Cluster setup (Kubernetes and AWS)
 
 ## Introduction
-This document describes what Kubernetes is and how it can be set up on AWS. We will try to use a simple imaginary inventory application as a case study to run using Kubernetes to simplify the learning process.
+This document describes what Kubernetes is and how it can be set up on AWS and Azure. We will try to use a simple imaginary inventory application as a case study to run using Kubernetes to simplify the learning process.
 
 Our application is a microservice based, containerized system. It consists of two services, `Product Management` and `Stock Reportin`g. We assume that the `Project Management` service will not be used a lot, but the `Stock Reporting` (which is a heavy process) is used frequently. 
 
