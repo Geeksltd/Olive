@@ -16,6 +16,8 @@ This document is based on AWS but the same instructions applys to other cloud pr
 
 
 ### Master
+
+#### AWS
 First create a EC2 instance (Windows) on AWS. Make sure you store the keypair somewhere safe. 
 During the launch process make sure:
 Create a new VPC for the build cluster.
@@ -23,10 +25,16 @@ Create a new security group to use for the build nodes.
 The security group has to open RDP connection to the company’s static IP address.
 Create a new volume to store the Jenkins home directory on for the master node.
 
+#### Azure
+// TODO
+
 
 After the instance is launched and running, RDP to it and install the following.
+- Jenkins
+   - You can download and install Jenkins from [here](https://jenkins.io/download/)
 - Git (with default settings)
    - Run the following commands:
+   ```
      - mklink "C:\Program Files\Git\bin\nohup.exe" "C:\Program Files\git\usr\bin\nohup.exe"
      - mklink "C:\Program Files\Git\bin\msys-2.0.dll" "C:\Program Files\git\usr\bin\msys-2.0.dll"
      - mklink "C:\Program Files\Git\bin\msys-iconv-2.dll" "C:\Program Files\git\usr\bin\msys-iconv-2.dll"
@@ -36,6 +44,7 @@ After the instance is launched and running, RDP to it and install the following.
      - mklink "C:\Program Files\Git\cmd\msys-iconv-2.dll" "C:\Program Files\git\usr\bin\msys-iconv-2.dll"
      - mklink "C:\Program Files\Git\cmd\msys-intl-8.dll" "C:\Program Files\git\usr\bin\msys-intl-8.dll"
      - mklink "C:\Program Files\Git\cmd\sh.exe" "C:\Program Files\git\usr\bin\sh.exe"
+   ```  
    - Add C:\Program Files\Git\usr\bin to the PATH variable  
 - Make sure the correct version of your framework SDK (.net framework or .net core) is installed.
 - For .Net Framework
@@ -45,7 +54,7 @@ After the instance is launched and running, RDP to it and install the following.
       - Tick the "NuGet package manager" check-box that is under "Code tools" option.
       - Click Install to install it.
 - Nuget
-   - Make sure it is accessible in cmd by typing nuget in a command prompt.
+   - Make sure it is accessible in cmd by typing nuget in a command prompt. If it is not, run 'set PATH=%PATH%;[PATH TO THE NUGET EXE]'
 - Install Hyper-v
 - Jenkins 
    - Restoring a backed up version:
