@@ -11,11 +11,12 @@
     * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
-    * DevOps
-        * [Docker support](Microservices/DevOps/Docker.md)
-        * [Jenkins](Microservices/DevOps/Jenkins.md)
-        * [Cluster setup (Kubernetes & AWS)](Microservices/DevOps/Cluster-setup.md)
-        * [Security](Microservices/DevOps/Security.md)
+
+* DevOps
+    * [Docker support](Microservices/DevOps/Docker.md)
+    * [Jenkins](Microservices/DevOps/Jenkins.md)
+    * [Cluster setup (Kubernetes & AWS)](Microservices/DevOps/Cluster-setup.md)
+    * [Security](Microservices/DevOps/Security.md)
         
 * Web Api and Integration
     * [RESTful WebApi](Api/WebApi.md)
