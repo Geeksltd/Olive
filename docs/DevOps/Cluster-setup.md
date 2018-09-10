@@ -103,19 +103,19 @@ Labels enable Kubernetes resources to find other resources too. For example, in 
 ## AWS account setup
 Earlier in this article we mentioned that Kubernetes needs some servers, to run as masters and nodes, to be able to function. There are different ways to create and manage servers for Kubernetes but for our environment we chose to use AWS. AWS is a well known IaaS provided in the market which provides some cloud computing features such as scailability, availability, security, good logging and monitoring systems that our production environment can benefit from. Compared to the other could providers we have more experience with AWS and that's another reason why we chose it.
 
-## Installation
+### Installation
 There are two ways we can set up our infrastructure on AWS for Kubernetes. One option is to create all the servers on AWS and install Kubernetes on them manually. But this is a very complicated and time consuming process.
 
 Alternatively, you can use `Kops` which will automate that process. We will use Kops in this guide.
 
 Or, you can use the more advanced [Terraform](https://www.terraform.io/) tool, to implement a more mature `infrastructure as code` architecture.
 
-## Kubectl
+### Kubectl
 Previously, we mentioned that the Kubernetes core components run on `master` nodes. To be able to manage the cluster, we need to send commands to the master node. The way to do that is to use the native Kubernetes command-line tool called `kubectl`.
 
 There are different ways to install this on Windows. For example you can use [Chocolatey](https://chocolatey.org/) by running `_choco install kubernetes-cli_`. Other installation options have been discussed [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-## Kops
+### Kops
 Kops helps you create, destroy, upgrade and maintain Kubernetes clusters from the command line. With a single command line and passing some configuration arguments kops can create a Kubernetes cluster.
 
 ### Installation
@@ -124,7 +124,7 @@ At the time of creating this document, kops only works on Linux and there is no 
 #### Linux
 You either need to have a machine with Linux running on it, or run a Linux virtual machine on windows. For the latter you can use the instrcution provided [here](https://www.windowscentral.com/how-run-linux-distros-windows-10-using-hyper-v). Once you install the virtual machine, you can install kops using the instruction [here](https://kubernetes.io/docs/setup/custom-cloud/kops/).
 
-### Creating the Cluster
+#### Creating the Cluster
 For our current production environment we are planning to have one master and 3 worker nodes. We want the worker nodes to be in different availability zones so that if one availability zone goes down the other nodes will be up and host our pods. Below is the command which creates our cluster :
 ```shell 
 kops create cluster app.geeks.ltd --node-count 3 --zones eu-west-1a,eu-west-1b,eu-west-1c --master-size t2.medium --master-count 1 --node-size t2.small --cloud aws  --master-zones eu-west-1a --dns-zone app.geeks.ltd --yes
@@ -143,10 +143,36 @@ The above command creates :
 ## Azure
 Almost everything we said about the Kubernetes cluster for AWS applies to Azure too. However, to install the cluster we need to use a different approach which is explained below:
 
+### Azure Cli (az)
+A common way to manage azure resouces is to use the Azure Cli. You can obviously do everything via the Azure console but this instruction uses the Azure cli for easier/better documentation.
+[Here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest) is the instructions for setting up the cli.
+
 ### Resource Group
 We start off by creating a resource group. A [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) is a container to hold all related Azure resources together. Without resource groups managing resources will be very complicated. Imagine you want to add a couple of VMs temporarily for testing, and have to add a couple of other resources to work with them. If you already have a lot of resources in your account, your new resources will be lost among the existing ones and it will be hard to find them, specially if you want to delete everything after your test is done. With resource groups you can create one group and add all related resources to that. Deleting the resource group will remove all the resources associated with it which makes the clean up process very easy and straight forward. 
 
+```
+az group create --name ResourceGroupName --location Locatioin
+```
+Description :
+ - Command : Creates a resource group in your Azure account.
+ - Parameters : 
+   - name : The name of the resource group (set to ResourceGroupName in the commnad)
+   - location : The azure region where all the resources will be created.
+   
+### Creating the Cluster
+Once you have the resource group created you can now create the cluster by running:
 
+```
+az aks create --resource-group ResourceGroupName --name ClusterName --node-count 1 --generate-ssh-keys --os-type Windows
+```
+Description:
+ - Command : Creates a kubernetes cluster in the Azure account.
+ - Parameters : 
+   - resource-group : The name of the resource group in which kubernetes resources will be created.
+   - name : The name of the cluster
+   - node-count : The number of nodes to be created in the cluster
+   - os-type : The operating system tye of the images running in the cluster.
+   
 
 ------------------
 
