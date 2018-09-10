@@ -45,7 +45,7 @@ After the instance is launched and running, RDP to it and install the following.
      - mklink "C:\Program Files\Git\cmd\msys-intl-8.dll" "C:\Program Files\git\usr\bin\msys-intl-8.dll"
      - mklink "C:\Program Files\Git\cmd\sh.exe" "C:\Program Files\git\usr\bin\sh.exe"
    ```  
-   - Add C:\Program Files\Git\usr\bin to the PATH variable  
+   - Add C:\Program Files\Git\usr\bin to the PATH variable by running  ``` set PATH=%PATH%;C:\Program Files\Git\usr\bin ```
 - Make sure the correct version of your framework SDK (.net framework or .net core) is installed.
 - For .Net Framework
    - Make sure you have installed MSBuild and added the path to the msbuild.exe to the PATH environment variable.
@@ -54,7 +54,7 @@ After the instance is launched and running, RDP to it and install the following.
       - Tick the "NuGet package manager" check-box that is under "Code tools" option.
       - Click Install to install it.
 - Nuget
-   - Make sure it is accessible in cmd by typing nuget in a command prompt. If it is not, run 'set PATH=%PATH%;[PATH TO THE NUGET EXE]'
+   - Make sure it is accessible in cmd by typing nuget in a command prompt. If it is not, run  ``` set PATH=%PATH%;[PATH TO THE NUGET EXE] ```
 - Install Hyper-v
 - Jenkins 
    - Restoring a backed up version:
