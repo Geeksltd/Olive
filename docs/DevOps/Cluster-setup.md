@@ -100,6 +100,13 @@ Kubernetes uses `labels` as a way to identify and query resources. In the previo
 
 Labels enable Kubernetes resources to find other resources too. For example, in our previous example of a Service specification, the `spec.selector` part of the template specified `"microservice: stock-reporting"`. That configuration tells kubernetes to search for all the pods with that label/value and bind them to the service.
 
+
+### Kubectl
+Previously, we mentioned that the Kubernetes core components run on `master` nodes. To be able to manage the cluster, we need to send commands to the master node. The way to do that is to use the native Kubernetes command-line tool called `kubectl`.
+
+There are different ways to install this on Windows. For example you can use [Chocolatey](https://chocolatey.org/) by running `_choco install kubernetes-cli_`. Other installation options have been discussed [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
+
 ## AWS account setup
 Earlier in this article we mentioned that Kubernetes needs some servers, to run as masters and nodes, to be able to function. There are different ways to create and manage servers for Kubernetes but for our environment we chose to use AWS. AWS is a well known IaaS provided in the market which provides some cloud computing features such as scailability, availability, security, good logging and monitoring systems that our production environment can benefit from. Compared to the other could providers we have more experience with AWS and that's another reason why we chose it.
 
@@ -109,11 +116,6 @@ There are two ways we can set up our infrastructure on AWS for Kubernetes. One o
 Alternatively, you can use `Kops` which will automate that process. We will use Kops in this guide.
 
 Or, you can use the more advanced [Terraform](https://www.terraform.io/) tool, to implement a more mature `infrastructure as code` architecture.
-
-### Kubectl
-Previously, we mentioned that the Kubernetes core components run on `master` nodes. To be able to manage the cluster, we need to send commands to the master node. The way to do that is to use the native Kubernetes command-line tool called `kubectl`.
-
-There are different ways to install this on Windows. For example you can use [Chocolatey](https://chocolatey.org/) by running `_choco install kubernetes-cli_`. Other installation options have been discussed [here](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 ### Kops
 Kops helps you create, destroy, upgrade and maintain Kubernetes clusters from the command line. With a single command line and passing some configuration arguments kops can create a Kubernetes cluster.
@@ -159,20 +161,35 @@ Description :
    - name : The name of the resource group (set to ResourceGroupName in the commnad)
    - location : The azure region where all the resources will be created.
    
-### Creating the Cluster
+### Creating the cluster
 Once you have the resource group created you can now create the cluster by running:
 
 ```
 az aks create --resource-group ResourceGroupName --name ClusterName --node-count 1 --generate-ssh-keys --os-type Windows
 ```
 Description:
- - Command : Creates a kubernetes cluster in the Azure account.
+ - Command : Creates a kubernetes cluster in the Azure account. It takes a few minutes for all the resources to be created and ready.
  - Parameters : 
    - resource-group : The name of the resource group in which kubernetes resources will be created.
    - name : The name of the cluster
    - node-count : The number of nodes to be created in the cluster
    - os-type : The operating system tye of the images running in the cluster.
    
+### Connect to the cluster
+To be able to connect to the cluster we need to switch kubectl to point to the new cluster. To do that we need to get the cluster credentials to be used to connect. We can use the Azure cli to get the credentials using the command below:
+
+```
+az aks get-credentials --resource-group ResourceGroupName --name ClusterName
+```
+
+Description:
+ - Commnad : Get the credentials needed for connecting to the cluster. This command automatically switches kubectl context to point to this cluster. 
+ - Parameters :
+   - resource-group : The name of the resource group which holds the cluster resources.
+   - name : The name of the cluster.  
+
+
+In order to make sure everything is set up correctly you can run ``` kubectl get nodes ```. This should give you all the nodes running in your cluster.
 
 ------------------
 
