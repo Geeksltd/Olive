@@ -140,6 +140,11 @@ The above command creates :
 ***kops stores the state of the infrastructure in S3. It is important not to change the infrastructure directly on AWS. Changes should be made by kops to make sure the state of the infrastructure is valid and up to date. Any inconsistency between the infrastructure and its metadata in kops can cause serious problems. Some changes may not cause problems but it is recommended to double check everything with the system admin first.***
 
 
+## Azure
+Almost everything we said about the Kubernetes cluster for AWS applies to Azure too. However, to install the cluster we need to use a different approach which is explained below:
+
+### Resource Group
+We start off by creating a resource group. A [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) is a container to hold all related Azure resources together. Without resource groups managing resources will be very complicated. Imagine you want to add a couple of VMs temporarily for testing, and have to add a couple of other resources to work with them. If you already have a lot of resources in your account, your new resources will be lost among the existing ones and it will be hard to find them, specially if you want to delete everything after your test is done. With resource groups you can create one group and add all related resources to that. Deleting the resource group will remove all the resources associated with it which makes the clean up process very easy and straight forward. 
 
 
 
