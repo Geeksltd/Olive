@@ -1,8 +1,13 @@
 ## Introduction
 
-The MC# application repositories only contain MSharp metadata files. The CI/CD process pulls the metadata and builds the application by MSharp, which currently requires .NetFramework on Windows to run. The production environment runs on Linux AWS EC2 instances on Docker and managed by Kubernetes. In order to run a service on production we have to generate Linux Docker images, which obviously require the Linux Docker engine. 
+The MC# application repositories only contain MSharp metadata files. The CI/CD process pulls the metadata and builds the application by MSharp, which currently requires .NetFramework on Windows to run. 
+
+#### Production Linux Runtime
+If you choose, or even have to, run your application in Linux servers there are a few more steps to be taken. In order to run a service on Linux servers we have to generate Linux Docker images. Generating linux docker images require the Linux Docker engine on the build server. 
 Running Linux Docker engine on Windows is achieved by running a Linux VM. Unfortunately since AWS EC2 instances are virtual machines, it is not possible to run another VM on top of them (at least not easily). 
 To have access to both Windows and Linux environments on the build server we need to add a Linux worker node to Jenkins. Fortunately Jenkins pipeline supports running stages on different nodes which enables us to build the application on a Windows node and use the generated artefacts on a Linux node and generate the Linux docker image.
+
+If the production envirnoment only has windows instances you can ignore the parts related to Linux worker nodes.
 
 Preparing The Build Cluster
 Below is the instruction for preparing the Windows master and Linux worker node. The master node is being used as a worker node, so we don’t need to add any more EC2 instances.
