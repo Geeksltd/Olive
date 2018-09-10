@@ -30,7 +30,7 @@ Create a new volume to store the Jenkins home directory on for the master node.
 
 
 After the instance is launched and running, RDP to it and install the following.
-- Jenkins
+- [Jenkins](https://github.com/Geeksltd/Olive/blob/master/docs/DevOps/Jenkins.md)
    - You can download and install Jenkins from [here](https://jenkins.io/download/)
 - Git (with default settings)
    - Run the following commands:
