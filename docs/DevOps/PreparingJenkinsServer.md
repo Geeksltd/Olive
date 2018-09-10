@@ -56,7 +56,7 @@ After the instance is launched and running, RDP to it and install the following.
 - Nuget
    - Make sure it is accessible in cmd by typing nuget in a command prompt. If it is not, run  ``` set PATH=%PATH%;[PATH TO THE NUGET EXE] ```
 - Install Hyper-v
-- Jenkins 
+- Jenkins Set Up
    - Restoring a backed up version:
      - Copy the backup Jenkins folder to the destination folder
      - Navigate to the Jenkins folder
