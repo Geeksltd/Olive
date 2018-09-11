@@ -33,6 +33,9 @@ namespace Olive.Mvc.Testing
                     .AddClearDatabaseCache();
 
             app.UseMiddleware<WebTestMiddleware>();
+
+            Entities.GuidEntity.NewIdGenerator = PredictableGuidGenerator.Generate;
+
             return app;
         }
     }
