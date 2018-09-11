@@ -14,10 +14,15 @@ namespace Olive.Mvc.Testing
         internal static Func<Task> ReferenceDataCreator;
 
         public static bool IsAutoExecMode { get; internal set; }
+        public static string TestName { get; internal set; }
 
         internal static void SetRunner()
         {
-            if (Context.Current.Request().Has("runner")) IsAutoExecMode = true;
+            if (Context.Current.Request().Has("runner"))
+            {
+                IsAutoExecMode = true;
+                TestName = Context.Current.Request().Param("testName").Or("N/A");
+            }
         }
 
         /// <summary>

@@ -6,8 +6,6 @@ namespace Olive.Mvc.Testing
 {
     class PredictableGuidGenerator
     {
-        static string CurrentTestId = "To be injected by Pangolin";
-
         static Dictionary<Type, int> UsedNumbers = new Dictionary<Type, int>();
         static object SyncLock = new object();
 
@@ -23,7 +21,7 @@ namespace Olive.Mvc.Testing
             lock (SyncLock)
             {
                 var parts = new[] {
-                    CurrentTestId.GetHashCode(), // current test
+                    WebTestConfig.TestName.GetHashCode(), // current test
                     type.GetHashCode(), // type
                     Next(type) // object
                 };
