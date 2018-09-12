@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Olive.Entities
 {
@@ -8,6 +9,9 @@ namespace Olive.Entities
     {
         bool IsIdLoaded; // For performance, this is used instead of Nullable<Guid>
         Guid id;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Func<Type, Guid> NewIdGenerator = t => Guid.NewGuid();
 
         /// <summary>
         /// Gets a unique Identifier for this instance. In the database, this will be the primary key of this object.
@@ -19,7 +23,7 @@ namespace Olive.Entities
                 if (IsIdLoaded) return id;
                 else
                 {
-                    id = Guid.NewGuid();
+                    id = NewIdGenerator(GetType());
                     IsIdLoaded = true;
                     return id;
                 }

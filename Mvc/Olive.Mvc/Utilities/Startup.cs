@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Olive.Entities;
@@ -22,6 +23,15 @@ namespace Olive.Mvc
     public abstract class Startup
     {
         const int DEFAULT_SESSION_TIMEOUT = 20;
+
+        protected readonly IHostingEnvironment Environment;
+        protected readonly IConfiguration Configuration;
+
+        protected Startup(IHostingEnvironment env, IConfiguration config)
+        {
+            Environment = env;
+            Configuration = config;
+        }
 
         protected AuthenticationBuilder AuthenticationBuilder;
 
@@ -61,46 +71,46 @@ namespace Olive.Mvc
         protected virtual void ConfigureResponseCompressionOptions(ResponseCompressionOptions options) { }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public virtual void Configure(IApplicationBuilder app)
         {
-            Context.Current.Configure(app.ApplicationServices).Configure(env);
+            Context.Current.Configure(app.ApplicationServices).Configure(Environment);
             app.UseResponseCompression();
 
-            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app, env)));
+            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));
 
-            ConfigureExceptionPage(app, env);
-            ConfigureSecurity(app, env);
-            ConfigureRequestHandlers(app, env);
+            ConfigureExceptionPage(app);
+            ConfigureSecurity(app);
+            ConfigureRequestHandlers(app);
         }
 
-        public virtual Task OnStartUpAsync(IApplicationBuilder app, IHostingEnvironment env)
+        public virtual Task OnStartUpAsync(IApplicationBuilder app)
         {
             return Task.CompletedTask;
         }
 
-        protected virtual void ConfigureSecurity(IApplicationBuilder app, IHostingEnvironment env)
+        protected virtual void ConfigureSecurity(IApplicationBuilder app)
         {
             app.UseMicroserviceAccessKeyAuthentication();
             app.UseAuthentication();
             app.UseMiddleware<SplitRoleClaimsMiddleware>();
         }
 
-        protected virtual void ConfigureRequestHandlers(IApplicationBuilder app, IHostingEnvironment env)
+        protected virtual void ConfigureRequestHandlers(IApplicationBuilder app)
         {
-            UseStaticFiles(app, env);
+            UseStaticFiles(app);
             app.UseRequestLocalization(RequestLocalizationOptions);
             app.UseMvc();
         }
 
-        protected virtual void UseStaticFiles(IApplicationBuilder app, IHostingEnvironment env)
+        protected virtual void UseStaticFiles(IApplicationBuilder app)
         {
-            if (env.IsDevelopment()) app.UseStaticFilesCaseSensitive();
+            if (Environment.IsDevelopment()) app.UseStaticFilesCaseSensitive();
             else app.UseStaticFiles();
         }
 
-        protected virtual void ConfigureExceptionPage(IApplicationBuilder app, IHostingEnvironment env)
+        protected virtual void ConfigureExceptionPage(IApplicationBuilder app)
         {
-            if (env.IsDevelopment() || env.IsStaging())
+            if (Environment.IsDevelopment() || Environment.IsStaging())
                 app.UseDeveloperExceptionPage();
             else app.UseExceptionHandler("/error");
         }

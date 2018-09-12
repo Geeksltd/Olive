@@ -126,7 +126,7 @@ namespace Olive
 
                 HttpClient = new HttpClient(container)
                 {
-                    Timeout = Config.Get("ApiClient:Timeout", 20).Seconds()
+                    Timeout = Config.Get("ApiClient:Timeout", 60).Seconds()
                 };
 
                 foreach (var config in Client.RequestHeadersCustomizers)

@@ -75,7 +75,8 @@ namespace Olive
                 if (CircuitBreakerPolicies.TryGetValue(policyKey, out policy))
                     return policy;
 
-                policy = Policy.Handle<HttpRequestException>().CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration);
+                policy = Policy.Handle<HttpRequestException>()
+                    .CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration);
 
                 CircuitBreakerPolicies.Add(policyKey, policy);
                 return policy;

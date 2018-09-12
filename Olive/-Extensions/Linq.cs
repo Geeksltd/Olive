@@ -1128,5 +1128,14 @@ namespace Olive
 
             return result;
         }
+
+        /// <summary>
+        /// If a specified condition is true, then the filter predicate will be executed.
+        /// Otherwise the original list will be returned.
+        /// </summary>
+        [EscapeGCop("The condition param should not be last in this case.")]
+        public static IEnumerable<T> FilterIf<T>(this IEnumerable<T> source,
+             bool condition, Func<T, bool> predicate)
+            => condition ? source.Where(predicate) : source;
     }
 }

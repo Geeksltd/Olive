@@ -1,5 +1,14 @@
 # Olive compatibility change log
 
+## 12 Sep 2018
+* Change the constructor in your Startup.cs file to the following.
+   * In case you're using other parameters, you can include those too.
+   * But as a minimum you should provide the following two arguments to the base constructor.   
+```
+public Startup(IHostingEnvironment env, IConfiguration config) : base(env, config) { }
+```
+* Remove the `env` parameter from all the other methods in that class. Use the inherited `Environment` field instead.
+
 ## 07 Sep 2018
 There was an issue with [the chosen library](https://github.com/harvesthq/chosen/issues/515) and jQuery Validation. To fix this issue we make these changes in the `select.ts` file of the Olive.MvcJs project as shown below:
 ```javascript

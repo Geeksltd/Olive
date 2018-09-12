@@ -179,5 +179,14 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<Array> @this)
             => @this.Get(x => x.OfType<TResult>());
+
+        /// <summary>
+        /// If a specified condition is true, then the filter predicate will be executed.
+        /// Otherwise the original list will be returned.
+        /// </summary>
+        [EscapeGCop("The condition param should not be last in this case.")]
+        public static Task<IEnumerable<T>> FilterIf<T>(this Task<T[]> source,
+             bool condition, Func<T, bool> predicate)
+            => condition ? source.ForLinq().Where(predicate) : source.ForLinq();
     }
 }
