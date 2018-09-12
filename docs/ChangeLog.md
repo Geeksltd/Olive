@@ -2,10 +2,12 @@
 
 ## 12 Sep 2018
 As it has been mentioned on the `21 August 2018` changes, we don't have a conflict between **jQuery-UI** and **Bootstrap** anymore so if you have removed `validation-style` according to the changes on the `04 July 2018` please reference it again. here are steps:
-1. Open `references.js`
-2. add `"validation-style": "jquery-validation-bootstrap-tooltip/jquery-validate.bootstrap-tooltip",` right after `"bootstrap": "bootstrap/dist/js/bootstrap",` in *paths* section
-3. add `"validation-style": ['jquery', "jquery-validate", "bootstrap"],` in the `shim` section right after `"jquery-validate": ['jquery'],`
-4. add `"validation-style"` after `"file-style"` in the `requirejs([...])`
+
+1. Open `bower.json` and add `"jquery-validation-bootstrap-tooltip": "*",` 
+2. Open `references.js`
+3. add `"validation-style": "jquery-validation-bootstrap-tooltip/jquery-validate.bootstrap-tooltip",` right after `"bootstrap": "bootstrap/dist/js/bootstrap",` in *paths* section
+4. add `"validation-style": ['jquery', "jquery-validate", "bootstrap"],` in the `shim` section right after `"jquery-validate": ['jquery'],`
+5. add `"validation-style"` after `"file-style"` in the `requirejs([...])`
 
 ## 12 Sep 2018
 * Change the constructor in your Startup.cs file to the following.
