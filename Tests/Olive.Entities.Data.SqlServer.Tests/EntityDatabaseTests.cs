@@ -9,42 +9,22 @@ using System.Threading.Tasks;
 namespace Olive.Entities.Data.SqlServer.Tests
 {
     [TestFixture]
-    public partial class EntityDatabaseTests
+    public partial class EntityDatabaseTests : TestsBase
     {
         Person person;
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
+
             person = new Person
             {
-                ID = "A67A0350-AC6C-4568-8CAA-F1C15802D599".ToLower().To<Guid>(),
                 FirstName = "Paymon",
                 LastName = "Khamooshi"
             };
 
-            #region initialize Context
-
-            database = new Database();
-
-            var services = new ServiceCollection();
-
-            services.AddSingleton<IDatabase>(database);
-
-            Context.Initialize(services);
-
-            Context.Current.Configure(services.BuildServiceProvider());
-            #endregion
-
-            #region Create database for Person
-
-            TempDatabaseName = DatabaseManager.GetDatabaseName();
-
-            var createScript = GetCreateDbFiles().Select(f => File.ReadAllText(f.FullName)).ToLinesString();
-
-            var hash = createScript.ToSimplifiedSHA1Hash().Replace("/", "-").Replace("\\", "-");
-
-            DatabaseFilesPath = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName).GetOrCreateSubDirectory(hash);
+            #region Create database for Person entity
 
             var server = new SqlServerManager();
 
@@ -79,7 +59,7 @@ namespace Olive.Entities.Data.SqlServer.Tests
         {
             database.ShouldNotBeNull();
 
-            var newPerson = await database.Get<Person>("A67A0350-AC6C-4568-8CAA-F1C15802D599".To<Guid>());
+            var newPerson = await database.FirstOrDefault<Person>(x => x.FirstName == "Paymon");
 
             newPerson.FirstName.ShouldEqual("Paymon");
             newPerson.LastName.ShouldEqual("Khamooshi");

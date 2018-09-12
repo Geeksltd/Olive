@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
     <ProjectReference Include="..\..\Olive.Entities\Olive.Entities.csproj" />
     <ProjectReference Include="..\..\Olive\Olive.csproj" />
   </ItemGroup>

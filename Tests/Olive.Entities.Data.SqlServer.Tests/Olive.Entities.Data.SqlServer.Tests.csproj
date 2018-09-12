@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Olive.Entities.Data.SqlServer\Olive.Entities.Data.SqlServer.csproj" />
-    <ProjectReference Include="..\..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
     <ProjectReference Include="..\Olive.Tests\Olive.Tests.csproj" />
   </ItemGroup>
 
