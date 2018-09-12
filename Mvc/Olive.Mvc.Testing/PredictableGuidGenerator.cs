@@ -29,9 +29,8 @@ namespace Olive.Mvc.Testing
 
                 var bytes = new byte[16];
                 for (var i = 0; i < 3; i++)
-                {
                     BitConverter.GetBytes(parts[i]).CopyTo(bytes, i * 4);
-                }
+
 
                 return new Guid(bytes);
             }

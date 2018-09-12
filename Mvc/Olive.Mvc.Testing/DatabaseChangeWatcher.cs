@@ -139,20 +139,18 @@ namespace Olive.Mvc.Testing
         }
     }
 }
+// using Olive.Entities;
+// using Olive.Entities.Data;
+// using System;
+// using System.Collections.Generic;
+// using System.Data;
+// using System.Data.SqlClient;
+// using System.Threading.Tasks;
+// using System.Xml;
+// using System.Xml.Linq;
 
-
-//using Olive.Entities;
-//using Olive.Entities.Data;
-//using System;
-//using System.Collections.Generic;
-//using System.Data;
-//using System.Data.SqlClient;
-//using System.Threading.Tasks;
-//using System.Xml;
-//using System.Xml.Linq;
-
-//namespace Olive.Mvc.Testing
-//{
+// namespace Olive.Mvc.Testing
+// {
 //    class DatabaseChangeWatcher
 //    {
 //        static List<XElement> Changes = new List<XElement>();
@@ -199,7 +197,6 @@ namespace Olive.Mvc.Testing
 //                var dataProviderType = xmlDocument.GetElementsByTagName("DataProviderType")[0].FirstChild.Value;
 //                var changesNodeList = xmlDocument.GetElementsByTagName("Changes")[0];
 
-
 //                foreach (XmlElement xmlElement in changesNodeList.ChildNodes)
 //                {
 //                    var command = xmlElement.GetAttribute("Command").Replace("&#xD;&#xA;", Environment.NewLine);
@@ -242,7 +239,6 @@ namespace Olive.Mvc.Testing
 //                    var dataAccessor = GetDataAccessor(dataProviderType, connectionStringKey);
 //                    dataAccessor.ExecuteNonQuery(command, commandType, dataParameters.ToArray());
 
-
 //                    throw new NotImplementedException("In the XML, save the data provider type and connection string key, so it can be executed here.");
 //                    // DataAccessor.ExecuteNonQuery(command, CommandType.Text, dataParameters.ToArray());
 //                }
@@ -270,4 +266,4 @@ namespace Olive.Mvc.Testing
 //            throw new Exception("Provider type not found");
 //        }
 //    }
-//}
+// }

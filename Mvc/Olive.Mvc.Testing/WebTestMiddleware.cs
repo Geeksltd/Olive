@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace Olive.Mvc.Testing
 {
@@ -15,14 +15,8 @@ namespace Olive.Mvc.Testing
 
         public async Task Invoke(HttpContext context)
         {
-            if (await ProcessAsWebCommand())
-            {
-                return;
-            }
-            else
-            {
-                await Next.Invoke(context);
-            }
+            if (await ProcessAsWebCommand()) return;
+            else await Next.Invoke(context);
         }
 
         async Task<bool> ProcessAsWebCommand()
