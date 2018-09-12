@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Olive.Mvc.Testing
 {
@@ -8,6 +7,8 @@ namespace Olive.Mvc.Testing
     {
         static Dictionary<Type, int> UsedNumbers = new Dictionary<Type, int>();
         static object SyncLock = new object();
+
+        internal static void Reset() => UsedNumbers = new Dictionary<Type, int>();
 
         static int Next(Type type)
         {
