@@ -22,7 +22,7 @@ namespace Olive.Mvc.Testing
             lock (SyncLock)
             {
                 var parts = new[] {
-                    WebTestConfig.TestName.GetHashCode(), // current test
+                    WebTestConfig.TestName.Or("N/A").GetHashCode(), // current test
                     type.GetHashCode(), // type
                     Next(type) // object
                 };
