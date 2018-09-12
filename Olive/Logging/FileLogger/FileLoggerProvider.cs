@@ -28,7 +28,7 @@ namespace Olive
         {
             foreach (var group in messages.GroupBy(x => x.Timestamp.Date))
             {
-                var file = Path.GetFile(FilePrefix + group.Key.ToString("YYYYMMdd") + ".txt");
+                var file = Path.GetFile(FilePrefix + group.Key.ToString("yyyyMMdd") + ".txt");
                 if (MaxFileSize > 0 && file.Exists() && file.Length > MaxFileSize) return;
 
                 await file.AppendAllTextAsync(group.Select(x => x.Message).ToLinesString());
