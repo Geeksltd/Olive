@@ -7,8 +7,13 @@ namespace Olive.Mvc.Testing
     {
         static Dictionary<Type, int> UsedNumbers = new Dictionary<Type, int>();
         static object SyncLock = new object();
+        static string CurrentTestName;
 
-        internal static void Reset() => UsedNumbers = new Dictionary<Type, int>();
+        internal static void Reset(string testName)
+        {
+            UsedNumbers = new Dictionary<Type, int>();
+            CurrentTestName = testName;
+        }
 
         static int Next(Type type)
         {
@@ -22,7 +27,7 @@ namespace Olive.Mvc.Testing
             lock (SyncLock)
             {
                 var parts = new[] {
-                    WebTestConfig.TestName.Or("N/A").GetHashCode(), // current test
+                    CurrentTestName.Or("N/A").GetHashCode(), // current test
                     type.GetHashCode(), // type
                     Next(type) // object
                 };

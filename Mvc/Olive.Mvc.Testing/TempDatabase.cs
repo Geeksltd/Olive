@@ -23,8 +23,6 @@ namespace Olive.Mvc.Testing
 
             try
             {
-                PredictableGuidGenerator.Reset();
-
                 if (new TestDatabaseGenerator().Process(Config, dropExisting))
                     try { await (WebTestConfig.ReferenceDataCreator?.Invoke() ?? Task.CompletedTask); }
                     catch (Exception ex)

@@ -27,7 +27,9 @@ namespace Olive.Mvc.Testing
             config?.Invoke(TempDatabase.Config);
 
             if (TempDatabase.Config.AddDefaultHandlers)
-                TempDatabase.Config.AddDatabaseManager()
+                TempDatabase.Config
+                    .AddDatabaseManager()
+                    .AddCurrentTestContext()
                     .AddTimeInjector()
                     .AddSqlProfile()
                     .AddClearDatabaseCache();

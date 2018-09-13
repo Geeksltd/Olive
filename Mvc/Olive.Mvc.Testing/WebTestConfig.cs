@@ -10,18 +10,15 @@ namespace Olive.Mvc.Testing
         internal static Dictionary<string, Func<Task<bool>>> Handlers = new Dictionary<string, Func<Task<bool>>>();
         internal static Dictionary<string, string> UserCommands = new Dictionary<string, string>();
         static bool? isActive;
-
         internal static Func<Task> ReferenceDataCreator;
 
         public static bool IsAutoExecMode { get; internal set; }
-        public static string TestName { get; internal set; }
 
         internal static void SetRunner()
         {
             if (Context.Current.Request().Has("runner"))
             {
                 IsAutoExecMode = true;
-                TestName = Context.Current.Request().Param("testName").Or("N/A");
             }
         }
 

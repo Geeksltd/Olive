@@ -91,6 +91,16 @@ namespace Olive.Mvc.Testing
             return config;
         }
 
+        internal static IDevCommandsConfig AddCurrentTestContext(this IDevCommandsConfig config)
+        {
+            config.Add("testContext", () =>
+          {
+              PredictableGuidGenerator.Reset(Param("name"));
+              return Task.CompletedTask;
+          });
+            return config;
+        }
+
         internal static IDevCommandsConfig AddServiceInjector(this IDevCommandsConfig config)
         {
             return config;
