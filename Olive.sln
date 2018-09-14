@@ -140,6 +140,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Tests", "Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SqlServer.Tests", "Tests\Olive.Entities.Data.SqlServer.Tests\Olive.Entities.Data.SqlServer.Tests.csproj", "{E613709B-D776-41D5-BDBF-5386B6DB186B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.MySql.Tests", "Tests\Olive.Entities.Data.MySql.Tests\Olive.Entities.Data.MySql.Tests.csproj", "{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -321,6 +323,10 @@ Global
 		{E613709B-D776-41D5-BDBF-5386B6DB186B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E613709B-D776-41D5-BDBF-5386B6DB186B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E613709B-D776-41D5-BDBF-5386B6DB186B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -359,6 +365,7 @@ Global
 		{B67F7B8C-3B04-45AC-8D5A-442EC14C68FC} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{CF8E08B3-684E-4A1A-8141-5FDE29B2FA11} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{E613709B-D776-41D5-BDBF-5386B6DB186B} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
+		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
