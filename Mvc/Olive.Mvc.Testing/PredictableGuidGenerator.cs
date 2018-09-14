@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Olive.Mvc.Testing
 {
@@ -26,18 +28,9 @@ namespace Olive.Mvc.Testing
         {
             lock (SyncLock)
             {
-                var parts = new[] {
-                    CurrentTestName.Or("N/A").GetHashCode(), // current test
-                    type.GetHashCode(), // type
-                    Next(type) // object
-                };
-
-                var bytes = new byte[16];
-                for (var i = 0; i < 3; i++)
-                    BitConverter.GetBytes(parts[i]).CopyTo(bytes, i * 4);
-
-
-                return new Guid(bytes);
+                var asText = string.Concat(CurrentTestName.Or("N/A"), type.Name, Next(type));
+                var data = MD5.Create().ComputeHash(asText.ToBytes(Encoding.UTF8));
+                return new Guid(data);
             }
         }
     }
