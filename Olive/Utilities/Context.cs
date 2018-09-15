@@ -25,7 +25,7 @@ namespace Olive
 
         public Context Configure(IServiceProvider provider)
         {
-            ServiceProvider = provider;
+            ServiceProvider = provider;            
             return this;
         }
 

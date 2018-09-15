@@ -12,7 +12,7 @@ namespace Olive
     partial class Context
     {
         /// <summary>
-        /// Initializes Olive context for legacy (non .NET Core apps).
+        /// Initializes Olive context for legacy (non ASP.NET Core apps).
         /// </summary>
         public static void InitializeLegacy()
         {
@@ -23,13 +23,16 @@ namespace Olive
             Initialize(services);
             Current.Configure(new BasicOliveServiceProvider(services));
 
-            Config.configuration = new ConfigReader();
+            Config.configuration = new XmlConfigReader();
         }
 
-        class ConfigReader : IConfiguration
+        /// <summary>
+        /// Reads the legacy web.config or app.config files.
+        /// </summary>
+        class XmlConfigReader : IConfiguration
         {
             Dictionary<string, string> AppSettings;
-            public ConfigReader()
+            public XmlConfigReader()
             {
                 var asExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName + ".config";
 
@@ -73,9 +76,18 @@ namespace Olive
 
             public object GetService(Type serviceType)
             {
-                var result = Services.FirstOrDefault(x => x.ServiceType == serviceType).ImplementationType.CreateInstance();
-                if (result != null) return result;
-                else throw new Exception("Implementation not specified: " + serviceType.FullName);
+                var descriptor = Services.FirstOrDefault(x => x.ServiceType == serviceType);
+                if (descriptor == null) return null;
+
+                switch (descriptor.Lifetime)
+                {
+                    case ServiceLifetime.Transient:
+                        return descriptor.ImplementationFactory(this);
+                    case ServiceLifetime.Singleton:
+                        return descriptor.ImplementationInstance;
+                    default:
+                        throw new NotImplementedException($"{GetType().Name} does not support {descriptor.Lifetime} scope.");
+                }
             }
         }
     }

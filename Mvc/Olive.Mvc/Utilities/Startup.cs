@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +25,7 @@ namespace Olive.Mvc
 
         protected readonly IHostingEnvironment Environment;
         protected readonly IConfiguration Configuration;
+        protected readonly IServiceCollection Services;
 
         protected Startup(IHostingEnvironment env, IConfiguration config)
         {
@@ -33,23 +33,34 @@ namespace Olive.Mvc
             Configuration = config;
         }
 
-        protected AuthenticationBuilder AuthenticationBuilder;
-
-        protected virtual IViewLocationExpander GetViewLocationExpander() => new ViewLocationExpander();
-
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application,
         // visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(IHttpContextAccessor), typeof(HttpContextAccessor))
-               .AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
-
             Context.Initialize(services);
+
+            services.AddSingleton(typeof(IHttpContextAccessor), typeof(HttpContextAccessor));
+            services.AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
             services.AddSingleton<IDatabase>(new Entities.Data.Database());
 
-            var mvc = services.AddMvc(o => o.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
-            Context.Current.AddService(typeof(IMvcBuilder), mvc);
+            ConfigureMvc(services.AddMvc());
+
+            services.AddResponseCompression();
+
+            services.Configure<RazorViewEngineOptions>(o => o.ViewLocationExpanders.Add(new ViewLocationExpander()));
+
+            ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
+        }
+
+        protected virtual void ConfigureAuthentication(AuthenticationBuilder auth)
+        {
+            auth.AddCookie(ConfigureAuthCookie);
+        }
+
+        protected virtual void ConfigureMvc(IMvcBuilder mvc)
+        {
+            mvc.AddMvcOptions(x => x.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
 
             mvc.AddJsonOptions(o => o.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
@@ -58,17 +69,7 @@ namespace Olive.Mvc
                 manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
                 manager.FeatureProviders.Add(new ReferencesMetadataReferenceFeatureProvider());
             });
-
-            services.Configure<RazorViewEngineOptions>(options =>
-                options.ViewLocationExpanders.Add(GetViewLocationExpander()));
-
-            services.AddResponseCompression(ConfigureResponseCompressionOptions);
-
-            AuthenticationBuilder = services.AddAuthentication(config => config.DefaultScheme = "Cookies")
-                .AddCookie(ConfigureAuthCookie);
         }
-
-        protected virtual void ConfigureResponseCompressionOptions(ResponseCompressionOptions options) { }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public virtual void Configure(IApplicationBuilder app)

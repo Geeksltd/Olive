@@ -28,7 +28,7 @@ namespace Olive.Tests
 
             var services = new ServiceCollection();
 
-            services.AddSingleton<IDatabase>(database);
+            services.AddSingleton(database);
 
             Context.Initialize(services);
 
