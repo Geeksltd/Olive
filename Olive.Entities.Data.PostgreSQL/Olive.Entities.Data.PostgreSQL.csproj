@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="1.2.7" />
     <PackageReference Include="GCop.UAT" Version="1.2.7" />
-    <PackageReference Include="Npgsql" Version="4.0.0" />
+    <PackageReference Include="Npgsql" Version="4.0.3" />
   </ItemGroup>
 
   <ItemGroup>
