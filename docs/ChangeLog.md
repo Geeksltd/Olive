@@ -1,5 +1,17 @@
 # Olive compatibility change log
 
+## 15 Sep 2018
+* In `Startup.cs` class
+   * From `ConfigureServices()` method, remove `AuthenticationBuilder.AddSocialAuth();`
+   * Add the following method:
+   ```csharp
+    protected override void ConfigureAuthentication(AuthenticationBuilder auth)
+    {
+        base.ConfigureAuthentication(auth);
+        auth.AddSocialAuth();
+    }
+    ```
+
 ## 12 Sep 2018
 As it has been mentioned on the `21 August 2018` changes, we don't have a conflict between **jQuery-UI** and **Bootstrap** anymore so if you have removed `validation-style` according to the changes on the `04 July 2018` please reference it again. here are steps:
 
