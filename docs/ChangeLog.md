@@ -1,7 +1,7 @@
 # Olive compatibility change log
 
 ## 16 Sep 2018
-If you're using AWS server identity (microservices with containers) please remove `services.AddAwsIdentity();` from `ConfigureServices(IServiceCollection services)` and add following method:
+If you're using AWS server identity (microservices with containers) please remove `services.AddAwsIdentity();` from `ConfigureServices(IServiceCollection services)` and add the following method:
 ```csharp
 public Startup(IHostingEnvironment env, IConfiguration config) : base(env, config)
 {
