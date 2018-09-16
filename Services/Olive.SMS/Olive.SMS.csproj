@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="1.2.7" />
     <PackageReference Include="GCop.UAT" Version="1.2.7" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>

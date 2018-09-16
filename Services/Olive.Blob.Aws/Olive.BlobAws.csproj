@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.18.3" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.23.2" />
     <PackageReference Include="GCop.All.Geeks" Version="1.2.7" />
     <PackageReference Include="GCop.UAT" Version="1.2.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
