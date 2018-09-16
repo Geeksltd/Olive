@@ -10,7 +10,7 @@ namespace Olive
     {
         public static void LoadAwsIdentity(this IConfiguration @this)
         {
-            RuntimeIdentity.Load().WaitAndThrow();
+            RuntimeIdentity.Load(@this).WaitAndThrow();
 
             var secrets = ObtainRuntimeIdentitiesSecret(@this);
 

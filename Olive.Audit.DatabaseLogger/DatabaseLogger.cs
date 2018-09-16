@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Audit
 {
-    public class DatabaseLogger : ILogger
+    public class DatabaseLogger : IAuditLogger
     {
         static Type AuditEventImplementation;
 

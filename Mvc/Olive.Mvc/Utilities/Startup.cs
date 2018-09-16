@@ -33,22 +33,20 @@ namespace Olive.Mvc
             Configuration = config;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application,
-        // visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
             Context.Initialize(services);
+            services.AddHttpContextAccessor();
 
-            services.AddSingleton(typeof(IHttpContextAccessor), typeof(HttpContextAccessor));
             services.AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
-            services.AddSingleton<IDatabase>(new Entities.Data.Database());
+            services.AddSingleton<IDatabase>(new Entities.Data.Database(Configuration));
 
             ConfigureMvc(services.AddMvc());
 
             services.AddResponseCompression();
 
-            services.Configure<RazorViewEngineOptions>(o => o.ViewLocationExpanders.Add(new ViewLocationExpander()));
+            services.Configure<RazorViewEngineOptions>(o =>
+            o.ViewLocationExpanders.Add(new ViewLocationExpander()));
 
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
         }
@@ -71,10 +69,12 @@ namespace Olive.Mvc
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public virtual void Configure(IApplicationBuilder app)
         {
             Context.Current.Configure(app.ApplicationServices).Configure(Environment);
+
+            app.ApplicationServices.GetService<IDatabase>().Configure();
+
             app.UseResponseCompression();
 
             app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));

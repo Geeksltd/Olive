@@ -7,6 +7,8 @@ namespace Olive.Entities
 {
     public interface IDatabase
     {
+        void Configure();
+
         AsyncEvent CacheRefreshed { get; }
 
         /// <summary>

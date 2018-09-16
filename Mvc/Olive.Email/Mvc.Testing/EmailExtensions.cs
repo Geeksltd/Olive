@@ -4,9 +4,10 @@ namespace Olive.Email
     {
         public static IDevCommandsConfig AddEmail(this IDevCommandsConfig config)
         {
+            var service = Context.Current.GetService<EmailTestService>();
+
             config.Add("testEmail", async () =>
             {
-                var service = new EmailTestService();
                 await service.Initialize();
                 await service.Process();
                 return true;

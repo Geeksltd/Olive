@@ -66,36 +66,5 @@ namespace Olive.Email
         /// Gets or sets the VCalendar View of this email.
         /// </summary>
         string VCalendarView { get; set; }
-
-        // -------------------------- Delivery settings override --------------------------
-
-        /// <summary>
-        /// Gets or sets whether SSL is enabled. If not set, the default config value will be used.
-        /// </summary>
-        bool? EnableSsl { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Username to use for sending this email.
-        /// If not set, the default config value will be used.
-        /// </summary>
-        string Username { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Password to use for sending this email.
-        /// If not set, the default config value will be used.
-        /// </summary>
-        string Password { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Smtp host address to use for sending this email.
-        /// If not set, the default config value will be used.
-        /// </summary>
-        string SmtpHost { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Smtp port to use for sending this email.
-        /// If not set, the default config value will be used. 
-        /// </summary>
-        int? SmtpPort { get; set; }
     }
 }

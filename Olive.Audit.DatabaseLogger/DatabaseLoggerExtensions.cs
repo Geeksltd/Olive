@@ -7,7 +7,7 @@ namespace Olive
     {
         public static IServiceCollection AddDatabaseLogger(this IServiceCollection @this)
         {
-            return @this.AddSingleton<Audit.ILogger>(new DatabaseLogger());
+            return @this.AddSingleton<Audit.IAuditLogger>(new DatabaseLogger());
         }
     }
 }

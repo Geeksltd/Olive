@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Audit
 {
-    public interface ILogger
+    public interface IAuditLogger
     {
         IAuditEvent CreateInstance();
         Task Log(IAuditEvent auditEvent);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,6 +14,7 @@ namespace Olive.Entities.Data
 
         [Obsolete("Use Context.Current.Database() instead.", error: true)]
         public static IDatabase Instance => Context.Current.Database();
+        IConfiguration Config;
 
         public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
             = new Dictionary<Assembly, IDataProviderFactory>();
@@ -23,9 +25,15 @@ namespace Olive.Entities.Data
 
         public static DatabaseConfig Configuration { get; private set; }
 
-        public Database()
+        public Database(IConfiguration config)
         {
-            if (Configuration == null) Configuration = Config.Bind<DatabaseConfig>("Database");
+            Config = config;
+        }
+
+        public void Configure()
+        {
+            if (Configuration == null)
+                Config.Bind("Database", Configuration = new DatabaseConfig());
 
             foreach (var factoryInfo in Configuration.Providers.OrEmpty())
                 RegisterDataProviderFactory(factoryInfo);

@@ -16,19 +16,23 @@ namespace Olive.Aws
     public class RuntimeIdentity
     {
         const string VARIABLE = "AWS_RUNTIME_ROLE_ARN";
+        static string RegionName, RoleArn;
 
-        static readonly string RegionName;
-        static string RoleArn;
+        static IConfiguration Config;
 
         public static AWSCredentials Credentials { get; private set; }
 
-        static RuntimeIdentity()
+        public static async Task Load(IConfiguration config)
         {
+            Config = config;
             RoleArn = Environment.GetEnvironmentVariable(VARIABLE);
             Environment.SetEnvironmentVariable(VARIABLE, null);
 
-            RegionName = Context.Current.Config.GetValue("Aws:Region",
+            RegionName = Config.GetValue("Aws:Region",
                 defaultValue: Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION"));
+
+            await Renew();
+            new Thread(KeepRenewing).Start();
         }
 
         public static RegionEndpoint Region
@@ -40,12 +44,6 @@ namespace Olive.Aws
 
                 return RegionEndpoint.GetBySystemName(RegionName);
             }
-        }
-
-        public static async Task Load()
-        {
-            await Renew();
-            new Thread(KeepRenewing).Start();
         }
 
         [EscapeGCop("This is a background process")]

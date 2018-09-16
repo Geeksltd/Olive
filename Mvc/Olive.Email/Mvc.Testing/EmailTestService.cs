@@ -17,17 +17,26 @@ namespace Olive.Email
 
         HttpRequest Request => Context.Current.Request();
         HttpResponse Response => Context.Current.Response();
+
+        IEmailAttachmentSerializer AttachmentSerializer;
+        IMailMessageCreator MessageCreator;
         string To, ReturnUrl;
         Attachment AttachmentFile;
         IEmailMessage Email;
         bool IsInitialized;
+
+        public EmailTestService(IEmailAttachmentSerializer attachmentSerializer, IMailMessageCreator messageCreator)
+        {
+            AttachmentSerializer = attachmentSerializer;
+            MessageCreator = messageCreator;
+        }
 
         public async Task<EmailTestService> Initialize()
         {
             To = Request.Param("to").ToStringOrEmpty().ToLower();
             ReturnUrl = Request.GetReturnUrl();
             if (Request.Has("attachmentInfo"))
-                AttachmentFile = EmailService.ParseAttachment(Request.Param("attachmentInfo"));
+                AttachmentFile = AttachmentSerializer.Parse(Request.Param("attachmentInfo"));
 
             using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
                 Email = await Request.GetOrDefault<IEmailMessage>("id");
@@ -69,7 +78,7 @@ namespace Olive.Email
             }
             else
             {
-                response = GenerateEmailView();
+                response = await GenerateEmailView();
             }
 
             await Dispatch(response);
@@ -155,13 +164,14 @@ namespace Olive.Email
             {
                 foreach (var item in emails)
                 {
+                    var mail = await MessageCreator.Create(item);
+
                     r.AppendLine("<tr>");
                     r.AddFormattedLine("<td>{0}</td>", item.SendableDate.ToString("yyyy-MM-dd"));
                     r.AddFormattedLine("<td>{0}</td>", item.SendableDate.ToSmallTime());
+                    r.AddFormattedLine("<td>{0}</td>", mail.From.DisplayName + "(" + mail.From.Address + ")");
                     r.AddFormattedLine("<td>{0}</td>",
-                        item.GetEffectiveFromName() + "(" + item.GetEffectiveFromAddress() + ")");
-                    r.AddFormattedLine("<td>{0}</td>",
-                        item.GetEffectiveReplyToName() + "(" + item.GetEffectiveReplyToAddress() + ")");
+                        mail.ReplyToList.First().DisplayName + "(" + mail.ReplyToList.First().Address + ")");
                     r.AddFormattedLine("<td>{0}</td>", item.To);
                     r.AddFormattedLine("<td>{0}</td>", item.Cc);
                     r.AddFormattedLine("<td>{0}</td>", item.Bcc);
@@ -169,7 +179,7 @@ namespace Olive.Email
                     r.AddFormattedLine("<td><a href='/?Web.Test.Command=testEmail&id={0}&to={1}&ReturnUrl={2}'>{3}</a></td>",
                         item.GetId(), To, ReturnUrl.UrlEncode(), item.Subject.Or("[NO SUBJECT]").HtmlEncode());
 
-                    r.AddFormattedLine("<td>{0}</td>", await GetAttachmentLinks(item));
+                    r.AddFormattedLine("<td>{0}</td>", GetAttachmentLinks(item));
 
                     r.AppendLine("</tr>");
                 }
@@ -180,35 +190,41 @@ namespace Olive.Email
             return r.ToString();
         }
 
-        async Task<string> GetAttachmentLinks(IEmailMessage email)
+        string GetAttachmentLinks(IEmailMessage email)
         {
-            return (await email.Attachments.OrEmpty().Split('|').Trim()
-                .Select(async f => $"<form action='/?Web.Test.Command=testEmail&To={To}&ReturnUrl={ReturnUrl.UrlEncode()}' " +
-                $"method='post'><input type=hidden name='attachmentInfo' value='{f.HtmlEncode()}'/><a href='#' " +
-                $"onclick='this.parentElement.submit()'>{(EmailService.ParseAttachment(f))?.Name.HtmlEncode()}</a></form>")
-                .AwaitAll()).ToString("");
+            return email.Attachments.OrEmpty().Split('|').Trim()
+                .Select(f =>
+              {
+                  var att = AttachmentSerializer.Parse(f)?.Name.HtmlEncode();
+
+                  return $"<form action='/?Web.Test.Command=testEmail&To={To}&ReturnUrl={ReturnUrl.UrlEncode()}' " +
+                     $"method='post'><input type=hidden name='attachmentInfo' value='{f.HtmlEncode()}'/><a href='#' " +
+                     $"onclick='this.parentElement.submit()'>{att}</a></form>";
+              }).ToString("");
         }
 
         bool IsTextFile(string fileName) => Path.GetExtension(fileName).ToLower().IsAnyOf(".txt", ".csv", ".xml");
 
-        string GenerateEmailView()
+        async Task<string> GenerateEmailView()
         {
             var r = new StringBuilder();
 
+            var mail = await MessageCreator.Create(Email);
+
             r.AppendLine("<a href='/?Web.Test.Command=testEmail&to=" + To + "'>&lt;&lt; Back</a>");
-            r.AppendLine("<h2>Subject: <u>" + Email.Subject.Or("[NO SUBJECT]") + "</u></h2>");
+            r.AppendLine("<h2>Subject: <u>" + mail.Subject + "</u></h2>");
             r.AppendLine("<table cellspacing='0'>");
 
             var body = GetBodyHtml(Email.Body.Or("[EMPTY BODY]"), Email.Html);
 
             var toShow = new Dictionary<string, object> {
                 {"Date", Email.SendableDate.ToString("yyyy-MM-dd") +" at " + Email.SendableDate.ToString("HH:mm") },
-                {"From", Email.GetEffectiveFromAddress()},
-                {"ReplyTo", Email.GetEffectiveReplyToAddress()},
-                {"To", Email.GetEffectiveToAddresses()},
-                {"Bcc", Email.GetEffectiveBccAddresses().ToString(", ")},
-                {"Cc", Email.GetEffectiveCcAddresses().ToString(", ")},
-                {"Subject", Email.Subject.Or("[NO SUBJECT]").HtmlEncode().WithWrappers("<b>", "</b>")},
+                {"From", mail.From?.Address},
+                {"ReplyTo", mail.ReplyToList.FirstOrDefault()?.Address},
+                {"To", mail.To.Select(x=>x.Address).ToString(", ")},
+                {"Cc", mail.CC.Select(x=>x.Address).ToString(", ")},
+                { "Bcc", mail.Bcc.Select(x=>x.Address).ToString(", ")},
+                {"Subject", mail.Subject.HtmlEncode().WithWrappers("<b>", "</b>")},
                 {"Body", body.WithWrappers("<div class='body'>" ,"</div>") },
                 {"Attachments", GetAttachmentLinks(Email) }
             };

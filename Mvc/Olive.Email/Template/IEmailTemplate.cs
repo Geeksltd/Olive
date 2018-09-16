@@ -7,8 +7,6 @@ namespace Olive.Email
     /// </summary>
     public partial interface IEmailTemplate : IEntity
     {
-        /* -------------------------- Properties -------------------------*/
-
         /// <summary>
         /// Gets or sets the value of Body on this Email template instance.
         /// </summary>
