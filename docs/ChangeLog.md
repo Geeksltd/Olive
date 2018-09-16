@@ -1,5 +1,17 @@
 # Olive compatibility change log
 
+## 16 Sep 2018
+If you're using AWS server identity (microservices with containers) please remove `services.AddAwsIdentity();` from `ConfigureServices(IServiceCollection services)` and add the following method:
+```csharp
+public Startup(IHostingEnvironment env, IConfiguration config) : base(env, config)
+{
+    if (env.IsProduction())
+    {
+        config.LoadAwsIdentity();
+    }
+}
+```
+
 ## 15 Sep 2018
 * In `Startup.cs` class
    * From `ConfigureServices()` method, remove `AuthenticationBuilder.AddSocialAuth();`
