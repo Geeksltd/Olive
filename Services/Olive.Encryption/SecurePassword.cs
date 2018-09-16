@@ -1,5 +1,6 @@
 ﻿namespace Olive.Security
 {
+    using Microsoft.Extensions.Configuration;
     using System;
     using System.Security.Cryptography;
 
@@ -10,7 +11,10 @@
     {
         // The following constants may be changed without breaking existing hashes.
         const int SALT_BYTE_SIZE = 64, HASH_BYTE_SIZE = 64;
-        static int PBKDF2_ITERATIONS = Config.Get("Authentication:SecurePassword:Pbkdf2Iterations", defaultValue: 10000);
+
+        static int PBKDF2_ITERATIONS
+            => Context.Current.Config.GetValue("Authentication:SecurePassword:Pbkdf2Iterations",
+                defaultValue: 10000);
 
         public string Password { get; set; }
         public string Salt { get; set; }

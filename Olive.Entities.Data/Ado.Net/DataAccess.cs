@@ -76,7 +76,8 @@ namespace Olive.Entities.Data
             command.Transaction = await (DbTransactionScope.Root?.GetDbTransaction()
                 ?? Task.FromResult(command.Transaction));
 
-            command.CommandTimeout = DatabaseContext.Current?.CommandTimeout ?? (Config.TryGet<int?>("Sql.Command.TimeOut")) ?? command.CommandTimeout;
+            command.CommandTimeout = DatabaseContext.Current?.CommandTimeout ??
+                Config.Get("Sql.Command.TimeOut", defaultValue: command.CommandTimeout);
 
             foreach (var param in @params)
                 command.Parameters.Add(param);

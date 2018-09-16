@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,10 +26,13 @@ namespace Olive
 
         public Context Configure(IServiceProvider provider)
         {
-            ServiceProvider = provider;            
+            ServiceProvider = provider;
             return this;
         }
 
+        /// <summary>
+        /// Gets a required service of the specified contract type.
+        /// </summary>
         public TService GetService<TService>()
         {
             if (ServiceProvider == null)
@@ -36,6 +40,8 @@ namespace Olive
 
             return ServiceProvider.GetRequiredService<TService>();
         }
+
+        public IConfiguration Config => GetService<IConfiguration>();
 
         public TService GetOptionalService<TService>() where TService : class
         {

@@ -1,11 +1,14 @@
 ﻿using Amazon;
+using Microsoft.Extensions.Configuration;
 
 namespace Olive.BlobAws
 {
     /// <summary>This class is to help the AWS Bucket</summary>
     static class AWSInfo
     {
-        internal static string S3BucketName => Config.Get("Blob:S3:Bucket");
+        static IConfiguration Config => Context.Current.Config;
+
+        internal static string S3BucketName => Config.GetValue<string>("Blob:S3:Bucket");
 
         /// <summary>
         /// Returns the Amazaon Region Endpoint as it might change in future
@@ -14,7 +17,7 @@ namespace Olive.BlobAws
         {
             get
             {
-                var regionName = Config.TryGet<string>("Blob:S3:Region");
+                var regionName = Config.GetValue<string>("Blob:S3:Region");
 
                 if (regionName.HasValue())
                     return RegionEndpoint.GetBySystemName(regionName);

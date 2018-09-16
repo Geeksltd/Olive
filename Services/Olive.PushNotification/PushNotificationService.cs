@@ -1,15 +1,15 @@
 ﻿namespace Olive.PushNotification
 {
+    using Newtonsoft.Json.Linq;
+    using Olive;
+    using PushSharp.Apple;
+    using PushSharp.Common;
+    using PushSharp.Google;
+    using PushSharp.Windows;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Xml.Linq;
-    using Olive;
-    using Newtonsoft.Json.Linq;
-    using PushSharp.Apple;
-    using PushSharp.Google;
-    using PushSharp.Windows;
-    using PushSharp.Common;
 
     /// <summary>
     /// Sends push notifications to ios, android and windows devices
@@ -40,7 +40,7 @@
         static void InitializeAppleBroker()
         {
             if (ApnsBroker != null) return;
-            if (!Config.IsDefined("PushNotification:Apple:CertificateFile")) return;
+            if (Config.Get("PushNotification:Apple:CertificateFile").IsEmpty()) return;
 
             // Configuration (NOTE: .pfx can also be used here)
             var config = CreateAppleConfig();
@@ -66,7 +66,7 @@
         {
             if (GcmBroker != null) return;
 
-            if (!Config.IsDefined("PushNotification:Google:SenderId")) return;
+            if (Config.Get("PushNotification:Google:SenderId").IsEmpty()) return;
 
             var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"), Config.Get("PushNotification:Google:AuthToken"), null)
             { GcmUrl = "https://fcm.googleapis.com/fcm/send" };
@@ -93,7 +93,7 @@
         static void InitializeWindowsBroker()
         {
             if (WnsBroker != null) return;
-            if (!Config.IsDefined("PushNotification:Windows:PackageName")) return;
+            if (Config.Get("PushNotification:Windows:PackageName").IsEmpty()) return;
 
             // Configuration
             var config = new WnsConfiguration(Config.Get("PushNotification:Windows:PackageName"),

@@ -23,7 +23,7 @@ namespace Olive
             Initialize(services);
             Current.Configure(new BasicOliveServiceProvider(services));
 
-            Config.configuration = new XmlConfigReader();
+            Current.AddService(typeof(IConfiguration), new XmlConfigReader());
         }
 
         /// <summary>

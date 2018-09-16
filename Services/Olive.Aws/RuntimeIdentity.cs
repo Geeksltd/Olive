@@ -2,6 +2,7 @@
 using Amazon.Runtime;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,8 +27,8 @@ namespace Olive.Aws
             RoleArn = Environment.GetEnvironmentVariable(VARIABLE);
             Environment.SetEnvironmentVariable(VARIABLE, null);
 
-            RegionName = Config.Get("Aws:Region",
-                Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION"));
+            RegionName = Context.Current.Config.GetValue("Aws:Region",
+                defaultValue: Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION"));
         }
 
         public static RegionEndpoint Region
@@ -41,10 +42,9 @@ namespace Olive.Aws
             }
         }
 
-        internal static async Task Load()
+        public static async Task Load()
         {
             await Renew();
-
             new Thread(KeepRenewing).Start();
         }
 

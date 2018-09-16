@@ -1,5 +1,6 @@
 ﻿using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
+using Microsoft.Extensions.Configuration;
 using Olive.Aws;
 using System;
 using System.Collections.Concurrent;
@@ -11,8 +12,8 @@ namespace Olive.Security.Aws
     {
         readonly static ConcurrentDictionary<string, byte[]> EncryptionKeys = new ConcurrentDictionary<string, byte[]>();
 
-        static readonly string MasterKeyArn = Config.Get("Aws:Kms:MasterKeyArn")
-            .Or(Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN"))
+        static readonly string MasterKeyArn = Context.Current.Config.GetValue("Aws:Kms:MasterKeyArn",
+            defaultValue: Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN"))
             .OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified.");
 
         static AmazonKeyManagementServiceClient CreateClient()

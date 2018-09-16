@@ -1,39 +1,34 @@
 ﻿using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Olive.Aws;
 using System;
-using System.Threading.Tasks;
 
 namespace Olive
 {
     public static class AWSExtensions
     {
-        public static IServiceCollection AddAwsIdentity(this IServiceCollection @this)
+        public static void LoadAwsIdentity(this IConfiguration @this)
         {
-            Task.Factory.RunSync(LoadIdentityAndSecrets);
-            return @this;
+            RuntimeIdentity.Load().WaitAndThrow();
+
+            var secrets = ObtainRuntimeIdentitiesSecret(@this);
+
+            foreach (var item in new JsonConfigurationProvider(secrets).GetData())
+                @this[item.Key] = item.Value;
         }
 
-        static async Task LoadIdentityAndSecrets()
+        static string ObtainRuntimeIdentitiesSecret(IConfiguration config)
         {
-            await RuntimeIdentity.Load();
-
-            var secrets = await ObtainRuntimeIdentitiesSecret();
-
-            Config.AddConfiguration(x => x.Add(new JsonConfigurationSource(secrets)));
-        }
-
-        static async Task<string> ObtainRuntimeIdentitiesSecret()
-        {
-            var request = new GetSecretValueRequest { SecretId = Config.Get("Aws:Secrets:Id") };
+            var request = new GetSecretValueRequest { SecretId = config["Aws:Secrets:Id"] };
 
             try
             {
-                using (var client = new AmazonSecretsManagerClient(RuntimeIdentity.Credentials,
+                using (var client = new AmazonSecretsManagerClient(
+                    RuntimeIdentity.Credentials,
                     RuntimeIdentity.Region))
                 {
-                    var response = await client.GetSecretValueAsync(request);
+                    var response = client.GetSecretValueAsync(request).RiskDeadlockAndAwaitResult();
                     if (response.SecretString.IsEmpty())
                         throw new Exception("AWS SecretString was empty!");
 

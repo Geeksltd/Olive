@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -126,7 +127,7 @@ namespace Olive
 
                 HttpClient = new HttpClient(container)
                 {
-                    Timeout = Config.Get("ApiClient:Timeout", 60).Seconds()
+                    Timeout = Context.Current.Config.GetValue("ApiClient:Timeout", 60).Seconds()
                 };
 
                 foreach (var config in Client.RequestHeadersCustomizers)
