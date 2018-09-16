@@ -1,6 +1,6 @@
 ﻿namespace Olive.Entities.Data
 {
-    using MySql.Data.MySqlClient;
+    using global::MySql.Data.MySqlClient;
     using System;
     using System.Collections.Generic;
     using System.Data;
