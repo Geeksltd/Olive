@@ -5,7 +5,7 @@ This library will help you to send emails as easy as possible.
 ## Getting started
 
 First, you need to add the [Olive.Email](https://www.nuget.org/packages/Olive.Email/) NuGet package : `Install-Package Olive.Email`.
-Now you should add these section to `appsettings.json` file:
+Now you should add this section to `appsettings.json` file:
 ```json
 "Email": {
     "From": {
@@ -42,7 +42,7 @@ You have now completed the initial setup of the `Olive.Email` service.
 ### Sending Email 
 
 Add `using Olive;` in top of your csharp file and implement `IEmailMessage` and `IEmailTemplate`. Here is a full example:
-``csharp
+```csharp
 public class EmailMessage : IEmailMessage
 {
     public string Body { get; set; }
