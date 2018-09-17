@@ -36,29 +36,7 @@ namespace Olive
             return @this.Result;
         }
 
-        /// <summary>
-        /// Runs a specified task in a new thread to prevent deadlock (context switch race).
-        /// </summary> 
-        [EscapeGCop("I AM the solution to the GCop warning itself!")]
-        public static void RunSync(this TaskFactory @this, Func<Task> task)
-        {
-            if (task == null) throw new ArgumentNullException(nameof(task));
-
-            using (var actualTask = new Task<Task>(task))
-            {
-                try
-                {
-                    actualTask.RunSynchronously();
-                    actualTask.WaitAndThrow();
-                    actualTask.Result.WaitAndThrow();
-                }
-                catch (AggregateException ex)
-                {
-                    Log.For(typeof(TaskExtensions)).Error(ex);
-                    throw ex.InnerException;
-                }
-            }
-        }
+     
 
         /// <summary>
         /// Waits for a task to complete, and then if it contains an exception, it will be thrown.
@@ -73,31 +51,7 @@ namespace Olive
                 throw @this.Exception.InnerException;
         }
 
-        /// <summary>
-        /// Runs a specified task in a new thread to prevent deadlock (context switch race).
-        /// </summary> 
-        [EscapeGCop("I AM the solution to the GCop warning itself!")]
-        public static TResult RunSync<TResult>(this TaskFactory @this, Func<Task<TResult>> task)
-        {
-            try
-            {
-                return @this.StartNew(task, TaskCreationOptions.LongRunning)
-                     .ContinueWith(t =>
-                     {
-                         if (t.Exception == null) return t.Result;
-
-                         System.Diagnostics.Debug.Fail("Error in calling TaskFactory.RunSync: " + t.Exception.InnerException.ToLogString());
-                         throw t.Exception.InnerException;
-                     })
-                     .RiskDeadlockAndAwaitResult()
-                     .RiskDeadlockAndAwaitResult();
-            }
-            catch (AggregateException ex)
-            {
-                throw ex.InnerException;
-            }
-        }
-
+     
         public static async Task WithTimeout(this Task @this, TimeSpan timeout, Action success = null, Action timeoutAction = null)
         {
             if (await Task.WhenAny(@this, Task.Delay(timeout)) == @this) success?.Invoke();

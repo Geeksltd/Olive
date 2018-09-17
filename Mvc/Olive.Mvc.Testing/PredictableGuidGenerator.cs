@@ -28,7 +28,9 @@ namespace Olive.Mvc.Testing
         {
             lock (SyncLock)
             {
-                var asText = string.Concat(CurrentTestName.Or("N/A"), type.Name, Next(type));
+                if (CurrentTestName.IsEmpty()) return Guid.NewGuid();
+
+                var asText = string.Concat(CurrentTestName, type.Name, Next(type));
                 var data = MD5.Create().ComputeHash(asText.ToBytes(Encoding.UTF8));
                 return new Guid(data);
             }
