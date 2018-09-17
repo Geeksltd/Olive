@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Olive.Tests;
 using System;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data.SqlServer.Tests
 {
     [TestFixture]
-    public partial class EntityDatabaseTests : TestsBase
+    public partial class EntityDatabaseTests : TestsDatabaseBase
     {
         Person person;
 
