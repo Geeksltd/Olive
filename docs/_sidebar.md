@@ -13,10 +13,13 @@
     * [Creating a new microservice](Microservices/Create.New.md)
 
 * DevOps
-    * [Docker support](Microservices/DevOps/Docker.md)
-    * [Jenkins](Microservices/DevOps/Jenkins.md)
-    * [Cluster setup (Kubernetes & AWS)](Microservices/DevOps/Cluster-setup.md)
-    * [Security](Microservices/DevOps/Security.md)
+    * [Docker support](DevOps/Docker.md)
+    * [Jenkins](DevOps/Jenkins.md)
+    * [Jenkinsfile template](DevOps/MSharp-Jenkinsfile.md)
+    * [Jenkinsfile server](DevOps/PreparingJenkinsServer.md)
+    * [Cluster setup (Kubernetes & AWS)](DevOps/Cluster-setup.md)
+    * [Security](DevOps/Security.md)
+    * [Service preparation](DevOps/Service-preparation.md)
         
 * Web Api and Integration
     * [RESTful WebApi](Api/WebApi.md)
