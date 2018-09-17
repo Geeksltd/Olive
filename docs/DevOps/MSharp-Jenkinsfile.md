@@ -1,9 +1,13 @@
 
 # Jenkinsfile for M# ASP.NET apps
 
-The [Jenkins.md](Jenkins.md) describes the build process in details. This document includes the Jenkinsfile steps for building and automating a `ASP.Net MVC 5` and `Web Forms` projects used by the earlier versions of M#.
+This document includes the Jenkinsfile steps for building and automating M# based applications that are built using any of the following target frameworks:
 
-> Configuring the Jenkinsfile as below doesn't require the Build.bat file in the repository.
+- `Olive` (and .NET Core)
+- `ASP.Net MVC 5`
+- `ASP.NET Web Forms`
+
+> Note: Configuring the Jenkinsfile as below no longer requires the Build.bat file in the repository.
 
 ## Variables
 
