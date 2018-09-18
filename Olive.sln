@@ -142,6 +142,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SqlServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.MySql.Tests", "Tests\Olive.Entities.Data.MySql.Tests\Olive.Entities.Data.MySql.Tests.csproj", "{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Email.Tests", "Tests\Olive.Email.Tests\Olive.Email.Tests.csproj", "{726887E1-66F0-4268-87D6-DD58E691EEA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.SMS.Tests", "Tests\Olive.SMS.Tests\Olive.SMS.Tests.csproj", "{EF294884-E2EE-4D3F-B6C5-5A783E26B89B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -327,6 +331,14 @@ Global
 		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722}.Release|Any CPU.Build.0 = Release|Any CPU
+		{726887E1-66F0-4268-87D6-DD58E691EEA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{726887E1-66F0-4268-87D6-DD58E691EEA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{726887E1-66F0-4268-87D6-DD58E691EEA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{726887E1-66F0-4268-87D6-DD58E691EEA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF294884-E2EE-4D3F-B6C5-5A783E26B89B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF294884-E2EE-4D3F-B6C5-5A783E26B89B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF294884-E2EE-4D3F-B6C5-5A783E26B89B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF294884-E2EE-4D3F-B6C5-5A783E26B89B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -366,6 +378,8 @@ Global
 		{CF8E08B3-684E-4A1A-8141-5FDE29B2FA11} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{E613709B-D776-41D5-BDBF-5386B6DB186B} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{8EF1FF34-15DB-49A9-9A48-601CBE5F1722} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
+		{726887E1-66F0-4268-87D6-DD58E691EEA6} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
+		{EF294884-E2EE-4D3F-B6C5-5A783E26B89B} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

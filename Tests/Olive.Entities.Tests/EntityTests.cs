@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using Olive.Tests;
-using System;
 
 namespace Olive.Entities.Tests
 {
@@ -14,7 +13,6 @@ namespace Olive.Entities.Tests
         {
             person = new Person
             {
-                ID = "A67A0350-AC6C-4568-8CAA-F1C15802D599".ToLower().To<Guid>(),
                 FirstName = "Paymon",
                 LastName = "Khamooshi"
             };
@@ -26,7 +24,6 @@ namespace Olive.Entities.Tests
             var newPerson = person.Clone() as Person;
 
             newPerson.ShouldNotBeNull();
-            newPerson.ID.ShouldEqual("A67A0350-AC6C-4568-8CAA-F1C15802D599".ToLower().To<Guid>());
             newPerson.FirstName.ShouldEqual("Paymon");
             newPerson.LastName.ShouldEqual("Khamooshi");
         }

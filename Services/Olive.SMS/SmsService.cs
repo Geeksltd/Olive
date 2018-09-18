@@ -1,26 +1,27 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using Olive.Entities;
+using System;
+using System.Threading.Tasks;
 
 namespace Olive.SMS
 {
-    public static class SmsService
+    public class SmsService : ISmsService
     {
-        static IDatabase Database => Context.Current.Database();
+        readonly IDatabase Database;
+        private readonly ILogger<SmsService> Log;
 
         /// <summary>
         /// Occurs when an exception happens when sending an sms. Sender parameter will be the ISmsQueueItem instance that couldn't be sent.
         /// </summary>
-        public static readonly AsyncEvent<SmsSendingEventArgs> SendError = new AsyncEvent<SmsSendingEventArgs>();
+        public readonly AsyncEvent<SmsSendingEventArgs> SendError = new AsyncEvent<SmsSendingEventArgs>();
 
-        /// <summary>
-        /// Sends the specified SMS item.
-        /// It will try several times to deliver the message. The number of retries can be specified in AppConfig of "SMS:MaximumRetries".
-        /// If it is not declared in web.config, then 3 retires will be used.
-        /// Note: The actual SMS Sender component must be implemented as a public type that implements ISMSSender interface.
-        /// The assembly qualified name of that component, must be specified in AppConfig of "SMS:SenderType".
-        /// </summary>
-        public static async Task<bool> Send(ISmsQueueItem smsItem)
+        public SmsService(IDatabase database, ILogger<SmsService> log)
+        {
+            Database = database;
+            this.Log = log;
+        }
+
+        public async Task<bool> Send(ISmsQueueItem smsItem)
         {
             if (smsItem.Retries > Config.Get("SMS:MaximumRetries", 3))
                 return false;
@@ -36,7 +37,7 @@ namespace Olive.SMS
                 }
                 catch (Exception ex)
                 {
-                    Log.For(typeof(SmsService)).Error(ex, "Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"));
+                    Log.Error(ex, "Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"));
                     return false;
                 }
 
@@ -48,16 +49,37 @@ namespace Olive.SMS
             catch (Exception ex)
             {
                 await SendError.Raise(new SmsSendingEventArgs(smsItem) { Error = ex });
-                Log.For(typeof(SmsService)).Error(ex, "Can not send the SMS queue item.");
-                await smsItem.RecordRetry();
+                Log.Error(ex, "Can not send the SMS queue item.");
+                await RecordRetry(smsItem);
                 return false;
             }
         }
 
-        public static async Task SendAll()
+        /// <summary>
+        /// Records an unsuccessful attempt to send this SMS.
+        /// </summary>
+        public async Task RecordRetry(ISmsQueueItem sms)
+        {
+            if (sms.IsNew) throw new InvalidOperationException();
+
+            await Database.Update(sms, s => s.Retries++);
+
+            // Also update this local instance:
+            sms.Retries++;
+        }
+
+        /// <summary>
+        /// Updates the DateSent field of this item and then soft deletes it.
+        /// </summary>
+        public Task MarkSent(ISmsQueueItem sms)
+        {
+            return Database.EnlistOrCreateTransaction(() => Database.Update(sms, o => o.DateSent = LocalTime.Now));
+        }
+
+        public async Task SendAll()
         {
             foreach (var sms in await Database.GetList<ISmsQueueItem>(i => i.DateSent == null))
-                await sms.Send();
+                await Send(sms);
         }
     }
 }
