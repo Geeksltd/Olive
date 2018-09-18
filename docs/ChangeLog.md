@@ -5,10 +5,7 @@ If you're using AWS server identity (microservices with containers) please remov
 ```csharp
 public Startup(IHostingEnvironment env, IConfiguration config) : base(env, config)
 {
-    if (env.IsProduction())
-    {
-        config.LoadAwsIdentity();
-    }
+    if (env.IsProduction()) config.LoadAwsIdentity();    
 }
 ```
 
