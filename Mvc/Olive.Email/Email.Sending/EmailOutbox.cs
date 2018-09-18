@@ -9,47 +9,13 @@ using System.Threading.Tasks;
 
 namespace Olive.Email
 {
-    public interface IEmailSender
-    {
-        /// <summary>Tries to sends all unsent emails from the queue.</summary>
-        Task SendAll(TimeSpan? delayPerSend = null);
-
-        /// <summary>
-        /// Will try to send the specified email and returns true for successful sending.
-        /// </summary>
-        Task<bool> Send(IEmailMessage message);
-
-        /// <summary>
-        /// Occurs when the smtp mail message for this email is about to be sent.
-        /// </summary>
-        AsyncEvent<EmailSendingEventArgs> Sending { get; }
-
-        /// <summary>
-        /// Occurs when the smtp mail message for this email is sent.
-        /// Sender is the IEmailMessage instance that was sent.
-        /// </summary>
-        AsyncEvent<EmailSendingEventArgs> Sent { get; }
-
-        /// <summary>
-        /// Occurs when an exception happens when sending an email.
-        /// Sender parameter will be the IEmailMessage instance that couldn't be sent.
-        /// </summary>
-        AsyncEvent<EmailSendingEventArgs> SendError { get; }
-
-        /// <summary>
-        /// Gets the email items which have been sent (marked as soft deleted).
-        /// </summary>
-        Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage;
-    }
-
-    public class EmailSender : IEmailSender
+    public class EmailOutbox : IEmailOutbox
     {
         static Random Random = new Random();
         AsyncLock AsyncLock = new AsyncLock();
         IDatabase Database;
         EmailConfiguration Config;
-        int MaximumRetries;
-        ILogger<EmailSender> Log;
+        ILogger<EmailOutbox> Log;
 
         public AsyncEvent<EmailSendingEventArgs> Sending { get; }
         public AsyncEvent<EmailSendingEventArgs> Sent { get; }
@@ -57,9 +23,9 @@ namespace Olive.Email
         public IEmailDispatcher Dispatcher { get; }
         public IMailMessageCreator MessageCreator { get; }
 
-        public EmailSender(IEmailDispatcher dispatcher,
+        public EmailOutbox(IEmailDispatcher dispatcher,
             IMailMessageCreator messageCreator,
-            IDatabase database, IConfiguration config, ILogger<EmailSender> log)
+            IDatabase database, IConfiguration config, ILogger<EmailOutbox> log)
         {
             Dispatcher = dispatcher;
             MessageCreator = messageCreator;
@@ -74,7 +40,7 @@ namespace Olive.Email
         Task<IEmailMessage[]> GetUnsentEmails()
         {
             return Database.Of<IEmailMessage>()
-                .Where(x => x.Retries < MaximumRetries)
+                .Where(x => x.Retries < Config.MaxRetries)
                   .OrderBy(e => e.SendableDate)
                   .GetList()
                   .ToArray();
@@ -129,9 +95,12 @@ namespace Olive.Email
                 try
                 {
                     await Sending.Raise(new EmailSendingEventArgs(message, mail));
-                    var result = await Dispatcher.Dispatch(message, mail);
+                    await Dispatcher.Dispatch(mail);
+
+                    if (!message.IsNew) await Database.Delete(message);
                     await Sent.Raise(new EmailSendingEventArgs(message, mail));
-                    return result;
+
+                    return true;
                 }
                 catch (Exception ex)
                 {

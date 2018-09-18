@@ -11,7 +11,7 @@ namespace Olive.Email.Tests
     [TestFixture]
     public class EmailTests : TestsBase
     {
-        IEmailSender EmailSender;
+        IEmailOutbox EmailOutbox;
 
         [SetUp]
         public override void SetUp()
@@ -20,7 +20,7 @@ namespace Olive.Email.Tests
 
             services.AddSingleton<IDatabase>(Mock.Of<IDatabase>());
 
-            services.AddSingleton<ILogger<EmailSender>>(Mock.Of<ILogger<EmailSender>>());
+            services.AddSingleton<ILogger<EmailOutbox>>(Mock.Of<ILogger<EmailOutbox>>());
 
             services.AddEmail();
 
@@ -28,13 +28,13 @@ namespace Olive.Email.Tests
 
             Context.Current.Configure(services.BuildServiceProvider());
 
-            EmailSender = Context.Current.GetService<IEmailSender>();
+            EmailOutbox = Context.Current.GetService<IEmailOutbox>();
         }
 
         [Test]
         public async Task Can_send_email()
         {
-            EmailSender.ShouldNotBeNull();
+            EmailOutbox.ShouldNotBeNull();
 
             //Mock email message
             var mock = Mock.Of<IEmailMessage>();
@@ -42,7 +42,7 @@ namespace Olive.Email.Tests
             mock.To = "paymon@geeks.ltd.uk";
             mock.SendableDate = LocalTime.Now.AddDays(1); //send email tomorrow, so we will get false result.
 
-            var result = await EmailSender.Send(mock);
+            var result = await EmailOutbox.Send(mock);
 
             result.ShouldBeFalse();
         }

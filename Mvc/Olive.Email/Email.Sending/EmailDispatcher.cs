@@ -11,7 +11,7 @@ namespace Olive.Email
         /// Provides a message which can dispatch an email message.
         /// Returns whether the message was sent successfully.
         /// </summary>
-        Task<bool> Dispatch(IEmailMessage mailItem, MailMessage mail);
+        Task Dispatch(MailMessage mail);
     }
 
     public class EmailDispatcher : IEmailDispatcher
@@ -27,7 +27,7 @@ namespace Olive.Email
         /// Provides a message which can dispatch an email message.
         /// Returns whether the message was sent successfully.
         /// </summary>
-        public async Task<bool> Dispatch(IEmailMessage mailItem, MailMessage mail)
+        public async Task Dispatch(MailMessage mail)
         {
             using (var smtpClient = new SmtpClient())
             {
@@ -38,11 +38,7 @@ namespace Olive.Email
                 smtpClient.Credentials = new NetworkCredential(Config.Username, Config.Password);
 
                 await smtpClient.SendMailAsync(mail);
-
-                if (!mailItem.IsNew) await Context.Current.Database().Delete(mailItem);
             }
-
-            return true;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Olive.Email;
+using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -9,22 +10,20 @@ namespace Olive.Aws.Ses
 {
     public class AwsSesEmailDispatcher : IEmailDispatcher
     {
-        // RuntimeIdentity.Credentials
-        public async Task<bool> Dispatch(IEmailMessage email, MailMessage mail)
+        public async Task Dispatch(MailMessage mail)
         {
-            var request = CreateEmailRequest(email, mail);
+            var request = CreateEmailRequest(mail);
 
-            using (var client = new AmazonSimpleEmailServiceClient(RuntimeIdentity.Credentials, RuntimeIdentity.Region))
+            using (var client = new AmazonSimpleEmailServiceClient(RuntimeIdentity.Credentials,
+                RuntimeIdentity.Region))
             {
                 var response = await client.SendEmailAsync(request);
-                if (response.HttpStatusCode != System.Net.HttpStatusCode.OK) return false;
-
-                if (!email.IsNew) await Context.Current.Database().Delete(email); ;
-                return true;
+                if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                    throw new Exception("Failed to send an email: " + response.HttpStatusCode);
             }
         }
 
-        SendEmailRequest CreateEmailRequest(IEmailMessage email, MailMessage mail)
+        SendEmailRequest CreateEmailRequest(MailMessage mail)
         {
             return new SendEmailRequest
             {

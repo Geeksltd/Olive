@@ -15,27 +15,27 @@ namespace Olive.Email
             return @this
                  .AddSingleton<IEmailAttachmentSerializer, EmailAttachmentSerializer>()
                  .AddSingleton<IEmailDispatcher, EmailDispatcher>()
-                 .AddSingleton<IEmailSender, EmailSender>()
+                 .AddSingleton<IEmailOutbox, EmailOutbox>()
                  .AddSingleton<IMailMessageCreator, MailMessageCreator>();
         }
 
         /// <summary>
         /// Attaches a file to this email.
         /// </summary>
-        public static async Task Attach(this IEmailMessage mail, Blob file)
+        public static async Task Attach(this IEmailMessage @this, Blob file)
         {
             if (file == null) throw new ArgumentNullException(nameof(file));
             if (file.IsEmpty()) return;
-            mail.Attach(await file.GetFileDataAsync(), file.FileName);
+            @this.Attach(await file.GetFileDataAsync(), file.FileName);
         }
 
         /// <summary>
         /// Attaches a file to this email.
         /// </summary>
-		/// <param name="mail">The email queue item.</param>
+		/// <param name="this">The email queue item.</param>
         /// <param name="file">The path of the attachment file.
         /// This must be the physical path of a file inside the running application.</param>
-        public static void Attach(this IEmailMessage mail, FileInfo file)
+        public static void Attach(this IEmailMessage @this, FileInfo file)
         {
             if (file == null) throw new ArgumentNullException(nameof(file));
 
@@ -46,32 +46,32 @@ namespace Olive.Email
             if (path.StartsWith(basePath, caseSensitive: false)) // Relative:
                 path = path.Substring(basePath.Length).TrimStart("\\");
 
-            if (mail.Attachments.IsEmpty()) mail.Attachments = path;
-            else mail.Attachments += "|" + path;
+            if (@this.Attachments.IsEmpty()) @this.Attachments = path;
+            else @this.Attachments += "|" + path;
         }
 
         /// <summary>
         /// Attaches the specified byte array content to this email as an attachment.
         /// </summary>
-        public static void Attach(this IEmailMessage mail, byte[] fileData, string name)
+        public static void Attach(this IEmailMessage @this, byte[] fileData, string name)
         {
             var data = new { Contents = fileData.ToBase64String(), Name = name };
             var json = JsonConvert.SerializeObject(data);
 
-            if (mail.Attachments.IsEmpty()) mail.Attachments = json;
-            else mail.Attachments += "|" + json;
+            if (@this.Attachments.IsEmpty()) @this.Attachments = json;
+            else @this.Attachments += "|" + json;
         }
 
         /// <summary>
         /// Attaches the specified byte array content to this email, which will be used as a linked resource in the email body.
         /// </summary>
-        public static void AttachLinkedResource(this IEmailMessage mail, byte[] fileData, string name, string contentId)
+        public static void AttachLinkedResource(this IEmailMessage @this, byte[] fileData, string name, string contentId)
         {
             var data = new { Contents = fileData.ToBase64String(), Name = name, ContentId = contentId, IsLinkedResource = true };
             var json = JsonConvert.SerializeObject(data);
 
-            if (mail.Attachments.IsEmpty()) mail.Attachments = json;
-            else mail.Attachments += "|" + json;
+            if (@this.Attachments.IsEmpty()) @this.Attachments = json;
+            else @this.Attachments += "|" + json;
         }
 
         /// <summary>
