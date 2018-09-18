@@ -50,9 +50,8 @@ namespace Olive.SMS
         /// </summary>
         public async Task RecordFailedAttempt(ISmsMessage sms)
         {
-            if (sms.IsNew) throw new InvalidOperationException();
-
-            await Database.Update(sms, s => s.Retries++);
+            if (!sms.IsNew)
+                await Database.Update(sms, s => s.Retries++);
 
             // Also update this local instance:
             sms.Retries++;
