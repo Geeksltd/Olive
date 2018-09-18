@@ -12,13 +12,16 @@ namespace Olive
         {
             RuntimeIdentity.Load(@this).WaitAndThrow();
 
-            var secrets = ObtainRuntimeIdentitiesSecret(@this);
+            var secrets = ObtainRuntimeIdentitySecret(@this);
 
-            foreach (var item in new JsonConfigurationProvider(secrets).GetData())
+            var jsonProvider = new JsonConfigurationProvider(secrets);
+            jsonProvider.Load();
+
+            foreach (var item in jsonProvider.GetData())
                 @this[item.Key] = item.Value;
         }
 
-        static string ObtainRuntimeIdentitiesSecret(IConfiguration config)
+        static string ObtainRuntimeIdentitySecret(IConfiguration config)
         {
             var request = new GetSecretValueRequest { SecretId = config["Aws:Secrets:Id"] };
 
