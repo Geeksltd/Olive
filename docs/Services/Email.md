@@ -1,6 +1,6 @@
 # Olive.Email
 
-This library will help you to send emails from your application and you can manage history of your emails.
+This library will help you to send emails from your application and you can manage the history of your emails by persisting them in the database.
 
 ## Getting started
 
@@ -37,7 +37,7 @@ public override void ConfigureServices(IServiceCollection services)
 }
 ```
 
-Olive exposes an interface under `Olive.Email` namespace, which enables you to implement email sending functionality. In order to send an email in your project using Olive, you must have an entity which implements this interface and you must have a database table having columns as per the properties in this interface. In the folowing code we have created a M# entity named `EmailMessage`:
+Olive exposes `IEmailMessage` interface under `Olive.Email` namespace, which enables you to implement email sending functionality. In order to send an email from your project using Olive, you must have an entity which implements this interface and you must have a database table having columns as per the properties in this interface. In the following code we have created an M# entity named `EmailMessage`:
 
 ```csharp
 using MSharp;
@@ -81,7 +81,7 @@ namespace Domain
 }
 ```
 
-This configuration is enough for sending email, but if you want to create custom template for your email content you should create another M# entity in your **#Model** project and inherit from `IEmailTemplate`. In the code below we have create an entity named `EmailTemplate`:
+Incidentally, you can add your custom logic here too. These configurations are enough for sending email, but if you want to create a custom template for your email content you can create another M# entity in your **#Model** project and inherit from `IEmailTemplate`. In the code below we have created an entity named `EmailTemplate`:
 
 ```csharp
 using MSharp;
@@ -147,3 +147,5 @@ async void SendRegistrationConfirmationEmail()
 ```
 
 As you can see we have injected `IEmailOutbox`, first saved email message and then send email message according to defined templated.
+
+> **Notice**: in this example, we have sent email instantly after saving to the database, but if you just save the email message in the database Olive will send emails on a regular basis that is configurable in the `TaskManager` class.
