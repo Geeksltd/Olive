@@ -43,7 +43,7 @@
 * Olive Plugins
     * [Compression](Services/Compression.md)
     * [Email notifications](Services/Email.md)
-    * [SMS notifications]()
+    * [SMS notifications](Services/SMS.md)
     * [GeoLocation]()
     * [Globalization]()
     * [Data Export]()
