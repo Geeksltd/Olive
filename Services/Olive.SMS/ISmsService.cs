@@ -11,7 +11,7 @@ namespace Olive.SMS
         /// Note: The actual SMS Sender component must be implemented as a public type that implements ISMSSender interface.
         /// The assembly qualified name of that component, must be specified in AppConfig of "SMS:SenderType".
         /// </summary>
-        Task<bool> Send(ISmsQueueItem smsItem);
+        Task<bool> Send(ISmsMessage smsItem);
 
         Task SendAll();
     }

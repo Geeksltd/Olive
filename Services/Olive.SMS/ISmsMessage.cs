@@ -8,7 +8,7 @@ namespace Olive.SMS
     /// </summary>
     [LogEvents(false)]
     [CacheObjects(false)]
-    public interface ISmsQueueItem : IEntity
+    public interface ISmsMessage : IEntity
     {
         /// <summary>
         /// Gets or sets the date this SMS should be sent.

@@ -8,29 +8,29 @@ namespace Olive.SMS
     public class SmsService : ISmsService
     {
         readonly IDatabase Database;
-        private readonly ILogger<SmsService> Log;
+        readonly ILogger<SmsService> Log;
 
         /// <summary>
-        /// Occurs when an exception happens when sending an sms. Sender parameter will be the ISmsQueueItem instance that couldn't be sent.
+        /// Occurs when an exception happens when sending an sms. Sender parameter will be the ISmsMessage instance that couldn't be sent.
         /// </summary>
         public readonly AsyncEvent<SmsSendingEventArgs> SendError = new AsyncEvent<SmsSendingEventArgs>();
 
         public SmsService(IDatabase database, ILogger<SmsService> log)
         {
             Database = database;
-            this.Log = log;
+            Log = log;
         }
 
-        public async Task<bool> Send(ISmsQueueItem smsItem)
+        public async Task<bool> Send(ISmsMessage smsItem)
         {
             if (smsItem.Retries > Config.Get("SMS:MaximumRetries", 3))
                 return false;
             try
             {
-                ISMSSender sender;
+                ISmsSender sender;
                 try
                 {
-                    sender = Activator.CreateInstance(Type.GetType(Config.GetOrThrow("SMS:SenderType"))) as ISMSSender;
+                    sender = Activator.CreateInstance(Type.GetType(Config.GetOrThrow("SMS:SenderType"))) as ISmsSender;
 
                     if (sender == null)
                         throw new Exception("Type is not defined, or it does not implement ISMSSender");
@@ -50,7 +50,7 @@ namespace Olive.SMS
             {
                 await SendError.Raise(new SmsSendingEventArgs(smsItem) { Error = ex });
                 Log.Error(ex, "Can not send the SMS queue item.");
-                await RecordRetry(smsItem);
+                await RecordFailedAttempt(smsItem);
                 return false;
             }
         }
@@ -58,7 +58,7 @@ namespace Olive.SMS
         /// <summary>
         /// Records an unsuccessful attempt to send this SMS.
         /// </summary>
-        public async Task RecordRetry(ISmsQueueItem sms)
+        public async Task RecordFailedAttempt(ISmsMessage sms)
         {
             if (sms.IsNew) throw new InvalidOperationException();
 
@@ -71,14 +71,14 @@ namespace Olive.SMS
         /// <summary>
         /// Updates the DateSent field of this item and then soft deletes it.
         /// </summary>
-        public Task MarkSent(ISmsQueueItem sms)
+        public Task MarkSent(ISmsMessage sms)
         {
             return Database.EnlistOrCreateTransaction(() => Database.Update(sms, o => o.DateSent = LocalTime.Now));
         }
 
         public async Task SendAll()
         {
-            foreach (var sms in await Database.GetList<ISmsQueueItem>(i => i.DateSent == null))
+            foreach (var sms in await Database.GetList<ISmsMessage>(i => i.DateSent == null))
                 await Send(sms);
         }
     }

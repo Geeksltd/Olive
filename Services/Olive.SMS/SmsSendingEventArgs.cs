@@ -4,11 +4,11 @@
 
     public class SmsSendingEventArgs
     {
-        public ISmsQueueItem Item { get; }
+        public ISmsMessage Item { get; }
 
         public Exception Error { get; internal set; }
 
-        public SmsSendingEventArgs(ISmsQueueItem item)
+        public SmsSendingEventArgs(ISmsMessage item)
         {
             Item = item;
         }

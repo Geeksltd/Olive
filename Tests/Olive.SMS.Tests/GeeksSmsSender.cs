@@ -1,8 +1,8 @@
 ﻿namespace Olive.SMS.Tests
 {
-    public class GeeksSmsSender : ISMSSender
+    public class GeeksSmsSender : ISmsSender
     {
-        public void Deliver(ISmsQueueItem sms)
+        public void Deliver(ISmsMessage sms)
         {
             //send sms
         }

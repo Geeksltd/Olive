@@ -35,7 +35,7 @@ namespace Olive.SMS.Tests
         {
             SmsService.ShouldNotBeNull();
 
-            var smsQueueItem = Mock.Of<ISmsQueueItem>();
+            var smsQueueItem = Mock.Of<ISmsMessage>();
 
             var result = await SmsService.Send(smsQueueItem);
 

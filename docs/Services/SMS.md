@@ -12,7 +12,7 @@ namespace Olive.SMS.Tests
 {
     public class GeeksSmsSender : ISMSSender
     {
-        public void Deliver(ISmsQueueItem sms)
+        public void Deliver(ISmsMessage sms)
         {
             //send sms
         }
@@ -38,25 +38,17 @@ public override void ConfigureServices(IServiceCollection services)
 
 ### Sending SMS 
 
-First, you should implement `ISmsQueueItem` interface:
+First, you should implement `ISmsMessage` interface:
 
 ```csharp
-public class SmsQueueItem : ISmsQueueItem
-    {
-        public DateTime Date { get; set; }
-        public DateTime? DateSent { get; set; }
-        public string SenderName { get; set; }
-        public string Text { get; set; }
-        public string To { get; set; }
-        public int Retries { get; set; }
-        public bool IsNew => true;
-        public IEntity Clone() => this;
-        public int CompareTo(object obj) => 0;
-        public object GetId() => this;
-        public void InvalidateCachedReferences()
-        {
-        }
-        public Task Validate() => Task.CompletedTask;
+public class SmsMessage : GuidEntity, ISmsMessage
+{
+    public DateTime Date { get; set; }
+    public DateTime? DateSent { get; set; }
+    public string SenderName { get; set; }
+    public string Text { get; set; }
+    public string To { get; set; }
+    public int Retries { get; set; }      
 }
 ```
 

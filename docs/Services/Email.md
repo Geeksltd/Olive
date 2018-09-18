@@ -9,22 +9,22 @@ Now you should add this section to `appsettings.json` file:
 ```json
 "Email": {
     "From": {
-      "Name": "From Geeks",
-      "Address": "info@geeks.ltd.uk"
+      "Name": "My Company",
+      "Address": "noreply@mycompany.com"
     },
     "Permitted": {
-      "Domains": "geeks.ltd.uk",
-      "Addresses": "info@geeks.ltd.uk"
+      "Domains": "mycompany.com",
+      "Addresses": "..."
     },
     "ReplyTo": {
-      "Name": "To Geeks",
-      "Address": "info@geeks.ltd.uk"
+      "Name": "My Company",
+      "Address": "support@mycompany.com"
     },
-    "EnableSsl": "false",
-    "SmtpPort": "25",
-    "SmtpHost": "127.0.0.1",
-    "Username": "username",
-    "Password": "password",
+    "EnableSsl": "true",
+    "SmtpPort": "587",
+    "SmtpHost": "...",
+    "Username": "...",
+    "Password": "...",
     "MaxRetries": "4"
  }
 ```
@@ -43,7 +43,7 @@ You have now completed the initial setup of the `Olive.Email` service.
 
 Add `using Olive;` in top of your csharp file and implement `IEmailMessage` and `IEmailTemplate`. Here is a full example:
 ```csharp
-public class EmailMessage : IEmailMessage
+public class EmailMessage : GuidEntity, IEmailMessage
 {
     public string Body { get; set; }
     public DateTime SendableDate { get; set; }
@@ -58,38 +58,17 @@ public class EmailMessage : IEmailMessage
     public string Bcc { get; set; }
     public string Cc { get; set; }
     public int Retries { get; set; }
-    public string VCalendarView { get; set; }
-    public bool? EnableSsl { get; set; }
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public string SmtpHost { get; set; }
-    public int? SmtpPort { get; set; }
-    public bool IsNew => true;
-    public IEntity Clone() => this;
-    public int CompareTo(object obj) => 0;
-    public object GetId() => this;
-    public void InvalidateCachedReferences()
-    {
-    }
-    public Task Validate() => Task.CompletedTask;
+    public string VCalendarView { get; set; }    
 }
 ```
 
 ```c#
-public class MailTemplate : IEmailTemplate
+public class MailTemplate : GuidEntity, IEmailTemplate
 {
     public string Body { get; set; }
     public string Key { get; set; }
     public string MandatoryPlaceholders { get; set; }
-    public string Subject { get; set; }
-    public bool IsNew => true;
-    public IEntity Clone() => this;
-    public int CompareTo(object obj) => 0;
-    public object GetId() => this;
-    public void InvalidateCachedReferences()
-    {
-    }
-    public Task Validate() => Task.CompletedTask;
+    public string Subject { get; set; }    
 }
 ```
 
