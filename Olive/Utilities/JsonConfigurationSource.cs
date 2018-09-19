@@ -29,7 +29,8 @@ namespace Olive
             Data = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             using (var sr = new StringReader(Json))
-            using (var re = new JsonTextReader(sr) { DateParseHandling = DateParseHandling.None }) VisitJObject(JObject.Load(re));
+            using (var re = new JsonTextReader(sr) { DateParseHandling = DateParseHandling.None })
+                VisitJObject(JObject.Load(re));
         }
 
         public IDictionary<string, string> GetData() => Data;

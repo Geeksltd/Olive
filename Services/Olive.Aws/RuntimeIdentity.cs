@@ -19,7 +19,6 @@ namespace Olive.Aws
         static string RegionName, RoleArn;
 
         static IConfiguration Config;
-
         public static AWSCredentials Credentials { get; private set; }
 
         public static async Task Load(IConfiguration config)
@@ -58,7 +57,8 @@ namespace Olive.Aws
                 }
                 catch (Exception ex)
                 {
-                    Log.For<RuntimeIdentity>().Error(ex, "Failed to renew AWS credentials.");
+                    Console.WriteLine("Failed to renew AWS credentials.");
+                    Console.WriteLine(ex.ToFullMessage());
                     Environment.Exit(-1);
                 }
             }

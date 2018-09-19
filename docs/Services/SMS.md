@@ -42,14 +42,14 @@ namespace Domain
 }
 ```
 
-Now you should write your custom SMS provider, this class should inherit from `ISMSSender`. 
-For example, here we create a class named `GeeksSmsSender`:
+Now you should write your custom SMS provider, this class should inherit from `ISmsDispatcher`. 
+For example, here we create a class named `GeeksSmsDispatcher`:
 ```csharp
 namespace Olive.SMS.Tests
 {
-    public class GeeksSmsSender : ISMSSender
+    public class GeeksSmsDispatcher : ISmsDispatcher
     {
-        public void Deliver(ISmsMessage sms)
+        public Task Dispatch(ISmsMessage sms)
         {
             //send sms
         }

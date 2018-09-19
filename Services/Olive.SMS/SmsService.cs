@@ -9,40 +9,30 @@ namespace Olive.SMS
     {
         readonly IDatabase Database;
         readonly ILogger<SmsService> Log;
+        ISmsDispatcher Dispatcher;
+        int MaximumRetries;
 
         /// <summary>
         /// Occurs when an exception happens when sending an sms. Sender parameter will be the ISmsMessage instance that couldn't be sent.
         /// </summary>
         public readonly AsyncEvent<SmsSendingEventArgs> SendError = new AsyncEvent<SmsSendingEventArgs>();
 
-        public SmsService(IDatabase database, ILogger<SmsService> log)
+        public SmsService(IDatabase database, ISmsDispatcher dispatcher, ILogger<SmsService> log)
         {
             Database = database;
+            Dispatcher = dispatcher;
             Log = log;
+            MaximumRetries = Config.Get("SMS:MaximumRetries", 3);
         }
 
         public async Task<bool> Send(ISmsMessage smsItem)
         {
-            if (smsItem.Retries > Config.Get("SMS:MaximumRetries", 3))
+            if (smsItem.Retries > MaximumRetries)
                 return false;
             try
             {
-                ISmsSender sender;
-                try
-                {
-                    sender = Activator.CreateInstance(Type.GetType(Config.GetOrThrow("SMS:SenderType"))) as ISmsSender;
 
-                    if (sender == null)
-                        throw new Exception("Type is not defined, or it does not implement ISMSSender");
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Can not instantiate the sms sender from App config of " + Config.Get("SMS:SenderType"));
-                    return false;
-                }
-
-                sender.Deliver(smsItem);
-
+                await Dispatcher.Dispatch(smsItem);
                 await Database.Update(smsItem, o => o.DateSent = LocalTime.Now);
                 return true;
             }
@@ -60,9 +50,8 @@ namespace Olive.SMS
         /// </summary>
         public async Task RecordFailedAttempt(ISmsMessage sms)
         {
-            if (sms.IsNew) throw new InvalidOperationException();
-
-            await Database.Update(sms, s => s.Retries++);
+            if (!sms.IsNew)
+                await Database.Update(sms, s => s.Retries++);
 
             // Also update this local instance:
             sms.Retries++;

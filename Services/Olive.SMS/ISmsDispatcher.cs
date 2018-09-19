@@ -1,15 +1,17 @@
-﻿namespace Olive.SMS
+﻿using System.Threading.Tasks;
+
+namespace Olive.SMS
 {
     /// <summary>
     /// Represents a component that actually delivers SMS messages.
     /// This should be implemented for any 3rd party SMS gateway.
     /// </summary>
-    public interface ISmsSender
+    public interface ISmsDispatcher
     {
         /// <summary>
-        /// Delivers the specified SMS message.
+        /// Dispatches the specified SMS message.
         /// The implementation of this method should not handle exceptions. Any exceptions will be logged by the engine.
         /// </summary>
-        void Deliver(ISmsMessage sms);
+        Task Dispatch(ISmsMessage sms);
     }
 }
