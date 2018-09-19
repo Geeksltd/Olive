@@ -52,7 +52,7 @@
     * [Data Export]()
     * [Parsing CSV](Services/CSV.md)
     * [PDF generation]()
-    * [Push Notifications]()
+    * [Push Notifications](Services/PushNotification.md)
     * [Image optimization]()
     * [Website IP Filter]()
 

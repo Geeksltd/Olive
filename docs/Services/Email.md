@@ -37,7 +37,7 @@ public override void ConfigureServices(IServiceCollection services)
 }
 ```
 
-Olive exposes `IEmailMessage` interface under `Olive.Email` namespace, which enables you to implement email sending functionality. In order to send an email from your project using Olive, you must have an entity which implements this interface and you must have a database table having columns as per the properties in this interface. In the following code we have created an M# entity named `EmailMessage`:
+Olive exposes `IEmailMessage` interface under `Olive.Email` namespace, which enables you to implement email sending functionality. In order to send an email from your project using Olive, you must have an entity which implements this interface and you must have a database table having columns as per the properties in this interface. In the following code we have created an M# entity named `EmailMessage` that this class will implement `IEmailMessage` as shown below:
 
 ```csharp
 using MSharp;
@@ -50,14 +50,14 @@ namespace Domain
         {
             SoftDelete();
 
-            String("Body").Max(5000).Lines(5);
+            BigString("Body").Lines(5).Mandatory();
             String("From address");
             String("From name");
             String("Reply to address");
             String("Reply to name");
-            String("Subject").Max(500);
-            String("To").Max(500);
-            String("Attachments").Max(500);
+            String("Subject");
+            String("To");
+            BigString("Attachments");
             String("Bcc").Max(2000);
             String("Cc").Max(2000);
             String("VCalendarView");
@@ -94,10 +94,10 @@ namespace Domain
         {
             InstanceAccessors("RegistrationConfirmationEmail");
 
-            String("Body").Max(5000).Lines(10);
-            String("Key").Mandatory().Unique();
-            String("Mandatory placeholders").Mandatory();
+			DefaultToString = String("Key").Mandatory().Unique();
             String("Subject").Mandatory();
+            BigString("Body", 10).Mandatory();
+            String("Mandatory placeholders");
         }
     }
 }
@@ -119,7 +119,28 @@ You have now completed the initial setup of the `Olive.Email` service.
 
 ### Sending Email 
 
-To send an email you should simply populate `EmailMessage` class and inject `IEmailOutbox` in your class constructor or use `Context.Current.GetService<Olive.Email.IEmailOutbox>();` and call `.Send(...)` method:
+To send an email you should simply populate `EmailMessage` class and inject `IEmailOutbox` in your class constructor or use `Context.Current.GetService<Olive.Email.IEmailOutbox>();` if you want to have property injection and call `.Send(...)`.
+
+Here we have used class constructor injection as shown below:
+
+```csharp
+using Olive.Email;
+
+namespace Domain
+{
+    public partial class ActionRequest
+    {
+        readonly IEmailOutbox EmailOutbox;
+
+        public ActionRequest(IEmailOutbox emailOutbox)
+        {
+            this.EmailOutbox = emailOutbox;
+        }
+
+		[...]
+    }
+}
+```
 
 ```csharp
 async void SendRegistrationConfirmationEmail()
@@ -140,12 +161,12 @@ async void SendRegistrationConfirmationEmail()
         Body = template.MergeBody(placeHolderValues)
     };
 
-	await Database.Save(emailMessage);
-
-    await emailOutbox.Send(emailMessage);
+    await Database.Save(emailMessage);
+	
+	await EmailOutbox.Send(emailMessage);
 }
 ```
 
-As you can see we have injected `IEmailOutbox`, first saved email message and then send email message according to defined templated.
+As you can see we have injected `IEmailOutbox` after that we have first saved email message and then sent email message according to defined templated.
 
 > **Notice**: in this example, we have sent email instantly after saving to the database, but if you just save the email message in the database Olive will send emails on a regular basis that is configurable in the `TaskManager` class.
