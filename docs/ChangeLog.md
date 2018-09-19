@@ -2,7 +2,7 @@
 
 ## 19 Sep 2018
 - In `references.js`, add urlArgs to the call to `requirejs.config()`. For example:
-```json
+```javascript
 requirejs.config({
     urlArgs: "v1", // Increment with every release to refresh browser cache.
     baseUrl: ...
