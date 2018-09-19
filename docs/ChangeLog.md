@@ -1,5 +1,18 @@
 # Olive compatibility change log
 
+## 19 Sep 2018
+- In `references.js`, add urlArgs to the call to `requirejs.config()`. For example:
+```json
+requirejs.config({
+    urlArgs: "v1", // Increment with every release to refresh browser cache.
+    baseUrl: ...
+```
+Make sure that with every release of your application, you increment this number.
+- In your `Views\Layouts\*.Container.cshtml` files, update the requirejs script's `data-main` value.
+```html
+<script src="~/lib/requirejs/require.js" data-main="/scripts/references.js?v=1"></script>
+```
+
 ## 16 Sep 2018
 If you're using AWS server identity (microservices with containers) please remove `services.AddAwsIdentity();` from `ConfigureServices(IServiceCollection services)` and add the following method:
 ```csharp
