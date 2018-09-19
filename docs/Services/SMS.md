@@ -59,7 +59,7 @@ namespace Olive.SMS.Tests
 Now you should open `appsettings.json` and add this section:
 ```json
 "SMS": {
-    "SenderType": "Olive.SMS.Tests.GeeksSmsSender, Olive.SMS.Tests"
+    "SenderType": "Olive.SMS.Tests.GeeksSmsDispatcher, Olive.SMS.Tests"
  }
 ```
 > **Notice**: Please notice you should provide *fully qualified assembly name* here.
