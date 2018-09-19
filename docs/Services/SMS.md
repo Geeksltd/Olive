@@ -5,27 +5,20 @@ This library will help you to send SMS with your customized SMS providers.
 ## Getting started
 
 First, you need to add the [Olive.SMS](https://www.nuget.org/packages/Olive.SMS/) NuGet package : `Install-Package Olive.SMS`.
-After adding nuget package you should write your custom SMS provider, this class should inherit from `ISMSSender`. 
-For example, here we create a class named `GeeksSmsSender`:
+After adding nuget package you should write your custom SMS provider, this class should inherit from `ISmsDispatcher`. 
+For example, here we create a class named `GeeksSmsDispatcher`:
 ```csharp
 namespace Olive.SMS.Tests
 {
-    public class GeeksSmsSender : ISMSSender
+    public class GeeksSmsDispatcher : ISmsDispatcher
     {
-        public void Deliver(ISmsMessage sms)
+        public Task Dispatch(ISmsMessage sms)
         {
             //send sms
         }
     }
 }
 ```
-Now you should open `appsettings.json` and add this section:
-```json
-"SMS": {
-    "SenderType": "Olive.SMS.Tests.GeeksSmsSender, Olive.SMS.Tests"
- }
-```
-Please notice you should provide *fully qualified assembly name* here.
 
 Open `Startup.cs` file and in the `ConfigureServices(...)` method add `services.AddSms();`. it should be something like this:
 ```csharp
@@ -49,6 +42,7 @@ public class SmsMessage : GuidEntity, ISmsMessage
     public string Text { get; set; }
     public string To { get; set; }
     public int Retries { get; set; }      
+    public DeliveryStatus Status {get; set;} 
 }
 ```
 

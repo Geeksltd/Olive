@@ -21,6 +21,7 @@ namespace Olive.SMS.Tests
 
             services.AddSingleton<IDatabase>(Mock.Of<IDatabase>());
             services.AddSingleton<ILogger<SmsService>>(Mock.Of<ILogger<SmsService>>());
+            services.AddSingleton<ISmsDispatcher>(Mock.Of<ISmsDispatcher>());
             services.AddSms();
 
             Context.Initialize(services);
