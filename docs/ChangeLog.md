@@ -1,5 +1,16 @@
 # Olive compatibility change log
 
+## 20 Sep 2018
+- If you use the `Olive.Email` component, then:
+  - In `Startup.cs` file, in the `ConfigureServices()` method, add `services.AddEmail();`
+  - In `#Model\Project.cs`, change the AutoTask of email's code to:
+  ```csharp
+      AutoTask("Send emails")
+           .Run(@"var outbox = Context.Current.GetService<Olive.Email.IEmailOutbox>();
+            await outbox.SendAll();")
+            ...;
+  ```
+
 ## 19 Sep 2018
 - In `references.js`, add urlArgs to the call to `requirejs.config()`. For example:
 ```javascript
