@@ -47,7 +47,7 @@
     * [Compression](Services/Compression.md)
     * [Email notifications](Services/Email.md)
     * [SMS notifications](Services/SMS.md)
-    * [GeoLocation]()
+    * [GeoLocation](Services/GeoLocation.md)
     * [Globalization]()
     * [Data Export]()
     * [Parsing CSV](Services/CSV.md)

@@ -1,4 +1,4 @@
-# Olive.Email
+# Olive.PushNotification
 
 This library will help you to send Push Notifications to iOS (iPhone/iPad APNS), Android (C2DM and GCM - Google Cloud Message), Windows Phone, Windows 8, Amazon, Blackberry, and (soon) FirefoxOS devices!
 
