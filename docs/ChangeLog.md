@@ -6,7 +6,7 @@
    - Add the following to the top of the file:
    ```csharp
    IDatabase Database;
-        public ReferenceData(IDatabase database) => Database = database;
+   public ReferenceData(IDatabase database) => Database = database;
    ```
    - Change all calls to database to use this field instead.
 
