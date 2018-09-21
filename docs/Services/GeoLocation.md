@@ -9,7 +9,7 @@ This library provides these features:
 
 First, you need to add the [Olive.GeoLocation](https://www.nuget.org/packages/Olive.GeoLocation/) NuGet package : `Install-Package Olive.GeoLocation`.
 
-Olive exposes `IGeoLocationService` interface under `Olive.GeoLocation` namespace, which provide you to Geo location functionality. 
+Olive exposes `IGeoLocationService` interface under `Olive.GeoLocation` namespace, which provide you with Geolocation functionality.
 
 After adding nuget package, open `Startup.cs` file and in the `ConfigureServices(...)` method add `services.AddGeoLocationService();`. it should be something like this:
 ```csharp
@@ -33,7 +33,7 @@ Now you should open `appsettings.json` and add this section:
 
 ### Using GeoLocation
 
-In order to use GeoLocation service, you should simply inject `IGeoLocationService` in your class constructor or use `Context.Current.GetService<Olive.GeoLocation.IGeoLocationService>();` if you want to have property injection as show below:
+In order to use GeoLocation service, you should simply inject `IGeoLocationService` in your class constructor or use `Context.Current.GetService<Olive.GeoLocation.IGeoLocationService>();` if you want to have property injection as shown below:
 
 ```csharp
 using Olive.GeoLocation;
