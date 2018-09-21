@@ -14,9 +14,9 @@ namespace Olive.Mvc.Testing
         static object SyncLock = new object();
 
         readonly string ConnectionString;
+        readonly IDatabaseServer DatabaseManager;
         string TempDatabaseName;
-        bool DropExisting;
-        DatabaseManager Server;
+        internal bool DropExisting;
 
         DirectoryInfo DbDirectory, DatabaseFilesPath;
 
@@ -42,12 +42,10 @@ namespace Olive.Mvc.Testing
             }
         }
 
-        /// <summary>
-        /// Creates a new TestDatabaseGenerator instance.
-        /// </summary>
-        public TestDatabaseGenerator()
+        public TestDatabaseGenerator(IDatabaseServer databaseManager)
         {
             ConnectionString = Config.GetConnectionString("Default");
+            DatabaseManager = databaseManager;
         }
 
         FileInfo[] GetCreateDbFiles()
@@ -92,7 +90,7 @@ namespace Olive.Mvc.Testing
         bool EstablishDatabaseFromScripts()
         {
             if (!DropExisting)
-                if (Server.Exists(TempDatabaseName, DatabaseFilesPath.FullName))
+                if (DatabaseManager.Exists(TempDatabaseName, DatabaseFilesPath.FullName))
                     return false;
 
             CreateDatabaseFromScripts();
@@ -101,17 +99,17 @@ namespace Olive.Mvc.Testing
 
         void CreateDatabaseFromScripts()
         {
-            Server.ClearConnectionPool();
-            Server.Delete(TempDatabaseName);
+            DatabaseManager.ClearConnectionPool();
+            DatabaseManager.Delete(TempDatabaseName);
 
             foreach (var file in GetExecutableCreateDbScripts())
             {
-                try { Server.Execute(file.Value, TempDatabaseName); }
+                try { DatabaseManager.Execute(file.Value, TempDatabaseName); }
                 catch (Exception ex)
                 { throw new Exception("Could not execute sql file '" + file.Key.FullName + "'", ex); }
             }
 
-            Server.ClearConnectionPool();
+            DatabaseManager.ClearConnectionPool();
         }
 
         Dictionary<FileInfo, string> GetExecutableCreateDbScripts()
@@ -143,10 +141,8 @@ namespace Olive.Mvc.Testing
             return result;
         }
 
-        public bool Process(WebTestConfig config, bool dropExisting)
+        public bool Process()
         {
-            DropExisting = dropExisting;
-            Server = config.DatabaseManager ?? throw new Exception("Database manager is not specified for WebTestConfig");
             LoadMetaDirectory();
 
             TempDatabaseName = DatabaseManager.GetDatabaseName().Or("Default.Temp");

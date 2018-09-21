@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -71,9 +70,12 @@ namespace Olive.Mvc
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            Context.Current.Configure(app.ApplicationServices).Configure(Environment);
+            Context.Current.Set(app.ApplicationServices).Set(Environment);
 
             app.ApplicationServices.GetService<IDatabase>().Configure();
+
+            if (Environment.IsDevelopment())
+                app.UseMiddleware<DevCommandMiddleware>();
 
             app.UseResponseCompression();
 
@@ -84,10 +86,7 @@ namespace Olive.Mvc
             ConfigureRequestHandlers(app);
         }
 
-        public virtual Task OnStartUpAsync(IApplicationBuilder app)
-        {
-            return Task.CompletedTask;
-        }
+        public virtual Task OnStartUpAsync(IApplicationBuilder app) => Task.CompletedTask;
 
         protected virtual void ConfigureSecurity(IApplicationBuilder app)
         {

@@ -28,7 +28,7 @@ namespace Olive
             => environment
             ?? throw new Exception("Environment is not set via Context.Configure()");
 
-        public static Context Configure(this Context context, IHostingEnvironment env)
+        public static Context Set(this Context context, IHostingEnvironment env)
         {
             environment = env;
             return context;

@@ -6,7 +6,7 @@ using Microsoft.Data.Sqlite;
 
 namespace Olive.Entities.Data
 {
-    public class SqLiteManager : DatabaseManager
+    public class SqLiteManager : DatabaseServer
     {
         SqliteConnection CreateConnection() => new SqliteConnection(DataAccess.GetCurrentConnectionString());
 

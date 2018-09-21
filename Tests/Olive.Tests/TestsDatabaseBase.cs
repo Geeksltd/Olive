@@ -28,7 +28,7 @@ namespace Olive.Tests
 
             Context.Initialize(services);
 
-            Context.Current.Configure(services.BuildServiceProvider());
+            Context.Current.Set(services.BuildServiceProvider());
 
             database = Context.Current.GetService<IDatabase>();
 
@@ -38,7 +38,7 @@ namespace Olive.Tests
 
             #region Init Database files
 
-            TempDatabaseName = DatabaseManager.GetDatabaseName();
+            TempDatabaseName = DatabaseServer.GetDatabaseName();
 
             var createScript = GetCreateDbFiles().Select(f => File.ReadAllText(f.FullName)).ToLinesString();
 
@@ -49,7 +49,7 @@ namespace Olive.Tests
             #endregion
         }
 
-        private static DirectoryInfo DatabaseStoragePath
+        static DirectoryInfo DatabaseStoragePath
         {
             get
             {
@@ -100,7 +100,7 @@ namespace Olive.Tests
             return result;
         }
 
-        private FileInfo[] GetCreateDbFiles()
+        FileInfo[] GetCreateDbFiles()
         {
             if (DbDirectory == null) LoadMetaDirectory();
 
@@ -129,7 +129,7 @@ namespace Olive.Tests
             return sources;
         }
 
-        private void LoadMetaDirectory()
+        void LoadMetaDirectory()
         {
             DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory("DB");
             if (!DbDirectory.Exists())

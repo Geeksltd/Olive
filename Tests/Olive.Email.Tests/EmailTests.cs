@@ -26,7 +26,7 @@ namespace Olive.Email.Tests
 
             Context.Initialize(services);
 
-            Context.Current.Configure(services.BuildServiceProvider());
+            Context.Current.Set(services.BuildServiceProvider());
 
             EmailOutbox = Context.Current.GetService<IEmailOutbox>();
         }
@@ -36,7 +36,7 @@ namespace Olive.Email.Tests
         {
             EmailOutbox.ShouldNotBeNull();
 
-            //Mock email message
+            // Mock email message
             var mock = Mock.Of<IEmailMessage>();
 
             mock.To = "paymon@geeks.ltd.uk";

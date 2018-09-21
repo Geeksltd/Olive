@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Olive.Entities.Data
 {
@@ -116,7 +115,7 @@ namespace Olive.Entities.Data
             var lists = GetLists(type);
             lock (lists)
             {
-                if (lists.ContainsKey(key)) return lists[key];
+                if (lists.TryGetValue(key, out var result)) return result;
                 else return null;
             }
         }

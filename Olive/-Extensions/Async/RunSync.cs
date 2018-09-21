@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -17,8 +14,8 @@ namespace Olive
 
             @this.StartNew(task).Unwrap().GetAwaiter().GetResult();
 
-            //using (var actualTask = new Task<Task>(task))
-            //{
+            // using (var actualTask = new Task<Task>(task))
+            // {
             //    try
             //    {
             //        actualTask.RunSynchronously();
@@ -30,7 +27,7 @@ namespace Olive
             //        Log.For(typeof(TaskExtensions)).Error(ex);
             //        throw ex.InnerException;
             //    }
-            //}
+            // }
         }
 
         /// <summary>
@@ -41,8 +38,8 @@ namespace Olive
         {
             return @this.StartNew(task).Unwrap().GetAwaiter().GetResult();
 
-            //try
-            //{
+            // try
+            // {
             //    return @this.StartNew(task, TaskCreationOptions.LongRunning)
             //         .ContinueWith(t =>
             //         {
@@ -53,11 +50,11 @@ namespace Olive
             //         })
             //         .RiskDeadlockAndAwaitResult()
             //         .RiskDeadlockAndAwaitResult();
-            //}
-            //catch (AggregateException ex)
-            //{
+            // }
+            // catch (AggregateException ex)
+            // {
             //    throw ex.InnerException;
-            //}
+            // }
         }
     }
 }

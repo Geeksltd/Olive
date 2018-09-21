@@ -26,7 +26,7 @@ namespace Olive.SMS.Tests
 
             Context.Initialize(services);
 
-            Context.Current.Configure(services.BuildServiceProvider());
+            Context.Current.Set(services.BuildServiceProvider());
 
             SmsService = Context.Current.GetService<ISmsService>();
         }

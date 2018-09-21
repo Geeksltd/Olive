@@ -8,24 +8,6 @@ namespace Olive.Hangfire
 {
     public static class ExtensionMethods
     {
-        public static IDevCommandsConfig AddTasks(this IDevCommandsConfig @this)
-        {
-            @this.Add("tasks", async () =>
-            {
-                await Context.Current.Response().EndWith(@"
-         <html>
-            <body>
-               <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/ jquery.min.js'>
-               </script>
-               TODO: Add the hangfire tasks information here.
-            </body>
-         </html>");
-                return true;
-            }, "Tasks...");
-
-            return @this;
-        }
-
         /// <summary>
         /// Adds the hangfire service and configure it to use Sql Server Storage with the connection string that of AppDatabase.
         /// </summary>      
@@ -36,6 +18,8 @@ namespace Olive.Hangfire
                 c.UseSqlServerStorage(Config.GetConnectionString("Default"));
                 config?.Invoke(c);
             });
+
+            @this.AddSingleton<IDevCommand, ShceduledTasksDevCommand>();
 
             return @this;
         }

@@ -1,11 +1,11 @@
 ﻿namespace AppData
 {
-    using System;
-    using System.Data.SqlClient;
     using Olive;
     using Olive.Entities;
     using Olive.Entities.Data;
     using Olive.Entities.Data.SqlServer.Tests;
+    using System;
+    using System.Data.SqlClient;
 
     /// <summary>A factory that can instantiate Data Provider objects for MS.MindMap</summary>
     [EscapeGCop("Auto generated code.")]
@@ -35,13 +35,13 @@
             {
                 throw new NotSupportedException(type + " is not a data-supported type.");
             }
-            else if (this.ConnectionString.HasValue())
+            else if (ConnectionString.HasValue())
             {
-                result.ConnectionString = this.ConnectionString;
+                result.ConnectionString = ConnectionString;
             }
-            else if (this.ConnectionStringKey.HasValue())
+            else if (ConnectionStringKey.HasValue())
             {
-                result.ConnectionStringKey = this.ConnectionStringKey;
+                result.ConnectionStringKey = ConnectionStringKey;
             }
 
             return result;

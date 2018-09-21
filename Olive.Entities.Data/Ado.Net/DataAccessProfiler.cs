@@ -50,7 +50,7 @@ namespace Olive.Entities.Data
         }
 
         /// <summary>
-        /// To invoice this you can send a request to the application using http://...?Web.Test.Command=Sql.Profile&amp;Mode=Snapshot
+        /// To invoice this you can send a request to the application using http://.../cmd/db-profile?Mode=Snapshot
         /// </summary>
         /// <param name="snapshot">Determines whether the current log data should be removed (false) or kept for future combined future generated (true).</param>
         public static ReportRow[] GenerateReport(bool snapshot = false)

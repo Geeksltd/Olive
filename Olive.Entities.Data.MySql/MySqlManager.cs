@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MySql.Data.MySqlClient;
-using System.Data;
 
 namespace Olive.Entities.Data.MySql
 {
-    public class MySqlManager : DatabaseManager
+    public class MySqlManager : DatabaseServer
     {
         public override void ClearConnectionPool() => MySqlConnection.ClearAllPools();
 
@@ -59,7 +59,6 @@ namespace Olive.Entities.Data.MySql
                     }
                 }
             }
-
         }
 
         public override bool Exists(string database, string filePath)

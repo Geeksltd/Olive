@@ -3,7 +3,17 @@ using System.Linq;
 
 namespace Olive.Entities.Data
 {
-    public abstract class DatabaseManager
+    public interface IDatabaseServer
+    {
+        string GetDatabaseName();
+        string GetDataSource();
+        bool Exists(string tempDatabaseName, string fullName);
+        void ClearConnectionPool();
+        void Delete(string database);
+        void Execute(string script, string database = null);
+    }
+
+    public abstract class DatabaseServer : IDatabaseServer
     {
         public abstract void Delete(string database);
 
@@ -13,11 +23,11 @@ namespace Olive.Entities.Data
 
         public abstract void ClearConnectionPool();
 
-        public static string GetDataSource() => GetConnectionStringSetting("data source", "server");
+        public string GetDataSource() => GetConnectionStringSetting("data source", "server");
 
-        public static string GetDatabaseName() => GetConnectionStringSetting("initial catalog", "database");
+        public string GetDatabaseName() => GetConnectionStringSetting("initial catalog", "database");
 
-        static string GetConnectionStringSetting(params string[] names)
+        string GetConnectionStringSetting(params string[] names)
         {
             var connectionString = DataAccess.GetCurrentConnectionString();
             if (connectionString.IsEmpty()) throw new Exception("There is no current connection string");

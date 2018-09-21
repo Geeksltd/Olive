@@ -24,7 +24,7 @@ namespace Olive
 
         public static void Initialize(IServiceCollection services) => current = new Context(services);
 
-        public Context Configure(IServiceProvider provider)
+        public Context Set(IServiceProvider provider)
         {
             ServiceProvider = provider;
             return this;

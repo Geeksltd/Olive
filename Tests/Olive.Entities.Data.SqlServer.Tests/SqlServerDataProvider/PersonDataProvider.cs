@@ -1,14 +1,14 @@
 ﻿namespace AppData
 {
+    using Olive;
+    using Olive.Entities;
+    using Olive.Entities.Data;
+    using Olive.Entities.Data.SqlServer.Tests;
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using System.Threading.Tasks;
-    using Olive;
-    using Olive.Entities;
-    using Olive.Entities.Data;
-    using Olive.Entities.Data.SqlServer.Tests;
 
     /// <summary>Provides data-access facilities for People.</summary>
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -30,10 +30,7 @@
         }
 
         /// <summary>Provides the data source expression for querying Person records.</summary>
-        public override string GetTables()
-        {
-            return @"People AS P";
-        }
+        public override string GetTables() => @"People AS P";
 
         /// <summary>Gets a SQL command text to insert a record into People table.</summary>
         const string INSERT_COMMAND = @"INSERT INTO People
@@ -89,10 +86,8 @@
         {
             var item = record as Person;
 
-            if (record.IsNew)
-                await Insert(item);
-            else
-                await Update(item);
+            if (record.IsNew) await Insert(item);
+            else await Update(item);
         }
 
         /// <summary>Inserts the specified new Person instance into the database.</summary>
@@ -108,9 +103,8 @@
             var commands = new List<KeyValuePair<string, IDataParameter[]>>();
 
             foreach (var item in entities.Cast<Person>())
-            {
                 commands.Add(INSERT_COMMAND, CreateParameters(item));
-            }
+
 
             await Access.ExecuteBulkNonQueries(CommandType.Text, commands);
         }

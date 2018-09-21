@@ -6,7 +6,7 @@ namespace Olive.Entities.Tests
     [TestFixture]
     public partial class EntityTests
     {
-        private Person person;
+        Person person;
 
         [SetUp]
         public void SetUp()

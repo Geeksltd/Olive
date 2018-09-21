@@ -1,7 +1,7 @@
 ﻿namespace Olive.Mvc
 {
-    using System.Linq;
     using Microsoft.AspNetCore.Razor.TagHelpers;
+    using System.Linq;
 
     [HtmlTargetElement(Attributes = PREFIX_ATTRIBUTE_NAME)]
     public class PrefixIdentificationsTagHelper : TagHelper

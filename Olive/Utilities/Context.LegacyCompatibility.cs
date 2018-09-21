@@ -21,7 +21,7 @@ namespace Olive
             var services = new ServiceCollection();
             services.AddLogging();
             Initialize(services);
-            Current.Configure(new BasicOliveServiceProvider(services));
+            Current.Set(new BasicOliveServiceProvider(services));
 
             Current.AddService(typeof(IConfiguration), new XmlConfigReader());
         }

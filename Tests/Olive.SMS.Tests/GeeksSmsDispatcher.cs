@@ -6,7 +6,7 @@ namespace Olive.SMS.Tests
     {
         public Task Dispatch(ISmsMessage sms)
         {
-            //send sms
+            // send sms
         }
     }
 }

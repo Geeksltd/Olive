@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Olive.Entities.Data
 {
-    public class SqlServerManager : DatabaseManager
+    public class SqlServerManager : DatabaseServer
     {
         SqlConnection CreateConnection()
         {

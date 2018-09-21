@@ -36,8 +36,6 @@ namespace Olive
             return @this.Result;
         }
 
-     
-
         /// <summary>
         /// Waits for a task to complete, and then if it contains an exception, it will be thrown.
         /// </summary>
@@ -51,7 +49,6 @@ namespace Olive
                 throw @this.Exception.InnerException;
         }
 
-     
         public static async Task WithTimeout(this Task @this, TimeSpan timeout, Action success = null, Action timeoutAction = null)
         {
             if (await Task.WhenAny(@this, Task.Delay(timeout)) == @this) success?.Invoke();

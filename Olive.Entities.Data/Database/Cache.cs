@@ -78,9 +78,8 @@ namespace Olive.Entities.Data
             if (!CanCache(type)) return;
 
             for (var parentType = type; parentType != typeof(Entity); parentType = parentType.BaseType)
-            {
                 DoExpireLists(type);
-            }
+
 
             if (this != Current) Current.ExpireLists(type);
         }

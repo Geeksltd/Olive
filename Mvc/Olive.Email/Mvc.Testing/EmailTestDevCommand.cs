@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Olive.Entities;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,68 +10,68 @@ using System.Threading.Tasks;
 
 namespace Olive.Email
 {
-    public class EmailTestService
+    public class EmailTestDevCommand : IDevCommand
     {
-        static readonly Regex LinkPattern = new Regex("(https?://[^ ]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        HttpRequest Request => Context.Current.Request();
-        HttpResponse Response => Context.Current.Response();
-
         IEmailAttachmentSerializer AttachmentSerializer;
         IMailMessageCreator MessageCreator;
-        string To, ReturnUrl;
         Attachment AttachmentFile;
-        IEmailMessage Email;
-        bool IsInitialized;
 
-        public EmailTestService(IEmailAttachmentSerializer attachmentSerializer, IMailMessageCreator messageCreator)
+        static readonly Regex LinkPattern = new Regex("(https?://[^ ]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        public EmailTestDevCommand(IEmailAttachmentSerializer attachmentSerializer,
+            IMailMessageCreator messageCreator)
         {
             AttachmentSerializer = attachmentSerializer;
             MessageCreator = messageCreator;
         }
 
-        public async Task<EmailTestService> Initialize()
+        HttpRequest Request => Context.Current.Request();
+
+        HttpResponse Response => Context.Current.Response();
+
+        async Task<IEmailMessage> Email()
         {
-            To = Request.Param("to").ToStringOrEmpty().ToLower();
-            ReturnUrl = Request.GetReturnUrl();
+            if (!Request.Has("id")) return default(IEmailMessage);
+            else using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
+                    return await Request.Get<IEmailMessage>("id");
+        }
+
+        string To => Request.Param("to").ToStringOrEmpty().ToLower();
+
+        string ReturnUrl => Request.GetReturnUrl();
+
+        public string Name => "outbox";
+
+        public string Title => "Outbox...";
+
+        public async Task<bool> Run()
+        {
+            await Initialize();
+            await Process();
+            return true;
+        }
+
+        public async Task Initialize()
+        {
             if (Request.Has("attachmentInfo"))
                 AttachmentFile = AttachmentSerializer.Parse(Request.Param("attachmentInfo"));
-
-            using (new SoftDeleteAttribute.Context(bypassSoftdelete: true))
-                Email = await Request.GetOrDefault<IEmailMessage>("id");
-
-            IsInitialized = true;
-
-            return this;
-        }
-
-        public void ThrowIfItIsNotInitialized()
-        {
-            if (!IsInitialized) throw new InvalidOperationException("Initialize the instance before using it.");
-        }
-
-        void Validate()
-        {
-            if (Request.Has("id") && Email == null) throw new Exception("Invalid Email id specified.");
         }
 
         public async Task Process()
         {
-            ThrowIfItIsNotInitialized();
-            Validate();
-
             string response;
             if (AttachmentFile != null)
             {
                 if (IsTextFile(AttachmentFile.Name))
-                    response = "<a href='/?Web.Test.Command=testEmail&to=" + To + "'>&lt;&lt; Back to emails</a><pre>" + (await AttachmentFile.ContentStream.ReadAllText()).HtmlEncode() + "</pre>";
+                    response = $"<a href='/cmd/{Name}?to={To}'>&lt;&lt; Back to emails</a><pre>" +
+                        (await AttachmentFile.ContentStream.ReadAllText()).HtmlEncode() + "</pre>";
                 else
                 {
                     await Response.Dispatch(await AttachmentFile.ContentStream.ReadAllBytesAsync(), AttachmentFile.Name);
                     return;
                 }
             }
-            else if (Email == null)
+            else if (await Email() == null)
             {
                 response = await GenerateInbox();
             }
@@ -107,7 +106,7 @@ namespace Olive.Email
             await Response.WriteAsync("<a class='exit' href='{0}'>Exit Mailbox</a>".FormatWith(ReturnUrl));
 
             // TDD hack:
-            await Response.WriteAsync("<a style='display:none;' href='/?Web.Test.Command=restart'>Restart Temp Database</a>");
+            await Response.WriteAsync("<a style='display:none;' href='/cmd/db-restart'>Restart Temp Database</a>");
 
             await Response.WriteAsync("</body></html>");
         }
@@ -176,8 +175,9 @@ namespace Olive.Email
                     r.AddFormattedLine("<td>{0}</td>", item.Cc);
                     r.AddFormattedLine("<td>{0}</td>", item.Bcc);
 
-                    r.AddFormattedLine("<td><a href='/?Web.Test.Command=testEmail&id={0}&to={1}&ReturnUrl={2}'>{3}</a></td>",
-                        item.GetId(), To, ReturnUrl.UrlEncode(), item.Subject.Or("[NO SUBJECT]").HtmlEncode());
+                    var text = item.Subject.Or("[NO SUBJECT]").HtmlEncode();
+                    var url = $"/cmd/{Name}?id={item.GetId()}&to={To}&ReturnUrl={ReturnUrl.UrlEncode()}";
+                    r.AppendLine($"<td><a href='{url}'>{text}</a></td>");
 
                     r.AddFormattedLine("<td>{0}</td>", GetAttachmentLinks(item));
 
@@ -197,7 +197,7 @@ namespace Olive.Email
               {
                   var att = AttachmentSerializer.Parse(f)?.Name.HtmlEncode();
 
-                  return $"<form action='/?Web.Test.Command=testEmail&To={To}&ReturnUrl={ReturnUrl.UrlEncode()}' " +
+                  return $"<form action='/cmd/{Name}?To={To}&ReturnUrl={ReturnUrl.UrlEncode()}' " +
                      $"method='post'><input type=hidden name='attachmentInfo' value='{f.HtmlEncode()}'/><a href='#' " +
                      $"onclick='this.parentElement.submit()'>{att}</a></form>";
               }).ToString("");
@@ -207,18 +207,19 @@ namespace Olive.Email
 
         async Task<string> GenerateEmailView()
         {
+            var email = await Email();
             var r = new StringBuilder();
 
-            var mail = await MessageCreator.Create(Email);
+            var mail = await MessageCreator.Create(email);
 
-            r.AppendLine("<a href='/?Web.Test.Command=testEmail&to=" + To + "'>&lt;&lt; Back</a>");
+            r.AppendLine($"<a href='/cmd/{Name}?to={To}'>&lt;&lt; Back</a>");
             r.AppendLine("<h2>Subject: <u>" + mail.Subject + "</u></h2>");
             r.AppendLine("<table cellspacing='0'>");
 
-            var body = GetBodyHtml(Email.Body.Or("[EMPTY BODY]"), Email.Html);
+            var body = GetBodyHtml(email.Body.Or("[EMPTY BODY]"), email.Html);
 
             var toShow = new Dictionary<string, object> {
-                {"Date", Email.SendableDate.ToString("yyyy-MM-dd") +" at " + Email.SendableDate.ToString("HH:mm") },
+                {"Date", email.SendableDate.ToString("yyyy-MM-dd") +" at " +email.SendableDate.ToString("HH:mm") },
                 {"From", mail.From?.Address},
                 {"ReplyTo", mail.ReplyToList.FirstOrDefault()?.Address},
                 {"To", mail.To.Select(x=>x.Address).ToString(", ")},
@@ -226,7 +227,7 @@ namespace Olive.Email
                 { "Bcc", mail.Bcc.Select(x=>x.Address).ToString(", ")},
                 {"Subject", mail.Subject.HtmlEncode().WithWrappers("<b>", "</b>")},
                 {"Body", body.WithWrappers("<div class='body'>" ,"</div>") },
-                {"Attachments", GetAttachmentLinks(Email) }
+                {"Attachments", GetAttachmentLinks(email) }
             };
 
             foreach (var item in toShow.Where(x => x.Value.ToStringOrEmpty().HasValue()))
@@ -242,5 +243,7 @@ namespace Olive.Email
 
             return r.ToString();
         }
+
+        public bool IsEnabled() => true;
     }
 }

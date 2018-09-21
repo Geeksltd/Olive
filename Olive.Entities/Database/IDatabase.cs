@@ -56,6 +56,8 @@ namespace Olive.Entities
 
         Task<T> FirstOrDefault<T>(Expression<Func<T, bool>> criteria) where T : IEntity;
 
+        Task<T> FirstOrDefault<T>() where T : IEntity;
+
         #region Get
 
         Task<T> Get<T>(string entityId) where T : IEntity;

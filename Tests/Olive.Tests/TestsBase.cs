@@ -27,9 +27,6 @@ namespace Olive.Tests
         }
 
         [TearDown]
-        public virtual void TearDown()
-        {
-            mocks?.VerifyAll();
-        }
+        public virtual void TearDown() => mocks?.VerifyAll();
     }
 }

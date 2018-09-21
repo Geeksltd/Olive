@@ -16,7 +16,8 @@ namespace Olive.Email
                  .AddSingleton<IEmailAttachmentSerializer, EmailAttachmentSerializer>()
                  .AddSingleton<IEmailDispatcher, EmailDispatcher>()
                  .AddSingleton<IEmailOutbox, EmailOutbox>()
-                 .AddSingleton<IMailMessageCreator, MailMessageCreator>();
+                 .AddSingleton<IMailMessageCreator, MailMessageCreator>()
+                 .AddSingleton<IDevCommand, EmailTestDevCommand>();
         }
 
         /// <summary>

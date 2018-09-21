@@ -25,8 +25,7 @@ namespace Olive.Entities.Data.MySql.Tests
 
             var server = new MySqlManager();
 
-            if (server.Exists(TempDatabaseName, TempDatabaseName))
-                return;
+            if (server.Exists(TempDatabaseName, TempDatabaseName)) return;
 
             server.ClearConnectionPool();
             server.Delete(TempDatabaseName);
@@ -62,6 +61,5 @@ namespace Olive.Entities.Data.MySql.Tests
             newPerson.FirstName.ShouldEqual("Paymon");
             newPerson.LastName.ShouldEqual("Khamooshi");
         }
-
     }
 }
