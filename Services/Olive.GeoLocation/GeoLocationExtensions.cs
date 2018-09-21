@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.ComponentModel;
 
 namespace Olive.GeoLocation
@@ -46,5 +47,10 @@ namespace Olive.GeoLocation
         /// </summary>
         public static double? GetDistance(this IGeoLocated @this, IGeoLocated to) =>
             GetDistance(@this?.GetLocation(), to?.GetLocation());
+
+        public static IServiceCollection AddGeoLocationService(this IServiceCollection @this)
+        {
+            return @this.AddSingleton<IGeoLocationService, GeoLocationService>();
+        }
     }
 }
