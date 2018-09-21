@@ -1,5 +1,6 @@
 ﻿namespace Olive.PushNotification
 {
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
     using Olive;
     using PushSharp.Apple;
@@ -11,35 +12,116 @@
     using System.Linq;
     using System.Xml.Linq;
 
-    /// <summary>
-    /// Sends push notifications to ios, android and windows devices
-    /// </summary>
-    public class PushNotificationService
+    public class PushNotificationService : IPushNotificationService
     {
-        static ApnsServiceBroker ApnsBroker; // Apple service broker
-        static GcmServiceBroker GcmBroker; // Google service broker
-        static WnsServiceBroker WnsBroker; // Windows service broker
+        readonly ILogger<PushNotificationService> Logger;
+        ApnsServiceBroker ApnsBroker; // Apple service broker
+        GcmServiceBroker GcmBroker; // Google service broker
+        WnsServiceBroker WnsBroker; // Windows service broker
 
-        static void InitializeBrokers()
+        public PushNotificationService(ILogger<PushNotificationService> logger)
+        {
+            Logger = logger;
+        }
+
+        public bool Send(string messageTitle, string messageBody, IEnumerable<IUserDevice> devices)
+        {
+            try
+            {
+                InitializeBrokers();
+
+                // Send to iOS devices
+                if (ApnsBroker != null)
+                {
+                    devices.Where(d => d.DeviceType == "iOS").Do(d =>
+                    {
+                        ApnsBroker.QueueNotification(new ApnsNotification
+                        {
+                            DeviceToken = d.PushNotificationToken,
+                            Payload = JObject.FromObject(new { aps = new { alert = new { title = messageTitle, body = messageBody } } })
+                        });
+                    });
+                }
+
+                // Send to Android devices
+                if (GcmBroker != null)
+                {
+                    var androidDevices = devices.Where(d => d.DeviceType == "Android").Select(d => d.PushNotificationToken).ToList();
+                    if (androidDevices.Any())
+                        GcmBroker.QueueNotification(new GcmNotification
+                        {
+                            RegistrationIds = androidDevices, // This is for multicast messages
+                            Notification = JObject.FromObject(new { body = messageBody, title = messageTitle }),
+                            Data = JObject.FromObject(new { body = messageBody, title = messageTitle })
+                        });
+                }
+
+                // Send to Windows devices
+                if (WnsBroker != null)
+                {
+                    foreach (var uri in devices.Where(d => d.DeviceType == "Windows").Select(d => d.PushNotificationToken))
+                    {
+                        // Queue a notification to send
+                        WnsBroker.QueueNotification(new WnsToastNotification
+                        {
+                            ChannelUri = uri,
+                            Payload = new XElement("toast", new XElement("visual", new XElement("binding", new XAttribute("template", "ToastText01"), new XElement("text", new XAttribute("id", "1"), messageBody))))
+                        });
+                    }
+                }
+
+                return !(ApnsBroker == null && GcmBroker == null && WnsBroker == null);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, ex.Message);
+                return false;
+            }
+        }
+
+        public bool UpdateBadge(int badge, IEnumerable<IUserDevice> devices)
+        {
+            try
+            {
+                InitializeBrokers();
+
+                // Send to iOS devices
+                if (ApnsBroker != null)
+                {
+                    devices.Where(d => d.DeviceType == "iOS").Do(d =>
+                    {
+                        // Queue a notification to send
+                        ApnsBroker.QueueNotification(new ApnsNotification
+                        {
+                            DeviceToken = d.PushNotificationToken,
+                            Payload = JObject.FromObject(new { aps = new { badge = badge } })
+                        });
+                    });
+                }
+
+                // TODO: Add for the other platfoorms.
+
+                return !(ApnsBroker == null);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, ex.Message);
+
+                return false;
+            }
+        }
+
+        void InitializeBrokers()
         {
             InitializeAppleBroker();
             InitializeGoogleBroker();
             InitializeWindowsBroker();
         }
 
-        static ApnsConfiguration CreateAppleConfig()
-        {
-            var certFile = AppDomain.CurrentDomain.WebsiteRoot().GetFile(Config.Get("PushNotification:Apple:CertificateFile")).FullName;
-
-            return new ApnsConfiguration(
-                Config.Get<ApnsConfiguration.ApnsServerEnvironment>("PushNotification:Apple:Environment"),
-                certFile,
-                Config.Get("PushNotification:Apple:CertificatePassword"));
-        }
-
-        static void InitializeAppleBroker()
+        void InitializeAppleBroker()
         {
             if (ApnsBroker != null) return;
+
             if (Config.Get("PushNotification:Apple:CertificateFile").IsEmpty()) return;
 
             // Configuration (NOTE: .pfx can also be used here)
@@ -62,7 +144,17 @@
             ApnsBroker.Start();
         }
 
-        static void InitializeGoogleBroker()
+        ApnsConfiguration CreateAppleConfig()
+        {
+            var certFile = AppDomain.CurrentDomain.WebsiteRoot().GetFile(Config.Get("PushNotification:Apple:CertificateFile")).FullName;
+
+            return new ApnsConfiguration(
+                Config.Get<ApnsConfiguration.ApnsServerEnvironment>("PushNotification:Apple:Environment"),
+                certFile,
+                Config.Get("PushNotification:Apple:CertificatePassword"));
+        }
+
+        void InitializeGoogleBroker()
         {
             if (GcmBroker != null) return;
 
@@ -84,13 +176,13 @@
 
             GcmBroker.OnNotificationSucceeded += notification =>
             {
-                Olive.Log.For<PushNotificationService>().Debug("Notification has been sent successfully: " + notification);
+                Logger.Debug("Notification has been sent successfully: " + notification);
             };
 
             GcmBroker.Start();
         }
 
-        static void InitializeWindowsBroker()
+        void InitializeWindowsBroker()
         {
             if (WnsBroker != null) return;
             if (Config.Get("PushNotification:Windows:PackageName").IsEmpty()) return;
@@ -114,95 +206,7 @@
             WnsBroker.Start();
         }
 
-        public static void Send(string messageTitle, string messageBody, IEnumerable<IUserDevice> devices)
-        {
-            InitializeBrokers();
-
-            // Send to iOS devices
-            if (ApnsBroker != null)
-                devices.Where(d => d.DeviceType == "iOS").Do(d =>
-                {
-                    ApnsBroker.QueueNotification(new ApnsNotification
-                    {
-                        DeviceToken = d.PushNotificationToken,
-                        Payload = JObject.FromObject(new { aps = new { alert = new { title = messageTitle, body = messageBody } } })
-                    });
-                });
-
-            // Send to Android devices
-            if (GcmBroker != null)
-            {
-                var androidDevices = devices.Where(d => d.DeviceType == "Android").Select(d => d.PushNotificationToken).ToList();
-                if (androidDevices.Any())
-                    GcmBroker.QueueNotification(new GcmNotification
-                    {
-                        RegistrationIds = androidDevices, // This is for multicast messages
-                        Notification = JObject.FromObject(new { body = messageBody, title = messageTitle }),
-                        Data = JObject.FromObject(new { body = messageBody, title = messageTitle })
-                    });
-            }
-
-            // Send to Windows devices
-            if (WnsBroker != null)
-            {
-                foreach (var uri in devices.Where(d => d.DeviceType == "Windows").Select(d => d.PushNotificationToken))
-                {
-                    // Queue a notification to send
-                    WnsBroker.QueueNotification(new WnsToastNotification
-                    {
-                        ChannelUri = uri,
-                        Payload = new XElement("toast", new XElement("visual", new XElement("binding", new XAttribute("template", "ToastText01"), new XElement("text", new XAttribute("id", "1"), messageBody))))
-                    });
-                }
-            }
-        }
-
-        /// <summary>
-        /// Updates badge number of user's devices
-        /// </summary>
-        /// <param name="badge">0 for removing badge icon</param>
-        public static void UpdateBadge(int badge, IEnumerable<IUserDevice> devices)
-        {
-            InitializeBrokers();
-
-            // Send to iOS devices
-            if (ApnsBroker != null)
-            {
-                devices.Where(d => d.DeviceType == "iOS").Do(d =>
-                {
-                    // Queue a notification to send
-                    ApnsBroker.QueueNotification(new ApnsNotification
-                    {
-                        DeviceToken = d.PushNotificationToken,
-                        Payload = JObject.FromObject(new { aps = new { badge = badge } })
-                    });
-                });
-            }
-
-            // TODO: Add for the other platfoorms.
-        }
-
-        // /// <summary>
-        // /// Finds the expired tokens. (Should be called frequently to avoid sending redundant messages to expired devices)
-        // /// </summary>
-        // public static string[] GetExpiredTokens()
-        // {
-        //    var service = new FeedbackService(CreateAppleConfig());
-        //    service.FeedbackReceived += (string deviceToken, DateTime timestamp) =>
-        //    {
-
-        //    };
-        //    service.Check();
-
-        //    // Mark android tokens
-        //    //TODO: Find and mark expired android devices
-
-        //    // Mark windows tokens
-        //    //TODO: Find and mark expired windows devices
-
-        // }
-
-        static void LogError(object broker, Exception ex)
+        void LogError(object broker, Exception ex)
         {
             var description = broker.GetType().Name + " - Push notification failed.";
 
@@ -234,24 +238,7 @@
                 description += $"GCM Rate Limited, don't send more until after {raeError.RetryAfterUtc}";
             }
 
-            Olive.Log.For<PushNotificationService>().Error(ex, description);
-        }
-
-        /// <summary>
-        /// Stops and unassigns all brokers
-        /// </summary>
-        public static void StopBrokers()
-        {
-            // Stop the broker, wait for it to finish   
-            // This isn't done after every message, but after you're
-            // done with the broker
-            ApnsBroker.Stop();
-            GcmBroker.Stop();
-            WnsBroker.Stop();
-
-            ApnsBroker = null;
-            GcmBroker = null;
-            WnsBroker = null;
+            Logger.Error(ex, description);
         }
     }
 }

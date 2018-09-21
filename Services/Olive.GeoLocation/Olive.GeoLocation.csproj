@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Olive.GeoLocation</RootNamespace> 
+    <RootNamespace>Olive.GeoLocation</RootNamespace>
     <OutputPath>..\..\@Assemblies\</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netstandard2.0\Olive.GeoLocation.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
@@ -12,6 +12,7 @@
     <PackageReference Include="GCop.All.Geeks" Version="1.2.7" />
     <PackageReference Include="GCop.UAT" Version="1.2.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>

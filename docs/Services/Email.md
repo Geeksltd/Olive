@@ -1,6 +1,6 @@
 # Olive.Email
 
-This library will help you to send emails as easy as possible.
+This library will help you to send emails from your application and you can manage the history of your emails by persisting them in the database.
 
 ## Getting started
 
@@ -37,39 +37,136 @@ public override void ConfigureServices(IServiceCollection services)
 }
 ```
 
+Olive exposes `IEmailMessage` interface under `Olive.Email` namespace, which enables you to implement email sending functionality. In order to send an email from your project using Olive, you must have an entity which implements this interface and you must have a database table having columns as per the properties in this interface. In the following code we have created an M# entity named `EmailMessage` that this class will implement `IEmailMessage` as shown below:
+
+```csharp
+using MSharp;
+
+namespace Domain
+{
+    public class EmailMessage : EntityType
+    {
+        public EmailMessage()
+        {
+            SoftDelete();
+
+            BigString("Body").Lines(5).Mandatory();
+            String("From address");
+            String("From name");
+            String("Reply to address");
+            String("Reply to name");
+            String("Subject");
+            String("To");
+            BigString("Attachments");
+            String("Bcc").Max(2000);
+            String("Cc").Max(2000);
+            String("VCalendarView");
+            Int("Retries").Mandatory();
+            DateTime("Sendable date").Default("c#:LocalTime.Now").Mandatory();
+            Bool("Html").Mandatory();
+        }
+    }
+}
+```
+By building your `#Model` project, M# will generate related code and in the **Logic** folder you must inherit this class from `IEmailMessage` interface:
+
+```csharp
+using Olive.Email;
+
+namespace Domain
+{
+    public partial class EmailMessage : IEmailMessage
+    {
+    }
+}
+```
+
+Incidentally, you can add your custom logic here too. These configurations are enough for sending email, but if you want to create a custom template for your email content you can create another M# entity in your **#Model** project and inherit from `IEmailTemplate`. In the code below we have created an entity named `EmailTemplate`:
+
+```csharp
+using MSharp;
+
+namespace Domain
+{
+    public class EmailTemplate : EntityType
+    {
+        public EmailTemplate()
+        {
+            InstanceAccessors("RegistrationConfirmationEmail");
+
+			DefaultToString = String("Key").Mandatory().Unique();
+            String("Subject").Mandatory();
+            BigString("Body", 10).Mandatory();
+            String("Mandatory placeholders");
+        }
+    }
+}
+```
+After building **#Model** project you must inherit this class from `IEmailTemplate` as shown below:
+
+```csharp
+using Olive.Email;
+
+namespace Domain
+{
+    public partial class EmailTemplate : IEmailTemplate
+    {
+    }
+}
+```
+
 You have now completed the initial setup of the `Olive.Email` service.
 
 ### Sending Email 
 
-Add `using Olive;` in top of your csharp file and implement `IEmailMessage` and `IEmailTemplate`. Here is a full example:
+To send an email you should simply populate `EmailMessage` class and inject `IEmailOutbox` in your class constructor or use `Context.Current.GetService<Olive.Email.IEmailOutbox>();` if you want to have property injection and call `.Send(...)`.
+
+Here we have used class constructor injection as shown below:
+
 ```csharp
-public class EmailMessage : GuidEntity, IEmailMessage
+using Olive.Email;
+
+namespace Domain
 {
-    public string Body { get; set; }
-    public DateTime SendableDate { get; set; }
-    public bool Html { get; set; }
-    public string FromAddress { get; set; }
-    public string FromName { get; set; }
-    public string ReplyToAddress { get; set; }
-    public string ReplyToName { get; set; }
-    public string Subject { get; set; }
-    public string To { get; set; }
-    public string Attachments { get; set; }
-    public string Bcc { get; set; }
-    public string Cc { get; set; }
-    public int Retries { get; set; }
-    public string VCalendarView { get; set; }    
+    public partial class ActionRequest
+    {
+        readonly IEmailOutbox EmailOutbox;
+
+        public ActionRequest(IEmailOutbox emailOutbox)
+        {
+            this.EmailOutbox = emailOutbox;
+        }
+
+		[...]
+    }
 }
 ```
 
-```c#
-public class MailTemplate : GuidEntity, IEmailTemplate
+```csharp
+async void SendRegistrationConfirmationEmail()
 {
-    public string Body { get; set; }
-    public string Key { get; set; }
-    public string MandatoryPlaceholders { get; set; }
-    public string Subject { get; set; }    
+    var template = EmailTemplate.RegistrationConfirmationEmail;
+
+    var placeHolderValues = new
+    {
+        LastName = this.LastName,
+        Email = this.Email,
+        Password = this.Password
+    };
+
+    var emailMessage = new EmailMessage
+    {
+        Subject = template.MergeSubject(placeHolderValues),
+        To = this.AssigneeEmail,
+        Body = template.MergeBody(placeHolderValues)
+    };
+
+    await Database.Save(emailMessage);
+	
+	await EmailOutbox.Send(emailMessage);
 }
 ```
 
-You need to inject `IEmailMessage` interface into your class constructor or in some cases, you may need to inject it using `Context.Current.GetService<IEmailSender>();` and use `Send()` method to send email.
+As you can see we have injected `IEmailOutbox` after that we have first saved email message and then sent email message according to defined templated.
+
+> **Notice**: in this example, we have sent email instantly after saving to the database, but if you just save the email message in the database Olive will send emails on a regular basis that is configurable in the `TaskManager` class.
