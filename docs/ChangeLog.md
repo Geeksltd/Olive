@@ -23,9 +23,10 @@ if (Environment.IsDevelopment()) app.UseWebTest(config => config.AddTasks());
 - In `ConfigureServices()` add the following line to the end of the method:
 ```csharp
 if (Environment.IsDevelopment())
-    services.AddDevCommands(x => x.AddTempDatabase<SqlServerManager, ReferenceData>());
+    services.AddDevCommands(x => x.AddTempDatabase<SqlServerManager, ReferenceData>()
+    /* also if you use ApiClient: */ .AddClearApiCache()
+    );
 ```
-    - If you use ApiClient, also add `.AddClearApiCache()` right after `AddTempDatabase()`
 
 
 ## 20 Sep 2018
