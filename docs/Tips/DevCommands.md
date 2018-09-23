@@ -80,3 +80,16 @@ To invoke a dev command a http request should be sent to the application with th
 If the Dev Command implementation provides a non-empty value for the `Title` property, then a UI will be generated to invoke this command on the web pages. Basically, a link will be added for every such command currently registered in the application into a box called the **DevCommandsWidget**.
 
 To enable the UI in your application, add `@Html.DevCommandsWidget()` right before `</main>` in your `Views/Layouts/***.cshtml` files.
+
+
+## Core built-in commands
+| Command     | Notes |
+| ------------- | -----:|
+| /cmd/`api-clear-cache` | A part of `Olive.ApiClient` plugin. When invoked, it clears all cached Api call responses. |
+| /cmd/`outbox`  | A part of `Olive.Email` plugin. When invoked, it will render a table with all generated emails message records in the database. It's useful in automated UI tests, to verify whether the application generated notification emails are working correctly. |
+| /cmd/`scheduled-tasks` |  A part of `Olive.Hangfire` plugin. Renders the status of all currently running scheduled tasks. |
+| /cmd/`db-get-changes` | Renders all non-query sql commands submitted to the database since the application started running. |
+| /cmd/`run-db-changes` | Executes a set of sql commands provided in the http request form value of `Data`. |
+| /cmd/`db-profile-start` | Starts measureing all sql query commands submitted to the database. |
+| /cmd/`db-profile-snapshot` | Generates a snapshot report of the profiling data so far, but keeps profiling. |
+| /cmd/`db-profile-stop` | Generates a snapshot report of the profiling data and stops profiling. |
