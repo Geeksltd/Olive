@@ -82,7 +82,11 @@ If the Dev Command implementation provides a non-empty value for the `Title` pro
 To enable the UI in your application, add `@Html.DevCommandsWidget()` right before `</main>` in your `Views/Layouts/***.cshtml` files.
 
 
-## Core built-in commands
+## Built-in olive commands
+
+The following are some of the built-in Olive commands. Some of them are used by automated UI testing tools, such as Pangolin or Sanity.
+Some of the other ones are available for developers to invoke manually when required.
+
 | Command     | Notes |
 | ------------- | ----- |
 | `db-clear-cache` | Simply calls `Database.Refresh()`. |
@@ -99,3 +103,5 @@ To enable the UI in your application, add `@Html.DevCommandsWidget()` right befo
 | `local-date?time=10:22:00` | Overrides the application's local time to the specified value.  |
 | `local-date?date=now` | Resets the application's local time to the real value. |
 | `test-context?name=MyTestName` | Sets the currently running UI Test name, which is used in `PredictableGuidGenerator` |
+
+If you can think of any commands that developers would find useful during development and debugging of an application, feel free to submit your pull request for adding to Olive.
