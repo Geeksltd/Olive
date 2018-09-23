@@ -52,9 +52,29 @@ class DatabaseClearCacheDevCommand : IDevCommand
     }
 }
 ```
+In order for this command to be recognised, it should be registered as a service. For example you can add the following in your `Startup.cs` file under `ConfigureServices`:
+```cshrap
+services.AddSingleton<IDevCommand, ClearApiCacheDevCommand>();
+```
+However, to improve the application code's readability, it's better to define the registration as an extention method as demonstrated below:
+```csharp
+public static class DatabaseClearCacheExtensions
+{
+    public static DevCommandsOptions AddClearDatabaseCache(this DevCommandsOptions @this)
+    {
+        @this.Services.AddSingleton<IDevCommand, ClearApiCacheDevCommand>();
+        return @this;
+    }
+}
+```
+That way, the end user's application can register your command along with all other commands, similar to:
+```
+if (Environment.IsDevelopment())
+    services.AddDevCommands(x => x.AddCommandX().AddCommandY()...AddClearDatabaseCache());
+```
 
 
-## Running a Dev Command
+## Invoking a Dev Command
 To invoke a dev command a http request should be sent to the application with the url of `/cmd/{Name}`.
 
 If the Dev Command implementation provides a non-empty value for the `Title` property, then a UI will be generated to invoke this command on the web pages. Basically, a link will be added for every such command currently registered in the application into a box called the **DevCommandsWidget**.
