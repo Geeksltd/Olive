@@ -16,10 +16,13 @@ namespace Olive.Mvc.Testing
             services.AddSingleton<ITempDatabase, TempDatabase>();
             services.AddSingleton<IDatabaseServer, TDatabaseServer>();
             services.AddSingleton<IReferenceData, TReferenceData>();
-            services.AddSingleton<IDevCommand, DatabaseProfileDevCommand>();
 
             services.AddSingleton<IDevCommand, DatabaseRestartDevCommand>();
             services.AddSingleton<IDevCommand, DatabaseGetChangesDevCommand>();
+
+            services.AddSingleton<IDevCommand, DatabaseProfileStartDevCommand>();
+            services.AddSingleton<IDevCommand, DatabaseProfileSnapshotDevCommand>();
+            services.AddSingleton<IDevCommand, DatabaseProfileStopDevCommand>();
 
             return @this;
         }

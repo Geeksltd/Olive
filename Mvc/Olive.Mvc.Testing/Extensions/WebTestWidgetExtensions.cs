@@ -24,7 +24,8 @@
             if (IsUITestExecutionMode)
                 @this.RunJavascript("loadModule('olive/plugins/sanityAdapter', m => m.default.enable());");
 
-            var commands = Context.Current.GetServices<IDevCommand>().Where(x => x.IsEnabled()).ToArray();
+            var commands = Context.Current.GetServices<IDevCommand>()
+                .Where(x => x.IsEnabled() && x.Title.HasValue()).ToArray();
 
             var r = new StringBuilder();
 
@@ -39,14 +40,14 @@
             r.Append("onmouseover='this.style.marginBottom=\"0\"' ");
             r.Append($"onmouseout='this.style.marginBottom=\"-{height}px\"'>");
 
-            r.AppendLine(@"<div style='width: 100%; background-color:#1b648d; padding: 3px 0;font-size: 13px; font-weight: 700;'>Test...</div>");
+            r.AppendLine(@"<div style='width: 100%; background-color:#1b648d; padding: 3px 0;font-size: 13px; font-weight: 700;'>Commands...</div>");
 
             foreach (var command in commands)
             {
-                if (command.Title.IsEmpty()) continue;
-                var url = "/cmd/" + command.Name;
                 r.AppendLine($@"<div style='width: 100%; height:30px; box-sizing:border-box; padding: 4px 0;'>
-                                  <a href='{url}' style='color: #fff;'>{command.Title.HtmlEncode()}</a>
+                                  <a href='/cmd/{command.Name}' style='color: #fff;'>
+                                      {command.Title.HtmlEncode()}
+                                  </a>
                                 </div>");
             }
 
