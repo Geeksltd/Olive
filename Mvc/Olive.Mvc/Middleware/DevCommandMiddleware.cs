@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,37 +28,43 @@ namespace Olive.Mvc
                 await TempDatabase.AwaitReadiness();
 
             var path = context.Request.Path.Value.TrimStart("/");
-            if (!path.StartsWith("cmd/")) await Next.Invoke(context);
-            else
+            if (!path.StartsWith("cmd/"))
             {
-                var command = path.TrimStart("cmd/");
-                if (await InvokeCommand(command)) return;
-                else
-                {
-                    var urlReferrer = context.Request.Headers["Referer"].ToString();
-                    if (urlReferrer.IsEmpty()) context.Response.EndWith("Commands ran successfully.");
-                    else context.Response.Redirect(urlReferrer);
-                }
+                await Next.Invoke(context);
+                return;
             }
+
+            var command = path.TrimStart("cmd/");
+            var response = await InvokeCommand(command);
+
+            if (response.HasValue())
+            {
+                await context.Response.EndWith(response);
+                return;
+            }
+
+            var urlReferrer = context.Request.Headers["Referer"].ToString();
+            if (urlReferrer.IsEmpty()) context.Response.Redirect("/");
+            else context.Response.Redirect(urlReferrer);
         }
 
-        async Task<bool> InvokeCommand(string command)
+        ILogger Logger => Log.For<DevCommandMiddleware>();
+
+        async Task<string> InvokeCommand(string command)
         {
             if (command.IsEmpty())
-            {
-                await Context.Current.Response()
-                    .EndWith(
-                    "Available commands:\n\n" +
-                    AvailableCommands().Select(x => "/cmd/" + x.Name).ToLinesString());
-                return true;
-            }
+                return "Available commands:\n\n" +
+                    AvailableCommands().Select(x => "/cmd/" + x.Name).ToLinesString();
 
             var commands = AvailableCommands().Where(x => x.Name == command);
+            if (commands.None()) return "Dev command not registered: " + command;
 
-            if (commands.None())
-                await Context.Current.Response().EndWith("Command not registered: " + command);
+            if (command.HasMany())
+                Logger.Warning("Multiple dev command implementations found for: " + command);
+            else
+                Logger.Info("Running Dev Command: " + command);
 
-            return await commands.Select(x => x.Run()).AwaitAll().ToArray().Any();
+            return await commands.Last().Run();
         }
 
         IEnumerable<IDevCommand> AvailableCommands()

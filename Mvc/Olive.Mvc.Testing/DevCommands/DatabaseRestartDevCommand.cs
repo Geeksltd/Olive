@@ -21,23 +21,15 @@ namespace Olive.Mvc.Testing
 
         public override string Title => "Restart DB";
 
-        public override async Task<bool> Run()
+        public override async Task<string> Run()
         {
-            var returnUrl = ContextAccessor.HttpContext.Request.Headers["Referer"].ToString();
-
             var context = ContextAccessor.HttpContext;
             if (context.Request.Param("runner").HasValue())
                 WebTestWidgetExtensions.IsUITestExecutionMode = true;
 
             await TempDatabase.Restart().ConfigureAwait(false);
 
-            if (returnUrl.HasValue())
-            {
-                context.Response.Redirect(returnUrl);
-                return true;
-            }
-
-            return false;
+            return null;
         }
     }
 }

@@ -41,21 +41,21 @@ namespace PushForLocalTesting
                 var packFolder = new DirectoryInfo(Path.Combine(nuget.FullName, cleanName));
                 if (!packFolder.Exists)
                 {
-                    Error("Skipped " + pack + " - Package folder not found:" + packFolder.FullName);
+                    // Error("Skipped " + pack + " - Package folder not found:" + packFolder.FullName);
                     continue; // Not installed. 
                 }
 
                 var latest = packFolder.GetDirectories().OrderByDescending(x => ToVersion(x.Name)).FirstOrDefault();
                 if (latest == null)
                 {
-                    Error("Skipped " + pack + " - Package folder has no version installed! " + packFolder.FullName);
+                    // Error("Skipped " + pack + " - Package folder has no version installed! " + packFolder.FullName);
                     continue;
                 }
 
                 var target = new DirectoryInfo(Path.Combine(latest.FullName, "lib", sourceDirectory.Name));
                 if (!target.Exists)
                 {
-                    Error("Skipped " + pack + " - lib folder not found at " + target.FullName);
+                    // Error("Skipped " + pack + " - lib folder not found at " + target.FullName);
                     continue;
                 }
 

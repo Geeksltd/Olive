@@ -7,12 +7,10 @@ namespace Olive.Mvc.Testing
     {
         public override string Name => "test-context";
 
-        public TestContextDevCommand(IHttpContextAccessor contextAccessor) : base(contextAccessor) { }
-
-        public override Task<bool> Run()
+        public override Task<string> Run()
         {
             PredictableGuidGenerator.Reset(Param("name"));
-            return Task.FromResult(true);
+            return Task.FromResult(string.Empty);
         }
     }
 }

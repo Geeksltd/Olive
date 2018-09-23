@@ -15,10 +15,10 @@ namespace Olive.Mvc.Testing
 
         public bool IsEnabled() => true;
 
-        public async Task<bool> Run()
+        public async Task<string> Run()
         {
             await Database.Refresh();
-            return true;
+            return null;
         }
     }
 }

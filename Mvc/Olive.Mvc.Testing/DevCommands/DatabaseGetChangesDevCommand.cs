@@ -9,10 +9,6 @@ namespace Olive.Mvc.Testing
 
         public override string Name => "db-get-changes";
 
-        public override async Task<bool> Run()
-        {
-            await DatabaseChangeWatcher.DispatchChanges();
-            return true;
-        }
+        public override async Task<string> Run() => DatabaseChangeWatcher.DispatchChanges();
     }
 }

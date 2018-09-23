@@ -28,6 +28,6 @@ namespace Olive.Mvc.Testing
             return IsTempDbMode ?? false;
         }
 
-        public abstract Task<bool> Run();
+        public abstract Task<string> Run();
     }
 }

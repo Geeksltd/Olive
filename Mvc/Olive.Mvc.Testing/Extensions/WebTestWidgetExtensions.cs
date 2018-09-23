@@ -11,7 +11,13 @@
     {
         internal static bool IsUITestExecutionMode;
 
+        [Obsolete("Use DevCommandsWidget() instead", error: true)]
         public static HtmlString WebTestWidget(this IHtmlHelper @this)
+        {
+            return @this.DevCommandsWidget();
+        }
+
+        public static HtmlString DevCommandsWidget(this IHtmlHelper @this)
         {
             if (!Context.Current.Environment().IsDevelopment()) return null;
 
@@ -30,7 +36,7 @@
             r.Append($"margin-bottom:-{height}px; ");
             r.Append("transition: margin-bottom 0.25s ease; background: #2ea8eb; ");
             r.Append("color: #fff; font-size: 12px; font-family:Arial;' ");
-            r.Append($"onmouseover='this.style.marginBottom=\"0\"' ");
+            r.Append("onmouseover='this.style.marginBottom=\"0\"' ");
             r.Append($"onmouseout='this.style.marginBottom=\"-{height}px\"'>");
 
             r.AppendLine(@"<div style='width: 100%; background-color:#1b648d; padding: 3px 0;font-size: 13px; font-weight: 700;'>Test...</div>");

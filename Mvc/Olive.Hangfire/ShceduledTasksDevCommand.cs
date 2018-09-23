@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive.Hangfire
@@ -10,10 +7,7 @@ namespace Olive.Hangfire
     {
         IHttpContextAccessor ContextAccessor;
 
-        public ShceduledTasksDevCommand(IHttpContextAccessor contextAccessor)
-        {
-            ContextAccessor = contextAccessor;
-        }
+        public ShceduledTasksDevCommand(IHttpContextAccessor accessor) => ContextAccessor = accessor;
 
         public string Name => "scheduled-tasks";
 
@@ -21,18 +15,15 @@ namespace Olive.Hangfire
 
         public bool IsEnabled() => true;
 
-        public async Task<bool> Run()
+        public async Task<string> Run()
         {
-            await ContextAccessor.HttpContext.Response.EndWith(@"
-         <html>
-            <body>
-               <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/ jquery.min.js'>
-               </script>
-               TODO: Add the hangfire tasks information here.
-            </body>
-         </html>");
-
-            return true;
+            return @"<html>
+                        <body>
+                           <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/ jquery.min.js'>
+                           </script>
+                           TODO: Add the hangfire tasks information here.
+                        </body>
+                     </html>";
         }
     }
 }

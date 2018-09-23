@@ -44,11 +44,10 @@ namespace Olive.Email
 
         public string Title => "Outbox...";
 
-        public async Task<bool> Run()
+        public async Task<string> Run()
         {
             await Initialize();
-            await Process();
-            return true;
+            return await Process();
         }
 
         public async Task Initialize()
@@ -57,7 +56,7 @@ namespace Olive.Email
                 AttachmentFile = AttachmentSerializer.Parse(Request.Param("attachmentInfo"));
         }
 
-        public async Task Process()
+        public async Task<string> Process()
         {
             string response;
             if (AttachmentFile != null)
@@ -67,8 +66,9 @@ namespace Olive.Email
                         (await AttachmentFile.ContentStream.ReadAllText()).HtmlEncode() + "</pre>";
                 else
                 {
-                    await Response.Dispatch(await AttachmentFile.ContentStream.ReadAllBytesAsync(), AttachmentFile.Name);
-                    return;
+                    await Response.Dispatch(await AttachmentFile.ContentStream.ReadAllBytesAsync(),
+                        AttachmentFile.Name);
+                    return null;
                 }
             }
             else if (await Email() == null)
@@ -80,35 +80,35 @@ namespace Olive.Email
                 response = await GenerateEmailView();
             }
 
-            await Dispatch(response);
+            return await Dispatch(response);
         }
 
-        async Task Dispatch(string response)
+        async Task<string> Dispatch(string response)
         {
-            Response.ContentType = "text/html";
-            await Response.WriteAsync("<html>");
+            var r = new StringBuilder();
+            r.AppendLine("<html>");
+            r.AppendLine("<head>");
+            r.AppendLine("<style>");
+            r.AppendLine("body {font-family:Arial; background:#fff; }");
+            r.AppendLine("td, th {border:1px solid #999; padding:5px; font-size:9pt;}");
+            r.AppendLine("th {background:#eee;}");
+            r.AppendLine("a { color: blue; }");
+            r.AppendLine(".exit { background: #444; color:#fff; padding:4px 10px; display:inline-block; float:right; margin-top:10px; border-radius: 10px; text-decoration:none;}");
+            r.AppendLine(".body { background: #f0f0f0; }");
+            r.AppendLine(".label { color: #888; width:100px; }");
+            r.AppendLine("</style>");
+            r.AppendLine("</head>");
+            r.AppendLine("<body>");
 
-            await Response.WriteAsync("<head>");
-            await Response.WriteAsync("<style>");
-            await Response.WriteAsync("body {font-family:Arial; background:#fff; }");
-            await Response.WriteAsync("td, th {border:1px solid #999; padding:5px; font-size:9pt;}");
-            await Response.WriteAsync("th {background:#eee;}");
-            await Response.WriteAsync("a { color: blue; }");
-            await Response.WriteAsync(".exit { background: #444; color:#fff; padding:4px 10px; display:inline-block; float:right; margin-top:10px; border-radius: 10px; text-decoration:none;}");
-            await Response.WriteAsync(".body { background: #f0f0f0; }");
-            await Response.WriteAsync(".label { color: #888; width:100px; }");
-            await Response.WriteAsync("</style>");
-            await Response.WriteAsync("</head>");
-            await Response.WriteAsync("<body>");
+            r.AppendLine(response);
 
-            await Response.WriteAsync(response);
-
-            await Response.WriteAsync("<a class='exit' href='{0}'>Exit Mailbox</a>".FormatWith(ReturnUrl));
+            r.AppendLine("<a class='exit' href='{0}'>Exit Mailbox</a>".FormatWith(ReturnUrl));
 
             // TDD hack:
-            await Response.WriteAsync("<a style='display:none;' href='/cmd/db-restart'>Restart Temp Database</a>");
+            r.AppendLine("<a style='display:none;' href='/cmd/db-restart'>Restart Temp Database</a>");
 
-            await Response.WriteAsync("</body></html>");
+            r.AppendLine("</body></html>");
+            return r.ToString();
         }
 
         async Task<List<IEmailMessage>> GetEmails()

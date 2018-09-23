@@ -43,6 +43,7 @@ namespace Olive.Mvc
             ConfigureMvc(services.AddMvc());
 
             services.AddResponseCompression();
+            services.AddResponseCaching();
 
             services.Configure<RazorViewEngineOptions>(o =>
             o.ViewLocationExpanders.Add(new ViewLocationExpander()));

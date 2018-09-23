@@ -1,22 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc.Testing
 {
     class InjectTimeDevCommand : DevCommand
     {
-        public InjectTimeDevCommand(IHttpContextAccessor contextAccessor) : base(contextAccessor) { }
-
         public override string Name => "local-date";
 
-        public override async Task<bool> Run()
+        public override async Task<string> Run()
         {
             if (Param("date") == "now")
             {
                 // reset to normal
                 LocalTime.RedefineNow(overriddenNow: null);
-                await Context.Response.EndWith(LocalTime.Now.ToString("yyyy-MM-dd @ HH:mm:ss"));
+                return LocalTime.Now.ToString("yyyy-MM-dd @ HH:mm:ss");
             }
             else
             {
@@ -28,10 +25,8 @@ namespace Olive.Mvc.Testing
                 var trueOrigin = DateTime.Now;
 
                 LocalTime.RedefineNow(() => date.Add(DateTime.Now.Subtract(trueOrigin)));
-                await Context.Response.EndWith(date.ToString("yyyy-MM-dd @ HH:mm:ss"));
+                return date.ToString("yyyy-MM-dd @ HH:mm:ss");
             }
-
-            return true;
         }
     }
 }

@@ -26,13 +26,15 @@ namespace Olive
         string Title { get; }
 
         /// <summary>
-        /// Invokes the command, and returns whether the command was executed successfully.
-        /// </summary>
-        Task<bool> Run();
-
-        /// <summary>
         /// Determines whether this command is usable in the current context.
         /// </summary>
         bool IsEnabled();
+
+        /// <summary>
+        /// Invokes the command.
+        /// After the command execution, if it returns null or empty, the user will be redirected to the http url referrer, or the root of the application.
+        /// Otherwise the returned string value will be rendered in the http response.
+        /// </summary>
+        Task<string> Run();
     }
 }

@@ -11,17 +11,16 @@ namespace Olive
 
         public bool IsEnabled() => true;
 
-        public async Task<bool> Run()
+        public async Task<string> Run()
         {
             await ApiClient.DisposeCache();
-            return false;
+            return null;
         }
     }
 
     public static class ApiClientExtensions
     {
-        public static DevCommandsOptions AddClearApiCache(
-          this DevCommandsOptions @this)
+        public static DevCommandsOptions AddClearApiCache(this DevCommandsOptions @this)
         {
             @this.Services.AddSingleton<IDevCommand, ClearApiCacheDevCommand>();
             return @this;

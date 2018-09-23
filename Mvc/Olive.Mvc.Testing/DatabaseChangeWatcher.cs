@@ -38,11 +38,11 @@ namespace Olive.Mvc.Testing
 
         internal static void Restart() => Changes.Clear();
 
-        internal static Task DispatchChanges()
+        internal static string DispatchChanges()
         {
             var response = new XElement("Changes", Changes).ToString();
             Changes.Clear();
-            return Context.Current.Response().EndWith(response, "text/xml");
+            return response;
         }
 
         public static async Task RunChanges()
