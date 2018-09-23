@@ -84,7 +84,7 @@ To enable the UI in your application, add `@Html.DevCommandsWidget()` right befo
 
 ## Core built-in commands
 | Command     | Notes |
-| ------------- | -----:|
+| ------------- | ----- |
 | `db-clear-cache` | Simply calls `Database.Refresh()`. |
 | `api-clear-cache` | A part of `Olive.ApiClient` plugin. When invoked, it clears all cached Api call responses. |
 | `outbox`  | A part of `Olive.Email` plugin. When invoked, it will render a table with all generated emails message records in the database. It's useful in automated UI tests, to verify whether the application generated notification emails are working correctly. |
