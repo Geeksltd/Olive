@@ -85,11 +85,17 @@ To enable the UI in your application, add `@Html.DevCommandsWidget()` right befo
 ## Core built-in commands
 | Command     | Notes |
 | ------------- | -----:|
-| /cmd/`api-clear-cache` | A part of `Olive.ApiClient` plugin. When invoked, it clears all cached Api call responses. |
-| /cmd/`outbox`  | A part of `Olive.Email` plugin. When invoked, it will render a table with all generated emails message records in the database. It's useful in automated UI tests, to verify whether the application generated notification emails are working correctly. |
-| /cmd/`scheduled-tasks` |  A part of `Olive.Hangfire` plugin. Renders the status of all currently running scheduled tasks. |
-| /cmd/`db-get-changes` | Renders all non-query sql commands submitted to the database since the application started running. |
-| /cmd/`run-db-changes` | Executes a set of sql commands provided in the http request form value of `Data`. |
-| /cmd/`db-profile-start` | Starts measureing all sql query commands submitted to the database. |
-| /cmd/`db-profile-snapshot` | Generates a snapshot report of the profiling data so far, but keeps profiling. |
-| /cmd/`db-profile-stop` | Generates a snapshot report of the profiling data and stops profiling. |
+| `db-clear-cache` | Simply calls `Database.Refresh()`. |
+| `api-clear-cache` | A part of `Olive.ApiClient` plugin. When invoked, it clears all cached Api call responses. |
+| `outbox`  | A part of `Olive.Email` plugin. When invoked, it will render a table with all generated emails message records in the database. It's useful in automated UI tests, to verify whether the application generated notification emails are working correctly. |
+| `scheduled-tasks` |  A part of `Olive.Hangfire` plugin. Renders the status of all currently running scheduled tasks. |
+| `db-get-changes` | Renders all non-query sql commands submitted to the database since the application started running. |
+| `run-db-changes` | Executes a set of sql commands provided in the http request form value of `Data`. |
+| `db-profile-start` | Starts measureing all sql query commands submitted to the database. |
+| `db-profile-snapshot` | Generates a snapshot report of the profiling data so far, but keeps profiling. |
+| `db-profile-stop` | Generates a snapshot report of the profiling data and stops profiling. |
+| `db-restart` | Recreates the database from the sql script files in the `DB` folder. |
+| `local-date?date=22/10/2020` | Overrides the application's local date to the specified value. It will affect `LocalTime.Now` rather than `DateTime.Now`. |
+| `local-date?time=10:22:00` | Overrides the application's local time to the specified value.  |
+| `local-date?date=now` | Resets the application's local time to the real value. |
+| `test-context?name=MyTestName` | Sets the currently running UI Test name, which is used in `PredictableGuidGenerator` |
