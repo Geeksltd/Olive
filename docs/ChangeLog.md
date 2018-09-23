@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 23 Sep 2018
+- Replace `@Html.WebTestWidget()` with `@Html.DevCommandsWidget()` in all *cshtml* files.
+
 ## 21 Sep 2018
 - Make your `ReferenceData` class implement `IReferenceData`
    - Remove `static` from all of its methods.
