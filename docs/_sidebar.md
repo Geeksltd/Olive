@@ -3,6 +3,15 @@
     * [.NET Extensions](Core/Extensions.md)
     * [Utility classes](Core/Utilities.md)
     * [change log](ChangeLog.md)
+    
+* Olive Entities
+    * [Overview](Entities/Overview.md)
+    * [Olive ORM](Entities/ORM.md)
+       * [Caching](Entities/Cache.md)
+    * [Ado.NET and Raw data access](Entities/AdoNet.md)
+    * [Database Api](Entities/Database.md)
+    * [Provider model and DI](Entities/DI.md)
+    * [Files and Blobs](Entities/Blob.md)
 
 * Microservices Architecture
     * [Overview](Microservices/Overview.md)
@@ -27,15 +36,6 @@
     * [Api Proxy](Api/Proxy.md)
     * [Api Versioning](Api/Versioning.md)
 
-* Olive Entities
-    * [Overview](Entities/Overview.md)
-    * [Olive ORM](Entities/ORM.md)
-       * [Caching](Entities/Cache.md)
-    * [Ado.NET and Raw data access](Entities/AdoNet.md)
-    * [Database Api](Entities/Database.md)
-    * [Provider model and DI](Entities/DI.md)
-    * [Files and Blobs](Entities/Blob.md)
-           
 
 * Olive Javascript Fx (MvcJS)
     * [Overview](MvcJS/Overview.md)
@@ -66,5 +66,7 @@
     * [Olive Audit](Logging/Audit.md)
     * [NLog integration](Logging/NLog.md)
 
-* Performance tips
+* Tips & Tricks
+    * [Dev Commands](Tips/DevCommands.md)
     * [Database profiling]()
+     
