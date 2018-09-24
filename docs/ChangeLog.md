@@ -1,9 +1,9 @@
 # Olive compatibility change log
 
 ## 24 Sep 2018
-**FormAction.ts** file in the Olive.MvcJs file has dependency to the jQuery-UI **focusable** module. please add this to the `references.js` as shown below:
+**FormAction.ts** file in the Olive.MvcJs file has a dependency to the jQuery-UI **focusable** module. please add this to the `references.js` as shown below:
 
-- Open `references.js` file and in the **paths** section of the `requirejs.config({...})` add `"jquery-ui/ui/focusable": "jquery-ui/ui/focusable",` right after `"jquery-ui/ui/widget"` then in the `requirejs([]) part add `"jquery-ui/ui/focusable"` after `"jquery-ui/ui/widget"`.
+- Open `references.js` file and in the **paths** section of the `requirejs.config({...})` add `"jquery-ui/ui/focusable": "jquery-ui/ui/focusable",` right after `"jquery-ui/ui/widget"` then in the `requirejs([])` part add `"jquery-ui/ui/focusable"` after `"jquery-ui/ui/widget"`.
 
 ## 24 Sep 2018
 You can redirect users to your custom login page by overriding `Url.onAuthenticationFailed`, for example here we redirect users to **Login.aspx**:
