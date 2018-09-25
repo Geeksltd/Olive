@@ -160,13 +160,57 @@ async void SendRegistrationConfirmationEmail()
         To = this.AssigneeEmail,
         Body = template.MergeBody(placeHolderValues)
     };
-
-    await Database.Save(emailMessage);
-	
 	await EmailOutbox.Send(emailMessage);
 }
 ```
+As you can see we have injected `IEmailOutbox` after that sent email message according to defined templated.
+> **Notice** In case `IEmailOutbox` fails to send the email, It will save the email to the database and retry it using `TaskSchedular's` configured time unless retry count is greater than `MaxRetries` configured in `appsettings.json`
+### Scheduling Email
+IEmailMessage contains a property `SendableDate` which is used by `IEmailDispatcher` to identify when to send the email. By default, It's value is set to `LocalTime.Now` which means this email will be sent instantly. In case, you want to schedule the email for some other time, You can provide the value for any specific Date/Time.
+```csharp
+async void ScheduleRegistrationConfirmationEmail()
+{
+    var template = EmailTemplate.RegistrationConfirmationEmail;
 
-As you can see we have injected `IEmailOutbox` after that we have first saved email message and then sent email message according to defined templated.
+    var placeHolderValues = new
+    {
+        LastName = this.LastName,
+        Email = this.Email,
+        Password = this.Password
+    };
 
-> **Notice**: in this example, we have sent email instantly after saving to the database, but if you just save the email message in the database Olive will send emails on a regular basis that is configurable in the `TaskManager` class.
+    var emailMessage = new EmailMessage
+    {
+        Subject = template.MergeSubject(placeHolderValues),
+        To = this.AssigneeEmail,
+        Body = template.MergeBody(placeHolderValues)
+        SendableDate = LocalTime.Now.AddHours(1)
+    };
+	await EmailOutbox.Send(emailMessage);
+}
+```
+### Email Dispatcher
+`IEmailOutbox` uses `IEmailDispatcher` to send an email. Olive provides default implementation for `IEmailDispatcher` called `EmailDispatcher` using `SmtpClient`. If you want to provide some custom dispatch mechanism like SendGrid api, You can implement `IEmailDispatcher` and register it with dependency injection container using `Replace` method.
+```csharp
+using Olive.Email;
+
+namespace Domain
+{
+    public partial class SendGridDispatcher : IEmailDispatcher
+    {
+        public Task Dispatch(MailMessage mail)
+        {
+            //dispatch implementation
+        }
+    }
+```
+Finally, You have to register `SendGridDispatcher` with dependency injection container.
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    services.AddEmail();
+    services.Replace<IEmailDispatcher, SendGridDispatcher>();
+}
+```
+> **Notice** Always register your custom implementation after calling `services.AddEmail();` otherwise, It will be overrided with olive's default `EmailDispatcher`

@@ -81,6 +81,9 @@ namespace Olive.Email
             if (message.SendableDate > LocalTime.Now)
             {
                 Log.Info($"Skipping Send() command for IEmailMessage ({message.GetId()}). SendableDate is in the future.");
+                if (message.IsNew)
+                    await Database.Save(message);
+
                 return false;
             }
 
@@ -117,10 +120,19 @@ namespace Olive.Email
             var retries = message.Retries + 1;
 
             if (!message.IsNew)
+            {
                 await Database.Update(message, e => e.Retries = retries);
+                message.Retries = retries;
+            }
+            else
+            {
+                message.Retries += 1;
+                await Database.Save(message);
+            }
+
 
             // Also update this local instance:
-            message.Retries = retries;
+
         }
 
         public async Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage
