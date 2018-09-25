@@ -7,6 +7,7 @@ namespace Olive.SMS
         public static IServiceCollection AddSms(this IServiceCollection @this)
         {
             return @this
+                .AddSingleton<ISmsDispatcher, NullSmsDispatcher>()
                  .AddSingleton<ISmsService, SmsService>();
         }
     }

@@ -210,7 +210,7 @@ public override void ConfigureServices(IServiceCollection services)
 {
     base.ConfigureServices(services);
     services.AddEmail();
-    services.Replace<IEmailDispatcher, SendGridDispatcher>();
+    services.Replace<IEmailDispatcher, NullEmailDispatcher>(ServiceLifetime.Singleton);
 }
 ```
 > **Notice** Always register your custom implementation after calling `services.AddEmail();` otherwise, It will be overrided with olive's default `EmailDispatcher`

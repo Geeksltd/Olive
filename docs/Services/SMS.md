@@ -42,7 +42,7 @@ namespace Domain
 }
 ```
 
-Now you should write your custom SMS provider, this class should inherit from `ISmsDispatcher`. 
+By default, Olive provides `NullSmsDispatcher` which does not dispatch the messages but marks them sent. You should implement your custom SMS dispatcher and register it with dependency injection container, this class should inherit from `ISmsDispatcher`. 
 For example, here we create a class named `GeeksSmsDispatcher`:
 ```csharp
 namespace Olive.SMS.Tests
@@ -56,23 +56,16 @@ namespace Olive.SMS.Tests
     }
 }
 ```
-Now you should open `appsettings.json` and add this section:
-```json
-"SMS": {
-    "SenderType": "Olive.SMS.Tests.GeeksSmsDispatcher, Olive.SMS.Tests"
- }
-```
-> **Notice**: Please notice you should provide *fully qualified assembly name* here.
-
 Open `Startup.cs` file and in the `ConfigureServices(...)` method add `services.AddSms();`. it should be something like this:
 ```csharp
 public override void ConfigureServices(IServiceCollection services)
 {
     base.ConfigureServices(services);
     services.AddSms();
+    services.Replace<ISmsDispatcher, GeeksSmsDispatcher>(ServiceLifetime.Singleton);
 }
 ```
-
+> **Notice** Always register your custom implementation after calling `services.AddSms();` otherwise, It will be overrided with olive's default `NullSmsDispatcher`
 ### Sending SMS 
 
 To send a SMS you should simply populate `SmsMessage` class and inject `ISmsService` in your class constructor or use `Context.Current.GetService<Olive.SMS.ISmsService>();` if you want to have property injection and call `.Send(...)` method as show below:

@@ -122,6 +122,7 @@ namespace Olive.Email
             if (!message.IsNew)
             {
                 await Database.Update(message, e => e.Retries = retries);
+                // Also update this local instance:
                 message.Retries = retries;
             }
             else
@@ -129,10 +130,6 @@ namespace Olive.Email
                 message.Retries += 1;
                 await Database.Save(message);
             }
-
-
-            // Also update this local instance:
-
         }
 
         public async Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage
