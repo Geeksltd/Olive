@@ -42,7 +42,7 @@ namespace Domain
 }
 ```
 
-Now you should write your custom SMS provider, this class should inherit from `ISmsDispatcher`. 
+By default, Olive provides `NullSmsDispatcher` which does not dispatch the messages but marks them sent. You should implement your custom SMS dispatcher and register it with dependency injection container, this class should inherit from `ISmsDispatcher`. 
 For example, here we create a class named `GeeksSmsDispatcher`:
 ```csharp
 namespace Olive.SMS.Tests
@@ -56,23 +56,16 @@ namespace Olive.SMS.Tests
     }
 }
 ```
-Now you should open `appsettings.json` and add this section:
-```json
-"SMS": {
-    "SenderType": "Olive.SMS.Tests.GeeksSmsDispatcher, Olive.SMS.Tests"
- }
-```
-> **Notice**: Please notice you should provide *fully qualified assembly name* here.
-
 Open `Startup.cs` file and in the `ConfigureServices(...)` method add `services.AddSms();`. it should be something like this:
 ```csharp
 public override void ConfigureServices(IServiceCollection services)
 {
     base.ConfigureServices(services);
     services.AddSms();
+    services.Replace<ISmsDispatcher, GeeksSmsDispatcher>(ServiceLifetime.Singleton);
 }
 ```
-
+> **Notice** Always register your custom implementation after calling `services.AddSms();` otherwise, It will be overrided with olive's default `NullSmsDispatcher`
 ### Sending SMS 
 
 To send a SMS you should simply populate `SmsMessage` class and inject `ISmsService` in your class constructor or use `Context.Current.GetService<Olive.SMS.ISmsService>();` if you want to have property injection and call `.Send(...)` method as show below:
@@ -104,16 +97,30 @@ async void SendSMS()
 
     var smsMessage = new SmsMessage
     {
-        Date = LocalTime.Now,
-		SenderName = "Geeks ltd",
-		Text = "Thanks for using our service",
-		To = "0000000"
+       SenderName = "Geeks ltd",
+       Text = "Thanks for using our service",
+       To = "0000000"
     };
 	
-	await SmsService.Send(smsMessage);
+    await SmsService.Send(smsMessage);
 }
 ```
 
 As you can see we have injected `ISmsService` and then sent SMS directroy to the recipient.
+### Scheduling SMS
+`ISmsMessage` contains a property `Date` which is used by `ISmsService` to identify when to send the Sms. By default, It's value is set to `LocalTime.Now` which means this sms will be sent instantly. In case, you want to schedule the Sms for some later time, You can provide the value for any specific Date/Time.
+```csharp
+async void SendSMS()
+{
 
-> **Notice**: in this example, we have sent email instantly after saving to the database, but if you just save the email message in the database Olive will send emails on a regular basis that is configurable in the `TaskManager` class.
+    var smsMessage = new SmsMessage
+    {
+       SenderName = "Geeks ltd",
+       Text = "Thanks for using our service",
+       To = "0000000",
+       Date = LocalTime.Now.AddHours(1)
+    };
+	
+    await SmsService.Send(smsMessage);
+}
+```
