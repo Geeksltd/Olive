@@ -82,11 +82,7 @@ namespace Olive.Csv
                 for (var i = 0; i < @this.Columns.Count; i++)
                 {
                     if (!Convert.IsDBNull(dr[i]))
-                    {
-                        var value = dr[i].ToString();
-                        if (value.Contains(',')) sb.Append(string.Format("\"{0}\"", value));
-                        else sb.Append(dr[i].ToString());
-                    }
+                        sb.Append(dr[i].ToString().EscapeCsvValue());
 
                     if (i < @this.Columns.Count - 1) sb.Append(",");
                 }
