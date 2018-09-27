@@ -1,9 +1,9 @@
 # Olive compatibility change log
 
 ## 27 Sep 2018
-If you want to customise CKEditor toolbar you can should follow these steps:
-- Open `bower.json` and update it to the version **0.9.140** or above.
-- Create a JS file named `ckeditor_config.js` under scripts folder of your project and write your customization code like this:
+If you want to customise CKEditor toolbar you should follow these steps:
+- Open `bower.json` and update `olive.mvc` to the version **0.9.140** or above.
+- Create a JS file named `ckeditor_config.js` under scripts folder of your project and write your customisation code like this:
 ```javascript
 CKEDITOR.editorConfig = function (config) {
     config.toolbar_Compact =
