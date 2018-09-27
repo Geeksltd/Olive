@@ -186,7 +186,7 @@ namespace Olive.Export
 
             // Header row:
             if (!ExcludeHeader)
-                r.AppendLine(Columns.Select(c => EscapeCsvValue(c.HeaderText)).ToString(","));
+                r.AppendLine(Columns.Select(c => c.HeaderText.EscapeCsvValue()).ToString(","));
 
             // Data rows:
 
@@ -220,22 +220,10 @@ namespace Olive.Export
                     }
                 }
 
-                r.AppendLine(fields.Select(f => EscapeCsvValue(f)).ToString(","));
+                r.AppendLine(fields.Select(f => f.EscapeCsvValue()).ToString(","));
             }
 
             return r.ToString();
-        }
-
-        static string EscapeCsvValue(string value)
-        {
-            if (value.IsEmpty()) return string.Empty;
-
-            value = value.Remove("\r").Replace("\n", "\r\n");
-
-            if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
-                value = "\"{0}\"".FormatWith(value.Replace("\"", "\"\""));
-
-            return value;
         }
 
         /// <summary>
