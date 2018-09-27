@@ -7,7 +7,7 @@ namespace Olive.Entities.Data
     {
         internal async Task<IEntity> GetConcrete(object entityID, Type concreteType)
         {
-            var result = Cache.Current.Get(concreteType, entityID.ToString());
+            var result = Cache.Get(concreteType, entityID.ToString());
             if (result != null) return result;
 
             var timestamp = Cache.GetQueryTimestamp();
@@ -23,8 +23,8 @@ namespace Olive.Entities.Data
         internal void TryCache(IEntity item, DateTime? queryTime)
         {
             if (AnyOpenTransaction()) return;
-            if (queryTime.HasValue && Cache.Current.IsUpdatedSince(item, queryTime.Value)) return;
-            Cache.Current.Add(item);
+            if (queryTime.HasValue && Cache.IsUpdatedSince(item, queryTime.Value)) return;
+            Cache.Add(item);
         }
 
         [EscapeGCop("I am the solution to this GCop warning")]
@@ -116,7 +116,7 @@ namespace Olive.Entities.Data
                     {
                         if (!provider.EntityType.IsInterface && !provider.EntityType.IsAbstract)
                         {
-                            result = Cache.Current.Get(provider.EntityType, entityID.ToString());
+                            result = Cache.Get(provider.EntityType, entityID.ToString());
                             if (result != null) return result;
                         }
 

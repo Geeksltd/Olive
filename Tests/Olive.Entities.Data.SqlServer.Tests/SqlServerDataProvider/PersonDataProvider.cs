@@ -15,7 +15,10 @@
     [EscapeGCop("Auto generated code.")]
     public class PersonDataProvider : SqlDataProvider<Person>
     {
+        private ICache Cache;
         public override Type EntityType => typeof(Person);
+
+        public PersonDataProvider(ICache cache) => Cache = cache;
 
         #region SQL Commands
 
@@ -114,7 +117,7 @@
         {
             if ((await ExecuteScalar(UPDATE_COMMAND, CommandType.Text, CreateParameters(item))).ToStringOrEmpty().IsEmpty())
             {
-                Cache.Current.Remove(item);
+                Cache.Remove(item);
                 throw new ConcurrencyException($"Failed to update the 'People' table. There is no row with the ID of {item.ID}.");
             }
         }

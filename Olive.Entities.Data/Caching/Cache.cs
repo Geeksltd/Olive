@@ -3,19 +3,12 @@ using System.Collections;
 
 namespace Olive.Entities.Data
 {
-    public abstract class Cache
+    public class Cache : ICache
     {
-        public static Cache Instance = new InMemoryCache();
+        private readonly ICacheProvider CacheProvider;
+        public Cache(ICacheProvider provider) => CacheProvider = provider;
 
-        /// <summary>
-        /// Gets the current cache.
-        /// </summary>
-        public static Cache Current => Instance;
-
-        public static bool CanCache(Type type)
-          => CacheObjectsAttribute.IsEnabled(type) ?? Database.Configuration.Cache.Enabled;
-
-        internal static DateTime? GetQueryTimestamp()
+        public DateTime? GetQueryTimestamp()
            => Database.Configuration.Cache.ConcurrencyAware ? DateTime.UtcNow : default(DateTime?);
 
         /// <summary>
@@ -23,14 +16,13 @@ namespace Olive.Entities.Data
         /// </summary>
         public void Add(IEntity entity)
         {
-            if (CanCache(entity.GetType()))
+            if (entity.GetType().IsCacheable())
             {
-                DoAdd(entity);
+                CacheProvider.Add(entity);
                 ExpireLists(entity.GetType());
             }
         }
 
-        protected abstract void DoAdd(IEntity entity);
 
         /// <summary>
         /// Removes a given entity from the cache.
@@ -42,70 +34,55 @@ namespace Olive.Entities.Data
             foreach (var type in CacheDependentAttribute.GetDependentTypes(entity.GetType()))
                 Remove(type, invalidateCachedReferences: true);
 
-            if (CanCache(entity.GetType()))
+            if (entity.GetType().IsCacheable())
             {
                 ExpireLists(entity.GetType());
-                DoRemove(entity);
+                CacheProvider.Remove(entity);
             }
 
-            if (this != Current) Current.Remove(entity);
         }
 
-        protected abstract void DoRemove(IEntity entity);
 
         /// <summary>
         /// Removes all entities of a given types from the cache.
         /// </summary>
         public virtual void Remove(Type type, bool invalidateCachedReferences = false)
         {
-            if (!CanCache(type)) return;
+            if (!type.IsCacheable()) return;
 
             ExpireLists(type);
 
-            DoRemove(type, invalidateCachedReferences);
+            CacheProvider.Remove(type, invalidateCachedReferences);
 
             foreach (var inherited in type.Assembly.GetSubTypes(type, withDescendants: true))
-                DoRemove(inherited, invalidateCachedReferences);
-
-            if (this != Current)
-                Current.Remove(type, invalidateCachedReferences);
+                CacheProvider.Remove(inherited, invalidateCachedReferences);
         }
-
-        protected abstract void DoRemove(Type type, bool invalidateCachedReferences = false);
 
         public virtual void ExpireLists(Type type)
         {
-            if (!CanCache(type)) return;
+            if (!type.IsCacheable()) return;
 
             for (var parentType = type; parentType != typeof(Entity); parentType = parentType.BaseType)
-                DoExpireLists(type);
-
-
-            if (this != Current) Current.ExpireLists(type);
+                CacheProvider.ExpireLists(type);
         }
-
-        protected abstract void DoExpireLists(Type type);
 
         public virtual IEnumerable GetList(Type type, string key)
         {
-            if (!CanCache(type)) return null;
-            return DoGetList(type, key);
+            if (type.IsCacheable()) return null;
+            return CacheProvider.GetList(type, key);
         }
 
-        protected abstract IEnumerable DoGetList(Type type, string key);
-
-        public abstract void ClearAll();
+        public void ClearAll() => CacheProvider.ClearAll();
 
         public void AddList(Type type, string key, IEnumerable list)
         {
-            if (CanCache(type)) DoAddList(type, key, list);
+            if (type.IsCacheable()) CacheProvider.AddList(type, key, list);
         }
 
-        protected abstract void DoAddList(Type type, string key, IEnumerable list);
 
-        public abstract bool IsUpdatedSince(IEntity instance, DateTime since);
+        public bool IsUpdatedSince(IEntity instance, DateTime since) => CacheProvider.IsUpdatedSince(instance, since);
 
-        public abstract void UpdateRowVersion(IEntity entity);
+        public void UpdateRowVersion(IEntity entity) => CacheProvider.UpdateRowVersion(entity);
 
         public virtual TEntity Get<TEntity>(object id) where TEntity : IEntity
             => (TEntity)Get(typeof(TEntity), id.ToStringOrEmpty());
@@ -115,8 +92,8 @@ namespace Olive.Entities.Data
         /// </summary>
         public IEntity Get(Type type, string id)
         {
-            if (!CanCache(type)) return null;
-            var result = DoGet(type, id);
+            if (!type.IsCacheable()) return null;
+            var result = CacheProvider.Get(type, id);
             if (!(result is null)) return result;
 
             foreach (var t in type.Assembly.GetSubTypes(type))
@@ -128,6 +105,6 @@ namespace Olive.Entities.Data
             return null;
         }
 
-        protected abstract IEntity DoGet(Type entityType, string id);
+
     }
 }

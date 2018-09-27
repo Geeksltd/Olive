@@ -21,8 +21,11 @@ namespace Olive.Entities.Data
         public IDataAccess Access { get; } = new DataAccess<TConnection>();
 
         public static IDatabase Database => Context.Current.Database();
-
-        protected DataProvider() { }
+        protected ICache Cache;
+        protected DataProvider(ICache cache)
+        {
+            Cache = cache;
+        }
 
         public abstract string MapColumn(string propertyName);
 

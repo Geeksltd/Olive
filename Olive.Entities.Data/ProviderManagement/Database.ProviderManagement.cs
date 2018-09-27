@@ -25,9 +25,10 @@ namespace Olive.Entities.Data
 
         public static DatabaseConfig Configuration { get; private set; }
 
-        public Database(IConfiguration config)
+        public Database(IConfiguration config, ICache cache)
         {
             Config = config;
+            Cache = cache;
         }
 
         public void Configure()

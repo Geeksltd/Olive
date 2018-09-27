@@ -8,6 +8,10 @@ namespace Olive.Entities.Data
 {
     public abstract class SqlDataProvider<TTargetEntity> : SqlDataProvider where TTargetEntity : IEntity
     {
+        protected SqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override Type EntityType => typeof(TTargetEntity);
     }
 
@@ -16,6 +20,10 @@ namespace Olive.Entities.Data
     /// </summary>
     public abstract partial class SqlDataProvider : DataProvider<SqlConnection, SqlParameter>
     {
+        protected SqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
         {
             var value = data.Value;
