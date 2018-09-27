@@ -24,7 +24,7 @@ namespace Olive.Tests
 
             #region initialize Context
 
-            services.AddSingleton<IDatabase>(new Database(Configuration.Build()));
+            services.AddSingleton<IDatabase, Database>();
 
             Context.Initialize(services);
 

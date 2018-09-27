@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace Olive.Entities.Data
 {
-    partial class InMemoryCache
+    partial class InMemoryCacheProvider
     {
         // Note: This feature can prevent a rare concurrency issue in highly concurrent applications.
         // But it comes at the cost of performance degradation.
@@ -19,19 +19,19 @@ namespace Olive.Entities.Data
         internal ConcurrentDictionary<Type, ConcurrentDictionary<string, long>> RowVersionCache
             = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
 
-        public override bool IsUpdatedSince(IEntity instance, DateTime since)
+        public bool IsUpdatedSince(IEntity instance, DateTime since)
         {
             var type = instance.GetType();
-            if (!CanCache(type)) return false;
+            if (!type.IsCacheable()) return false;
 
             var cache = RowVersionCache.GetOrDefault(type);
             return cache?.GetOrDefault(instance.GetId().ToString()) > since.Ticks;
         }
 
-        public override void UpdateRowVersion(IEntity entity)
+        public void UpdateRowVersion(IEntity entity)
         {
             var type = entity.GetType();
-            if (!CanCache(type)) return;
+            if (!type.IsCacheable()) return;
 
             var cache = RowVersionCache.GetOrAdd(type, t => new ConcurrentDictionary<string, long>());
             cache[entity.GetId().ToString()] = DateTime.UtcNow.Ticks;

@@ -10,11 +10,19 @@
 
     public abstract class MySqlDataProvider<TTargetEntity> : MySqlDataProvider where TTargetEntity : IEntity
     {
+        protected MySqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override Type EntityType => typeof(TTargetEntity);
     }
 
     public abstract partial class MySqlDataProvider : DataProvider<MySqlConnection, MySqlParameter>
     {
+        protected MySqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
         {
             var value = data.Value;

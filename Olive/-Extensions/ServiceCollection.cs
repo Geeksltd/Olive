@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Olive._Extensions
+namespace Olive
 {
     public static partial class OliveExtensions
     {
