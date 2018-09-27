@@ -9,11 +9,19 @@
 
     public abstract class PostgreSqlDataProvider<TTargetEntity> : PostgreSqlDataProvider where TTargetEntity : IEntity
     {
+        protected PostgreSqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override Type EntityType => typeof(TTargetEntity);
     }
 
     public abstract partial class PostgreSqlDataProvider : DataProvider<NpgsqlConnection, NpgsqlParameter>
     {
+        protected PostgreSqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
         {
             var value = data.Value;

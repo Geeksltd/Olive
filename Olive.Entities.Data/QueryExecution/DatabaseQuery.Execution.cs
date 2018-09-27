@@ -49,7 +49,7 @@
 
             var cacheKey = GetCacheKey();
 
-            var result = Cache.Current.GetList(EntityType, cacheKey)?.Cast<IEntity>();
+            var result = Cache.GetList(EntityType, cacheKey)?.Cast<IEntity>();
             if (result != null)
             {
                 await LoadIncludedAssociations(result);
@@ -60,7 +60,7 @@
 
             // If there is no transaction open, cache it:
             if (!Context.Current.Database().AnyOpenTransaction())
-                Cache.Current.AddList(EntityType, cacheKey, result);
+                Cache.AddList(EntityType, cacheKey, result);
 
             return result;
         }
@@ -102,7 +102,7 @@
 
             foreach (var item in await LoadFromDatabase())
             {
-                var inCache = Cache.Current.Get(item.GetType(), item.GetId().ToString());
+                var inCache = Cache.Get(item.GetType(), item.GetId().ToString());
                 if (inCache != null) result.Add(inCache);
                 else
                 {

@@ -11,6 +11,11 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class Database : IDatabase
     {
+        private readonly ICache Cache;
+        /// <summary>
+        /// Initialize instance of Database by injecting ICache dependency
+        /// </summary>
+        /// 
         bool IsSet(SaveBehaviour setting, SaveBehaviour behaviour) => (setting & behaviour) == behaviour;
 
         bool IsSet(DeleteBehaviour setting, DeleteBehaviour behaviour) => (setting & behaviour) == behaviour;
@@ -24,7 +29,7 @@ namespace Olive.Entities.Data
         /// </summary>
         public async Task Refresh()
         {
-            Cache.Current.ClearAll();
+            Cache.ClearAll();
 
             await CacheRefreshed.Raise();
         }
@@ -92,7 +97,7 @@ namespace Olive.Entities.Data
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
 
-            Cache.Current.Remove(instance);
+            Cache.Remove(instance);
 
             return (T)await Get(instance.GetId(), instance.GetType());
         }

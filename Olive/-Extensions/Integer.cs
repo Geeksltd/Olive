@@ -118,7 +118,7 @@ namespace Olive
 
             while (fileSize > 0x400 && index < suffix.Length)
             {
-                fileSize = fileSize / 0x400;
+                fileSize /= 0x400;
                 index++;
             }
 

@@ -24,7 +24,7 @@ namespace Olive.Entities.Data
 
                 if (deletingArgs.Cancel)
                 {
-                    Cache.Current.Remove(entity);
+                    Cache.Remove(entity);
                     return;
                 }
             }
@@ -55,11 +55,11 @@ namespace Olive.Entities.Data
 
             await EnlistOrCreateTransaction(async () => await DoDelete(entity, behaviour));
 
-            Cache.Current.Remove(entity);
+            Cache.Remove(entity);
             if (Transaction.Current != null)
-                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Current.Remove(entity); };
+                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Remove(entity); };
 
-            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
+            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Remove(entity));
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassLogging))
                 await Audit.Audit.LogDelete(entity);

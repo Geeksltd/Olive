@@ -118,7 +118,7 @@ namespace Olive.Mvc.Testing
                     }
                 }
 
-                Cache.Current.ClearAll();
+                Context.Current.GetService<ICache>().ClearAll();
             }
             catch (Exception ex)
             {

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.ApiProxyGenerator</id>
-    <version>1.0.80</version>
+    <version>1.0.81</version>
     <title>Olive Api Proxy Generator</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</projectUrl>

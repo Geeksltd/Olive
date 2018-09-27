@@ -29,6 +29,8 @@ namespace Olive.SMS
         {
             if (smsItem.Retries > MaximumRetries)
                 return false;
+            if (smsItem.IsNew)
+                await Database.Save(smsItem);
             try
             {
 

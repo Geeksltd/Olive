@@ -29,6 +29,12 @@ namespace Olive.Entities.Data
     public class DataAccess<TConnection> : DataAccess, IDataAccess
         where TConnection : DbConnection, new()
     {
+        public DataAccess(string connectionString = null)
+        {
+            if (connectionString.IsEmpty())
+                connectionString = GetCurrentConnectionString();
+        }
+
         /// <summary>
         /// Creates a connection object.
         /// </summary>

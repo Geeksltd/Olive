@@ -85,7 +85,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
                 if (savingArgs.Cancel)
                 {
-                    Cache.Current.Remove(entity);
+                    Cache.Remove(entity);
                     return;
                 }
             }
@@ -97,7 +97,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
                 else await Audit.Audit.LogUpdate(entity);
 
             await dataProvider.Save(entity);
-            Cache.Current.UpdateRowVersion(entity);
+            Cache.UpdateRowVersion(entity);
 
             if (mode == SaveMode.Update && asEntity?._ClonedFrom != null && AnyOpenTransaction())
             {
@@ -108,12 +108,12 @@ Database.Update(myObject, x=> x.P2 = ...);");
             if (mode == SaveMode.Insert)
                 Entity.Services.SetSaved(entity);
 
-            Cache.Current.Remove(entity);
+            Cache.Remove(entity);
 
             if (Transaction.Current != null)
-                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Current.Remove(entity); };
+                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Remove(entity); };
 
-            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
+            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Remove(entity));
 
             await OnUpdated(entity);
 
@@ -122,7 +122,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             // OnSaved event handler might have read the object again and put it in the cache, which would
             // create invalid CachedReference objects.
-            Cache.Current.Remove(entity);
+            Cache.Remove(entity);
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
                     await GetProvider(group.Key).BulkInsert(group.ToArray(), batchSize);
 
                 foreach (var type in objectTypes)
-                    Cache.Current.Remove(type.Key);
+                    Cache.Remove(type.Key);
             }
             catch
             {
@@ -256,7 +256,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
                 }
 
                 foreach (var type in objectTypes)
-                    Cache.Current.Remove(type.Key);
+                    Cache.Remove(type.Key);
             }
             catch
             {

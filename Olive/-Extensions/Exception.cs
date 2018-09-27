@@ -78,7 +78,7 @@ namespace Olive
 
         public static async Task<string> GetResponseBody(this WebException @this)
         {
-            if (@this.Response == null) return null;
+            if (@this.Response == null) return default(string);
 
             using (var reader = new StreamReader(@this.Response.GetResponseStream()))
                 return await reader.ReadToEndAsync();

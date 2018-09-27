@@ -81,7 +81,7 @@ namespace Olive.Export
         public void RemoveColumn(string headerText)
         {
             var columns = Columns.Where(c => c.HeaderText == headerText);
-            if (columns.Count() > 1)
+            if (columns.HasMany())
                 throw new ArgumentException($"There are {columns.Count()} columns with header text of '{headerText}'. Please use RemoveColumn(index) instead.");
 
             if (columns.None())
@@ -186,10 +186,9 @@ namespace Olive.Export
 
             // Header row:
             if (!ExcludeHeader)
-                r.AppendLine(Columns.Select(c => EscapeCsvValue(c.HeaderText)).ToString(","));
+                r.AppendLine(Columns.Select(c => c.HeaderText.EscapeCsvValue()).ToString(","));
 
             // Data rows:
-
             foreach (var row in DataRows)
             {
                 var fields = new List<string>();
@@ -220,25 +219,10 @@ namespace Olive.Export
                     }
                 }
 
-                r.AppendLine(fields.Select(f => EscapeCsvValue(f)).ToString(","));
+                r.AppendLine(fields.Select(f => f.EscapeCsvValue()).ToString(","));
             }
 
             return r.ToString();
-        }
-
-        static string EscapeCsvValue(string value)
-        {
-            if (value.IsEmpty()) return string.Empty;
-
-            value = value.Remove("\r").Replace("\n", "\r\n");
-
-            if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
-                value = "\"{0}\"".FormatWith(value.Replace("\"", "\"\""));
-
-            if (value.StartsWithAny("=", "+", "-", "@"))
-                return "'" + value;
-
-            return value;
         }
 
         /// <summary>

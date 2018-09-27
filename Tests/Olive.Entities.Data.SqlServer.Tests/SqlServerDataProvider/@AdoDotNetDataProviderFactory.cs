@@ -27,8 +27,8 @@
         public virtual IDataProvider GetProvider(Type type)
         {
             IDataProvider result = null;
-
-            if (type == typeof(Person)) result = new PersonDataProvider();
+            ICache cache = Context.Current.GetService<ICache>();
+            if (type == typeof(Person)) result = new PersonDataProvider(cache);
             else if (type.IsInterface) result = new InterfaceDataProvider(type);
 
             if (result == null)

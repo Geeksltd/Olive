@@ -26,10 +26,10 @@ namespace Olive.Audit
                 }
             }).ToList();
 
-            if (possible.Count == 0)
+            if (possible.None())
                 throw new Exception("No type in the currently loaded assemblies implements IApplicationEvent.");
 
-            if (possible.Count > 1)
+            if (possible.HasMany())
                 throw new Exception($"More than one type in the currently loaded assemblies implement IApplicationEvent:{possible.Select(x => x.FullName).ToString(" and ")}");
 
             AuditEventImplementation = possible.Single();

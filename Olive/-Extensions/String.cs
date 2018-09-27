@@ -1447,5 +1447,20 @@ namespace Olive
             if (@this.IsEmpty()) return string.Empty;
             return System.Net.WebUtility.UrlDecode(@this);
         }
+
+        public static string EscapeCsvValue(this string @this)
+        {
+            if (@this.IsEmpty()) return string.Empty;
+
+            @this = @this.Remove("\r").Replace("\n", "\r\n");
+
+            if (@this.Contains(",") || @this.Contains("\"") || @this.Contains("\n"))
+                @this = "\"{0}\"".FormatWith(@this.Replace("\"", "\"\""));
+
+            if (@this.StartsWithAny("=", "+", "-", "@"))
+                return "'" + @this;
+
+            return @this;
+        }
     }
 }
