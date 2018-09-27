@@ -26,8 +26,25 @@ namespace Olive.ApiProxy
             Folder.GetFile("README.txt").WriteAllText(ReadmeFileGenerator.Generate());
             Console.WriteLine("Done");
 
+            GenerateEnums();
             GenerateDtoClasses();
             GenerateDataProviderClasses();
+        }
+
+        void GenerateEnums()
+        {
+            if (DtoTypes.Enums.None()) return;
+
+            Console.Write("Adding Enums ...");
+
+            foreach (var type in DtoTypes.Enums)
+            {
+                var file = Folder.GetFile("Enums.cs");
+                file.AppendLine("public enum " + type.Name.TrimBefore("+", trimPhrase: true));
+                file.AppendLine("{");
+                file.AppendLine(Enum.GetNames(type).ToString(",\r\n"));
+                file.AppendLine("}\r\n");
+            }
         }
 
         void GenerateDtoClasses()

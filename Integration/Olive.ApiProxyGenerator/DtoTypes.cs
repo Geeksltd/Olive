@@ -9,6 +9,8 @@ namespace Olive.ApiProxy
     {
         internal static List<Type> All;
 
+        internal static List<Type> Enums;
+
         internal static void FindAll()
         {
             All = Context.ActionMethods
@@ -19,6 +21,9 @@ namespace Olive.ApiProxy
                 .ExceptNull()
                 .Distinct()
                 .ToList();
+
+            Enums = All.Where(x => x.IsEnum).ToList();
+            All = All.Except(Enums).ToList();
 
             while (All.Any(t => Crawl(t))) continue;
         }
@@ -40,8 +45,16 @@ namespace Olive.ApiProxy
             {
                 var memberType = GetDefinableType(member.GetPropertyOrFieldType());
                 if (memberType == null || All.Contains(memberType)) continue;
-                All.Add(memberType);
-                return true;
+
+                if (memberType.IsEnum)
+                {
+                    if (Enums.Lacks(memberType)) Enums.Add(memberType);
+                }
+                else
+                {
+                    All.Add(memberType);
+                    return true;
+                }
             }
 
             return false;

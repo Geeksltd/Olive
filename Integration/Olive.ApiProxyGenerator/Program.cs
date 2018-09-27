@@ -28,7 +28,6 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Api assembly: " + Context.AssemblyFile);
                 Console.WriteLine("Api controller: " + Context.ControllerName);
                 Console.WriteLine("Temp folder: " + Context.TempPath);
-                Console.WriteLine("------------------------");
                 Context.LoadAssembly();
                 Context.PrepareOutputDirectory();
                 DtoTypes.FindAll();

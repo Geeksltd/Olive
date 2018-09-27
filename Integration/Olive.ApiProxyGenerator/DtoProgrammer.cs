@@ -57,17 +57,32 @@ namespace Olive.ApiProxy
             return r.ToString();
         }
 
-        string GenerateTheToString() => $"public override string ToString()=> {GetToStringField()};";
+        string GenerateTheToString() => $"public override string ToString() => {GetToStringField()};";
 
         string GetToStringField()
         {
             var explicitToStringField = EffectiveProperties.SingleOrDefault(i => i.GetCustomAttribute<Entities.ToStringAttribute>() != null);
             var toStringField = explicitToStringField ?? SelectDefaultToStringField();
 
-            if (toStringField == null)
-                throw new Exception($"Could not find an implementation for ToString(). There is no field annotated with {nameof(Entities.ToStringAttribute)} attribute or a field named {CommonDefaultProperties.Select(s => s.ToPascalCaseId()).ToString(",", " or ")} for {Type.FullName}.");
+            if (toStringField != null) return toStringField.Name;
 
-            return toStringField.Name;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("********** WARNING ***********");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Could not find a suitable implementation for ToString().");
+            Console.WriteLine("- There is no field annotated with [ToString] attribute.");
+            Console.WriteLine($"- Nor is there a field in {Type.FullName} named {CommonDefaultProperties.Select(s => s.ToPascalCaseId()).ToString(", ", " or ")}.");
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.ResetColor();
+
+            Console.WriteLine("This does not stop the proxy creation.");
+            Console.WriteLine("Press Enter to continue");
+            Console.ReadLine();
+
+            return $"\"{Type.Name.TrimBefore("+", trimPhrase: true)}: No good ToString() :(\"";
         }
 
         MemberInfo SelectDefaultToStringField()

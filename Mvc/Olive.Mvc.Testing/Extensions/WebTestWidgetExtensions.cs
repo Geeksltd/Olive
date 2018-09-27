@@ -33,7 +33,7 @@
 
             var height = commands.Count() * 30;
 
-            r.Append("style='position: fixed; left: 47%; bottom: 0; text-align: center; width: 150px;");
+            r.Append("style='position: fixed; left: 45%; bottom: 0; text-align: center; width: 200px;");
             r.Append($"margin-bottom:-{height}px; ");
             r.Append("transition: margin-bottom 0.25s ease; background: #2ea8eb; ");
             r.Append("color: #fff; font-size: 12px; font-family:Arial;' ");

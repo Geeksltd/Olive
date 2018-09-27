@@ -235,6 +235,9 @@ namespace Olive.Export
             if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
                 value = "\"{0}\"".FormatWith(value.Replace("\"", "\"\""));
 
+            if (value.StartsWithAny("=", "+", "-", "@"))
+                return "'" + value;
+
             return value;
         }
 
