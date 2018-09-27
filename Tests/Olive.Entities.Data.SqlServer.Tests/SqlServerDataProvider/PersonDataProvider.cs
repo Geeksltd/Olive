@@ -15,10 +15,10 @@
     [EscapeGCop("Auto generated code.")]
     public class PersonDataProvider : SqlDataProvider<Person>
     {
-        private ICache Cache;
         public override Type EntityType => typeof(Person);
-
-        public PersonDataProvider(ICache cache) => Cache = cache;
+        public PersonDataProvider(ICache cache) : base(cache)
+        {
+        }
 
         #region SQL Commands
 
@@ -51,6 +51,7 @@
 
         /// <summary>Gets a SQL command text to delete a record from People table.</summary>
         const string DELETE_COMMAND = @"DELETE FROM People WHERE ID = @Id";
+
 
         #endregion
 
