@@ -16,6 +16,9 @@
     public class PersonDataProvider : SqlDataProvider<Person>
     {
         public override Type EntityType => typeof(Person);
+        public PersonDataProvider(ICache cache) : base(cache)
+        {
+        }
 
         #region SQL Commands
 
@@ -48,6 +51,7 @@
 
         /// <summary>Gets a SQL command text to delete a record from People table.</summary>
         const string DELETE_COMMAND = @"DELETE FROM People WHERE ID = @Id";
+
 
         #endregion
 
@@ -114,7 +118,7 @@
         {
             if ((await ExecuteScalar(UPDATE_COMMAND, CommandType.Text, CreateParameters(item))).ToStringOrEmpty().IsEmpty())
             {
-                Cache.Current.Remove(item);
+                Cache.Remove(item);
                 throw new ConcurrencyException($"Failed to update the 'People' table. There is no row with the ID of {item.ID}.");
             }
         }

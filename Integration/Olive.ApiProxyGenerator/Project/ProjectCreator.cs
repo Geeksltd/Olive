@@ -40,6 +40,10 @@ namespace Olive.ApiProxy
 </Project>");
 
             Environment.CurrentDirectory = Folder.FullName;
+        }
+
+        void AddNugetReferences()
+        {
             foreach (var item in References)
             {
                 Console.Write("Adding nuget reference " + item + "...");
@@ -52,6 +56,7 @@ namespace Olive.ApiProxy
         {
             Create();
             AddFiles();
+            AddNugetReferences();
 
             Console.Write("Building " + Folder + "...");
             Context.Run("dotnet build");

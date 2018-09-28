@@ -55,6 +55,7 @@ namespace Olive.ApiProxy
             if (type.Assembly == Context.Assembly)
             {
                 method = "Associate" + "<" + type.Name + ">";
+                if (type.IsEnum) method = "String";
             }
 
             switch (method)

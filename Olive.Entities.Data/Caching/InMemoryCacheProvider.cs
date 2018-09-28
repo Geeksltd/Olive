@@ -8,7 +8,7 @@ namespace Olive.Entities.Data
     /// <summary>
     /// Provides a cache of objects retrieved from the database.
     /// </summary>
-    public partial class InMemoryCache : Cache
+    public partial class InMemoryCacheProvider : ICacheProvider
     {
         object SyncLock = new object();
 
@@ -49,7 +49,7 @@ namespace Olive.Entities.Data
             return result;
         }
 
-        protected override IEntity DoGet(Type entityType, string id)
+        public IEntity Get(Type entityType, string id)
         {
             var entities = GetEntities(entityType);
 
@@ -62,13 +62,13 @@ namespace Olive.Entities.Data
             catch
             {
                 // A threading issue. No logging is needed.
-                return DoGet(entityType, id);
+                return Get(entityType, id);
             }
 
             return null;
         }
 
-        protected override void DoAdd(IEntity entity)
+        public void Add(IEntity entity)
         {
             var entities = GetEntities(entity.GetType());
 
@@ -85,7 +85,7 @@ namespace Olive.Entities.Data
             }
         }
 
-        protected override void DoRemove(IEntity entity)
+        public void Remove(IEntity entity)
         {
             var entities = GetEntities(entity.GetType());
 
@@ -93,7 +93,7 @@ namespace Olive.Entities.Data
                 entities.Remove(entity.GetId().ToString());
         }
 
-        protected override void DoRemove(Type type, bool invalidateCachedReferences = false)
+        public void Remove(Type type, bool invalidateCachedReferences = false)
         {
             if (Types.TryGetValue(type, out var entities))
             {
@@ -104,13 +104,13 @@ namespace Olive.Entities.Data
             }
         }
 
-        protected override void DoExpireLists(Type type)
+        public void ExpireLists(Type type)
         {
             var lists = GetLists(type, autoCreate: false);
             if (lists != null) lock (lists) lists.Clear();
         }
 
-        protected override IEnumerable DoGetList(Type type, string key)
+        public IEnumerable GetList(Type type, string key)
         {
             var lists = GetLists(type);
             lock (lists)
@@ -120,13 +120,13 @@ namespace Olive.Entities.Data
             }
         }
 
-        protected override void DoAddList(Type type, string key, IEnumerable list)
+        public void AddList(Type type, string key, IEnumerable list)
         {
             var lists = GetLists(type);
             lock (lists) lists[key] = list;
         }
 
-        public override void ClearAll()
+        public void ClearAll()
         {
             lock (SyncLock)
             {

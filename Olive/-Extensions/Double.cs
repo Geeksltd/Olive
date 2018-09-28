@@ -90,7 +90,7 @@ namespace Olive
 
             if (double.IsNaN(pc) || double.IsInfinity(pc)) return 0d;
 
-            if (multiplyBy100) pc = pc * 100d;
+            if (multiplyBy100) pc *= 100d;
 
             if (roundTo.HasValue) pc = pc.Round(roundTo.Value);
 
@@ -104,7 +104,7 @@ namespace Olive
         {
             var pc = @this / total;
 
-            if (multiplyBy100) pc = pc * 100;
+            if (multiplyBy100) pc *= 100;
 
             if (roundTo.HasValue)
                 pc = Math.Round(pc, roundTo.Value);

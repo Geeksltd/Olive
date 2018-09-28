@@ -3,7 +3,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Olive.Entities.Data
 {
-    partial class RedisCache
+    partial class RedisCacheProvider
     {
         object Get(string key)
         {

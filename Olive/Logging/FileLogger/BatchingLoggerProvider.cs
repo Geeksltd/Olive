@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,7 +51,7 @@ namespace Olive.Logging
                     limit--;
                 }
 
-                if (CurrentBatch.Count > 0)
+                if (CurrentBatch.Any())
                 {
                     try { await WriteMessagesAsync(CurrentBatch, CancellationTokenSource.Token); }
                     catch

@@ -14,7 +14,7 @@ namespace Olive
         public async Task<string> Run()
         {
             await ApiClient.DisposeCache();
-            return null;
+            return default(string);
         }
     }
 

@@ -50,10 +50,12 @@ namespace Olive.Email
             return await Process();
         }
 
-        public async Task Initialize()
+        public Task Initialize()
         {
             if (Request.Has("attachmentInfo"))
                 AttachmentFile = AttachmentSerializer.Parse(Request.Param("attachmentInfo"));
+
+            return Task.CompletedTask;
         }
 
         public async Task<string> Process()
@@ -68,7 +70,7 @@ namespace Olive.Email
                 {
                     await Response.Dispatch(await AttachmentFile.ContentStream.ReadAllBytesAsync(),
                         AttachmentFile.Name);
-                    return null;
+                    return default(string);
                 }
             }
             else if (await Email() == null)
@@ -80,10 +82,10 @@ namespace Olive.Email
                 response = await GenerateEmailView();
             }
 
-            return await Dispatch(response);
+            return Dispatch(response);
         }
 
-        async Task<string> Dispatch(string response)
+        string Dispatch(string response)
         {
             var r = new StringBuilder();
             r.AppendLine("<html>");
@@ -129,8 +131,7 @@ namespace Olive.Email
             if (wasHtml) return body;
 
             body = body.HtmlEncode().Replace("\n", "<br/>").Replace("\r", "");
-            body = LinkPattern.Replace(body, "<a href=\"$1\" target=\"_parent\">$1</a>");
-            return body;
+            return LinkPattern.Replace(body, "<a href=\"$1\" target=\"_parent\">$1</a>");
         }
 
         async Task<string> GenerateInbox()

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Olive.Entities;
+using Olive.Entities.Data;
 using Olive.Security;
 using System;
 using System.Collections.Generic;
@@ -38,8 +39,7 @@ namespace Olive.Mvc
             services.AddHttpContextAccessor();
 
             services.AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
-            services.AddSingleton<IDatabase>(new Entities.Data.Database(Configuration));
-
+            services.AddDatabase();
             ConfigureMvc(services.AddMvc());
 
             services.AddResponseCompression();

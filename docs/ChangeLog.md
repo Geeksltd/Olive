@@ -1,5 +1,30 @@
 # Olive compatibility change log
 
+## 28 Sep 2018
+- Replace `Cache.CanCache(modifiedObjectType)` with `modifiedObjectType.IsCacheable()`
+- Replace `Database.Cache` with `Context.Current.Cache()` or `Database.Cache()`
+
+## 27 Sep 2018
+If you want to customise CKEditor toolbar you should follow these steps:
+- Open `bower.json` and update `olive.mvc` to the version **0.9.140** or above.
+- Create a JS file named `ckeditor_config.js` under scripts folder of your project and write your customisation code like this:
+```javascript
+CKEDITOR.editorConfig = function (config) {
+    config.toolbar_Compact =
+        [
+            { name: 'basicstyles', items: ['Bold', 'Italic'] },
+            { name: 'paragraph', items: ['NumberedList', 'BulletedList'] },
+            { name: 'links', items: ['Link', 'Unlink'] }
+        ];
+};
+```
+- Open your main TS file that is usually located under scripts folder and in the `run()` method or any where that suit more add this code:
+```javascript
+var url: string = Url.effectiveUrlProvider("", null);
+HtmlEditor.editorConfigPath = `${url}scripts/ckeditor_config.js`;
+```
+these codes may vary depending on your development environment, you should just set `HtmlEditor.editorConfigPath` with absolute path.
+
 ## 24 Sep 2018
 **FormAction.ts** file in the Olive.MvcJs file has a dependency to the jQuery-UI **focusable** module. please add this to the `references.js` as shown below:
 

@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="1.2.7" />
-    <PackageReference Include="GCop.UAT" Version="1.2.7" />
+    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="MySqlConnector" Version="0.45.0" />
   </ItemGroup>
@@ -30,6 +30,7 @@
     </Reference>
     <Reference Include="Olive.Entities.Data">
       <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.Data.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
 

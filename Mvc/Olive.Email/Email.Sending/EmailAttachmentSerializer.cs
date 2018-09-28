@@ -40,13 +40,10 @@ namespace Olive.Email
             {
                 return ParseJson(attachmentInfo);
             }
+            else if (attachmentInfo.StartsWith("\\\\") || Path.IsPathRooted(attachmentInfo))
+                return new Attachment(attachmentInfo); // absolute path
             else
-            {
-                if (attachmentInfo.StartsWith("\\\\") || Path.IsPathRooted(attachmentInfo))
-                    return new Attachment(attachmentInfo); // absolute path
-                else
-                    return new Attachment(Path.Combine(AppDomain.CurrentDomain.WebsiteRoot().FullName, attachmentInfo));
-            }
+                return new Attachment(Path.Combine(AppDomain.CurrentDomain.WebsiteRoot().FullName, attachmentInfo));
         }
 
         Attachment ParseJson(string attachmentInfo)

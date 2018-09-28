@@ -42,10 +42,8 @@ namespace Olive
         public static async Task<string> GetString(this WebResponse response)
         {
             using (var stream = response.GetResponseStream())
-            {
-                using (var reader = new StreamReader(stream))
-                    return await reader.ReadToEndAsync();
-            }
+            using (var reader = new StreamReader(stream))
+                return await reader.ReadToEndAsync();
         }
 
         /// <summary>

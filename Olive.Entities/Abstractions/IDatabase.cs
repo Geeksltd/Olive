@@ -37,7 +37,7 @@ namespace Olive.Entities
         Task<bool> None<T>(Expression<Func<T, bool>> criteria) where T : IEntity;
 
         Task<int> Count<T>(Expression<Func<T, bool>> criteria) where T : IEntity;
-
+        
         #region Delete
 
         Task Delete(IEntity instance);
