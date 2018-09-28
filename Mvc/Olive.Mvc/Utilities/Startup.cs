@@ -39,9 +39,7 @@ namespace Olive.Mvc
             services.AddHttpContextAccessor();
 
             services.AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
-            services.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
-            services.AddSingleton<ICache, Cache>();
-            services.AddSingleton<IDatabase, Database>();
+            services.AddDatabase();
             ConfigureMvc(services.AddMvc());
 
             services.AddResponseCompression();

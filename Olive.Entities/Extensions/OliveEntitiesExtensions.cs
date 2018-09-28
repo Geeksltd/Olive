@@ -42,6 +42,8 @@ namespace Olive
 
         public static IDatabase Database(this Context @this) => @this.GetService<IDatabase>();
 
+        public static ICache Cache(this Context @this) => @this.GetService<ICache>();
+
         public static int? GetResultsToFetch(this IEnumerable<QueryOption> options) =>
           options.OfType<TakeTopQueryOption>().FirstOrDefault()?.Number;
 

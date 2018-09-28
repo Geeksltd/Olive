@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Olive.Entities.Data
+namespace Olive.Entities
 {
     public interface ICache
     {
