@@ -385,7 +385,8 @@ namespace Olive.Entities
         {
             if (fileName.IsEmpty()) return false;
 
-            var extension = Path.GetExtension(fileName).OrEmpty().Where(x => x.IsLetter()).ToArray().ToString("").ToLower();
+            var extension = Path.GetExtension(fileName.Trim().TrimEnd('.', '\\', '/'))
+                .OrEmpty().Where(x => x.IsLetter()).ToArray().ToString("").ToLower();
 
             return UnsafeExtensions.Contains(extension);
         }
