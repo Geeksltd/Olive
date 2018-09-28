@@ -1,5 +1,8 @@
 # Olive compatibility change log
 
+## 28 Sep 2018
+- Replace `Cache.CanCache(modifiedObjectType)` with `modifiedObjectType.IsCacheable()`
+
 ## 27 Sep 2018
 If you want to customise CKEditor toolbar you should follow these steps:
 - Open `bower.json` and update `olive.mvc` to the version **0.9.140** or above.
