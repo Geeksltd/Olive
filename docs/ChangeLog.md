@@ -2,6 +2,7 @@
 
 ## 28 Sep 2018
 - Replace `Cache.CanCache(modifiedObjectType)` with `modifiedObjectType.IsCacheable()`
+- Replace `Database.Cache` with `Context.Current.Cache()` or `Database.Cache()`
 
 ## 27 Sep 2018
 If you want to customise CKEditor toolbar you should follow these steps:
