@@ -37,13 +37,12 @@ namespace Olive.Email
             SendError = new AsyncEvent<EmailSendingEventArgs>();
         }
 
-        Task<IEmailMessage[]> GetUnsentEmails()
+        async Task<IEmailMessage[]> GetUnsentEmails()
         {
-            return Database.Of<IEmailMessage>()
+            var unsentEmails = await Database.Of<IEmailMessage>()
                 .Where(x => x.Retries < Config.MaxRetries)
-                  .OrderBy(e => e.SendableDate)
-                  .GetList()
-                  .ToArray();
+                  .GetList();
+            return unsentEmails.OrderBy(x => x.SendableDate).ToArray();
         }
 
         public async Task SendAll(TimeSpan? delayPerSend = null)
