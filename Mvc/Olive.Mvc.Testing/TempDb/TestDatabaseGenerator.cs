@@ -152,7 +152,6 @@ namespace Olive.Mvc.Testing
                 return false;
             }
 
-            EnsurePermissions();
             CreateDatabaseFilesPath();
 
             lock (SyncLock)
@@ -164,36 +163,6 @@ namespace Olive.Mvc.Testing
             Task.Factory.RunSync(() => Context.Current.Database().Refresh());
 
             return true;
-        }
-
-        /// <summary>
-        /// Ensures the right permissions are configured.
-        /// </summary>
-        void EnsurePermissions()
-        {
-            var identity = System.Security.Principal.WindowsIdentity.GetCurrent()?.Name;
-
-            Debug.WriteLine($"Temp databae creation: current identity '{identity}' has enough permission.");
-
-            var error = "\r\n\r\nRecommended action: If using IIS, update the Application Pool (Advanced Settings) and set Identity to LocalSystem.";
-
-            if (identity.IsEmpty())
-            {
-                error = "Current IIS process model Identity not found!" + error;
-                throw new Exception(error);
-            }
-            else
-            {
-                error = "Current IIS process model Identity: " + identity + error;
-            }
-
-            if (identity.ContainsAny(new[] { "IIS APPPOOL", "LOCAL SERVICE", "NETWORK SERVICE" }))
-            {
-                error = "In TDD mode full system access is needed in order to create temporary database files." + error;
-                throw new Exception(error);
-            }
-
-            Debug.WriteLine($"Temp databae creation: '{identity}' seems good to use.");
         }
 
         void LoadMetaDirectory()
