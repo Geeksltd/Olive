@@ -19,6 +19,7 @@ namespace Olive.Mvc.Testing
 
             services.AddSingleton<IDevCommand, DatabaseRestartDevCommand>();
             services.AddSingleton<IDevCommand, DatabaseGetChangesDevCommand>();
+            services.AddSingleton<IDevCommand, DatabaseRunChangesDevCommand>();
 
             services.AddSingleton<IDevCommand, DatabaseProfileStartDevCommand>();
             services.AddSingleton<IDevCommand, DatabaseProfileSnapshotDevCommand>();

@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace Olive.Mvc.Testing
 {
-    class DatabaesRunChangesDevCommand : TempDatabaseDevCommand
+    class DatabaseRunChangesDevCommand : TempDatabaseDevCommand
     {
-        public DatabaesRunChangesDevCommand(IDatabaseServer databaseManager) : base(databaseManager) { }
+        public DatabaseRunChangesDevCommand(IDatabaseServer databaseManager) : base(databaseManager) { }
 
         public override string Name => "db-run-changes";
 
