@@ -2,19 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Olive.Entities;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
     partial class OliveMvcExtensions
     {
-        static ConcurrentDictionary<string, List<RouteTemplate>> IndexActionRoutes = new ConcurrentDictionary<string, List<RouteTemplate>>();
-
         static IDatabase Database => Context.Current.Database();
 
         public static string Current(this IUrlHelper @this)
@@ -151,35 +147,6 @@ namespace Olive.Mvc
 
         public static object RouteValue(this IUrlHelper @this, string key) => @this.ActionContext.RouteData.Values[key];
 
-        static List<RouteTemplate> FindIndexRouteTemplates(string controllerName)
-        {
-            var relevantAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.References(Assembly.GetExecutingAssembly())).ToList();
-
-            var types = relevantAssemblies.SelectMany(a => a.GetTypes().Where(t => t.Name == controllerName))
-                         .ExceptNull()
-                         .Where(x => x.InhritsFrom(typeof(ControllerBase))).ToList();
-
-            if (types.None())
-                throw new Exception("Controller class not found: " + controllerName);
-
-            if (types.HasMany())
-                throw new Exception("Multiple Controller classes found: " + types.Select(x => x.AssemblyQualifiedName).ToLinesString());
-
-            var type = types.Single();
-
-            var indexAction = type.GetMethods().Where(x => x.Name == "Index").ToList();
-
-            if (indexAction.None()) throw new Exception(type.FullName + " has no Index method.");
-
-            if (indexAction.HasMany()) throw new Exception(type.FullName + " has multiple Index methods.");
-
-            var attributes = indexAction.First().GetCustomAttributes<RouteAttribute>();
-
-            if (attributes.None()) throw new Exception(type.FullName + ".Index() has no Route attribute.");
-
-            return attributes.Select(x => new RouteTemplate(x.Template)).ToList();
-        }
-
         public static string Index<TController>(this IUrlHelper @this, object routeValues = null) where TController : Microsoft.AspNetCore.Mvc.Controller =>
             @this.Index(typeof(TController).Name.TrimEnd("Controller"), routeValues);
 
@@ -198,7 +165,7 @@ namespace Olive.Mvc
         {
             if (!controllerName.EndsWith("Controller")) controllerName += "Controller";
 
-            var routeTemplates = IndexActionRoutes.GetOrAdd(controllerName, FindIndexRouteTemplates);
+            var routeTemplates = RouteTemplates.GetTemplates(controllerName);
 
             var bestRouteMatch = FindBestRouteMatch(routeTemplates, routeParameters);
 

@@ -216,6 +216,9 @@ namespace Olive
             Func<TSource, decimal> func)
             => @this.Get(x => x.OrEmpty().Average(func));
 
+        public static Task<int> Count<TSource>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.OrEmpty().Count());
+
         public static Task<int> Count<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
             => @this.Get(x => x.OrEmpty().Count(func));
