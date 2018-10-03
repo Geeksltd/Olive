@@ -1,4 +1,6 @@
-﻿namespace Olive
+﻿using System.Net.Http;
+
+namespace Olive
 {
     /// <summary>
     /// Provides helper services for implementing microservices using Olive.
@@ -41,9 +43,9 @@
         /// Creates an Api client for this service.
         /// It will automatically add an authentication cookie based on the service key.
         /// </summary>
-        public ApiClient Api(string relativeApiUrl)
+        public ApiClient Api(IHttpClientFactory httpClientFactory, string relativeApiUrl)
         {
-            var result = new ApiClient(Url(relativeApiUrl));
+            var result = new ApiClient(httpClientFactory, Url(relativeApiUrl));
 
             result.Header(x => x.Add("Microservice.AccessKey", AccessKey));
 
