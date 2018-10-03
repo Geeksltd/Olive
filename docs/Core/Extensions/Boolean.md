@@ -5,14 +5,19 @@
 Converts the value of this instance to its equivalent `string` representation (either "True" or "False").
 #### When to use it?
 When you want to show the meaningful value of an object value in your applications.
-#### Format:
-string **Tostring**()
+
 #### Example:
-|OBJECT |OUTPUT |
-|-------------------------------|-----------------------------|
-|true |True |
-|false |False |
-|`null` |`Empty` |
+```csharp
+bool myVariable = true;
+
+myVariable.ToString("Oh yes", "Oh no"); // returns "Oh yes".
+
+myVariable = false;
+myVariable.ToString("Oh yes", "Oh no"); // returns "Oh no".
+
+bool? myNullable = null;
+myVariable.ToString("Oh yes", "Oh no", "N/A"); // returns "N/A".
+```
 
 ## ToYesNoString()
 Returns `Yes` or `No` string depending on whether the result is `true` of `false`. It returns `Empty string`, if object is `null`.
