@@ -1,10 +1,17 @@
 # Boolean Extension Methods
 >These are a bunch of useful extension methods related to `Boolean` objects which you can use in your applications.
 
-## Tostring()
-Converts the value of this instance to its equivalent `string` representation (either "True" or "False").
+## Tostring({trueText}, {falseText}, {nullText})
+Converts the value of a boolean object to its equivalent `string` representation for the specified custom text instead of the default `"True"` or `"False"`.
+
+- For simple `bool` objects, it's an alternative to writing `myBoolean ? "my true text" : "my false text."`.
+- For `bool?` objects (nullable), it's an alternative to writing:
+
+  `myNullableBoolean == true ? "my true text" : (myNullableBoolean == false) ? "my false text." : "my null text")`.
+
+
 #### When to use it?
-When you want to show the meaningful value of an object value in your applications.
+When you want to show the meaningful value of a boolean value in your applications.
 
 #### Example:
 ```csharp
