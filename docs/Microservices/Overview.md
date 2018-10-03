@@ -37,7 +37,6 @@ It provides:
 - Common theme: Shared css files
 - Common scripts: Shared javascript components
 
-
 #### Business Feature microservices
 The actual business functionality is delivered to the user as UI fragments. Each one is usually an MVC page with just the unique content for that page such as form fields, list modules, ... but not the overall shared layout. It can then be hosted inside AccessHub either as a Web Component (fully Ajax based) or an IFrame (for legacy services).
 
@@ -45,7 +44,7 @@ There will usually be many such microservices in the solution, each with one or 
 
 ![Overall structure](https://i.imgur.com/EqqTjDy.jpg)
 
-## Shared Theme (CSS and Javascript)
-Although the feature microservices are simple pages in a blank template, but they still need to look consistent, use the same fonts, colours, etc. Also many standard Olive javascript features are required by them. To avoid duplication, a single ***Theme*** microservice will provide the shared CSS and Javascript that is referenced by all other microservice pages.
-
 > To the end user, the starting point is Access Hub home page. From there he can click on each menu item to get to the final destination page. The fact that the final page, which provide the desired functionality, is coming from another application (microservice) is seemless and irrelevant.
+
+## Shared Theme (CSS and Javascript)
+Access Hub will come with shared Javascripts, CSS theme and genral layout code, that is indirectly used by all *feature microservices*. This enables the feature microservices to be developed as simple pages in a blank template, without worrying about styles or javascript framework.
