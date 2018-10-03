@@ -2,89 +2,90 @@
 # Misc Extension Methods
 >These are a bunch of useful extension methods which you can use in your applications.
 
-## Shorten()
+## Shorten({Guid})
 A normal `GUID` uses the characters '0' to '9', 'a' to 'f'. This is a range of 16 different characters. 
 It also has generally 4 dashes that contain no data.
 This method uses the characters '0' to '9', 'a' to 'z', 'A' to 'Z' and also '-' and '_'. This is a range of 64 characters.
 Therefore a `shortGuid` is 22 characters long.
 #### When to use it?
 When you want to use a shorter `GUID` value in your applications.
-#### Format:
-ShortGuid **Shorten**(Guid)
 #### Example:
+```
+Guid GID1 =new Guid("d7fedc56-959f-4d5b-8855-6138b534bce4");
+GID1.Shorten(); // returns "Vtz-15-VW02IVWE4tTS85A"
 
-|OBJECT                          |OUTPUT                       |
-|-------------------------------|-----------------------------|
-|d7fedc56-959f-4d5b-8855-6138b534bce4            |Vtz-15-VW02IVWE4tTS85A            |
-|aceefe63-42f3-4135-a63a-96d1636f3b8d            |Y_7urPNCNUGmOpbRY287jQ            |
-|Guid.Empty            |AAAAAAAAAAAAAAAAAAAAAA            |
+Guid GID2 =new Guid("aceefe63-42f3-4135-a63a-96d1636f3b8d");
+GID2.Shorten(); // returns "Y_7urPNCNUGmOpbRY287jQ"
 
-## ReadAllBytes()
+Guid GID3 = Guid.Empty;
+GID3.Shorten(); // returns "AAAAAAAAAAAAAAAAAAAAAA"
+```
+
+## ReadAllBytes({stream})
 A `stream` is an object used to transfer data. There is a generic stream class `System.IO.Stream`, from which all other stream classes in .NET are derived. 
 The `Stream` class deals with `bytes`.
 #### When to use it?
 When you want to read data from a stream, you should convert it to `Byte[]` object.
 This method sets the Position to zero of a stream, and then copy all bytes to a memory stream's buffer.
-#### Format:
-byte[] **ReadAllBytes**()
 >Asynchronous method : byte[] **ReadAllBytesAsync**(Stream)
 #### Example:
+```
+byte[] array = File.ReadAllBytes("C:\\a");
+        Console.WriteLine("First byte: {0}", array[0]);
+        Console.WriteLine("Last byte: {0}", array[array.Length - 1]);
+        Console.WriteLine(array.Length);
+```
 
-|OBJECT                          |OUTPUT                       |
-|-------------------------------|-----------------------------|
-|MemoryStream            |Byte[]            |
-|FileStream            |Byte[]            |
-
-## NullIfDefault()
-Returns a `nullable` value wrapper object if this value is the default for its type
+## NullIfDefault<T>({value})
+Returns a `nullable` value wrapper object if this value is the default for its type.
 #### When to use it?
 When you want to compare value of an object with another value and return a `nullable` value if this value is the default for its type.
-#### Format:
-T? **NullIfDefault<T>**(T defaultValue = default(T))
 >Note 
 >- The object should have a default value.
 >- The type `T` must be a non-nullable value type in order to use it as parameter `T` in the generic type or method 'OliveExtensions.NullIfDefault<T>(T, T)'
-
 #### Example:
 
-|OBJECT               |INPUT                          |OUTPUT                       |
-|---------------------|-------------------------------|-----------------------------|
-|0                    |0                              |NULL                         |
-|100                  |100                            |NULL                         |
-|10                   |100                            |10                           |
-|100                  |10                             |100                          |
-|10                   |"abc"                          |Error - string is not a non-nullable value type                       |
-|"abc"                |10                             |Error - string is not a non-nullable value type                       |
-|"abc"                |"abc"                          |Error - string is not a non-nullable value type                       |
+```
+double intdefault=0;
+intdefault.NullIfDefault(0).ToString();  // returns Null
 
-## GetPath(string)
+intdefault=100;
+intdefault.NullIfDefault(100).ToString();  // returns Null
+
+intdefault=10;
+intdefault.NullIfDefault(100).ToString();  // returns 10
+
+intdefault=100;
+intdefault.NullIfDefault(10).ToString();  // returns 100
+
+intdefault=10;
+intdefault.NullIfDefault("abc").ToString();  // throws an exception : Error - string is not a non-nullable value type
+```
+
+## GetPath({string})
 #### When to use it?
 When you want to get the full path of a `file` or `directory` from a specified relative path.
-#### Format:
-**GetPath(string)**
-
 #### Example:
 In the client service application, you need the following code to enable you to create authenticated `HttpClient` instances which you can then use to invoke any actual `Web API`:
 ```
-static FileInfo CachedTokenFile => AppDomain.CurrentDomain.**GetPath**("App_Data\\Temp\\...txt").AsFile();
+static FileInfo CachedTokenFile => AppDomain.CurrentDomain.**GetPath**("App_Data\\Temp\\token.txt").AsFile(); // returns token.txt as a file
 ```
 
 ## GetBaseDirectory()
 #### When to use it?
 When you want to get the fullpath of base directory in the server.
-#### Format:
-**GetBaseDirectory**()
 #### Example:
 ```
-AppDomain.CurrentDomain.GetBaseDirectory();
+AppDomain.CurrentDomain.GetBaseDirectory(); // returns the path of the base directory of server
 ```
 
-## LoadAssembly()
+## LoadAssembly({assembly})
+You do not have to put an `assembly` that an application must use at runtime in the bin folder of the application. You can put the `assembly` in any folder on the system, and then you can refer to the assembly at runtime.
 #### When to use it?
 When you want to get an Assembly object by knowing its path.
-#### Format:
-**LoadAssembly**(string)
 #### Example:
 ```
 public Assembly Assembly { get; set; }
-public Assembly GetAssembly() => Assembly ?? (Assembly = AppDomain.CurrentDomain.LoadAssembly(AssemblyName));
+
+public Assembly GetAssembly() => Assembly ?? (Assembly = AppDomain.CurrentDomain.LoadAssembly('C:\Samples\AssemblyLoading\MultipleAssemblyLoading\f2\TestAssembly.dll'));
+```
