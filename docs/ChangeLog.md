@@ -1,4 +1,10 @@
+
 # Olive compatibility change log
+
+## 3 Oct 2018
+- If your application is a microservice (hosted in Hub), then in `BaseController.cs` add the following line:
+
+  `protected override bool IsMicrofrontEnd => true;`
 
 ## 28 Sep 2018
 - Replace `Cache.CanCache(modifiedObjectType)` with `modifiedObjectType.IsCacheable()`
