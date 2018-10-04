@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace MSharp.Build
 {
@@ -64,8 +63,8 @@ namespace MSharp.Build
 
                 foreach (var x in item)
                     Console.WriteLine(x.Value);
-
             }
+
             Console.ResetColor();
         }
     }

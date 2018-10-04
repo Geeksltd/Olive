@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace MSharp.Build
 {
     class OliveSolution : Builder
     {
-        DirectoryInfo Root;
-        DirectoryInfo Lib;
+        DirectoryInfo Root, Lib;
 
         bool Publish;
 
@@ -55,7 +51,6 @@ namespace MSharp.Build
             var log = WindowsCommand.DotNet.Execute($"build {DotnetBuildOptions} \"{Folder("M#\\Model")}\"");
             Log(log);
         }
-
 
         void BuildAppDomain()
         {

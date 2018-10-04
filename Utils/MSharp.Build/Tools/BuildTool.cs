@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace MSharp.Build.Tools
 {
@@ -15,14 +14,21 @@ namespace MSharp.Build.Tools
         public FileInfo Path { get; set; }
         public abstract FileInfo ExpectedPath { get; }
 
-      public  List<string> Logs = new List<string>();
+        protected virtual void OnInstalled() { }
+
+        protected virtual bool AlwaysInstall => false;
+
+        public List<string> Logs = new List<string>();
 
         public FileInfo Install()
         {
-            if (IsInstalled()) return Path;
+            if (!AlwaysInstall)
+                if (IsInstalled()) return Path;
 
             var log = Installer.Execute(InstallCommand);
             Logs.Add(log);
+
+            OnInstalled();
 
             AddToPath();
 

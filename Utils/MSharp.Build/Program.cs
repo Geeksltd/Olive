@@ -8,7 +8,6 @@ namespace MSharp.Build
     {
         static bool InstallTools, Log;
 
-
         static int Main(string[] args)
         {
             InstallTools = !args.Contains("-fast");
