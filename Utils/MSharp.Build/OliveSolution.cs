@@ -5,7 +5,6 @@ namespace MSharp.Build
     class OliveSolution : Builder
     {
         DirectoryInfo Root, Lib;
-
         bool Publish;
 
         public OliveSolution(DirectoryInfo root, bool publish)

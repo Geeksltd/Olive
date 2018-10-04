@@ -6,24 +6,18 @@ namespace MSharp.Build
 {
     class Program
     {
-        static bool InstallTools, Log;
-
         static int Main(string[] args)
         {
-            InstallTools = !args.Contains("-fast");
-            Log = args.Contains("-log");
-
             var root = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
-            var solution = new OliveSolution(root, publish: args.Contains("-publish"));
-
             var buildTools = new BuildTools();
+            var solution = new OliveSolution(root, publish: args.Contains("-publish"));
 
             try
             {
-                if (InstallTools) buildTools.Build();
+                buildTools.Build();
                 solution.Build();
 
-                if (Log)
+                if (args.Contains("-log"))
                 {
                     buildTools.PrintLog();
                     solution.PrintLog();
