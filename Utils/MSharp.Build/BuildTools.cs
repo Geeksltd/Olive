@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MSharp.Build.Tools;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MSharp.Build
@@ -11,8 +13,8 @@ namespace MSharp.Build
     {
         protected override void AddTasks()
         {
-            Add(() => InstallDotnetCore());
             Add(() => InstallChocolatey());
+            Add(() => InstallDotnetCoreSdk());
             Add(() => InstallNodeJs());
             Add(() => InstallYarn());
             Add(() => InstallTypescript());
@@ -35,15 +37,6 @@ namespace MSharp.Build
             }
         }
 
-        void InstallDotnetCore()
-        {
-            var result = WindowsCommand.Powershell
-                 .Execute(@"-NoProfile -ExecutionPolicy unrestricted -Command ""[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; &([scriptblock]::Create((Invoke-WebRequest -useb 'https://dot.net/v1/dotnet-install.ps1'))) -Version 2.1.4""");
-
-            IsInstalled("dotnet", out WindowsCommand.DotNet);
-            Log(result);
-        }
-
         void InstallChocolatey()
         {
             if (IsInstalled("choco", out WindowsCommand.Chocolaty)) return;
@@ -57,6 +50,14 @@ namespace MSharp.Build
 
             var log = WindowsCommand.Chocolaty.Execute("feature enable -n allowGlobalConfirmation");
             Log("Enable allow global feature: " + log);
+        }
+
+        void InstallDotnetCoreSdk()
+        {
+            var log = WindowsCommand.Chocolaty.Execute("install dotnetcore-sdk");
+            Log(log);
+
+            IsInstalled("dotnet", out WindowsCommand.DotNet);
         }
 
         void InstallNodeJs()
@@ -74,9 +75,13 @@ namespace MSharp.Build
             WindowsCommand.TypeScript = Install(WindowsCommand.NodeJs, "install -g typescript", "tsc");
         }
 
-        void InstallWebPack()
+        void InstallWebPack() => Install<WebPack>(out WindowsCommand.WebPack);
+
+        void Install<T>(out FileInfo tool, [CallerMemberName] string step = "") where T : BuildTool, new()
         {
-            WindowsCommand.WebPack = Install(WindowsCommand.Yarn, "global add webpack", "webpack");
+            var builder = new T();
+            try { tool = builder.Install(); }
+            finally { Log(string.Join(Environment.NewLine, builder.Logs), step); }
         }
 
         void InstallBower()

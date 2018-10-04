@@ -29,6 +29,7 @@ namespace MSharp.Build
             Add(() => MSharpGenerateUI());
             Add(() => YarnInstall());
             Add(() => InstallBowerComponents());
+            Add(() => TypescriptCompile());
             Add(() => SassCompile());
             Add(() => BuildAppWebsite());
         }
@@ -103,6 +104,13 @@ namespace MSharp.Build
         void InstallBowerComponents()
         {
             var log = WindowsCommand.Bower.Execute("install",
+                configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
+            Log(log);
+        }
+
+        void TypescriptCompile()
+        {
+            var log = WindowsCommand.TypeScript.Execute("",
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
             Log(log);
         }

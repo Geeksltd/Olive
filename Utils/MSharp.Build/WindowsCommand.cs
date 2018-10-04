@@ -26,5 +26,8 @@ namespace MSharp.Build
 
         public static string ProgramsData
             => Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+
+        public static string LocalAppData(string relative)
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), relative);
     }
 }
