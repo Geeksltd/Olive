@@ -14,7 +14,7 @@ namespace Controllers
         {
             this.httpClientFactory = httpClientFactory;
         }
-
+		
 		public async Task PrepareApps(vm.SingleSignOn info)
 		{
 			foreach (var item in info.Items)
