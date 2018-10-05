@@ -94,6 +94,7 @@ dotnet build Integration\Olive.ApiProxyGenerator
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Mvc\Olive.Hangfire
+if ERRORLEVEL 1 (goto error)
 
 exit /b 0
 

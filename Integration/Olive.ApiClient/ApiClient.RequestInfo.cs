@@ -125,7 +125,7 @@ namespace Olive
 
                 container.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 
-                HttpClient = Client.clientFactory.CreateClient();
+                HttpClient = Client.Factory.CreateClient();
                 HttpClient.Timeout = Context.Current.Config.GetValue("ApiClient:Timeout", 60).Seconds();
 
                 foreach (var config in Client.RequestHeadersCustomizers)

@@ -43,9 +43,9 @@ namespace Olive
         /// Creates an Api client for this service.
         /// It will automatically add an authentication cookie based on the service key.
         /// </summary>
-        public ApiClient Api(IHttpClientFactory httpClientFactory, string relativeApiUrl)
+        public ApiClient Api(string relativeApiUrl)
         {
-            var result = new ApiClient(httpClientFactory, Url(relativeApiUrl));
+            var result = new ApiClient(Url(relativeApiUrl));
 
             result.Header(x => x.Add("Microservice.AccessKey", AccessKey));
 
