@@ -16,6 +16,15 @@ namespace MSharp.Build
         public static bool HasValue(this string text) => !string.IsNullOrEmpty(text);
 
         /// <summary>
+        /// Gets this same string when a specified condition is True, otherwise it returns empty string.
+        /// </summary>
+        public static string OnlyWhen(this string @this, bool condition)
+        {
+            if (condition) return @this;
+            else return string.Empty;
+        }
+
+        /// <summary>
         /// Returns this text with the specified prefix if this has a value. If this text is empty or null, it will return empty string.
         /// </summary>
         public static string WithPrefix(this string @this, string prefix)

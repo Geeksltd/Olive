@@ -44,33 +44,25 @@ namespace MSharp.Build
             File.WriteAllText(Path.Combine(Lib.FullName, "MSharp.DSL.runtimeconfig.json"), json);
         }
 
-        static string DotnetBuildOptions => "-v q";
+        void BuildMSharpModel() => DotnetBuild("M#\\Model");
 
-        void BuildMSharpModel()
-        {
-            var log = WindowsCommand.DotNet.Execute($"build {DotnetBuildOptions} \"{Folder("M#\\Model")}\"");
-            Log(log);
-        }
+        void BuildAppDomain() => DotnetBuild(Folder("Domain"));
 
-        void BuildAppDomain()
-        {
-            var log = WindowsCommand.DotNet.Execute($"build {DotnetBuildOptions} \"{Folder("Domain")}\"");
-            Log(log);
-        }
-
-        void BuildMSharpUI()
-        {
-            var log = WindowsCommand.DotNet.Execute($"build {DotnetBuildOptions} \"{Folder("M#\\UI")}\"");
-            Log(log);
-        }
+        void BuildMSharpUI() => DotnetBuild("M#\\UI");
 
         void BuildAppWebsite()
+            => DotnetBuild("Website", "publish -o ..\\publish".OnlyWhen(Publish));
+
+        void DotnetBuild(string folder, string command = null)
         {
-            var command = "build " + DotnetBuildOptions;
-            if (Publish) command = "publish -o ..\\publish";
+            if (command.IsEmpty()) command = "build -v q";
 
             var log = WindowsCommand.DotNet.Execute(command,
-                configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
+                configuration: x =>
+                {
+                    x.StartInfo.WorkingDirectory = Folder(folder);
+                    x.StartInfo.EnvironmentVariables.Add("MSHARP_BUILD", "FULL");
+                });
 
             Log(log);
         }
