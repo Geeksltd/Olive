@@ -8,21 +8,21 @@ namespace Controllers
 {
     partial class SSOController
     {
-	readonly IHttpClientFactory httpClientFactory;
+		readonly IHttpClientFactory httpClientFactory;
 		
-	public SSOController(IHttpClientFactory httpClientFactory)
-	{
-		this.httpClientFactory = httpClientFactory;
-	}
-		
-	public async Task PrepareApps(vm.SingleSignOn info)
-	{
-		foreach (var item in info.Items)
+		public SSOController(IHttpClientFactory httpClientFactory)
 		{
-			await new ApiClient(httpClientFactory, "url").Get<string>();
-			[...]
+			this.httpClientFactory = httpClientFactory;
 		}
-	}
+		
+		public async Task PrepareApps(vm.SingleSignOn info)
+		{
+			foreach (var item in info.Items)
+			{
+				await new ApiClient(httpClientFactory, "url").Get<string>();
+				[...]
+			}
+		}
 	}
 }
 ```
