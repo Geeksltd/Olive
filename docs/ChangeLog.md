@@ -6,6 +6,8 @@
 - In `dockerfile`, drop the `Website/` part from `COPY ./Website/publish/ .`
 - Replace the `Jenkinsfile` of the project with the *new template*.
 - Add `MSharp.build` nuget tool to the project
+- Edit the `csproj` files in `#Model` and `#UI` projects.
+  - In the `<Exec ...` command add: `Condition="'$(MSHARP_BUILD)' != 'FULL'"`
 
 ## 3 Oct 2018
 - If your application is a microservice (hosted in Hub), then in `BaseController.cs` add the following line:
