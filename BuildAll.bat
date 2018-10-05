@@ -9,6 +9,9 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Audit
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Services\Olive.Encryption
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Entities.Data
 if ERRORLEVEL 1 (goto error)
 
@@ -25,6 +28,9 @@ dotnet build Olive.Entities.Data.SqlServer
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Entities\Olive.Entities.Cache.Redis
+if ERRORLEVEL 1 (goto error)
+
+dotnet build Services\Olive.Aws
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Services\Olive.Blob.Aws

@@ -40,6 +40,8 @@ namespace Olive.Mvc
 
             services.AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
             services.AddDatabase();
+            services.AddHttpClient();
+
             ConfigureMvc(services.AddMvc());
 
             services.AddResponseCompression();

@@ -1,3 +1,5 @@
+using System.Net.Http;
+
 namespace Olive
 {
     public partial class ApiClient
@@ -6,9 +8,14 @@ namespace Olive
         /// Raised when a less desirable cache policy option is used. For example if for FreshOrCacheOrFail, there is no fresh data available, but data from cache is successfully returned, this event will be fired.
         /// </summary>
         public static readonly AsyncEvent<FallBackEvent> FallBack = new AsyncEvent<FallBackEvent>();
+        public readonly IHttpClientFactory clientFactory;
 
         public string Url { get; private set; }
-        public ApiClient(string apiUrl) => Url = apiUrl;
+        public ApiClient(IHttpClientFactory clientFactory, string apiUrl)
+        {
+            Url = apiUrl;
+            this.clientFactory = clientFactory;
+        }
 
         public ApiFallBackEventPolicy FallBackEventPolicy { get; private set; } = ApiFallBackEventPolicy.Raise;
 

@@ -4,6 +4,11 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath></OutputPath>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="1.2.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
@@ -13,7 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Olive.Tests\Olive.Tests.csproj" />
+    <Reference Include="Olive.Tests">
+      <HintPath>..\Olive.Tests\bin\Debug\netcoreapp2.1\Olive.Tests.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

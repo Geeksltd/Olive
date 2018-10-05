@@ -24,6 +24,8 @@ namespace Olive.Tests
 
             #region initialize Context
 
+            services.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
+            services.AddSingleton<ICache, Cache>();
             services.AddSingleton<IDatabase, Database>();
 
             Context.Initialize(services);
@@ -33,18 +35,6 @@ namespace Olive.Tests
             database = Context.Current.GetService<IDatabase>();
 
             database.Configure();
-
-            #endregion
-
-            #region Init Database files
-
-            TempDatabaseName = DatabaseServer.GetDatabaseName();
-
-            var createScript = GetCreateDbFiles().Select(f => File.ReadAllText(f.FullName)).ToLinesString();
-
-            var hash = createScript.ToSimplifiedSHA1Hash().Replace("/", "-").Replace("\\", "-");
-
-            DatabaseFilesPath = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName).GetOrCreateSubDirectory(hash);
 
             #endregion
         }
@@ -98,6 +88,15 @@ namespace Olive.Tests
             }
 
             return result;
+        }
+
+        protected void InitDatabase()
+        {
+            var createScript = GetCreateDbFiles().Select(f => File.ReadAllText(f.FullName)).ToLinesString();
+
+            var hash = createScript.ToSimplifiedSHA1Hash().Replace("/", "-").Replace("\\", "-");
+
+            DatabaseFilesPath = DatabaseStoragePath.GetOrCreateSubDirectory(TempDatabaseName).GetOrCreateSubDirectory(hash);
         }
 
         FileInfo[] GetCreateDbFiles()

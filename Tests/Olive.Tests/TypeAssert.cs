@@ -1,5 +1,5 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
 
 namespace Olive.Tests
 {
@@ -23,10 +23,7 @@ namespace Olive.Tests
             Assert.AreEqual(expected, instance.GetType(), "Expected: " + expected + ", was: " + instance.GetType() + " was not of type " + instance.GetType());
         }
 
-        public static void Equals<T>(object instance)
-        {
-            AreEqual(typeof(T), instance);
-        }
+        public static void Equals<T>(object instance) => AreEqual(typeof(T), instance);
 
         public static void Is<T>(object instance)
         {
