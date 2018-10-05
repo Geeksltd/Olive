@@ -5,6 +5,11 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath></OutputPath>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
@@ -24,8 +29,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Services\Olive.GeoLocation\Olive.GeoLocation.csproj" />
-    <ProjectReference Include="..\Olive.Tests\Olive.Tests.csproj" />
+    <Reference Include="Olive.GeoLocation">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.GeoLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Tests">
+      <HintPath>..\Olive.Tests\bin\Debug\netcoreapp2.1\Olive.Tests.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

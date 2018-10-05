@@ -15,6 +15,10 @@ namespace Olive.Entities.Data.SqlServer.Tests
         {
             base.SetUp();
 
+            TempDatabaseName = new SqlServerManager().GetDatabaseName();
+
+            base.InitDatabase();
+
             person = new Person
             {
                 FirstName = "Paymon",
