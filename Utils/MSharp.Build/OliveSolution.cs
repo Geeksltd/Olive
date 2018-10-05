@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace MSharp.Build
 {
@@ -66,7 +67,7 @@ namespace MSharp.Build
         void BuildAppWebsite()
         {
             var command = "build " + DotnetBuildOptions;
-            if (Publish) command = "publish -o publish";
+            if (Publish) command = "publish -o ..\\publish";
 
             var log = WindowsCommand.DotNet.Execute(command,
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
@@ -97,6 +98,12 @@ namespace MSharp.Build
 
         void InstallBowerComponents()
         {
+            if (!Folder("Website\\bower.json").AsFile().Exists)
+            {
+                Console.Write("Skipped - bower.json is not found.");
+                return;
+            }
+
             var log = WindowsCommand.Bower.Execute("install",
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
             Log(log);
