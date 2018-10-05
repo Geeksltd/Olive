@@ -17,13 +17,13 @@ namespace Controllers
 		
 	   public async Task PrepareApps(vm.SingleSignOn info)
 	   {
-          foreach (var item in info.Items)
+                  foreach (var item in info.Items)
 		  {
-		    await new ApiClient(httpClientFactory, "url").Get<string>();
-		    [...]
+		     await new ApiClient(httpClientFactory, "url").Get<string>();
+		     [...]
 		  }
-        }
-    }
+            }
+     }
 }
 ```
 
