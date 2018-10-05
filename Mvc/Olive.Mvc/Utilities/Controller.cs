@@ -136,10 +136,15 @@ namespace Olive.Mvc
             return JsonActions();
         }
 
+        /// <summary>
+        /// Determines if the UI is a micro-front-end, hosted in a UI container (e.g. Access Hub).
+        /// </summary>
+        protected virtual bool IsMicrofrontEnd => false;
+
         [NonAction]
         public ActionResult Redirect(string url, string target = null)
         {
-            JavascriptActions.Redirect(url, target: target);
+            JavascriptActions.Redirect(url, withAjax: IsMicrofrontEnd, target: target);
 
             if (Request.IsAjaxCall() || target.HasValue())
             {

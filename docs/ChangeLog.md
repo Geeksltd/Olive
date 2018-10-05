@@ -1,6 +1,12 @@
 
 # Olive compatibility change log
 
+## 4 Oct 2018 - DRAFT (Don't apply yet)
+- Remove `Initialize.bat`
+- In `dockerfile`, drop the `Website/` part from `COPY ./Website/publish/ .`
+- Replace the `Jenkinsfile` of the project with the *new template*.
+- Add `MSharp.build` nuget tool to the project
+
 ## 3 Oct 2018
 - If your application is a microservice (hosted in Hub), then in `BaseController.cs` add the following line:
 
