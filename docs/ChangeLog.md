@@ -1,6 +1,32 @@
 
 # Olive compatibility change log
 
+## 5 Oct 2018
+We have refactored `Olive.ApiClient` and used `IHttpClientFactory`. if you are referencing `Olive.ApiClient` or `Olive.Microservices` nuget packages, please inject `IHttpClientFactory` by your controller constructor as shown below:
+```csharp
+namespace Controllers
+{
+    partial class SSOController
+    {
+        readonly IHttpClientFactory httpClientFactory;
+
+        public SSOController(IHttpClientFactory httpClientFactory)
+        {
+            this.httpClientFactory = httpClientFactory;
+        }
+
+		public async Task PrepareApps(vm.SingleSignOn info)
+        {
+            foreach (var item in info.Items)
+            {
+				await new ApiClient(httpClientFactory, "url").Get<string>();
+				[...]
+            }
+        }
+	}
+}
+```
+
 ## 4 Oct 2018 - DRAFT (Don't apply yet)
 - Remove `Initialize.bat`
 - In `dockerfile`, drop the `Website/` part from `COPY ./Website/publish/ .`
