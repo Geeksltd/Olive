@@ -23,43 +23,65 @@ myVariable = false;
 myVariable.ToString("Oh yes", "Oh no"); // returns "Oh no".
 
 bool? myNullable = null;
-myVariable.ToString("Oh yes", "Oh no", "N/A"); // returns "N/A".
+myNullable.ToString("Oh yes", "Oh no", "N/A"); // returns "N/A".
 ```
 
-## ToYesNoString()
-Returns `Yes` or `No` string depending on whether the result is `true` of `false`. It returns `Empty string`, if object is `null`.
+## ToYesNoString({trueText}, {falseText})
+Returns `Yes` or `No` string depending on whether the result is `true` of `false`. It returns `Empty string` if object is `null`.
+
 #### When to use it?
 When you want to show the meaningful value of an object value in your applications. If the value is `true`, this method returns `string1`, otherwise, it returns `string2`.
 If you don't initialize `string1` or `string2`, the default value is `Yes` or `No`.
-#### Format:
-string **ToYesNoString**(string1, string2 )
 #### Example:
-|OBJECT| INPUT |OUTPUT |
-|------------|-------------------|-----------------------------|
-|true |"ACCEPT","REJECT" |"ACCEPT" |
-|false |"ACCEPT","REJECT" |"REJECT" |
-|true |"","" |"Yes" |
-|false |"","" |"No" |
-|Null |"A","B" |`Empty` |
-|Null |"","B" |`Empty` |
-|Null |"A","" |`Empty` |
-|Null |"","" |`Empty` |
+```csharp
+bool myVariable = true;
+myVariable.ToYesNoString("Oh yes", "Oh no"); // returns "Oh yes".
 
-## CompareTo()
+myVariable = false;
+myVariable.ToYesNoString("Oh yes", "Oh no"); // returns "Oh no".
+
+myVariable = true;
+myVariable.ToYesNoString(); // returns "Yes".
+
+myVariable = false;
+myVariable.ToYesNoString(); // returns "No".
+
+bool? myNullable = null;
+myNullable.ToYesNoString(); // returns "N/A".
+```
+
+
+## CompareTo({ComparedBoolean})
 Compare two `boolean` object and returns 0 if both are equal.
+
 #### When to use it?
 When You want to compare two `Boolean` Object value in your codes.
-#### Format:
-int **CompareTo**(boolean)
 #### Example:
-|OBJECT| INPUT |OUTPUT |
-|------------|-------------------|-----------------------------|
-|true |true |0 |
-|true |false |1 |
-|false |false |0 |
-|false |true |1 |
-|true |null |1 |
-|Null |false |1 |
-|Null |true |-1 |
-|false |Null |-1 |
-|Null |Null |0 |
+```csharp
+bool myVariable = true;
+myVariable.CompareTo(true).ToString()); //returns 0
+
+myVariable = true;
+myVariable.CompareTo(false).ToString()); //returns 1
+
+myVariable = false;
+myVariable.CompareTo(false).ToString()); //returns 0
+
+myVariable = false;
+myVariable.CompareTo(true).ToString()); //returns 1
+
+myVariable = true;
+myVariable.CompareTo(null).ToString()); //returns 1
+
+bool? myNullable = null;
+myNullable.CompareTo(false).ToString()); //returns 1
+
+myNullable = null;
+myVariable.CompareTo(true).ToString()); //returns -1
+
+myVariable = false;
+myVariable.CompareTo(null).ToString()); //returns -1
+
+myNullable = null;
+myVariable.CompareTo(null).ToString()); //returns 0
+```
