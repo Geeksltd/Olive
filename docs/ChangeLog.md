@@ -8,12 +8,12 @@ namespace Controllers
 {
     partial class SSOController
     {
-        readonly IHttpClientFactory httpClientFactory;
-
-        public SSOController(IHttpClientFactory httpClientFactory)
-        {
-            this.httpClientFactory = httpClientFactory;
-        }
+		readonly IHttpClientFactory httpClientFactory;
+		
+		public SSOController(IHttpClientFactory httpClientFactory)
+		{
+			this.httpClientFactory = httpClientFactory;
+		}
 		
 		public async Task PrepareApps(vm.SingleSignOn info)
 		{
