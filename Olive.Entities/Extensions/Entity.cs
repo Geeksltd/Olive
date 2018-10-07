@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Olive;
+using Olive.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Olive.Entities
+namespace Olive
 {
-    partial class OliveExtensions
+    partial class OliveEntitiesExtensions
     {
         /// <summary>
         /// Determines if this item is in a specified list of specified items.
@@ -51,7 +53,7 @@ namespace Olive.Entities
         /// </summary>
         public static List<T> CloneAll<T>(this IEnumerable<T> list) where T : IEntity
         {
-            return list.Select(i => (T)i.Clone()).ToList();
+            return list.Select(i => i.Clone()).Cast<T>().ToList();
         }
 
         /// <summary>
@@ -59,20 +61,8 @@ namespace Olive.Entities
         /// </summary>
         public static bool IsImage(this Blob doc)
         {
-            throw new NotImplementedException();
-            // if (doc.IsEmpty()) return false;
-
-            // try
-            // {
-            //    using (System.Drawing.Imaging.BitmapHelper.FromBuffer(doc.FileData))
-            //    {
-            //        return true;
-            //    }
-            // }
-            // catch
-            // {
-            //    return false;
-            // }
+            return doc.FileExtension.ToLower().TrimStart(".")
+                .IsAnyOf("jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff");
         }
 
         /// <summary>

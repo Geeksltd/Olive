@@ -7,7 +7,7 @@ namespace Olive.Entities.Data
     {
         internal async Task<IEntity> GetConcrete(object entityID, Type concreteType)
         {
-            var result = Cache.Current.Get(concreteType, entityID.ToString());
+            var result = Cache.Get(concreteType, entityID.ToString());
             if (result != null) return result;
 
             var timestamp = Cache.GetQueryTimestamp();
@@ -23,15 +23,16 @@ namespace Olive.Entities.Data
         internal void TryCache(IEntity item, DateTime? queryTime)
         {
             if (AnyOpenTransaction()) return;
-            if (queryTime != null && Cache.Current.IsUpdatedSince(item, queryTime.Value)) return;
-            Cache.Current.Add(item);
+            if (queryTime.HasValue && Cache.IsUpdatedSince(item, queryTime.Value)) return;
+            Cache.Add(item);
         }
 
+        [EscapeGCop("I am the solution to this GCop warning")]
         async Task<IEntity> FromDatabase(object entityID, Type concreteType)
         {
             var result = await GetProvider(concreteType).Get(entityID);
 
-            if (result != null) await EntityManager.RaiseOnLoaded(result as Entity);
+            if (result != null) await Entity.Services.RaiseOnLoaded(result as Entity);
 
             return result;
         }
@@ -113,14 +114,18 @@ namespace Olive.Entities.Data
                 {
                     try
                     {
-                        result = Cache.Current.Get(entityID.ToString());
-                        if (result != null) return result;
+                        if (!provider.EntityType.IsInterface && !provider.EntityType.IsAbstract)
+                        {
+                            result = Cache.Get(provider.EntityType, entityID.ToString());
+                            if (result != null) return result;
+                        }
 
                         result = await provider.Get(entityID);
                         if (result != null) break;
                     }
                     catch
                     {
+                        // No logging is needed
                         continue;
                     }
                 }
@@ -154,7 +159,11 @@ namespace Olive.Entities.Data
             if (id.ToStringOrEmpty().IsEmpty()) return null;
 
             try { return await Get(id, type); }
-            catch { return null; }
+            catch
+            {
+                // No logging is needed.
+                return null;
+            }
         }
     }
 }

@@ -11,76 +11,70 @@ namespace Olive
     {
         static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-        public static string NameWithoutExtension(this FileInfo file) => Path.GetFileNameWithoutExtension(file.FullName);
+        public static string NameWithoutExtension(this FileInfo @this) => Path.GetFileNameWithoutExtension(@this.FullName);
 
         /// <summary>
         /// Determines whether or not this directory exists.
         /// Note: The standard Exists property has a caching bug, so use this for accurate result.
         /// </summary>
-        public static bool Exists(this DirectoryInfo folder)
+        public static bool Exists(this DirectoryInfo @this)
         {
-            if (folder == null) return false;
-            return Directory.Exists(folder.FullName);
+            if (@this == null) return false;
+            return Directory.Exists(@this.FullName);
         }
 
         /// <summary>
         /// Determines whether or not this file exists. 
         /// Note: The standard Exists property has a caching bug, so use this for accurate result.
         /// </summary>
-        public static bool Exists(this FileInfo file)
+        public static bool Exists(this FileInfo @this)
         {
-            if (file == null) return false;
-            return File.Exists(file.FullName);
+            if (@this == null) return false;
+            return File.Exists(@this.FullName);
         }
 
         /// <summary>
         /// Gets the total size of all files in this directory.
         /// </summary>
-        public static long GetSize(this DirectoryInfo folder, bool includeSubDirectories = true)
-            => folder.GetFiles(includeSubDirectories).Sum(x => x.AsFile().Length);
+        public static long GetSize(this DirectoryInfo @this, bool includeSubDirectories = true)
+            => @this.GetFiles(includeSubDirectories).Sum(x => x.AsFile().Length);
 
         /// <summary>
         /// Gets the size of this folder in human readable text.
         /// </summary>
-        public static string GetSizeText(this DirectoryInfo folder, bool includeSubDirectories = true, int round = 1) =>
-            folder.GetSize(includeSubDirectories).ToFileSizeString(round);
+        public static string GetSizeText(this DirectoryInfo @this, bool includeSubDirectories = true, int round = 1) =>
+            @this.GetSize(includeSubDirectories).ToFileSizeString(round);
 
         /// <summary>
         /// Gets the size of this file in human readable text.
         /// </summary>
-        public static string GetSizeText(this FileInfo file, int round = 1) => file.Length.ToFileSizeString(round);
+        public static string GetSizeText(this FileInfo @this, int round = 1) => @this.Length.ToFileSizeString(round);
 
         /// <summary>
         /// Detects the characters which are not acceptable in File System and replaces them with a hyphen.
         /// </summary>
         /// <param name="replacement">The character with which to replace invalid characters in the name.</param>
-        public static string ToSafeFileName(this string name, char replacement = '-')
+        public static string ToSafeFileName(this string @this, char replacement = '-')
         {
-            if (name.IsEmpty()) return string.Empty;
+            if (@this.IsEmpty()) return string.Empty;
 
-            var controlCharacters = name.Where(c => char.IsControl(c));
+            var controlCharacters = @this.Where(c => char.IsControl(c));
 
             var invalidChars = new[] { '<', '>', ':', '"', '/', '\\', '|', '?', '*' }.Concat(controlCharacters);
 
             foreach (var c in invalidChars)
-                name = name.Replace(c, replacement);
+                @this = @this.Replace(c, replacement);
 
             if (replacement.ToString().HasValue())
-                name = name.KeepReplacing(replacement.ToString() + replacement, replacement.ToString());
+                @this = @this.KeepReplacing(replacement.ToString() + replacement, replacement.ToString());
 
-            return name.Summarize(255).TrimEnd("...");
+            return @this.Summarize(255).TrimEnd("...");
         }
 
         /// <summary>
         /// Executes this EXE file and returns the standard output.
         /// </summary>
-        public static string Execute(this FileInfo exeFile, string args, bool waitForExit = true) =>
-            Execute(exeFile, args, waitForExit, null);
-
-        /// <summary>
-        /// Executes this EXE file and returns the standard output.
-        /// </summary>
-        public static string Execute(this FileInfo exeFile, string args, bool waitForExit, Action<Process> configuration)
+        public static string Execute(this FileInfo @this, string args, bool waitForExit = true, Action<Process> configuration = null)
         {
             var output = new StringBuilder();
 
@@ -90,9 +84,9 @@ namespace Olive
 
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = exeFile.FullName,
+                    FileName = @this.FullName,
                     Arguments = args,
-                    WorkingDirectory = exeFile.Directory.FullName,
+                    WorkingDirectory = @this.Directory.FullName,
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
@@ -106,11 +100,11 @@ namespace Olive
 
             process.ErrorDataReceived += (sender, e) =>
             {
-                if (e.Data.HasValue()) output.AppendLine(e.Data);
+                if (e.Data.HasValue()) lock (output) output.AppendLine(e.Data);
             };
             process.OutputDataReceived += (sender, e) =>
             {
-                if (e.Data != null) output.AppendLine(e.Data);
+                if (e.Data != null) lock (output) output.AppendLine(e.Data);
             };
 
             process.Start();
@@ -122,9 +116,8 @@ namespace Olive
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
-                {
-                    throw new Exception($"Error running '{exeFile.FullName}':{output}");
-                }
+                    throw new Exception($"Error running '{@this.FullName}':{output}");
+                else process.Dispose();
             }
 
             return output.ToString();
@@ -133,9 +126,9 @@ namespace Olive
         /// <summary>
         /// Gets the mime type based on the file extension.
         /// </summary>
-        public static string GetMimeType(this FileInfo file)
+        public static string GetMimeType(this FileInfo @this)
         {
-            switch (file.Extension.OrEmpty().TrimStart("."))
+            switch (@this.Extension.OrEmpty().TrimStart("."))
             {
                 case "doc": case "docx": return "application/msword";
                 case "pdf": return "application/pdf";
@@ -176,12 +169,29 @@ namespace Olive
         /// <summary>
         /// Gets the files in this folder. If this folder is null or non-existent it will return an empty array.
         /// </summary>
-        public static IEnumerable<FileInfo> GetFilesOrEmpty(this DirectoryInfo folder, string searchPattern)
+        public static IEnumerable<FileInfo> GetFilesOrEmpty(this DirectoryInfo @this, string searchPattern)
         {
-            if (folder == null || !folder.Exists())
+            if (@this == null || !@this.Exists())
                 return Enumerable.Empty<FileInfo>();
 
-            return folder.GetFiles(searchPattern);
+            return @this.GetFiles(searchPattern);
+        }
+
+        /// <summary>
+        /// Gets this file's original exact file name with the correct casing.
+        /// </summary>
+        public static string GetExactFullName(this FileSystemInfo @this)
+        {
+            var path = @this.FullName;
+            if (!File.Exists(path) && !Directory.Exists(path)) return path;
+
+            var asDirectory = new DirectoryInfo(path);
+            var parent = asDirectory.Parent;
+
+            if (parent == null) // Drive:
+                return asDirectory.Name.ToUpper();
+
+            return Path.Combine(parent.GetExactFullName(), parent.GetFileSystemInfos(asDirectory.Name)[0].Name);
         }
     }
 }

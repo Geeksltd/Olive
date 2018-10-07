@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
@@ -10,14 +9,14 @@ namespace Olive.Entities.Data
     /// <summary>
     /// Provides data access for Interface types.
     /// </summary>
-    public class InterfaceDataProvider : IDataProvider
+    public class InterfaceDataProvider : LimitedDataProvider
     {
         Type InterfaceType;
         static ConcurrentDictionary<Type, List<Type>> ImplementationsCache = new ConcurrentDictionary<Type, List<Type>>();
 
         public InterfaceDataProvider(Type interfaceType) => InterfaceType = interfaceType;
 
-        Type IDataProvider.EntityType => InterfaceType;
+        public override Type EntityType => InterfaceType;
 
         List<Type> GetImplementers() => ImplementationsCache.GetOrAdd(InterfaceType, FindImplementers);
 
@@ -40,7 +39,7 @@ namespace Olive.Entities.Data
                 }
                 catch
                 {
-                    // Can't load assembly
+                    // Can't load assembly. No logging is needed.
                 }
             }
 
@@ -57,17 +56,17 @@ namespace Olive.Entities.Data
         List<IDataProvider> FindProviders()
         {
             var implementers = GetImplementers();
-            return implementers.Select(x => Database.Instance.GetProvider(x)).ToList();
+            return implementers.Select(x => Context.Current.Database().GetProvider(x)).ToList();
         }
 
-        public async Task<int> Count(IDatabaseQuery query)
+        public override async Task<int> Count(IDatabaseQuery query)
         {
             var providers = FindProviders();
             var results = await providers.SelectAsync(x => x.Count(query.CloneFor(x.EntityType)));
             return results.Sum();
         }
 
-        public async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
+        public override async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
         {
             if (query.TakeTop.HasValue)
                 throw new Exception("Top() criteria is not allowed when querying based on Interfaces.");
@@ -80,67 +79,22 @@ namespace Olive.Entities.Data
             return results.SelectMany(x => x);
         }
 
-        public DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query,
-            PropertyInfo association)
-        {
-            throw new InvalidOperationException("Oops! GetAssociationInclusionCriteria() is not meant to be ever called on " + GetType().Name);
-        }
-
-        public Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName) =>
-            throw new NotSupportedException("Database.Aggregate doesn't work on interfaces.");
-
-        public async Task<IEntity> Get(object objectID)
+        public override async Task<IEntity> Get(object objectID)
         {
             foreach (var actual in GetImplementers())
             {
                 try
                 {
-                    if (await Database.Instance.Get(objectID, actual) is Entity result) return result;
+                    if (await Context.Current.Database().Get(objectID, actual) is Entity result) return result;
                 }
-                catch { continue; }
+                catch
+                {
+                    // No logging is needed.
+                    continue;
+                }
             }
 
             throw new Exception($"There is no {InterfaceType.Name} record with the ID of '{objectID}'");
         }
-
-        public Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property) =>
-            throw new NotSupportedException("IDataProvider.ReadManyToManyRelation() is not supported for Interfaces");
-
-        public Task Save(IEntity record) =>
-            throw new NotSupportedException("IDataProvider.Save() is irrelevant to Interfaces");
-
-        public Task Delete(IEntity record) =>
-            throw new NotSupportedException("IDataProvider.Delete() is irrelevant to Interfaces");
-
-        public string MapColumn(string propertyName) =>
-            throw new NotSupportedException("IDataProvider.MapColumn() is irrelevant to Interfaces");
-
-        public IDictionary<string, Tuple<string, string>> GetUpdatedValues(IEntity original, IEntity updated) =>
-            throw new NotSupportedException("IDataProvider.GetUpdatedValues() is irrelevant to Interfaces");
-
-        public Task<int> ExecuteNonQuery(string command) =>
-            throw new NotSupportedException("IDataProvider.ExecuteNonQuery() is irrelevant to Interfaces");
-
-        public Task<object> ExecuteScalar(string command) =>
-            throw new NotSupportedException("IDataProvider.ExecuteScalar() is irrelevant to Interfaces");
-
-        public bool SupportValidationBypassing() =>
-            throw new NotSupportedException("IDataProvider.SupportValidationBypassing() is irrelevant to Interfaces");
-
-        public Task BulkInsert(IEntity[] entities, int batchSize) =>
-            throw new NotSupportedException("IDataProvider.BulkInsert() is irrelevant to Interfaces");
-
-        public Task BulkUpdate(IEntity[] entities, int batchSize) =>
-            throw new NotSupportedException("IDataProvider.BulkUpdate() is irrelevant to Interfaces");
-
-        public IDataAccess Access =>
-            throw new NotSupportedException("IDataProvider.Access is irrelevant to Interfaces");
-
-        public string MapSubquery(string path, string parent) =>
-            throw new NotSupportedException("IDataProvider.MapSubquery() is irrelevant to Interfaces");
-
-        public string ConnectionString { get; set; }
-
-        public string ConnectionStringKey { get; set; }
     }
 }

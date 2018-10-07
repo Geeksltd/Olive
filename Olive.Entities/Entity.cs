@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,21 +7,35 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace Olive.Entities
 {
     /// <summary>
     /// Entity, a persistent object in the application.
     /// </summary>
+    [Serializable]
     public abstract class Entity : IEntity
     {
+        [NonSerialized]
+        AsyncEvent validating, loaded, deleted;
+        [NonSerialized]
+        AsyncEvent<CancelEventArgs> deleting, saving;
+        [NonSerialized]
+        AsyncEvent<SaveEventArgs> saved;
+
         static Dictionary<Type, PropertyInfo[]> PrimitiveProperties = new Dictionary<Type, PropertyInfo[]>();
         static object PrimitivePropertiesSyncLock = new object();
+
         object CachedCopiesLock = new object();
+
+        [NonSerialized]
         internal List<ICachedReference> CachedCopies;
-        public Entity _ClonedFrom;
         internal bool IsImmutable;
+
+        [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        public Entity _ClonedFrom;
+
+        public static readonly EntityServices Services = new EntityServices();
 
         /// <summary>
         /// Base constructor (called implicitly in all typed entity classes) to initialize an object.
@@ -83,6 +98,7 @@ namespace Olive.Entities
         /// <summary>
         /// Determines whether this object is already cloned and updated in the database without this instance being updated.
         /// </summary>
+        [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
         public bool IsStale;
 
         /// <summary>
@@ -181,14 +197,16 @@ namespace Olive.Entities
 
         /// <summary>
         /// This even is raised just after this instance is loaded from the database.
-        /// </summary>
-        public AsyncEvent Loaded { get; } = new AsyncEvent();
+        /// </summary>        
+        [XmlIgnore, JsonIgnore]
+        public AsyncEvent Loaded => loaded ?? (loaded = new AsyncEvent());
         protected internal virtual Task OnLoaded() => Loaded.Raise();
 
         /// <summary>
         /// This event is raised just before this instance is saved in the data repository.
         /// </summary>
-        public AsyncEvent<CancelEventArgs> Saving { get; } = new AsyncEvent<CancelEventArgs>();
+        [XmlIgnore, JsonIgnore]
+        public AsyncEvent<CancelEventArgs> Saving => saving ?? (saving = new AsyncEvent<CancelEventArgs>());
         protected internal virtual Task OnSaving(CancelEventArgs e) => Saving.Raise(e);
 
         /// <summary>
@@ -196,42 +214,40 @@ namespace Olive.Entities
         /// It will automatically be called in Database.Save() method before calling the Validate() method.
         /// Use this to do any last-minute object modifications, such as initializing complex values.
         /// </summary>
-        public AsyncEvent<EventArgs> Validating { get; } = new AsyncEvent<EventArgs>();
-        protected internal virtual Task OnValidating(EventArgs e) => Validating.Raise(e);
+        [XmlIgnore, JsonIgnore]
+        public AsyncEvent Validating => validating ?? (validating = new AsyncEvent());
+        protected internal virtual Task OnValidating(EventArgs e) => Validating.Raise();
 
         /// <summary>
         /// This event is raised after this instance is saved in the database.
         /// </summary>
-        public AsyncEvent<SaveEventArgs> Saved { get; } = new AsyncEvent<SaveEventArgs>();
-
-        /// <summary>
-        /// Raises the <see cref = "E:Saved"/> event.
-        /// </summary>
-        /// <param name = "e">The <see cref = "SaveEventArgs"/> instance containing the event data.</param>
+        [XmlIgnore, JsonIgnore]
+        public AsyncEvent<SaveEventArgs> Saved => saved ?? (saved = new AsyncEvent<SaveEventArgs>());
         protected internal virtual async Task OnSaved(SaveEventArgs e)
         {
             InvalidateCachedReferences();
             await Saved.Raise(e);
-            await EntityManager.RaiseStaticOnSaved(e);
+            await GlobalEntityEvents.InstanceSaved.Raise(e);
             InvalidateCachedReferences();
         }
 
         /// <summary>
         /// This event is raised just before this instance is deleted from the database.
         /// </summary>
-        public AsyncEvent<CancelEventArgs> Deleting { get; } = new AsyncEvent<CancelEventArgs>();
+        [XmlIgnore, JsonIgnore]
+        public AsyncEvent<CancelEventArgs> Deleting => deleting ?? (deleting = new AsyncEvent<CancelEventArgs>());
         protected internal virtual Task OnDeleting(CancelEventArgs e) => Deleting.Raise(e);
 
         /// <summary>
         /// This event is raised just after this instance is deleted from the database.
         /// </summary>
-        public AsyncEvent Deleted { get; } = new AsyncEvent();
-
+        [XmlIgnore, JsonIgnore]
+        public AsyncEvent Deleted => deleted ?? (deleted = new AsyncEvent());
         protected internal virtual async Task OnDeleted(EventArgs e)
         {
             InvalidateCachedReferences();
             await Deleted.Raise();
-            await EntityManager.RaiseStaticOnDeleted(e);
+            await GlobalEntityEvents.InstanceDeleted.Raise(e);
             InvalidateCachedReferences();
         }
 
@@ -263,10 +279,14 @@ namespace Olive.Entities
         public static bool operator ==(Entity left, object right)
         {
             if (right == null) return left == null;
-            var rightEntity = right as Entity;
-            if (rightEntity == null) return false;
 
-            return left == rightEntity;
+            if (right is Entity rightEntity)
+                return left == rightEntity;
+
+            if (right is Task)
+                throw new Exception("You cannot compare an entity object with a Task object. Await the task before comparing.");
+
+            return false;
         }
 
         public static bool operator !=(Entity left, object right) => !(left == right);
@@ -274,7 +294,7 @@ namespace Olive.Entities
         public static bool operator ==(Entity left, Entity right)
         {
             if (ReferenceEquals(left, right)) return true;
-            if (ReferenceEquals(left, null)) return false;
+            if (left is null) return false;
             return left.Equals(right);
         }
 
@@ -290,17 +310,9 @@ namespace Olive.Entities
             else return string.Compare(ToString(), other.ToString(), ignoreCase: true);
         }
 
-        #region Database instance
-        static IDatabase DatabaseInstance;
-
-        public static IDatabase Database => DatabaseInstance
-            ?? throw new InvalidOperationException("The database instance is not initialized.");
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void InitializeDatabase(IDatabase instance)
-        {
-            DatabaseInstance = instance ?? throw new ArgumentException("Database instance cannot be null.");
-        }
-        #endregion
+        /// <summary>
+        /// Gets the currently injected Datbase service.
+        /// </summary>
+        protected static IDatabase Database => Context.Current.Database();
     }
 }

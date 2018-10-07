@@ -12,19 +12,19 @@ namespace Olive
         /// <summary>
         /// If specified as recursive and harshly, then it tries multiple times to delete this directory.        
         /// </summary>
-        public static async Task Delete(this DirectoryInfo directory, bool recursive, bool harshly)
+        public static async Task DeleteAsync(this DirectoryInfo @this, bool recursive, bool harshly)
         {
-            if (directory == null)
-                throw new ArgumentNullException(nameof(directory));
+            if (@this == null)
+                throw new ArgumentNullException(nameof(@this));
 
-            if (!directory.Exists()) return;
+            if (!@this.Exists()) return;
 
             if (harshly && !recursive)
                 throw new ArgumentException("For deleting a folder harshly, the recursive option should also be specified.");
 
             if (!harshly)
             {
-                directory.Delete(recursive);
+                @this.Delete(recursive);
                 return;
             }
 
@@ -32,14 +32,21 @@ namespace Olive
             try
             {
                 // First attempt: Simple delete:
-                await Task.Factory.StartNew(() => directory.Delete(recursive: true));
+                @this.Delete(recursive: true);
             }
             catch
             {
                 // No loging is needed
                 // Normal attempt failed. Let's try it harshly!
-                await HarshDelete(directory);
+                await HarshDelete(@this);
             }
+        }
+
+        public static void DeleteIfExists(this DirectoryInfo @this, bool recursive = false)
+        {
+            if (@this == null) return;
+            if (!@this.Exists()) return;
+            @this.Delete(recursive);
         }
 
         /// <summary>
@@ -60,18 +67,18 @@ namespace Olive
         /// <summary>
         /// Copies the entire content of a directory to a specified destination.
         /// </summary>
-        public static Task CopyToAsync(this DirectoryInfo source, DirectoryInfo destination, bool overwrite = false)
+        public static Task CopyToAsync(this DirectoryInfo @this, DirectoryInfo destination, bool overwrite = false)
         {
-            return CopyToAsync(source, destination.FullName, overwrite);
+            return CopyToAsync(@this, destination.FullName, overwrite);
         }
 
         /// <summary>
         /// Determines whether the file's contents start with MZ which is the signature for EXE files.
         /// </summary>
-        public static bool HasExeContent(this FileInfo file)
+        public static bool HasExeContent(this FileInfo @this)
         {
             var twoBytes = new byte[2];
-            using (var fileStream = File.Open(file.FullName, FileMode.Open))
+            using (var fileStream = File.Open(@this.FullName, FileMode.Open))
             {
                 try
                 {
@@ -90,43 +97,46 @@ namespace Olive
         /// <summary>
         /// Copies the entire content of a directory to a specified destination.
         /// </summary>
-        public static async Task CopyToAsync(this DirectoryInfo source, string destination, bool overwrite = false)
+        public static async Task CopyToAsync(this DirectoryInfo @this, string destination, bool overwrite = false)
         {
             destination.AsDirectory().EnsureExists();
 
-            foreach (var file in source.GetFiles())
+            foreach (var file in @this.GetFiles())
                 await file.CopyToAsync(Path.Combine(destination, file.Name).AsFile(), overwrite);
 
-            foreach (var sub in source.GetDirectories())
+            foreach (var sub in @this.GetDirectories())
                 await sub.CopyToAsync(Path.Combine(destination, sub.Name), overwrite);
         }
 
         /// <summary>
         /// Copies the entire content of a directory to a specified destination.
         /// </summary>
-        public static void CopyToSync(this DirectoryInfo source, string destination, bool overwrite = false)
+        public static void CopyTo(this DirectoryInfo @this, string destination, bool overwrite = false)
         {
+            if (@this == null) throw new ArgumentNullException(nameof(@this));
+            if (!@this.Exists()) throw new Exception(@this.FullName + " does not exist.");
+
             destination.AsDirectory().EnsureExists();
 
-            foreach (var file in source.GetFiles())
+            foreach (var file in @this.GetFiles())
                 file.CopyTo(Path.Combine(destination, file.Name).AsFile(), overwrite);
 
-            foreach (var sub in source.GetDirectories())
-                sub.CopyToSync(Path.Combine(destination, sub.Name), overwrite);
+            foreach (var sub in @this.GetDirectories())
+                sub.CopyTo(Path.Combine(destination, sub.Name), overwrite);
         }
 
         /// <summary>
         /// Copies this file to a specified destination directiry with the original file name.
         /// </summary>
-        public static async Task CopyTo(this FileInfo file, DirectoryInfo destinationDirectory, bool overwrite = false) =>
-            await file.CopyToAsync(destinationDirectory.GetFile(file.Name), overwrite);
+        public static async Task CopyTo(this FileInfo @this, DirectoryInfo destinationDirectory, bool overwrite = false) =>
+            await @this.CopyToAsync(destinationDirectory.GetFile(@this.Name), overwrite);
 
-        public static string[] GetFiles(this DirectoryInfo folder, bool includeSubDirectories)
+        public static string[] GetFiles(this DirectoryInfo @this, bool includeSubDirectories)
         {
-            var result = new List<string>(folder.GetFiles().Select(f => f.FullName));
+            var result = new List<string>(@this.GetFiles().Select(f => f.FullName));
 
             if (includeSubDirectories)
-                foreach (var subFolder in folder.GetDirectories())
+                foreach (var subFolder in @this.GetDirectories())
                     result.AddRange(subFolder.GetFiles(includeSubDirectories: true));
 
             return result.ToArray();
@@ -152,9 +162,9 @@ namespace Olive
         /// <summary>
         /// Gets or creates a subdirectory with the specified name.
         /// </summary>
-        public static DirectoryInfo GetOrCreateSubDirectory(this DirectoryInfo parent, string subdirectoryName)
+        public static DirectoryInfo GetOrCreateSubDirectory(this DirectoryInfo @this, string subdirectoryName)
         {
-            var result = new DirectoryInfo(Path.Combine(parent.FullName, subdirectoryName));
+            var result = new DirectoryInfo(Path.Combine(@this.FullName, subdirectoryName));
 
             result.Create();
 
@@ -164,14 +174,14 @@ namespace Olive
         /// <summary>
         /// Gets the subdirectory tree of this directory.
         /// </summary>
-        public static IEnumerable<DirectoryInfo> GetDirectories(this DirectoryInfo parent, bool recursive)
+        public static IEnumerable<DirectoryInfo> GetDirectories(this DirectoryInfo @this, bool recursive)
         {
-            if (!recursive) return parent.GetDirectories();
+            if (!recursive) return @this.GetDirectories();
             else
             {
-                var result = parent.GetDirectories().ToList();
+                var result = @this.GetDirectories().ToList();
 
-                foreach (var sub in parent.GetDirectories())
+                foreach (var sub in @this.GetDirectories())
                     result.AddRange(sub.GetDirectories(recursive: true));
 
                 return result;
@@ -181,23 +191,23 @@ namespace Olive
         /// <summary>
         /// Creates the directory if it doesn't already exist.
         /// </summary>
-        public static DirectoryInfo EnsureExists(this DirectoryInfo folder)
+        public static DirectoryInfo EnsureExists(this DirectoryInfo @this)
         {
-            if (!folder.Exists())
-                Directory.CreateDirectory(folder.FullName);
+            if (!@this.Exists())
+                Directory.CreateDirectory(@this.FullName);
 
             // if (!folder.Exists) folder.Create(); This has caching bug in the core .NET code :-(
 
-            return folder;
+            return @this;
         }
 
         /// <summary>
         /// Determines whether this folder is empty of any files or sub-directories.
         /// </summary>
-        public static bool IsEmpty(this DirectoryInfo folder)
+        public static bool IsEmpty(this DirectoryInfo @this)
         {
-            if (folder.GetFiles().Any()) return false;
-            if (folder.GetDirectories().Any()) return false;
+            if (@this.GetFiles().Any()) return false;
+            if (@this.GetDirectories().Any()) return false;
 
             return true;
         }

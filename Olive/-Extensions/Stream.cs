@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +14,10 @@ namespace Olive
         {
             using (var memoryStream = new MemoryStream())
             {
-                stream.Position = 0;
-                stream.CopyTo(memoryStream);
+                try { if (stream.CanSeek) stream.Position = 0; }
+                catch (NotSupportedException) { /*Not needed*/ }
+                try { stream.CopyTo(memoryStream); }
+                catch (System.IO.InvalidDataException) { /*Not needed*/ }
                 return memoryStream.ToArray();
             }
         }
@@ -26,7 +29,7 @@ namespace Olive
         {
             using (var memoryStream = new MemoryStream())
             {
-                stream.Position = 0;
+                if (stream.CanSeek) stream.Position = 0;
                 await stream.CopyToAsync(memoryStream);
                 return memoryStream.ToArray();
             }
@@ -36,13 +39,15 @@ namespace Olive
         /// Reads all text in this stream as UTF8.
         /// </summary>
         /// <param name="encoding">If not specified (or NULL specified) then UTF8 will be used.</param>
-        public static async Task<string> ReadAllText(this Stream response, Encoding encoding = null)
+        public static async Task<string> ReadAllText(this Stream @this, Encoding encoding = null)
         {
-            var result = "";
+            encoding = encoding ?? Encoding.UTF8;
 
             // Pipes the stream to a higher level stream reader with the required encoding format.
-            using (var readStream = new StreamReader(response, encoding))
+            using (var readStream = new StreamReader(@this, encoding))
             {
+                var result = "";
+
                 var read = new char[256];
                 // Reads 256 characters at a time.
                 var count = await readStream.ReadAsync(read, 0, read.Length);
@@ -53,9 +58,9 @@ namespace Olive
                     result += new string(read, 0, count);
                     count = await readStream.ReadAsync(read, 0, read.Length);
                 }
-            }
 
-            return result;
+                return result;
+            }
         }
 
         public static byte[] ReadAllBytes(this BinaryReader reader)
@@ -70,5 +75,7 @@ namespace Olive
                 return ms.ToArray();
             }
         }
+
+        public static MemoryStream AsStream(this byte[] data) => new MemoryStream(data);
     }
 }

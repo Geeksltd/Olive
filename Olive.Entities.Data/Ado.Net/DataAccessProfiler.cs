@@ -9,8 +9,6 @@ namespace Olive.Entities.Data
     /// </summary>
     public class DataAccessProfiler
     {
-        internal static bool IsEnabled = Config.Get("Database.Profile.Enabled", defaultValue: false);
-
         static ConcurrentBag<Watch> Watches = new ConcurrentBag<Watch>();
 
         static object SyncLock = new object();
@@ -19,9 +17,10 @@ namespace Olive.Entities.Data
 
         internal static Watch Start(string command) => new Watch(command);
 
+        [EscapeGCop("The rule does not apply to this as it's a system level calculation item.")]
         internal static void Complete(Watch watch)
         {
-            watch.Duration = DateTime.Now.Subtract(watch.Start);
+            watch.Duration = DateTime.UtcNow.Subtract(watch.Start);
 
             Watches.Add(watch);
         }
@@ -32,10 +31,11 @@ namespace Olive.Entities.Data
             internal DateTime Start;
             internal TimeSpan Duration;
 
+            [EscapeGCop("The rule does not apply to this as it's a system level calculation item.")]
             public Watch(string command)
             {
                 Command = command.ToLines().ToString(" ");
-                Start = DateTime.Now;
+                Start = DateTime.UtcNow;
             }
         }
 
@@ -50,7 +50,7 @@ namespace Olive.Entities.Data
         }
 
         /// <summary>
-        /// To invoice this you can send a request to the application using http://...?Web.Test.Command=Sql.Profile&amp;Mode=Snapshot
+        /// To invoice this you can send a request to the application using http://.../cmd/db-profile?Mode=Snapshot
         /// </summary>
         /// <param name="snapshot">Determines whether the current log data should be removed (false) or kept for future combined future generated (true).</param>
         public static ReportRow[] GenerateReport(bool snapshot = false)

@@ -11,6 +11,11 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class Database : IDatabase
     {
+        private readonly ICache Cache;
+        /// <summary>
+        /// Initialize instance of Database by injecting ICache dependency
+        /// </summary>
+        /// 
         bool IsSet(SaveBehaviour setting, SaveBehaviour behaviour) => (setting & behaviour) == behaviour;
 
         bool IsSet(DeleteBehaviour setting, DeleteBehaviour behaviour) => (setting & behaviour) == behaviour;
@@ -18,12 +23,13 @@ namespace Olive.Entities.Data
         bool NeedsTypeResolution(Type type) => type.IsInterface || type == typeof(Entity);
 
         public AsyncEvent CacheRefreshed { get; } = new AsyncEvent();
+
         /// <summary>
         /// Clears the cache of all items.
         /// </summary>
         public async Task Refresh()
         {
-            Cache.Current.ClearAll();
+            Cache.ClearAll();
 
             await CacheRefreshed.Raise();
         }
@@ -35,13 +41,14 @@ namespace Olive.Entities.Data
         /// </summary>
         public async Task EnlistOrCreateTransaction(Func<Task> func)
         {
-            if (AnyOpenTransaction()) await func?.Invoke();
+            if (func == null) return;
+
+            if (AnyOpenTransaction()) await func.Invoke();
             else
             {
                 using (var scope = CreateTransactionScope())
                 {
-                    await func?.Invoke();
-
+                    await func.Invoke();
                     scope.Complete();
                 }
             }
@@ -63,23 +70,18 @@ namespace Olive.Entities.Data
                 catch (Exception ex)
                 {
                     throw new Exception("Database.Parse() failed. Calling ToString() throw an exception on the {0} object with ID of '{1}'"
-                        .FormatWith(typeof(T).Name, instance.GetId(), ex));
+                        .FormatWith(typeof(T).Name, instance.GetId()), ex);
                 }
 
-                if (toString == null && objectString == null) return instance;
+                if (toString is null && objectString is null) return instance;
 
-                if (toString == null || objectString == null) continue;
+                if (toString is null || objectString is null) continue;
 
                 if (objectString.Equals(toString, comparison)) return instance;
             }
 
             return default(T);
         }
-
-        /// <summary>
-        /// Gets the total number of objects in cache.
-        /// </summary>
-        public int CountAllObjectsInCache() => Cache.Current.CountAllObjects();
 
         public async Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property)
         {
@@ -95,7 +97,7 @@ namespace Olive.Entities.Data
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
 
-            Cache.Current.Remove(instance);
+            Cache.Remove(instance);
 
             return (T)await Get(instance.GetId(), instance.GetType());
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,25 +10,35 @@ namespace Olive.Entities.Data
 {
     partial class Database
     {
-        static readonly Database instance = new Database();
+        object DataProviderSyncLock = new object();
 
-        Database()
+        [Obsolete("Use Context.Current.Database() instead.", error: true)]
+        public static IDatabase Instance => Context.Current.Database();
+        IConfiguration Config;
+
+        public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
+            = new Dictionary<Assembly, IDataProviderFactory>();
+
+        public Dictionary<Type, IDataProvider> TypeProviders { get; } = new Dictionary<Type, IDataProvider>();
+
+        Dictionary<Type, IDataProviderFactory> TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
+
+        public static DatabaseConfig Configuration { get; private set; }
+
+        public Database(IConfiguration config, ICache cache)
         {
-            AssemblyProviderFactories = new Dictionary<Assembly, IDataProviderFactory>();
-            TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
-
-            // Load from configuration:
-            var configSection = Config.Bind<DataProviderModelConfigurationSection>("DataProviderModel");
-
-            if (configSection != null)
-            {
-                if (configSection.Providers != null)
-                    foreach (var factoryInfo in configSection.Providers)
-                        RegisterDataProviderFactory(factoryInfo);
-            }
+            Config = config;
+            Cache = cache;
         }
 
-        public static Database Instance => instance;
+        public void Configure()
+        {
+            if (Configuration == null)
+                Config.Bind("Database", Configuration = new DatabaseConfig());
+
+            foreach (var factoryInfo in Configuration.Providers.OrEmpty())
+                RegisterDataProviderFactory(factoryInfo);
+        }
 
         #region Updated event
         /// <summary>
@@ -39,8 +50,7 @@ namespace Olive.Entities.Data
 
         #endregion
 
-        object DataProviderSyncLock = new object();
-        public void RegisterDataProviderFactory(DataProviderFactoryInfo factoryInfo)
+        public void RegisterDataProviderFactory(DatabaseConfig.Provider factoryInfo)
         {
             if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));
 
@@ -72,8 +82,14 @@ namespace Olive.Entities.Data
             }
         }
 
-        public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; internal set; }
-        Dictionary<Type, IDataProviderFactory> TypeProviderFactories;
+        public void RegisterDataProvider(Type entityType, IDataProvider dataProvider)
+        {
+            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            if (dataProvider == null) throw new ArgumentNullException(nameof(dataProvider));
+
+            lock (TypeProviders)
+                TypeProviders[entityType] = dataProvider;
+        }
 
         /// <summary>
         /// Gets the assemblies for which a data provider factory has been registered in the current domain.
@@ -116,8 +132,13 @@ namespace Olive.Entities.Data
 
         public IDataProvider GetProvider(Type type)
         {
+            if (TypeProviders.TryGetValue(type, out var result))
+                return result;
+
             var factory = GetProviderFactory(type);
-            if (factory != null) return factory.GetProvider(type);
+            if (factory != null)
+                lock (TypeProviders)
+                    return TypeProviders[type] = factory.GetProvider(type);
 
             if (type.IsInterface) return new InterfaceDataProvider(type);
             else
@@ -130,9 +151,9 @@ namespace Olive.Entities.Data
         /// </summary>
         public ITransactionScope CreateTransactionScope(DbTransactionScopeOption option = DbTransactionScopeOption.Required)
         {
-            var isolationLevel = Config.Get("Default.Transaction.IsolationLevel", System.Data.IsolationLevel.Serializable);
+            var isolationLevel = DbTransactionScope.GetDefaultIsolationLevel();
 
-            var typeName = Config.Get<string>("Default.TransactionScope.Type");
+            var typeName = Configuration.Transaction.Type;
 
             if (typeName.HasValue())
             {

@@ -4,13 +4,14 @@ using System.ComponentModel;
 namespace Olive.Entities
 {
     /// <summary>Represents a base Entity with ID of type Guid.</summary>
+    [Serializable]
     public abstract class GuidEntity : Entity<Guid>, IEntity<Guid>
     {
         bool IsIdLoaded; // For performance, this is used instead of Nullable<Guid>
         Guid id;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Func<Type, Guid> NewGuidGenerator = t => Guid.NewGuid();
+        public static Func<Type, Guid> NewIdGenerator = t => Guid.NewGuid();
 
         /// <summary>
         /// Gets a unique Identifier for this instance. In the database, this will be the primary key of this object.
@@ -22,7 +23,7 @@ namespace Olive.Entities
                 if (IsIdLoaded) return id;
                 else
                 {
-                    id = NewGuidGenerator(GetType());
+                    id = NewIdGenerator(GetType());
                     IsIdLoaded = true;
                     return id;
                 }

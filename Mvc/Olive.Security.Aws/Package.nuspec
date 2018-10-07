@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.Security.Aws</id>
+    <version>2.1.38</version>
+    <title>Olive Security Aws</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
+    <description>Olive Framework</description>
+    <dependencies>
+      <dependency id="AWSSDK.KeyManagementService" version="3.3.5.6" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.Aws.dll" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.Aws.pdb" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.Aws.xml" target="lib\netcoreapp2.1\" />
+  </files>
+</package>

@@ -214,52 +214,52 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Determines if a specified date is an English national holiday or weekend.
         /// </summary>
-        public static bool IsEnglishHoliday(this DateTime date)
+        public static bool IsEnglishHoliday(this DateTime @this)
         {
-            date = date.Date; // drop time.
+            @this = @this.Date; // drop time.
 
-            if (date.IsWeekend()) return true;
+            if (@this.IsWeekend()) return true;
 
             // 1 January - New Year's Day
-            if (date == GetActualHolidayDate(new DateTime(date.Year, 1, 1)))
+            if (@this == GetActualHolidayDate(new DateTime(@this.Year, 1, 1)))
                 return true;
 
             // 1st Monday in May	Early May Bank Holiday
-            if (date == GetEarlyMayBankHoliday(date.Year))
+            if (@this == GetEarlyMayBankHoliday(@this.Year))
                 return true;
 
             // Last Monday in May	Spring Bank Holiday
-            if (date == GetSpringBankHoliday(date.Year))
+            if (@this == GetSpringBankHoliday(@this.Year))
                 return true;
 
             // Last Monday in August	Late Summer Bank Holiday
-            if (date == GetLateSummerBankHoliday(date.Year))
+            if (@this == GetLateSummerBankHoliday(@this.Year))
                 return true;
 
             // December 25	Christmas Day
-            if (date == GetActualHolidayDate(new DateTime(date.Year, 12, CHRISTMAS_DAY)))
+            if (@this == GetActualHolidayDate(new DateTime(@this.Year, 12, CHRISTMAS_DAY)))
                 return true;
 
             // December 26	Boxing Day
-            if (date == GetBoxingDay(date.Year))
+            if (@this == GetBoxingDay(@this.Year))
                 return true;
 
             try
             {
-                var easterMonday = GetEasterMonday(date.Year);
+                var easterMonday = GetEasterMonday(@this.Year);
 
                 // Easter Monday
-                if (date == easterMonday)
+                if (@this == easterMonday)
                     return true;
 
                 // Good Friday
-                if (date == easterMonday.AddDays(MINUS_THREE))
+                if (@this == easterMonday.AddDays(MINUS_THREE))
                     return true;
             }
             catch { /* No logging needed. out of supported range*/ }
 
             // Additional Holidays
-            if (IsAdditionalBankHoliday(date))
+            if (IsAdditionalBankHoliday(@this))
                 return true;
 
             return false;
@@ -280,33 +280,33 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the first upcoming specified week day.
         /// </summary>
-        public static DateTime GetUpcoming(this DateTime date, DayOfWeek dayOfWeek, bool skipToday = false)
+        public static DateTime GetUpcoming(this DateTime @this, DayOfWeek dayOfWeek, bool skipToday = false)
         {
-            if (skipToday) date = date.Date.AddDays(1);
-            else date = date.Date;
+            if (skipToday) @this = @this.Date.AddDays(1);
+            else @this = @this.Date;
 
             while (true)
             {
-                if (date.DayOfWeek == dayOfWeek) return date;
+                if (@this.DayOfWeek == dayOfWeek) return @this;
 
-                date = date.AddDays(1);
+                @this = @this.AddDays(1);
             }
         }
 
         /// <summary>
         /// Gets the last occurance of the specified week day.
         /// </summary>
-        public static DateTime GetLast(this DateTime date, DayOfWeek dayOfWeek, bool skipToday = false)
+        public static DateTime GetLast(this DateTime @this, DayOfWeek dayOfWeek, bool skipToday = false)
         {
-            date = date.Date;
+            @this = @this.Date;
 
-            if (skipToday) date = date.AddDays(-1);
+            if (skipToday) @this = @this.AddDays(-1);
 
             while (true)
             {
-                if (date.DayOfWeek == dayOfWeek) return date;
+                if (@this.DayOfWeek == dayOfWeek) return @this;
 
-                date = date.AddDays(-1);
+                @this = @this.AddDays(-1);
             }
         }
 
@@ -396,13 +396,13 @@ new DateTime(2099,04,13)};
                 if (day.DayOfWeek == weekday) return day;
         }
 
-        public static bool IsOlderThan(this DateTime source, TimeSpan span) => (LocalTime.Now - source) > span;
+        public static bool IsOlderThan(this DateTime @this, TimeSpan span) => (LocalTime.Now - @this) > span;
 
         public static bool IsNewerThan(this DateTime source, TimeSpan span) => (LocalTime.Now - source) < span;
 
-        public static bool IsAfterOrEqualTo(this DateTime date, DateTime otherDate) => date >= otherDate;
+        public static bool IsAfterOrEqualTo(this DateTime @this, DateTime otherDate) => @this >= otherDate;
 
-        public static bool IsBeforeOrEqualTo(this DateTime date, DateTime otherDate) => date <= otherDate;
+        public static bool IsBeforeOrEqualTo(this DateTime @this, DateTime otherDate) => @this <= otherDate;
 
         /// <summary>
         /// Determines whether this day is in the same week (Monday to Sunday) as the specified other date.
@@ -422,22 +422,22 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Determines whether this day is in the same month as the specified other date.
         /// </summary>
-        public static bool IsInSameMonth(this DateTime day, DateTime other) => day.Month == other.Month && day.Year == other.Year;
+        public static bool IsInSameMonth(this DateTime @this, DateTime other) => @this.Month == other.Month && @this.Year == other.Year;
 
         /// <summary>
         /// Gets the number of days in this year.
         /// </summary>
-        public static int DaysInYear(this DateTime date) => new DateTime(date.Year, 12, MAC_DAY_COUNT_IN_MONTH).DayOfYear;
+        public static int DaysInYear(this DateTime @this) => new DateTime(@this.Year, 12, MAC_DAY_COUNT_IN_MONTH).DayOfYear;
 
         /// <summary>
         /// Gets the number of days in this month.
         /// </summary>
-        public static int DaysInMonth(this DateTime date) => DateTime.DaysInMonth(date.Year, date.Month);
+        public static int DaysInMonth(this DateTime @this) => DateTime.DaysInMonth(@this.Year, @this.Month);
 
         /// <summary>
         /// Gets the mid-night of Monday of this week.
         /// </summary>
-        public static DateTime GetBeginningOfWeek(this DateTime day) => day.Date.GetLast(DayOfWeek.Monday, skipToday: false);
+        public static DateTime GetBeginningOfWeek(this DateTime @this) => @this.Date.GetLast(DayOfWeek.Monday, skipToday: false);
 
         /// <summary>
         /// Gets one tick before the start of next week.
@@ -465,17 +465,17 @@ new DateTime(2099,04,13)};
             }
         }
 
-        public static DateTime? EndOfDay(this DateTime? date) => date?.EndOfDay();
+        public static DateTime? EndOfDay(this DateTime? @this) => @this?.EndOfDay();
 
         /// <summary>
         /// Determines whether this date is in the future.
         /// </summary>
-        public static bool IsInTheFuture(this DateTime date) => date > LocalTime.Now;
+        public static bool IsInTheFuture(this DateTime @this) => @this > LocalTime.Now;
 
         /// <summary>
         /// Determines whether this date is in the future.
         /// </summary>
-        public static bool IsTodayOrFuture(this DateTime date) => date.Date >= LocalTime.Today;
+        public static bool IsTodayOrFuture(this DateTime @this) => @this.Date >= LocalTime.Today;
 
         /// <summary>
         /// Determines whether this date is in the future.
@@ -484,69 +484,69 @@ new DateTime(2099,04,13)};
 
         public static bool IsInThePast(this DateTime date) => date < LocalTime.Now;
 
-        public static bool IsAfter(this DateTime date, DateTime otherDate) => date > otherDate;
+        public static bool IsAfter(this DateTime @this, DateTime otherDate) => @this > otherDate;
 
-        public static bool IsBefore(this DateTime date, DateTime otherDate) => date < otherDate;
+        public static bool IsBefore(this DateTime @this, DateTime otherDate) => @this < otherDate;
 
         /// <summary>
         /// E.g. 4am or 6:30pm.
         /// </summary>
         public static string ToSmallTime(this DateTime date) => date.ToString("h:mm").TrimEnd(":00") + date.ToString("tt").ToLower();
 
-        public static bool IsWeekend(this DateTime value) => value.DayOfWeek == DayOfWeek.Sunday || value.DayOfWeek == DayOfWeek.Saturday;
+        public static bool IsWeekend(this DateTime @this) => @this.DayOfWeek == DayOfWeek.Sunday || @this.DayOfWeek == DayOfWeek.Saturday;
 
-        public static DateTime AddWorkingDays(this DateTime date, int days, bool considerEnglishBankHolidays = true)
+        public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true)
         {
-            if (days == 0) return date;
+            if (days == 0) return @this;
 
-            var result = date;
+            var result = @this;
 
             if (days > 0)
-                for (int day = 0; day < days; day++)
+                for (var day = 0; day < days; day++)
                     result = result.NextWorkingDay(considerEnglishBankHolidays);
             else
-                for (int day = 0; day < -days; day++)
+                for (var day = 0; day < -days; day++)
                     result = result.PreviousWorkingDay(considerEnglishBankHolidays);
 
             return result;
         }
 
-        public static string ToTimeDifferenceString(this DateTime? date, int precisionParts = 2, bool longForm = true)
+        public static string ToTimeDifferenceString(this DateTime? @this, int precisionParts = 2, bool longForm = true)
         {
-            if (date == null) return null;
-            return ToTimeDifferenceString(date.Value, precisionParts, longForm);
+            if (@this == null) return null;
+            return ToTimeDifferenceString(@this.Value, precisionParts, longForm);
         }
 
-        public static string ToTimeDifferenceString(this DateTime date) => ToTimeDifferenceString(date, longForm: true);
+        public static string ToTimeDifferenceString(this DateTime @this) => ToTimeDifferenceString(@this, longForm: true);
 
-        public static string ToTimeDifferenceString(this DateTime date, bool longForm) => ToTimeDifferenceString(date, 2, longForm);
+        public static string ToTimeDifferenceString(this DateTime @this, bool longForm) => ToTimeDifferenceString(@this, 2, longForm);
 
-        public static string ToTimeDifferenceString(this DateTime date, int precisionParts) => ToTimeDifferenceString(date, precisionParts, longForm: true);
+        public static string ToTimeDifferenceString(this DateTime @this, int precisionParts) => ToTimeDifferenceString(@this, precisionParts, longForm: true);
 
-        public static string ToTimeDifferenceString(this DateTime date, int precisionParts, bool longForm)
+        public static string ToTimeDifferenceString(this DateTime @this, int precisionParts, bool longForm)
         {
             var now = LocalTime.Now;
 
-            if (now == date)
+            if (now == @this)
             {
                 if (longForm) return "Just now";
                 else return "Now";
             }
 
-            if (now > date)
-                return now.Subtract(date).ToNaturalTime(precisionParts, longForm) + " ago";
+            if (now > @this)
+                return now.Subtract(@this).ToNaturalTime(precisionParts, longForm) + " ago";
             else
-                return date.Subtract(now).ToNaturalTime(precisionParts, longForm) + " later";
+                return @this.Subtract(now).ToNaturalTime(precisionParts, longForm) + " later";
         }
 
-        public static string ToString(this DateTime? value, string format) => ($"{{0:{format}}}").FormatWith(value);
+        public static string ToString(this DateTime? @this, string format) => ($"{{0:{format}}}").FormatWith(@this);
 
         /// <summary>
         /// Gets the next working day.
         /// </summary>
-        public static DateTime NextWorkingDay(this DateTime date, bool considerEnglishHolidays = true)
+        public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays = true)
         {
-            var result = date.AddDays(1);
+            var result = @this.AddDays(1);
 
             if (considerEnglishHolidays)
                 while (result.IsEnglishHoliday())
@@ -562,13 +562,13 @@ new DateTime(2099,04,13)};
         /// Gets the days between this day and the specified other day.
         /// It will remove TIME information. 
         /// </summary>
-        public static IEnumerable<DateTime> GetDaysInBetween(this DateTime day, DateTime other, bool inclusive = false)
+        public static IEnumerable<DateTime> GetDaysInBetween(this DateTime @this, DateTime other, bool inclusive = false)
         {
-            day = day.Date;
+            @this = @this.Date;
             other = other.Date;
 
-            var from = day <= other ? day : other;
-            var to = day > other ? day : other;
+            var from = @this <= other ? @this : other;
+            var to = @this > other ? @this : other;
 
             var count = (int)to.Subtract(from).TotalDays;
 
@@ -581,16 +581,16 @@ new DateTime(2099,04,13)};
 
             var result = numbers.Select(i => from.AddDays(i));
 
-            if (day > other) return result.Reverse();
+            if (@this > other) return result.Reverse();
             else return result;
         }
 
         /// <summary>
         /// Gets the previous working day.
         /// </summary>
-        public static DateTime PreviousWorkingDay(this DateTime date, bool considerEnglishHolidays = true)
+        public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays = true)
         {
-            var result = date.AddDays(-1);
+            var result = @this.AddDays(-1);
 
             if (considerEnglishHolidays)
                 while (result.IsEnglishHoliday())
@@ -602,39 +602,39 @@ new DateTime(2099,04,13)};
             return result;
         }
 
-        public static string ToFriendlyDateString(this DateTime date)
+        public static string ToFriendlyDateString(this DateTime @this)
         {
             string formattedDate;
-            if (date.Date == DateTime.Today)
+            if (@this.Date == LocalTime.Today)
                 formattedDate = "Today";
 
-            else if (date.Date == DateTime.Today.AddDays(-1))
+            else if (@this.Date == LocalTime.Today.AddDays(-1))
                 formattedDate = "Yesterday";
 
-            else if (date.Date > DateTime.Today.AddDays(MINUS_SIX))
+            else if (@this.Date > LocalTime.Today.AddDays(MINUS_SIX))
                 // *** Show the Day of the week
-                formattedDate = date.ToString("dddd");
+                formattedDate = @this.ToString("dddd");
 
             else
-                formattedDate = date.ToString("MMMM dd, yyyy");
+                formattedDate = @this.ToString("MMMM dd, yyyy");
 
             // append the time portion to the output
-            formattedDate += " @ " + date.ToString("t").ToLower();
+            formattedDate += " @ " + @this.ToString("t").ToLower();
             return formattedDate;
         }
 
         /// <summary>
         /// Determines whether this date is between two sepcified dates.
         /// </summary>
-        public static bool IsBetween(this DateTime date, DateTime from, DateTime to, bool includingEdges = true)
+        public static bool IsBetween(this DateTime @this, DateTime from, DateTime to, bool includingEdges = true)
         {
             if (from > to)
                 throw new ArgumentException("\"From\" date should be smaller than or equal to \"To\" date.");
 
-            if (date < from || date > to) return false;
+            if (@this < from || @this > to) return false;
 
             if (!includingEdges)
-                if (date == from || date == to) return false;
+                if (@this == from || @this == to) return false;
 
             return true;
         }
@@ -643,15 +643,15 @@ new DateTime(2099,04,13)};
         /// Calculates the total working times in the specified duration which are between the two specified day-hours.
         /// This can be used to calculate working hours in a particular duration.
         /// </summary>
-        public static TimeSpan CalculateTotalWorkingHours(this DateTime date, TimeSpan period, TimeSpan workingStartTime, TimeSpan workingEndTime, bool considerEnglishBankHolidays = true)
+        public static TimeSpan CalculateTotalWorkingHours(this DateTime @this, TimeSpan period, TimeSpan workingStartTime, TimeSpan workingEndTime, bool considerEnglishBankHolidays = true)
         {
             if (period < TimeSpan.Zero)
                 throw new ArgumentException("duration should be a positive time span.");
 
-            if (workingStartTime < TimeSpan.Zero || workingStartTime >= TimeSpan.FromHours(HOURS_IN_A_DAY))
+            if (workingStartTime < TimeSpan.Zero || workingStartTime >= HOURS_IN_A_DAY.Hours())
                 throw new ArgumentException("fromTime should be greater than or equal to 0, and smaller than 24.");
 
-            if (workingEndTime <= TimeSpan.Zero || workingEndTime > TimeSpan.FromHours(HOURS_IN_A_DAY))
+            if (workingEndTime <= TimeSpan.Zero || workingEndTime > HOURS_IN_A_DAY.Hours())
                 throw new ArgumentException("toTime should be greater than 0, and smaller than or equal to 24.");
 
             var result = TimeSpan.Zero;
@@ -670,18 +670,18 @@ new DateTime(2099,04,13)};
             }
 
             // For each working day in the range, calculate relevant times
-            for (var day = date.Date; day < date.Add(period); day = day.AddWorkingDays(1, considerEnglishBankHolidays))
+            for (var day = @this.Date; day < @this.Add(period); day = day.AddWorkingDays(1, considerEnglishBankHolidays))
             {
                 foreach (var range in workingTimesInday)
                 {
                     var from = day.Add(range.Key);
 
-                    if (from < date) from = date;
+                    if (from < @this) from = @this;
 
                     var to = day.Add(range.Value);
-                    if (to < date) continue;
+                    if (to < @this) continue;
 
-                    if (to > date.Add(period)) to = date.Add(period);
+                    if (to > @this.Add(period)) to = @this.Add(period);
 
                     var amount = to - from;
 
@@ -697,14 +697,14 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Returns the Date of the beginning of Quarter for this DateTime value (time will be 00:00:00).
         /// </summary>
-        public static DateTime GetBeginningOfQuarter(this DateTime date)
+        public static DateTime GetBeginningOfQuarter(this DateTime @this)
         {
             var startMonths = new[] { 1, 4, 7, 10 };
 
-            for (int i = startMonths.Length - 1; i >= 0; i--)
+            for (var i = startMonths.Length - 1; i >= 0; i--)
             {
-                var beginningOfQuarter = new DateTime(date.Year, startMonths[i], 1);
-                if (date >= beginningOfQuarter)
+                var beginningOfQuarter = new DateTime(@this.Year, startMonths[i], 1);
+                if (@this >= beginningOfQuarter)
                     return beginningOfQuarter;
             }
 
@@ -714,78 +714,78 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Returns the Date of the end of Quarter for this DateTime value (time will be 11:59:59).
         /// </summary>
-        public static DateTime GetEndOfQuarter(this DateTime date) =>
-            date.GetBeginningOfQuarter().AddMonths(4).GetBeginningOfQuarter().AddTicks(-1);
+        public static DateTime GetEndOfQuarter(this DateTime @this) =>
+            @this.GetBeginningOfQuarter().AddMonths(4).GetBeginningOfQuarter().AddTicks(-1);
 
         /// <summary>
         /// Returns the Date of the end of Quarter for this DateTime value (time will be 11:59:59).
         /// </summary>
         public static DateTime GetEndOfMonth(this DateTime date) => date.GetBeginningOfMonth().AddMonths(1).AddTicks(-1);
 
-        public static bool IsLastDayOfMonth(this DateTime date) => date.Date == date.GetEndOfMonth().Date;
+        public static bool IsLastDayOfMonth(this DateTime @this) => @this.Date == @this.GetEndOfMonth().Date;
 
         /// <summary>
         /// Gets the last date with the specified month and day.
         /// </summary>
-        public static DateTime GetLast(this DateTime date, CalendarMonth month, int day)
+        public static DateTime GetLast(this DateTime @this, CalendarMonth month, int day)
         {
-            date = date.Date; // cut time
+            @this = @this.Date; // cut time
 
-            var thisYear = new DateTime(date.Year, (int)month, day);
+            var thisYear = new DateTime(@this.Year, (int)month, day);
 
-            if (date >= thisYear) return thisYear;
-            else return new DateTime(date.Year - 1, (int)month, day);
+            if (@this >= thisYear) return thisYear;
+            else return new DateTime(@this.Year - 1, (int)month, day);
         }
 
         /// <summary>
         /// Gets the last date with the specified month and day.
         /// </summary>
-        public static DateTime GetNext(this DateTime date, CalendarMonth month, int day)
+        public static DateTime GetNext(this DateTime @this, CalendarMonth month, int day)
         {
-            date = date.Date; // cut time
+            @this = @this.Date; // cut time
 
-            var thisYear = new DateTime(date.Year, (int)month, day);
+            var thisYear = new DateTime(@this.Year, (int)month, day);
 
-            if (date >= thisYear) return new DateTime(date.Year + 1, (int)month, day);
+            if (@this >= thisYear) return new DateTime(@this.Year + 1, (int)month, day);
             else return thisYear;
         }
 
         /// <summary>
         /// Returns the Date of the end of Quarter for this DateTime value (time will be 11:59:59).
         /// </summary>
-        public static DateTime GetEndOfYear(this DateTime date) => new DateTime(date.Year + 1, 1, 1).AddTicks(-1);
+        public static DateTime GetEndOfYear(this DateTime @this) => new DateTime(@this.Year + 1, 1, 1).AddTicks(-1);
 
         /// <summary>
         /// Gets the minimum value between this date and a specified other date.
         /// </summary>
-        public static DateTime Min(this DateTime date, DateTime other)
+        public static DateTime Min(this DateTime @this, DateTime other)
         {
-            if (other < date) return other;
-            else return date;
+            if (other < @this) return other;
+            else return @this;
         }
 
         /// <summary>
         /// Gets the maximum value between this date and a specified other date.
         /// </summary>
-        public static DateTime Max(this DateTime date, DateTime other)
+        public static DateTime Max(this DateTime @this, DateTime other)
         {
-            if (other > date) return other;
-            else return date;
+            if (other > @this) return other;
+            else return @this;
         }
 
         /// <summary>
         /// Adds the specified number of weeks and returns the result.
         /// </summary>
-        public static DateTime AddWeeks(this DateTime date, int numberofWeeks) => date.AddDays(WEEK_DAYS_COUNT * numberofWeeks);
+        public static DateTime AddWeeks(this DateTime @this, int numberofWeeks) => @this.AddDays(WEEK_DAYS_COUNT * numberofWeeks);
 
         /// <summary>
         /// Gets the latest date with the specified day of week and time that is before (or same as) this date.
         /// </summary>
-        public static DateTime GetLast(this DateTime date, DayOfWeek day, TimeSpan timeOfDay)
+        public static DateTime GetLast(this DateTime @this, DayOfWeek day, TimeSpan timeOfDay)
         {
-            var result = date.GetLast(day).Add(timeOfDay);
+            var result = @this.GetLast(day).Add(timeOfDay);
 
-            if (result > date) return result.AddWeeks(-1);
+            if (result > @this) return result.AddWeeks(-1);
             else return result;
         }
 
@@ -793,33 +793,33 @@ new DateTime(2099,04,13)};
         /// Returns the local time equivalent of this UTC date value based on the TimeZone specified in Localtime.TimeZoneProvider.
         /// Use this instead of ToLocalTime() so you get control over the TimeZone.
         /// </summary>
-        public static DateTime? ToLocal(this DateTime? utcValue) => utcValue?.ToLocal();
+        public static DateTime? ToLocal(this DateTime? @this) => @this?.ToLocal();
 
         /// <summary>
         /// Returns the local time equivalent of this UTC date value based on the TimeZone specified in Localtime.CurrentTimeZone().
         /// Use this instead of ToLocalTime() so you get control over the TimeZone.
         /// </summary>
-        public static DateTime ToLocal(this DateTime utcValue) => utcValue.ToLocal(LocalTime.CurrentTimeZone());
+        public static DateTime ToLocal(this DateTime @this) => @this.ToLocal(LocalTime.CurrentTimeZone());
 
-        public static DateTime ToLocal(this DateTime utcValue, TimeZoneInfo timeZone) =>
-            new DateTime(utcValue.Ticks, DateTimeKind.Local).Add(timeZone.GetUtcOffset(utcValue));
-
-        /// <summary>
-        /// Returns the equivalent Universal Time (UTC) of this local date value.
-        /// </summary>
-        public static DateTime? ToUniversal(this DateTime? localValue) => localValue?.ToUniversal();
+        public static DateTime ToLocal(this DateTime @this, TimeZoneInfo timeZone) =>
+            new DateTime(@this.Ticks, DateTimeKind.Local).Add(timeZone.GetUtcOffset(@this));
 
         /// <summary>
         /// Returns the equivalent Universal Time (UTC) of this local date value.
         /// </summary>
-        public static DateTime ToUniversal(this DateTime localValue) =>
-            localValue.ToUniversal(sourceTimezone: LocalTime.CurrentTimeZone());
+        public static DateTime? ToUniversal(this DateTime? @this) => @this?.ToUniversal();
 
         /// <summary>
         /// Returns the equivalent Universal Time (UTC) of this local date value.
         /// </summary>
-        public static DateTime ToUniversal(this DateTime localValue, TimeZoneInfo sourceTimezone) =>
-            new DateTime(localValue.Ticks, DateTimeKind.Utc).Subtract(sourceTimezone.BaseUtcOffset);
+        public static DateTime ToUniversal(this DateTime @this) =>
+            @this.ToUniversal(sourceTimezone: LocalTime.CurrentTimeZone());
+
+        /// <summary>
+        /// Returns the equivalent Universal Time (UTC) of this local date value.
+        /// </summary>
+        public static DateTime ToUniversal(this DateTime @this, TimeZoneInfo sourceTimezone) =>
+            new DateTime(@this.Ticks, DateTimeKind.Utc).Subtract(sourceTimezone.BaseUtcOffset);
 
         /// <summary>
         ///  Rounds this up to the nearest whole second.
@@ -839,13 +839,13 @@ new DateTime(2099,04,13)};
         /// <summary>
         ///  Rounds this up to the nearest interval (e.g. second, minute, hour, etc).
         /// </summary>
-        public static DateTime Round(this DateTime dateTime, TimeSpan nearest)
+        public static DateTime Round(this DateTime @this, TimeSpan nearest)
         {
-            if (nearest == TimeSpan.Zero) return dateTime;
+            if (nearest == TimeSpan.Zero) return @this;
 
-            var remainder = dateTime.Ticks % nearest.Ticks;
+            var remainder = @this.Ticks % nearest.Ticks;
 
-            var result = dateTime.AddTicks(-remainder);
+            var result = @this.AddTicks(-remainder);
 
             if (remainder >= nearest.Ticks / 2) result = result.Add(nearest);
 
@@ -863,8 +863,8 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the total number of seconds elapsed since 1st Jan 1970.
         /// </summary>
-        public static long ToUnixTime(this DateTime dateTime)
-            => (int)(dateTime.ToUniversalTime().Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        public static long ToUnixTime(this DateTime @this)
+            => (int)(@this.ToUniversalTime().Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
     }
 
     public enum CalendarMonth

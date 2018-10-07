@@ -67,8 +67,8 @@ namespace Olive.Entities.Data
 
         #endregion
 
-        static IsolationLevel GetDefaultIsolationLevel() =>
-            Config.Get("Default.Transaction.IsolationLevel", IsolationLevel.ReadUncommitted);
+        internal static IsolationLevel GetDefaultIsolationLevel() =>
+             Config.Get("Default:Transaction:DefaultIsolationLevel", IsolationLevel.ReadUncommitted);
 
         internal async Task<DbTransaction> GetDbTransaction()
         {
@@ -88,7 +88,7 @@ namespace Olive.Entities.Data
         {
             if (Connections.LacksKey(connectionString))
             {
-                var access = Database.Instance.GetAccess(connectionString);
+                var access = Context.Current.Database().GetAccess(connectionString);
                 var connection = (DbConnection)await access.CreateConnection();
                 var transaction = connection.BeginTransaction(IsolationLevel);
 
@@ -104,19 +104,15 @@ namespace Olive.Entities.Data
             {
                 Root = null;
 
-                if (IsCompleted)
+                if (!IsCompleted)
                 {
-                    // Happy scenario:
-                    Connections.Do(x => x.Value.Item1.Close());
-                }
-                else // Root is not completed.
-                {
+                    // Root is not completed.
                     IsAborted = true;
-
                     Connections.Do(x => x.Value.Item2.Rollback());
                     Connections.Do(x => x.Value.Item2.Dispose());
-                    Connections.Do(x => x.Value.Item1.Close());
                 }
+
+                Connections.Do(x => x.Value.Item1.Close());
             }
             else
             {

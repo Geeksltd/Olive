@@ -10,7 +10,7 @@ namespace Olive
     {
         readonly List<T> List;
         readonly object Lock = new object();
-        bool IsVirgin = true; // For performance 
+        bool IsVirgin = true; // For performance  
         T FirstItem;
 
         public ConcurrentList() => List = new List<T>();

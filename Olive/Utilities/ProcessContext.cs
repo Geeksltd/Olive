@@ -13,7 +13,7 @@ namespace Olive
         /// <summary>Gets or sets the Data of this ProcessContext.</summary>
         public T Data { get; }
 
-        /// <summary>
+        /// <summary> 
         /// Creates a new Process Context.
         /// </summary>
         public ProcessContext(T data) : this(null, data) { }

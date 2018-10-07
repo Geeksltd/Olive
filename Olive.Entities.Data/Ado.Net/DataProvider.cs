@@ -15,9 +15,17 @@ namespace Olive.Entities.Data
         where TConnection : DbConnection, new()
         where TDataParameter : IDbDataParameter, new()
     {
+        string connectionString, connectionStringKey = "Default";
+        readonly static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
+
         public IDataAccess Access { get; } = new DataAccess<TConnection>();
 
-        protected DataProvider() => connectionStringKey = GetDefaultConnectionStringKey();
+        public static IDatabase Database => Context.Current.Database();
+        protected ICache Cache;
+        protected DataProvider(ICache cache)
+        {
+            Cache = cache;
+        }
 
         public abstract string MapColumn(string propertyName);
 
@@ -26,22 +34,16 @@ namespace Olive.Entities.Data
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }
 
-        static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
-
-        string connectionStringKey, connectionString;
-
-        static string GetDefaultConnectionStringKey() => "AppDatabase";
-
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
+                await Database.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task BulkUpdate(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
-                await Database.Instance.Save(item, SaveBehaviour.BypassAll);
+                await Database.Save(item, SaveBehaviour.BypassAll);
         }
 
         public async Task<int> Count(IDatabaseQuery query)
@@ -101,7 +103,14 @@ namespace Olive.Entities.Data
             var type = original.GetType();
             var propertyNames = type.GetProperties().Distinct().Select(p => p.Name.Trim()).ToArray();
 
-            Func<string, PropertyInfo> getProperty = name => type.GetProperties().Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic).Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic).OrderByDescending(x => x.DeclaringType == type).FirstOrDefault(p => p.Name == name);
+            PropertyInfo getProperty(string name)
+            {
+                return type.GetProperties()
+                    .Except(p => p.IsSpecialName || p.GetGetMethod().IsStatic)
+                    .Where(p => p.GetSetMethod() != null && p.GetGetMethod().IsPublic)
+                    .OrderByDescending(x => x.DeclaringType == type)
+                    .FirstOrDefault(p => p.Name == name);
+            }
 
             var dataProperties = propertyNames.Select(getProperty).ExceptNull()
                 .Except(x => CalculatedAttribute.IsCalculated(x))
@@ -123,6 +132,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed.
                         continue;
                     }
                 }
@@ -136,6 +146,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed.
                         continue;
                     }
                 }
@@ -149,6 +160,7 @@ namespace Olive.Entities.Data
                     }
                     catch
                     {
+                        // No logging is needed
                         continue;
                     }
                 }
@@ -244,12 +256,6 @@ namespace Olive.Entities.Data
             return ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters));
         }
 
-        /// <summary>
-        /// Returns a direct database criterion used to eager load associated objects.
-        /// Gets the list of specified records.
-        /// </summary>        
-        public abstract DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery query, PropertyInfo association);
-
         #region Connection String
 
         /// <summary>
@@ -299,7 +305,12 @@ namespace Olive.Entities.Data
 
         public abstract IEntity Parse(IDataReader reader);
 
-        public abstract string GenerateSelectCommand(IDatabaseQuery iquery);
+        public virtual string GenerateSelectCommand(IDatabaseQuery iquery)
+        {
+            return GenerateSelectCommand(iquery, GetFields());
+        }
+
+        public abstract string GenerateSelectCommand(IDatabaseQuery iquery, string fields);
 
         public async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
         {
@@ -342,7 +353,7 @@ namespace Olive.Entities.Data
 
         public abstract string GenerateWhere(DatabaseQuery query);
 
-        public string GenerateSort(DatabaseQuery query)
+        public virtual string GenerateSort(DatabaseQuery query)
         {
             var parts = new List<string>();
 
@@ -354,6 +365,38 @@ namespace Olive.Entities.Data
 
             return parts.ToString(", ") + offset;
         }
+
         #endregion
+
+        /// <summary>
+        /// Returns a direct database criterion used to eager load associated objects.
+        /// Gets the list of specified records.
+        /// </summary>        
+        public virtual DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association)
+        {
+            var whereClause = GenerateAssociationLoadingCriteria((DatabaseQuery)masterQuery, association);
+
+            return new DirectDatabaseCriterion(whereClause)
+            {
+                Parameters = masterQuery.Parameters
+            };
+        }
+
+        string GenerateAssociationLoadingCriteria(DatabaseQuery masterQuery, PropertyInfo association)
+        {
+            if (masterQuery.PageSize.HasValue && masterQuery.OrderByParts.None())
+                throw new ArgumentException("PageSize cannot be used without OrderBy.");
+
+            var masterProvider = masterQuery.Provider as DataProvider<TConnection, TDataParameter>;
+
+            var uniqueItems = masterProvider.GenerateSelectCommand(masterQuery, masterQuery.Column(association.Name));
+
+            return GenerateAssociationLoadingCriteria(MapColumn("ID"), uniqueItems, association);
+        }
+
+        protected virtual string GenerateAssociationLoadingCriteria(string id, string uniqueItems, PropertyInfo association)
+        {
+            return $"{id} IN ({uniqueItems})";
+        }
     }
 }

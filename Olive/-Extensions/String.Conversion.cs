@@ -20,16 +20,17 @@ namespace Olive
         /// Tries to parse this text to the specified type.
         /// Returns null if parsing is not possible.
         /// </summary>
+        [EscapeGCop("It is ok for trying methods to have out param.")]
         public static T? TryParseAs<T>(this string text) where T : struct
         {
             if (text.IsEmpty()) return default(T?);
 
             // Check common types first, for performance:
-            if (TryParseToCommonTypes<T>(text, out T? result))
+            if (TryParseToCommonTypes<T>(text, out var result))
                 return result;
 
             foreach (var parser in TryParseProviders)
-                if (parser(text, typeof(T), out object result2))
+                if (parser(text, typeof(T), out var result2))
                     return (T)result2;
 
             try { return (T)Convert.ChangeType(text, typeof(T)); }
@@ -47,56 +48,56 @@ namespace Olive
 
             if (typeof(T) == typeof(int))
             {
-                if (int.TryParse(text, out int tempResult)) result = (T)(object)tempResult;
+                if (int.TryParse(text, out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
 
             if (typeof(T) == typeof(double))
             {
-                if (double.TryParse(text, out double tempResult)) result = (T)(object)tempResult;
+                if (double.TryParse(text, out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
 
             if (typeof(T) == typeof(decimal))
             {
-                if (decimal.TryParse(text, out decimal tempResult)) result = (T)(object)tempResult;
+                if (decimal.TryParse(text, out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
 
             if (typeof(T) == typeof(bool))
             {
-                if (bool.TryParse(text, out bool tempResult)) result = (T)(object)tempResult;
+                if (bool.TryParse(text, out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
 
             if (typeof(T) == typeof(DateTime))
             {
-                if (DateTime.TryParse(text, out DateTime tempResult)) result = (T)(object)tempResult;
+                if (DateTime.TryParse(text, out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
 
             if (typeof(T) == typeof(TimeSpan))
             {
-                if (TimeSpan.TryParse(text, out TimeSpan tempResult)) result = (T)(object)tempResult;
+                if (TimeSpan.TryParse(text, out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
 
             if (typeof(T) == typeof(Guid))
             {
-                if (Guid.TryParse(text, out Guid tempResult)) result = (T)(object)tempResult;
+                if (Guid.TryParse(text, out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
 
             if (typeof(T).IsEnum)
             {
-                if (Enum.TryParse<T>(text, ignoreCase: true, result: out T tempResult)) result = (T)(object)tempResult;
+                if (Enum.TryParse<T>(text, ignoreCase: true, result: out var tempResult)) result = (T)(object)tempResult;
 
                 return true;
             }
@@ -136,6 +137,7 @@ namespace Olive
             }
         }
 
+        [EscapeGCop("I AM the solutino to this GCop rule.")]
         static object ChangeType(string text, Type targetType)
         {
             if (targetType == typeof(string)) return text;
@@ -143,7 +145,7 @@ namespace Olive
             if (text.IsEmpty()) return targetType.GetDefaultValue();
 
             // Check common types first, for performance:
-            if (TryParseToCommonTypes(text, targetType, out object result))
+            if (TryParseToCommonTypes(text, targetType, out var result))
                 return result;
 
             if (targetType.IsEnum) return Enum.Parse(targetType, text);
@@ -155,7 +157,7 @@ namespace Olive
             if (targetType == typeof(ShortGuid)) return ShortGuid.Parse(text);
 
             foreach (var parser in TryParseProviders)
-                if (parser(text, targetType, out object result2))
+                if (parser(text, targetType, out var result2))
                     return result2;
 
             return Convert.ChangeType(text, targetType);

@@ -104,7 +104,7 @@ namespace Olive
                     continue; // Already added in explicit mappings.
 
                 // Otherwise, if a column with that name is available, then that's it:
-                var potential = columnNames.Where(c => c.Replace(" ", "").ToLower() == property.Name.ToLower());
+                var potential = columnNames.Where(c => c.Remove(" ").ToLower() == property.Name.ToLower());
                 if (potential.IsSingle())
                     result[property.Name] = potential.Single();
 
@@ -163,7 +163,7 @@ namespace Olive
         public static string ToCSV(this DataTable table)
         {
             var result = new StringBuilder();
-            for (int i = 0; i < table.Columns.Count; i++)
+            for (var i = 0; i < table.Columns.Count; i++)
             {
                 result.Append(table.Columns[i].ColumnName);
                 result.Append(i == table.Columns.Count - 1 ? "\n" : ",");
@@ -171,7 +171,7 @@ namespace Olive
 
             foreach (DataRow row in table.Rows)
             {
-                for (int i = 0; i < table.Columns.Count; i++)
+                for (var i = 0; i < table.Columns.Count; i++)
                 {
                     result.Append(row[i].ToString());
                     result.Append(i == table.Columns.Count - 1 ? "\n" : ",");

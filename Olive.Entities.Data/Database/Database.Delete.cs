@@ -20,19 +20,18 @@ namespace Olive.Entities.Data
             if (!IsSet(behaviour, DeleteBehaviour.BypassDeleting))
             {
                 var deletingArgs = new System.ComponentModel.CancelEventArgs();
-                await EntityManager.RaiseOnDeleting(entity, deletingArgs);
+                await Entity.Services.RaiseOnDeleting(entity, deletingArgs);
 
                 if (deletingArgs.Cancel)
                 {
-                    Cache.Current.Remove(entity);
+                    Cache.Remove(entity);
                     return;
                 }
             }
 
             if (SoftDeleteAttribute.IsEnabled(entity.GetType()) && !SoftDeleteAttribute.Context.ShouldByPassSoftDelete())
             {
-                // Soft delete:
-                EntityManager.MarkSoftDeleted(entity);
+                SoftDeleteAttribute.MarkDeleted(entity);
                 await GetProvider(entity).Save(entity);
             }
             else
@@ -56,20 +55,19 @@ namespace Olive.Entities.Data
 
             await EnlistOrCreateTransaction(async () => await DoDelete(entity, behaviour));
 
-            Cache.Current.Remove(entity);
+            Cache.Remove(entity);
             if (Transaction.Current != null)
-                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Current.Remove(entity); };
+                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Remove(entity); };
 
-            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
+            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Remove(entity));
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassLogging))
-                if (!(entity is IApplicationEvent) && Config.Get("Log.Record:Application:Events", defaultValue: true))
-                    await ApplicationEventManager.RecordDelete(entity);
+                await Audit.Audit.LogDelete(entity);
 
             await OnUpdated(entity);
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassDeleted))
-                await EntityManager.RaiseOnDeleted(entity);
+                await Entity.Services.RaiseOnDeleted(entity);
         }
 
         /// <summary>
@@ -85,7 +83,7 @@ namespace Olive.Entities.Data
 
             await EnlistOrCreateTransaction(async () =>
             {
-                foreach (T obj in instances.ToArray()) await Delete(obj);
+                foreach (var obj in instances.ToArray()) await Delete(obj);
             });
         }
 

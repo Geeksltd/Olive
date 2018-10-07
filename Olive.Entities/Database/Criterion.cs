@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,16 +10,15 @@ namespace Olive.Entities
     /// <summary>
     /// A basic implementation of a database query criterion.
     /// </summary>
-    public class Criterion : ICriterion
+    public partial class Criterion : ICriterion
     {
         const string NULL_ESCAPE = "[#-NULL-VALUE-#]", COLON_ESCAPE = "[#-SEPERATOR-#]";
 
-        static readonly MethodInfo StringContainsMethod = typeof(string).GetMethod("Contains");
+        static readonly MethodInfo StringContainsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
         static readonly MethodInfo StringContainsExtensionMethod = typeof(OliveExtensions).GetMethod("Contains", new[] { typeof(string), typeof(string), typeof(bool) });
         static readonly MethodInfo StringLacksExtensionMethod = typeof(OliveExtensions).GetMethod("Lacks", new[] { typeof(string), typeof(string), typeof(bool) });
         static readonly MethodInfo StringIsEmptyExtensionMethod = typeof(OliveExtensions).GetMethod("IsEmpty", new[] { typeof(string) });
         static readonly MethodInfo StringHasValueExtensionMethod = typeof(OliveExtensions).GetMethod("HasValue", new[] { typeof(string) });
-        static readonly MethodInfo IsAnyOfExtensionMethod = typeof(OliveExtensions).GetMethod("IsAnyOf", new[] { typeof(string), typeof(string[]) });
         static readonly MethodInfo StringStartsWithMethod = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
         static readonly MethodInfo StringEndsWithMethod = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
 
@@ -106,6 +106,10 @@ namespace Olive.Entities
             {
                 return (Value as IEntity).GetId().ToString();
             }
+            else if (Value is IEnumerable asEnum && !(Value is string))
+            {
+                return asEnum.ToString("|");
+            }
             else
             {
                 return Value?.ToStringOrEmpty();
@@ -141,148 +145,6 @@ namespace Olive.Entities
         }
 
         object ICriterion.Value => (Value as IEntity)?.GetId() ?? Value;
-
-        public static Criterion FromSql(string sqlCondition)
-        {
-            return new DirectDatabaseCriterion(sqlCondition);
-        }
-
-        public static Criterion From<T>(Expression<Func<T, bool>> criterion) where T : IEntity
-        {
-            if (criterion == null)
-                throw new ArgumentNullException(nameof(criterion));
-
-            var methodCallExpression = criterion.Body as MethodCallExpression;
-            if (methodCallExpression != null) return From(methodCallExpression);
-
-            var binaryExpression = criterion.Body as BinaryExpression;
-            if (binaryExpression != null) return From(binaryExpression);
-
-            return CriteriaExtractor<T>.CreateCriterion(criterion.Body);
-        }
-
-        public static Criterion From(MethodCallExpression expression, bool throwOnError = true)
-        {
-            Expression valueExpression = null;
-            MemberExpression propertyExpression;
-            FilterFunction filter;
-            string sql = null;
-
-            if (expression.Method == StringContainsMethod)
-            {
-                propertyExpression = expression.Object as MemberExpression;
-                valueExpression = expression.Arguments[0];
-                filter = FilterFunction.Contains;
-            }
-            else if (expression.Method == StringContainsExtensionMethod)
-            {
-                propertyExpression = expression.Arguments[0] as MemberExpression;
-                valueExpression = expression.Arguments[1];
-                filter = FilterFunction.Contains;
-            }
-            else if (expression.Method == StringIsEmptyExtensionMethod)
-            {
-                propertyExpression = expression.Arguments[0] as MemberExpression;
-
-                sql = "(${{#PROPERTY#}} IS NULL OR ${{#PROPERTY#}} = '')";
-                filter = default(FilterFunction);
-            }
-            else if (expression.Method == StringHasValueExtensionMethod)
-            {
-                propertyExpression = expression.Arguments[0] as MemberExpression;
-
-                sql = "(${{#PROPERTY#}} IS NOT NULL AND ${{#PROPERTY#}} <> '')";
-                filter = default(FilterFunction);
-            }
-            else if (expression.Method == StringLacksExtensionMethod)
-            {
-                propertyExpression = expression.Arguments[0] as MemberExpression;
-                valueExpression = expression.Arguments[1];
-                filter = FilterFunction.NotContains;
-            }
-            else if (expression.Method == StringStartsWithMethod)
-            {
-                propertyExpression = expression.Object as MemberExpression;
-                valueExpression = expression.Arguments[0];
-                filter = FilterFunction.BeginsWith;
-            }
-            else if (expression.Method == StringEndsWithMethod)
-            {
-                propertyExpression = expression.Object as MemberExpression;
-                valueExpression = expression.Arguments[0];
-                filter = FilterFunction.EndsWith;
-            }
-            else if (expression.Method == IsAnyOfExtensionMethod)
-            {
-                propertyExpression = expression.Arguments.First() as MemberExpression;
-                valueExpression = expression.Arguments[1];
-                filter = FilterFunction.In;
-            }
-            else
-            {
-                if (!throwOnError) return null;
-
-                throw new ArgumentException("Invalid database criteria. The provided filter expression cannot be evaluated and converted into a SQL condition.");
-            }
-
-            if (propertyExpression == null || !(propertyExpression.Member is PropertyInfo))
-            {
-                if (!throwOnError) return null;
-
-                throw new ArgumentException("Invalid database criteria. The provided filter expression cannot be evaluated and converted into a SQL condition." + expression.ToString() +
-                    Environment.NewLine + Environment.NewLine + "Consider using application level filter using the \".Where(...)\" clause.");
-            }
-
-            var property = propertyExpression.Member.Name;
-
-            // Middle properties?
-            while (propertyExpression.Expression is MemberExpression)
-            {
-                propertyExpression = (propertyExpression.Expression as MemberExpression);
-                property = propertyExpression.Member.Name + "." + property;
-            }
-
-            if (sql.HasValue())
-            {
-                if (property.Contains(".")) return null; // Nesting is not supported.
-
-                return new DirectDatabaseCriterion(sql.Replace("#PROPERTY#", property)) { PropertyName = property };
-            }
-            else
-            {
-                var value = Expression.Lambda(valueExpression).Compile().DynamicInvoke();
-                if (valueExpression.NodeType == ExpressionType.NewArrayInit)
-                    value = $"({(value as string[]).Select(part => $"'{part}'").ToString(",")})";
-
-                return new Criterion(property, filter, value);
-            }
-        }
-
-        static Criterion From(BinaryExpression expression)
-        {
-            var propertyExpression = expression.Left as MemberExpression;
-
-            if (propertyExpression == null && expression.Left is UnaryExpression)
-            {
-                propertyExpression = (expression.Left as UnaryExpression).Operand as MemberExpression;
-            }
-
-            if (propertyExpression == null || !(propertyExpression.Member is PropertyInfo))
-                throw new ArgumentException("Invalid use of Property comparison in condition expression: " + expression.ToString());
-
-            var value = Expression.Lambda(expression.Right).Compile().DynamicInvoke();
-
-            var property = propertyExpression.Member.Name;
-
-            // Middle properties?
-            while (propertyExpression.Expression is MemberExpression)
-            {
-                propertyExpression = (propertyExpression.Expression as MemberExpression);
-                property = propertyExpression.Member.Name + "." + property;
-            }
-
-            return new Criterion(property, GetFilterFunction(expression.NodeType), value);
-        }
 
         /// <summary>
         /// Gets the filter option for a specified Lambda expression node type.

@@ -17,15 +17,33 @@ namespace Olive
         }
 
         /// <summary>
+        /// Determines whether this is in the 400 range.
+        /// </summary>
+        public static bool ContainsUserMessage(this HttpStatusCode @this)
+        {
+            var code = (int)@this;
+
+            return code >= (int)HttpStatusCode.BadRequest &&
+                            code < (int)HttpStatusCode.InternalServerError;
+        }
+
+        /// <summary>
+        /// Determines whether this is in the 400 or 500 ranges.
+        /// </summary>
+        public static bool IsError(this HttpStatusCode @this)
+        {
+            var code = (int)@this;
+            return code >= (int)HttpStatusCode.BadRequest;
+        }
+
+        /// <summary>
         /// Gets the response data as string.
         /// </summary>
         public static async Task<string> GetString(this WebResponse response)
         {
             using (var stream = response.GetResponseStream())
-            {
-                using (var reader = new StreamReader(stream))
-                    return await reader.ReadToEndAsync();
-            }
+            using (var reader = new StreamReader(stream))
+                return await reader.ReadToEndAsync();
         }
 
         /// <summary>

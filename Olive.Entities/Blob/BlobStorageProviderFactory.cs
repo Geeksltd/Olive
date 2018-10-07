@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
+    using System.Collections.Generic;
+
     public class BlobStorageProviderFactory
     {
-        public static IBlobStorageProvider DefaultProvider = new DiskBlobStorageProvider();
+        static IBlobStorageProvider DefaultProvider
+          => Context.Current.GetOptionalService<IBlobStorageProvider>() ?? new DiskBlobStorageProvider();
 
         /// <summary>
         /// This is to be configured in Global.asax if a different provider is needed for specific files.
@@ -18,7 +19,6 @@ namespace Olive.Entities
         internal static IBlobStorageProvider GetProvider(string folderName)
         {
             if (folderName.IsEmpty()) return DefaultProvider;
-
             return Providers.GetOrDefault(folderName) ?? DefaultProvider;
         }
     }

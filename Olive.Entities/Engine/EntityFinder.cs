@@ -30,7 +30,7 @@ namespace Olive.Entities
                  .Where(a => a.References(typeof(Entity).Assembly))
                  .SelectMany(a => a.GetExportedTypes())
                  .Where(t => t.Implements<IEntity>())
-                 .Where(t => !t.Name.StartsWith("App_Code"));
+                 .Except(t => t.Name.StartsWith("App_Code"));
         }
 
         public static IEnumerable<Type> SearchForPossibleTypes(Type baseType, bool mustFind)
@@ -42,7 +42,7 @@ namespace Olive.Entities
 
             else if (baseType.IsInterface)
                 result =
-                   Entity.Database.AssemblyProviderFactories.Except(f => f.Value.SupportsPolymorphism())
+                   Context.Current.Database().AssemblyProviderFactories.Except(f => f.Value.SupportsPolymorphism())
                    .Select(a => a.Key).Where(a => a.References(baseType.Assembly)).Concat(baseType.Assembly)
                    .SelectMany(a => a.GetExportedTypes())
                    .Where(t => t.Implements(baseType)).ToList();
@@ -59,8 +59,6 @@ namespace Olive.Entities
                 .Where(t => PersistentAttribute.IsTypePersistent(t))
                 // Leaf nodes first (most concrete):
                 .OrderByDescending(t => t.GetParentTypes().Count());
-
-            result = result.Except(new[] { typeof(IApplicationEvent) }).ToArray();
 
             if (result.None())
             {

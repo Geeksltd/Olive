@@ -9,11 +9,19 @@
 
     public abstract class PostgreSqlDataProvider<TTargetEntity> : PostgreSqlDataProvider where TTargetEntity : IEntity
     {
+        protected PostgreSqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override Type EntityType => typeof(TTargetEntity);
     }
 
     public abstract partial class PostgreSqlDataProvider : DataProvider<NpgsqlConnection, NpgsqlParameter>
     {
+        protected PostgreSqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
         {
             var value = data.Value;
@@ -29,7 +37,7 @@
             return result;
         }
 
-        public override string GenerateSelectCommand(IDatabaseQuery iquery)
+        public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields)
         {
             var query = (DatabaseQuery)iquery;
 
@@ -38,7 +46,7 @@
 
             var r = new StringBuilder("SELECT");
 
-            r.AppendLine($" {GetFields()} FROM {GetTables()}");
+            r.AppendLine($" {fields} FROM {GetTables()}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
             r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));

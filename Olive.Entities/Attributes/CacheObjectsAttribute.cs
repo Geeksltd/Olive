@@ -29,7 +29,7 @@ namespace Olive.Entities
         /// </summary>
         public static bool? IsEnabled(Type type)
         {
-            if (Cache.TryGetValue(type, out bool? result)) return result;
+            if (Cache.TryGetValue(type, out var result)) return result;
 
             return DetectAndCache(type);
         }
@@ -45,7 +45,11 @@ namespace Olive.Entities
                 if (usage != null) result = usage.Enabled;
 
                 try { return Cache[type] = result; }
-                catch { return result; }
+                catch
+                {
+                    // No logging is needed
+                    return result;
+                }
             }
         }
     }

@@ -14,7 +14,7 @@
     public partial class DatabaseQuery : IDatabaseQuery
     {
         Dictionary<string, AssociationInclusion> include = new Dictionary<string, AssociationInclusion>();
-
+        readonly ICache Cache;
         public IDataProvider Provider { get; }
         public Type EntityType { get; private set; }
         public List<ICriterion> Criteria { get; } = new List<ICriterion>();
@@ -33,7 +33,8 @@
                 throw new ArgumentException(entityType.Name + " is not an IEntity.");
 
             EntityType = entityType;
-            Provider = Database.Instance.GetProvider(entityType);
+            Provider = Context.Current.Database().GetProvider(entityType);
+            Cache = Context.Current.GetService<ICache>();
         }
 
         public string Column(string propertyName, string alias = null)

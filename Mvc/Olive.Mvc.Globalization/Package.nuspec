@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.Globalization</id>
+    <version>1.0.26</version>
+    <title>Olive Globalization (Service)</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
+    <description>Olive Framework</description>
+    <dependencies>
+      <!--<dependency id="Olive.Security" version="0.0.0" />-->
+      <dependency id="HtmlAgilityPack" version="1.6.15" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\@Assemblies\netstandard2.0\Olive.Globalization.dll" target="lib\netstandard2.0\" />
+    <file src="..\..\@Assemblies\netstandard2.0\Olive.Globalization.pdb" target="lib\netstandard2.0\" />
+    <file src="..\..\@Assemblies\netstandard2.0\Olive.Globalization.xml" target="lib\netstandard2.0\" />
+  </files>
+</package>

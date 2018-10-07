@@ -14,7 +14,7 @@ namespace Olive.Entities.Data
             string result;
 
             if (DatabaseContext.Current != null) result = DatabaseContext.Current.ConnectionString;
-            else result = Config.GetConnectionString("AppDatabase");
+            else result = Config.GetConnectionString("Default");
 
             if (result.IsEmpty())
                 throw new Exception("No 'AppDatabase' connection string is specified in the application config file.");
@@ -29,6 +29,12 @@ namespace Olive.Entities.Data
     public class DataAccess<TConnection> : DataAccess, IDataAccess
         where TConnection : DbConnection, new()
     {
+        public DataAccess(string connectionString = null)
+        {
+            if (connectionString.IsEmpty())
+                connectionString = GetCurrentConnectionString();
+        }
+
         /// <summary>
         /// Creates a connection object.
         /// </summary>
@@ -76,7 +82,8 @@ namespace Olive.Entities.Data
             command.Transaction = await (DbTransactionScope.Root?.GetDbTransaction()
                 ?? Task.FromResult(command.Transaction));
 
-            command.CommandTimeout = DatabaseContext.Current?.CommandTimeout ?? (Config.TryGet<int?>("Sql.Command.TimeOut")) ?? command.CommandTimeout;
+            command.CommandTimeout = DatabaseContext.Current?.CommandTimeout ??
+                Config.Get("Sql.Command.TimeOut", defaultValue: command.CommandTimeout);
 
             foreach (var param in @params)
                 command.Parameters.Add(param);
@@ -86,7 +93,7 @@ namespace Olive.Entities.Data
 
         DataAccessProfiler.Watch StartWatch(string command)
         {
-            if (DataAccessProfiler.IsEnabled) return DataAccessProfiler.Start(command);
+            if (Database.Configuration.Profile) return DataAccessProfiler.Start(command);
             else return null;
         }
 
@@ -108,7 +115,7 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running Non-Query SQL command.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")))
+                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
             }
             finally
@@ -146,7 +153,7 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running SQL Query.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")))
+                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
             }
             finally
@@ -182,7 +189,7 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running Scalar SQL Command.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")))
+                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
             }
             finally
@@ -233,7 +240,7 @@ namespace Olive.Entities.Data
                     catch (Exception ex)
                     {
                         throw new Exception("Error in executing SQL command.", ex).AddData("Command", c.Key)
-                            .AddData("Parameters", c.Value.Get(l => l.Select(p => p.ParameterName + "=" + p.Value).ToString(" | ")));
+                            .AddData("Parameters", c.Value?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "));
                     }
                     finally
                     {

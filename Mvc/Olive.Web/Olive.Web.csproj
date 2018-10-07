@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>Olive.Web</RootNamespace>
+    <AssemblyName>Olive.Web</AssemblyName>
+    <OutputPath>..\..\@Assemblies\</OutputPath>
+    <DocumentationFile>..\..\@Assemblies\netcoreapp2.1\Olive.Web.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
+    <PackageReference Include="GCop.UAT" Version="1.3.7" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Olive.ApiClient">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.ApiClient.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -11,12 +11,12 @@ namespace Olive
         /// <summary>
         /// Copies this file onto the specified desination path.
         /// </summary>
-        public static void CopyTo(this FileInfo file, FileInfo destinationPath, bool overwrite = true)
+        public static void CopyTo(this FileInfo @this, FileInfo destinationPath, bool overwrite = true)
         {
             if (!overwrite && destinationPath.Exists()) return;
-            if (!file.Exists()) throw new Exception("File does not exist: " + file.FullName);
+            if (!@this.Exists()) throw new Exception("File does not exist: " + @this.FullName);
 
-            File.Copy(file.FullName, destinationPath.FullName, overwrite);
+            File.Copy(@this.FullName, destinationPath.FullName, overwrite);
         }
 
         /// <summary>
@@ -28,52 +28,57 @@ namespace Olive
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
-        public static string ReadAllText(this FileInfo file) => ReadAllText(file, DefaultEncoding);
+        public static string ReadAllText(this FileInfo @this) => ReadAllText(@this, DefaultEncoding);
 
         /// <summary>
         /// Gets the entire content of this file.
         /// </summary>
-        public static string ReadAllText(this FileInfo file, Encoding encoding)
+        public static string ReadAllText(this FileInfo @this, Encoding encoding)
         {
             Func<string> readFile = () =>
             {
-                using (var stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var stream = new FileStream(@this.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     using (var reader = new StreamReader(stream, encoding))
                         return reader.ReadToEnd();
                 }
             };
 
-            return TryHard(file, readFile, "The system cannot read the file: {0}");
+            return TryHard(@this, readFile, "The system cannot read the file: {0}");
+        }
+
+        public static void DeleteIfExists(this FileInfo @this)
+        {
+            if (@this != null && @this.Exists()) @this.Delete();
         }
 
         /// <summary>
-        /// Will try to delete a specified directory by first deleting its sub-folders and files.
+        /// Will try to delete a specified file if it exists.
         /// </summary>
         /// <param name="harshly">If set to true, then it will try multiple times, in case the file is temporarily locked.</param>
-        public static void Delete(this FileInfo file, bool harshly)
+        public static void Delete(this FileInfo @this, bool harshly)
         {
-            if (!file.Exists()) return;
+            if (!@this.Exists()) return;
 
             if (!harshly)
             {
-                Task.Factory.StartNew(file.Delete);
+                Task.Factory.StartNew(@this.Delete);
                 return;
             }
 
-            DoTryHard(file, () => file.Delete(harshly),
+            DoTryHard(@this, () => @this.Delete(harshly),
                "The system cannot delete the file, even after several attempts. Path: {0}");
         }
 
         /// <summary>
         /// Saves the specified content on this file.
         /// </summary>
-        public static void WriteAllBytes(this FileInfo file, byte[] content)
+        public static void WriteAllBytes(this FileInfo @this, byte[] content)
         {
-            if (!file.Directory.Exists())
-                file.Directory.Create();
+            if (!@this.Directory.Exists())
+                @this.Directory.Create();
 
-            DoTryHard(file, () => File.WriteAllBytes(file.FullName, content),
+            DoTryHard(@this, () => File.WriteAllBytes(@this.FullName, content),
                "The system cannot write the specified content on the file: {0}");
         }
 
@@ -87,39 +92,52 @@ namespace Olive
         /// Saves the specified content on this file. 
         /// Note: For backward compatibility, for UTF-8 encoding, it will always add the BOM signature.
         /// </summary>
-        public static void WriteAllText(this FileInfo file, string content, Encoding encoding)
+        public static void WriteAllText(this FileInfo @this, string content, Encoding encoding)
         {
             if (encoding == null) encoding = DefaultEncoding;
 
-            file.Directory.EnsureExists();
+            @this.Directory.EnsureExists();
 
             if (encoding is UTF8Encoding) encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
-            File.WriteAllText(file.FullName, content, encoding);
+            File.WriteAllText(@this.FullName, content, encoding);
         }
 
         /// <summary>
         /// Saves the specified content to the end of this file.
         /// </summary>
-        public static void AppendAllText(this FileInfo file, string content)
-            => AppendAllText(file, content, DefaultEncoding);
+        public static void AppendAllText(this FileInfo @this, string content)
+            => AppendAllText(@this, content, DefaultEncoding);
 
         /// <summary>
         /// Saves the specified content to the end of this file.
         /// </summary>
-        public static void AppendLine(this FileInfo file, string content = null)
-            => AppendAllText(file, content + Environment.NewLine, DefaultEncoding);
+        public static async Task AppendAllTextAsync(this FileInfo @this, string content)
+        {
+            using (await @this.GetSyncLock().Lock())
+            {
+                @this.Directory.EnsureExists();
+                using (var streamWriter = File.AppendText(@this.FullName))
+                    await streamWriter.WriteAsync(content);
+            }
+        }
 
         /// <summary>
         /// Saves the specified content to the end of this file.
         /// </summary>
-        public static void AppendAllText(this FileInfo file, string content, Encoding encoding)
+        public static void AppendLine(this FileInfo @this, string content = null)
+            => AppendAllText(@this, content + Environment.NewLine, DefaultEncoding);
+
+        /// <summary>
+        /// Saves the specified content to the end of this file.
+        /// </summary>
+        public static void AppendAllText(this FileInfo @this, string content, Encoding encoding)
         {
             if (encoding == null) encoding = DefaultEncoding;
 
-            file.Directory.EnsureExists();
+            @this.Directory.EnsureExists();
 
-            File.AppendAllText(file.FullName, content, encoding);
+            File.AppendAllText(@this.FullName, content, encoding);
         }
 
         /// <summary>
@@ -130,11 +148,24 @@ namespace Olive
             using (var outFile = new MemoryStream())
             {
                 using (var inFile = new MemoryStream(data))
-                using (var Compress = new GZipStream(outFile, CompressionMode.Compress))
-                    inFile.CopyTo(Compress);
+                using (var compress = new GZipStream(outFile, CompressionMode.Compress))
+                    inFile.CopyTo(compress);
 
                 return outFile.ToArray();
             }
+        }
+
+        /// <summary>
+        /// Decompresses this gzipped data.
+        /// </summary>
+        public static byte[] UnGZip(this byte[] @this)
+        {
+            if (@this == null)
+                throw new ArgumentNullException(nameof(@this));
+
+            using (var zippedStream = @this.AsStream())
+            using (var decompress = new GZipStream(zippedStream, CompressionMode.Decompress))
+                return decompress.ReadAllBytes();
         }
 
         /// <summary>
@@ -145,7 +176,7 @@ namespace Olive
         /// <summary>
         /// Compresses this string into Gzip.
         /// </summary>
-        public static byte[] GZip(this string data, Encoding encoding)
-            => encoding.GetBytes(data).GZip();
+        public static byte[] GZip(this string @this, Encoding encoding)
+            => encoding.GetBytes(@this).GZip();
     }
 }

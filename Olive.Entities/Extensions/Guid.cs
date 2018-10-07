@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Olive.Entities;
+using System;
 using System.Threading.Tasks;
 
-namespace Olive.Entities
+namespace Olive
 {
-    partial class OliveExtensions
+    partial class OliveEntitiesExtensions
     {
         /// <summary>
         /// This will use Database.Get() to load the specified entity type with this ID.
@@ -22,7 +23,7 @@ namespace Olive.Entities
         {
             if (guid == Guid.Empty) return default(T);
 
-            return await Entity.Database.Get<T>(guid);
+            return await Context.Current.Database().Get<T>(guid);
         }
     }
 }

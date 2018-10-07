@@ -43,7 +43,7 @@ namespace Olive
         /// Converts this number to a short textual representation.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Base32Integer ToBase32(this int value) => new Base32Integer(value);
+        public static Base32Integer ToBase32(this int @this) => new Base32Integer(@this);
 
         public static int CompareTo(this int? @this, int? another)
         {
@@ -53,7 +53,7 @@ namespace Olive
             return @this.Value.CompareTo(another.Value);
         }
 
-        public static string ToString(this int? value, string format) => ($"{{0:{format}}}").FormatWith(value);
+        public static string ToString(this int? @this, string format) => ($"{{0:{format}}}").FormatWith(@this);
 
         /// <summary>
         /// To the word string.
@@ -61,44 +61,44 @@ namespace Olive
         /// <remarks>
         /// Some awesome code from http://stackoverflow.com/questions/2729752/converting-numbers-in-to-words-c-sharp
         /// </remarks>
-        public static string ToWordString(this int number)
+        public static string ToWordString(this int @this)
         {
-            if (number == 0) return "zero";
+            if (@this == 0) return "zero";
 
-            if (number < 0)
-                return "minus " + ToWordString(Math.Abs(number));
+            if (@this < 0)
+                return "minus " + ToWordString(Math.Abs(@this));
 
             var words = "";
 
-            if ((number / ONE_MILLION) > 0)
+            if ((@this / ONE_MILLION) > 0)
             {
-                words += ToWordString(number / ONE_MILLION) + " million ";
-                number %= ONE_MILLION;
+                words += ToWordString(@this / ONE_MILLION) + " million ";
+                @this %= ONE_MILLION;
             }
 
-            if ((number / 1000) > 0)
+            if ((@this / 1000) > 0)
             {
-                words += ToWordString(number / 1000) + " thousand ";
-                number %= 1000;
+                words += ToWordString(@this / 1000) + " thousand ";
+                @this %= 1000;
             }
 
-            if ((number / 100) > 0)
+            if ((@this / 100) > 0)
             {
-                words += ToWordString(number / 100) + " hundred ";
-                number %= 100;
+                words += ToWordString(@this / 100) + " hundred ";
+                @this %= 100;
             }
 
-            if (number > 0)
+            if (@this > 0)
             {
                 if (words != "") words += "and ";
 
-                if (number < TWENTY)
-                    words += NumberWordsUnits[number];
+                if (@this < TWENTY)
+                    words += NumberWordsUnits[@this];
                 else
                 {
-                    words += NumberWordsTens[number / 10];
-                    if ((number % 10) > 0)
-                        words += "-" + NumberWordsUnits[number % 10];
+                    words += NumberWordsTens[@this / 10];
+                    if ((@this % 10) > 0)
+                        words += "-" + NumberWordsUnits[@this % 10];
                 }
             }
 
@@ -118,7 +118,7 @@ namespace Olive
 
             while (fileSize > 0x400 && index < suffix.Length)
             {
-                fileSize = fileSize / 0x400;
+                fileSize /= 0x400;
                 index++;
             }
 
@@ -128,21 +128,21 @@ namespace Olive
         /// <summary>
         /// Gets the size text for the given number of bytes. E.g. 4.5MB or 11KB.
         /// </summary>
-        public static string ToFileSizeString(this int size, int round = 1) => ToFileSizeString((long)size, round);
+        public static string ToFileSizeString(this int @this, int round = 1) => ToFileSizeString((long)@this, round);
 
         /// <summary>
         /// Gets the size text for the given number of bytes.
         /// </summary>
-        public static string ToFileSizeString(this long size, int round = 1)
+        public static string ToFileSizeString(this long @this, int round = 1)
         {
             var scale = new[] { "B", "KB", "MB", "GB", "TB" };
-            if (size == 0) return "0" + scale[0];
+            if (@this == 0) return "0" + scale[0];
 
-            var sign = Math.Sign(size);
-            size = Math.Abs(size);
+            var sign = Math.Sign(@this);
+            @this = Math.Abs(@this);
 
-            var place = Convert.ToInt32(Math.Floor(Math.Log(size, 1024)));
-            var num = Math.Round(size / Math.Pow(1024, place), round);
+            var place = Convert.ToInt32(Math.Floor(Math.Log(@this, 1024)));
+            var num = Math.Round(@this / Math.Pow(1024, place), round);
 
             return (sign * num) + scale[place];
             // return (Math.Sign(size) * num).ToString() + scale[place];
@@ -151,53 +151,53 @@ namespace Olive
         /// <summary>
         /// Emits a user readable file size (including units).
         /// </summary>
-        public static string ToFileSizeString(this int fileSize, string units, int round) =>
-            ToFileSizeString((long)fileSize, units, round);
+        public static string ToFileSizeString(this int @this, string units, int round) =>
+            ToFileSizeString((long)@this, units, round);
 
         /// <summary>
         /// Return this value as a percentages the of the given total.
         /// </summary>
         /// <param name="multiplyBy100">Multiply this by 100.</param>
         /// <param name="roundTo">Rounding decimals to.</param>
-        public static double AsPercentageOf(this int value, int total, bool multiplyBy100 = true, int? roundTo = 0) =>
-            AsPercentageOf((double)value, total, multiplyBy100, roundTo);
+        public static double AsPercentageOf(this int @this, int total, bool multiplyBy100 = true, int? roundTo = 0) =>
+            AsPercentageOf((double)@this, total, multiplyBy100, roundTo);
 
         /// <summary>
         /// E.g. converts 1 to 1st. Or converts 13 to 13th.
         /// </summary>
-        public static string ToOrdinal(this int number)
+        public static string ToOrdinal(this int @this)
         {
-            switch (number % 100)
+            switch (@this % 100)
             {
                 case 11:
                 case 12:
                 case 13:
-                    return number + "th";
+                    return @this + "th";
                 default:
                     // Other numbers are fine.
                     break;
             }
 
-            switch (number % 10)
+            switch (@this % 10)
             {
                 case 1:
-                    return number + "st";
+                    return @this + "st";
                 case 2:
-                    return number + "nd";
+                    return @this + "nd";
                 case 3:
-                    return number + "rd";
+                    return @this + "rd";
                 default:
-                    return number + "th";
+                    return @this + "th";
             }
         }
 
         /// <summary>
         /// Concerts this integer value to GUID.
         /// </summary>
-        public static Guid ToGuid(this int value)
+        public static Guid ToGuid(this int @this)
         {
             var bytes = new byte[16];
-            BitConverter.GetBytes(value).CopyTo(bytes, 0);
+            BitConverter.GetBytes(@this).CopyTo(bytes, 0);
             return new Guid(bytes);
         }
     }

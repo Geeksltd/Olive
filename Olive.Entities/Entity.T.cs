@@ -1,13 +1,13 @@
 ﻿namespace Olive.Entities
 {
-    using System.Xml.Serialization;
     using Newtonsoft.Json;
+    using System;
+    using System.Xml.Serialization;
 
+    [Serializable]
     public class Entity<T> : Entity, IEntity<T>
     {
-        /// <summary>
-        /// Gets or sets the ID of this object.
-        /// </summary>
+        /// <summary>Gets or sets the ID of this object.</summary>
         public virtual T ID { get; set; }
 
         /// <summary>
@@ -33,7 +33,7 @@
 
             var typed = other as Entity<T>;
 
-            if (ReferenceEquals(this, null) || ReferenceEquals(typed, null)) return false;
+            if (typed is null) return false;
 
             if (GetType() != typed.GetType()) return false;
 

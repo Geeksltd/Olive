@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Olive.Security.Impersonation</id>
+    <version>1.0.31</version>
+    <title>Olive Security Impersonation</title>
+    <authors>Geeks Ltd</authors>
+    <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
+    <iconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</iconUrl>
+    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
+    <description>Olive Framework</description>
+    <dependencies>
+      <!--<dependency id="Olive.Security" version="0.0.0" />
+      <dependency id="Olive.Entities.Data" version="0.0.0" />-->
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.Impersonation.dll" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.Impersonation.pdb" target="lib\netcoreapp2.1\" />
+    <file src="..\..\@Assemblies\netcoreapp2.1\Olive.Security.Impersonation.xml" target="lib\netcoreapp2.1\" />
+  </files>
+</package>

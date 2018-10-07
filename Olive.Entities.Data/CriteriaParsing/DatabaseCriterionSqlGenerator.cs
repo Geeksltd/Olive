@@ -37,7 +37,7 @@ namespace Olive.Entities.Data
             if (criterion.PropertyName.IsEmpty() || criterion.PropertyName == "N/A")
                 return criterion.SqlCriteria;
 
-            return criterion.SqlCriteria.Replace($"{{{{{criterion.PropertyName}}}}}",
+            return criterion.SqlCriteria.Replace($"${{{{{criterion.PropertyName}}}}}",
               Query.Column(criterion.PropertyName));
         }
 
@@ -117,7 +117,7 @@ namespace Olive.Entities.Data
 
         string GetUniqueParameterName(string column)
         {
-            var result = column.Remove("[").Remove("]").Replace(".", "_");
+            var result = column.Remove("[").Remove("]").Remove("`").Replace(".", "_");
 
             if (Query.Parameters.ContainsKey(result))
             {

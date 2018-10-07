@@ -1,18 +1,28 @@
 ﻿namespace Olive.Entities.Data
 {
+    using global::MySql.Data.MySqlClient;
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
+    using System.Reflection;
     using System.Text;
-    using MySql.Data.MySqlClient;
 
     public abstract class MySqlDataProvider<TTargetEntity> : MySqlDataProvider where TTargetEntity : IEntity
     {
+        protected MySqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override Type EntityType => typeof(TTargetEntity);
     }
 
     public abstract partial class MySqlDataProvider : DataProvider<MySqlConnection, MySqlParameter>
     {
+        protected MySqlDataProvider(ICache cache) : base(cache)
+        {
+        }
+
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
         {
             var value = data.Value;
@@ -28,7 +38,7 @@
             return result;
         }
 
-        public override string GenerateSelectCommand(IDatabaseQuery iquery)
+        public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields)
         {
             var query = (DatabaseQuery)iquery;
 
@@ -37,7 +47,7 @@
 
             var r = new StringBuilder("SELECT");
 
-            r.AppendLine($" {GetFields()} FROM {GetTables()}");
+            r.AppendLine($" {fields} FROM {GetTables()}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
             r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
@@ -59,6 +69,24 @@
                 r.Append(whereGenerator.Generate(c).WithPrefix(" AND "));
 
             return r.ToString();
+        }
+
+        protected override string GenerateAssociationLoadingCriteria(string id, string uniqueItems, PropertyInfo association)
+        {
+            return $"{id} IN (SELECT `{association.Name}` FROM ({uniqueItems}) Alias)";
+        }
+
+        public override string GenerateSort(DatabaseQuery query)
+        {
+            var parts = new List<string>();
+
+            parts.AddRange(query.OrderByParts.Select(p => MapColumn(p.Property) + " DESC".OnlyWhen(p.Descending)));
+
+            var offset = string.Empty;
+            if (query.PageSize > 0)
+                offset = $" LIMIT {query.PageStartIndex},{query.PageSize}";
+
+            return parts.ToString(", ") + offset;
         }
     }
 }

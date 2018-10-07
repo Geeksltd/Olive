@@ -9,10 +9,7 @@ namespace Olive
         T[] Buffer;
         int Offset;
 
-        public AsyncLockDeque(int capacity = 5)
-        {
-            Buffer = new T[capacity];
-        }
+        public AsyncLockDeque(int capacity = 5) => Buffer = new T[capacity];
 
         int Capacity => Buffer.Length;
 
@@ -23,7 +20,7 @@ namespace Olive
         public IEnumerator<T> GetEnumerator()
         {
             var count = Count;
-            for (int i = 0; i != count; ++i)
+            for (var i = 0; i != count; ++i)
                 yield return Buffer[(i + Offset) % Capacity];
         }
 

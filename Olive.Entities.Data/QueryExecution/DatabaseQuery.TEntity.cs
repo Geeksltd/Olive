@@ -13,7 +13,7 @@
         IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Where(Expression<Func<TEntity, bool>> criteria)
         {
             if (criteria == null) return this;
-            Criteria.AddRange(CriteriaExtractor<TEntity>.Parse(criteria));
+            Criteria.AddRange(new CriteriaExtractor<TEntity>(criteria, throwOnNonConversion: true).Extract());
             return this;
         }
 
@@ -48,7 +48,7 @@
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
 
-            var ids = items.Where(x => !ReferenceEquals(null, x)).Select(x => x.GetId()).ToArray();
+            var ids = items.Except(x => ReferenceEquals(null, x)).Select(x => x.GetId()).ToArray();
 
             if (ids.None()) throw new ArgumentException("ContainsAny() requires at least one item");
 

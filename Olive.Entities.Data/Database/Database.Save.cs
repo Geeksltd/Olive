@@ -9,8 +9,6 @@ namespace Olive.Entities.Data
 {
     partial class Database
     {
-        bool ENFORCE_SAVE_TRANSACTION = Config.Get("Database:Save.Enforce.Transaction", defaultValue: false);
-
         static ConcurrentDictionary<string, AsyncLock> StringKeySyncLocks = new ConcurrentDictionary<string, AsyncLock>();
 
         public static AsyncLock GetSyncLock(string key) => StringKeySyncLocks.GetOrAdd(key, f => new AsyncLock());
@@ -39,7 +37,7 @@ namespace Olive.Entities.Data
                 else using (await GetSyncLock(entity.GetType().FullName + entity.GetId()).Lock()) await save();
             };
 
-            if (ENFORCE_SAVE_TRANSACTION) await EnlistOrCreateTransaction(doSave);
+            if (Configuration.Transaction.EnforceForSave) await EnlistOrCreateTransaction(doSave);
             else await doSave();
         }
 
@@ -62,7 +60,7 @@ myObject = Database.Reload(myObject);
 Database.Update(myObject, x=> x.P2 = ...);");
             }
 
-            if (EntityManager.IsImmutable(entity))
+            if (Entity.Services.IsImmutable(entity))
                 throw new ArgumentException("An immutable record must be cloned before any modifications can be applied on it. " +
                     $"Type={entity.GetType().FullName}, Id={entity.GetId()}.");
 
@@ -70,7 +68,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             if (!IsSet(behaviour, SaveBehaviour.BypassValidation))
             {
-                await EntityManager.RaiseOnValidating(entity as Entity, EventArgs.Empty);
+                await Entity.Services.RaiseOnValidating(entity as Entity, EventArgs.Empty);
                 await entity.Validate();
             }
             else if (!dataProvider.SupportValidationBypassing())
@@ -83,23 +81,23 @@ Database.Update(myObject, x=> x.P2 = ...);");
             if (!IsSet(behaviour, SaveBehaviour.BypassSaving))
             {
                 var savingArgs = new System.ComponentModel.CancelEventArgs();
-                await EntityManager.RaiseOnSaving(entity, savingArgs);
+                await Entity.Services.RaiseOnSaving(entity, savingArgs);
 
                 if (savingArgs.Cancel)
                 {
-                    Cache.Current.Remove(entity);
+                    Cache.Remove(entity);
                     return;
                 }
             }
 
             #endregion
 
-            if (!IsSet(behaviour, SaveBehaviour.BypassLogging) && !(entity is IApplicationEvent) &&
-                Config.Get("Log.Record:Application:Events", defaultValue: true))
-                await ApplicationEventManager.RecordSave(entity, mode);
+            if (!IsSet(behaviour, SaveBehaviour.BypassLogging))
+                if (mode == SaveMode.Insert) await Audit.Audit.LogInsert(entity);
+                else await Audit.Audit.LogUpdate(entity);
 
             await dataProvider.Save(entity);
-            Cache.Current.UpdateRowVersion(entity);
+            Cache.UpdateRowVersion(entity);
 
             if (mode == SaveMode.Update && asEntity?._ClonedFrom != null && AnyOpenTransaction())
             {
@@ -108,24 +106,23 @@ Database.Update(myObject, x=> x.P2 = ...);");
             }
 
             if (mode == SaveMode.Insert)
-                EntityManager.SetSaved(entity);
+                Entity.Services.SetSaved(entity);
 
-            Cache.Current.Remove(entity);
+            Cache.Remove(entity);
 
             if (Transaction.Current != null)
-                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Current.Remove(entity); };
+                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Remove(entity); };
 
-            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Current.Remove(entity));
+            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Remove(entity));
 
-            if (!(entity is IApplicationEvent))
-                await OnUpdated(entity);
+            await OnUpdated(entity);
 
             if (!IsSet(behaviour, SaveBehaviour.BypassSaved))
-                await EntityManager.RaiseOnSaved(entity, new SaveEventArgs(mode));
+                await Entity.Services.RaiseOnSaved(entity, new SaveEventArgs(mode));
 
             // OnSaved event handler might have read the object again and put it in the cache, which would
             // create invalid CachedReference objects.
-            Cache.Current.Remove(entity);
+            Cache.Remove(entity);
         }
 
         /// <summary>
@@ -194,7 +191,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
                 // No need for an error. We can just get the fresh version here.
                 item = await Reload(item);
 
-            if (EntityManager.IsImmutable(item as Entity))
+            if (Entity.Services.IsImmutable(item as Entity))
             {
                 var clone = (T)((IEntity)item).Clone();
 
@@ -231,7 +228,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
                     await GetProvider(group.Key).BulkInsert(group.ToArray(), batchSize);
 
                 foreach (var type in objectTypes)
-                    Cache.Current.Remove(type.Key);
+                    Cache.Remove(type.Key);
             }
             catch
             {
@@ -259,7 +256,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
                 }
 
                 foreach (var type in objectTypes)
-                    Cache.Current.Remove(type.Key);
+                    Cache.Remove(type.Key);
             }
             catch
             {
