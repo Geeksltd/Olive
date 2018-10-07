@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>MSharp.Build</id>
+    <version>$version$</version>
+    <title>MSharp.Build</title>
+    <authors>Geeks.LTD</authors>
+    <owners>Geeks.LTD</owners>
+  </metadata>
+  <files>
+	<file src="bin\Release\*.dll" target="tools" />
+  </files>
+</package>

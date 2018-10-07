@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="CICD\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\MindMap\&#xD;&#xA;copy /y $(TargetDir)*.runtimeconfig.json C:\Projects\Geeks.MS\MindMap\" />
+  </Target>
+
+</Project>

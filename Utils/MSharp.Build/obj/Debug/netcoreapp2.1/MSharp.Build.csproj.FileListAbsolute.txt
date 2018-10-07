@@ -1,0 +1,11 @@
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\bin\Debug\netcoreapp2.1\MSharp.Build.deps.json
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\bin\Debug\netcoreapp2.1\MSharp.Build.runtimeconfig.json
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\bin\Debug\netcoreapp2.1\MSharp.Build.runtimeconfig.dev.json
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\bin\Debug\netcoreapp2.1\MSharp.Build.dll
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\bin\Debug\netcoreapp2.1\MSharp.Build.pdb
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\obj\Debug\netcoreapp2.1\MSharp.Build.csproj.CoreCompileInputs.cache
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\obj\Debug\netcoreapp2.1\MSharp.Build.AssemblyInfoInputs.cache
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\obj\Debug\netcoreapp2.1\MSharp.Build.AssemblyInfo.cs
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\obj\Debug\netcoreapp2.1\MSharp.Build.dll
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\obj\Debug\netcoreapp2.1\MSharp.Build.pdb
+G:\Alireza\Geeks\Olive-master\Utils\MSharp.Build\obj\Debug\netcoreapp2.1\MSharp.Build.csprojAssemblyReference.cache
