@@ -47,7 +47,7 @@ When you want to know what is the next specified weekend day in your application
 #### Example:
 ```csharp
 
-var dateVariable1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+var dateVariable1 = DateTime.Today;
 dateVariable1.GetUpcoming(DayOfWeek.Monday); // returns the next Monday date          
 dateVariable1.GetUpcoming(DayOfWeek.Monday,true); // returns the next Monday date, if today is Monday, it returns the Monday date of next week.   
 
@@ -62,7 +62,7 @@ When you want to know what is the previous specified weekend day in your applica
 #### Example:
 ```csharp
 
-var dateVariable1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+var dateVariable1 = DateTime.Today;
 dateVariable1.GetLast(DayOfWeek.Monday); // returns the previous Monday date          
 dateVariable1.GetLast(DayOfWeek.Monday,true); // returns the previous Monday date, if today is Monday, it returns the Monday date of previous week.        
 
@@ -75,7 +75,7 @@ dateVariable1.GetLast(DayOfWeek.Monday,true); // returns the previous Monday dat
 When you want to know whether the date is older than another date or not.
 #### Example:
 ```csharp
-var dateVariable1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+var dateVariable1 = DateTime.Today;
 dateVariable1.IsOlderThan(TimeSpan.FromDays(1)); // returns False because tomorrow is not older than today.
 dateVariable1.IsOlderThan(TimeSpan.FromDays(-1)); // returns True because yesterday is older than today.
 
@@ -89,7 +89,7 @@ When you want to know whether the date is newer than another date or not.
 It returns True or false.
 #### Example:
 ```csharp
-var dateVariable1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+var dateVariable1 = DateTime.Today;
 dateVariable1.IsNewerThan(TimeSpan.FromDays(1)); // returns True because tomorrow is newer than today.
 dateVariable1.IsNewerThan(TimeSpan.FromDays(-1)); // returns False because yesterday is not newer than today.
 
@@ -104,7 +104,7 @@ It returns True or false.
 #### Example:
 ```csharp
 
-var dateVariable1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+var dateVariable1 = DateTime.Today;
 dateVariable1.IsAfterOrEqualTo(new DateTime(2010, 10 , 10)); // returns True
 ```
 
@@ -117,7 +117,7 @@ It returns True or false.
 #### Example:
 ```csharp
 
-var dateVariable1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+var dateVariable1 = DateTime.Today;
 dateVariable1.IsBeforeOrEqualTo(new DateTime(2010, 10 , 10)); // returns false
 ```
 
@@ -213,7 +213,7 @@ In some applications such as Payroll or Sales systems, you need the first day of
 ```csharp
 
 var dateVariable1 = new DateTime(2018, 10, 10); 
-dateVariable1.GetBeginningOfWeek(); // returns 08/10/2018
+dateVariable1.GetBeginningOfWeek(); // returns "10/10/2018 12:00:00 AM"
 ```
 
 
@@ -228,8 +228,59 @@ In some applications such as Payroll or Sales systems, you need the last day of 
 ```csharp
 
 var dateVariable1 = new DateTime(2018, 10, 10); 
-dateVariable1.GetEndOfWeek(); // returns 14/10/2018
+dateVariable1.GetEndOfWeek(); // returns "10/14/2018 11:59:59 PM"
 
 ```
 
+## GetBeginningOfMonth({day})
+Gets the mid-night of the first day of this month.
+- It returns DateTime
+#### When to use it?
+When you want to know the first day of the month of {day} in your application.
+In some applications such as Payroll or Sales systems, you need the first day of the month of the {day}.
+#### Example:
 
+```csharp
+
+var dateVariable1 = new DateTime(2018, 10, 10); 
+dateVariable1.GetBeginningOfMonth(); // returns "10/01/2018 12:00:00 AM"
+
+```
+
+## EndOfDay({day})
+Gets the end of this day (one tick before the next day).
+- It returns DateTime or null
+#### When to use it?
+When you want to know the last tick of the {day} in your application.
+In some applications such as Payroll or Sales systems, you need the last tick of the {day}.
+#### Example:
+
+```csharp
+
+var dateVariable1 = new DateTime(2018, 10, 10); 
+dateVariable1.EndOfDay(); // returns "10/10/2018 11:59:59 PM"
+DateTime? dateVariable2 = null; 
+dateVariable2.EndOfDay(); // returns ""
+
+```
+
+ 
+
+## IsInTheFuture({day})
+Determines whether this date is in the future.
+- It returns true if the {day} after or equal to LocalTime.Today.
+- It returns false if {day} is today.
+#### When to use it?
+When you want to know the first day of the month of the date in your application.
+In some applications such as Payroll or Sales systems, you need the first day of the month of the date.
+#### Example:
+
+```csharp
+
+var dateVariable1 = new DateTime(2018, 5, 5); 
+dateVariable1.IsInTheFuture(); // returns false
+
+var dateVariable2 = new DateTime(2018, 5, 5); 
+dateVariable2.IsInTheFuture(); // returns false
+
+```
