@@ -25,7 +25,7 @@ namespace MSharp.Build.Tools
             if (!AlwaysInstall)
                 if (IsInstalled()) return Path;
 
-            var log = Installer.Execute(InstallCommand);
+            var log = Execute();
             Logs.Add(log);
 
             OnInstalled();
@@ -34,6 +34,22 @@ namespace MSharp.Build.Tools
 
             if (IsInstalled()) return Path;
             else throw new Exception($"Failed to install {Name}. Install it manually.");
+        }
+
+        protected virtual string Execute()
+        {
+            if (Installer == WindowsCommand.Chocolaty)
+            {
+                var wrappedCommand = $"-noprofile -command \"&{{ start-process -FilePath '{Installer.FullName}' -ArgumentList '{InstallCommand} -y' -Wait -Verb RunAs}}\"";
+
+                Logs.Add("Elavating to powershell command: " + wrappedCommand);
+
+                return WindowsCommand.Powershell.Execute(wrappedCommand);
+            }
+            else
+            {
+                return Installer.Execute(InstallCommand);
+            }
         }
 
         protected bool IsInstalled()

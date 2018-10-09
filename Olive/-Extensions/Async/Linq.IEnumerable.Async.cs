@@ -44,8 +44,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            // Run them in parallel
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Where(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -65,7 +64,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Distinct(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -73,31 +72,20 @@ namespace Olive
         public static async Task<T> First<T>(
           this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
+            foreach (var item in @this)
+                if (await func(item))
+                    return item;
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.First(x => x.Predicate.GetAlreadyCompletedResult()).Value;
+            throw new InvalidOperationException("No item in the source sequence matches the provided predicte.");
         }
 
         public static async Task<T> FirstOrDefault<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
+            foreach (var item in @this)
+                if (await func(item))
+                    return item;
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            var result = tasks.FirstOrDefault(x => x.Predicate.GetAlreadyCompletedResult());
-
-            if (result is null) return default(T);
-            return result.Value;
+            return default(T);
         }
 
         public static async Task<IEnumerable<T>> Intersect<T>(
@@ -106,31 +94,14 @@ namespace Olive
         public static Task<IEnumerable<T>> Intersect<T>(
         this IEnumerable<T> @this, IEnumerable<Task<T>> second) => @this.Intersect(second.AwaitAll());
 
-        public static async Task<TSource> Last<TSource>(
-        this IEnumerable<TSource> @this, Func<TSource, Task<bool>> func)
+        public static Task<TSource> Last<TSource>(this IEnumerable<TSource> @this, Func<TSource, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
-
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.Last(x => x.Predicate.GetAlreadyCompletedResult()).Value;
+            return @this.Reverse().First(func);
         }
 
-        public static async Task<T> LastOrDefault<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
+        public static Task<T> LastOrDefault<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
-
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.LastOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
+            return @this.Reverse().FirstOrDefault(func);
         }
 
         public static async Task<IEnumerable<TSource>> OrderBy<TSource, TKey>(
@@ -142,7 +113,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.OrderKey).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.OrderBy(x => x.OrderKey.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
@@ -150,39 +121,27 @@ namespace Olive
         public static async Task<IEnumerable<TSource>> OrderByDescending<TSource, TKey>(
         this IEnumerable<TSource> @this, Func<TSource, Task<TKey>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                OrderKey = func(x),
-                Value = x
-            }).ToArray();
+            var tasks = @this.Select(x => new { OrderKey = func(x), Value = x }).ToArray();
 
-            await tasks.AwaitAll(x => x.OrderKey).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.OrderKey).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.OrderByDescending(x => x.OrderKey.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
         public static async Task<T> Single<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
+            var tasks = @this.Select(x => new { Predicate = func(x), Value = x }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Single(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
 
         public static async Task<T> SingleOrDefault<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
+            var tasks = @this.Select(x => new { Predicate = func(x), Value = x }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.SingleOrDefault(x => x.Predicate.GetAlreadyCompletedResult()).Value;
         }
@@ -210,49 +169,40 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.SkipWhile(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
-        public static async Task<IEnumerable<T>> TakeWhile<T>(
-        this IEnumerable<T> @this, Func<T, Task<bool>> func)
+        public static async Task<IEnumerable<T>> TakeWhile<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
+            var result = new List<T>();
+
+            foreach (var item in @this)
             {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
+                if (await func(item).ConfigureAwait(false)) result.Add(item);
+                else break;
+            }
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.TakeWhile(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
+            return result;
         }
 
         public static async Task<bool> All<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
+            foreach (var item in @this)
+                if (!await func(item).ConfigureAwait(false))
+                    return false;
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.All(x => x.Predicate.GetAlreadyCompletedResult());
+            return true;
         }
 
         public static async Task<bool> Any<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
+            foreach (var item in @this)
+                if (await func(item).ConfigureAwait(false))
+                    return true;
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.Any(x => x.Predicate.GetAlreadyCompletedResult());
+            return false;
         }
 
         public static async Task<bool> None<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
@@ -266,7 +216,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Average(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -279,7 +229,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Count(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -292,7 +242,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Sum(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -305,7 +255,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Max(x => x.Predicate.GetAlreadyCompletedResult());
         }
@@ -319,7 +269,7 @@ namespace Olive
                 Value = x
             }).ToArray();
 
-            await tasks.AwaitAll(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Min(x => x.Predicate.GetAlreadyCompletedResult());
         }

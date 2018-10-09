@@ -1103,6 +1103,18 @@ namespace Olive
             return Task.WhenAll(tasks);
         }
 
+        public static async Task AwaitSequential<T>(this IEnumerable<T> @this, Func<T, Task> task)
+        {
+            var tasks = new List<Task>();
+
+            if (@this == null) return;
+            foreach (var item in @this)
+            {
+                var awaitable = task(item);
+                if (awaitable != null) await awaitable;
+            }
+        }
+
         public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<T> @this, Func<T, Task<T>> task)
         {
             var tasks = new List<Task<T>>();

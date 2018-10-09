@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\MindMap\&#xD;&#xA;copy /y $(TargetDir)*.runtimeconfig.json C:\Projects\Geeks.MS\MindMap\" />
+    <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\Tasks\ &#xD;&#xA;copy /y $(TargetDir)*.runtimeconfig.json C:\Projects\Geeks.MS\Tasks\" />
   </Target>
 
 </Project>

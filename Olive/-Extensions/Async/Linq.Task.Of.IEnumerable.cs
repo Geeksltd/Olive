@@ -22,19 +22,25 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<TResult>> func)
-            => @this.Get(x => x.OrEmpty().Select(func).AwaitAll());
+            => @this.Get(x => x.OrEmpty().SequentialSelect(func));
 
         public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<TResult>> func)
             => @this.Get(x => x.OrEmpty().SelectMany(func));
 
-        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+        public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<Task<TResult>>> func)
-            => @this.Get(x => x.OrEmpty().SelectMany(func).AwaitAll());
+        {
+            var source = await @this.Get(x => x.OrEmpty().SelectMany(func)).ConfigureAwait(false);
+            return await source.SequentialSelect(x => x);
+        }
 
-        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+        public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<IEnumerable<TResult>>> func)
-            => @this.Get(x => x.OrEmpty().Select(func).AwaitAll().SelectMany(v => v));
+        {
+            var source = await @this.Get(x => x.OrEmpty().Select(func));
+            return await source.SequentialSelect(x => x).SelectMany(v => v);
+        }
 
         public static Task<IEnumerable<TSource>> Except<TSource>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
@@ -109,6 +115,9 @@ namespace Olive
         public static Task<TSource> Single<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
             => @this.Get(x => x.OrEmpty().Single(func));
+
+        public static Task<TSource> Single<TSource>(this Task<IEnumerable<TSource>> @this)
+           => @this.Get(x => x.OrEmpty().Single());
 
         public static Task<TSource> SingleOrDefault<TSource>(
         this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
