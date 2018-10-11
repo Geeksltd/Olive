@@ -6,25 +6,44 @@ with `claims-based identity`, see “Claims-Based Identity Term Claims-based ide
 Definitions” at http://msdn.microsoft.com/en-us/library/ee534975.aspx.
 You can use claims to implement `role-based access control (RBAC)`. Roles are claims, but `claims` can contain more information than just 
 role membership. Also, you can send claims inside a signed (and possibly encrypted) `security token` to assure the receiver that they 
-come from a trusted issuer. 
+come from a trusted issuer.
+
+> Note:You should use `HttpContext.Current.User.` Or use the `User` property inside a `Controller` action method.
+
 
 ## GetEmail()
 #### When to use it?
 When you want to use the `Email` claim of current user Email in your applications.
 
 #### Example:
+
 ```csharp
-var claim = new ClaimsPrincipal();
- claim.GetEmail(); // returns current user Email
+
+ HttpContext.Current.User.GetEmail(); // returns current user Email 
 ```
+Or
+
+```csharp
+
+User.GetEmail(); // returns current user Email inside a `Controller` action method.
+```
+
 
 ## GetId()
 #### When to use it?
 When you want to use the `NameIdentifier` claim of current user Email in your applications.
 #### Example:
+
 ```csharp
-var claim = new ClaimsPrincipal();
-claim.GetId(); // returns current user NameIdentifier
+
+HttpContext.Current.User.GetId(); // returns current user NameIdentifier
+```
+
+Or
+
+```csharp
+
+User.GetId(); // returns current user NameIdentifier inside a `Controller` action method.
 ```
 
 ##GetRoles()
@@ -32,24 +51,45 @@ claim.GetId(); // returns current user NameIdentifier
 #### When to use it?
 This method return a list of Roles which current user has.
 #### Example:
+
 ```csharp
-  var claim = new ClaimsPrincipal();
-            IEnumerable<string> roles;
-            roles = claim.GetRoles(); //returns roles of current user
-            foreach (var item in roles)
-            {
-               ...
-            }
+
+IEnumerable<string> roles;
+roles = HttpContext.Current.User.GetRoles(); //returns roles of current user 
+foreach (var item in roles)
+{
+ ...
+}
 ```
+
+Or
+
+```csharp
+IEnumerable<string> roles;
+roles = User.GetRoles(); //returns roles of current user inside a `Controller` action method.
+foreach (var item in roles)
+{
+ ...
+}
+```
+
 
 ## GetFirstIssuer()
 `Claims` are issued by a provider, and they are given one or more values and then packaged in security tokens that are issued by an issuer, commonly known as a `security token service (STS)`
 #### When to use it?
 When you want to know the `Issuer` in your applications.
 #### Example:
+
 ```csharp
-var claim = new ClaimsPrincipal();
-claim.GetFirstIssuer(); // returns current Issuer, for example the name of your Application
+
+HttpContext.Current.User.GetFirstIssuer(); // returns current Issuer, for example the name of your Application
+```
+
+Or
+
+```csharp
+
+User.GetFirstIssuer(); // returns current Issuer, for example the name of your Application inside a `Controller` action method.
 ```
 
 >Note: The following table shows the relationships between security tokens, claims, and issuers (A Guide To Claims-Based Identity And Access Control published by Microsoft):
