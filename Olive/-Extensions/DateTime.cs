@@ -672,22 +672,25 @@ new DateTime(2099,04,13)};
             // For each working day in the range, calculate relevant times
             for (var day = @this.Date; day < @this.Add(period); day = day.AddWorkingDays(1, considerEnglishBankHolidays))
             {
-                foreach (var range in workingTimesInday)
+                if (!day.IsWeekend() && !(day.IsEnglishHoliday() && considerEnglishBankHolidays)) 
                 {
-                    var from = day.Add(range.Key);
+                    foreach (var range in workingTimesInday)
+                    {
+                        var from = day.Add(range.Key);
 
-                    if (from < @this) from = @this;
+                        if (from < @this) from = @this;
 
-                    var to = day.Add(range.Value);
-                    if (to < @this) continue;
+                        var to = day.Add(range.Value);
+                        if (to < @this) continue;
 
-                    if (to > @this.Add(period)) to = @this.Add(period);
+                        if (to > @this.Add(period)) to = @this.Add(period);
 
-                    var amount = to - from;
+                        var amount = to - from;
 
-                    if (amount < TimeSpan.Zero) continue;
+                        if (amount < TimeSpan.Zero) continue;
 
-                    result += amount;
+                        result += amount;
+                    }
                 }
             }
 
