@@ -18,7 +18,7 @@ namespace Olive.Security
         }
 
         public IDataProtector CreateProtector(string purpose)
-            => new SymmetricKeyDataProtector(EncryptionKey, purpose);
+            => new SymmetricKeyDataProtector(purpose, EncryptionKey);
 
         public byte[] Protect(byte[] plaintext)
             => Encryption.Encrypt(plaintext, EncryptionKey + Purpose).GZip();
