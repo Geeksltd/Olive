@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace Olive
 {
-    partial class Compatibility
+    public class Compatibility
     {
         /// <summary>
         /// Initializes Olive context for legacy (non ASP.NET Core apps).
