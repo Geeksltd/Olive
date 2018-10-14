@@ -150,7 +150,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PushNotification.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.GeoLocation.Tests", "Tests\Olive.GeoLocation.Tests\Olive.GeoLocation.Tests.csproj", "{641E5318-DADD-48AE-9DBD-0BF74883D577}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSharp.Build", "Utils\MSharp.Build\MSharp.Build.csproj", "{126292EE-733D-4C27-8343-E38A310B72F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSharp.Build", "Utils\MSharp.Build\MSharp.Build.csproj", "{126292EE-733D-4C27-8343-E38A310B72F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Net4x.Compatibility", "Olive.Net4x.Compatibility\Olive.Net4x.Compatibility.csproj", "{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -357,6 +359,10 @@ Global
 		{126292EE-733D-4C27-8343-E38A310B72F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{126292EE-733D-4C27-8343-E38A310B72F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{126292EE-733D-4C27-8343-E38A310B72F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
