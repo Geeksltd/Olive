@@ -601,7 +601,6 @@ new DateTime(2099,04,13)};
 
             return result;
         }
-
         public static string ToFriendlyDateString(this DateTime @this)
         {
             string formattedDate;
@@ -721,10 +720,13 @@ new DateTime(2099,04,13)};
             @this.GetBeginningOfQuarter().AddMonths(4).GetBeginningOfQuarter().AddTicks(-1);
 
         /// <summary>
-        /// Returns the Date of the end of Quarter for this DateTime value (time will be 11:59:59).
+        /// Returns the Date of the end of Month for this DateTime value (time will be 11:59:59).
         /// </summary>
         public static DateTime GetEndOfMonth(this DateTime date) => date.GetBeginningOfMonth().AddMonths(1).AddTicks(-1);
 
+        /// <summary>
+        /// Determines whether this date is the last day of its month or not.
+        /// </summary>
         public static bool IsLastDayOfMonth(this DateTime @this) => @this.Date == @this.GetEndOfMonth().Date;
 
         /// <summary>
@@ -741,7 +743,7 @@ new DateTime(2099,04,13)};
         }
 
         /// <summary>
-        /// Gets the last date with the specified month and day.
+        /// Gets the next date with the specified month and day.
         /// </summary>
         public static DateTime GetNext(this DateTime @this, CalendarMonth month, int day)
         {
@@ -754,7 +756,7 @@ new DateTime(2099,04,13)};
         }
 
         /// <summary>
-        /// Returns the Date of the end of Quarter for this DateTime value (time will be 11:59:59).
+        /// Returns the Date of the end of Year for this DateTime value (time will be 11:59:59).
         /// </summary>
         public static DateTime GetEndOfYear(this DateTime @this) => new DateTime(@this.Year + 1, 1, 1).AddTicks(-1);
 
