@@ -36,7 +36,7 @@ The first step to set up CI/CD in Jenkins is to create a `job` for the project. 
 ### Jenkinsfile
 A pipeline jobs is described using a `Jenkinsfile` which is based on the [Groovy](http://groovy-lang.org/) language.
 
-Here you can see a [jenkinsfile template for M# projects](./MSharp-Jenkinsfile.md) along with a full description.
+Here you can see a [jenkinsfile template for M# projects](MSharp-Jenkinsfile.md) along with a full description.
 
 #### Location of the jenkinsfile
 When creating a pipeline job, you should provide the jenkinsfile for it. Rather than uploading it to Jenkins directly, you can specify a GIT repository and a path within it, from which the build script (jenkinsfile) can be pulled.
