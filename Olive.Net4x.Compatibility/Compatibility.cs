@@ -1,15 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace Olive
 {
+    /// <summary>
+    /// Prepares a legacy .NET 4.x application to use Olive.
+    /// </summary>
     public class Compatibility
     {
         /// <summary>
@@ -27,6 +27,9 @@ namespace Olive
             Context.Current.AddService(typeof(IConfiguration), new XmlConfigReader());
         }
 
+        /// <summary>
+        /// To be invoked when loading production runtime secrets.
+        /// </summary>
         public static void LoadSecrets(IDictionary<string, string> secrets)
         {
             foreach (var item in secrets)
