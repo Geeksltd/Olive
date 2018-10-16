@@ -5,6 +5,11 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>MSharpBuild</ToolCommandName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.1.109</Version>
+    <Company>Geeks Ltd</Company>
+    <Authors>Geeks Ltd</Authors>
+    <Description>Provides build functionality for M# projects</Description>
   </PropertyGroup>
 
   <ItemGroup>

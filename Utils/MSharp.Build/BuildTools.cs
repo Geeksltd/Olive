@@ -11,6 +11,7 @@ namespace MSharp.Build
         {
             Add(() => InstallChocolatey());
             Add(() => InstallDotnetCoreSdk());
+            Add(() => InstallReplaceInFiles());
             Add(() => InstallNodeJs());
             Add(() => InstallYarn());
             Add(() => InstallTypescript());
@@ -21,6 +22,9 @@ namespace MSharp.Build
         void InstallChocolatey() => WindowsCommand.Chocolaty = Install<Chocolatey>();
 
         void InstallDotnetCoreSdk() => WindowsCommand.DotNet = Install<DotNet>();
+
+        void InstallReplaceInFiles()
+            => WindowsCommand.DotNet.Execute("tool install -g replace-in-file");
 
         void InstallNodeJs() => WindowsCommand.NodeJs = Install<NodeJs>();
 
