@@ -8,7 +8,12 @@ namespace Olive
         public CookieAwareHttpClient() : this(new CookieContainer()) { }
 
         public CookieAwareHttpClient(CookieContainer container)
-            : base(new HttpClientHandler { CookieContainer = container })
+            : base(new HttpClientHandler
+            {
+                CookieContainer = container,
+                UseCookies = true,
+                AllowAutoRedirect = true
+            })
         {
             CookieContainer = container;
         }

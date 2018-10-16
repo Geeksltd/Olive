@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -55,6 +57,28 @@ namespace Olive
                    .Where(x => x.Name == name ||
                    (x.Name.StartsWith(name + "C") && x.Name.TrimStart(name + "C").Is<int>()))
                    .ToArray();
+        }
+
+        /// <summary>
+        /// Sends a Http Post message.
+        /// </summary>
+        /// <param name="anonymouseObject">Each property in this anonymous object will be sent as a form field.</param>        
+        public static Task<HttpResponseMessage> PostFormAsync(this HttpClient @this, string url, object anonymouseObject)
+        {
+            var settings =
+                anonymouseObject.GetType().GetProperties()
+                .ToDictionary(x => x.Name, x => x.GetValue(anonymouseObject)?.ToStringOrEmpty());
+
+            return @this.PostFormAsync(url, settings);
+        }
+
+        /// <summary>
+        /// Sends a Http Post message.
+        /// </summary>
+        public static Task<HttpResponseMessage> PostFormAsync(this HttpClient @this,
+            string url, IEnumerable<KeyValuePair<string, string>> formData)
+        {
+            return @this.PostAsync(url, new FormUrlEncodedContent(formData));
         }
     }
 }
