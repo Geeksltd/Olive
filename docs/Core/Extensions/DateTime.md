@@ -1,7 +1,5 @@
 
 
-
-
 # DateTime Extension Methods
 >`Date` And `Time` extension methods are really useful in all frameworks. `Olive` has various methods which you can use in your applications.
 The year that you can use is between 1 and 9999.
@@ -218,9 +216,10 @@ dateVariable1.GetBeginningOfWeek(); // returns "10/10/2018 12:00:00 AM"
 ```
 
 
-## GetEndOfWeek()
+## GetEndOfWeek({startofweek})
 Gets one tick before the start of next week.
 - It returns `DateTime`.
+- You can set the first day of week by setting {startofweek}. Default value is Monday.
 #### When to use it?
 When you want to know the last day of the week of the date in your application.
 In some applications such as `Payroll` or `Sales` systems, you need the last day of the week of the date.
@@ -230,6 +229,10 @@ In some applications such as `Payroll` or `Sales` systems, you need the last day
 
 var dateVariable1 = new DateTime(2018, 10, 10); 
 dateVariable1.GetEndOfWeek(); // returns "10/14/2018 11:59:59 PM"
+
+dateVariable1.GetEndOfWeek(DayOfWeek.Monday); // returns "10/14/2018 11:59:59 PM"
+dateVariable1.GetEndOfWeek(DayOfWeek.Saturday); // returns "10/12/2018 11:59:59 PM"
+
 
 ```
 
@@ -352,10 +355,9 @@ dateVariable2.IsBefore(dateVariable1); // returns false
 ```
 
 ## ToSmallTime()
-Determines whether this date is smaller than {day}.
-- It returns `true` if this date is smaller than {day}.
+It shows the time as hh:mm AM or hh:mm PM.
 #### When to use it?
-When you want to know a DateTime object is smaller than another `Datetime` value in your application.
+When you want to show the time in a good shape in your application.
 #### Example:
 
 ```csharp
@@ -366,10 +368,10 @@ dateVariable2.ToSmallTime(); // returns e.g: 2:15pm or 1:43am
 ```
 
 ## IsWeekend()
-Determines whether this date is smaller than {day}.
-- It returns `true` if this date is smaller than {day}.
+Determines whether this date is weekend or not (Saturday or Sunday).
+- It returns `true` if this date is Saturday or Sunday.
 #### When to use it?
-When you want to know a DateTime object is smaller than another `Datetime` value in your application.
+When you want to know a DateTime object is weekend in your application.
 #### Example:
 
 ```csharp
@@ -401,7 +403,7 @@ dateVariable2.NextWorkingDay(); // returns "15/10/2018 12:00:00 AM" next Monday
 ## PreviousWorkingDay()
 Gets the previous working day.
 #### When to use it?
-When you want to know the next working day in your application. You can add a specific working day after today.
+When you want to know the previous working day in your application.
 #### Example:
 
 ```csharp
@@ -449,6 +451,163 @@ dateVariable1.AddWorkingDays(0); // returns "08/10/2018 12:00:00 AM" Monday
 
 dateVariable1.AddWorkingDays(1); // returns "09/10/2018 12:00:00 AM" Tuesday
 
-dateVariable1.AddWorkingDays(-1); // returns "05/10/2018 12:00:00 AM" previous Thursday
+dateVariable1.AddWorkingDays(-1); // returns "05/10/2018 12:00:00 AM" previous Friday
 
 ```
+
+ ## ToTimeDifferenceString({precisionParts},{longForm})
+Gets the difference day and time to now.
+#### When to use it?
+When you want to know the difference day and time to now in your application. 
+- You can set {precisionParts} and {longForm} to set output format. You can see all in samples section.
+#### Example:
+
+```csharp
+var dateVariable1 = new DateTime(2018, 10, 9); // runtime of samples is 9/10/2018
+dateVariable1.ToTimeDifferenceString(); //returns "10 hours and 35 minutes ago"
+dateVariable1.ToTimeDifferenceString(0); //returns " ago"
+dateVariable1.ToTimeDifferenceString(1); //returns "10 hours ago"
+dateVariable1.ToTimeDifferenceString(2); //returns "10 hours and 35 minutes ago"
+dateVariable1.ToTimeDifferenceString(3); //returns "10 hours, 35 minutes and 47 seconds ago"
+dateVariable1.ToTimeDifferenceString(false); //returns "10h 35m ago"
+dateVariable1.ToTimeDifferenceString(true); //returns "10 hours and 36 minutes ago"
+dateVariable1.ToTimeDifferenceString(0,false); //returns " ago"
+dateVariable1.ToTimeDifferenceString(1,false); //returns "10h ago"
+dateVariable1.ToTimeDifferenceString(2,false); //returns "10h 37m ago"
+dateVariable1.ToTimeDifferenceString(3,false); //returns "10h 37m 50s ago"
+dateVariable1.ToTimeDifferenceString(3,true); //returns "10 hours, 38 minutes and 1 second ago"
+dateVariable1.ToTimeDifferenceString(0,true); //returns " ago"
+dateVariable1.ToTimeDifferenceString(1,true); //returns "10 hours ago"
+dateVariable1.ToTimeDifferenceString(2,true); //returns "10 hours and 38 minutes ago"
+dateVariable1.ToTimeDifferenceString(3,true); //returns "10 hours, 38 minutes and 49 seconds ago"
+
+var dateVariable2 = DateTime.Now;
+dateVariable2.ToTimeDifferenceString(); //returns "Just Now"
+dateVariable2.ToTimeDifferenceString(false); //returns "Now"
+
+var dateVariable3 = DateTime.Today.AddDays(2);
+dateVariable1.ToTimeDifferenceString(); // returns "1 day and 13 hours later"
+
+```
+
+ ## ToFriendlyDateString()
+Gets useful format of the date.
+#### When to use it?
+When you want to show the date and time in a good shape in your application. 
+#### Example:
+
+```csharp
+// Today is 08/10/2018 - Tuesday
+var dateVariable1 = new DateTime(2018, 10, 8); 
+dateVariable1.ToFriendlyDateString(); //returns  "Today @ 10:55 am"
+
+var dateVariable2 = DateTime.Today.AddDays(-1);
+dateVariable2.ToFriendlyDateString(); // returns "Yesterday @ 12:00 am"
+
+var dateVariable3 = DateTime.Today.AddDays(2);
+dateVariable3.ToFriendlyDateString(); // returns "Thursday @ 12:00 am"
+```
+   
+ ## IsBetween( {StartDateTime}, {EndDateTime} , {includingEdges})
+Determines whether this date is between two sepcified dates.
+#### When to use it?
+When you want to know a specific date is between two other dates in your application. 
+#### Example:
+
+```csharp
+var dateVariable1 = new DateTime(2018, 10, 8); 
+dateVariable1.IsBetween(new DateTime(2017,10,10), new DateTime(2019,10,10));// returns "True"
+dateVariable1.IsBetween(new DateTime(2017,10,10), new DateTime(2016,10,10)); // throw new ArgumentException("\"From\" date should be smaller than or equal to \"To\" date.")
+dateVariable1.IsBetween(new DateTime(2017,10,10), new DateTime(2017,11,10));// returns "False"
+
+```     
+
+ ## CalculateTotalWorkingHours({period}, {workingStartTime},{workingEndTime},{considerEnglishBankHolidays})
+Calculates the total working times in the specified duration which are between the two specified day-hours.
+- {period} should be a positive time span.
+- {workingStartTime} should be greater than or equal to 0, and smaller than 24.
+- {workingEndTime} should be greater than 0, and smaller than or equal to 24.
+- If it is not important that whether the day is BankHolidays or not, you should set the considerEnglishBankHolidays on false. The default value is true.
+#### When to use it?
+This can be used to calculate working hours in a particular duration.
+#### Example:
+
+```csharp
+
+new DateTime(2018,10,09).CalculateTotalWorkingHours(TimeSpan.FromDays(1), TimeSpan.FromHours(8), TimeSpan.FromHours(16),false).ToString(); // returns "08:00:00"
+new DateTime(2018,10,09).CalculateTotalWorkingHours(TimeSpan.FromDays(2), TimeSpan.FromHours(8), TimeSpan.FromHours(16),false).ToString(); // returns "16:00:00"
+
+```     
+If it is not important that whether the day is BankHolidays or not, you should set the considerEnglishBankHolidays on false:
+
+```csharp
+
+new DateTime(2016,1,1).CalculateTotalWorkingHours(TimeSpan.FromDays(1), TimeSpan.FromHours(8), TimeSpan.FromHours(16),false).ToString(); // returns "08:00:00" , this day is BankHolidays, but we set considerEnglishBankHolidays on `false`, so the output is "08:00:00"
+
+new DateTime(2016,1,1).CalculateTotalWorkingHours(TimeSpan.FromDays(1), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "00:00:00" , this day is BankHolidays and we set considerEnglishBankHolidays on `true`, so the output is "00:00:00"
+
+```     
+
+When the period of time consist of a few days, this function control the Bankholiday of each day and calculate all working hours:
+
+```csharp
+
+// calculating from 8 o'clock to 16 o'clock during 1 day to 9 days which set in FromDays parameter.
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(1), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "08:00:00" , this day is not BankHolidays(Thursday), so the output is "08:00:00".  
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(2), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "08:00:00" , the second day(1/1/2016) is BankHolidays, so the output is only "08:00:00".
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(3), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "08:00:00" , the second day(1/1/2016) is BankHolidays and third day is weekend (2/1/2016,Saturday), so the output is only "08:00:00".
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(4), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "08:00:00" , the second day(1/1/2016) is BankHolidays, third day is weekend (2/1/2016,Saturday) and 4th day is weekend (3/1/2016,Sunday), so the output is only "08:00:00".
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(5), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "16:00:00" , the second day(1/1/2016) is BankHolidays, third day is weekend (2/1/2016,Saturday), 4th day is weekend (3/1/2016,Sunday) and 5th day is not weekand and holiday, so the output is "16:00:00".
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(6), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "1:00:00:00" , 3*8 = 1 day or 24 hours
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(7), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "1:08:00:00"  or 32 hours
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(8), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "1:16:00:00"  or 40 hours
+
+new DateTime(2015,12,31).CalculateTotalWorkingHours(TimeSpan.FromDays(9), TimeSpan.FromHours(8), TimeSpan.FromHours(16)).ToString(); // returns "2:00:00:00"  or 48 hours
+
+```     
+
+ ## GetBeginningOfQuarter()
+Returns the Date of the beginning of Quarter for this DateTime value (time will be 00:00:00).
+#### When to use it?
+When you want to know the Date of the beginning of Quarter for this DateTime value. 
+For example, in Sales management system, you should have the first date of each quarter to calclulate amount of sale of that quarter and report it.
+- First quarter, Q1: 1 January – 31 March (90 days or 91 days in leap years)
+- Second quarter, Q2: 1 April – 30 June (91 days)
+- Third quarter, Q3: 1 July – 30 September (92 days)
+- Fourth quarter, Q4: 1 October – 31 December (92 days)
+#### Example:
+
+```csharp
+
+new DateTime(2018,10,09).GetBeginningOfQuarter().ToString(); // returns "1/10/2018"
+new DateTime(1978,06,10).GetBeginningOfQuarter().ToString(); // returns "1/04/1978"
+
+```     
+
+## GetBeginningOfQuarter()
+Returns the Date of the end of Quarter for this DateTime value (time will be 11:59:59).
+#### When to use it?
+When you want to know the Date of the end of Quarter for this DateTime value. 
+For example, in Sales management system, you should have the last date of each quarter to calclulate amount of sale of that quarter and report it.
+- First quarter, Q1: 1 January – 31 March (90 days or 91 days in leap years)
+- Second quarter, Q2: 1 April – 30 June (91 days)
+- Third quarter, Q3: 1 July – 30 September (92 days)
+- Fourth quarter, Q4: 1 October – 31 December (92 days)
+
+#### Example:
+
+```csharp
+
+new DateTime(2018,10,09).GetBeginningOfQuarter().ToString(); // returns "31/12/2018"
+new DateTime(1978,06,10).GetBeginningOfQuarter().ToString(); // returns "30/06/1978"
+
+```     
+
+
