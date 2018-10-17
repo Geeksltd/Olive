@@ -8,7 +8,11 @@ namespace MSharp.Build
     {
         static int Main(string[] args)
         {
-            var root = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\'));
+            var root = new DirectoryInfo(Environment.CurrentDirectory.TrimEnd('\\'));
+
+            Console.WriteLine("Build started for: " + root.FullName);
+            Console.WriteLine();
+
             var buildTools = new BuildTools();
             var solution = new OliveSolution(root, publish: args.Contains("-publish"));
 

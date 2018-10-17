@@ -23,8 +23,7 @@ namespace MSharp.Build
 
         void InstallDotnetCoreSdk() => WindowsCommand.DotNet = Install<DotNet>();
 
-        void InstallReplaceInFiles()
-            => WindowsCommand.DotNet.Execute("tool install -g replace-in-file");
+        void InstallReplaceInFiles() => Install<ReplaceInFile>();
 
         void InstallNodeJs() => WindowsCommand.NodeJs = Install<NodeJs>();
 
