@@ -50,7 +50,7 @@ namespace Olive.Mvc.Testing
             try
             {
                 var xmlDocument = new XmlDocument();
-                xmlDocument.LoadXml(Context.Current.Request().Param("Data"));
+                xmlDocument.LoadXml(Context.Current.Request().Param("Data").HtmlDecode());
 
                 var connectionStringKey = xmlDocument.GetElementsByTagName("ConnectionStringKey")[0].FirstChild.Value;
                 var dataProviderType = xmlDocument.GetElementsByTagName("DataProviderType")[0].FirstChild.Value;

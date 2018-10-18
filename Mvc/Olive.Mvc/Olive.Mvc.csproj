@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell start-process &quot;$(TargetDir)..\PublishToLocalNuget.exe&quot;" />
+    <Exec Command="update-local-nuget-cache C:\Projects\MSharp\MSharp.DSL.Fx\MSharp.DSL.Fx.csproj C:\Projects\MSharp\MSharp.DSL.Fx\bin\Debug\MSharp.DSL.exe MSharp.DSL" />
   </Target>
 
 </Project>
