@@ -15,8 +15,11 @@ namespace MSharp.Build.Tools
 
         protected override void OnInstalled()
         {
-            var log = WindowsCommand.Chocolaty.Execute("feature enable -n allowGlobalConfirmation");
-            Logs.Add("Enable allow global feature: " + log);
+            if (IsInstalled())
+            {
+                var log = Path.Execute("feature enable -n allowGlobalConfirmation");
+                Logs.Add("Enable allow global feature: " + log);
+            }
         }
     }
 }

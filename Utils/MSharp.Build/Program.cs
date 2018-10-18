@@ -14,7 +14,9 @@ namespace MSharp.Build
             Console.WriteLine();
 
             var buildTools = new BuildTools();
-            var solution = new OliveSolution(root, publish: args.Contains("-publish"));
+            var solution = new OliveSolution(root,
+                publish: args.Contains("-publish"),
+                reportGCopWarnings: args.Contains("-gcop"));
 
             try
             {

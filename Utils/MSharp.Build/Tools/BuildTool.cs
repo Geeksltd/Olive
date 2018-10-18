@@ -28,9 +28,9 @@ namespace MSharp.Build.Tools
             var log = Execute();
             Logs.Add(log);
 
-            OnInstalled();
-
             AddToPath();
+
+            OnInstalled();
 
             if (IsInstalled()) return Path;
             else throw new Exception($"Failed to install {Name}. Install it manually.");

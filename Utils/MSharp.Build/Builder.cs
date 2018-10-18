@@ -23,6 +23,8 @@ namespace MSharp.Build
             Steps.Add(name, () => method.Method.Invoke(this, new object[0]));
         }
 
+        protected void Add(string key, Action step) => Steps.Add(key, step);
+
         protected void Log(string message, [CallerMemberName] string step = "")
             => LogMessages.Add(KeyValuePair.Create(step, message));
 

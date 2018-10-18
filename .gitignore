@@ -268,3 +268,4 @@ GCopLog.txt
 @Assemblies
 /Olive.MvcJs
 nuget.exe
+/Utils/MSharp.Build/Properties/launchSettings.json

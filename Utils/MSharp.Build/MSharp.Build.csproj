@@ -24,4 +24,8 @@
     <Folder Include="CICD\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="15.8.166" />
+  </ItemGroup>
+
 </Project>
