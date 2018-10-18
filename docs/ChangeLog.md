@@ -1,6 +1,16 @@
 
 # Olive compatibility change log
 
+## 12 Oct 2018
+
+- Edit the `csproj` file in `Website` project, and append the flowing code to the bottom of the file before closing the `project` tag.
+`<Target Name="MSharpBuilding" AfterTargets="AfterBuild">
+  <CreateProperty Value="%(PackageReference.Version)" Condition="%(PackageReference.Identity) == 'MSharp.Build'">
+    <Output TaskParameter="Value" PropertyName="MSharpBuildToolsVersion" />
+  </CreateProperty>
+  <Exec Command="dotnet $(NuGetPackageRoot)msharp.build\$(MSharpBuildToolsVersion)\tools\MSharp.Build.dll -publish" />
+</Target>`
+
 ## 4 Oct 2018 - DRAFT (Don't apply yet)
 - Remove `Initialize.bat`
 - In `dockerfile`, drop the `Website/` part from `COPY ./Website/publish/ .`
