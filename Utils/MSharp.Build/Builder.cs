@@ -28,6 +28,8 @@ namespace MSharp.Build
         protected void Log(string message, [CallerMemberName] string step = "")
             => LogMessages.Add(KeyValuePair.Create(step, message));
 
+        protected virtual void OnStepFinished() { }
+
         public void Build()
         {
             AddTasks();
@@ -42,6 +44,8 @@ namespace MSharp.Build
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Done. " + Math.Round(DateTime.Now.Subtract(Start).TotalSeconds, 1) + "s");
                     Console.ResetColor();
+
+                    OnStepFinished();
                 }
                 catch (Exception ex)
                 {

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace MSharp.Build
@@ -14,6 +15,7 @@ namespace MSharp.Build
         DirectoryInfo Root, Lib;
         bool Publish, ReportGCopWarnings, ModelBuilt, UIBuilt;
         SolutionFile SolutionFile;
+        List<string> GCopLog = new List<string>();
 
         public OliveSolution(DirectoryInfo root, bool publish, bool reportGCopWarnings)
         {
@@ -164,7 +166,26 @@ namespace MSharp.Build
                     x.StartInfo.EnvironmentVariables.Add("MSHARP_BUILD", "FULL");
                 });
 
+            if (ReportGCopWarnings)
+                CountWarnings(log);
+
             Log(log);
+        }
+
+        void CountWarnings(string log)
+        {
+            var matchCollection = Regex.Matches(log, @".*: warning GCop.*\n");
+            GCopLog.AddRange(matchCollection.Select(m => m.Value.Trim()).Distinct());
+        }
+
+        protected override void OnStepFinished()
+        {
+            foreach (var item in GCopLog)
+                Console.WriteLine(item);
+
+            GCopLog.Clear();
+
+            base.OnStepFinished();
         }
 
         void MSharpGenerateModel()
