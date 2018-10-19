@@ -23,7 +23,7 @@ namespace MSharp.Build
             Lib = root.CreateSubdirectory(@"M#\lib\netcoreapp2.1\");
 
             SolutionFile = SolutionFile.Parse(Root.GetFiles("*.sln").FirstOrDefault()?.FullName ??
-                throw new InvalidOperationException("There is no solution file in the current working directory."));
+                throw new InvalidOperationException($"There is no solution file in the current working directory. '{Root.FullName}'"));
         }
 
         protected override void AddTasks()
@@ -51,7 +51,7 @@ namespace MSharp.Build
                     Add(() => BuildAppWebsite());
                 }
                 else
-                    Add($"Build{name}", () => DotnetBuild(project.RelativePath));
+                    Add($"Build{name}", () => DotnetBuild(project.RelativePath.Replace($"\\{name}.csproj", "")));
             }
         }
 
