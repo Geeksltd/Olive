@@ -88,7 +88,7 @@ namespace Olive.Entities.Data
                         throw new Exception(targetType.FullName + " does not have a property named " + property.Name);
 
                     if (!propertyInTarget.CanWrite)
-                        throw new Exception("{0}.{1} property is read-only.".FormatWith(targetType.FullName, property.Name));
+                        throw new Exception($"{targetType.FullName}.{property.Name} property is read-only.");
 
                     var mappedName = (string)property.GetValue(declaredMappings);
                     result[property.Name] = mappedName;
@@ -152,7 +152,7 @@ namespace Olive.Entities.Data
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Could not set the value of the property '{0}' from the value of '{1}'.".FormatWith(mapping.Key, data), ex);
+                    throw new Exception($"Could not set the value of the property '{mapping.Key}' from the value of '{data}'.", ex);
                 }
             }
 
@@ -213,6 +213,18 @@ namespace Olive.Entities.Data
             }
 
             return dataTable;
+        }
+
+        public static int FieldIndex(this IDataReader reader, string name)
+        {
+            try
+            {
+                return reader.GetOrdinal(name);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return -1;
+            }
         }
     }
 }
