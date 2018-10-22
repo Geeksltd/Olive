@@ -27,7 +27,7 @@ namespace Olive.Entities
 
         internal Entity OwnerEntity;
         bool IsEmptyBlob;
-        byte[] CachedFileData, NewFileData;
+        protected byte[] CachedFileData, NewFileData;
         string fileName, folderName;
         bool hasValue; // For performance, cache it
 

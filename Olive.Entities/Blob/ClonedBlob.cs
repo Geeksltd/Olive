@@ -16,10 +16,12 @@ namespace Olive.Entities
 
         public override Task<byte[]> GetFileDataAsync() => Original.GetFileDataAsync();
 
-        public override Task Save()
+        public override async Task Save()
         {
-            if (BelongsToOriginal) return Task.CompletedTask;
-            else return base.Save();
+            if (BelongsToOriginal) return;
+
+            NewFileData = await GetFileDataAsync();
+            await base.Save();
         }
     }
 }
