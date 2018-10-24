@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Olive.Entities.Data
+namespace Olive
 {
-    public static partial class DataExtensions
+    partial class OliveExtensions
     {
         /// <summary>
         /// Casts this data table's records into a list of typed objects.        
