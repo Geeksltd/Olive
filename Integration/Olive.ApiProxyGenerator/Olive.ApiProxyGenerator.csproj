@@ -33,5 +33,9 @@
       <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+  </Target>
 
 </Project>

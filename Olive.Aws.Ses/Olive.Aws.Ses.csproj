@@ -28,5 +28,8 @@
       <HintPath>..\@Assemblies\netcoreapp2.1\Olive.Email.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+  </Target>
 
 </Project>
