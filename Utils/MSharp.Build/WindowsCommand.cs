@@ -36,11 +36,11 @@ namespace MSharp.Build
         public static string ProgramFiles86(string relative)
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), relative);
 
-        public static string LocalNuget(string relative)
+        public static string GlobalDotNetTool(string relative)
         {
             var result = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
             result = new DirectoryInfo(result).Parent.FullName;
-            return Path.Combine(result, ".nuget", relative);
+            return Path.Combine(result, ".dotnet", relative);
         }
     }
 }

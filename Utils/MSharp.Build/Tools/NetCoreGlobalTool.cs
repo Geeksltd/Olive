@@ -4,7 +4,7 @@ namespace MSharp.Build.Tools
 {
     abstract class NetCoreGlobalTool : BuildTool
     {
-        public override FileInfo ExpectedPath => WindowsCommand.LocalNuget($"tools\\{Name}.exe").AsFile();
+        public override FileInfo ExpectedPath => WindowsCommand.GlobalDotNetTool($"tools\\{Name}.exe").AsFile();
 
         protected override FileInfo Installer => WindowsCommand.DotNet;
 
