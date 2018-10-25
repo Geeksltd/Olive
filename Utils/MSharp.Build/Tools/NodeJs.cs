@@ -7,6 +7,6 @@ namespace MSharp.Build.Tools
         protected override string Name => "npm";
         protected override FileInfo Installer => WindowsCommand.Chocolaty;
         protected override string InstallCommand => "install nodejs.install";
-        public override FileInfo ExpectedPath => WindowsCommand.ProgramFiles("nodejs\\node_modules\\npm\\bin\\npm.cmd").AsFile();
+        public override FileInfo ExpectedPath => WindowsCommand.ProgramFiles("nodejs\\npm.cmd").AsFile();
     }
 }
