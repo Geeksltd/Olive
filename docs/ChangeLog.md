@@ -1,13 +1,12 @@
 
 # Olive compatibility change log
 
-## 4 Oct 2018 - DRAFT (Don't apply yet)
+## 25 Oct 2018
 - Remove `Initialize.bat`
 - In `dockerfile`, drop the `Website/` part from `COPY ./Website/publish/ .`
-- Replace the `Jenkinsfile` of the project with the *new template*.
-- Add `MSharp.build` nuget tool to the project
+- Add [build.bat](https://raw.githubusercontent.com/Geeksltd/Olive.MvcTemplate/master/Template/Build.bat) to the solution root
 - Edit the `csproj` files in `#Model` and `#UI` projects.
-  - In the `<Exec ...` command add: `Condition="'$(MSHARP_BUILD)' != 'FULL'"`
+   - In the `<Exec ...` command add: `Condition="'$(MSHARP_BUILD)' != 'FULL'"`
 
 ## 3 Oct 2018
 - If your application is a microservice (hosted in Hub), then in `BaseController.cs` add the following line:

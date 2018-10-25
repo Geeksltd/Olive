@@ -16,7 +16,7 @@
 
 # Olive
 
-Olive is a framework built top of .NET for more productive cross platform software development in .NET solutions. It provides a whole set of productivity tools to make .NET development easier, cleaner and more expressive. It's available under the GPLv3 license.
+Olive is a framework built on top of .NET for more productive cross platform software development in .NET solutions. It provides a whole set of productivity tools to make .NET development easier, cleaner and more expressive. It's available under the GPLv3 license.
 Olive is a .NET Standard 2.0 library and so compatible with .NET Framework 4.6.1, .NET Core 2.0, Mono 5.4, Xamarin.iOS 10.14, Xamarin.Mac 3.8, Xamarin.Android 7.5 and UWP.
 You can check out Olive documentation [HERE](geeksltd.github.com/Olive)
 
@@ -32,6 +32,7 @@ We'll review your code ASAP and we will do the merge if everything was just fine
 1. Windows 10
 2. Visual Studio 2017 (latest build) with .NET Core and web development features installed.
 3. GIT for Windows ([install from here](http://gitforwindows.org/))
+4. Add GCop package repository to your NuGet sources [link]http://nuget.gcop.co/nuget()
 
 #### Next steps
 
