@@ -1,9 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Csv</RootNamespace>
     <AssemblyName>Olive.Csv</AssemblyName>
+    <PackageId>Olive.CSV</PackageId>
+    <PackageVersion>1.0.24</PackageVersion>
+    <Title>Olive CSV (Service)</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Olive Framework</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

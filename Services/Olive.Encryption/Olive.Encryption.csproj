@@ -8,6 +8,14 @@
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <RootNamespace>Olive.Encryption</RootNamespace>
     <AssemblyName>Olive.Encryption</AssemblyName>
+    <PackageId>Olive.Encryption</PackageId>
+    <PackageVersion>2.1.46</PackageVersion>
+    <Title>Olive Encryption</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Olive Framework</Description>
   </PropertyGroup>
 
   <ItemGroup>

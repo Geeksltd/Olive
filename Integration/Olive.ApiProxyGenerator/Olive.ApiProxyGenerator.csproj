@@ -7,6 +7,15 @@
     <ApplicationIcon />
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
+    <PackageId>Olive.ApiProxyGenerator</PackageId>
+    <PackageVersion>1.0.82</PackageVersion>
+    <Title>Olive Api Proxy Generator</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Generates Api Proxy packages for Olive microservice Apis</Description>
+    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -33,7 +42,7 @@
       <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(TargetPath) C:\Projects\Geeks.MS\Tasks\Website\bin\Debug\netcoreapp2.1" />
   </Target>

@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Globalization</RootNamespace>
+    <PackageId>Olive.Globalization</PackageId>
+    <PackageVersion>1.0.26</PackageVersion>
+    <Title>Olive Globalization (Service)</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Olive Framework</Description>    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

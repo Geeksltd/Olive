@@ -7,6 +7,15 @@
     <OutputPath>..\..\@Assemblies\</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netcoreapp2.1\Olive.Web.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <PackageId>Olive.Web</PackageId>
+    <PackageVersion>2.1.49</PackageVersion>
+    <Title>Olive Web</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Olive Framework</Description>
+    
   </PropertyGroup>
 
   <ItemGroup>

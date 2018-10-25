@@ -1,10 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-	<OutputPath>..\@Assemblies\</OutputPath>
+    <OutputPath>..\@Assemblies\</OutputPath>
     <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <PackageId>Olive</PackageId>
+    <PackageVersion>1.0.121</PackageVersion>
+    <Title>Olive</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Olive Framework</Description>    
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +24,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
-
+  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell start-process &quot;$(TargetDir)..\PublishToLocalNuget.exe&quot;" />
   </Target>
