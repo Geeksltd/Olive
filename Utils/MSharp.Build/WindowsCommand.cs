@@ -38,8 +38,7 @@ namespace MSharp.Build
 
         public static string GlobalDotNetTool(string relative)
         {
-            var result = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
-            result = new DirectoryInfo(result).Parent.FullName;
+            var result = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             return Path.Combine(result, ".dotnet", relative);
         }
     }
