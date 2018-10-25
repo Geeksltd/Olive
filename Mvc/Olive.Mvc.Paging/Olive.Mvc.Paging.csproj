@@ -5,6 +5,14 @@
     <OutputPath>..\..\@Assemblies\</OutputPath>
     <DocumentationFile>..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.Paging.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <PackageId>Olive.Mvc.Paging</PackageId>
+    <PackageVersion>1.0.18</PackageVersion>
+    <Title>Olive MVC Paging</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Pagination Utilities for Olive</Description>    
   </PropertyGroup>
 
   <ItemGroup>
