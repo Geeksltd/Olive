@@ -6,29 +6,37 @@ namespace MSharp.Build
 {
     class Program
     {
+        static bool Log;
+
         static int Main(string[] args)
         {
-            var root = new DirectoryInfo(Environment.CurrentDirectory.TrimEnd('\\'));
-
-            Console.WriteLine("Build started for: " + root.FullName);
-            Console.WriteLine();
+            Log = args.Contains("-log");
 
             var buildTools = new BuildTools();
-            var solution = new OliveSolution(root,
-                publish: args.Contains("-publish"),
-                reportGCopWarnings: args.Contains("-gcop"));
+            var result = Run(buildTools.Build, buildTools.PrintLog);
+            if (result != 0) return result;
 
+            if (!args.Contains("-tools"))
+            {
+                var root = new DirectoryInfo(Environment.CurrentDirectory.TrimEnd('\\'));
+
+                Console.WriteLine("Build started for: " + root.FullName);
+                Console.WriteLine();
+
+                var solution = new OliveSolution(root,
+                               publish: args.Contains("-publish"),
+                               reportGCopWarnings: args.Contains("-gcop"));
+                result = Run(solution.Build, solution.PrintLog);
+            }
+
+            return result;
+        }
+
+        static int Run(Action work, Action printLog)
+        {
             try
             {
-                buildTools.Build();
-                solution.Build();
-
-                if (args.Contains("-log"))
-                {
-                    buildTools.PrintLog();
-                    solution.PrintLog();
-                }
-
+                work();
                 return 0;
             }
             catch (Exception ex)
@@ -36,10 +44,11 @@ namespace MSharp.Build
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(ex.Message);
                 Console.ResetColor();
-
-                buildTools.PrintLog();
-                solution.PrintLog();
                 return -1;
+            }
+            finally
+            {
+                if (Log) printLog();
             }
         }
     }
