@@ -48,6 +48,17 @@ namespace Olive.Mvc
         }
 
         /// <summary>
+        /// Creates a new instance of the specified type, and binds it.
+        /// </summary>
+        [NonAction]
+        protected internal async Task<TViewModel> Bind<TViewModel>(string prefix = null) where TViewModel : class, new()
+        {
+            var result = new TViewModel();
+            if (await TryUpdateModelAsync(result, prefix)) return result;
+            else throw new Exception("Failed to bind a new instance of " + result.GetType().Name);
+        }
+
+        /// <summary>
         /// Do not use this overload. Always provide a viewmodel as a parameter.
         /// </summary>
         protected new internal ViewResult View()
