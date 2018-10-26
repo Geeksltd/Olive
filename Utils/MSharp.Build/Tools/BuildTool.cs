@@ -80,7 +80,8 @@ namespace MSharp.Build.Tools
             .Concat(new[] { path.Directory.FullName })
             .Distinct();
 
-            Environment.SetEnvironmentVariable("PATH", string.Join(";", parts), EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("PATH", string.Join(";", parts),
+                EnvironmentVariableTarget.User);
         }
     }
 }
