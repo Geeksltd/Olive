@@ -23,9 +23,7 @@ namespace MSharp.Build
                 Console.WriteLine("Build started for: " + root.FullName);
                 Console.WriteLine();
 
-                var solution = new OliveSolution(root,
-                               publish: args.Contains("-publish"),
-                               reportGCopWarnings: args.Contains("-gcop"));
+                var solution = new OliveSolution(root, publish: args.Contains("-publish"));
                 result = Run(solution.Build, solution.PrintLog);
             }
 
