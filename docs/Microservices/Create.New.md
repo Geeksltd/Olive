@@ -2,12 +2,7 @@
 
 1. Create a new GIT repository named `{my-solution}.{my-service}`
 1. In Visual Studio, click to create a new project with the template ***M# ASP.NET Core - MVC Microservice***.
-   - Set the project name as `{my-solution}.{my-service}`. For example, if you're creating the **Calendar** microservice for the **Lorem** solution name the new project "*Lorem.Calendar*".   
-
-## Website\Properties\LaunchSettings.json
-
-1. Select a port number that is unique in your overall solution
-2. Set **applicationUrl** to *http://localhost:N* where **N** is the port number you selected.
+   - Set the project name as `{my-solution}.{my-service}`. For example, if you're creating the **Calendar** microservice for the **Lorem** solution name the new project "*Lorem.Calendar*".
 
 ## ..\BigPicture\Services.json
 
