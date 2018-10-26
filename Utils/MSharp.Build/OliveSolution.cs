@@ -13,15 +13,13 @@ namespace MSharp.Build
         const string ModelProjectName = "#Model", UIProjectName = "#UI", DomainProjectName = "Domain", WebsiteProjectName = "Website";
 
         DirectoryInfo Root, Lib;
-        bool Publish, ReportGCopWarnings, ModelBuilt, UIBuilt;
+        bool Publish, ModelBuilt, UIBuilt;
         SolutionFile SolutionFile;
-        List<string> GCopLog = new List<string>();
 
-        public OliveSolution(DirectoryInfo root, bool publish, bool reportGCopWarnings)
+        public OliveSolution(DirectoryInfo root, bool publish)
         {
             Root = root;
             Publish = publish;
-            ReportGCopWarnings = reportGCopWarnings;
             Lib = root.CreateSubdirectory(@"M#\lib\netcoreapp2.1\");
 
             SolutionFile = SolutionFile.Parse(Root.GetFiles("*.sln").FirstOrDefault()?.FullName ??
@@ -166,26 +164,7 @@ namespace MSharp.Build
                     x.StartInfo.EnvironmentVariables.Add("MSHARP_BUILD", "FULL");
                 });
 
-            if (ReportGCopWarnings)
-                CountWarnings(log);
-
             Log(log);
-        }
-
-        void CountWarnings(string log)
-        {
-            var matchCollection = Regex.Matches(log, @".*: warning GCop.*\n");
-            GCopLog.AddRange(matchCollection.Select(m => m.Value.Trim()).Distinct());
-        }
-
-        protected override void OnStepFinished()
-        {
-            foreach (var item in GCopLog)
-                Console.WriteLine(item);
-
-            GCopLog.Clear();
-
-            base.OnStepFinished();
         }
 
         void MSharpGenerateModel()
