@@ -7,50 +7,28 @@
      - For example if you're creating the **Calendar** microservice for the **Lorem** solution for **Ipsum** company, just name the new project *Calendar".
    - Choose *Sql Server* and click **Create**
 
+## Website\Properties\LaunchSettings.json
+
+1. Select a port number that is unique in your overall solution
+2. Set **applicationUrl** to *http://localhost:N* where **N** is the port number you selected.
+
+## ..\BigPicture\Services.json
+
+1. Add an entry to this file for the new service, similar to the other ones.
+
 ## Production environment: AWS
-If using AWS for your production environment, do the following steps in AWS console:
+If using AWS for your production environment, use the following steps.
 
-#### Create a secret
-1. In AWS, create a new secret
-   - Choose `Other type of secrets` as the secret type.
-   - Choose `Plaintext` and paste the following: `{ "ConnectionStrings": { "Default": "..." } }`
-   - Name the secret `{my-solution}/{my-service}`  
-2. In `appSettings.Production.json` set the value of `Aws:Secrets:Id` to `{my-solution}/{my-service}`.
+### AWS setup
+You can set up the environment using the following tool:
+`C:\Projects\Geeks.MS\BigPicture\PrepareServiceScript`
 
 
-#### Create a Runtime Role 
-1. Under IAM, [create a Role](https://console.aws.amazon.com/iam/home?region=eu-west-1#/roles)
-1. Choose `AWS Service` and then `EC2`
-1. Give it a name as `{my-service}Runtime` and save.
-1. Edit it and grant applicable permissions:
-   - If the service has a UI, add your authentication policy, e.g. `KMS_GeeksMS-Authentication_DecryptDataKey`   
-   - Add an inline policy for accessing the secret you created earlier. Name it `ReadSecret-{My-Solution}.{My-Service}`
-```
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": "secretsmanager:GetSecretValue",
-            "Resource": "{YOUR-Secret-URI}"
-        }
-    ]
-}
-```
-1. Edit the `Trust relationships` and change it to the following (set the correct value for `{Kubernetes-Node-Role-URN}`):
-```
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": { "AWS": [ "{Kubernetes-Node-Role-URN}"] },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-```
+1. Edit `Settings.json` and set the *name* and *path* settings.
+1. Go to `bin\Debug\netcoreapp2.1\`
+1. Run `dotnet PrepareServiceScript.dll'
+1. If it runs successfuly, you will see a file pop up named `@Instructions.txt`
+   * Apply the specified changes. 
 
 
 #### Blob Storage (optional)
@@ -80,11 +58,4 @@ Do the following steps only if your service needs file storage.
 }
 ```
 
-## Website\Properties\LaunchSettings.json
 
-1. Select a port number that is unique in your overall solution
-2. Set **applicationUrl** to *http://localhost:N* where **N** is the port number you selected.
-
-## ..\BigPicture\Services.json
-
-1. Add an entry to this file for the new service, similar to the other ones.
