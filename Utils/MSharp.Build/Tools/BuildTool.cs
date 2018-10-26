@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -62,6 +63,12 @@ namespace MSharp.Build.Tools
             }
             catch
             {
+                if (ExpectedPath != null && File.Exists(ExpectedPath.FullName))
+                {
+                    Path = ExpectedPath;
+                    return true;
+                }
+
                 Path = null;
                 return false;
             }
@@ -69,19 +76,33 @@ namespace MSharp.Build.Tools
 
         void AddToPath()
         {
+
             var toCheck = new[] { Path, ExpectedPath }.Where(x => x != null).ToArray();
             var path = toCheck.FirstOrDefault(x => File.Exists(x.FullName));
 
-            Path = path ??
-                     throw new Exception("Failed to locate the installed tool: " + Name + Environment.NewLine +
-                    "Searched:\r\n" + string.Join("\r\n", toCheck.Select(x => x.FullName)));
+            Path = path ?? throw new Exception("Failed to locate the installed tool: " +
+                Name + Environment.NewLine + "Searched:\r\n" + string.Join("\r\n", toCheck.Select(x => x.FullName)));
 
             var parts = Environment.GetEnvironmentVariable("PATH").TrimOrEmpty().Split(';')
             .Concat(new[] { path.Directory.FullName })
-            .Distinct();
+            .Select(x => x + "\\")
+            .Select(x => x.Replace("\\\\", "\\"))
+            .Distinct()
+            .OrderBy(x => x.Contains("\\."));
 
-            Environment.SetEnvironmentVariable("PATH", string.Join(";", parts),
-                EnvironmentVariableTarget.User);
+            var newPath = string.Join(";", parts);
+
+            Environment.SetEnvironmentVariable("PATH", newPath);
+            Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.User);
+
+            try
+            {
+                Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Machine);
+            }
+            catch
+            {
+
+            }
         }
     }
 }
