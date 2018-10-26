@@ -11,7 +11,6 @@
 ## Production environment: AWS
 If using AWS for your production environment, use the following steps.
 
-### AWS setup
 You can set up the environment using the following tool:
 `C:\Projects\Geeks.MS\BigPicture\PrepareServiceScript`
 
