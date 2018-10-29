@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Olive;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -12,11 +13,16 @@ namespace MSharp.Build
         {
             Log = args.Contains("-log");
 
-            var buildTools = new BuildTools();
-            var result = Run(buildTools.Build, buildTools.PrintLog);
-            if (result != 0) return result;
+            var result = 0;
 
-            if (!args.Contains("-tools"))
+            if (args.Lacks("-notools"))
+            {
+                var buildTools = new BuildTools();
+                result = Run(buildTools.Build, buildTools.PrintLog);
+                if (result != 0) return result;
+            }
+
+            if (args.Lacks("-tools"))
             {
                 var root = new DirectoryInfo(Environment.CurrentDirectory.TrimEnd('\\'));
 

@@ -37,7 +37,7 @@ namespace Olive.Mvc
             var type = item?.GetType().GetCustomAttribute<BindingControllerAttribute>()?.Type;
             if (type != null)
             {
-                var result = type.CreateInstance() as Controller;
+                var result = type.CreateInstanceWithDI() as Controller;
                 result.ControllerContext = controller.ControllerContext;
                 yield return result;
             }
