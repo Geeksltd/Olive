@@ -14,7 +14,7 @@
     <PackageIconUrl>https://github.com/Geeksltd/MSharp.Docs/raw/master/_media/MSharp.png</PackageIconUrl>
     <AssemblyVersion>1.1.130</AssemblyVersion>
     <Product>msharp-build</Product>
-    <PackageId>msharp-build</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>msharp-build</PackageId>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <FileVersion>1.1.130</FileVersion>

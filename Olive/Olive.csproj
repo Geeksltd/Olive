@@ -1,18 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputPath>..\@Assemblies\</OutputPath>
     <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
-    <PackageId>Olive</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive</PackageId>
     <Title>Olive</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <Version>1.0.128</Version>
+    <Version>1.0.129</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    
   </PropertyGroup>
 
@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
-    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />

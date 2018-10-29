@@ -7,8 +7,8 @@
     <ApplicationIcon />
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
-    <PackageId>Olive.ApiProxyGenerator</PackageId>
-    <PackageVersion>1.0.82</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.ApiProxyGenerator</PackageId>
+    <Version>1.0.82</Version>
     <Title>Olive Api Proxy Generator</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</PackageProjectUrl>
@@ -26,7 +26,6 @@
   
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
-    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>

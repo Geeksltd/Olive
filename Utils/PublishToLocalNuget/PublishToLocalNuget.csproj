@@ -34,9 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GCop.Core, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GCop.Thread.1.2.5\lib\netstandard\GCop.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,8 +51,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\GCop.Collections.1.2.5\analyzers\dotnet\cs\GCop.Collections.dll" />
-    <Analyzer Include="..\..\packages\GCop.Collections.1.2.5\analyzers\dotnet\cs\GCop.Core.dll" />
     <Analyzer Include="..\..\packages\GCop.ErrorHandling.1.2.5\analyzers\dotnet\cs\GCop.Core.dll" />
     <Analyzer Include="..\..\packages\GCop.ErrorHandling.1.2.5\analyzers\dotnet\cs\GCop.ErrorHandling.dll" />
     <Analyzer Include="..\..\packages\GCop.IO.1.2.5\analyzers\dotnet\cs\GCop.Core.dll" />

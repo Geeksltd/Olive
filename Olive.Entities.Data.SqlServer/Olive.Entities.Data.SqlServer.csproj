@@ -7,8 +7,8 @@
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <OutputPath>..\@Assemblies</OutputPath>
     <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.xml</DocumentationFile>
-    <PackageId>Olive.Entities.Data.SqlServer</PackageId>
-    <PackageVersion>1.0.32</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.Entities.Data.SqlServer</PackageId>
+    <Version>1.0.32</Version>
     <Title>Olive Entities Data SqlServer</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -19,7 +19,6 @@
  
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
-    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
   </ItemGroup>

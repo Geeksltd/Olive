@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>Olive.Security</RootNamespace>
-    <PackageId>Olive.Security.Auth0</PackageId>
-    <PackageVersion>1.0.16</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.Security.Auth0</PackageId>
+    <Version>1.0.16</Version>
     <Title>Olive Security Auth0</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -23,7 +23,6 @@
   <ItemGroup>
     <PackageReference Include="Auth0" Version="3.6.0" />
     <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
-    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
   </ItemGroup>
 
