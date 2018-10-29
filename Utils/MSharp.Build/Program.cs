@@ -46,7 +46,7 @@ namespace MSharp.Build
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.ToLogString());
                 Console.ResetColor();
                 return -1;
             }
