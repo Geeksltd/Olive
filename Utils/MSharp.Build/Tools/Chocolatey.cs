@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Olive;
+using System;
+using System.IO;
 
 namespace MSharp.Build.Tools
 {
@@ -11,7 +13,7 @@ namespace MSharp.Build.Tools
             => @"-NoProfile -InputFormat None -ExecutionPolicy Bypass -Command ""iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))""";
 
         public override FileInfo ExpectedPath
-            => WindowsCommand.ProgramsData("chocolatey\\bin\\choco.exe").AsFile();
+            => Environment.SpecialFolder.CommonApplicationData.GetFile("chocolatey\\bin\\choco.exe");
 
         protected override void OnInstalled()
         {

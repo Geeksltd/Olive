@@ -114,7 +114,7 @@ namespace Olive
         public static void CopyTo(this DirectoryInfo @this, string destination, bool overwrite = false)
         {
             if (@this == null) throw new ArgumentNullException(nameof(@this));
-            if (!@this.Exists()) throw new Exception(@this.FullName + " does not exist.");
+            @this.ExistsOrThrow();
 
             destination.AsDirectory().EnsureExists();
 
@@ -194,7 +194,7 @@ namespace Olive
         public static DirectoryInfo EnsureExists(this DirectoryInfo @this)
         {
             if (!@this.Exists())
-                Directory.CreateDirectory(@this.FullName);
+                System.IO.Directory.CreateDirectory(@this.FullName);
 
             // if (!folder.Exists) folder.Create(); This has caching bug in the core .NET code :-(
 

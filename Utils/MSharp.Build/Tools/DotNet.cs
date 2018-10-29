@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Olive;
+using System;
 using System.IO;
 
 namespace MSharp.Build.Tools
@@ -13,6 +14,7 @@ namespace MSharp.Build.Tools
 
         protected override string InstallCommand => "install dotnetcore-sdk";
 
-        public override FileInfo ExpectedPath => WindowsCommand.ProgramFiles("dotnet\\dotnet.exe").AsFile();
+        public override FileInfo ExpectedPath
+            => Environment.SpecialFolder.ProgramFiles.GetFile("dotnet\\dotnet.exe");
     }
 }

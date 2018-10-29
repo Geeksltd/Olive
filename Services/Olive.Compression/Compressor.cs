@@ -99,8 +99,7 @@ namespace Olive
         {
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 
-            if (!@this.Exists())
-                throw new IOException("File does not exist: " + @this.FullName);
+            @this.ExistsOrThrow();
 
             if (destination.Exists() && !overwrite)
                 throw new Exception("Destination file already exists: " + destination.FullName);

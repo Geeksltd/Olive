@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Olive;
+using System;
+using System.IO;
 
 namespace MSharp.Build.Tools
 {
@@ -7,6 +9,8 @@ namespace MSharp.Build.Tools
         protected override string Name => "npm";
         protected override FileInfo Installer => WindowsCommand.Chocolaty;
         protected override string InstallCommand => "install nodejs.install";
-        public override FileInfo ExpectedPath => WindowsCommand.ProgramFiles("nodejs\\npm.cmd").AsFile();
+
+        public override FileInfo ExpectedPath
+            => Environment.SpecialFolder.ProgramFiles.GetFile("nodejs\\npm.cmd");
     }
 }

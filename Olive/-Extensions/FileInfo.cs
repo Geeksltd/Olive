@@ -20,7 +20,7 @@ namespace Olive
         public static bool Exists(this DirectoryInfo @this)
         {
             if (@this == null) return false;
-            return Directory.Exists(@this.FullName);
+            return System.IO.Directory.Exists(@this.FullName);
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace Olive
         public static string GetExactFullName(this FileSystemInfo @this)
         {
             var path = @this.FullName;
-            if (!File.Exists(path) && !Directory.Exists(path)) return path;
+            if (!File.Exists(path) && !System.IO.Directory.Exists(path)) return path;
 
             var asDirectory = new DirectoryInfo(path);
             var parent = asDirectory.Parent;
@@ -192,6 +192,30 @@ namespace Olive
                 return asDirectory.Name.ToUpper();
 
             return Path.Combine(parent.GetExactFullName(), parent.GetFileSystemInfos(asDirectory.Name)[0].Name);
+        }
+
+        /// <summary>
+        /// If this file exists, it will simply return it. 
+        /// Otherwise it will throw a FileNotFoundException with the message of 'File not found: {path}'.
+        /// </summary>
+        public static FileInfo ExistsOrThrow(this FileInfo file)
+        {
+            if (!file.Exists())
+                throw new FileNotFoundException("File not found: " + file.FullName);
+
+            return file;
+        }
+
+        /// <summary>
+        /// If this directory exists, it will simply return it. 
+        /// Otherwise it will throw a DirectoryNotFoundException with the message of 'Directory not found: {path}'.
+        /// </summary>
+        public static DirectoryInfo ExistsOrThrow(this DirectoryInfo directory)
+        {
+            if (!directory.Exists())
+                throw new DirectoryNotFoundException("Directory not found: " + directory.FullName);
+
+            return directory;
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Olive;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -76,7 +76,6 @@ namespace MSharp.Build.Tools
 
         void AddToPath()
         {
-
             var toCheck = new[] { Path, ExpectedPath }.Where(x => x != null).ToArray();
             var path = toCheck.FirstOrDefault(x => File.Exists(x.FullName));
 
@@ -101,7 +100,6 @@ namespace MSharp.Build.Tools
             }
             catch
             {
-
             }
         }
     }

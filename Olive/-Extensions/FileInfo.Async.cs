@@ -23,9 +23,8 @@ namespace Olive
             using (await file.GetSyncLock().Lock())
             {
                 if (!overwrite && destinationPath.Exists()) return;
-                if (!file.Exists()) throw new Exception("File does not exist: " + file.FullName);
 
-                var content = await DoReadAllBytesAsync(file);
+                var content = await DoReadAllBytesAsync(file.ExistsOrThrow());
                 await DoWriteAllBytesAsync(destinationPath, content);
             }
         }

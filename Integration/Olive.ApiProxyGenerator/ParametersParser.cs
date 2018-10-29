@@ -28,9 +28,9 @@ namespace Olive.ApiProxy
             Context.NugetApiKey = Param("apiKey");
 
             Context.PublisherService = GetServiceName();
-            Context.AssemblyFile = Context.Source.GetFile(Param("assembly").Or("Website.dll"));
-            if (!Context.AssemblyFile.Exists())
-                throw new Exception(Context.AssemblyFile.FullName + " does not exist.");
+            Context.AssemblyFile = Context.Source
+                .GetFile(Param("assembly").Or("Website.dll"))
+                .ExistsOrThrow();
 
             Context.TempPath = Path.GetTempPath().AsDirectory()
                 .GetOrCreateSubDirectory("api-proxy").CreateSubdirectory(Guid.NewGuid().ToString());

@@ -1,16 +1,16 @@
 ﻿using Microsoft.Build.Construction;
+using Olive;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace MSharp.Build
 {
     class OliveSolution : Builder
     {
-        const string ModelProjectName = "#Model", UIProjectName = "#UI", DomainProjectName = "Domain", WebsiteProjectName = "Website";
+        const string MODEL_PROJECT_NAME = "#Model", UIPROJECT_NAME = "#UI", DOMAIN_PROJECT_NAME = "Domain", WEBSITE_PROJECT_NAME = "Website";
 
         DirectoryInfo Root, Lib;
         bool Publish, ModelBuilt, UIBuilt;
@@ -34,18 +34,16 @@ namespace MSharp.Build
             {
                 var name = project.ProjectName;
 
-                if (name == ModelProjectName)
-                    AddModelBuilds();
+                if (name == MODEL_PROJECT_NAME) AddModelBuilds();
 
-                else if (name == UIProjectName)
-                    AddUIBuilds();
+                else if (name == UIPROJECT_NAME) AddUIBuilds();
 
-                else if (name == DomainProjectName)
+                else if (name == DOMAIN_PROJECT_NAME)
                 {
                     AddModelBuilds();
                     Add(() => BuildAppDomain());
                 }
-                else if (name == WebsiteProjectName)
+                else if (name == WEBSITE_PROJECT_NAME)
                 {
                     AddWebsitePreparations();
                     Add(() => BuildAppWebsite());
@@ -98,8 +96,6 @@ namespace MSharp.Build
                     yield return innerDependency;
             }
         }
-
-
 
         void AddWebsitePreparations()
         {

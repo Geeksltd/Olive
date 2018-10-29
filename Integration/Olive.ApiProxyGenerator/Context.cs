@@ -56,10 +56,7 @@ namespace Olive.ApiProxy
 
         internal static void LoadAssembly()
         {
-            if (!AssemblyFile.Exists)
-                throw new Exception("File not found: " + AssemblyFile.FullName);
-
-            Assembly = Assembly.LoadFrom(AssemblyFile.FullName);
+            Assembly = Assembly.LoadFrom(AssemblyFile.ExistsOrThrow().FullName);
             ControllerType = Assembly.GetType(ControllerName);
 
             if (ControllerType == null) // Maybe no namespace?

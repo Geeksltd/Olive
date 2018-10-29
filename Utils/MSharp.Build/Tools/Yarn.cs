@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Olive;
+using System;
+using System.IO;
 
 namespace MSharp.Build.Tools
 {
@@ -7,6 +9,8 @@ namespace MSharp.Build.Tools
         protected override string Name => "yarn";
         protected override FileInfo Installer => WindowsCommand.Chocolaty;
         protected override string InstallCommand => "install yarn";
-        public override FileInfo ExpectedPath => WindowsCommand.ProgramFiles86("yarn\\bin\\yarn.cmd").AsFile();
+
+        public override FileInfo ExpectedPath
+            => Environment.SpecialFolder.ProgramFilesX86.GetFile("yarn\\bin\\yarn.cmd");
     }
 }

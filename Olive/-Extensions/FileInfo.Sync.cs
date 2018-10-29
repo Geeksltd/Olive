@@ -14,9 +14,8 @@ namespace Olive
         public static void CopyTo(this FileInfo @this, FileInfo destinationPath, bool overwrite = true)
         {
             if (!overwrite && destinationPath.Exists()) return;
-            if (!@this.Exists()) throw new Exception("File does not exist: " + @this.FullName);
 
-            File.Copy(@this.FullName, destinationPath.FullName, overwrite);
+            File.Copy(@this.ExistsOrThrow().FullName, destinationPath.FullName, overwrite);
         }
 
         /// <summary>
