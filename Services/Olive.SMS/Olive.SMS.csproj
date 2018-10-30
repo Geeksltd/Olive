@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.SMS</RootNamespace>
     <PackageId>Olive.SMS</PackageId>
-    <PackageVersion>1.0.21</PackageVersion>
+    <Version>1.0.21</Version>
     <Title>Olive SMS (Service)</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
