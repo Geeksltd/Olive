@@ -74,19 +74,21 @@ namespace Olive.Entities
                where T : IDatabaseQuery
                => query.WhereIn<T>("ID", subquery, targetField);
 
-        public static T WhereIn<T>(this T query, Expression<Func<T, object>> property, IDatabaseQuery subquery, string targetField)
-             where T : IDatabaseQuery
-             => (T)query.WhereIn(property.GetPropertyPath(), subquery, targetField);
+        public static IDatabaseQuery<T> WhereIn<T>(this IDatabaseQuery<T> query, Expression<Func<T, object>> property, IDatabaseQuery subquery, string targetField)
+             where T : IEntity
+             => (IDatabaseQuery<T>)query.WhereIn(property.GetPropertyPath(), subquery, targetField);
 
-        public static T WhereIn<T, K>(this T query, Expression<Func<T, object>> property,
-            K subquery, Expression<Func<K, object>> targetProperty)
-             where T : IDatabaseQuery
-            where K : IDatabaseQuery
-             => (T)query.WhereIn(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
+        public static IDatabaseQuery<T> WhereIn<T, K>(this IDatabaseQuery<T> query, Expression<Func<T, object>> property,
+            IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
+             where T : IEntity
+            where K : IEntity
+        {
+            return (IDatabaseQuery<T>)query.WhereIn(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
+        }
 
-        public static T WhereIn<T, K>(this T query, string property, K subquery, Expression<Func<K, object>> targetProperty)
+        public static T WhereIn<T, K>(this T query, string property, IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
            where T : IDatabaseQuery
-           where K : IDatabaseQuery
+           where K : IEntity
             => (T)query.WhereIn(property, subquery, targetProperty.GetPropertyPath());
 
         public static T WhereIn<T, K>(this T query, IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
@@ -105,19 +107,19 @@ namespace Olive.Entities
                where T : IDatabaseQuery
                => query.WhereNotIn<T>("ID", subquery, targetField);
 
-        public static T WhereNotIn<T>(this T query, Expression<Func<T, object>> property, IDatabaseQuery subquery, string targetField)
-             where T : IDatabaseQuery
-             => (T)query.WhereNotIn(property.GetPropertyPath(), subquery, targetField);
+        public static IDatabaseQuery<T> WhereNotIn<T>(this IDatabaseQuery<T> query, Expression<Func<T, object>> property, IDatabaseQuery subquery, string targetField)
+             where T : IEntity
+             => (IDatabaseQuery<T>)query.WhereNotIn(property.GetPropertyPath(), subquery, targetField);
 
-        public static T WhereNotIn<T, K>(this T query, Expression<Func<T, object>> property,
-            K subquery, Expression<Func<K, object>> targetProperty)
-             where T : IDatabaseQuery
-            where K : IDatabaseQuery
-             => (T)query.WhereNotIn(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
+        public static IDatabaseQuery<T> WhereNotIn<T, K>(this IDatabaseQuery<T> query, Expression<Func<T, object>> property,
+            IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
+             where T : IEntity
+            where K : IEntity
+             => (IDatabaseQuery<T>)query.WhereNotIn(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
 
-        public static T WhereNotIn<T, K>(this T query, string property, K subquery, Expression<Func<K, object>> targetProperty)
+        public static T WhereNotIn<T, K>(this T query, string property, IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
            where T : IDatabaseQuery
-           where K : IDatabaseQuery
+           where K : IEntity
             => (T)query.WhereNotIn(property, subquery, targetProperty.GetPropertyPath());
 
         public static T WhereNotIn<T, K>(this T query, IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
