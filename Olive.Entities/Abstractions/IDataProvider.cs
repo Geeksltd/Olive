@@ -46,5 +46,7 @@ namespace Olive.Entities
 
         string ConnectionString { get; set; }
         string ConnectionStringKey { get; set; }
+
+        string GenerateSelectCommand(IDatabaseQuery iquery, string fields);
     }
 }

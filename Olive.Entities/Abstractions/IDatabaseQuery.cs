@@ -16,10 +16,15 @@ namespace Olive.Entities
         IDatabaseQuery Include(string associationProperty);
         IDatabaseQuery Include(IEnumerable<string> associationProperties);
         IDatabaseQuery Where(params ICriterion[] criteria);
+        IDatabaseQuery WhereIn(string myField, IDatabaseQuery subquery, string targetField);
+        IDatabaseQuery WhereNotIn(string myField, IDatabaseQuery subquery, string targetField);
+
         IDatabaseQuery OrderBy(string property, bool descending);
         IDatabaseQuery ThenBy(string property, bool descending);
         IDatabaseQuery Top(int rows);
         IDatabaseQuery OrderBy(string property);
+
+        IDataProvider Provider { get; }
 
         /// <summary>
         /// Transforms this query to be usable for a specified data provider. 

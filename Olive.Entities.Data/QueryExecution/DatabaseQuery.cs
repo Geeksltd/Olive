@@ -88,6 +88,22 @@
 
         IDatabaseQuery IDatabaseQuery.OrderBy(string property) => this.OrderBy(property, descending: false);
 
+        IDatabaseQuery IDatabaseQuery.WhereIn(string myField, IDatabaseQuery subquery, string targetField)
+        {
+            var sql = subquery.Provider.GenerateSelectCommand(subquery, subquery.Provider.MapColumn(targetField));
+            sql = $"{Provider.MapColumn(myField)} IN ({sql})";
+            Criteria.Add(Criterion.FromSql(sql));
+            return this;
+        }
+
+        IDatabaseQuery IDatabaseQuery.WhereNotIn(string myField, IDatabaseQuery subquery, string targetField)
+        {
+            var sql = subquery.Provider.GenerateSelectCommand(subquery, subquery.Provider.MapColumn(targetField));
+            sql = $"{Provider.MapColumn(myField)} NOT IN ({sql})";
+            Criteria.Add(Criterion.FromSql(sql));
+            return this;
+        }
+
         public IDatabaseQuery CloneFor(Type type)
         {
             var result = new DatabaseQuery(type)

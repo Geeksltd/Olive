@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>    
@@ -9,7 +9,7 @@
     <RootNamespace>Olive.Security</RootNamespace>
     <AssemblyName>Olive.Mvc.Security</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.Mvc.Security</PackageId>
-    <Version>2.1.50</Version>
+    <Version>2.1.51</Version>
     <Title>Olive Mvc Security</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
