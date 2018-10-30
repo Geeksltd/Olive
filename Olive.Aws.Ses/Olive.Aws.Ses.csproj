@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <PackageId>Olive.Aws.Ses</PackageId>
-    <Version>1.0.16</Version>
+    <Version>1.0.17</Version>
     <Title>Olive AWS SES</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
