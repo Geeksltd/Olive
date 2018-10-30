@@ -89,10 +89,10 @@ namespace Olive.Entities
            where K : IDatabaseQuery
             => (T)query.WhereIn(property, subquery, targetProperty.GetPropertyPath());
 
-        public static T WhereIn<T, K>(this T query, K subquery, Expression<Func<K, object>> targetProperty)
-           where T : IDatabaseQuery
-           where K : IDatabaseQuery
-           => query.WhereIn(subquery, targetProperty.GetPropertyPath());
+        public static T WhereIn<T, K>(this T query, IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
+            where T : IDatabaseQuery
+            where K : IEntity
+            => query.WhereIn(subquery, targetProperty.GetPropertyPath());
 
         #endregion
 
@@ -120,9 +120,9 @@ namespace Olive.Entities
            where K : IDatabaseQuery
             => (T)query.WhereNotIn(property, subquery, targetProperty.GetPropertyPath());
 
-        public static T WhereNotIn<T, K>(this T query, K subquery, Expression<Func<K, object>> targetProperty)
+        public static T WhereNotIn<T, K>(this T query, IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
            where T : IDatabaseQuery
-           where K : IDatabaseQuery
+           where K : IEntity
            => query.WhereNotIn(subquery, targetProperty.GetPropertyPath());
         #endregion
     }
