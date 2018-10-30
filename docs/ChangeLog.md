@@ -1,6 +1,13 @@
 
 # Olive compatibility change log
 
+## 30 Oct 2018
+In `Website.csproj` file add the following to the first *PropertyGroup*:
+
+```xml
+<TieredCompilation>true</TieredCompilation>
+```
+
 
 ## 29 Oct 2018
 - Edit `#UI.csproj` and add `<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>` under the first <PropertyGroup>
