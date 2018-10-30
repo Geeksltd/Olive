@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Olive.Entities
 {
@@ -62,5 +63,67 @@ namespace Olive.Entities
             query.Where(criteria.Cast<ICriterion>().ToArray());
             return query;
         }
+
+        #region WhereIn 
+
+        public static T WhereIn<T>(this T query, string myField, IDatabaseQuery subquery, string targetField)
+               where T : IDatabaseQuery
+               => (T)query.WhereIn(myField, subquery, targetField);
+
+        public static T WhereIn<T>(this T query, IDatabaseQuery subquery, string targetField)
+               where T : IDatabaseQuery
+               => query.WhereIn<T>("ID", subquery, targetField);
+
+        public static T WhereIn<T>(this T query, Expression<Func<T, object>> property, IDatabaseQuery subquery, string targetField)
+             where T : IDatabaseQuery
+             => (T)query.WhereIn(property.GetPropertyPath(), subquery, targetField);
+
+        public static T WhereIn<T, K>(this T query, Expression<Func<T, object>> property,
+            K subquery, Expression<Func<K, object>> targetProperty)
+             where T : IDatabaseQuery
+            where K : IDatabaseQuery
+             => (T)query.WhereIn(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
+
+        public static T WhereIn<T, K>(this T query, string property, K subquery, Expression<Func<K, object>> targetProperty)
+           where T : IDatabaseQuery
+           where K : IDatabaseQuery
+            => (T)query.WhereIn(property, subquery, targetProperty.GetPropertyPath());
+
+        public static T WhereIn<T, K>(this T query, K subquery, Expression<Func<K, object>> targetProperty)
+           where T : IDatabaseQuery
+           where K : IDatabaseQuery
+           => query.WhereIn(subquery, targetProperty.GetPropertyPath());
+
+        #endregion
+
+        #region WhereNotIn
+        public static T WhereNotIn<T>(this T query, string myField, IDatabaseQuery subquery, string targetField)
+            where T : IDatabaseQuery
+            => (T)query.WhereNotIn(myField, subquery, targetField);
+
+        public static T WhereNotIn<T>(this T query, IDatabaseQuery subquery, string targetField)
+               where T : IDatabaseQuery
+               => query.WhereNotIn<T>("ID", subquery, targetField);
+
+        public static T WhereNotIn<T>(this T query, Expression<Func<T, object>> property, IDatabaseQuery subquery, string targetField)
+             where T : IDatabaseQuery
+             => (T)query.WhereNotIn(property.GetPropertyPath(), subquery, targetField);
+
+        public static T WhereNotIn<T, K>(this T query, Expression<Func<T, object>> property,
+            K subquery, Expression<Func<K, object>> targetProperty)
+             where T : IDatabaseQuery
+            where K : IDatabaseQuery
+             => (T)query.WhereNotIn(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
+
+        public static T WhereNotIn<T, K>(this T query, string property, K subquery, Expression<Func<K, object>> targetProperty)
+           where T : IDatabaseQuery
+           where K : IDatabaseQuery
+            => (T)query.WhereNotIn(property, subquery, targetProperty.GetPropertyPath());
+
+        public static T WhereNotIn<T, K>(this T query, K subquery, Expression<Func<K, object>> targetProperty)
+           where T : IDatabaseQuery
+           where K : IDatabaseQuery
+           => query.WhereNotIn(subquery, targetProperty.GetPropertyPath());
+        #endregion
     }
 }

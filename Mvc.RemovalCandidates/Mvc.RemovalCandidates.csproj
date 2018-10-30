@@ -9,8 +9,4 @@
     <DocumentationFile>..\@Assemblies\netstandard2.0\Mvc.RemovalCandidates.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="GCop.UAT" Version="1.3.7" />
-  </ItemGroup>
-
 </Project>

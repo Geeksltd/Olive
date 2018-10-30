@@ -52,5 +52,7 @@ namespace Olive.Entities
         public virtual Task Save(IEntity record) => throw NA();
 
         public virtual bool SupportValidationBypassing() => throw NA();
+
+        public string GenerateSelectCommand(IDatabaseQuery iquery, string fields) => throw NA();
     }
 }

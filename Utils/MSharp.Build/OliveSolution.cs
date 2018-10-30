@@ -1,129 +1,34 @@
-﻿using Microsoft.Build.Construction;
-using Olive;
+﻿using Olive;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Xml;
 
 namespace MSharp.Build
 {
     class OliveSolution : Builder
     {
-        const string MODEL_PROJECT_NAME = "#Model", UIPROJECT_NAME = "#UI", DOMAIN_PROJECT_NAME = "Domain", WEBSITE_PROJECT_NAME = "Website";
-
         DirectoryInfo Root, Lib;
-        bool Publish, ModelBuilt, UIBuilt;
-        SolutionFile SolutionFile;
+        bool Publish;
 
         public OliveSolution(DirectoryInfo root, bool publish)
         {
             Root = root;
             Publish = publish;
             Lib = root.CreateSubdirectory(@"M#\lib\netcoreapp2.1\");
-
-            SolutionFile = SolutionFile.Parse(Root.GetFiles("*.sln").FirstOrDefault()?.FullName ??
-                throw new InvalidOperationException($"There is no solution file in the current working directory. '{Root.FullName}'"));
         }
 
         protected override void AddTasks()
         {
             Add(() => BuildRuntimeConfigJson());
-
-            foreach (var project in GetSortedProject())
-            {
-                var name = project.ProjectName;
-
-                if (name == MODEL_PROJECT_NAME) AddModelBuilds();
-
-                else if (name == UIPROJECT_NAME) AddUIBuilds();
-
-                else if (name == DOMAIN_PROJECT_NAME)
-                {
-                    AddModelBuilds();
-                    Add(() => BuildAppDomain());
-                }
-                else if (name == WEBSITE_PROJECT_NAME)
-                {
-                    AddWebsitePreparations();
-                    Add(() => BuildAppWebsite());
-                }
-                else
-                    Add($"Build{name}", () => DotnetBuild(project.RelativePath.Replace($"\\{name}.csproj", "")));
-            }
-        }
-
-        IEnumerable<ProjectInSolution> GetSortedProject()
-        {
-            ProjectInSolution[] projects = SolutionFile.ProjectsInOrder
-                .Where(p =>
-                    p.ProjectType == SolutionProjectType.KnownToBeMSBuildFormat ||
-                    p.ProjectType == SolutionProjectType.WebProject)
-                .ToArray();
-
-            var projectComparision = new Comparison<ProjectInSolution>((left, right) =>
-            {
-                var leftDeps = GetDependencies(left).ToArray();
-                var rightDeps = GetDependencies(right).ToArray();
-
-                if (leftDeps.Contains(right.ProjectName)) return 1;
-
-                if (rightDeps.Contains(left.ProjectName)) return -1;
-
-                return leftDeps.Count().CompareTo(rightDeps.Count());
-            });
-
-            Array.Sort(projects, projectComparision);
-
-            return projects;
-        }
-
-        IEnumerable<string> GetDependencies(ProjectInSolution project)
-        {
-            var xml = new XmlDocument();
-
-            xml.Load(project.AbsolutePath);
-
-            foreach (XmlNode dependency in xml.GetElementsByTagName("ProjectReference"))
-            {
-                var fileInfo = dependency.Attributes["Include"].Value.AsFile();
-
-                var dependencyName = fileInfo.Name.Replace(fileInfo.Extension, "");
-
-                yield return dependencyName;
-
-                foreach (var innerDependency in GetDependencies(SolutionFile.ProjectsInOrder.FirstOrDefault(p => p.ProjectName == dependencyName)))
-                    yield return innerDependency;
-            }
-        }
-
-        void AddWebsitePreparations()
-        {
-            AddUIBuilds();
+            Add(() => BuildMSharpModel());
+            Add(() => MSharpGenerateModel());
+            Add(() => BuildAppDomain());
+            Add(() => BuildMSharpUI());
+            Add(() => MSharpGenerateUI());
             Add(() => YarnInstall());
             Add(() => InstallBowerComponents());
             Add(() => TypescriptCompile());
             Add(() => SassCompile());
-        }
-
-        void AddUIBuilds()
-        {
-            if (UIBuilt) return;
-
-            UIBuilt = true;
-
-            Add(() => BuildMSharpUI());
-            Add(() => MSharpGenerateUI());
-        }
-
-        void AddModelBuilds()
-        {
-            if (ModelBuilt) return;
-
-            ModelBuilt = true;
-
-            Add(() => BuildMSharpModel());
-            Add(() => MSharpGenerateModel());
+            Add(() => BuildAppWebsite());
         }
 
         void BuildRuntimeConfigJson()

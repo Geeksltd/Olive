@@ -1,6 +1,11 @@
 
 # Olive compatibility change log
 
+
+## 29 Oct 2018
+- Edit `#UI.csproj` and add `<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>` under the first <PropertyGroup>
+
+
 ## 25 Oct 2018
 - Remove `Initialize.bat`
 - In `dockerfile`, drop the `Website/` part from `COPY ./Website/publish/ .`
