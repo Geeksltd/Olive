@@ -1,15 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.Aws.Ses</PackageId>
+    <PackageId>Olive.Aws.Ses</PackageId>
     <Version>1.0.17</Version>
     <Title>Olive AWS SES</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
-    <Description>A plugin for Olive Framework</Description>    
+    <Description>A plugin for Olive Framework</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\@Assemblies</OutputPath>
@@ -18,6 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.3.6.20" />
+    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
   </ItemGroup>
@@ -35,6 +37,7 @@
       <HintPath>..\@Assemblies\netcoreapp2.1\Olive.Email.dll</HintPath>
     </Reference>
   </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>

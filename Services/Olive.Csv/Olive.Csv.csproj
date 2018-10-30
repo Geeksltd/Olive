@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Csv</RootNamespace>
     <AssemblyName>Olive.Csv</AssemblyName>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.CSV</PackageId>
+    <PackageId>Olive.CSV</PackageId>
     <Version>1.0.24</Version>
     <Title>Olive CSV (Service)</Title>
     <Authors>Geeks Ltd</Authors>
@@ -12,6 +12,7 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,7 +23,8 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="7.1.1" />
-    <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
+    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
   </ItemGroup>
 

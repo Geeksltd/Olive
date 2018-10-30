@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace OliveVSIX.NugetPacker
@@ -15,11 +13,11 @@ namespace OliveVSIX.NugetPacker
 
     static class NugetPackerLogic
     {
-        const string NuspecFileName = "Package.nuspec";
-        const string NugetFileName = "nuget.exe";
-        const string OutputFolder = "NugetPackages";
+        const string NUSPEC_FILE_NAME = "Package.nuspec";
+        const string NUGET_FILE_NAME = "nuget.exe";
+        const string OUTPUT_FOLDER = "NugetPackages";
 #pragma warning disable GCop412 // Never hardcode a path or drive name in code. Get the application path programmatically and use relative path. Use “AppDomain.CurrentDomain.GetPath” to get the physical path.
-        const string ApiKeyContainingFile = @"C:\Projects\NUGET-Publish-Key.txt";
+        const string API_KEY_CONTAINING_FILE = @"C:\Projects\NUGET-Publish-Key.txt";
 #pragma warning restore GCop412 // Never hardcode a path or drive name in code. Get the application path programmatically and use relative path. Use “AppDomain.CurrentDomain.GetPath” to get the physical path.
 
         static DTE2 Dte2;
@@ -38,9 +36,9 @@ namespace OliveVSIX.NugetPacker
             Dte2 = dte2;
 
             SolutionPath = Path.GetDirectoryName(Dte2.Solution.FullName);
-            NugetExe = Path.Combine(SolutionPath, NugetFileName);
-            ApiKey = File.ReadAllText(ApiKeyContainingFile);
-            NugetPackagesFolder = Path.Combine(SolutionPath, OutputFolder);
+            NugetExe = Path.Combine(SolutionPath, NUGET_FILE_NAME);
+            ApiKey = File.ReadAllText(API_KEY_CONTAINING_FILE);
+            NugetPackagesFolder = Path.Combine(SolutionPath, OUTPUT_FOLDER);
 
             var start = new System.Threading.ThreadStart(() =>
             {
@@ -66,11 +64,23 @@ namespace OliveVSIX.NugetPacker
         static void PackSingleProject(Project proj)
         {
             var projectPath = Path.GetDirectoryName(proj.FullName);
-            var nuspecAddress = Path.Combine(projectPath, NuspecFileName);
+            var nuspecAddress = Path.Combine(projectPath, NUSPEC_FILE_NAME);
 
-            var packageFilename = UpdateVersionThenReturnPackageName(nuspecAddress);
+            if (!File.Exists(nuspecAddress))
+            {
+                GenerateNugetFromVSProject(proj.FileName);
+            }
+            else
+            {
+                GenerateNugetFromNuspec(nuspecAddress);
+            }
+        }
 
-            if (TryPack(nuspecAddress, out string packingMessage))
+        static void GenerateNugetFromNuspec(string nuspecAddress)
+        {
+            var packageFilename = UpdateNuspecVersionThenReturnPackageName(nuspecAddress);
+
+            if (TryPackNuget(nuspecAddress, out string packingMessage))
             {
                 if (!TryPush(packageFilename, out string pushingMessage))
                     InvokeException(new Exception(pushingMessage));
@@ -79,23 +89,39 @@ namespace OliveVSIX.NugetPacker
                 InvokeException(new Exception(packingMessage));
         }
 
+        static void GenerateNugetFromVSProject(string projectAddress)
+        {
+            var packageFilename = UpdateVisualStudioPackageVersionThenReturnPackageName(projectAddress);
+
+            if (TryPackDotnet(projectAddress, out string packingMessageDotnet))
+            {
+                if (!TryPush(packageFilename, out string pushingMessage))
+                    InvokeException(new Exception(pushingMessage));
+            }
+            else
+                InvokeException(new Exception(packingMessageDotnet));
+        }
+
         static bool TryPush(string packageFilename, out string message)
         {
-            if (!ExecuteNuget($"push \"{NugetPackagesFolder}\\{packageFilename}\" {ApiKey} -NonInteractive -Source https://www.nuget.org/api/v2/package", out message))
+            if (!ExecuteNuget($"push \"{NugetPackagesFolder}\\{packageFilename}\" {ApiKey} -NonInteractive -Source https://www.nuget.org/api/v2/package", out message, NugetExe))
                 return false;
 
-            if (!ExecuteNuget($"push \"{NugetPackagesFolder}\\{packageFilename}\" thisIsMyApiKey -NonInteractive -Source http://nuget.geeksms.uat.co/nuget", out message))
+            if (!ExecuteNuget($"push \"{NugetPackagesFolder}\\{packageFilename}\" thisIsMyApiKey -NonInteractive -Source http://nuget.geeksms.uat.co/nuget", out message, NugetExe))
                 return false;
 
             return true;
         }
 
-        static bool TryPack(string nuspecAddress, out string message) =>
-            ExecuteNuget($"pack \"{nuspecAddress}\" -OutputDirectory \"{NugetPackagesFolder}\"", out message);
+        static bool TryPackNuget(string nuspecAddress, out string message) =>
+            ExecuteNuget($"pack \"{nuspecAddress}\" -OutputDirectory \"{NugetPackagesFolder}\"", out message, NugetExe);
 
-        static bool ExecuteNuget(string arguments, out string message)
+        static bool TryPackDotnet(string projectAddress, out string message) =>
+            ExecuteNuget($"pack \"{projectAddress}\" -o \"{NugetPackagesFolder}\"", out message, "dotnet");
+
+        static bool ExecuteNuget(string arguments, out string message, string processStart)
         {
-            var startInfo = new ProcessStartInfo(NugetExe)
+            var startInfo = new ProcessStartInfo(processStart)
             {
                 Arguments = arguments,
                 RedirectStandardOutput = true,
@@ -121,7 +147,7 @@ namespace OliveVSIX.NugetPacker
             }
         }
 
-        static string UpdateVersionThenReturnPackageName(string nuspecAddress)
+        static string UpdateNuspecVersionThenReturnPackageName(string nuspecAddress)
         {
             var doc = new XmlDocument();
             doc.Load(nuspecAddress);
@@ -140,6 +166,29 @@ namespace OliveVSIX.NugetPacker
             versionNode.InnerText = $"{newVersion}{minorPart}";
 
             doc.Save(nuspecAddress);
+
+            return $"{idNode.InnerText}.{versionNode.InnerText}.nupkg";
+        }
+
+        static string UpdateVisualStudioPackageVersionThenReturnPackageName(string projectAddress)
+        {
+            var doc = new XmlDocument();
+            doc.Load(projectAddress);
+
+            var projectFile = doc.SelectSingleNode("Project/PropertyGroup");
+            var idNode = projectFile.SelectSingleNode("PackageId");
+            var versionNode = projectFile.SelectSingleNode("Version");
+
+            var versionParts = versionNode.InnerText.Split('.');
+            var minorPart = int.Parse(versionParts.LastOrDefault()) + 1;
+
+            var newVersion = string.Empty;
+            for (var index = 0; index < versionParts.Length - 1; index++)
+                newVersion += $"{versionParts[index]}.";
+
+            versionNode.InnerText = $"{newVersion}{minorPart}";
+
+            doc.Save(projectAddress);
 
             return $"{idNode.InnerText}.{versionNode.InnerText}.nupkg";
         }

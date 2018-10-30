@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.Microservices</PackageId>
+    <PackageId>Olive.Microservices</PackageId>
     <Version>1.0.36</Version>
     <Title>Olive Microservices helper framework</Title>
     <Authors>Geeks Ltd</Authors>
@@ -11,6 +11,7 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>A plugin for Olive Framework</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,7 +21,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
+    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />

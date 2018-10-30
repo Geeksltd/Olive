@@ -4,14 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Compression</RootNamespace>
     <AssemblyName>Olive.Compression</AssemblyName>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild><PackageId>Olive.Compression</PackageId>
+    <PackageId>Olive.Compression</PackageId>
     <Version>1.0.22</Version>
     <Title>Olive Compression (Service)</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
-    <Description>Olive Framework</Description>    
+    <Description>Olive Framework</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -21,7 +22,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.3.9" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
+    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="SharpCompress" Version="0.22.0" />
   </ItemGroup>
