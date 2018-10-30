@@ -90,17 +90,23 @@
 
         IDatabaseQuery IDatabaseQuery.WhereIn(string myField, IDatabaseQuery subquery, string targetField)
         {
-            var sql = subquery.Provider.GenerateSelectCommand(subquery, subquery.Provider.MapColumn(targetField));
-            sql = $"{Provider.MapColumn(myField)} IN ({sql})";
-            Criteria.Add(Criterion.FromSql(sql));
-            return this;
+            return WhereSubquery(myField, subquery, targetField, "IN");
         }
 
         IDatabaseQuery IDatabaseQuery.WhereNotIn(string myField, IDatabaseQuery subquery, string targetField)
         {
+            return WhereSubquery(myField, subquery, targetField, "NOT IN");
+        }
+
+        IDatabaseQuery WhereSubquery(string myField, IDatabaseQuery subquery, string targetField, string @operator)
+        {
             var sql = subquery.Provider.GenerateSelectCommand(subquery, subquery.Provider.MapColumn(targetField));
-            sql = $"{Provider.MapColumn(myField)} NOT IN ({sql})";
+            sql = $"{Provider.MapColumn(myField)} {@operator} ({sql})";
             Criteria.Add(Criterion.FromSql(sql));
+
+            foreach (var subQueryParam in subquery.Parameters)
+                Parameters.Add(subQueryParam.Key, subQueryParam.Value);
+
             return this;
         }
 
