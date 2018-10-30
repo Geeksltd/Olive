@@ -39,10 +39,10 @@
 
         public string Column(string propertyName, string alias = null)
         {
-            var result = Provider.MapColumn(propertyName);
+            var result = MapColumn(propertyName);
 
-            if (alias.HasValue()) return alias + "." + result.Split('.').Last();
-            else return Provider.MapColumn(propertyName);
+            if (alias.IsEmpty()) return result;
+            return AliasPrefix + alias + "." + result.Split('.').Last();
         }
 
         IDatabaseQuery IDatabaseQuery.Where(params ICriterion[] criteria)
@@ -88,28 +88,6 @@
 
         IDatabaseQuery IDatabaseQuery.OrderBy(string property) => this.OrderBy(property, descending: false);
 
-        IDatabaseQuery IDatabaseQuery.WhereIn(string myField, IDatabaseQuery subquery, string targetField)
-        {
-            return WhereSubquery(myField, subquery, targetField, "IN");
-        }
-
-        IDatabaseQuery IDatabaseQuery.WhereNotIn(string myField, IDatabaseQuery subquery, string targetField)
-        {
-            return WhereSubquery(myField, subquery, targetField, "NOT IN");
-        }
-
-        IDatabaseQuery WhereSubquery(string myField, IDatabaseQuery subquery, string targetField, string @operator)
-        {
-            var sql = subquery.Provider.GenerateSelectCommand(subquery, subquery.Provider.MapColumn(targetField));
-            sql = $"{Provider.MapColumn(myField)} {@operator} ({sql})";
-            Criteria.Add(Criterion.FromSql(sql));
-
-            foreach (var subQueryParam in subquery.Parameters)
-                Parameters.Add(subQueryParam.Key, subQueryParam.Value);
-
-            return this;
-        }
-
         public IDatabaseQuery CloneFor(Type type)
         {
             var result = new DatabaseQuery(type)
@@ -122,6 +100,7 @@
             result.Criteria.AddRange(Criteria);
             result.include.Add(include);
             result.Parameters.Add(Parameters);
+            result.AliasPrefix = AliasPrefix;
 
             return result;
         }

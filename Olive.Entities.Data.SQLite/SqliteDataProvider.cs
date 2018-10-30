@@ -8,10 +8,7 @@ namespace Olive.Entities.Data
 {
     public abstract class SqliteDataProvider<TTargetEntity> : SqliteDataProvider where TTargetEntity : IEntity
     {
-        protected SqliteDataProvider(ICache cache) : base(cache)
-        {
-        }
-
+        protected SqliteDataProvider(ICache cache) : base(cache) { }
         public override Type EntityType => typeof(TTargetEntity);
     }
 
@@ -60,5 +57,7 @@ namespace Olive.Entities.Data
 
             return r.ToString();
         }
+
+        protected override string SafeId(string objectName) => $"`{objectName}`";
     }
 }

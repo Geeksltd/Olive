@@ -27,7 +27,7 @@ namespace Olive.Mvc
         /// <summary>
         /// Use create method to instantiate the class.
         /// </summary>
-        private FileAccessor() { }
+        FileAccessor() { }
 
         /// <summary>
         /// Creates a new SecureFileAccessor instance.

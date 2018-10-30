@@ -78,5 +78,7 @@
 
             return r.ToString();
         }
+
+        protected override string SafeId(string objectName) => $"\"{objectName}\"";
     }
 }

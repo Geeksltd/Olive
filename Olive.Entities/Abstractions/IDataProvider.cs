@@ -27,6 +27,7 @@ namespace Olive.Entities
         Type EntityType { get; }
 
         string MapColumn(string propertyName);
+
         string MapSubquery(string path, string parent);
 
         /// <summary>

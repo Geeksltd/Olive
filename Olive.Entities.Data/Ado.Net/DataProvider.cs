@@ -29,6 +29,8 @@ namespace Olive.Entities.Data
 
         public abstract string MapColumn(string propertyName);
 
+        protected abstract string SafeId(string objectName);
+
         public virtual string MapSubquery(string path, string parent)
         {
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
@@ -322,7 +324,7 @@ namespace Olive.Entities.Data
         {
             var sqlFunction = function.ToString();
 
-            var columnValueExpression = MapColumn(propertyName);
+            var columnValueExpression = query.MapColumn(propertyName);
 
             if (function == AggregateFunction.Average)
             {
@@ -391,7 +393,7 @@ namespace Olive.Entities.Data
 
             var uniqueItems = masterProvider.GenerateSelectCommand(masterQuery, masterQuery.Column(association.Name));
 
-            return GenerateAssociationLoadingCriteria(MapColumn("ID"), uniqueItems, association);
+            return GenerateAssociationLoadingCriteria(masterQuery.AliasPrefix + MapColumn("ID"), uniqueItems, association);
         }
 
         protected virtual string GenerateAssociationLoadingCriteria(string id, string uniqueItems, PropertyInfo association)

@@ -55,7 +55,7 @@
             if (ids[0] is string || ids[0] is Guid)
                 ids = ids.Select(x => $"'{x}'").ToArray();
 
-            var idColumn = Provider.MapColumn("ID");
+            var idColumn = MapColumn("ID");
 
             ((IDatabaseQuery<TEntity>)this)
                 .Where(new DirectDatabaseCriterion(ids.Select(x => $"{idColumn} = {x}").ToString(" OR ")));

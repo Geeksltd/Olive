@@ -6,6 +6,6 @@
 
         protected override string ToSafeId(string id) => "[" + id + "]";
 
-        protected override string UnescapeId(string id) => id.Remove("[").Remove("]");
+        protected override string UnescapeId(string id) => id.Trim('[', ']');
     }
 }

@@ -12,6 +12,8 @@ namespace Olive.Entities
         int PageStartIndex { get; set; }
         int? PageSize { get; set; }
         int? TakeTop { get; set; }
+        string AliasPrefix { get; set; }
+        string MapColumn(string propertyName);
 
         IDatabaseQuery Include(string associationProperty);
         IDatabaseQuery Include(IEnumerable<string> associationProperties);

@@ -80,7 +80,7 @@
         {
             var parts = new List<string>();
 
-            parts.AddRange(query.OrderByParts.Select(p => MapColumn(p.Property) + " DESC".OnlyWhen(p.Descending)));
+            parts.AddRange(query.OrderByParts.Select(p => query.MapColumn(p.Property) + " DESC".OnlyWhen(p.Descending)));
 
             var offset = string.Empty;
             if (query.PageSize > 0)
@@ -88,5 +88,7 @@
 
             return parts.ToString(", ") + offset;
         }
+
+        protected override string SafeId(string objectName) => $"`{objectName}`";
     }
 }
