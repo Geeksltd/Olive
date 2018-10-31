@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,7 @@
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
     <PackageId>Olive.ApiProxyGenerator</PackageId>
-    <Version>1.0.82</Version>
+    <Version>1.0.83</Version>
     <Title>Olive Api Proxy Generator</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</PackageProjectUrl>

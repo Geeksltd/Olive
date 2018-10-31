@@ -97,18 +97,32 @@ namespace Olive.ApiProxy
 
         string Route()
         {
-            var classRouteAttr = Context.ControllerType.GetAttribute("Route")
-             ?.ConstructorArguments.Single().Value.ToString();
+            var classRouteAttr = Context.ControllerType
+                      .GetAttribute("Route")
+                      ?.ConstructorArguments
+                      .FirstOrDefault().Value.ToString();
 
-            var routeAttr = Method.GetAttribute("Route")
-                ?.ConstructorArguments.Single().Value.ToString();
+            return classRouteAttr.WithSuffix("/") + GetMethodRoute();
+        }
 
-            return classRouteAttr.WithSuffix("/" + routeAttr.Or("{Route?}"));
+        string GetMethodRoute()
+        {
+            foreach (var name in new[] { "Route", "HttpGet", "HttpPost", "HttpDelete", "HttpPut", "HttpPatch" })
+            {
+                var result = Method.GetAttribute(name)
+                             ?.ConstructorArguments
+                             .FirstOrDefault().Value.ToStringOrEmpty();
+
+                if (result.HasValue()) return result;
+            }
+
+            return "{Route???}";
         }
 
         public Type[] GetArgAndReturnTypes()
         {
-            return Method.GetParameters().Select(x => x.ParameterType).Concat(Method.GetApiMethodReturnType()).ToArray();
+            return Method.GetParameters().Select(x => x.ParameterType)
+                .Concat(Method.GetApiMethodReturnType()).ToArray();
         }
     }
 }
