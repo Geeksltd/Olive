@@ -58,7 +58,7 @@
       <Button guid="guidNugetPackerPackageCmdSet" id="NugetPackerId" priority="0x0100" type="Button">
         <Parent guid="guidNugetPackerPackageCmdSet" id="SingleProjectSelectedGroup" />
         <Strings>
-          <ButtonText>Push this project`s package</ButtonText>
+          <ButtonText>Publish to nuget.org</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidNugetPackerPackageCmdSet" id="NugetPackerId" priority="0x0100" type="Button">
