@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,7 +8,7 @@
     <OutputPath>..\@Assemblies</OutputPath>
     <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.xml</DocumentationFile>
     <PackageId>Olive.Entities.Data.SqlServer</PackageId>
-    <Version>1.0.32</Version>
+    <Version>1.0.33</Version>
     <Title>Olive Entities Data SqlServer</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>

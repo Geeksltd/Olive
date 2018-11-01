@@ -303,7 +303,7 @@ namespace Olive.Entities.Data
 
         public abstract string GetFields();
 
-        public abstract string GetTables();
+        public abstract string GetTables(string prefix = null);
 
         public abstract IEntity Parse(IDataReader reader);
 
