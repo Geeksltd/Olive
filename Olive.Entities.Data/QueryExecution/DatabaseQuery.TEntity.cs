@@ -38,6 +38,16 @@
             return this;
         }
 
+        public Task<TEntity> WithMin(string property) => this.OrderBy(property).FirstOrDefault();
+
+        public Task<TEntity> WithMax(string property) => this.OrderByDescending(property).FirstOrDefault();
+
+        public Task<TEntity> WithMin(Expression<Func<TEntity, object>> property) =>
+             OrderBy(property).FirstOrDefault();
+
+        public Task<TEntity> WithMax(Expression<Func<TEntity, object>> property) =>
+                OrderByDescending(property).FirstOrDefault();
+
         public Task<bool> Contains(TEntity item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
