@@ -95,11 +95,22 @@ namespace OliveVSIX.NugetPacker
 
             if (TryPackDotnet(projectAddress, out string packingMessageDotnet))
             {
-                if (!TryPush(packageFilename, out string pushingMessage))
+                if (!TryPushDotnet(packageFilename, out string pushingMessage))
                     InvokeException(new Exception(pushingMessage));
             }
             else
                 InvokeException(new Exception(packingMessageDotnet));
+        }
+
+        static bool TryPushDotnet(string packageFilename, out string message)
+        {
+            if (!ExecuteNuget($"nuget push \"{NugetPackagesFolder}\\{packageFilename}\" -k {ApiKey} -s https://www.nuget.org/api/v2/package", out message, "dotnet"))
+                return false;
+
+            if (!ExecuteNuget($"nuget push \"{NugetPackagesFolder}\\{packageFilename}\" -k thisIsMyApiKey -s http://nuget.geeksms.uat.co/nuget", out message, "dotnet"))
+                return false;
+
+            return true;
         }
 
         static bool TryPush(string packageFilename, out string message)
