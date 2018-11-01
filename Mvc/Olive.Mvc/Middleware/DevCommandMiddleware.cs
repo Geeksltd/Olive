@@ -53,8 +53,12 @@ namespace Olive.Mvc
         async Task<string> InvokeCommand(string command)
         {
             if (command.IsEmpty())
-                return "Available commands:\n\n" +
-                    AvailableCommands().Select(x => "/cmd/" + x.Name).ToLinesString();
+            {
+                return "<html><body><h3>Available commands:</h3><ul>" +
+                       AvailableCommands()
+                       .Select(x => $"<li>{x.Title}: <href='/cmd/{x.Name}'>/cmd/{x.Name}</a></li>")
+                       .ToLinesString() + "</ul></body></html>";
+            }
 
             var commands = AvailableCommands().Where(x => x.Name == command);
             if (commands.None()) return "Dev command not registered: " + command;
