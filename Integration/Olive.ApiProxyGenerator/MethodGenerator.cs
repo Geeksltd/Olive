@@ -12,7 +12,7 @@ namespace Olive.ApiProxy
         internal MethodInfo Method;
         string[] RouteParams;
 
-        string ReturnType => Method.GetApiMethodReturnType()?.Name;
+        public string ReturnType => Method.GetApiMethodReturnType()?.Name;
 
         public MethodGenerator(MethodInfo method)
         {
@@ -79,7 +79,7 @@ namespace Olive.ApiProxy
             return parameters.Single();
         }
 
-        string GetArgs()
+        public string GetArgs()
         {
             var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true) + " " + x.Name).ToList();
 
