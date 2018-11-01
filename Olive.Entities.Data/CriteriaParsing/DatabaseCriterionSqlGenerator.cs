@@ -117,7 +117,7 @@ namespace Olive.Entities.Data
 
         string GetUniqueParameterName(string column)
         {
-            var result = column.Trim('[', ']', '`', '\"').Replace(".", "_");
+            var result = column.Remove("[").Remove("]").Remove("`").Remove("\"").Replace(".", "_");
 
             if (Query.Parameters.ContainsKey(result))
             {
