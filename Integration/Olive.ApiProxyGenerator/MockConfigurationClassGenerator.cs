@@ -96,8 +96,10 @@ namespace Olive.ApiProxy
                 r.AppendLine($"internal {overload.ReturnType} {overload.Method.Name}Result({overload.GetArgs()})");
                 r.AppendLine("{");
                 r.AppendLine($"var key=\"{GetKey(overload.GetArgsTypes())}\";");
-
+                r.AppendLine($"if({overload.Method.Name}Expectations.ContainsKey(key))");
                 r.AppendLine($"return {overload.Method.Name}Expectations[key].Result;");
+                r.AppendLine("else");
+                r.AppendLine($"return {overload.Method.Name}Expectations[\"\"].Result;");
                 r.AppendLine("}");
             }
             r.AppendLine(GenerateMethodBehaviourClass(methodInfo));
