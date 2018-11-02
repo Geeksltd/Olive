@@ -79,7 +79,7 @@ namespace Olive.ApiProxy
             r.AppendLine($"public partial class {ClassName}");
             r.AppendLine("{");
             //Adding mock configuration field
-            r.AppendLine($"static {ClassName}MockConfiguration {ClassName}MockConfiguration;");
+            r.AppendLine($"static {ClassName}MockConfiguration {ClassName}MockConfiguration= new {ClassName}MockConfiguration();");
             r.AppendLine();
             //Method Mock starts here
             r.Append($"/// <summary>set the mock configuration for {ClassName}");
