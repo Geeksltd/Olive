@@ -292,7 +292,7 @@ namespace Olive
             else
                 secondEnding = char.MinValue;
 
-            if (ending == 's' || (secondEnding.ToString() + ending).IsAnyOf("ch", "sh"))
+            if (ending == 'x' || ending == 'z' || ending == 's' || (secondEnding.ToString() + ending) == "ch" || (secondEnding.ToString() + ending) == "sh" )
                 return singular + "es";
 
             else if (ItNeedsIESForPlural(ending, secondEnding))
