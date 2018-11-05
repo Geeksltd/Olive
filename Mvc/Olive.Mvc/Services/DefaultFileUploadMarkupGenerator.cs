@@ -28,7 +28,7 @@ namespace Olive.Mvc
             var result = new HtmlContentBuilder();
 
             result.AppendHtmlLine("<div class=\"file-upload\">");
-            result.AppendHtmlLine($"<span class=\"current-file\"{" style=\"display:none\"".OnlyWhen(blob.IsEmpty())}>" +
+            result.AppendHtmlLine($"<span class=\"current-file\" aria-label=\"Preview the file\"{" style=\"display:none\"".OnlyWhen(blob.IsEmpty())}>" +
                 $"<a target=\"_blank\" href=\"{blob.Url().HtmlEncode()}\">{blob.FileName.OrEmpty().HtmlEncode()}</a></span>");
 
             result.AppendHtmlLine($"<label for=\"{propertyInfo.Name}_fileInput\" hidden>HiddenLabel</label>");
