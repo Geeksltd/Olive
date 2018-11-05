@@ -12,7 +12,7 @@ namespace Olive.ApiProxy
         internal MethodInfo Method;
         string[] RouteParams;
 
-        string ReturnType => Method.GetApiMethodReturnType()?.Name;
+        public string ReturnType => Method.GetApiMethodReturnType()?.Name;
 
         public MethodGenerator(MethodInfo method)
         {
@@ -32,7 +32,11 @@ namespace Olive.ApiProxy
 
             r.AppendLine($"public Task{ReturnType.WithWrappers("<", ">")} {Method.Name}({GetArgs()})");
             r.AppendLine("{");
-
+            //Inject the mock data here
+            r.AppendLine($"if({Context.ControllerType.Name}MockConfiguration.Enabled)");
+            r.AppendLine("{");
+            r.AppendLine($"return Task.FromResult({Context.ControllerType.Name}MockConfiguration.Expect.{Method.Name}Result({GetArg()}));");
+            r.AppendLine("}");
             if (Method.GetExplicitAuthorizeServiceAttribute().HasValue())
                 r.AppendLine("this.AsServiceUser();");
 
@@ -79,13 +83,18 @@ namespace Olive.ApiProxy
             return parameters.Single();
         }
 
-        string GetArgs()
+        public string GetArgs()
         {
             var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true) + " " + x.Name).ToList();
 
             return string.Join(", ", items);
         }
+        public string GetArgsTypes()
+        {
+            var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true)).ToList();
 
+            return string.Join(", ", items);
+        }
         string HttpVerb()
         {
             foreach (var item in new[] { "Get", "Post", "Put", "Patch", "Delete" })
