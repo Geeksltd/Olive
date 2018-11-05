@@ -416,6 +416,8 @@ namespace Olive
                 case "wife": return "wives";
                 case "wolf": return "wolves";
                 case "woman": return "women";
+                case "cactus": return "cacti";
+                case "syllabus": return "syllabi";
 
                 default: return "";
             }
