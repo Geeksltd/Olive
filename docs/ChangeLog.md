@@ -3,7 +3,7 @@
 
 ## 05 Nov 2018
 We have added [bootstrap-select](https://developer.snapappointments.com/bootstrap-select/) to the OliveJs that has an effect on the **Collapsible** items. You can use this feature by updating `olive.mvc` to the version `0.9.154` or above and then do as below:
-1. Open `package.json` or `bower.json` and add '"bootstrap-select" : "1.13.3"' library.(you may need to run `yarn` to download the package again)
+1. Open `package.json` or `bower.json` and add `"bootstrap-select" : "1.13.3"` library.(you may need to run `yarn` to download the package again)
 2. Open `references.js` and change is as show here:
 ```javascript
 requirejs.config({
