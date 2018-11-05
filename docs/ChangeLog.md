@@ -1,6 +1,32 @@
 
 # Olive compatibility change log
 
+## 05 Nov 2018
+We have added (bootstrap-select)[https://developer.snapappointments.com/bootstrap-select/] to the OliveJs that has an effect on the **Collapsible** items. You can use this feature by updating `olive.mvc` to the version `0.9.154` or above and then do as below:
+1. Open `package.json` or `bowe.json` and add '"bootstrap-select" : "1.13.3"' library.(you may need to run `yarn` to download the package again)
+2. Open `references.js` and change is as show here:
+```javascript
+requirejs.config({
+		[...]
+		paths: {
+			[...]
+			"bootstrap-select": "bootstrap-select/dist/js/bootstrap-select"
+		},
+		shim: {
+			[...]
+			"bootstrap-select": ['jquery', 'bootstrap'],
+		}
+	});
+	requirejs([ ... , "bootstrap-select"])]);
+```
+3. Open `common.scss` and import `bootstrap-select` and `variables` as show below:
+`css
+@import "../../lib/bootstrap-select/sass/bootstrap-select";
+@import "../../lib/bootstrap-select/sass/variables";
+`
+
+run `sass-to-css.bat` too make sure everything is OK and there should be new UI where ever you have used `.AsCollapsibleCheckBoxList()` or `.Control(ControlType.CollapsibleCheckBoxList)`
+
 ## 30 Oct 2018
 In `Website.csproj` file add the following to the first *PropertyGroup*:
 
