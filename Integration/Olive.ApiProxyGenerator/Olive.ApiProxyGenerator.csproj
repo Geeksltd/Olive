@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -7,8 +6,8 @@
     <ApplicationIcon />
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
-    <PackageId>Olive.ApiProxyGenerator</PackageId>
-    <Version>1.0.83</Version>
+    <PackageId>generate-api-proxy</PackageId>
+    <Version>2.0.87</Version>
     <Title>Olive Api Proxy Generator</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</PackageProjectUrl>
@@ -17,22 +16,21 @@
     <Description>Generates Api Proxy packages for Olive microservice Apis</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>generate-api-proxies</ToolCommandName>
+    <ToolCommandName>generate-api-proxy</ToolCommandName>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath></OutputPath>
-    <DocumentationFile></DocumentationFile>
+    <OutputPath>
+    </OutputPath>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>1701;1702;1705;NU1701</NoWarn>
   </PropertyGroup>
-  
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
-  
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
@@ -44,13 +42,7 @@
       <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="	" />
-  </Target>
-
 </Project>
