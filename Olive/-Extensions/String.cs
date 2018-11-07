@@ -292,7 +292,7 @@ namespace Olive
             else
                 secondEnding = char.MinValue;
 
-            if (ending == 'x' || ending == 'z' || ending == 's' || (secondEnding.ToString() + ending) == "ch" || (secondEnding.ToString() + ending) == "sh" )
+            if (ending == 'x' || ending == 'z' || ending == 's' || (secondEnding.ToString() + ending) == "ch" || (secondEnding.ToString() + ending) == "sh")
                 return singular + "es";
 
             else if (ItNeedsIESForPlural(ending, secondEnding))
@@ -1459,7 +1459,7 @@ namespace Olive
             if (@this.Contains(",") || @this.Contains("\"") || @this.Contains("\n"))
                 @this = "\"{0}\"".FormatWith(@this.Replace("\"", "\"\""));
 
-            if (@this.StartsWithAny("=", "+", "-", "@"))
+            if (@this.StartsWithAny("+", "-", "@"))
                 return "'" + @this;
 
             return @this;
