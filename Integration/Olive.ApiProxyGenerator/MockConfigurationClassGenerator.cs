@@ -84,22 +84,58 @@ namespace Olive.ApiProxy
             //generate the result methods 
             r.Append($"/// <summary>Get the expected result for {methodInfo.Method.Name} Method");
             r.AppendLine("</summary>");
-            r.Append($"internal {methodInfo.ReturnType} {methodInfo.Method.Name}Result()");
-            r.Append(" => ");
-            r.AppendLine($"{methodInfo.Method.Name}Expectations[\"\"]?.Result;");
+            r.Append($"internal Task{methodInfo.ReturnType.WithWrappers("<", ">")} {methodInfo.Method.Name}Result()");
+            if (methodInfo.HasReturnType())
+            {
+                r.Append(" => ");
+                r.AppendLine($"Task.FromResult({methodInfo.Method.Name}Expectations[\"\"]?.Result);");
+            }
+            else
+            {
+                r.AppendLine();
+                r.AppendLine("{");
+                r.AppendLine($"var expectation = {methodInfo.Method.Name}Expectations[\"\"];");
+                r.AppendLine("if(expectation.Result)");
+                r.AppendLine("return Task.CompletedTask;");
+                r.AppendLine("else");
+                r.AppendLine("throw new Exception(expectation.ErrorMessage);");
+                r.AppendLine("}");
+            }
             foreach (var overload in Context.ActionMethods.Where(x => x.Method.Name == methodInfo.Method.Name && !x.GetArgs().IsEmpty()))
             {
 
                 //define result method with parameters
                 r.Append($"/// <summary>Get the expected result for {overload.Method.Name} Method");
                 r.AppendLine("</summary>");
-                r.AppendLine($"internal {overload.ReturnType} {overload.Method.Name}Result({overload.GetArgs()})");
+                r.AppendLine($"internal Task{overload.ReturnType.WithWrappers("<", ">")} {overload.Method.Name}Result({overload.GetArgs()})");
                 r.AppendLine("{");
                 r.AppendLine($"var key=\"{GetKey(overload.GetArgsTypes())}\";");
-                r.AppendLine($"if({overload.Method.Name}Expectations.ContainsKey(key))");
-                r.AppendLine($"return {overload.Method.Name}Expectations[key].Result;");
-                r.AppendLine("else");
-                r.AppendLine($"return {overload.Method.Name}Expectations[\"\"].Result;");
+                if (methodInfo.HasReturnType())
+                {
+                    r.AppendLine($"if({overload.Method.Name}Expectations.ContainsKey(key))");
+                    r.AppendLine($"return Task.FromResult({overload.Method.Name}Expectations[key].Result);");
+                    r.AppendLine("else");
+                    r.AppendLine($"return Task.FromResult({overload.Method.Name}Expectations[\"\"].Result);");
+                }
+                else
+                {
+                    r.AppendLine($"if({overload.Method.Name}Expectations.ContainsKey(key))");
+                    r.AppendLine("{");
+                    r.AppendLine($"var expectation = {overload.Method.Name}Expectations[key];");
+                    r.AppendLine("if(expectation.Result)");
+                    r.AppendLine("return Task.CompletedTask;");
+                    r.AppendLine("else");
+                    r.AppendLine("throw new Exception(expectation.ErrorMessage);");
+                    r.AppendLine("}");
+                    r.AppendLine("else");
+                    r.AppendLine("{");
+                    r.AppendLine($"var expectation = {overload.Method.Name}Expectations[\"\"];");
+                    r.AppendLine("if(expectation.Result)");
+                    r.AppendLine("return Task.CompletedTask;");
+                    r.AppendLine("else");
+                    r.AppendLine("throw new Exception(expectation.ErrorMessage);");
+                    r.AppendLine("}");
+                }
                 r.AppendLine("}");
             }
             r.AppendLine(GenerateMethodBehaviourClass(methodInfo));
@@ -117,18 +153,48 @@ namespace Olive.ApiProxy
             //Class defination starts here
             r.AppendLine("{");
             r.AppendLine();
-            r.Append($"/// <summary>Get teh configured mock value for {methodInfo.Method.Name} Method");
-            r.AppendLine("</summary>");
-            r.AppendLine($"internal {methodInfo.ReturnType} Result {{ get; private set;}}");
-            r.AppendLine();
-            r.Append($"/// <summary>Set the mock returned value for {methodInfo.Method.Name} Method");
-            r.AppendLine("</summary>");
-            r.AppendLine($"public void Returns({methodInfo.ReturnType} expectedResult)");
-            //Method defination starts here
-            r.AppendLine("{");
-            r.AppendLine("Result = expectedResult;");
-            //Method defination ends here
-            r.AppendLine("}");
+            if (methodInfo.HasReturnType())
+            {
+                r.Append($"/// <summary>Get the configured mock value for {methodInfo.Method.Name} Method");
+                r.AppendLine("</summary>");
+                r.AppendLine($"internal {methodInfo.ReturnType} Result {{ get; private set;}}");
+                r.AppendLine();
+                r.Append($"/// <summary>Set the mock returned value for {methodInfo.Method.Name} Method");
+                r.AppendLine("</summary>");
+                r.AppendLine($"public void Returns({methodInfo.ReturnType} expectedResult)");
+                //Method defination starts here
+                r.AppendLine("{");
+                r.AppendLine("Result = expectedResult;");
+                //Method defination ends here
+                r.AppendLine("}");
+            }
+            else
+            {
+                r.Append($"/// <summary>Get the configured mock value for {methodInfo.Method.Name} Method");
+                r.AppendLine("</summary>");
+                r.AppendLine("internal bool Result { get; private set;}");
+                r.Append($"/// <summary>Get the fail message for {methodInfo.Method.Name} Method");
+                r.AppendLine("</summary>");
+                r.AppendLine("internal string ErrorMessage { get; private set;}");
+                r.AppendLine();
+                r.Append("/// <summary>Pass the method execult with no result");
+                r.AppendLine("</summary>");
+                r.AppendLine("public void Pass()");
+                //Method defination starts here
+                r.AppendLine("{");
+                r.AppendLine("Result = true;");
+                //Method defination ends here
+                r.AppendLine("}");
+                r.Append("/// <summary>Fail the method execult with exception");
+                r.AppendLine("</summary>");
+                r.AppendLine("public void Fail(string errorMessage)");
+                //Method defination starts here
+                r.AppendLine("{");
+                r.AppendLine("Result = false;");
+                r.AppendLine("ErrorMessage = errorMessage;");
+                //Method defination ends here
+                r.AppendLine("}");
+            }
             //Class defination ends here
             r.AppendLine("}");
 

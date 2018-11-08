@@ -35,7 +35,7 @@ namespace Olive.ApiProxy
             //Inject the mock data here
             r.AppendLine($"if({Context.ControllerType.Name}MockConfiguration.Enabled)");
             r.AppendLine("{");
-            r.AppendLine($"return Task.FromResult({Context.ControllerType.Name}MockConfiguration.Expect.{Method.Name}Result({GetArg()}));");
+            r.AppendLine($"return {Context.ControllerType.Name}MockConfiguration.Expect.{Method.Name}Result({GetArg()});");
             r.AppendLine("}");
             if (Method.GetExplicitAuthorizeServiceAttribute().HasValue())
                 r.AppendLine("this.AsServiceUser();");
