@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace Olive.ApiProxy
@@ -10,12 +12,16 @@ namespace Olive.ApiProxy
     {
         static int Main(string[] args)
         {
+            Console.WriteLine("Current directory: " + Environment.CurrentDirectory);
+
             if (args.Contains("/debug"))
             {
                 Console.Write("Waiting for debugger to attach...");
                 while (!Debugger.IsAttached) Thread.Sleep(100);
                 Console.WriteLine("Attached.");
             }
+
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
             if (!ParametersParser.Start(args)) return Helper.ShowHelp();
 
@@ -53,6 +59,28 @@ namespace Olive.ApiProxy
             {
                 ShowError(ex);
                 return -1;
+            }
+        }
+
+        static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            var fileName = args.Name.Split(',').Select(x => x.Trim())
+                .FirstOrDefault(x => x.HasValue())?.ToLower();
+
+            if (fileName.IsEmpty()) return null;
+            else fileName = fileName.ToLower();
+
+            if (!fileName.EndsWith(".dll")) fileName += ".dll";
+
+            var file = Path.Combine(Environment.CurrentDirectory, fileName);
+            if (File.Exists(file))
+            {
+                return Assembly.LoadFile(file);
+            }
+            else
+            {
+                Console.WriteLine("Not found: " + file);
+                return null;
             }
         }
 
