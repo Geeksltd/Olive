@@ -10,6 +10,8 @@ namespace Olive.ApiProxy
 
         public DirectoryInfo Folder;
 
+        public DirectoryInfo MockFolder => Folder.GetOrCreateSubDirectory("Mock");
+
         internal static string Version = LocalTime.Now.ToString("yyMMdd.HH.mmss");
 
         protected abstract string Framework { get; }

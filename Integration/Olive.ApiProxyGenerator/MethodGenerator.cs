@@ -33,9 +33,9 @@ namespace Olive.ApiProxy
             r.AppendLine($"public Task{ReturnType.WithWrappers("<", ">")} {Method.Name}({GetArgs()})");
             r.AppendLine("{");
             //Inject the mock data here
-            r.AppendLine($"if({Context.ControllerType.Name}MockConfiguration.Enabled)");
+            r.AppendLine("if(MockConfig.Enabled)");
             r.AppendLine("{");
-            r.AppendLine($"return Task.FromResult({Context.ControllerType.Name}MockConfiguration.Expect.{Method.Name}Result({GetArg()}));");
+            r.AppendLine($"return Task.FromResult(MockConfig.Expect.{Method.Name}Result({GetArguments().Keys.ToString(", ")}));");
             r.AppendLine("}");
             if (Method.GetExplicitAuthorizeServiceAttribute().HasValue())
                 r.AppendLine("this.AsServiceUser();");
@@ -83,18 +83,24 @@ namespace Olive.ApiProxy
             return parameters.Single();
         }
 
-        public string GetArgs()
-        {
-            var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true) + " " + x.Name).ToList();
+        public string GetArgs() => GetArguments().Select(x => x.Value + " " + x.Key).ToString(", ");
 
-            return string.Join(", ", items);
-        }
-        public string GetArgsTypes()
+        public string GetMockKeyExpression()
         {
-            var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true)).ToList();
-
-            return string.Join(", ", items);
+            return GetArguments().Select(x => x.Value + ":{" + x.Key + "}").ToString(" | ");
         }
+
+        /// <summary>
+        /// Keys are arg names. Values are their types.
+        /// </summary>
+        Dictionary<string, string> GetArguments()
+        {
+            return Method.GetParameters().ToDictionary(x => x.Name,
+                  x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true));
+        }
+
+        public string GetArgsTypes() => GetArguments().Values.ToString(", ");
+
         string HttpVerb()
         {
             foreach (var item in new[] { "Get", "Post", "Put", "Patch", "Delete" })

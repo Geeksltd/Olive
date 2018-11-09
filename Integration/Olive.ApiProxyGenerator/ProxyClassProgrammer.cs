@@ -63,6 +63,7 @@ namespace Olive.ApiProxy
 
             return new CSharpFormatter(r.ToString()).Format();
         }
+
         public static string GenerateMock()
         {
             var r = new StringBuilder();
@@ -73,21 +74,22 @@ namespace Olive.ApiProxy
             r.AppendLine("using System.Threading.Tasks;");
             r.AppendLine("using System.Collections.Generic;");
             r.AppendLine("using Olive;");
+            r.AppendLine("using Mock;");
             r.AppendLine();
             r.Append("/// <summary>This will allow api users to set mock data for the api");
             r.AppendLine("</summary>");
             r.AppendLine($"public partial class {ClassName}");
             r.AppendLine("{");
             //Adding mock configuration field
-            r.AppendLine($"static {ClassName}MockConfiguration {ClassName}MockConfiguration= new {ClassName}MockConfiguration();");
+            r.AppendLine($"static {ClassName}MockConfiguration MockConfig = new {ClassName}MockConfiguration();");
             r.AppendLine();
             //Method Mock starts here
             r.Append($"/// <summary>set the mock configuration for {ClassName}");
             r.AppendLine("</summary>");
             r.AppendLine($"public static void Mock(Action<{ClassName}MockConfiguration> mockConfiguration, bool enabled = true)");
             r.AppendLine("{");
-            r.AppendLine($"{ClassName}MockConfiguration.Enabled=enabled;");
-            r.AppendLine($"mockConfiguration({ClassName}MockConfiguration);");
+            r.AppendLine("MockConfig.Enabled = enabled;");
+            r.AppendLine("mockConfiguration(MockConfig);");
             //Method Mock ends here
             r.AppendLine("}");
 
