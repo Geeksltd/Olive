@@ -35,7 +35,7 @@ namespace Olive.ApiProxy
             //Inject the mock data here
             r.AppendLine($"if({Context.ControllerType.Name}MockConfiguration.Enabled)");
             r.AppendLine("{");
-            r.AppendLine($"return {Context.ControllerType.Name}MockConfiguration.Expect.{Method.Name}Result({GetArg()});");
+            r.AppendLine($"return {Context.ControllerType.Name}MockConfiguration.Expect.{Method.Name}Result({GetArgsNames()});");
             r.AppendLine("}");
             if (Method.GetExplicitAuthorizeServiceAttribute().HasValue())
                 r.AppendLine("this.AsServiceUser();");
@@ -66,7 +66,7 @@ namespace Olive.ApiProxy
             return r.ToString();
         }
 
-        string GetArg()
+        public string GetArg()
         {
             var args = new List<string>();
 
@@ -93,6 +93,11 @@ namespace Olive.ApiProxy
         {
             var items = Method.GetParameters().Select(x => x.ParameterType.GetProgrammingName(useGlobal: false, useNamespace: false, useNamespaceForParams: false, useCSharpAlias: true)).ToList();
 
+            return string.Join(", ", items);
+        }
+        public string GetArgsNames()
+        {
+            var items = Method.GetParameters().Select(x => x.Name).ToList();
             return string.Join(", ", items);
         }
         string HttpVerb()
