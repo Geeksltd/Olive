@@ -1,3 +1,4 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -280,6 +281,8 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the first upcoming specified week day.
         /// </summary>
+        /// <param name="dayOfWeek">The number of day of week(0 to 6)</param>
+        /// <param name="skipToday">If skipToday is true, method starts from tomorrow.</param>
         public static DateTime GetUpcoming(this DateTime @this, DayOfWeek dayOfWeek, bool skipToday = false)
         {
             if (skipToday) @this = @this.Date.AddDays(1);
@@ -296,6 +299,8 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the last occurance of the specified week day.
         /// </summary>
+        /// <param name="dayOfWeek">The number of day of week(0 to 6)</param>
+        /// <param name="skipToday">If skipToday is true, the method does not contain Today.</param>
         public static DateTime GetLast(this DateTime @this, DayOfWeek dayOfWeek, bool skipToday = false)
         {
             @this = @this.Date;
@@ -396,17 +401,34 @@ new DateTime(2099,04,13)};
                 if (day.DayOfWeek == weekday) return day;
         }
 
+        /// <summary>
+        /// Determines whether this value is before than TimeSpan parameter
+        /// </summary>
+        /// <param name="span">Is a TimeSpan which is compared with this value.</param>
         public static bool IsOlderThan(this DateTime @this, TimeSpan span) => (LocalTime.Now - @this) > span;
 
+        /// <summary>
+        /// Determines whether this value is after than TimeSpan parameter
+        /// </summary>
+        /// <param name="span">Is a TimeSpan which is compared with this value.</param>
         public static bool IsNewerThan(this DateTime source, TimeSpan span) => (LocalTime.Now - source) < span;
 
+        /// <summary>
+        /// Determines whether this value is equal or after than TimeSpan parameter
+        /// </summary>
+        /// <param name="otherDate">Is a date which is compared with this value.</param>
         public static bool IsAfterOrEqualTo(this DateTime @this, DateTime otherDate) => @this >= otherDate;
 
+        /// <summary>
+        /// Determines whether this value is equal or before than TimeSpan parameter
+        /// </summary>
+        /// <param name="otherDate">Is a TimeSpan which is compared with this value.</param>
         public static bool IsBeforeOrEqualTo(this DateTime @this, DateTime otherDate) => @this <= otherDate;
 
         /// <summary>
         /// Determines whether this day is in the same week (Monday to Sunday) as the specified other date.
         /// </summary>
+        /// <param name="other">Is a date which is compared with this value.</param>
         public static bool IsInSameWeek(this DateTime day, DateTime other)
         {
             day = day.Date;
@@ -422,6 +444,7 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Determines whether this day is in the same month as the specified other date.
         /// </summary>
+        /// <param name="other">Is a date which is compared with this value.</param>
         public static bool IsInSameMonth(this DateTime @this, DateTime other) => @this.Month == other.Month && @this.Year == other.Year;
 
         /// <summary>
@@ -442,6 +465,7 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets one tick before the start of next week.
         /// </summary>
+        /// <param name="startOfWeek">The day of week which you want to set the first day of week. Default is Monday.</param>
         public static DateTime GetEndOfWeek(this DateTime date, DayOfWeek startOfWeek = DayOfWeek.Monday) =>
             date.GetUpcoming(startOfWeek, skipToday: true).AddTicks(-1);
 
@@ -465,6 +489,9 @@ new DateTime(2099,04,13)};
             }
         }
 
+        /// <summary>
+        /// Gets the end of this day (one tick before the next day).
+        /// </summary>
         public static DateTime? EndOfDay(this DateTime? @this) => @this?.EndOfDay();
 
         /// <summary>
@@ -482,19 +509,38 @@ new DateTime(2099,04,13)};
         /// </summary>
         public static bool IsToday(this DateTime date) => date.Date == LocalTime.Today;
 
+        /// <summary>
+        /// Determines whether this date is in the past. It returns true if the the date is smaller than LocalTime.Today.
+        /// </summary>
         public static bool IsInThePast(this DateTime date) => date < LocalTime.Now;
 
+        /// <summary>
+        /// Determines whether this date is greater than another one. It returns true if this date is greater.
+        /// </summary>
+        /// <param name="otherDate">Compared by this date</param>
         public static bool IsAfter(this DateTime @this, DateTime otherDate) => @this > otherDate;
 
+        /// <summary>
+        /// Determines whether this date is smaller than another one. It returns true if this date is smaller.
+        /// </summary>
+        /// <param name="otherDate">Compared by this date</param>
         public static bool IsBefore(this DateTime @this, DateTime otherDate) => @this < otherDate;
 
         /// <summary>
-        /// E.g. 4am or 6:30pm.
+        /// It shows the time as hh:mm AM or hh:mm PM. E.g. 4am or 6:30pm.
         /// </summary>
         public static string ToSmallTime(this DateTime date) => date.ToString("h:mm").TrimEnd(":00") + date.ToString("tt").ToLower();
 
+        /// <summary>
+        /// Determines whether this date is weekend. It returns true if this date is Saturday or Sunday.
+        /// </summary>
         public static bool IsWeekend(this DateTime @this) => @this.DayOfWeek == DayOfWeek.Sunday || @this.DayOfWeek == DayOfWeek.Saturday;
 
+        /// <summary>
+        /// Gets the specific working day after this date.
+        /// </summary>
+        /// <param name="days">Added the value of this parameter to this date</param>
+        /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
         public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true)
         {
             if (days == 0) return @this;
@@ -511,18 +557,38 @@ new DateTime(2099,04,13)};
             return result;
         }
 
+        /// <summary>
+        /// Gets the difference day and time between this date and now.
+        /// </summary>
+        /// <param name="precisionParts">Determines the number of output parts</param>
+        /// <param name="longForm">determines whether the abstractions of Hours, Minutes or Seconds are shown</param>
         public static string ToTimeDifferenceString(this DateTime? @this, int precisionParts = 2, bool longForm = true)
         {
             if (@this == null) return null;
             return ToTimeDifferenceString(@this.Value, precisionParts, longForm);
         }
-
+        /// <summary>
+        /// Gets the difference day and time between this date and now.
+        /// </summary>
         public static string ToTimeDifferenceString(this DateTime @this) => ToTimeDifferenceString(@this, longForm: true);
 
+        /// <summary>
+        /// Gets the difference day and time between this date and now.
+        /// </summary>
+        /// <param name="longForm">determines whether the abstractions of Hours, Minutes or Seconds are shown</param>
         public static string ToTimeDifferenceString(this DateTime @this, bool longForm) => ToTimeDifferenceString(@this, 2, longForm);
 
+        /// <summary>
+        /// Gets the difference day and time between this date and now.
+        /// </summary>
+        /// <param name="precisionParts">Determines the number of output parts</param>
         public static string ToTimeDifferenceString(this DateTime @this, int precisionParts) => ToTimeDifferenceString(@this, precisionParts, longForm: true);
 
+        /// <summary>
+        /// Gets the difference day and time between this date and now.
+        /// </summary>
+        /// <param name="precisionParts">Determines the number of output parts</param>
+        /// <param name="longForm">determines whether the abstractions of Hours, Minutes or Seconds are shown</param>
         public static string ToTimeDifferenceString(this DateTime @this, int precisionParts, bool longForm)
         {
             var now = LocalTime.Now;
@@ -539,11 +605,16 @@ new DateTime(2099,04,13)};
                 return @this.Subtract(now).ToNaturalTime(precisionParts, longForm) + " later";
         }
 
+        /// <summary>
+        /// Gets this value as string of date.
+        /// </summary>
+        /// <param name="format">Set the output format</param>
         public static string ToString(this DateTime? @this, string format) => ($"{{0:{format}}}").FormatWith(@this);
 
         /// <summary>
         /// Gets the next working day.
         /// </summary>
+        /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
         public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays = true)
         {
             var result = @this.AddDays(1);
@@ -562,6 +633,8 @@ new DateTime(2099,04,13)};
         /// Gets the days between this day and the specified other day.
         /// It will remove TIME information. 
         /// </summary>
+        /// <param name="other">Determines whether English Bank Holidays are considered</param>
+        /// <param name="inclusive">determines whether the result has the first and last days.</param>
         public static IEnumerable<DateTime> GetDaysInBetween(this DateTime @this, DateTime other, bool inclusive = false)
         {
             @this = @this.Date;
@@ -588,6 +661,7 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the previous working day.
         /// </summary>
+        /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
         public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays = true)
         {
             var result = @this.AddDays(-1);
@@ -601,6 +675,9 @@ new DateTime(2099,04,13)};
 
             return result;
         }
+        /// <summary>
+        /// Gets useful and readable format of the date.
+        /// </summary>
         public static string ToFriendlyDateString(this DateTime @this)
         {
             string formattedDate;
@@ -625,6 +702,9 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Determines whether this date is between two sepcified dates.
         /// </summary>
+        /// <param name="from">The date which determines the begin of period.</param>
+        /// <param name="to">The date which determines the end of period</param>
+        /// <param name="includingEdges">Determines whether from and to parameters included in period</param>
         public static bool IsBetween(this DateTime @this, DateTime from, DateTime to, bool includingEdges = true)
         {
             if (from > to)
@@ -642,6 +722,10 @@ new DateTime(2099,04,13)};
         /// Calculates the total working times in the specified duration which are between the two specified day-hours.
         /// This can be used to calculate working hours in a particular duration.
         /// </summary>
+        /// <param name="period">determines the TimeSpan of the period</param>
+        /// <param name="workingStartTime">determines the begin of the period</param>
+        /// <param name="workingEndTime">determines the end of the period</param>
+        /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
         public static TimeSpan CalculateTotalWorkingHours(this DateTime @this, TimeSpan period, TimeSpan workingStartTime, TimeSpan workingEndTime, bool considerEnglishBankHolidays = true)
         {
             if (period < TimeSpan.Zero)
@@ -732,6 +816,8 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the last date with the specified month and day.
         /// </summary>
+        /// <param name="month">The number of month which is used in the method.</param>
+        /// <param name="day">The number of day which is used in the method.</param>
         public static DateTime GetLast(this DateTime @this, CalendarMonth month, int day)
         {
             @this = @this.Date; // cut time
@@ -745,6 +831,8 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the next date with the specified month and day.
         /// </summary>
+        /// <param name="month">The number of month which is used in the method.</param>
+        /// <param name="day">The number of day which is used in the method.</param>
         public static DateTime GetNext(this DateTime @this, CalendarMonth month, int day)
         {
             @this = @this.Date; // cut time
@@ -763,6 +851,7 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the minimum value between this date and a specified other date.
         /// </summary>
+        /// <param name="other">Is the date which is compared with this value.</param>
         public static DateTime Min(this DateTime @this, DateTime other)
         {
             if (other < @this) return other;
@@ -772,6 +861,7 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the maximum value between this date and a specified other date.
         /// </summary>
+        /// <param name="other">Is the date which is compared with this value.</param>
         public static DateTime Max(this DateTime @this, DateTime other)
         {
             if (other > @this) return other;
@@ -781,11 +871,14 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Adds the specified number of weeks and returns the result.
         /// </summary>
+        /// <param name="numberofWeeks">the specified number of weeks</param>
         public static DateTime AddWeeks(this DateTime @this, int numberofWeeks) => @this.AddDays(WEEK_DAYS_COUNT * numberofWeeks);
 
         /// <summary>
         /// Gets the latest date with the specified day of week and time that is before (or same as) this date.
         /// </summary>
+        /// <param name="day">the specified number of weeks</param>
+        /// <param name="timeOfDay">the specified number of weeks</param>
         public static DateTime GetLast(this DateTime @this, DayOfWeek day, TimeSpan timeOfDay)
         {
             var result = @this.GetLast(day).Add(timeOfDay);
@@ -806,6 +899,10 @@ new DateTime(2099,04,13)};
         /// </summary>
         public static DateTime ToLocal(this DateTime @this) => @this.ToLocal(LocalTime.CurrentTimeZone());
 
+        /// <summary>
+        /// Returns the local time equivalent of this UTC date value based on the TimeZone specified in Localtime.CurrentTimeZone().
+        /// </summary>
+        /// <param name="timeZone">the specified TimeZone</param>
         public static DateTime ToLocal(this DateTime @this, TimeZoneInfo timeZone) =>
             new DateTime(@this.Ticks, DateTimeKind.Local).Add(timeZone.GetUtcOffset(@this));
 
@@ -823,6 +920,7 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Returns the equivalent Universal Time (UTC) of this local date value.
         /// </summary>
+        /// <param name="sourceTimezone">the specified TimeZone</param>
         public static DateTime ToUniversal(this DateTime @this, TimeZoneInfo sourceTimezone) =>
             new DateTime(@this.Ticks, DateTimeKind.Utc).Subtract(sourceTimezone.BaseUtcOffset);
 
@@ -844,6 +942,7 @@ new DateTime(2099,04,13)};
         /// <summary>
         ///  Rounds this up to the nearest interval (e.g. second, minute, hour, etc).
         /// </summary>
+        /// <param name="nearest">Nearest interval or rounding (e.g. second, minute, hour, etc).</param>
         public static DateTime Round(this DateTime @this, TimeSpan nearest)
         {
             if (nearest == TimeSpan.Zero) return @this;
@@ -857,6 +956,10 @@ new DateTime(2099,04,13)};
             return result;
         }
 
+        /// <summary>
+        ///  Compare this value with another date parameter.
+        /// </summary>
+        /// <param name="another">The date which is compared with this value.</param>
         public static int CompareTo(this DateTime? @this, DateTime? another)
         {
             if (@this == another) return 0;
