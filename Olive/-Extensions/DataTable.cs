@@ -17,17 +17,17 @@ namespace Olive
 
         /// <summary>
         /// Casts this data table's records into a list of typed objects.
+        /// </summary>
         /// <param name="propertyMappings">An anonymouse object containing property mapping information.
         /// e.g.: new {Property1 = "Property name in CSV", Property2 = "...", set_Property1 = new Func&lt;string, object&gt;(text => Client.Parse(value)) }</param>
-        /// </summary>
         public static IEnumerable<T> CastTo<T>(this DataTable @this, object propertyMappings) where T : new() =>
             CastAsDictionary<T>(@this, propertyMappings).Select(i => i.Key).ToList();
 
         /// <summary>
         /// Casts this data table's records into a list of typed objects.
+        /// </summary>
         /// <param name="propertyMappings">An anonymouse object containing property mapping information.
         /// e.g.: new {Property1 = "Property name in CSV", Property2 = "...", set_Property1 = new Func&lt;string, object&gt;(text => Client.Parse(value)) }</param>
-        /// </summary>
         public static Dictionary<T, DataRow> CastAsDictionary<T>(this DataTable @this, object propertyMappings) where T : new()
         {
             if (propertyMappings != null)
@@ -64,9 +64,6 @@ namespace Olive
             return result;
         }
 
-        /// <summary>
-        /// Finds the property mappings for the specified target type, CSV column names and user declared mappings.
-        /// </summary>
         static Dictionary<string, string> FindPropertyMappings(Type targetType, DataColumnCollection columns, object declaredMappings)
         {
             var result = new Dictionary<string, string>();
@@ -215,6 +212,10 @@ namespace Olive
             return dataTable;
         }
 
+        /// <summary>
+        /// Returns the ordinal number of the field which is declared in name parameter in the DataReader object.
+        /// </summary>
+        /// <param name="name">The name of the field.</param>
         public static int FieldIndex(this IDataReader reader, string name)
         {
             try
