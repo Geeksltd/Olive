@@ -3,6 +3,7 @@ using Amazon.Runtime;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,6 +65,8 @@ namespace Olive.Aws
             }
         }
 
+        static ILogger Log => Olive.Log.For(typeof(RuntimeIdentity));
+
         static async Task Renew()
         {
             var request = new AssumeRoleRequest
@@ -74,10 +77,14 @@ namespace Olive.Aws
                 RoleSessionName = "Pod"
             };
 
+            Log.Debug("Requesting AssumeRole: " + RoleArn);
+
             using (var client = new AmazonSecurityTokenServiceClient(Region))
             {
                 var response = await client.AssumeRoleAsync(request);
+                Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
                 Credentials = response.Credentials;
+                Log.Debug("Obtained assume role credentials.");
             }
         }
     }

@@ -34,7 +34,7 @@ namespace Olive
                 if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
                 var filename = ID + "." + Extension.Trim('.');
-                return folder + "\\" + filename;
+                return Path.Combine(folder, filename);
             }
         }
 
