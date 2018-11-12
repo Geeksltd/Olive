@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="OliveVSIX.d974b9b5-a7c9-4678-806b-b9afe6af3341" Version="1.12" Language="en-US" Publisher="Geeks Developers" />
+        <Identity Id="OliveVSIX.d974b9b5-a7c9-4678-806b-b9afe6af3341" Version="1.13" Language="en-US" Publisher="Geeks Developers" />
         <DisplayName>OliveVSIX</DisplayName>
         <Description xml:space="preserve">Empty VSIX Project.</Description>
         <MoreInfo>https://github.com/Geeksltd/Olive</MoreInfo>

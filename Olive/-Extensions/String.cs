@@ -292,7 +292,7 @@ namespace Olive
             else
                 secondEnding = char.MinValue;
 
-            if (ending == 's' || (secondEnding.ToString() + ending).IsAnyOf("ch", "sh"))
+            if (ending == 'x' || ending == 'z' || ending == 's' || (secondEnding.ToString() + ending) == "ch" || (secondEnding.ToString() + ending) == "sh")
                 return singular + "es";
 
             else if (ItNeedsIESForPlural(ending, secondEnding))
@@ -416,6 +416,8 @@ namespace Olive
                 case "wife": return "wives";
                 case "wolf": return "wolves";
                 case "woman": return "women";
+                case "cactus": return "cacti";
+                case "syllabus": return "syllabi";
 
                 default: return "";
             }
@@ -1457,7 +1459,7 @@ namespace Olive
             if (@this.Contains(",") || @this.Contains("\"") || @this.Contains("\n"))
                 @this = "\"{0}\"".FormatWith(@this.Replace("\"", "\"\""));
 
-            if (@this.StartsWithAny("=", "+", "-", "@"))
+            if (@this.StartsWithAny("+", "-", "@"))
                 return "'" + @this;
 
             return @this;

@@ -116,8 +116,11 @@ namespace OliveVSIX.NugetPacker
         static bool TryPackNuget(string nuspecAddress, out string message) =>
             ExecuteNuget($"pack \"{nuspecAddress}\" -OutputDirectory \"{NugetPackagesFolder}\"", out message, NugetExe);
 
-        static bool TryPackDotnet(string projectAddress, out string message) =>
-            ExecuteNuget($"pack \"{projectAddress}\" -o \"{NugetPackagesFolder}\"", out message, "dotnet");
+        static bool TryPackDotnet(string projectAddress, out string message)
+        {
+            ExecuteNuget($"build \"{projectAddress}\"", out message, "dotnet");
+            return ExecuteNuget($"pack \"{projectAddress}\" -o \"{NugetPackagesFolder}\"", out message, "dotnet");
+        }
 
         static bool ExecuteNuget(string arguments, out string message, string processStart)
         {

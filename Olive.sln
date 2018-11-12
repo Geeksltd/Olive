@@ -83,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire", "Mvc\Olive
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Microservices", "Integration\Olive.Microservices\Olive.Microservices.csproj", "{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiProxyGenerator", "Integration\Olive.ApiProxyGenerator\Olive.ApiProxyGenerator.csproj", "{81877296-65EB-4F57-8B58-6B3982ADF05B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiProxyGenerator", "Integration\Olive.ApiProxyGenerator\generate-api-proxy.csproj", "{81877296-65EB-4F57-8B58-6B3982ADF05B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mvc", "Mvc", "{4EE1A9FA-1435-417C-B407-77E652959CE1}"
 EndProject
@@ -153,6 +153,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSharp.Build", "Utils\MSharp.Build\MSharp.Build.csproj", "{126292EE-733D-4C27-8343-E38A310B72F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Net4x.Compatibility", "Olive.Net4x.Compatibility\Olive.Net4x.Compatibility.csproj", "{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1B0E7F4A-9C3A-4FF4-AFA7-D5E6390FA4B8}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.exe = nuget.exe
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

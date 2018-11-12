@@ -22,7 +22,7 @@ namespace Olive.ApiProxy
             Folder.GetFile($"{Context.ControllerName}.cs").WriteAllText(ProxyClassProgrammer.Generate());
             Console.WriteLine("Done");
             Console.Write("Adding the proxy class mock configuration...");
-            Folder.GetFile($"{Context.ControllerName}.Mock.cs").WriteAllText(ProxyClassProgrammer.GenerateMock());
+            MockFolder.GetFile($"{Context.ControllerName}.Mock.cs").WriteAllText(ProxyClassProgrammer.GenerateMock());
             Console.WriteLine("Done");
             Console.Write("Adding ReamMe.txt file ...");
             Folder.GetFile("README.txt").WriteAllText(ReadmeFileGenerator.Generate());
@@ -76,12 +76,14 @@ namespace Olive.ApiProxy
                 Console.WriteLine("Done");
             }
         }
+
         void GenerateMockConfiguration()
         {
             Console.Write($"Adding class {Context.ControllerName}MockConfiguration");
-            Folder.GetFile($"{Context.ControllerName}MockConfiguration.cs").WriteAllText(MockConfigurationClassGenerator.Generate());
+            MockFolder.GetFile($"{Context.ControllerName}MockConfiguration.cs").WriteAllText(MockConfigurationClassGenerator.Generate());
             Console.WriteLine("Done");
         }
+
         public override IEnumerable<string> GetTargetFiles()
         {
             var readme = Folder.GetFile("README.txt").FullName;

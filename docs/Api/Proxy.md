@@ -102,7 +102,7 @@ namespace MyPublisherService
 
 ## Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
 
-1. Ensure you have a NuGet reference to [Olive.ApiProxyGenerator](https://www.nuget.org/packages/Olive.ApiProxyGenerator/)
+1. Ensure you have [generate-api-proxy tool](https://www.nuget.org/packages/Olive.ApiProxyGenerator/) installed by calling `dotnet tool install -g Olive.ApiProxyGenerator`
 2. Compile the website project (which includes the Api code)
 3. Right click on the Api controller class in Visual Studio solution explorer.
 4. Select "Generate Proxy Dll..." which opens a pop-up

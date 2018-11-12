@@ -34,7 +34,7 @@ namespace Olive.Entities.Data
 
             var r = new StringBuilder("SELECT");
 
-            r.AppendLine($" {fields} FROM {GetTables()}");
+            r.AppendLine($" {fields} FROM {GetTables(query.AliasPrefix)}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
             r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));

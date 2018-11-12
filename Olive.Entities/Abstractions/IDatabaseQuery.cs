@@ -28,6 +28,9 @@ namespace Olive.Entities
 
         IDataProvider Provider { get; }
 
+        Task<IEntity> WithMax(string property);
+        Task<IEntity> WithMin(string property);
+
         /// <summary>
         /// Transforms this query to be usable for a specified data provider. 
         /// </summary> 
@@ -55,6 +58,11 @@ namespace Olive.Entities
         IDatabaseQuery<TEntity> OrderBy(Expression<Func<TEntity, object>> property, bool descending = false);
         IDatabaseQuery<TEntity> ThenByDescending(Expression<Func<TEntity, object>> property);
         IDatabaseQuery<TEntity> Include(Expression<Func<TEntity, object>> property);
+
+        new Task<TEntity> WithMax(string property);
+        new Task<TEntity> WithMin(string property);
+        Task<TEntity> WithMax(Expression<Func<TEntity, object>> property);
+        Task<TEntity> WithMin(Expression<Func<TEntity, object>> property);
 
         /// <summary>
         /// Gets a list of entities of the given type from the database with the specified type matching the specified criteria.

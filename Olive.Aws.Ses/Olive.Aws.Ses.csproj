@@ -1,9 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <PackageId>Olive.Aws.Ses</PackageId>
-    <Version>1.0.17</Version>
+    <Version>1.0.19</Version>
     <Title>Olive AWS SES</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -37,9 +36,7 @@
       <HintPath>..\@Assemblies\netcoreapp2.1\Olive.Email.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
-
 </Project>

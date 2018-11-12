@@ -111,7 +111,9 @@ namespace Olive
 
             return @value;
         }
-
+        /// <summary>
+        /// Returns a DirectoryInfo object of the Website root directory.
+        /// </summary>
         public static DirectoryInfo WebsiteRoot(this AppDomain @this)
         {
             var root = @this.BaseDirectory.AsDirectory();
@@ -119,8 +121,14 @@ namespace Olive
             else return root;
         }
 
+        /// <summary>
+        /// Returns DirectoryInfo object of the base directory.
+        /// </summary>
         public static DirectoryInfo GetBaseDirectory(this AppDomain @this) => @this.BaseDirectory.AsDirectory();
 
+        /// <summary>
+        /// loads an assembly given its name.
+        /// </summary>
         public static Assembly LoadAssembly(this AppDomain @this, string assemblyName)
         {
             var result = @this.GetAssemblies().FirstOrDefault(a => a.FullName == assemblyName);

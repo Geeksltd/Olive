@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     partial class Database
     {
@@ -87,6 +88,12 @@
         }
 
         IDatabaseQuery IDatabaseQuery.OrderBy(string property) => this.OrderBy(property, descending: false);
+
+        Task<IEntity> IDatabaseQuery.WithMin(string property) =>
+               this.OrderBy(property).FirstOrDefault();
+
+        Task<IEntity> IDatabaseQuery.WithMax(string property) =>
+               this.OrderBy(property, descending: true).FirstOrDefault();
 
         public IDatabaseQuery CloneFor(Type type)
         {

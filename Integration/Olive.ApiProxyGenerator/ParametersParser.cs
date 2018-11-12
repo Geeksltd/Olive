@@ -11,7 +11,7 @@ namespace Olive.ApiProxy
         internal static bool Start(string[] args)
         {
             Args = args;
-            Context.Source = AppDomain.CurrentDomain.GetBaseDirectory();
+            Context.Source = Environment.CurrentDirectory.AsDirectory();
             if (Param("controller").IsEmpty()) return false;
             return Param("out").HasValue() || Param("push").HasValue();
         }

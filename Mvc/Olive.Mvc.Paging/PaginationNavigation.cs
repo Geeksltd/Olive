@@ -38,20 +38,22 @@
 
         string GetPagingKey() => Paging.Prefix.WithSuffix(".") + "p";
 
-        string GetLinkAttributes(int number)
+        string GetLinkAttributes(int number, string ariaLabel = null)
         {
+            if (ariaLabel.IsEmpty()) ariaLabel = "Go to page " + number;
+            var result = "aria-label=\"" + ariaLabel + "\" ";
             var urlHelper = Context.Current.Http().GetUrlHelper();
 
             if (Paging.UseAjaxPost)
             {
-                return "href=\"#\" formaction=\"{0}\" data-pagination=\"{1}{2}\""
+                return result + "href=\"#\" formaction=\"{0}\" data-pagination=\"{1}{2}\""
                     .FormatWith(urlHelper.ActionWithQuery(Paging.Container.GetType().Name + "/Reload"), Paging.Prefix.WithSuffix(".p="), Paging.GetQuery(number));
             }
             else
             {
                 var url = urlHelper.Current(new Dictionary<string, string> { { GetPagingKey(), Paging.GetQuery(number) } });
 
-                return "href=\"{0}\"".FormatWith(url) + " data-redirect=\"ajax\"".OnlyWhen(Paging.UseAjaxGet);
+                return result + "href=\"{0}\"".FormatWith(url) + " data-redirect=\"ajax\"".OnlyWhen(Paging.UseAjaxGet);
             }
         }
 
