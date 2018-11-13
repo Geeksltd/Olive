@@ -51,7 +51,7 @@ namespace Olive.Mvc
         /// Creates a new instance of the specified type, and binds it.
         /// </summary>
         [NonAction]
-        protected internal async Task<TViewModel> Bind<TViewModel>(string prefix = null) where TViewModel : class, new()
+        protected internal async Task<TViewModel> Bind<TViewModel>(string prefix = "") where TViewModel : class, new()
         {
             var result = new TViewModel();
             if (await TryUpdateModelAsync(result, prefix)) return result;
