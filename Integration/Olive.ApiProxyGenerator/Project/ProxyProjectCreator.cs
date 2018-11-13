@@ -79,8 +79,9 @@ namespace Olive.ApiProxy
 
         void GenerateMockConfiguration()
         {
+            var generator = new MockConfigurationClassGenerator(Context.ControllerType);
             Console.Write($"Adding class {Context.ControllerName}MockConfiguration");
-            MockFolder.GetFile($"{Context.ControllerName}MockConfiguration.cs").WriteAllText(MockConfigurationClassGenerator.Generate());
+            MockFolder.GetFile($"{Context.ControllerName}MockConfiguration.cs").WriteAllText(generator.Generate());
             Console.WriteLine("Done");
         }
 
