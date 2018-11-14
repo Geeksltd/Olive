@@ -159,6 +159,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nuget.exe = nuget.exe
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "generate-api-proxy", "Integration\Olive.ApiProxyGenerator\generate-api-proxy.csproj", "{6FB3726E-D43A-4801-B692-309631C90C5D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -368,6 +370,10 @@ Global
 		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FB3726E-D43A-4801-B692-309631C90C5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FB3726E-D43A-4801-B692-309631C90C5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FB3726E-D43A-4801-B692-309631C90C5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FB3726E-D43A-4801-B692-309631C90C5D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -412,6 +418,7 @@ Global
 		{A0B60121-F4AB-4D29-8863-C3DE2DCABEE1} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{641E5318-DADD-48AE-9DBD-0BF74883D577} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{126292EE-733D-4C27-8343-E38A310B72F1} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
+		{6FB3726E-D43A-4801-B692-309631C90C5D} = {E2BA5BD4-58EF-4031-9203-10FD08B0AE9E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

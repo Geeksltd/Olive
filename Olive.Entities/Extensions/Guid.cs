@@ -1,5 +1,7 @@
 ﻿using Olive.Entities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -25,5 +27,17 @@ namespace Olive
 
             return await Context.Current.Database().Get<T>(guid);
         }
+
+        public static bool IsAnyOf(this Guid? @this, params GuidEntity[] items)
+         => items?.Any(x => x?.ID == @this) ?? false;
+
+        public static bool IsAnyOf(this Guid? @this, IEnumerable<GuidEntity> items)
+            => items?.Any(x => x?.ID == @this) ?? false;
+
+        public static bool IsAnyOf(this Guid @this, params GuidEntity[] items)
+       => items?.Any(x => x?.ID == @this) ?? false;
+
+        public static bool IsAnyOf(this Guid @this, IEnumerable<GuidEntity> items)
+            => items?.Any(x => x?.ID == @this) ?? false;
     }
 }

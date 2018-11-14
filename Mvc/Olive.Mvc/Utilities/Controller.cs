@@ -247,6 +247,7 @@ namespace Olive.Mvc
     public enum WindowAction
     {
         CloseModal,
+        CloseModalRebindParent,
         CloseModalRefreshParent,
         Refresh,
         Close,

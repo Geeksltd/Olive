@@ -1,5 +1,4 @@
-﻿using Olive.Mvc;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -140,7 +139,7 @@ namespace Olive.ApiProxy
                 {
                     Method = m,
                     ReturnsType = m.GetApiMethodReturnType(),
-                    dataProviderType = m.GetCustomAttribute<RemoteDataProviderAttribute>()?.EntityType
+                    dataProviderType = m.GetDataProviderEntity()
                 }).Where(x => x.dataProviderType != null).ToList();
 
             var moreThanOneDataProviderForAnyType = relevantMethods

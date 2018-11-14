@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -14,11 +16,6 @@ namespace Olive
     {
         const int MAXIMUM_ATTEMPTS = 3;
         const int ATTEMPT_PAUSE = 50 /*Milisseconds*/;
-
-        /// <summary>
-        /// Shortens this GUID.
-        /// </summary>
-        public static ShortGuid Shorten(this Guid @this) => new ShortGuid(@this);
 
         static Task<T> TryHardAsync<T>(FileSystemInfo fileOrFolder, Func<Task<T>> func, string error)
         {

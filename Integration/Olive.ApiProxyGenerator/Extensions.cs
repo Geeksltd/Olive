@@ -1,5 +1,4 @@
-﻿using Olive.Mvc;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 
@@ -33,12 +32,29 @@ namespace Olive.ApiProxy
 
         public static MethodInfo FindDatabaseGetMethod(this Type type)
         {
-            return Context.ActionMethods.Select(x => x.Method).FirstOrDefault(x => x.GetCustomAttribute<RemoteDataProviderAttribute>()?.EntityType == type);
+            var providers = Context.ActionMethods
+                .Select(x => x.Method)
+                .Select(x => new
+                {
+                    Method = x,
+                    ProviderOf = x.GetDataProviderEntity()
+                })
+                .Where(x => x.ProviderOf != null);
+
+            return providers
+                .FirstOrDefault(x => x.ProviderOf.FullName == type.FullName)
+                ?.Method;
         }
 
         public static Type GetApiMethodReturnType(this MethodInfo @this)
         {
             return @this.GetAttribute("Returns")?.ConstructorArguments.Single().Value as Type;
+        }
+
+        public static Type GetDataProviderEntity(this MethodInfo @this)
+        {
+            return @this.GetAttribute("RemoteDataProviderAttribute")
+                ?.ConstructorArguments.Single().Value as Type;
         }
     }
 }
