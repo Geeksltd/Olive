@@ -1,4 +1,5 @@
-﻿using System;
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +38,8 @@ namespace Olive
         /// <summary>
         /// Removes the specified text from the start of this string instance.
         /// </summary>
-        public static string TrimStart(this string @this, string textToTrim)
+        /// <param name="textToTrim">Determines the string which removed if it is occured in start of this string.</param>
+	    public static string TrimStart(this string @this, string textToTrim)
         {
             @this = @this.OrEmpty();
 
@@ -50,6 +52,7 @@ namespace Olive
         /// <summary>
         /// Trims the end of this instance of string with the specified number of characters.
         /// </summary>
+        /// <param name="numberOfCharacters">The specified number of characters which removed from end of this string.</param>
         public static string TrimEnd(this string @this, int numberOfCharacters)
         {
             if (numberOfCharacters < 0)
@@ -73,6 +76,10 @@ namespace Olive
         /// </summary>
         public static string TrimOrEmpty(this string @this) => @this.TrimOrNull().OrEmpty();
 
+        /// <summary>
+        /// If this string object is null, it will return empty. Otherwise it will trim the text and return it.
+        /// </summary>
+        /// <param name="items">The list of items which are compared to this string.</param>
         public static bool IsNoneOf(this string @this, params string[] items) => !@this.IsAnyOf(items);
 
         /// <summary>
@@ -85,11 +92,24 @@ namespace Olive
         /// </summary>
         public static string ToUpperOrEmpty(this string @this) => @this.OrEmpty().ToUpper();
 
+        /// <summary>
+        /// Determines this value is one of the {Args}.
+        /// </summary>
+        /// <param name="items">The list of items which are compared to this string.</param>
         public static bool IsAnyOf(this string @this, params string[] items) => items.Contains(@this);
 
+        /// <summary>
+        /// Determines this value is one of the {Args}.
+        /// </summary>
+        /// <param name="items">The list of items which are compared to this string.</param>
         public static bool IsAnyOf(this string @this, IEnumerable<string> items)
             => IsAnyOf(@this, items.ToArray());
 
+        /// <summary>
+        /// If this string have one of the {Args} parameter, it returns true, otherwise it returns false.
+        /// </summary>
+        /// <param name="keywords">The list of items which are checked.</param>
+        /// <param name="caseSensitive">determines whether sensitivity is checked or not. Default value is false.</param>
         public static bool ContainsAll(this string @this, string[] keywords, bool caseSensitive)
         {
             if (!caseSensitive)
@@ -142,9 +162,9 @@ namespace Olive
         }
 
         /// <summary>
-        /// Gets the same string if it is not null or empty.
-        /// Otherwise it invokes the specified default value provider and returns the result.
+        /// Gets the same string if it is not null or empty. Otherwise it returns the specified default value.
         /// </summary>
+        /// <param name="defaultValueProvider">It is returned if this string is Null.</param>
         public static string Or(this string @this, Func<string> defaultValueProvider)
         {
             if (@this.IsEmpty()) return defaultValueProvider?.Invoke();
@@ -154,6 +174,7 @@ namespace Olive
         /// <summary>
         /// Gets the same string unless it is the same as the specified text. If they are the same, empty string will be returned.
         /// </summary>
+        /// <param name="unwantedText">The string is used to search in this string.</param>
         public static string Unless(this string @this, string unwantedText)
         {
             if (@this == unwantedText) return string.Empty;
@@ -163,6 +184,8 @@ namespace Olive
         /// <summary>
         /// Summarizes the specified source.
         /// </summary>
+        /// <param name="maximumLength">The number of characters which should be shown. It should be greater than 3 if the enforceMaxLength parameter is true.</param>
+        /// <param name="enforceMaxLength">Determines whether maximumLength parameter should be enforced or not.</param>
         public static string Summarize(this string @this, int maximumLength, bool enforceMaxLength)
         {
             var result = Summarize(@this, maximumLength);
@@ -176,6 +199,7 @@ namespace Olive
         /// <summary>
         /// Summarizes the specified text.
         /// </summary>        
+        /// <param name="maximumLength">The number of characters which should be shown.</param>
         public static string Summarize(this string @this, int maximumLength)
         {
             if (@this.IsEmpty()) return @this;
@@ -200,6 +224,10 @@ namespace Olive
 
         #region Count string
 
+        /// <summary>
+        /// Returns the number of members of this value.
+        /// </summary>        
+        /// <param name="objectTitle">Determines the title of the object.</param>
         public static string Count<T>(this IEnumerable<T> @this, string objectTitle)
         {
             if (objectTitle.IsEmpty())
@@ -208,6 +236,11 @@ namespace Olive
             return objectTitle.ToCountString(@this.Count());
         }
 
+        /// <summary>
+        /// Returns the number of members of this value.
+        /// </summary>        
+        /// <param name="objectTitle">Determines the title of the object.</param>
+        /// <param name="zeroQualifier">Determines the title when the number of items is zero.</param>
         public static string Count<T>(this IEnumerable<T> @this, string objectTitle, string zeroQualifier)
         {
             if (objectTitle.IsEmpty())
@@ -216,6 +249,10 @@ namespace Olive
             return objectTitle.ToCountString(@this.Count(), zeroQualifier);
         }
 
+        /// <summary>
+        /// Inserts a "s" in the end of this string if {count} greater than zero.
+        /// </summary>        
+        /// <param name="count">Determines the number of this object.</param>
         public static string ToCountString(this string @this, int count)
         {
             var zeroQualifier = "no";
@@ -226,6 +263,11 @@ namespace Olive
             return ToCountString(@this, count, zeroQualifier);
         }
 
+        /// <summary>
+        /// Inserts a "s" in the end of this string if {count} greater than zero.
+        /// </summary>        
+        /// <param name="count">Determines the number of this object.</param>
+        /// <param name="zeroQualifier">is a string that if the {count} is zero, it is added to the end of the output string.</param>
         public static string ToCountString(this string @this, int count, string zeroQualifier)
         {
             @this = @this.Or("").Trim();
@@ -240,6 +282,9 @@ namespace Olive
             else return $"{count} {@this.ToPlural()}";
         }
 
+        /// <summary>
+        /// Inserts a space after each uppercase characters in this string.
+        /// </summary>        
         public static string SeparateAtUpperCases(this string @this)
         {
             var sb = new StringBuilder();
@@ -253,6 +298,9 @@ namespace Olive
             return sb.ToString().ToLower();
         }
 
+        /// <summary>
+        /// Returns the plural form of this word.
+        /// </summary>        
         public static string ToPlural(this string @this)
         {
             if (@this.IsEmpty()) return string.Empty;
@@ -428,11 +476,13 @@ namespace Olive
         /// <summary>
         /// Trims some unnecessary text from the end of this string, if it exists.
         /// </summary>
+        /// <param name="unnecessaryText">Specific number of characters from this value that you want to be removed.</param>
         public static string TrimEnd(this string @this, string unnecessaryText) => TrimEnd(@this, unnecessaryText, caseSensitive: true);
 
         /// <summary>
         /// Trims some unnecessary text from the end of this string, if it exists.
         /// </summary>
+        /// <param name="unnecessaryText">Specific number of characters from this value that you want to be removed.</param>
         /// <param name="caseSensitive">By default it's TRUE.</param>
         public static string TrimEnd(this string @this, string unnecessaryText, bool caseSensitive)
         {
@@ -480,6 +530,11 @@ namespace Olive
                 return @this;
         }
 
+        /// <summary>
+        /// This method identifies a string literal as an interpolated string.
+        /// </summary>
+        /// <param name="arg">The value which is used in this string.</param>
+        /// <param name="additionalArgs">The list of values which are used in this string.</param>
         public static string FormatWith(this string @this, object arg, params object[] additionalArgs)
         {
             try
@@ -495,6 +550,9 @@ namespace Olive
             }
         }
 
+        /// <summary>
+        /// Gets the last Char of a string.
+        /// </summary>
         public static string GetLastChar(this string @this)
         {
             if (@this.HasValue())
@@ -508,6 +566,10 @@ namespace Olive
                 return null;
         }
 
+	/// <summary>
+        /// Gets whether this string item begins with any of the specified items{Args}.
+        /// </summary>
+        /// <param name="listOfBeginnings">The list of strings which are checked whether they are in this value or not.</param>
         public static bool StartsWithAny(this string @this, params string[] listOfBeginnings)
         {
             foreach (var option in listOfBeginnings)
@@ -516,6 +578,11 @@ namespace Olive
             return false;
         }
 
+        /// <summary>
+        /// Gets whether this string item begins with any of the specified items{Args}.
+        /// </summary>
+        /// <param name="other">The string which is checked whether it is in this value.</param>
+        /// <param name="caseSensitive">The list of strings which are checked whether it is in this value or not.</param>
         public static bool StartsWith(this string @this, string other, bool caseSensitive)
         {
             if (other.IsEmpty()) return false;
@@ -527,6 +594,7 @@ namespace Olive
         /// <summary>
         /// Gets whether this string item ends with any of the specified items.
         /// </summary>
+        /// <param name="listOfEndings">The list of strings which are checked whether they are in this value or not.</param>
         public static bool EndsWithAny(this string @this, params string[] listOfEndings)
         {
             foreach (var option in listOfEndings)
@@ -583,6 +651,7 @@ namespace Olive
         /// <summary>
         /// Gets all indices of a specified string inside this text.
         /// </summary>
+        /// <param name="pattern">Finds {pattern} into this string and returns Inumerable value.</param>
         public static IEnumerable<int> AllIndicesOf(this string @this, string pattern)
         {
             if (pattern.IsEmpty())
@@ -614,6 +683,7 @@ namespace Olive
         /// <summary>
         /// Returns this text with the specified suffix if this has a value. If this text is empty or null, it will return empty string.
         /// </summary>
+        /// <param name="suffix">String which is inserted in the start of this value.</param>
         public static string WithSuffix(this string @this, string suffix)
         {
             if (@this.IsEmpty()) return string.Empty;
@@ -623,6 +693,8 @@ namespace Olive
         /// <summary>
         /// Wraps this text between the left and right wrappers, only if this has a value.
         /// </summary>
+        /// <param name="left">String which is located left side of this value.</param>
+        /// <param name="right">String which is located right side of this value.</param>
         public static string WithWrappers(this string @this, string left, string right)
         {
             if (@this.IsEmpty()) return string.Empty;
@@ -633,12 +705,15 @@ namespace Olive
         /// <summary>
         /// Repeats this text by the number of times specified.
         /// </summary>
+        /// <param name="times">The number of times that this value should be repeated.</param>
         public static string Repeat(this string @this, int times) => Repeat(@this, times, null);
 
         /// <summary>
-        /// Repeats this text by the number of times specified, seperated with the specified seperator.
+        /// Repeats this text by the number of times specified separated with the specified separator.
         /// </summary>
-        public static string Repeat(this string @this, int times, string seperator)
+        /// <param name="times">String which is located left side of this value.</param>
+        /// <param name="separator">String which is located among all characters of this value.</param>
+        public static string Repeat(this string @this, int times, string separator)
         {
             if (times < 0) throw new ArgumentOutOfRangeException(nameof(times), $"{nameof(times)} should be 0 or more.");
 
@@ -659,6 +734,8 @@ namespace Olive
         /// <summary>
         /// Determines if this string value contains a specified substring.
         /// </summary>
+        /// <param name="subString">String which is checked.</param>
+        /// <param name="caseSensitive">Determined whether case sensitive is important or not.</param>
         public static bool Contains(this string @this, string subString, bool caseSensitive)
         {
             if (@this is null && subString is null)
@@ -677,9 +754,15 @@ namespace Olive
         /// <summary>
         /// Removes the specified substrings from this string object.
         /// </summary>
+        /// <param name="firstSubstringsToRemove">String which is removed.</param>
+        /// <param name="otherSubstringsToRemove">A list of Strings which are removed.</param>
         public static string Remove(this string @this, string firstSubstringsToRemove, params string[] otherSubstringsToRemove) =>
             @this.Remove(firstSubstringsToRemove).Remove(otherSubstringsToRemove);
 
+        /// <summary>
+        /// Removes the specified substrings from this string object.
+        /// </summary>
+        /// <param name="substringsToRemove">A list of Strings which are removed.</param>
         [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static string Remove(this string text, string[] substringsToRemove)
         {
@@ -697,7 +780,8 @@ namespace Olive
         /// <summary>
         /// Removes the specified substrings from this string object.
         /// </summary>
-		[EscapeGCop("It is the Except definition and so it cannot call itself")]
+        /// <param name="substringToRemove">String which is removed.</param>
+	    [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static string Remove(this string text, string substringToRemove)
         {
             if (text.IsEmpty()) return text;
@@ -706,8 +790,10 @@ namespace Olive
         }
 
         /// <summary>
-        /// Replaces all occurances of a specified phrase to a substitude, even if the original phrase gets produced again as the result of substitution. Note: It's an expensive call.
+        /// Replaces all occurrences of a specified phrase to a substitute, even if the original phrase gets produced again as the result of substitution. Note: It's an expensive call.
         /// </summary>
+        /// <param name="original">String which is removed.</param>
+        /// <param name="substitute">String which is replaced.</param>
         public static string KeepReplacing(this string @this, string original, string substitute)
         {
             if (@this.IsEmpty()) return @this;
@@ -723,6 +809,7 @@ namespace Olive
         /// <summary>
         /// Gets this same string when a specified condition is True, otherwise it returns empty string.
         /// </summary>
+        /// <param name="condition">The condition which is checked.</param>
         public static string OnlyWhen(this string @this, bool condition)
         {
             if (condition) return @this;
@@ -732,6 +819,7 @@ namespace Olive
         /// <summary>
         /// Gets this same string when a specified condition is False, otherwise it returns empty string.
         /// </summary>
+        /// <param name="condition">The condition which is checked.</param>
         public static string Unless(this string @this, bool condition)
         {
             if (condition) return string.Empty;
@@ -763,6 +851,10 @@ namespace Olive
         /// </summary>
         public static bool IsLetter(this char @this) => char.IsLetter(@this);
 
+        /// <summary>
+        /// Determines this value is one of the {Args}.
+        /// </summary>
+        /// <param name="characters">The list of characters which are checked.</param>
         public static bool IsAnyOf(this char @this, params char[] characters) => characters.Contains(@this);
 
         /// <summary>
@@ -771,7 +863,7 @@ namespace Olive
         public static bool IsDigit(this char @this) => char.IsDigit(@this);
 
         /// <summary>
-        /// Indicates whether this character is categorized as White Space (space, tab, new line, etc).
+        /// Indicates whether this character is categorized as White Space (space, tab, new line, etc.).
         /// </summary>
         public static bool IsWhiteSpace(this char @this) => char.IsWhiteSpace(@this);
 
@@ -802,6 +894,8 @@ namespace Olive
         /// <summary>
         /// Determines whether this string object does not contain the specified phrase.
         /// </summary>
+        /// <param name="phrase">The string which is searched in this value.</param>
+        /// <param name="caseSensitive">Determined whether case sensitive is important or not.</param>
         public static bool Lacks(this string @this, string phrase, bool caseSensitive = false)
         {
             if (@this.IsEmpty()) return phrase.HasValue();
@@ -812,12 +906,15 @@ namespace Olive
         /// <summary>
         /// Determines whether this string object does not contain any of the specified phrases.
         /// </summary>
+        /// <param name="phrases">The list of strings which are searched in this value.</param>
         public static bool LacksAll(this string @this, params string[] phrases) =>
             LacksAll(@this, caseSensitive: false, phrases: phrases);
 
         /// <summary>
         /// Determines whether this string object does not contain any of the specified phrases.
         /// </summary>
+        /// <param name="caseSensitive">Determined whether case sensitive is important or not.</param>
+        /// <param name="phrases">The list of strings which are searched in this value.</param>
         public static bool LacksAll(this string @this, bool caseSensitive, params string[] phrases)
         {
             if (@this.IsEmpty()) return true;
@@ -909,12 +1006,15 @@ namespace Olive
         /// <summary>
         /// Converts this string to an array of bytes with the given encoding.
         /// </summary>
+        /// <param name="encoding">The Encoding which is used for this value.</param>
         public static byte[] ToBytes(this string @this, Encoding encoding) => encoding.GetBytes(@this);
 
         /// <summary>
         /// Determines whether this text contains any of the specified keywords.
         /// If the keywords list contains a null or empty string, it throws an exception. If you wish to ignore those, use .Trim() on your keywords list.
         /// </summary>
+        /// <param name="keywords">The list of string which are checked.</param>
+        /// <param name="caseSensitive">ِDetermines whether the case sensitive is important or not.</param>
         public static bool ContainsAny(this string @this, IEnumerable<string> keywords, bool caseSensitive = true)
         {
             if (keywords == null)
@@ -937,6 +1037,7 @@ namespace Olive
         /// <summary>
         /// Splits this list of string items by a specified separator into a number of smaller lists of string.
         /// </summary>
+        /// <param name="separator">ِDetermines separator string.</param>
         public static IEnumerable<List<string>> Split(this IEnumerable<string> @this, string separator)
         {
             var currentArray = new List<string>();
@@ -1033,6 +1134,7 @@ namespace Olive
         /// <summary>
         /// Creates a hash of a specified clear text with a mix of MD5 and SHA1.
         /// </summary>
+        /// <param name="salt">Is random data that is used as an additional input to a one-way function that "hashes" data, a password or passphrase.</param>
         public static string CreateHash(this string @this, object salt = null)
         {
             var firstHash = @this.CreateMD5Hash();
@@ -1048,6 +1150,7 @@ namespace Olive
         /// Creates MD5 hash of this text
         /// <param name="asHex">Specifies whether a hex-compatible string is expected.</param>
         /// </summary>
+        /// <param name="asHex">Determines whether MD5 is based on Hex or not.</param>
         public static string CreateMD5Hash(this string @this, bool asHex = false)
         {
             var value = MD5.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(@this));
@@ -1059,7 +1162,7 @@ namespace Olive
         }
 
         /// <summary>
-        /// Creates MD5 hash of this text
+        /// Creates MD5 hash of this text.
         /// </summary>
         public static string CreateMD5Hash(this string @this) =>
             Convert.ToBase64String(MD5.Create().ComputeHash(UnicodeEncoding.UTF8.GetBytes(@this)));
@@ -1102,6 +1205,10 @@ namespace Olive
             }
         }
 
+        /// <summary>
+        /// Splits this string into some IEnumerable strings which have {chunkSize} characters.
+        /// </summary>
+        /// <param name="chunkSize"> The size of chunks. If {chunkSize} is 1, it returns all this string.</param>
         public static IEnumerable<string> Split(this string @this, int chunkSize)
         {
             if (@this.HasValue())
@@ -1116,6 +1223,11 @@ namespace Olive
             }
         }
 
+        /// <summary>
+        /// Gets a piece of this string from specific start to specific end place..
+        /// </summary>
+        /// <param name="fromIndex"> Is an Integer argument that determines substring is started from which character index. The first character of this string is started from Zero.</param>
+        /// <param name="toText"> Is a string that determines the end of the output string.</param>
         public static string Substring(this string @this, int fromIndex, string toText)
         {
             var toIndex = @this.IndexOf(toText, fromIndex + 1);
@@ -1129,9 +1241,22 @@ namespace Olive
             return @this.Substring(fromIndex, toIndex - fromIndex);
         }
 
+        /// <summary>
+        /// Gets a piece of this string from specific start to specific end place..
+        /// </summary>
+        /// <param name="fromIndex"> Is an Integer argument that determines substring is started from which character index. The first character of this string is started from Zero.</param>
+        /// <param name="toText"> Is a string that determines the end of the output string.</param>
+        /// <param name="inclusive"> Determines whether the output string contains {from} and {to} strings or not. Default value is false.</param>
         public static string Substring(this string @this, string from, string to, bool inclusive) =>
             Substring(@this, from, to, inclusive, caseSensitive: true);
 
+        /// <summary>
+        /// Gets a piece of this string from specific start to specific end place..
+        /// </summary>
+        /// <param name="fromIndex"> Is an Integer argument that determines substring is started from which character index. The first character of this string is started from Zero.</param>
+        /// <param name="toText"> Is a string that determines the end of the output string.</param>
+        /// <param name="inclusive"> Determines whether the output string contains {from} and {to} strings or not. Default value is false.</param>
+        /// <param name="caseSensitive"> Determines whether the case sensitive is important or not.</param>
         public static string Substring(this string @this, string from, string to, bool inclusive, bool caseSensitive)
         {
             var comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
@@ -1151,6 +1276,10 @@ namespace Olive
             return @this.Substring(fromIndex, toIndex - fromIndex);
         }
 
+        /// <summary>
+        /// Gets a piece of this string from specific start to specific end place.
+        /// </summary>
+        /// <param name="encoding">The Encoding that is base of convert to string.</param>
         public static string ToString(this byte[] @this, Encoding encoding) => encoding.GetString(@this);
 
         /// <summary>
@@ -1164,7 +1293,7 @@ namespace Olive
         }
 
         /// <summary>
-        /// Getsa SHA1 hash of this text where all characters are alpha numeric.
+        /// Gets a SHA1 hash of this text where all characters are alpha numeric.
         /// </summary>
         public static string ToSimplifiedSHA1Hash(this string @this) =>
             new string(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray());
@@ -1188,6 +1317,7 @@ namespace Olive
         /// Returns the only matched string in the given text using this Regex pattern. 
         /// Returns null if more than one match found.
         /// </summary>
+        /// <param name="text">The string that is controlled whether is matched to Regex or not.</param>
         public static string GetSingleMatchedValueOrDefault(this Regex @this, string text)
         {
             var matches = @this.Matches(text).Cast<Match>()
@@ -1284,6 +1414,9 @@ namespace Olive
         /// <summary>
         /// Trims all text before the specified search phrase.
         /// </summary>
+        /// <param name="search">Trims all text before it.</param>
+        /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
+        /// <param name="trimPhrase">If {trimPhrase} is true, only phrases are returned instead of all characters. The defalt value is false.</param>
         public static string TrimBefore(this string @this, string search, bool caseSensitive = false, bool trimPhrase = false)
         {
             if (@this.IsEmpty()) return @this;
@@ -1303,6 +1436,12 @@ namespace Olive
             return @this;
         }
 
+        /// <summary>
+        /// Removes all leading occurrences of a set of characters specified in this string. 
+	/// The string that remains after all occurrences of characters in this string are removed from the start of the current string.
+        /// </summary>
+        /// <param name="search">It is removed from this value.</param>
+        /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
         public static string TrimStart(this string @this, string search, bool caseSensitive)
         {
             if (caseSensitive) return @this.TrimStart(search);
@@ -1313,6 +1452,13 @@ namespace Olive
             return @this;
         }
 
+        /// <summary>
+        /// Removes all leading occurrences of a set of characters specified in this string. 
+	/// The string that remains after all occurrences of characters in this string are removed from the start of the current string.
+        /// </summary>
+        /// <param name="phrase">The string which is searched into this value.</param>
+        /// <param name="trimPhrase">If it is true, only phrases are returned instead of all characters. The default value is false.</param>
+        /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
         public static string TrimAfter(this string @this, string phrase, bool trimPhrase = true, bool caseSensitive = false)
         {
             if (@this.IsEmpty()) return @this;
@@ -1351,8 +1497,11 @@ namespace Olive
         }
 
         /// <summary>
-        /// It will replace all occurances of a specified WHOLE WORD and skip occurances of the word with characters or digits attached to it.
+        /// It will replace all occurrences of a specified WHOLE WORD and skip occurrences of the word with characters or digits attached to it.
         /// </summary>
+        /// <param name="word">Determines the string which is removed.</param>
+        /// <param name="replacement">Determines the string which is replaced.</param>
+        /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
         public static string ReplaceWholeWord(this string @this, string word, string replacement, bool caseSensitive = true)
         {
             var pattern = "\\b" + Regex.Escape(word) + "\\b";
@@ -1361,8 +1510,10 @@ namespace Olive
         }
 
         /// <summary>
-        /// Returns if a specified WHOLE WORD is found in this text. It skips occurances of the word with characters or digits attached to it.
+        /// Returns if a specified WHOLE WORD is found in this text. It skips occurrences of the word with characters or digits attached to it.
         /// </summary>
+        /// <param name="word">Determines the string which is searched.</param>
+        /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
         public static bool ContainsWholeWord(this string @this, string word, bool caseSensitive = true)
         {
             if (@this.IsEmpty()) return false;
@@ -1373,10 +1524,21 @@ namespace Olive
             else return Regex.IsMatch(@this, pattern, RegexOptions.IgnoreCase);
         }
 
+        /// <summary>
+        /// Converts the value of a boolean object to its equivalent string representation for the specified custom text instead of the default "True" or "False".
+        /// </summary>
+        /// <param name="trueText">The string which is returned if this value is true.</param>
+        /// <param name="falseText">The string which is returned if this value is false.</param>
         [EscapeGCop("It is an extension for boolean type")]
         public static string ToString(this bool value, string trueText, string falseText) =>
             ToString(value, trueText, falseText, nullText: null);
 
+        /// <summary>
+        /// Converts the value of a boolean object to its equivalent string representation for the specified custom text instead of the default "True" or "False".
+        /// </summary>
+        /// <param name="trueText">The string which is returned if this value is true.</param>
+        /// <param name="falseText">The string which is returned if this value is false.</param>
+        /// <param name="nullText ">The string which is returned if this value is null.</param>
         public static string ToString(this bool? @this, string trueText, string falseText, string nullText = null)
         {
             if (@this == true) return trueText;
@@ -1388,6 +1550,8 @@ namespace Olive
         /// Ensure that this string object starts with a specified other one.
         /// If it does not, then it prepends that and return the combined text.
         /// </summary>
+        /// <param name="expression ">The string which is used for searching.</param>
+        /// <param name="caseSensitive ">Determines which the case sensitive is important or not.</param>
         public static string EnsureStartsWith(this string @this, string expression, bool caseSensitive = true)
         {
             if (expression.IsEmpty()) return @this;
@@ -1403,6 +1567,8 @@ namespace Olive
         /// Ensure that this string object ends with a specified other one.
         /// If it does not, then it appends that and return the combined text.
         /// </summary>
+        /// <param name="expression ">The string which is used for searching.</param>
+        /// <param name="caseSensitive ">Determines which the case sensitive is important or not.</param>
         public static string EnsureEndsWith(this string @this, string expression, bool caseSensitive = true)
         {
             if (expression.IsEmpty()) return @this;
@@ -1450,6 +1616,9 @@ namespace Olive
             return System.Net.WebUtility.UrlDecode(@this);
         }
 
+        /// <summary>
+        /// Removes unused characters from the content of a CSV file.
+        /// </summary>
         public static string EscapeCsvValue(this string @this)
         {
             if (@this.IsEmpty()) return string.Empty;
