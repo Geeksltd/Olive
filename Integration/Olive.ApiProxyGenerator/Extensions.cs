@@ -53,7 +53,7 @@ namespace Olive.ApiProxy
 
         public static Type GetDataProviderEntity(this MethodInfo @this)
         {
-            return @this.GetAttribute("RemoteDataProviderAttribute")
+            return @this.GetAttribute("RemoteDataProvider")
                 ?.ConstructorArguments.Single().Value as Type;
         }
     }
