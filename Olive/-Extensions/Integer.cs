@@ -28,6 +28,7 @@ namespace Olive
         /// <summary>
         /// Rounds up to nearest value with the intervals specified.
         /// </summary>
+        /// <param name="roundIntervals">The interval value for rounding to the nearest number.</param>
         public static int RoundUpToNearest(this int value, int roundIntervals)
         {
             var difference = roundIntervals - (value % roundIntervals);
@@ -37,6 +38,7 @@ namespace Olive
         /// <summary>
         /// Rounds down to nearest value with the intervals specified.
         /// </summary>
+        /// <param name="roundIntervals">The interval value for rounding to the nearest number.</param>
         public static int RoundDownToNearest(this int value, int roundIntervals) => value - (value % roundIntervals);
 
         /// <summary>
@@ -45,6 +47,10 @@ namespace Olive
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Base32Integer ToBase32(this int @this) => new Base32Integer(@this);
 
+        /// <summary>
+        /// Compare two values and returns 0, 1 or -1.
+        /// </summary>
+        /// <param name="another">The integer value that is used for comparing.</param>
         public static int CompareTo(this int? @this, int? another)
         {
             if (@this == another) return 0;
@@ -53,6 +59,10 @@ namespace Olive
             return @this.Value.CompareTo(another.Value);
         }
 
+        /// <summary>
+        /// This method will not change the original value, but it will return a formatted string.
+        /// </summary>
+        /// <param name="format">A standard or custom numeric format string.</param>
         public static string ToString(this int? @this, string format) => ($"{{0:{format}}}").FormatWith(@this);
 
         /// <summary>
@@ -108,6 +118,8 @@ namespace Olive
         /// <summary>
         /// Emits a user readable file size (including units).
         /// </summary>
+        /// <param name="units">Set the unit of this value including B, KB, MB, GB or TB.</param>
+        /// <param name="round">Determines the number of rounding digits.</param>
         public static string ToFileSizeString(this long fileSize, string units, int round)
         {
             if ("MB".Equals(units, StringComparison.OrdinalIgnoreCase))
@@ -128,11 +140,13 @@ namespace Olive
         /// <summary>
         /// Gets the size text for the given number of bytes. E.g. 4.5MB or 11KB.
         /// </summary>
+        /// <param name="round">Determines the number of rounding digits.</param>
         public static string ToFileSizeString(this int @this, int round = 1) => ToFileSizeString((long)@this, round);
 
         /// <summary>
         /// Gets the size text for the given number of bytes.
         /// </summary>
+        /// <param name="round">Determines the number of rounding digits.</param>
         public static string ToFileSizeString(this long @this, int round = 1)
         {
             var scale = new[] { "B", "KB", "MB", "GB", "TB" };
@@ -151,19 +165,22 @@ namespace Olive
         /// <summary>
         /// Emits a user readable file size (including units).
         /// </summary>
+        /// <param name="units">Set the unit of this value including B, KB, MB, GB or TB.</param>
+        /// <param name="round">Determines the number of round digits.</param>
         public static string ToFileSizeString(this int @this, string units, int round) =>
             ToFileSizeString((long)@this, units, round);
 
         /// <summary>
-        /// Return this value as a percentages the of the given total.
+        /// Return this value as a percentages of the given total.
         /// </summary>
+        /// <param name="total">Return this value as a percentages the of the given total.</param>
         /// <param name="multiplyBy100">Multiply this by 100.</param>
         /// <param name="roundTo">Rounding decimals to.</param>
         public static double AsPercentageOf(this int @this, int total, bool multiplyBy100 = true, int? roundTo = 0) =>
             AsPercentageOf((double)@this, total, multiplyBy100, roundTo);
 
         /// <summary>
-        /// E.g. converts 1 to 1st. Or converts 13 to 13th.
+        /// E.g. converts 1 to 1st or 13 to 13th.
         /// </summary>
         public static string ToOrdinal(this int @this)
         {
