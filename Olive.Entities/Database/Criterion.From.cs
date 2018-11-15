@@ -162,9 +162,11 @@ namespace Olive.Entities
 
             if (expression.Operand is MemberExpression member)
             {
-                var property = member.GetDatabaseColumnPath();
-                if (property.HasValue())
-                    return new Criterion(property, FilterFunction.Is, false);
+                var criterion = From(member);
+                if (criterion != null)
+                    criterion.FilterFunction = criterion.FilterFunction == FilterFunction.Is ? FilterFunction.IsNot : FilterFunction.Is;
+
+                return criterion;
             }
 
             return null;
