@@ -140,9 +140,10 @@ namespace Olive.Entities
         {
             if (expression.NodeType != ExpressionType.MemberAccess) return null;
 
-            if(expression.GetPropertiesInPath().LastOrDefault()?.Name == "HasValue")
+            if(expression.GetPropertiesInPath().LastOrDefault()?.Name == "HasValue" &&
+                expression.Expression is MemberExpression memberExpression)
             {
-                var nullableProperty = ((MemberExpression)expression.Expression).GetDatabaseColumnPath();
+                var nullableProperty = memberExpression.GetDatabaseColumnPath();
                 return new Criterion(nullableProperty, FilterFunction.IsNot, value: null);
             }
 
