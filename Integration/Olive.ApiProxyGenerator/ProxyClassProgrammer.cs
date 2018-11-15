@@ -88,11 +88,11 @@ namespace Olive.ApiProxy
             r.AppendLine("</summary>");
             r.AppendLine($"public static void Mock(Action<{ClassName}MockConfiguration> mockConfiguration, bool enabled = true)");
             r.AppendLine("{");
-            r.AppendLine("MockConfig.Enabled = enabled;");
+            r.AppendLine($"MockConfig.Enabled = Config.Get(GetMockConfigKey(\"{Context.PublisherService}\")).Or(enabled.ToString()).To<bool>();");
             r.AppendLine("mockConfiguration(MockConfig);");
             //Method Mock ends here
             r.AppendLine("}");
-
+            r.AppendLine("private static string GetMockConfigKey(string serviceName) => $\"Microservice:{ serviceName}:Mock\";");
             //class defination ends here
             r.AppendLine("}");
 

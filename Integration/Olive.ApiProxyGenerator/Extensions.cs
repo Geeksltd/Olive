@@ -50,7 +50,7 @@ namespace Olive.ApiProxy
         {
             return @this.GetAttribute("Returns")?.ConstructorArguments.Single().Value as Type;
         }
-
+        public static bool HasReturnType(this MethodGenerator @this) => !@this.ReturnType.IsEmpty();
         public static Type GetDataProviderEntity(this MethodInfo @this)
         {
             return @this.GetAttribute("RemoteDataProvider")
