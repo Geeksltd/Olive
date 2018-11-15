@@ -140,14 +140,14 @@ namespace Olive.Entities
         {
             if (expression.NodeType != ExpressionType.MemberAccess) return null;
 
+            if(expression.GetPropertiesInPath().LastOrDefault()?.Name == "HasValue")
+            {
+                var nullableProperty = ((MemberExpression)expression.Expression).GetDatabaseColumnPath();
+                return new Criterion(nullableProperty, FilterFunction.IsNot, value: null);
+            }
+
             var property = expression.GetDatabaseColumnPath();
             if (property.IsEmpty()) return null;
-
-            if (property.EndsWith(".HasValue"))
-            {
-                property = ((MemberExpression)expression.Expression).GetDatabaseColumnPath();
-                return new Criterion(property, FilterFunction.IsNot, value: null);
-            }
 
             if ((expression.Member as PropertyInfo).PropertyType != typeof(bool)) return null;
 
