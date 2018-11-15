@@ -140,7 +140,7 @@ namespace Olive.Entities
         {
             if (expression.NodeType != ExpressionType.MemberAccess) return null;
 
-            if(expression.GetPropertiesInPath().LastOrDefault()?.Name == "HasValue" &&
+            if (expression.GetPropertiesInPath().LastOrDefault()?.Name == "HasValue" &&
                 expression.Expression is MemberExpression memberExpression)
             {
                 var nullableProperty = memberExpression.GetDatabaseColumnPath();
@@ -163,8 +163,10 @@ namespace Olive.Entities
             if (expression.Operand is MemberExpression member)
             {
                 var criterion = From(member);
-                if (criterion != null)
-                    criterion.FilterFunction = criterion.FilterFunction == FilterFunction.Is ? FilterFunction.IsNot : FilterFunction.Is;
+                if (criterion == null) return null;
+
+                criterion.FilterFunction =
+                    criterion.FilterFunction == FilterFunction.Is ? FilterFunction.IsNot : FilterFunction.Is;
 
                 return criterion;
             }
