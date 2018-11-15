@@ -8,7 +8,7 @@
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
     <PackageId>Olive.ApiProxyGenerator</PackageId>
-    <Version>1.0.83</Version>
+    <Version>2.0.98</Version>
     <Title>Olive Api Proxy Generator</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</PackageProjectUrl>
@@ -26,7 +26,6 @@
   
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
-    <PackageReference Include="GCop.UAT" Version="1.3.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
@@ -35,16 +34,10 @@
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
     </Reference>
-    <Reference Include="Olive.Entities">
-      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Mvc">
-      <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Mvc.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)&#xD;&#xA;copy /y $(TargetPath) C:\Users\Administrator\.dotnet\tools\.store\generate-api-proxy\2.0.93\generate-api-proxy\2.0.93\tools\netcoreapp2.1\any\" />
   </Target>
 
 </Project>

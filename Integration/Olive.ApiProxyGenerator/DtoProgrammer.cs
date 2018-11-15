@@ -61,7 +61,7 @@ namespace Olive.ApiProxy
 
         string GetToStringField()
         {
-            var explicitToStringField = EffectiveProperties.SingleOrDefault(i => i.GetCustomAttribute<Entities.ToStringAttribute>() != null);
+            var explicitToStringField = EffectiveProperties.SingleOrDefault(i => i.GetAttribute("ToString") != null);
             var toStringField = explicitToStringField ?? SelectDefaultToStringField();
 
             if (toStringField != null) return toStringField.Name;
