@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Olive
 {
@@ -87,6 +88,21 @@ namespace Olive
             }
 
             if (last != null) yield return last;
+        }
+
+        /// <summary>
+        /// Determines if there is any overlap between any two ranges in this list of ranges.
+        /// </summary>
+        public static bool Overlap<T>(this IEnumerable<Range<T>> ranges, bool includeEdges = true)
+            where T : IComparable, IComparable<T>
+        {
+            var all = ranges.ExceptNull().ToArray();
+
+            for (var i = 0; i < all.Length; i++)
+                for (var j = i + 1; j < all.Length; j++)
+                    if (all[i].Intersects(all[j], includeEdges)) return true;
+
+            return false;
         }
     }
 }

@@ -566,7 +566,7 @@ namespace Olive
                 return null;
         }
 
-	/// <summary>
+        /// <summary>
         /// Gets whether this string item begins with any of the specified items{Args}.
         /// </summary>
         /// <param name="listOfBeginnings">The list of strings which are checked whether they are in this value or not.</param>
@@ -725,7 +725,7 @@ namespace Olive
             {
                 r.Append(@this);
 
-                if (!(seperator is null)) r.Append(seperator);
+                if (!(separator is null)) r.Append(separator);
             }
 
             return r.ToString();
@@ -1438,7 +1438,7 @@ namespace Olive
 
         /// <summary>
         /// Removes all leading occurrences of a set of characters specified in this string. 
-	/// The string that remains after all occurrences of characters in this string are removed from the start of the current string.
+        /// The string that remains after all occurrences of characters in this string are removed from the start of the current string.
         /// </summary>
         /// <param name="search">It is removed from this value.</param>
         /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
@@ -1454,7 +1454,7 @@ namespace Olive
 
         /// <summary>
         /// Removes all leading occurrences of a set of characters specified in this string. 
-	/// The string that remains after all occurrences of characters in this string are removed from the start of the current string.
+        /// The string that remains after all occurrences of characters in this string are removed from the start of the current string.
         /// </summary>
         /// <param name="phrase">The string which is searched into this value.</param>
         /// <param name="trimPhrase">If it is true, only phrases are returned instead of all characters. The default value is false.</param>

@@ -144,6 +144,7 @@ namespace Olive
                 case "jpeg": case "jpg": case "jpe": return "image/jpeg";
                 case "png": return "image/png";
                 case "tiff": case "tif": return "image/tiff";
+                case "svg": return "image/svg+xml";
                 case "html": case "htm": return "text/html";
                 case "txt": return "text/plain";
                 case "mpeg": case "mpg": case "mpe": return "video/mpeg";

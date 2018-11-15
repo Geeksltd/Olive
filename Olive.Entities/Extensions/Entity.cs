@@ -62,7 +62,7 @@ namespace Olive
         public static bool IsImage(this Blob doc)
         {
             return doc.FileExtension.ToLower().TrimStart(".")
-                .IsAnyOf("jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff");
+                .IsAnyOf("jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff", "svg");
         }
 
         /// <summary>
