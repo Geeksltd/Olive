@@ -725,7 +725,7 @@ namespace Olive
             {
                 r.Append(@this);
 
-                if (!(seperator is null)) r.Append(seperator);
+                if (!(separator is null)) r.Append(separator);
             }
 
             return r.ToString();
