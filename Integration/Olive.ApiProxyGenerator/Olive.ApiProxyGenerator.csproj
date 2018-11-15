@@ -1,5 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -7,37 +6,34 @@
     <ApplicationIcon />
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
-    <PackageId>Olive.ApiProxyGenerator</PackageId>
-    <Version>2.0.98</Version>
+    <PackageId>generate-api-proxy</PackageId>
+    <Version>2.0.100</Version>
     <Title>Olive Api Proxy Generator</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive/blob/master/Integration/Olive.Microservices/Integration.md</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Generates Api Proxy packages for Olive microservice Apis</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath></OutputPath>
-    <DocumentationFile></DocumentationFile>
+    <OutputPath>
+    </OutputPath>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>1701;1702;1705;NU1701</NoWarn>
   </PropertyGroup>
-  
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
-  
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)&#xD;&#xA;copy /y $(TargetPath) C:\Users\Administrator\.dotnet\tools\.store\generate-api-proxy\2.0.93\generate-api-proxy\2.0.93\tools\netcoreapp2.1\any\" />
   </Target>
-
 </Project>
