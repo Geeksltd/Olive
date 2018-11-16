@@ -3,8 +3,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Entities</RootNamespace>
     <AssemblyName>Olive.Entities</AssemblyName>
-    <OutputPath>..\@Assemblies\</OutputPath>
-    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.xml</DocumentationFile>
+    <OutputPath>..\bin\</OutputPath>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Entities</PackageId>
     <Version>1.0.75</Version>
@@ -30,7 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

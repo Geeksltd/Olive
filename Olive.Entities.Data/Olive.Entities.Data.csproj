@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>..\@Assemblies\</OutputPath>
-    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.xml</DocumentationFile>
+    <OutputPath>..\bin\</OutputPath>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Entities.Data</PackageId>
     <Version>1.0.78</Version>
@@ -21,16 +21,16 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Audit">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Audit.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Audit.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Encryption">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Encryption.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Encryption.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Entities">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

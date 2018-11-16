@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <Reference Include="Olive.GeoLocation">
-      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.GeoLocation.dll</HintPath>
+      <HintPath>..\..\bin\netstandard2.0\Olive.GeoLocation.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Tests">
       <HintPath>..\Olive.Tests\bin\Debug\netcoreapp2.1\Olive.Tests.dll</HintPath>

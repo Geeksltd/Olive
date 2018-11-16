@@ -14,8 +14,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\@Assemblies</OutputPath>
-    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.SQLite.xml</DocumentationFile>
+    <OutputPath>..\bin</OutputPath>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.SQLite.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
   </PropertyGroup>
 
@@ -27,13 +27,13 @@
 
   <ItemGroup>
     <Reference Include="Olive">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Entities">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Entities.Data">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.Data.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
 

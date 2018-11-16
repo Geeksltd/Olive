@@ -5,8 +5,8 @@
     <RootNamespace>Olive.Entities.Data</RootNamespace>
     <WarningsAsErrors>NU1605</WarningsAsErrors>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
-    <OutputPath>..\@Assemblies</OutputPath>
-    <DocumentationFile>..\@Assemblies\netstandard2.0\Olive.Entities.Data.SqlServer.xml</DocumentationFile>
+    <OutputPath>..\bin</OutputPath>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.SqlServer.xml</DocumentationFile>
     <PackageId>Olive.Entities.Data.SqlServer</PackageId>
     <Version>1.0.33</Version>
     <Title>Olive Entities Data SqlServer</Title>
@@ -26,13 +26,13 @@
 
   <ItemGroup>
     <Reference Include="Olive">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Entities">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Entities.Data">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Entities.Data.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

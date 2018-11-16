@@ -9,7 +9,7 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Audit
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.Encryption
+dotnet build Olive.Encryption
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Entities.Data
@@ -27,73 +27,73 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Entities.Data.SqlServer
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Entities\Olive.Entities.Cache.Redis
+dotnet build Olive.Entities.Cache.Redis
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.Aws
+dotnet build Olive.Aws
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.Blob.Aws
+dotnet build Olive.Blob.Aws
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.Compression
+dotnet build Olive.Compression
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.Csv
+dotnet build Olive.Csv
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.Drawing
+dotnet build Olive.Drawing
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.Excel
+dotnet build Olive.Excel
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.GeoLocation
+dotnet build Olive.GeoLocation
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.PDF
+dotnet build Olive.PDF
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.PushNotification
+dotnet build Olive.PushNotification
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Services\Olive.SMS
+dotnet build Olive.SMS
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Integration\Olive.ApiClient
+dotnet build Olive.ApiClient
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Integration\Olive.Microservices
+dotnet build Olive.Microservices
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Web
+dotnet build Olive.Web
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Security
+dotnet build Olive.Security
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Mvc
+dotnet build Olive.Mvc
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Mvc.Testing
+dotnet build Olive.Mvc.Testing
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Email
+dotnet build Olive.Email
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Security.Impersonation
+dotnet build Olive.Security.Impersonation
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Mvc.IpFilter
+dotnet build Olive.Mvc.IpFilter
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Mvc.Security.Auth0
+dotnet build Olive.Mvc.Security.Auth0
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Integration\Olive.ApiProxyGenerator
+dotnet build Olive.ApiProxyGenerator
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Mvc\Olive.Hangfire
+dotnet build Olive.Hangfire
 if ERRORLEVEL 1 (goto error)
 
 exit /b 0

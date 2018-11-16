@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <Reference Include="Olive.Entities.Data.MySql">
-      <HintPath>..\..\@Assemblies\netstandard2.0\Olive.Entities.Data.MySql.dll</HintPath>
+      <HintPath>..\..\bin\netstandard2.0\Olive.Entities.Data.MySql.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Tests">
       <HintPath>..\Olive.Tests\bin\Debug\netcoreapp2.1\Olive.Tests.dll</HintPath>

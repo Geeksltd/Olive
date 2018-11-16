@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <Reference Include="Olive.Email">
-      <HintPath>..\..\@Assemblies\netcoreapp2.1\Olive.Email.dll</HintPath>
+      <HintPath>..\..\bin\netcoreapp2.1\Olive.Email.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Tests">
       <HintPath>..\Olive.Tests\bin\Debug\netcoreapp2.1\Olive.Tests.dll</HintPath>

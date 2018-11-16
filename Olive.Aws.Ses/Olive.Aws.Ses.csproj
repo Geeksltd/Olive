@@ -12,8 +12,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\@Assemblies</OutputPath>
-    <DocumentationFile>..\@Assemblies\netcoreapp2.1\Olive.Aws.Ses.xml</DocumentationFile>
+    <OutputPath>..\bin</OutputPath>
+    <DocumentationFile>..\bin\netcoreapp2.1\Olive.Aws.Ses.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -26,13 +26,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Aws">
-      <HintPath>..\@Assemblies\netstandard2.0\Olive.Aws.dll</HintPath>
+      <HintPath>..\bin\netstandard2.0\Olive.Aws.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Email">
-      <HintPath>..\@Assemblies\netcoreapp2.1\Olive.Email.dll</HintPath>
+      <HintPath>..\bin\netcoreapp2.1\Olive.Email.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
