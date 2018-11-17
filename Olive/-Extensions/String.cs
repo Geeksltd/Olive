@@ -794,17 +794,17 @@ namespace Olive
         /// </summary>
         /// <param name="original">String which is removed.</param>
         /// <param name="substitute">String which is replaced.</param>
-        public static string KeepReplacing(this string @this, string original, string substitute)
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not. Default value is True.</param>
+        public static string KeepReplacing(this string @this, string original, string substitute, bool caseSensitive= true)
         {
             if (@this.IsEmpty()) return @this;
 
             if (original == substitute) return @this; // prevent loop
 
-            while (@this.Contains(original))
-                @this = @this.Replace(original, substitute);
+            var comparison = caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
+            return Regex.Replace(@this, original, substitute, comparison);
 
-            return @this;
-        }
+	}
 
         /// <summary>
         /// Gets this same string when a specified condition is True, otherwise it returns empty string.
