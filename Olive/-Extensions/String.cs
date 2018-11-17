@@ -755,24 +755,28 @@ namespace Olive
         /// Removes the specified substrings from this string object.
         /// </summary>
         /// <param name="firstSubstringsToRemove">String which is removed.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
         /// <param name="otherSubstringsToRemove">A list of Strings which are removed.</param>
-        public static string Remove(this string @this, string firstSubstringsToRemove, params string[] otherSubstringsToRemove) =>
-            @this.Remove(firstSubstringsToRemove).Remove(otherSubstringsToRemove);
+        public static string Remove(this string @this, string firstSubstringsToRemove, bool caseSensitive=true, params string[] otherSubstringsToRemove) =>
+            @this.Remove(firstSubstringsToRemove,caseSensitive).Remove(otherSubstringsToRemove,caseSensitive);
 
         /// <summary>
         /// Removes the specified substrings from this string object.
         /// </summary>
         /// <param name="substringsToRemove">A list of Strings which are removed.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
         [EscapeGCop("It is the Except definition and so it cannot call itself")]
-        public static string Remove(this string text, string[] substringsToRemove)
+        public static string Remove(this string text, string[] substringsToRemove, bool caseSensitive=true)
         {
             if (text.IsEmpty()) return text;
 
             var result = text;
+            var comparison = caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
 
             foreach (var sub in substringsToRemove)
                 if (sub.HasValue())
-                    result = result.Replace(sub, string.Empty);
+                    result = Regex.Replace(result, sub, string.Empty, comparison);
+		
 
             return result;
         }
@@ -781,12 +785,14 @@ namespace Olive
         /// Removes the specified substrings from this string object.
         /// </summary>
         /// <param name="substringToRemove">String which is removed.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
 	    [EscapeGCop("It is the Except definition and so it cannot call itself")]
-        public static string Remove(this string text, string substringToRemove)
+        public static string Remove(this string text, string substringToRemove,bool caseSensitive = true)
         {
             if (text.IsEmpty()) return text;
 
-            return text.Replace(substringToRemove, string.Empty);
+            var comparison = caseSensitive ? RegexOptions.None: RegexOptions.IgnoreCase;
+            return Regex.Replace(text, substringToRemove, string.Empty, comparison);
         }
 
         /// <summary>
