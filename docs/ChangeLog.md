@@ -21,6 +21,89 @@ $fa-font-path: "/lib/@fortawesome/fontawesome-free/webfonts"; //override default
 ```
 4. Run the `sass-to-css.bat` file and build your sass files.
 
+5. We have updated Olive.MvcJs and project template to use custom radio and checkbox. If you are updating your bower package from any version before 0.9.161, you need to add some scss files to your project as you can find [here](https://github.com/Geeksltd/Olive.MvcTemplate/tree/master/Template/Website/wwwroot/styles/controls)
+
+##### Checkbox's scss file:
+```stylesheet
+@import "../imports/variables";
+
+$check-box-size: 20px;
+
+input[type='checkbox'].handled {
+    opacity: 0;
+
+    &:focus + .checkbox-helper {
+        box-shadow: 0 0 0 0 #fff, 0 0 0 0.2rem rgba(0,123,255,.25);
+        border: 1px solid $input-border-focus;
+    }
+
+    &:checked + .checkbox-helper {
+
+        &:before {
+            outline: none;
+            content: '\2714';
+            font-size: 26px;
+            position: absolute;
+            top: -11px;
+            left: 17px;
+            color: $primary;
+            font-family: initial;
+        }
+    }
+}
+
+.checkbox-helper {
+    display: inline-block;
+    width: $check-box-size;
+    height: $check-box-size;
+    border: 1px solid $input-border;
+    border-radius: $input-border-radius;
+    background-color: $input-bg;
+}
+```
+
+##### Radio's scss file:
+```stylesheet
+@import "../imports/variables";
+
+$check-box-size: 20px;
+$check-box-size-checked-offset: 2px;
+
+input[type='radio'].handled {
+    opacity: 0;
+
+    &:focus + .radio-helper {
+        box-shadow: 0 0 0 0 #fff, 0 0 0 0.2rem rgba(0,123,255,.25);
+        border: 1px solid $input-border-focus;
+    }
+
+    &:checked + .radio-helper {
+
+        &:before {
+            outline: none;
+            display: inline-block;
+            height: calc(#{$check-box-size} - #{$check-box-size-checked-offset});
+            width: calc(#{$check-box-size} - #{$check-box-size-checked-offset});
+            border-radius: 50%;
+            content: '';
+            position: absolute;
+            top: -11px;
+            left: 17px;
+            background-color: $primary;
+        }
+    }
+}
+
+.radio-helper {
+    display: inline-block;
+    width: $check-box-size;
+    height: $check-box-size;
+    border: 1px solid $input-border;
+    border-radius: 50%;
+    background-color: $input-bg;
+}
+```
+
 ## 18 Nov 2018
 - Rename FA5 to just FA
 
