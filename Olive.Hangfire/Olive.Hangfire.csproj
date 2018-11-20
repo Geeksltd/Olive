@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework> 
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Hangfire.xml</DocumentationFile>
     <PackageId>Olive.Hangfire</PackageId>
-    <Version>1.0.40</Version>
+    <Version>1.0.43</Version>
     <Title>Olive Hangfire (Service)</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -14,18 +13,15 @@
     <Description>Olive Framework</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="HangFire" Version="1.6.20" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
@@ -39,9 +35,7 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
-
 </Project>
