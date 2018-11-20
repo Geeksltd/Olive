@@ -1,7 +1,8 @@
 
 # Olive compatibility change log
 
-## We have used [FontAwesome 5](https://fontawesome.com/icons?d=gallery&s=brands,solid) in the version of the M# and Olive so if your project is still using FA4 please update it to the FA5 as shown below:
+## 20 Nov 2018
+We have used [FontAwesome 5](https://fontawesome.com/icons?d=gallery&s=brands,solid) in the version of the M# and Olive so if your project is still using FA4 please update it to the FA5 as shown below:
 1. Open `package.json` or `bower.json` and update **FontAwesome** to the last version.
 2. Open `common.scss` and remove these lines:
 `@import "../../lib/fontawesome/css/font-awesome.min.css";`
