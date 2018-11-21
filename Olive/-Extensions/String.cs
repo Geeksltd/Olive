@@ -807,6 +807,25 @@ namespace Olive
         }
 
         /// <summary>
+        /// Replaces all occurrences of a specified phrase to a substitute, even if the original phrase gets produced again as the result of substitution. Note: It's an expensive call.
+        /// </summary>
+        /// <param name="original">String which is removed.</param>
+        /// <param name="substitute">String which is replaced.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not. Default value is True.</param>
+        public static string KeepReplacing(this string @this, string original, string substitute, bool caseSensitive)
+        {
+            if (@this.IsEmpty()) return @this;
+
+            if (original == substitute) return @this; // prevent loop
+
+            var comparison = caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
+            @this = Regex.Replace(@this, original, substitute, comparison);
+
+            return @this;
+        }
+	    
+	    
+        /// <summary>
         /// Gets this same string when a specified condition is True, otherwise it returns empty string.
         /// </summary>
         /// <param name="condition">The condition which is checked.</param>
