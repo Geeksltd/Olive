@@ -581,6 +581,29 @@ namespace Olive
         /// <summary>
         /// Gets whether this string item begins with any of the specified items{Args}.
         /// </summary>
+        /// <param name="listOfBeginnings">The list of strings which are checked whether they are in this value or not.</param>
+        /// <param name="caseSensitive">The list of strings which are checked whether it is in this value or not.</param>
+        public static bool StartsWithAny(this string @this, bool caseSensitive, params string[] listOfBeginnings)
+        {
+
+            foreach (var option in listOfBeginnings)
+            {
+                if (caseSensitive)
+                {
+                    if (@this.StartsWith(option)) return true;
+                }
+                else
+                {
+                if (@this.StartsWith(option, StringComparison.OrdinalIgnoreCase)) return true;
+
+                }
+            }
+            return false;
+        }
+	    
+        /// <summary>
+        /// Gets whether this string item begins with any of the specified items{Args}.
+        /// </summary>
         /// <param name="other">The string which is checked whether it is in this value.</param>
         /// <param name="caseSensitive">The list of strings which are checked whether it is in this value or not.</param>
         public static bool StartsWith(this string @this, string other, bool caseSensitive)
