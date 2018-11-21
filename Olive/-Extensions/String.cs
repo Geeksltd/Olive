@@ -1485,7 +1485,7 @@ namespace Olive
         /// <param name="search">Trims all text before it.</param>
         /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
         /// <param name="trimPhrase">If {trimPhrase} is true, only phrases are returned instead of all characters. The defalt value is false.</param>
-        public static string TrimBefore(this string @this, string search, bool caseSensitive = false, bool trimPhrase = false)
+        public static string TrimBefore(this string @this, string search, bool trimPhrase = false, bool caseSensitive = false)
         {
             if (@this.IsEmpty()) return @this;
 
