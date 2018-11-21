@@ -762,6 +762,16 @@ namespace Olive
         /// <summary>
         /// Removes the specified substrings from this string object.
         /// </summary>
+        /// <param name="firstSubstringsToRemove">String which is removed.</param>
+        /// <param name="otherSubstringsToRemove">A list of Strings which are removed.</param>
+        /// <param name="caseSensitive">Determined whether case sensitive is important or not.</param>
+	public static string Remove(this string @this, string firstSubstringsToRemove,bool caseSensitive, params string[] otherSubstringsToRemove) =>
+            @this.Remove(firstSubstringsToRemove,caseSensitive).Remove(otherSubstringsToRemove,caseSensitive);
+
+	    
+        /// <summary>
+        /// Removes the specified substrings from this string object.
+        /// </summary>
         /// <param name="substringsToRemove">A list of Strings which are removed.</param>
         [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static string Remove(this string text, string[] substringsToRemove)
@@ -777,6 +787,26 @@ namespace Olive
             return result;
         }
 
+
+        /// <summary>
+        /// Removes the specified substrings from this string object.
+        /// </summary>
+        /// <param name="substringsToRemove">A list of Strings which are removed.</param>
+	/// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+	 public static string Remove(this string text, string[] substringsToRemove, bool caseSensitive)
+        {
+            if (text.IsEmpty()) return text;
+
+            var result = text;
+   	    var comparison = caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
+
+            foreach (var sub in substringsToRemove)
+                if (sub.HasValue())
+                    result = Regex.Replace(result, sub, string.Empty, comparison);
+
+            return result;
+        }
+	    
         /// <summary>
         /// Removes the specified substrings from this string object.
         /// </summary>
@@ -789,6 +819,21 @@ namespace Olive
             return text.Replace(substringToRemove, string.Empty);
         }
 
+        /// <summary>
+        /// Removes the specified substrings from this string object.
+        /// </summary>
+        /// <param name="substringToRemove">String which is removed.</param>
+	/// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static string Remove(this string text, string substringToRemove,bool caseSensitive)
+        {
+            if (text.IsEmpty()) return text;
+		
+	    var comparison = caseSensitive ? RegexOptions.None: RegexOptions.IgnoreCase;
+            return Regex.Replace(text, substringToRemove, string.Empty, comparison);
+        }
+	    
+	    
+	    
         /// <summary>
         /// Replaces all occurrences of a specified phrase to a substitute, even if the original phrase gets produced again as the result of substitution. Note: It's an expensive call.
         /// </summary>
