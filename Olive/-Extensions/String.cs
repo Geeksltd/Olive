@@ -182,6 +182,24 @@ namespace Olive
         }
 
         /// <summary>
+        /// Gets the same string unless it is the same as the specified text. If they are the same, empty string will be returned.
+        /// </summary>
+        /// <param name="unwantedText">The string is used to search in this string.</param>
+        /// <param name="caseSensitive">Determines whether caseSensitive is important or not. Default value is True.</param>
+        public static string Unless(this string @this, string unwantedText, bool caseSensitive)
+        {
+            var temptext = @this;
+             if (caseSensitive == false)
+            {
+                @this = @this.ToLower();
+                unwantedText = unwantedText.ToLower();
+            }
+             if (@this == unwantedText) return string.Empty;
+            else return @this;
+            else return temptext;
+        }	    
+	    
+        /// <summary>
         /// Summarizes the specified source.
         /// </summary>
         /// <param name="maximumLength">The number of characters which should be shown. It should be greater than 3 if the enforceMaxLength parameter is true.</param>
