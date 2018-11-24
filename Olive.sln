@@ -130,6 +130,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nuget.exe = nuget.exe
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.EventBus", "Olive.EventBus\Olive.EventBus.csproj", "{CE18C25B-E11F-429F-A3B3-F23C30B00731}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Aws.EventBus", "Olive.Aws.Sqs\Olive.Aws.EventBus.csproj", "{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -335,6 +339,14 @@ Global
 		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE18C25B-E11F-429F-A3B3-F23C30B00731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE18C25B-E11F-429F-A3B3-F23C30B00731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE18C25B-E11F-429F-A3B3-F23C30B00731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE18C25B-E11F-429F-A3B3-F23C30B00731}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
