@@ -9,4 +9,13 @@ namespace Olive.Entities
     }
 
     public enum SaveMode { Update, Insert }
+
+    public class GlobalSaveEventArgs : SaveEventArgs
+    {
+        public IEntity Entity;
+        public GlobalSaveEventArgs(IEntity entity, SaveMode mode) : base(mode)
+        {
+            Entity = entity ?? throw new ArgumentNullException(nameof(entity));
+        }
+    }
 }

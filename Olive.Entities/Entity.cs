@@ -227,7 +227,7 @@ namespace Olive.Entities
         {
             InvalidateCachedReferences();
             await Saved.Raise(e);
-            await GlobalEntityEvents.InstanceSaved.Raise(e);
+            await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(this, e.Mode));
             InvalidateCachedReferences();
         }
 

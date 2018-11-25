@@ -15,7 +15,7 @@ namespace Olive.Entities
         /// This event is raised for the whole Entity type after "any" object is saved in the database.
         /// You can handle this to provide global functionality/event handling scenarios.
         /// </summary>
-        public readonly static AsyncEvent<SaveEventArgs> InstanceSaved = new AsyncEvent<SaveEventArgs>();
+        public readonly static AsyncEvent<GlobalSaveEventArgs> InstanceSaved = new AsyncEvent<GlobalSaveEventArgs>();
 
         /// <summary>
         /// This event is raised for the whole Entity type before "any" object is deleted from the database.

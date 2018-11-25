@@ -60,8 +60,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire", "Olive.Han
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Microservices", "Olive.Microservices\Olive.Microservices.csproj", "{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiProxyGenerator", "Olive.ApiProxyGenerator\Olive.ApiProxyGenerator.csproj", "{81877296-65EB-4F57-8B58-6B3982ADF05B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Email", "Olive.Email\Olive.Email.csproj", "{6C81363C-E71F-4999-80A4-AF42FAF69D04}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublishToLocalNuget", "Utils\PublishToLocalNuget\PublishToLocalNuget.csproj", "{4E848AF4-85B4-4B47-82FB-C78C337573C9}"
@@ -130,9 +128,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		nuget.exe = nuget.exe
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.EventBus", "Olive.EventBus\Olive.EventBus.csproj", "{CE18C25B-E11F-429F-A3B3-F23C30B00731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.EventBus", "Olive.EventBus\Olive.EventBus.csproj", "{CE18C25B-E11F-429F-A3B3-F23C30B00731}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Aws.EventBus", "Olive.Aws.Sqs\Olive.Aws.EventBus.csproj", "{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.EventBus", "Olive.Aws.Sqs\Olive.Aws.EventBus.csproj", "{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication", "Olive.Entities.Data.Replication\Olive.Entities.Data.Replication.csproj", "{BFDA766C-CEA4-4318-86B4-F3E094B7B502}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiProxyGenerator", "Olive.ApiProxyGenerator\Olive.ApiProxyGenerator.csproj", "{CF40451D-DC3B-42A5-B797-68E68CB5BE2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -251,10 +253,6 @@ Global
 		{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D544D10-9E8B-47E8-AB51-D6F504B1F5EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81877296-65EB-4F57-8B58-6B3982ADF05B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81877296-65EB-4F57-8B58-6B3982ADF05B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81877296-65EB-4F57-8B58-6B3982ADF05B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81877296-65EB-4F57-8B58-6B3982ADF05B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C81363C-E71F-4999-80A4-AF42FAF69D04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C81363C-E71F-4999-80A4-AF42FAF69D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C81363C-E71F-4999-80A4-AF42FAF69D04}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -347,6 +345,14 @@ Global
 		{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFDA766C-CEA4-4318-86B4-F3E094B7B502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFDA766C-CEA4-4318-86B4-F3E094B7B502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFDA766C-CEA4-4318-86B4-F3E094B7B502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFDA766C-CEA4-4318-86B4-F3E094B7B502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF40451D-DC3B-42A5-B797-68E68CB5BE2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF40451D-DC3B-42A5-B797-68E68CB5BE2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF40451D-DC3B-42A5-B797-68E68CB5BE2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF40451D-DC3B-42A5-B797-68E68CB5BE2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

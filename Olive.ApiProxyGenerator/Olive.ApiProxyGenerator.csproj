@@ -2,8 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <StartupObject>Olive.ApiProxy.Program</StartupObject>
-    <ApplicationIcon />
+    <StartupObject>Olive.ApiProxy.Program</StartupObject>    
     <AssemblyName>Olive.ApiProxyGenerator</AssemblyName>
     <RootNamespace>Olive.ApiProxy</RootNamespace>
     <PackageId>generate-api-proxy</PackageId>
@@ -14,13 +13,7 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Generates Api Proxy packages for Olive microservice Apis</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>
-    </OutputPath>
-    <DocumentationFile>
-    </DocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild> 
     <NoWarn>1701;1702;1705;NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -32,8 +25,5 @@
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)&#xD;&#xA;copy /y $(TargetPath) C:\Users\Administrator\.dotnet\tools\.store\generate-api-proxy\2.0.93\generate-api-proxy\2.0.93\tools\netcoreapp2.1\any\" />
-  </Target>
+  </ItemGroup>  
 </Project>

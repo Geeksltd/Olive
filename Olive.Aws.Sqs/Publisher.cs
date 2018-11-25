@@ -6,18 +6,22 @@ using System.Threading.Tasks;
 
 namespace Olive.Aws
 {
-    class Publisher<TMessage> : Agent<TMessage> where TMessage : IEventBusMessage
+    class Publisher : Agent
     {
         SendMessageRequest Request;
 
-        public async Task<string> Publish(TMessage message)
+        public Publisher(string queueKey) : base(queueKey)
+        {
+        }
+
+        public async Task<string> Publish(IEventBusMessage message)
         {
             Request = new SendMessageRequest
             {
                 QueueUrl = QueueUrl,
                 MessageBody = JsonConvert.SerializeObject(message),
                 MessageDeduplicationId = message.DeduplicationId,
-                MessageGroupId = typeof(TMessage).FullName
+                MessageGroupId = "Default"
             };
 
             var response = await Client.SendMessageAsync(Request);

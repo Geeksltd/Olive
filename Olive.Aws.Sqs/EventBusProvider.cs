@@ -5,14 +5,13 @@ namespace Olive.Aws
 {
     public class EventBusProvider : IEventBusProvider
     {
-        public Task<string> Publish<TMessage>(TMessage message)
-            where TMessage : IEventBusMessage
-            => new Publisher<TMessage>().Publish(message);
+        public Task<string> Publish(string queueKey, IEventBusMessage message)
+            => new Publisher(queueKey).Publish(message);
 
-        public void Subscribe<TMessage>(Func<TMessage, Task> handler)
+        public void Subscribe<TMessage>(string queueKey, Func<TMessage, Task> handler)
             where TMessage : IEventBusMessage
         {
-            new Subscriber<TMessage>(handler).Start();
+            new Subscriber<TMessage>(queueKey, handler).Start();
         }
     }
 }

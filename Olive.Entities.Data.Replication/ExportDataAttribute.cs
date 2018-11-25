@@ -1,0 +1,18 @@
+﻿using System;
+
+namespace Olive.Entities
+{
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    public class ExportDataAttribute : Attribute
+    {
+        public Type Type { get; }
+
+        public ExportDataAttribute(Type type)
+        {
+            Type = type ?? throw new ArgumentNullException(nameof(type));
+
+            if (!type.IsA<ReplicatedData>())
+                throw new ArgumentException(type.FullName + " is not a subclass of " + typeof(ReplicatedData).FullName);
+        }
+    }
+}

@@ -5,8 +5,8 @@ namespace Olive
 {
     public interface IEventBusProvider
     {
-        void Subscribe<TMessage>(Func<TMessage, Task> @handler) where TMessage : IEventBusMessage;
+        Task<string> Publish(string queueKey, IEventBusMessage message);
 
-        Task<string> Publish<TMessage>(TMessage message) where TMessage : IEventBusMessage;
+        void Subscribe<TMessage>(string queueName, Func<TMessage, Task> @handler) where TMessage : IEventBusMessage;
     }
 }

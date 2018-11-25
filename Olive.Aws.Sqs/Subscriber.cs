@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Olive.Aws
 {
-    class Subscriber<TMessage> : Agent<TMessage> where TMessage : IEventBusMessage
+    class Subscriber<TMessage> : Agent where TMessage : IEventBusMessage
     {
         public Func<TMessage, Task> Handler { get; }
         ReceiveMessageRequest Request;
         DeleteMessageRequest Receipt;
 
-        public Subscriber(Func<TMessage, Task> handler) => Handler = handler;
+        public Subscriber(string queueKey, Func<TMessage, Task> handler) : base(queueKey)
+            => Handler = handler;
 
         public void Start()
         {

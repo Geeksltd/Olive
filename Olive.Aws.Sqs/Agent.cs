@@ -6,15 +6,19 @@ using System.Threading.Tasks;
 
 namespace Olive.Aws
 {
-    abstract class Agent<TMessage> where TMessage : IEventBusMessage
+    abstract class Agent
     {
         protected string QueueUrl;
         protected AmazonSQSClient Client;
+        string QueueKey;
 
-        protected Agent()
+        protected Agent(string queueKey)
         {
-            var key = "Aws:QueueUrls:" + typeof(TMessage).FullName;
+            QueueKey = queueKey;
+            var key = "Aws:QueueUrls:" + queueKey;
+
             QueueUrl = Config.Get(key).OrNullIfEmpty()
+
             ?? throw new Exception("Queue url not specified under " + key);
 
             Client = new AmazonSQSClient(Amazon.RegionEndpoint.EUWest1);
