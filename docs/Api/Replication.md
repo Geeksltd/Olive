@@ -145,3 +145,9 @@ When the `Subscribe()` method is called, it will do the following:
 #### CustomerService.OrdersEndPoint.MSharp
 This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
 
+Each subclass of `ReplicatedData<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
+- We have a `Domain.Customer` class in the publisher service (`Customer Service`) which has the full customer data, perhaps with 20 fields.
+- In the consumer service (Orders) we need to have the `customer` concept for various programming activities. We may want to add business logic to it, or add associations to other entities, etc. But we only care about its Name and Email fields (and ID of course).
+- For security, efficiency and simplicity, we want the Order service to only see a limited view of the main `Customer` entity.
+- The `PeopleService.Customer` class which inherits from `ReplicatedData<Domain.Customer>` serves that purpose. It is in fact a remote representative of the customer concept with limited data in the consumer's world.
+- In the consumer service (Orders) we will need that Customer concept to be present, giving us programmatic access, intellisense, data querying, etc. 
