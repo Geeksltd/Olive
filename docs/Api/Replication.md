@@ -61,13 +61,29 @@ namespace CustomerService
     public class OrdersEndPoint : DataReplicationEndPoint { }
 }
 ```
-The `Customer` class here provides a definition for a data table to expose. It inherits from `ReplicatedData<...>` which is a special class in Olive, 
+The `Customer` class here provides a definition for a data table to expose. It inherits from `ReplicatedData<...>` which is a special class in Olive. The above code is saying *"Export the data from my local `Domain.Customer` type into a type, also called `Customer`. But only export the `Email` and `Name` fields."*.
+
+#### Exporting multiple data tables
+In the same endpoint, you can export multiple data types. For each data type you need to define a sub-class of `ReplicatedData` and then add that to the endpoint using another `ExportData` attribute. For example:
+
+```cshrap
+public class CustomerAddress : ReplicatedData<Domain.CustomerAddress>
+{
+    protected override void Define()
+    {
+        Export(x => x.Line1);
+        ...
+    }
+}
+
+[ExportData(typeof(Customer))]
+[ExportData(typeof(CustomerAddress))]
+public class OrdersEndPoint : DataReplicationEndPoint { }
+```
 
 Here, a data end point is created, called `OrdersEndPoint`. Using an `ExportData` attribute, it's linking  The end point can export data for multiple data replication definitions. In the above example
 
-
 ### Generating a proxy
-
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. It will generate the following two nuget package.
 
 #### {Publisher}Service.{Consumer}EndPoint
