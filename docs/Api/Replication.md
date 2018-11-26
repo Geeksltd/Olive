@@ -42,7 +42,7 @@ A utility named **generate-data-endpoint-proxy** (distributed as a nuget global 
 
 It will generate two packages:
 
-- ** *{Publisher}*Service.*{Consumer}*EndPoint ** (referenced by the consumer service's `Domain` project) 
-- ** *{Publisher}*Service.*{Consumer}*EndPoint.MSharp ** (referenced by the consumer service's `#Model` project) 
+- ***{Publisher}*Service.*{Consumer}*EndPoint** (referenced by the consumer service's `Domain` project) 
+- ***{Publisher}*Service.*{Consumer}*EndPoint.MSharp** (referenced by the consumer service's `#Model` project) 
 
 The consumer service will reference these generated nuget packages. T
