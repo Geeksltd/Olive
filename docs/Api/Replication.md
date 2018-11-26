@@ -29,18 +29,46 @@ But that will be:
 
 ## Better approach: Replication
 To solve the problems mentioned above with an Api-based integration fo data, you can use the data replication approach.
+In this approach, a read-only copy of the data will be created in the consumer service's database, and it's kept up-to-date via an event bus and queueing system, for a reliable, fast and efficient result.
 
-In this method, the `publisher service` will define a `Data Endpoint` for the `consumer service` to declaratively specify:
+In this approach, the `publisher service` will define an `Data Endpoint` for the `consumer service` to declaratively specify:
 - What entity types' data can be made available to the consumer
 - What fields
 - What filter criteria (to limit the data to a subset if required)
 
+### Example
+The following example is defined in an imaginary publisher microservice called the `Customer Service` which holds customer data.
+Let's say there is another microservice called `Order Service` which is responsible for managing customer orders.
+In the orders service, we need access to the customer data, for example to associate orders to them.
+
+To implement this, in the customer microserice project, we will create the following class:
+
+```c#
+namespace CustomerService
+{
+    using Olive.Entities;
+
+    public class Customer : ReplicatedData<Domain.Customer>
+    {
+        protected override void Define()
+        {
+            Export(x => x.Email);
+            Export(x => x.Name);
+        }
+    }
+    
+    [ExportData(typeof(Customer))]
+    public class OrdersEndPoint : DataReplicationEndPoint { }
+}
+```
+The `Customer` class here provides a definition for a data table to expose. It inherits from `ReplicatedData<...>` which is a special class in Olive, 
+
+Here, a data end point is created, called `OrdersEndPoint`. Using an `ExportData` attribute, it's linking  The end point can export data for multiple data replication definitions. In the above example
+
 
 ### Generating a proxy
 
-A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`.
-
-It will generate two packages:
+A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. It will generate the following two nuget package.
 
 #### {Publisher}Service.{Consumer}EndPoint
 This package will be referenced by the consumer service's `Website` project, in the `Startup.cs` file to kick start the engine.
