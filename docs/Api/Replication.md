@@ -35,8 +35,14 @@ In this method, the `publisher service` will define a `Data Endpoint` for the `c
 - What fields
 - What filter criteria (to limit the data to a subset if required)
 
+
+### Generating a proxy
+
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`.
 
 It will generate two packages:
-- *{Publisher}*Service.*{Consumer}*EndPoint
-- *{Publisher}*Service.*{Consumer}*EndPoint.MSharp
+
+- ** *{Publisher}*Service.*{Consumer}*EndPoint ** (referenced by the consumer service's `Domain` project) 
+- ** *{Publisher}*Service.*{Consumer}*EndPoint.MSharp ** (referenced by the consumer service's `#Model` project) 
+
+The consumer service will reference these generated nuget packages. T
