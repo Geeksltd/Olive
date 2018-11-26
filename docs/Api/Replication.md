@@ -66,7 +66,7 @@ The `Customer` class here provides a definition for a data table to expose. It i
 #### Exporting multiple data tables
 In the same endpoint, you can export multiple data types. For each data type you need to define a sub-class of `ReplicatedData` and then add that to the endpoint using another `ExportData` attribute. For example:
 
-```cshrap
+```c#
 public class CustomerAddress : ReplicatedData<Domain.CustomerAddress>
 {
     protected override void Define()
@@ -85,6 +85,11 @@ Here, a data end point is created, called `OrdersEndPoint`. Using an `ExportData
 
 ### Generating a proxy
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. It will generate the following two nuget package.
+
+```batch
+C:\> dotnet tool install -g generate-data-endpoint-proxy
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndPoint:OrdersEndPoint /out:"c:\temp\generated-packages\"
+```
 
 #### {Publisher}Service.{Consumer}EndPoint
 This package will be referenced by the consumer service's `Website` project, in the `Startup.cs` file to kick start the engine.
