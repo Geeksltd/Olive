@@ -13,5 +13,7 @@ namespace Olive.Aws
         {
             new Subscriber<TMessage>(queueKey, handler).Start();
         }
+
+        public Task Purge(string queueKey) => new Purger(queueKey).Run();
     }
 }

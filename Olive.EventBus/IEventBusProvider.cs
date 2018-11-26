@@ -8,5 +8,7 @@ namespace Olive
         Task<string> Publish(string queueKey, IEventBusMessage message);
 
         void Subscribe<TMessage>(string queueName, Func<TMessage, Task> @handler) where TMessage : IEventBusMessage;
+
+        Task Purge(string queueKey);
     }
 }

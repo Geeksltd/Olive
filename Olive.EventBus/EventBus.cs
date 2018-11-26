@@ -35,5 +35,16 @@ namespace Olive
         public static void Subscribe<TMessage>(string queueKey, Func<TMessage, Task> handler)
             where TMessage : IEventBusMessage
             => Provider.Subscribe(queueKey, handler ?? throw new ArgumentNullException(nameof(handler)));
+
+        /// <summary>
+        /// Deletes all messages on the specified queue.
+        /// </summary>
+        public static Task Purge(string queueKey) => Provider.Purge(queueKey);
+
+        /// <summary>
+        /// Deletes all messages on the specified queue.
+        /// </summary>
+        public static Task Purge<TMessage>() where TMessage : IEventBusMessage
+            => Purge(typeof(TMessage).FullName);
     }
 }
