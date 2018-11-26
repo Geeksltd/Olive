@@ -151,3 +151,23 @@ Each subclass of `ReplicatedData<TDomain>` defined in the publisher service, rep
 - For security, efficiency and simplicity, we want the Order service to only see a limited view of the main `Customer` entity.
 - The `PeopleService.Customer` class which inherits from `ReplicatedData<Domain.Customer>` serves that purpose. It is in fact a remote representative of the customer concept with limited data in the consumer's world.
 - In the consumer service (Orders) we will need that Customer concept to be present, giving us programmatic access, intellisense, data querying, etc. 
+
+To make it all happen, we generate an M# nuget package which contains the definition of the `Customer` entity from the perspective of the consumer application. It's basically a DLL with a normal M# entity definition.
+
+The following code is therefore generted by the **generate-data-endpoint-proxy** tool, from the `PeopleService.Customer` class.
+```c#
+using MSharp;
+namespace PeopleService
+{
+    public class Customer : EntityType
+    {
+        public Customer()
+        {
+            Schema("PeopleService");
+            String("Email");
+            String("Name");
+        }
+    }
+}
+```
+For all intents and purposes, this is a normal M# entity definition. (**TODO: Find a way to prevent save/delete operations on it**)
