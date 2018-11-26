@@ -67,7 +67,7 @@
     * [ApiClient](Api/ApiClient.md)
     * [Api Proxy](Api/Proxy.md)
     * [Api Versioning](Api/Versioning.md)
-
+    * [Data Replication](Api/Replication.md)
 
 * Olive Javascript Fx (MvcJS)
     * [Overview](MvcJS/Overview.md)
