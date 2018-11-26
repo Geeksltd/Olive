@@ -100,15 +100,15 @@ namespace MyPublisherService
 }
 ```
 
-## Generating an Api Proxy (Olive.ApiProxyGenerator.dll)
+## Generating an Api Proxy using `generate-api-proxy`
 
-1. Ensure you have [generate-api-proxy tool](https://www.nuget.org/packages/Olive.ApiProxyGenerator/) installed by calling `dotnet tool install -g Olive.ApiProxyGenerator`
+1. Ensure you have [generate-api-proxy tool](https://www.nuget.org/packages/generate-api-proxy/) installed by calling `dotnet tool install -g generate-api-proxy`
 2. Compile the website project (which includes the Api code)
 3. Right click on the Api controller class in Visual Studio solution explorer.
 4. Select "Generate Proxy Dll..." which opens a pop-up
 5. Provide the requested settings to define the target destination for publishing the generated Proxy.
 
-> The Api.Proxy.dll tool will generate two class library projects, one called **Proxy** and one called **MSharp**. It will then compile them and generate a nuget package for each, and publish to the requested destination. The generated NuGet packages can then be referenced in the consuming microservices.
+> The generate-api-proxy tool will generate two class library projects in a temp location, one called **Proxy** and one called **MSharp**. It will then compile them and generate a nuget package for each, and publish to the requested destination. The generated NuGet packages can then be referenced in the consuming microservices.
 
 ### Using the generated proxy
 
