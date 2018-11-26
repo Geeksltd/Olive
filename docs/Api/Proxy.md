@@ -3,10 +3,9 @@
 The **ApiClient** class will solve many of the routine integration problems for you.
 But for consuming remote services, there are still some problems remaining, such as:
 
-In addition there is a utility named **Olive.ApiProxyGenerator** to help simplify invoking Web Apis.
+In addition there is a utility named **generate-api-proxy** to help simplify invoking Web Apis. It is available as a *DotNet Global Tool* distributed via Nuget.
 
 It generates a proxy assembly and NuGet package for your Web Api, to be installed in the consumer app.
-
 The generated proxy assembly will:
 
 - Provide a strongly typed proxy class to invoke remote services as if they are local functions.
