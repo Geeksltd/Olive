@@ -582,8 +582,9 @@ When you want to return valid JavaScript string content with reserved characters
 "<data>\'abc23123</data>\r\n".JavascriptEncode(); // returns "<data>\\x27abc23123</data>\\n"
 ```
 
-# KeepReplacing({original},{substitute})
+# KeepReplacing({original},{substitute},{caseSensitive})
 Replaces all occurances of a specified phrase to a substitude, even if the original phrase gets produced again as the result of substitution. Note: It's an expensive call.
+{caseSensitive} determines whether case sensitive of method is important or not.
 #### When to use it?
 When you want to replace some substring from  another string in your application.
 #### Example:
@@ -591,6 +592,9 @@ When you want to replace some substring from  another string in your application
 "Sample Example".KeepReplacing("xa","pe");// returns "Sample Epemple"
 "Sample Example".KeepReplacing("a","p");// returns "Spmple Expmple"
 "Sample Example".KeepReplacing(" ","");// returns "SampleExample"
+"Sample Example".KeepReplacing("a","p",false);// returns "Spmple Expmple"
+"Sample Example".KeepReplacing("A","P",true);// returns "Sample Example"
+"Sample Example".KeepReplacing("E","p",true);// returns "Sample pxample"
 ```
 # Lacks({phrase},{caseSensitive})
 Determines whether this string object does not contain the specified phrase.
@@ -672,8 +676,9 @@ When you want to return this string, but if it's String.Empty, it returns NULL i
 " ".OrNullIfEmpty(); // returns " "
 ```
 
-# Remove({firstSubstringsToRemove},{otherSubstringsToRemove})
+# Remove({firstSubstringsToRemove},{otherSubstringsToRemove},{caseSensitive})
 Removes the specified substrings from this string object.
+{caseSensitive} determines whether case sensitive of method is important or not.
 #### When to use it?
 When you want to Remove some substring from  another string in your application.
 #### Example:
@@ -683,6 +688,8 @@ When you want to Remove some substring from  another string in your application.
 "Sample Example".Remove("a","b"); //returns "Smple Exmple"
 "Sample Example".Remove("a","x"); //returns "Smple Emple"
 "Sample Example".Remove("a","x","E"); //returns "Smple mple"
+"Sample Example".Remove("a","x","E",caseSensitive: false); //returns "Smple mple"
+"Sample Example".Remove("A","X","E",caseSensitive: true); //returns "Sample xample"
 ```
 
 # RemoveHtmlTags()
@@ -812,8 +819,9 @@ When you want to get whether this string item begins with any of the specified i
 "Example".StartsWith("e",StringComparison.OrdinalIgnoreCase); //returns true
 ```
 
-# StartsWithAny({Args})
+# StartsWithAny({Args},{caseSensitive})
 Gets whether this string item begins with any of the specified items{Args}.
+{caseSensitive} determines whether case sensitive of method is important or not.
 #### When to use it?
 When you want to know a `String` begins with other strings in your applications.
 
@@ -1289,10 +1297,11 @@ When you want to trim all text after the specified search phrase in your applica
 "Sample String".TrimAfter(""); // returns ""
 
 ```        
-# TrimBefore({stringsearch},{caseSensitive},{trimPhrase})
+# TrimBefore({stringsearch},{trimPhrase},{caseSensitive})
 Trims all text before the specified search phrase.
 If {trimPhrase} is `true`, only phrases are returned instead of all characters. The defalt value is `false `.
 If this string or {stringsearch} are `Empty`, it returns `Empty` string.
+{caseSensitive} determines whether case sensitive of method is important or not.
 #### When to use it?
 When you want to trim all text before the specified search phrase in your application codes.
 #### Example:
@@ -1355,8 +1364,9 @@ string? nullstring= null;
 nullstring..TrimOrNull(); // returns null
 ```
 
-# Unless({unwantedText})
+# Unless({unwantedText},{caseSensitive})
 Gets the same string unless it is the same as the specified text. If they are the same, empty string will be returned.
+{caseSensitive} determines whether case sensitive of method is important or not.
 #### When to use it?
 When you want to the same string unless it is the same as the specified text in your application.
 #### Example:
@@ -1368,6 +1378,8 @@ When you want to the same string unless it is the same as the specified text in 
 "Example".Unless(""); //returns "Example"
 "Example".Unless("Example"); //returns ""
 "Example".Unless("example"); //returns "Example"
+"Example".Unless("example",false); //returns ""
+"Example".Unless("example",true); //returns "Example"
 ```
 # WithPrefix({prefixString})
 Returns this text with the specified `prefix` if this has a value. 
