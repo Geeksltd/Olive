@@ -3,6 +3,10 @@
 A solution using Olive microservices will consist of a number of components that are needed either for run-time or development time.
 This guide will explain what they are and how you can set them up to get started with your first Microservice based solution!
 
+### Microservice Explorer
+This utility will help with creation and management of microservices using Olive.
+[Read more here](https://github.com/Geeksltd/Olive.Microservice.Explorer/blob/master/README.md)
+
 ### AccessHub
 If you want to benefit from the Composite UI architecture, then you need a UI container to orchestrate everything together.
 [AccessHub](https://github.com/Geeksltd/Olive/blob/master/docs/Microservices/Overview.md#distributed-ui-via-access-hub) is an implementation of such UI container.
