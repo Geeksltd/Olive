@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc
@@ -80,22 +81,38 @@ namespace Olive.Mvc
         public static string ActionWithQuery(this IUrlHelper @this, string actionUrl, IEntity listItem = null) =>
             @this.ActionWithQuery(actionUrl, new { list_item = listItem });
 
+        static Dictionary<string, string> SerializeQuery(object item)
+        {
+            var result = new Dictionary<string, string>();
+
+            void serialize(object container, string key, object value)
+            {
+                if (!(value is IEntity entity)) result[key] = value.ToStringOrEmpty();
+                else if (!TransientEntityAttribute.IsTransient(entity.GetType()))
+                    result[key] = entity.GetId().ToStringOrEmpty();
+                else
+                    foreach (var pp in entity.GetType().GetProperties())
+                        serialize(value, key + "." + pp.Name, pp.GetValue(container));
+            }
+
+            foreach (var p in item.GetType().GetProperties())
+            {
+                var key = p.Name.ToLower().Replace("_", ".");
+                var value = p.GetValue(item);
+                serialize(item, key, value);
+            }
+
+            return result;
+        }
+
         public static string ActionWithQuery(this IUrlHelper @this, string actionUrl, object query)
         {
             var data = @this.ActionContext.GetRequestParameters();
 
             if (query != null)
             {
-                var queryData = query.GetType().GetProperties()
-                    .ToDictionary(p => p.Name.ToLower().Replace("_", "."), p =>
-                    {
-                        var value = p.GetValue(query);
-                        if (value is IEntity)
-                            return (value as IEntity).GetId().ToStringOrEmpty();
-                        return value.ToStringOrEmpty();
-                    });
-
-                foreach (var item in queryData.Where(x => x.Value.HasValue())) data[item.Key] = item.Value;
+                foreach (var item in SerializeQuery(query).Where(x => x.Value.HasValue()))
+                    data[item.Key] = item.Value;
             }
 
             var queryString = data.Where(x => x.Value.HasValue()).Select(x => x.Key + "=" + WebUtility.UrlEncode(x.Value)).ToString("&");
