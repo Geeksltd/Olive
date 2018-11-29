@@ -175,11 +175,7 @@ namespace Olive
         /// Gets the same string unless it is the same as the specified text. If they are the same, empty string will be returned.
         /// </summary>
         /// <param name="unwantedText">The string is used to search in this string.</param>
-        public static string Unless(this string @this, string unwantedText)
-        {
-            if (@this == unwantedText) return string.Empty;
-            else return @this;
-        }
+        public static string Unless(this string @this, string unwantedText) => @this.Unless(unwantedText, caseSensitive: true);
 
         /// <summary>
         /// Gets the same string unless it is the same as the specified text. If they are the same, empty string will be returned.
@@ -189,14 +185,13 @@ namespace Olive
         public static string Unless(this string @this, string unwantedText, bool caseSensitive)
         {
             var temptext = @this;
-             if (caseSensitive == false)
+            if (!caseSensitive)
             {
                 @this = @this.ToLower();
                 unwantedText = unwantedText.ToLower();
             }
-             if (@this == unwantedText) return string.Empty;
-            else return @this;
-            else return temptext;
+
+            return @this.Unless(@this == unwantedText);
         }	    
 	    
         /// <summary>
