@@ -91,11 +91,11 @@ namespace Olive.Mvc
                 else if (!TransientEntityAttribute.IsTransient(entity.GetType()))
                     result[key] = entity.GetId().ToStringOrEmpty();
                 else
-                    foreach (var pp in entity.GetType().GetProperties())
-                        serialize(value, key + "." + pp.Name, pp.GetValue(container));
+                    foreach (var pp in GetSerializableProperties(entity.GetType()))
+                        serialize(value, key + "." + pp.Name, pp.GetValue(entity));
             }
 
-            foreach (var p in item.GetType().GetProperties())
+            foreach (var p in GetSerializableProperties(item.GetType()))
             {
                 var key = p.Name.ToLower().Replace("_", ".");
                 var value = p.GetValue(item);
@@ -103,6 +103,21 @@ namespace Olive.Mvc
             }
 
             return result;
+        }
+
+        static IEnumerable<PropertyInfo> GetSerializableProperties(Type type)
+        {
+            foreach (var p in type.GetProperties())
+            {
+                if (!p.CanRead) continue;
+                if (!p.CanWrite) continue;
+                if (p.PropertyType.IsA<AsyncEvent>()) continue;
+
+                if (type.IsA<IEntity>())
+                    if (p.Name.IsAnyOf(nameof(Entity.IsNew), nameof(Entity.IsMarkedSoftDeleted))) continue;
+
+                yield return p;
+            }
         }
 
         public static string ActionWithQuery(this IUrlHelper @this, string actionUrl, object query)

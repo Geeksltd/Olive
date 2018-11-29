@@ -6,12 +6,21 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CustomEntityBinder = System.Func<string, System.Threading.Tasks.Task<Olive.Entities.IEntity>>;
 
 namespace Olive.Mvc
 {
-    public class EntityModelBinder : IModelBinder
+    public partial class EntityModelBinder : IModelBinder
     {
-        static Dictionary<Type, Func<string, IEntity>> CustomParsers = new Dictionary<Type, Func<string, IEntity>>();
+        Type EntityType;
+
+        public EntityModelBinder(Type type)
+        {
+            EntityType = type;
+            CustomBinder = FindCustomParser(EntityType);
+        }
+
+        bool IsTransient => TransientEntityAttribute.IsTransient(EntityType);
 
         static IDatabase Database => Context.Current.Database();
 
@@ -51,74 +60,71 @@ namespace Olive.Mvc
 
         #region Custom parsers
 
-        /// <summary>
-        /// Will register a custom binder for a type instead of the default which uses a Database.Get.
-        /// </summary>
-        public static void RegisterCustomParser<TEntity>(Func<string, IEntity> binder) where TEntity : IEntity
-        {
-            CustomParsers.Add(typeof(TEntity), binder);
-        }
 
-        static Func<string, IEntity> FindCustomParser(Type entityType)
-        {
-            Func<string, IEntity> result = null;
-
-            foreach (var actualType in entityType.WithAllParents())
-            {
-                if (CustomParsers.TryGetValue(actualType, out result))
-                    return result;
-            }
-
-            return null;
-        }
 
         #endregion
 
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
-
-            if (value == null) return;
-
-            var data = value.FirstValue;
-
-            // Special cases:
-            if (data.IsEmpty() || data.IsAnyOf("{NULL}", "-", Guid.Empty.ToString())) return;
-
             if (IsReadOnly(bindingContext)) return;
 
-            if (bindingContext.ModelType.IsA<GuidEntity>() && data.TryParseAs<Guid>() == null)
-            {
-                // We have some data which is not Guid.
-                bindingContext.Result = ModelBindingResult.Success(ParseGuidEntityFromReadableText(bindingContext.ModelType, data));
-            }
+            var data = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).FirstValue;
 
-            var customBinder = FindCustomParser(bindingContext.ModelType);
-            if (customBinder != null)
+            if (IsTransient && CustomBinder == null)
             {
-                try
+                var result = EntityType.CreateInstance();
+                // Parse from values:
+                foreach (var p in EntityType.GetProperties().Where(x => x.CanWrite))
                 {
-                    bindingContext.Result = ModelBindingResult.Success(customBinder(data));
+                    var requestValue = bindingContext.ValueProvider.GetValue(bindingContext.ModelName + "." + p.Name).FirstValue;
+
+                    if (requestValue.HasValue())
+                        p.SetValue(result, requestValue.To(p.PropertyType));
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Failed to bind the value of type '{bindingContext.ModelType.FullName}' from '{data}'.", ex);
-                }
+
+                bindingContext.Result = ModelBindingResult.Success(result);
+                return;
             }
             else
             {
-                try
-                {
-                    bindingContext.Result = ModelBindingResult.Success((await Database.GetOrDefault(data, bindingContext.ModelType))
-                        // Sometimes (e.g. in master detail binding) the view model data is written to the 'Item ', so it must be cloned.
-                        ?.Clone());
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Failed to bind the value of type '{bindingContext.ModelType.FullName}' from '{data}'.", ex);
-                }
+                // No value provided, skip binding:
+                if (data.IsEmpty()) return;
+            }
+
+            try
+            {
+                bindingContext.Result = ModelBindingResult.Success(Bind(data));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to bind the value of type '{EntityType.FullName}' from '{data}'.", ex);
             }
         }
+
+        async Task<IEntity> Bind(string data)
+        {
+            if (data.IsAnyOf("{NULL}", "-", Guid.Empty.ToString())) return null;
+
+            if (CustomBinder != null)
+                return await CustomBinder(data);
+
+            IEntity result;
+
+            if (EntityType.IsA<GuidEntity>() && !data.Is<Guid>())
+            {
+                // We have some data which is not Guid.
+                result = ParseGuidEntityFromReadableText(EntityType, data);
+            }
+            else
+            {
+                result = await Database.GetOrDefault(data, EntityType);
+            }
+
+            // Sometimes (e.g. in master detail binding) the view model data is written to.
+            // So it must be cloned.
+            return result?.Clone();
+        }
+
 
         bool IsReadOnly(ModelBindingContext context)
         {
