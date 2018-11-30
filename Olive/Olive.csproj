@@ -11,7 +11,7 @@
     <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <Version>1.0.136</Version>
+    <Version>1.0.137</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -26,6 +26,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+    <Exec Command="update-local-nuget-cache &quot;$(ProjectPath)&quot; &quot;$(TargetPath)&quot; $(TargetName)" />
   </Target>
 </Project>

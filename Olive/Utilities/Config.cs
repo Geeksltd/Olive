@@ -65,10 +65,12 @@ namespace Olive
 
         public static T Get<T>(string key, T defaultValue) => Configuration.GetValue(key, defaultValue);
 
-        public static IEnumerable<KeyValuePair<string, string>> GetSubsection(string sectionKey, bool relativeKeys)
+        public static Dictionary<string, string> GetSubsection(string sectionKey, bool relativeKeys)
         {
-            return GetSection(sectionKey)?.AsEnumerable(relativeKeys) ??
+            var settings = GetSection(sectionKey)?.AsEnumerable(relativeKeys) ??
                 Enumerable.Empty<KeyValuePair<string, string>>();
+
+            return settings.ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

@@ -93,7 +93,7 @@ namespace Olive.Mvc
 
             try
             {
-                bindingContext.Result = ModelBindingResult.Success(Bind(data));
+                bindingContext.Result = ModelBindingResult.Success(await Bind(data));
             }
             catch (Exception ex)
             {
@@ -124,7 +124,6 @@ namespace Olive.Mvc
             // So it must be cloned.
             return result?.Clone();
         }
-
 
         bool IsReadOnly(ModelBindingContext context)
         {
