@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Olive
 {
@@ -61,5 +64,11 @@ namespace Olive
         public static T Get<T>(string key) => Get<T>(key, default(T));
 
         public static T Get<T>(string key, T defaultValue) => Configuration.GetValue(key, defaultValue);
+
+        public static IEnumerable<KeyValuePair<string, string>> GetSubsection(string sectionKey, bool relativeKeys)
+        {
+            return GetSection(sectionKey)?.AsEnumerable(relativeKeys) ??
+                Enumerable.Empty<KeyValuePair<string, string>>();
+        }
     }
 }

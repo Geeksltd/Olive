@@ -10,7 +10,7 @@ namespace Olive.Entities
 {
     public abstract class ReplicatedData
     {
-        protected List<ExportedField> Fields = new List<ExportedField>();
+        public List<ExportedField> Fields = new List<ExportedField>();
 
         public abstract Type DomainType { get; }
 
@@ -47,17 +47,41 @@ namespace Olive.Entities
             });
         }
 
-        public void Export<T>(Expression<Func<TDomain, T>> field)
+        public ExportedField Export<T>(Expression<Func<TDomain, T>> field)
         {
+            var result = new ExportedField(field.GetProperty());
+            Fields.Add(result);
+            return result;
         }
 
         public void ExportAll()
         {
+            DomainType.GetProperties()
+               .Where(x => x.CanRead && x.CanWrite)
+               .Where(x => x.DeclaringType.Assembly == DomainType.Assembly)
+               .Do(v => Fields.Add(new ExportedField(v)));
         }
     }
 
     public class ExportedField
     {
-        public PropertyInfo Property { get; set; }
+        string title;
+        public PropertyInfo Property { get; }
+
+        public ExportedField(PropertyInfo property)
+        {
+            Property = property;
+            title = property.GetCustomAttribute<System.ComponentModel.DisplayNameAttribute>()?.DisplayName;
+            if (title.IsEmpty())
+                title = property.Name.ToLiteralFromPascalCase();
+        }
+
+        public string GetTitle() => title;
+
+        public ExportedField Title(string exportTitle)
+        {
+            title = exportTitle;
+            return this;
+        }
     }
 }
