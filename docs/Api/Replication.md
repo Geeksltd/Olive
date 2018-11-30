@@ -132,7 +132,7 @@ This package will be referenced by the `Website` project in the consumer service
 public override async Task OnStartUpAsync(IApplicationBuilder app)
 {
     await base.OnStartUpAsync(app);
-    CustomerService.OrderssEndPoint.Subscribe();
+    await CustomerService.OrderssEndPoint.Subscribe();
 }
 ```
 
