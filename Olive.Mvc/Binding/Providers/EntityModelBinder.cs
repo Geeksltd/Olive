@@ -26,17 +26,18 @@ namespace Olive.Mvc
 
         #region GuidEntityReadableTextParsers
 
-        static Dictionary<Type, Func<string, GuidEntity>> GuidEntityReadableTextParsers = new Dictionary<Type, Func<string, GuidEntity>>();
+        static Dictionary<Type, Func<string, Task<GuidEntity>>> GuidEntityReadableTextParsers
+            = new Dictionary<Type, Func<string, Task<GuidEntity>>>();
 
         /// <summary>
         /// If you want to use the string format of an guid entity in URL, then you can get MVC to bind the entity directly from a textual route value. This registers your binding in addition to the normal binding from GUID.
         /// </summary>
-        public static void RegisterReadableTextParser<TEntity>(Func<string, GuidEntity> binder) where TEntity : GuidEntity
+        public static void RegisterReadableTextParser<TEntity>(Func<string, Task<GuidEntity>> binder) where TEntity : GuidEntity
         {
             GuidEntityReadableTextParsers.Add(typeof(TEntity), binder);
         }
 
-        static GuidEntity ParseGuidEntityFromReadableText(Type entityType, string data)
+        static async Task<GuidEntity> ParseGuidEntityFromReadableText(Type entityType, string data)
         {
             var actualType = entityType;
 
@@ -44,7 +45,7 @@ namespace Olive.Mvc
             {
                 var binder = GuidEntityReadableTextParsers.TryGet(actualType);
 
-                if (binder != null) return binder(data);
+                if (binder != null) return await binder(data);
 
                 if (actualType.BaseType == typeof(GuidEntity))
                 {
@@ -113,7 +114,7 @@ namespace Olive.Mvc
             if (EntityType.IsA<GuidEntity>() && !data.Is<Guid>())
             {
                 // We have some data which is not Guid.
-                result = ParseGuidEntityFromReadableText(EntityType, data);
+                result = await ParseGuidEntityFromReadableText(EntityType, data);
             }
             else
             {
