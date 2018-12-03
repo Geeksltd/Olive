@@ -34,7 +34,7 @@ namespace Olive.Entities
         Type domainType;
         protected abstract void Define();
 
-        public override Type DomainType => domainType ?? (domainType = GetType().GetGenericArguments().Single());
+        public override Type DomainType => domainType ?? (domainType = GetType().GenericTypeArguments.Single());
 
         protected virtual string QueueKey => GetType().FullName;
 
