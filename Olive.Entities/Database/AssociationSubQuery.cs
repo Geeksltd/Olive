@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Olive.Entities.Data
+namespace Olive.Entities
 {
     public class AssociationSubQuery
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Olive.Entities.Data
+namespace Olive.Entities
 {
     public class NestedCriteriaProcessor
     {

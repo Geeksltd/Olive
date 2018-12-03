@@ -15,6 +15,9 @@ namespace Olive.Entities
             Operator = opt;
         }
 
+        public override string ToSql(SqlConversionContext context) =>
+            $"({Left.ToSql(context)} {Operator} {Right.ToSql(context)})";
+
         public Criterion Left { get; set; }
 
         public Criterion Right { get; set; }
@@ -45,7 +48,7 @@ namespace Olive.Entities
             var right = From(expression.Right);
 
             if (left == null && right == null) return null;
-            if (((left == null) != (right == null)))
+            if ((left == null) != (right == null))
             {
                 // Only one of them has value.
                 if (expression.NodeType == ExpressionType.AndAlso)

@@ -190,7 +190,18 @@ namespace Olive.Entities
             if (left is ParameterExpression) return create("ID");
 
             if (left is MemberExpression memberEx)
+            {
+                if (expression.Right is MemberExpression rightEx && memberEx.Expression == rightEx.Expression)
+                {
+                    var rightProp = rightEx.GetDatabaseColumnPath();
+                    var leftProp = memberEx.GetDatabaseColumnPath();
+
+                    if (rightProp.HasValue() && leftProp.HasValue())
+                        return new DynamicValueCriterion(leftProp, expression.NodeType.ToFilterFunction(), rightProp);
+                }
+
                 return create(memberEx.GetDatabaseColumnPath());
+            }
 
             if (left is UnaryExpression unary && unary.Operand is MemberExpression member)
                 return create(member.GetDatabaseColumnPath());

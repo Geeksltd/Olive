@@ -86,6 +86,19 @@ namespace Olive.Entities
         public override string ToString() =>
             $"{SqlCriteria}|{Parameters.Select(x => "{0}={1}".FormatWith(x.Key, x.Value)).ToString("|")}";
 
+        public override string ToSql(SqlConversionContext context)
+        {
+            // Add the params:
+            if (Parameters != null)
+                foreach (var x in Parameters) context.Query.Parameters[x.Key] = x.Value;
+
+            if (PropertyName.IsEmpty() || PropertyName == "N/A")
+                return SqlCriteria;
+
+            return SqlCriteria.Replace($"${{{{{PropertyName}}}}}",
+              context.Query.Column(PropertyName));
+        }
+
         public string MapSqlCriteria(Dictionary<string, string> propertyMappings)
         {
             if (PropertyName.IsEmpty() || PropertyName == "N/A") return SqlCriteria;

@@ -6,10 +6,10 @@ namespace Olive.Entities
     public interface ICriterion
     {
         string PropertyName { get; }
-
         FilterFunction FilterFunction { get; set; }
         object Value { get; }
-
         string SqlCondition { get; }
+
+        string ToSql(SqlConversionContext context);
     }
 }

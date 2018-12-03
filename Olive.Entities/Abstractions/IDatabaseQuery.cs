@@ -15,6 +15,8 @@ namespace Olive.Entities
         string AliasPrefix { get; set; }
         string MapColumn(string propertyName);
 
+        string Column(string propertyName, string alias = null);
+
         IDatabaseQuery Include(string associationProperty);
         IDatabaseQuery Include(IEnumerable<string> associationProperties);
         IDatabaseQuery Where(params ICriterion[] criteria);
