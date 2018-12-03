@@ -160,7 +160,9 @@ namespace Olive.Entities
         public string Url()
         {
             if (OwnerEntity == null) return null;
-            return Config.Get("Blob:BaseUrl") + FolderName + "/" + OwnerId() + FileExtension;
+            var result = Config.Get("Blob:BaseUrl") + FolderName + "/" + OwnerId();
+            if (Config.Get("Blob:UrlWithExtension", defaultValue: true)) result += FileExtension;
+            return result;
         }
 
         /// <summary>
