@@ -1,10 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>Olive.Security.Impersonation</RootNamespace>
     <PackageId>Olive.Security.Impersonation</PackageId>
-    <Version>1.0.31</Version>
+    <Version>1.0.32</Version>
     <Title>Olive Security Impersonation</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -13,18 +12,15 @@
     <Description>Olive Framework</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netcoreapp2.1\Olive.Security.Impersonation.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
@@ -47,9 +43,7 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
-
 </Project>

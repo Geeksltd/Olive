@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework> 
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netcoreapp2.1\Olive.Mvc.Paging.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Mvc.Paging</PackageId>
-    <Version>1.0.18</Version>
+    <Version>1.0.19</Version>
     <Title>Olive MVC Paging</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -15,12 +14,10 @@
     <Description>Pagination Utilities for Olive</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
@@ -38,14 +35,12 @@
       <HintPath>..\bin\netcoreapp2.1\Olive.Web.dll</HintPath>
       <Private>false</Private>
     </Reference>
-	 <Reference Include="Olive.Mvc">
+    <Reference Include="Olive.Mvc">
       <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
-
 </Project>

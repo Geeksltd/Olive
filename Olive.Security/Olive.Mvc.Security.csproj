@@ -1,7 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>    
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netcoreapp2.1\Olive.Mvc.Security.xml</DocumentationFile>
     <WarningsAsErrors>NU1605</WarningsAsErrors>
@@ -9,7 +8,7 @@
     <RootNamespace>Olive.Security</RootNamespace>
     <AssemblyName>Olive.Mvc.Security</AssemblyName>
     <PackageId>Olive.Mvc.Security</PackageId>
-    <Version>2.1.51</Version>
+    <Version>2.1.52</Version>
     <Title>Olive Mvc Security</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -18,12 +17,10 @@
     <Description>Olive Framework</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
@@ -42,9 +39,7 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;&#xD;&#xA;update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
-
 </Project>

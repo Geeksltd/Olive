@@ -4,7 +4,7 @@
     <RootNamespace>Olive.Email</RootNamespace>
     <AssemblyName>Olive.Email</AssemblyName>
     <PackageId>Olive.Email</PackageId>
-    <Version>1.0.53</Version>
+    <Version>1.0.54</Version>
     <Title>Olive Email (Service)</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
