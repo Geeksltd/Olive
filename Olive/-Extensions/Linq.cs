@@ -803,11 +803,12 @@ namespace Olive
         public static void RemoveNulls<T>(this IList<T> @this) => @this.RemoveWhere(i => i == null);
 
         /// <summary>
-        /// Determines whether this least contains at least the specified number of items.
+        /// Determines whether this list contains at least the specified number of items.
         /// This can be faster than calling "x.Count() >= N" for complex iterators.
         /// </summary>
         public static bool ContainsAtLeast(this System.Collections.IEnumerable @this, int numberOfItems)
         {
+            if (numberOfItems < 0) throw new ArgumentException("The numberOfItems should be greater than or equal to 0.");            
             // Special case for List:
             if (@this is ICollection asList) return asList.Count >= numberOfItems;
 
