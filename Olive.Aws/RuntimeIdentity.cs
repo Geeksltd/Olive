@@ -2,6 +2,7 @@
 using Amazon.Runtime;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
+using Amazon.Util;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -35,16 +36,6 @@ namespace Olive.Aws
             new Thread(KeepRenewing).Start();
         }
 
-        public static RegionEndpoint Region
-        {
-            get
-            {
-                if (RegionName.IsEmpty())
-                    throw new Exception("Region name is not specified in either Environment Variable of 'AWS_RUNTIME_ROLE_REGION' or config value of 'Aws:Region'.");
-
-                return RegionEndpoint.GetBySystemName(RegionName);
-            }
-        }
 
         [EscapeGCop("This is a background process")]
         static async void KeepRenewing()
@@ -66,7 +57,6 @@ namespace Olive.Aws
         }
 
         static ILogger Log => Olive.Log.For(typeof(RuntimeIdentity));
-
         static async Task Renew()
         {
             var request = new AssumeRoleRequest
@@ -79,11 +69,13 @@ namespace Olive.Aws
 
             Log.Debug("Requesting AssumeRole: " + RoleArn);
 
-            using (var client = new AmazonSecurityTokenServiceClient(Region))
+            using (var client = new AmazonSecurityTokenServiceClient())
             {
                 var response = await client.AssumeRoleAsync(request);
                 Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
-                Credentials = response.Credentials;
+                var credentials = response.Credentials;
+                Config["AWSAccessKey"] = credentials.AccessKeyId;
+                Config["AWSSecretKey"] = credentials.SecretAccessKey;
                 Log.Debug("Obtained assume role credentials.");
             }
         }

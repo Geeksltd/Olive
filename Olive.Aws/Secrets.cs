@@ -37,9 +37,7 @@ namespace Olive.Aws
 
             try
             {
-                using (var client = new AmazonSecretsManagerClient(
-                    RuntimeIdentity.Credentials,
-                    RuntimeIdentity.Region))
+                using (var client = new AmazonSecretsManagerClient())
                 {
                     var response = client.GetSecretValueAsync(request).RiskDeadlockAndAwaitResult();
                     if (response.SecretString.IsEmpty())

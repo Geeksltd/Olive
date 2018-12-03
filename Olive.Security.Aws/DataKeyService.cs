@@ -17,7 +17,7 @@ namespace Olive.Security.Aws
             .OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified.");
 
         static AmazonKeyManagementServiceClient CreateClient()
-            => new AmazonKeyManagementServiceClient(RuntimeIdentity.Credentials, RuntimeIdentity.Region);
+            => new AmazonKeyManagementServiceClient();
 
         internal static async Task<Key> GenerateKey()
         {

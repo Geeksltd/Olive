@@ -55,7 +55,7 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureAuthentication(AuthenticationBuilder auth)
         {
-            auth.AddCookie(ConfigureAuthCookie);
+            auth.AddCookie("Cookies", options => ConfigureAuthCookie(options));
         }
 
         protected virtual void ConfigureMvc(IMvcBuilder mvc)
