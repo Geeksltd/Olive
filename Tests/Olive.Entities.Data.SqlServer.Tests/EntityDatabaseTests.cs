@@ -14,7 +14,7 @@ namespace Olive.Entities.Data.SqlServer.Tests
         public override void SetUp()
         {
             base.SetUp();
-
+            
             TempDatabaseName = new SqlServerManager().GetDatabaseName();
 
             base.InitDatabase();
@@ -29,7 +29,7 @@ namespace Olive.Entities.Data.SqlServer.Tests
 
             var server = new SqlServerManager();
 
-            if (server.Exists(TempDatabaseName, DatabaseFilesPath.FullName)) return;
+            if (server.Exists(TempDatabaseName, DatabaseFilesPath.FullName)) server.Delete(TempDatabaseName);
 
             server.ClearConnectionPool();
             server.Delete(TempDatabaseName);
@@ -57,10 +57,11 @@ namespace Olive.Entities.Data.SqlServer.Tests
         [Test]
         public async Task Can_get_from_sqlServer()
         {
-            database.ShouldNotBeNull();
+            await Can_save_to_sqlServer();
 
             var newPerson = await database.FirstOrDefault<Person>(x => x.FirstName == "Paymon");
 
+            newPerson.ShouldNotBeNull();
             newPerson.FirstName.ShouldEqual("Paymon");
             newPerson.LastName.ShouldEqual("Khamooshi");
         }
