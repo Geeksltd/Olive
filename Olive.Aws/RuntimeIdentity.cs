@@ -74,9 +74,11 @@ namespace Olive.Aws
                     var response = await client.AssumeRoleAsync(request);
                     Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
                     var credentials = response.Credentials;
-                    Config["AWS:AccessKey"] = credentials.AccessKeyId;
-                    Config["AWS:SecretKey"] = credentials.SecretAccessKey;
+
+                    FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () => credentials);
+
                     Log.Debug("Obtained assume role credentials.");
+
                 }
             }
             catch (Exception ex)

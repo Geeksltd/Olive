@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Olive.Aws</PackageId>
-    <Version>2.1.24</Version>
+    <Version>2.1.25</Version>
     <Title>Olive AWS General Provider</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
