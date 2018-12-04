@@ -4,7 +4,8 @@
 ## 4 Dec 2018
 In `Startup.cs` add an instance of `ILoggerFactory` to the constructor, and just pass it to the base constructor.
 ```c#
-public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory) : base(env, config, loggerFactory)`
+public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory) 
+       : base(env, config, loggerFactory)`
 {
     ...
 }
