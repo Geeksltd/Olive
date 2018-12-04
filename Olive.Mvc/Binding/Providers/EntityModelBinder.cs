@@ -65,25 +65,35 @@ namespace Olive.Mvc
 
         #endregion
 
+        object FromRequestValues(ModelBindingContext bindingContext)
+        {
+            var result = EntityType.CreateInstance();
+            // Parse from values:
+            foreach (var p in EntityType.GetProperties().Where(x => x.CanWrite))
+            {
+                var requestValue = bindingContext.ValueProvider.GetValue(bindingContext.ModelName + "." + p.Name).FirstValue;
+
+                if (requestValue.HasValue())
+                    p.SetValue(result, requestValue.To(p.PropertyType));
+            }
+
+            return result;
+        }
+
+        bool ShouldInitializeFromRequestValues()
+        {
+            return IsTransient && CustomBinder == null && Database.GetProviderOrNull(EntityType) == null;
+        }
+
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (IsReadOnly(bindingContext)) return;
 
             var data = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).FirstValue;
 
-            if (IsTransient && CustomBinder == null)
+            if (ShouldInitializeFromRequestValues())
             {
-                var result = EntityType.CreateInstance();
-                // Parse from values:
-                foreach (var p in EntityType.GetProperties().Where(x => x.CanWrite))
-                {
-                    var requestValue = bindingContext.ValueProvider.GetValue(bindingContext.ModelName + "." + p.Name).FirstValue;
-
-                    if (requestValue.HasValue())
-                        p.SetValue(result, requestValue.To(p.PropertyType));
-                }
-
-                bindingContext.Result = ModelBindingResult.Success(result);
+                bindingContext.Result = ModelBindingResult.Success(FromRequestValues(bindingContext));
                 return;
             }
             else
