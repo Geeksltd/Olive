@@ -1,6 +1,14 @@
 
 # Olive compatibility change log
 
+## 4 Dec 2018
+In `Startup.cs` add an instance of `ILoggerFactory` to the constructor, and just pass it to the base constructor.
+```c#
+public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory) : base(env, config, loggerFactory)`
+{
+    ...
+}
+
 ## 20 Nov 2018
 We have used [FontAwesome 5](https://fontawesome.com/icons?d=gallery&s=brands,solid) in the last version of the M# and Olive so if your project is still using **FA4** please update it to the **FA5** as shown below:
 1. Open `package.json` or `bower.json` and update **FontAwesome** to the last version.
