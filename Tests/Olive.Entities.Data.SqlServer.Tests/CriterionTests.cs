@@ -101,8 +101,15 @@ namespace Olive.Entities.Data.SqlServer.Tests
             database.ShouldNotBeNull();
             await PopulateTestData();
 
-            var groups = await database.Of<GroupMember>().Where(x => x.Person.LastName == x.Person.FirstName).GetList().Select(x => x.Group);
+            var groups = await database.Of<GroupMember>().Where(x => x.Group.Name == x.Person.FirstName).GetList().Select(x => x.Group);
         }
+
+        //        select root.* from
+        //GroupMembers root
+        //left join Groups root_Group on root.Group = root_Group.ID
+        //left join Persons root_Person on root.Person = root_Person.ID
+        //left join Companies root_Person_Company on rootPerson.Company = root_Person_Company.ID
+        //where root_Group.Name = root_Person.Name
 
         [Test]
         public async Task Get_GroupsMember_Where_Registered_Before_Birth()
@@ -111,6 +118,13 @@ namespace Olive.Entities.Data.SqlServer.Tests
             await PopulateTestData();
 
             var groups = await database.GetList<GroupMember>(x => x.DateRegistered < x.Person.Birthdate).Select(x => x.Group);
+
+            var query = database.Of<Person>().Where(x => x.FirstName == x.LastName);
+
+            //var provider = (AppData.PersonDataProvider)database.GetProvider<Person>();
+            //var command = provider.GenerateSelectCommand(query, provider.GetFields());
+
+            //Assert.AreEqual(command, "....");
         }
 
         async Task PopulateTestData()
