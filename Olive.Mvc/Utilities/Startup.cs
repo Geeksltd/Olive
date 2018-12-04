@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Olive.Entities;
 using Olive.Entities.Data;
@@ -27,10 +28,11 @@ namespace Olive.Mvc
         protected readonly IConfiguration Configuration;
         protected readonly IServiceCollection Services;
 
-        protected Startup(IHostingEnvironment env, IConfiguration config)
+        protected Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
         {
             Environment = env;
             Configuration = config;
+            Log.Init(loggerFactory);
         }
 
         public virtual void ConfigureServices(IServiceCollection services)

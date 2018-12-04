@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.ComponentModel;
 using System.Text;
 
 namespace Olive
@@ -63,6 +64,10 @@ namespace Olive
     public static class Log
     {
         static ILoggerFactory factory;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void Init(ILoggerFactory factory) => Log.factory = factory;
+
         static ILoggerFactory Factory => factory ?? (factory = Context.Current.GetService<ILoggerFactory>());
 
         /// <summary>

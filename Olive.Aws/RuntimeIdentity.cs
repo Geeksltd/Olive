@@ -18,10 +18,12 @@ namespace Olive.Aws
     public class RuntimeIdentity
     {
         const string VARIABLE = "AWS_RUNTIME_ROLE_ARN";
-        static string RegionName, RoleArn;
+        static string RoleArn;
 
         static IConfiguration Config;
         public static AWSCredentials Credentials { get; private set; }
+
+        static ILogger Log => Olive.Log.For(typeof(RuntimeIdentity));
 
         public static async Task Load(IConfiguration config)
         {
@@ -29,13 +31,11 @@ namespace Olive.Aws
             RoleArn = Environment.GetEnvironmentVariable(VARIABLE);
             Environment.SetEnvironmentVariable(VARIABLE, null);
 
-            RegionName = Config.GetValue("Aws:Region",
-                defaultValue: Environment.GetEnvironmentVariable("AWS_RUNTIME_ROLE_REGION"));
+            Log.Info("Runtime role ARN > " + RoleArn);
 
             await Renew();
             new Thread(KeepRenewing).Start();
         }
-
 
         [EscapeGCop("This is a background process")]
         static async void KeepRenewing()
@@ -49,16 +49,16 @@ namespace Olive.Aws
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Failed to renew AWS credentials.");
-                    Console.WriteLine(ex.ToFullMessage());
+                    Log.Error(ex, "Failed to renew AWS credentials.");
                     Environment.Exit(-1);
                 }
             }
         }
 
-        static ILogger Log => Olive.Log.For(typeof(RuntimeIdentity));
         static async Task Renew()
         {
+            Log.Info("Requesting AssumeRole: " + RoleArn + "...");
+
             var request = new AssumeRoleRequest
             {
                 RoleArn = RoleArn,
@@ -67,16 +67,22 @@ namespace Olive.Aws
                 RoleSessionName = "Pod"
             };
 
-            Log.Debug("Requesting AssumeRole: " + RoleArn);
-
-            using (var client = new AmazonSecurityTokenServiceClient())
+            try
             {
-                var response = await client.AssumeRoleAsync(request);
-                Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
-                var credentials = response.Credentials;
-                Config["AWSAccessKey"] = credentials.AccessKeyId;
-                Config["AWSSecretKey"] = credentials.SecretAccessKey;
-                Log.Debug("Obtained assume role credentials.");
+                using (var client = new AmazonSecurityTokenServiceClient())
+                {
+                    var response = await client.AssumeRoleAsync(request);
+                    Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
+                    var credentials = response.Credentials;
+                    Config["AWS:AccessKey"] = credentials.AccessKeyId;
+                    Config["AWS:SecretKey"] = credentials.SecretAccessKey;
+                    Log.Debug("Obtained assume role credentials.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Submitting Assume Role request failed.");
+                throw;
             }
         }
     }

@@ -47,6 +47,9 @@ namespace Olive
 
             if (@this.Exception?.InnerException != null)
                 throw @this.Exception.InnerException;
+
+            if (@this.Exception != null)
+                throw @this.Exception;
         }
 
         public static async Task WithTimeout(this Task @this, TimeSpan timeout, Action success = null, Action timeoutAction = null)
