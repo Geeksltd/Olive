@@ -10,9 +10,7 @@ using System.Xml.Serialization;
 
 namespace Olive.Entities
 {
-    /// <summary>
-    /// Entity, a persistent object in the application.
-    /// </summary>
+    /// <summary>Entity, a persistent object in the application.</summary>
     [Serializable]
     public abstract class Entity : IEntity
     {

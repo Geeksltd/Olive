@@ -75,6 +75,7 @@ namespace Olive.Aws
                     Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
                     var credentials = response.Credentials;
 
+                    FallbackCredentialsFactory.Reset();
                     FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () => credentials);
 
                     Log.Debug("Obtained assume role credentials.");
