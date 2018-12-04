@@ -29,6 +29,8 @@
             IDataProvider result = null;
             ICache cache = Context.Current.GetService<ICache>();
             if (type == typeof(Person)) result = new PersonDataProvider(cache);
+            if (type == typeof(Group)) result = new GroupDataProvider(cache);
+            if (type == typeof(GroupMember)) result = new GroupMemberDataProvider(cache);
             else if (type.IsInterface) result = new InterfaceDataProvider(type);
 
             if (result == null)

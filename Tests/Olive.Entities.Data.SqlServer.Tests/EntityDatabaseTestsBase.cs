@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 namespace Olive.Entities.Data.SqlServer.Tests
 {
     [TestFixture]
-    public partial class EntityDatabaseTests : TestsDatabaseBase
+    public partial class EntityDatabaseTestsBase : TestsDatabaseBase
     {
-        Person person;
-
         [SetUp]
         public override void SetUp()
         {
@@ -18,12 +16,6 @@ namespace Olive.Entities.Data.SqlServer.Tests
             TempDatabaseName = new SqlServerManager().GetDatabaseName();
 
             base.InitDatabase();
-
-            person = new Person
-            {
-                FirstName = "Paymon",
-                LastName = "Khamooshi"
-            };
 
             #region Create database for Person entity
 
@@ -44,26 +36,6 @@ namespace Olive.Entities.Data.SqlServer.Tests
             server.ClearConnectionPool();
 
             #endregion
-        }
-
-        [Test]
-        public async Task Can_save_to_sqlServer()
-        {
-            database.ShouldNotBeNull();
-
-            await database.Save(person);
-        }
-
-        [Test]
-        public async Task Can_get_from_sqlServer()
-        {
-            await Can_save_to_sqlServer();
-
-            var newPerson = await database.FirstOrDefault<Person>(x => x.FirstName == "Paymon");
-
-            newPerson.ShouldNotBeNull();
-            newPerson.FirstName.ShouldEqual("Paymon");
-            newPerson.LastName.ShouldEqual("Khamooshi");
         }
     }
 }
