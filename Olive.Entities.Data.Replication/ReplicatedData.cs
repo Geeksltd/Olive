@@ -56,10 +56,18 @@ namespace Olive.Entities
 
         public void ExportAll()
         {
-            DomainType.GetProperties()
+            var properties = DomainType.GetProperties()
                .Where(x => x.CanRead && x.CanWrite)
                .Where(x => x.DeclaringType.Assembly == DomainType.Assembly)
-               .Do(v => Fields.Add(new ExportedField(v)));
+               .ToArray();
+
+            foreach (var p in properties)
+            {
+                if (p.PropertyType == typeof(Guid?) && p.Name.EndsWith("Id") && properties.Any(x => x.Name ==
+                p.Name.TrimEnd(2))) continue;
+
+                Fields.Add(new ExportedField(p));
+            }
         }
     }
 
@@ -67,6 +75,8 @@ namespace Olive.Entities
     {
         string title;
         public PropertyInfo Property { get; }
+
+        public bool IsAssociation => Property.PropertyType.IsA<IEntity>();
 
         public ExportedField(PropertyInfo property)
         {
