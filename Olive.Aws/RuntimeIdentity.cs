@@ -54,7 +54,7 @@ namespace Olive.Aws
                 }
             }
         }
-
+        
         static async Task Renew()
         {
             Log.Info("Requesting AssumeRole: " + RoleArn + "...");

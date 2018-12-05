@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Olive.Entities
 {
-    public class DataReplicationEndPoint
+    public abstract class DataReplicationEndPoint
     {
         /// <summary>
         /// Starts publishing an end point for the specified data types. 
@@ -17,7 +17,14 @@ namespace Olive.Entities
             if (types.None())
                 throw new Exception("No data is exported on " + GetType().FullName);
 
-            types.Select(x => x.CreateInstance<ReplicatedData>()).Do(x => x.Start());
+            foreach (var type in types)
+            {
+                var agent = type.CreateInstance<ReplicatedData>();
+                agent.DefaultQueueConfigKey = QueueConfigKey;
+                agent.Start();
+            }
         }
+
+        protected abstract string QueueConfigKey { get; }
     }
 }

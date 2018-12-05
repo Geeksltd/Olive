@@ -10,6 +10,8 @@ namespace Olive.Entities
 {
     public abstract class ReplicatedData
     {
+        internal string DefaultQueueConfigKey { get; set; }
+
         public List<ExportedField> Fields = new List<ExportedField>();
 
         public abstract Type DomainType { get; }
@@ -36,14 +38,14 @@ namespace Olive.Entities
 
         public override Type DomainType => domainType ?? (domainType = GetType().BaseType.GenericTypeArguments.Single());
 
-        protected virtual string QueueKey => GetType().FullName;
+        protected virtual string QueueConfigKey => DefaultQueueConfigKey;
 
         internal override void Start()
         {
             GlobalEntityEvents.InstanceSaved.Handle(async x =>
             {
                 if (!x.Entity.GetType().IsA(DomainType)) return;
-                await EventBus.Publish(QueueKey, ToMessage(x.Entity));
+                await EventBus.Publish(QueueConfigKey, ToMessage(x.Entity));
             });
         }
 
