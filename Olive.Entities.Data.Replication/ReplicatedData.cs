@@ -78,6 +78,8 @@ namespace Olive.Entities
 
         public bool IsAssociation => Property.PropertyType.IsA<IEntity>();
 
+        public bool IsInverseAssociation => Property.PropertyType.IsA<IDatabaseQuery>() && Property.Defines<CalculatedAttribute>();
+
         public ExportedField(PropertyInfo property)
         {
             Property = property;

@@ -5,7 +5,7 @@
     <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.Replication.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Entities.Data.Replication</PackageId>
-    <Version>1.0.87</Version>
+    <Version>1.0.88</Version>
     <Title>Olive Entities Data Replication</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
