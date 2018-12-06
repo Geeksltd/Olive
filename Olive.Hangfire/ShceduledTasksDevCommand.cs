@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using Hangfire;
+﻿using Hangfire;
 using Hangfire.Storage;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive.Hangfire
@@ -20,6 +20,12 @@ namespace Olive.Hangfire
 
         public async Task<string> Run()
         {
+            var toRun = ContextAccessor.HttpContext.Request.Param("run");
+            if (toRun.HasValue())
+            {
+                await BackgroundJobsPlan.Jobs[toRun].Action();
+            }
+
             return $@"<html>
                         <body>
                             <style>
@@ -33,25 +39,17 @@ namespace Olive.Hangfire
                             <table>
                                 <thead><tr>
                                     <th>Id</th>
-                                    <th>Last execution</th>
-                                    <th>Last execution status</th>
-                                    <th>Next execution</th>
+                                    <th>Execute</th>                                    
                                 </tr></thead>
-                                {JobStorage.Current.GetConnection().GetRecurringJobs().Select(j => ToMarkup(j)).ToString("")}
+                                {BackgroundJobsPlan.Jobs.Values.Select(ToMarkup).ToString("")}
                             </table>
                         </body>
                      </html>";
         }
 
-        private string ToMarkup(RecurringJobDto job)
+        string ToMarkup(BackgroundJob job)
         {
-            var dateFormat = "yyyy/MMM/dd H:mm:ss";
-            string td(string value) => $"<td>{value}</td>";
-
-            return $"<tr>{td(job.Id)}" +
-                td(job.LastExecution.ToString(dateFormat)) +
-                td(job.LastJobState) +
-                $"{td(job.NextExecution.ToString(dateFormat))}</tr>";
+            return $"<tr><td>{job.Name.HtmlEncode()}</td><td><a href='/cmd/scheduled-tasks?run={job.Name.ToPascalCaseId()}'Execute</a></td></tr>";
         }
     }
 }

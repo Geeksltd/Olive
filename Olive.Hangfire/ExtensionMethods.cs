@@ -28,15 +28,22 @@ namespace Olive.Hangfire
         /// It will register the hangfire server.
         /// If a debugger is attached, it will also start the hangfire dashboard.
         /// </summary>      
-        public static IApplicationBuilder UseScheduledTasks(this IApplicationBuilder @this,
-            Action createAutomatedTasks)
+        public static IApplicationBuilder UseScheduledTasks<TPlan>(this IApplicationBuilder @this)
+            where TPlan : BackgroundJobsPlan, new()
         {
             if (System.Diagnostics.Debugger.IsAttached)
                 @this.UseHangfireDashboard();
 
             @this.UseHangfireServer();
 
-            createAutomatedTasks();
+            var plan = new TPlan();
+            plan.Initialize();
+
+            if (Config.Get<bool>("Automated.Tasks:Enabled"))
+            {
+                foreach (var job in BackgroundJobsPlan.Jobs.Values)
+                    RecurringJob.AddOrUpdate(job.Name, () => job.Action(), job.ScheduleCron, queue: job.SyncGroup);
+            }
 
             return @this;
         }

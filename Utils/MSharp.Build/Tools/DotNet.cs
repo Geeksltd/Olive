@@ -12,7 +12,7 @@ namespace MSharp.Build.Tools
 
         protected override bool AlwaysInstall => true;
 
-        protected override string InstallCommand => "install dotnetcore-sdk --version 2.1.4";
+        protected override string InstallCommand => "install dotnetcore-sdk --version 2.1.402";
 
         public override FileInfo ExpectedPath
             => Environment.SpecialFolder.ProgramFiles.GetFile("dotnet\\dotnet.exe");
