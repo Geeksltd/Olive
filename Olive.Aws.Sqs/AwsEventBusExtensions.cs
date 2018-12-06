@@ -6,7 +6,7 @@ namespace Olive
     {
         public static IServiceCollection AddAwsEventBus(this IServiceCollection @this)
         {
-            return @this.AddTransient<IEventBusProvider, Aws.EventBusProvider>();
+            return @this.AddTransient<IEventBusQueueProvider, Aws.EventBusProvider>();
         }
     }
 }

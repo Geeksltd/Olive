@@ -7,26 +7,30 @@ using System.Threading.Tasks;
 
 namespace Olive.Aws
 {
-    class Subscriber<TMessage> : Agent where TMessage : IEventBusMessage
+    class Subscriber<TMessage> where TMessage : IEventBusMessage
     {
         public Func<TMessage, Task> Handler { get; }
         ReceiveMessageRequest Request;
         DeleteMessageRequest Receipt;
+        EventBusQueue Queue;
 
-        public Subscriber(string queueKey, Func<TMessage, Task> handler) : base(queueKey)
-            => Handler = handler;
+        public Subscriber(EventBusQueue queue, Func<TMessage, Task> handler)
+        {
+            Handler = handler;
+            Queue = queue;
+        }
 
         public void Start()
         {
             Request = new ReceiveMessageRequest
             {
-                QueueUrl = QueueUrl,
+                QueueUrl = Queue.QueueUrl,
                 WaitTimeSeconds = 10
             };
 
             Receipt = new DeleteMessageRequest
             {
-                QueueUrl = QueueUrl
+                QueueUrl = Queue.QueueUrl
             };
 
             new Thread(KeepPolling).Start();
@@ -35,7 +39,7 @@ namespace Olive.Aws
         async Task<List<KeyValuePair<TMessage, Message>>> FetchEvents()
         {
             var result = new List<KeyValuePair<TMessage, Message>>();
-            var response = await Client.ReceiveMessageAsync(Request);
+            var response = await Queue.Client.ReceiveMessageAsync(Request);
             foreach (var item in response.Messages)
             {
                 try
@@ -64,7 +68,7 @@ namespace Olive.Aws
                         await Handler(item.Key);
 
                         Receipt.ReceiptHandle = item.Value.ReceiptHandle;
-                        await Client.DeleteMessageAsync(Receipt);
+                        await Queue.Client.DeleteMessageAsync(Receipt);
                     }
                     catch (Exception ex)
                     {

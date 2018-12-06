@@ -1,19 +1,50 @@
-﻿using System;
+﻿using Amazon.SQS;
+using Amazon.SQS.Model;
+using Newtonsoft.Json;
+using System;
 using System.Threading.Tasks;
 
 namespace Olive.Aws
 {
-    public class EventBusProvider : IEventBusProvider
+    public class EventBusQueue : IEventBusQueue
     {
-        public Task<string> Publish(string queueKey, IEventBusMessage message)
-            => new Publisher(queueKey).Publish(message);
+        internal string QueueUrl;
+        internal AmazonSQSClient Client;
 
-        public void Subscribe<TMessage>(string queueKey, Func<TMessage, Task> handler)
-            where TMessage : IEventBusMessage
+        public EventBusQueue(string queueUrl)
         {
-            new Subscriber<TMessage>(queueKey, handler).Start();
+            QueueUrl = queueUrl;
+            Client = new AmazonSQSClient();
         }
 
-        public Task Purge(string queueKey) => new Purger(queueKey).Run();
+        public async Task<string> Publish(IEventBusMessage message)
+        {
+            var request = new SendMessageRequest
+            {
+                QueueUrl = QueueUrl,
+                MessageBody = JsonConvert.SerializeObject(message),
+                MessageDeduplicationId = message.DeduplicationId,
+                MessageGroupId = "Default"
+            };
+
+            var response = await Client.SendMessageAsync(request);
+            return response.MessageId;
+        }
+
+        public void Subscribe<TMessage>(Func<TMessage, Task> handler)
+            where TMessage : IEventBusMessage
+        {
+            new Subscriber<TMessage>(this, handler).Start();
+        }
+
+        public Task Purge()
+        {
+            return Client.PurgeQueueAsync(new PurgeQueueRequest { QueueUrl = QueueUrl });
+        }
+    }
+
+    public class EventBusProvider : IEventBusQueueProvider
+    {
+        public IEventBusQueue Provide(string queueUrl) => new EventBusQueue(queueUrl);
     }
 }
