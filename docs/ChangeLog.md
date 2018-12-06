@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 6 Dec 2018
+In `Website.csproj` set `<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>`
+
 ## 4 Dec 2018
 In `Startup.cs` add an instance of `ILoggerFactory` to the constructor, and just pass it to the base constructor.
 ```c#
