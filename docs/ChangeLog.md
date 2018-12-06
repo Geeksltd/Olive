@@ -2,7 +2,12 @@
 # Olive compatibility change log
 
 ## 6 Dec 2018
-In `Website.csproj` set `<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>`
+- In `Website.csproj` set `<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>`
+- In `Startup.cs` change use just `app.UseScheduledTasks<TaskManager>();` instead of the following block:
+```c#
+if (Config.Get<bool>("Automated.Tasks:Enabled"))
+    app.UseScheduledTasks(TaskManager.Run);
+```
 
 ## 4 Dec 2018
 In `Startup.cs` add an instance of `ILoggerFactory` to the constructor, and just pass it to the base constructor.
