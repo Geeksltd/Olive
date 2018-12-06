@@ -1,12 +1,8 @@
 # Creating a new Microservice
 
 1. Create a new GIT repository named `{my-solution}.{my-service}`
-1. In Visual Studio, click to create a new project with the template ***M# ASP.NET Core - MVC Microservice***.
-   - Set the project name as `{my-solution}.{my-service}`. For example, if you're creating the **Calendar** microservice for the **Lorem** solution name the new project "*Lorem.Calendar*".
-
-## ..\BigPicture\Services.json
-
-1. Add an entry to this file for the new service, similar to the other ones.
+1. Download, build and run [Olive Microservice Explorer](https://github.com/Geeksltd/Olive.Microservice.Explorer/blob/master/README.md)
+1. From `File` > `New Microservice` menu, [create a new service](https://github.com/Geeksltd/Olive.Microservice.Explorer/blob/master/README.md#new-microservice-creation)
 
 ## Production environment: AWS
 If using AWS for your production environment, use the following steps.
