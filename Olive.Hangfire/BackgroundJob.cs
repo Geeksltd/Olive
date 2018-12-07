@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace Olive
 {
     public class BackgroundJob
     {
-        public BackgroundJob(string name, Func<Task> action, string scheduleCron)
+        public BackgroundJob(string name, Expression<Func<Task>> action, string scheduleCron)
         {
             Name = name;
             Action = action;
@@ -28,7 +29,7 @@ namespace Olive
         /// <summary>
         /// The action to run in the schedule.
         /// </summary>
-        public Func<Task> Action { get; set; }
+        public Expression<Func<Task>> Action { get; set; }
 
         public string SyncGroup { get; set; } = "default";
     }

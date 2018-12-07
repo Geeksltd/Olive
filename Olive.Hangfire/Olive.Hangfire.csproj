@@ -4,7 +4,7 @@
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Hangfire.xml</DocumentationFile>
     <PackageId>Olive.Hangfire</PackageId>
-    <Version>1.0.45</Version>
+    <Version>1.0.46</Version>
     <Title>Olive Hangfire (Service)</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>

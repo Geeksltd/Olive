@@ -42,7 +42,7 @@ namespace Olive.Hangfire
             if (Config.Get<bool>("Automated.Tasks:Enabled"))
             {
                 foreach (var job in BackgroundJobsPlan.Jobs.Values)
-                    RecurringJob.AddOrUpdate(job.Name, () => job.Action(), job.ScheduleCron, queue: job.SyncGroup);
+                    RecurringJob.AddOrUpdate(job.Name, job.Action, job.ScheduleCron, queue: job.SyncGroup);
             }
 
             return @this;

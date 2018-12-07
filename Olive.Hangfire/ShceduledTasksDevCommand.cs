@@ -23,7 +23,7 @@ namespace Olive.Hangfire
             var toRun = ContextAccessor.HttpContext.Request.Param("run");
             if (toRun.HasValue())
             {
-                await BackgroundJobsPlan.Jobs[toRun].Action();
+                await BackgroundJobsPlan.Jobs[toRun].Action.Compile().Invoke();
             }
 
             return $@"<html>
