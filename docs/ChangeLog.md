@@ -1,6 +1,13 @@
 
 # Olive compatibility change log
 
+## 7 Dec 2018
+We have removed [Chosen](https://github.com/harvesthq/chosen) library and replaced it with [Bootstrap-select](https://github.com/snapappointments/bootstrap-select/), now you can safely remove `chosen` from your project.
+1. Open `package.json` or `bower.json` and remove `chosen` then update `olive.mvc` to the version `0.9.175`
+2. Open `references.js` and remove `chosen`
+3. Open `_common.scss` file and remove `chosen.css`
+now your drop-down list will have default bootstrap style.
+
 ## 6 Dec 2018
 - In `Website.csproj` set `<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>`
 - In `Startup.cs` change use just `app.UseScheduledTasks<TaskManager>();` instead of the following block:
