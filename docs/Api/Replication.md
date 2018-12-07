@@ -58,7 +58,7 @@ namespace CustomerService
     }
     
     [ExportData(typeof(Customer))]
-    public class OrdersEndPoint : DataReplicationEndPoint { }
+    public class OrdersEndpoint : SourceEndpoint { }
 }
 ```
 The `Customer` class here provides a definition for a data table to expose. It inherits from `ReplicatedData<...>` which is a special class in Olive. The above code is saying *"Export the data from my local `Domain.Customer` type into a type, also called `Customer`. But only export the `Email` and `Name` fields."*.
@@ -78,28 +78,28 @@ public class CustomerAddress : ReplicatedData<Domain.CustomerAddress>
 
 [ExportData(typeof(Customer))]
 [ExportData(typeof(CustomerAddress))]
-public class OrdersEndPoint : DataReplicationEndPoint { }
+public class OrdersEndpoint : SourceEndpoint { }
 ```
 
-Here, a data end point is created, called `OrdersEndPoint`. Using an `ExportData` attribute, it's linking  The end point can export data for multiple data replication definitions. In the above example
+Here, a data end point is created, called `OrdersEndpoint`. Using an `ExportData` attribute, it's linking  The end point can export data for multiple data replication definitions. In the above example
 
 ### Generating a proxy
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
 
 ```batch
 C:\> dotnet tool install -g generate-data-endpoint-proxy
-C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndPoint:OrdersEndPoint /out:"c:\temp\generated-packages\"
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndPoint:OrdersEndpoint /out:"c:\temp\generated-packages\"
 ```
 
 It will generate the following two nuget packages.
 
-#### CustomerService.OrdersEndPoint
+#### CustomerService.OrdersEndpoint
 
 This package will have the following generated class:
 ```c#
 namespace CustomerService
 {
-   public class OrdersEndPoint : DataReplicationEndPointConsumer   
+   public class OrdersEndpoint : DataReplicationEndpointConsumer   
    {   
        static Type CustomerType => Type.GetType("CustomerService.Customer");
        static Type CustomerAddressType => Type.GetType("CustomerService.CustomerAddress");
@@ -124,7 +124,7 @@ namespace CustomerService
 }
 ```
 
-To see how the above code works, look into [this class](https://github.com/Geeksltd/Olive/blob/master/Olive.Entities.Data.Replication/DataReplicationEndPointConsumer.cs).
+To see how the above code works, look into [this class](https://github.com/Geeksltd/Olive/blob/master/Olive.Entities.Data.Replication/DataReplicationEndpointConsumer.cs).
 
 This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice). In the `Startup.cs` file to kick start the engine, it should call:
 
@@ -132,7 +132,7 @@ This package will be referenced by the `Website` project in the consumer service
 public override async Task OnStartUpAsync(IApplicationBuilder app)
 {
     await base.OnStartUpAsync(app);
-    await CustomerService.OrderssEndPoint.Subscribe();
+    await CustomerService.OrderssEndpoint.Subscribe();
 }
 ```
 
@@ -142,7 +142,7 @@ When the `Subscribe()` method is called, it will do the following:
   - It invokes a Web Api on the `CustomerService` to fetch the full database as a clean starting point.
 - It will then watch all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
 
-#### CustomerService.OrdersEndPoint.MSharp
+#### CustomerService.OrdersEndpoint.MSharp
 This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
 
 Each subclass of `ReplicatedData<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
