@@ -87,15 +87,25 @@ namespace Olive.Mvc
 
             void serialize(object container, string key, object value)
             {
-                if (!(value is IEntity entity)) result[key] = value.ToStringOrEmpty();
-                else if (!TransientEntityAttribute.IsTransient(entity.GetType()))
-                    result[key] = entity.GetId().ToStringOrEmpty();
+                if (value is IEntity entity)
+                {
+                    if (TransientEntityAttribute.IsTransient(entity.GetType()))
+                    {
+                        foreach (var pp in GetSerializableProperties(entity.GetType()))
+                            serialize(value, key + "." + pp.Name, pp.GetValue(entity));
+                    }
+                    else
+                    {
+                        result[key] = entity.GetId().ToStringOrEmpty();
+                    }
+                }
                 else
-                    foreach (var pp in GetSerializableProperties(entity.GetType()))
-                        serialize(value, key + "." + pp.Name, pp.GetValue(entity));
+                {
+                    result[key] = value.ToStringOrEmpty();
+                }
             }
 
-            foreach (var p in GetSerializableProperties(item.GetType()))
+            foreach (var p in item.GetType().GetProperties())
             {
                 var key = p.Name.ToLower().Replace("_", ".");
                 var value = p.GetValue(item);
