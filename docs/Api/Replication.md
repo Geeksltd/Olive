@@ -11,10 +11,10 @@ The consumer processes may frequently need access to the publisher's data. If th
 But more importantly, what if the publisher service is unavailable? Well, the consumer service will also fail!
 This defeats the purpose of using microservices architecture in the first place.
 
-To solve the performance problem, the consumer service can cache the data for a desired period of time.
+- To solve the performance problem, the consumer service can cache the data for a desired period of time.
 A support for this is built-in to the Olive `ApiClient` framework.
 
-To solve the resiliency problem, the `ApiClient` framework in Olive, allows reusing the earlier snapshots of the cached data, even when the cache lifetime is passed.
+- To solve the resiliency problem, the `ApiClient` framework in Olive, allows reusing the earlier snapshots of the cached data, even when the cache lifetime is passed.
 
 ### Data recency
 While the caching approach can somewhat solve the performance and resiliency problem, but it introduces another problem, which is data recency.
@@ -91,48 +91,18 @@ C:\> dotnet tool install -g generate-data-endpoint-proxy
 C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndPoint:OrdersEndpoint /out:"c:\temp\generated-packages\"
 ```
 
-It will generate the following two nuget packages.
+It will generate the following two nuget packages:
 
-#### CustomerService.OrdersEndpoint
+#### Package 1: CustomerService.OrdersEndpoint
 
-This package will have the following generated class:
-```c#
-namespace CustomerService
-{
-   public class OrdersEndpoint : DataReplicationEndpointConsumer   
-   {   
-       static Type CustomerType => Type.GetType("CustomerService.Customer");
-       static Type CustomerAddressType => Type.GetType("CustomerService.CustomerAddress");
-   
-       /// <summary> Clears all messages from the queue of customer data. It will then 
-       /// fetch the current data directly from the CustomerService. </summary>
-       public static Task RefreshCustomerData() => RefreshData(CustomerType);
-              
-       /// <summary> Clears all messages from the queue of customer address data. It will then 
-       /// fetch the current data directly from the CustomerService. </summary>
-       public static async Task RefreshCustomerAddressData() => RefreshData(CustomerAddressType);
-       
-       /// <summary> It will start listening to queue messages to keep the local database up to date
-       /// with the changes in the Customer service. But before it starts that, if the local table 
-       /// is empty, it will refresh the full data. </summary>
-       public static async Task Subscribe()
-       {
-           await Subscribe(CustomerType);
-           await Subscribe(CustomerAddressType);
-       }
-   }
-}
-```
-
-To see how the above code works, look into [this class](https://github.com/Geeksltd/Olive/blob/master/Olive.Entities.Data.Replication/DataReplicationEndpointConsumer.cs).
-
-This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice). In the `Startup.cs` file to kick start the engine, it should call:
+This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice).
+In the `Startup.cs` file to kick start the engine, call:
 
 ```c#
 public override async Task OnStartUpAsync(IApplicationBuilder app)
 {
     await base.OnStartUpAsync(app);
-    await CustomerService.OrderssEndpoint.Subscribe();
+    await new CustomerService.OrdersEndpoint(typeof(CustomerService.Order).Subscribe();
 }
 ```
 
@@ -142,7 +112,7 @@ When the `Subscribe()` method is called, it will do the following:
   - It invokes a Web Api on the `CustomerService` to fetch the full database as a clean starting point.
 - It will then watch all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
 
-#### CustomerService.OrdersEndpoint.MSharp
+#### Package 2: CustomerService.OrdersEndpoint.MSharp
 This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
 
 Each subclass of `ReplicatedData<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
