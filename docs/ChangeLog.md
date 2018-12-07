@@ -6,6 +6,7 @@ We have removed [Chosen](https://github.com/harvesthq/chosen) library and replac
 1. Open `package.json` or `bower.json` and remove `chosen` then update `olive.mvc` to the version `0.9.175`
 2. Open `references.js` and remove `chosen`
 3. Open `_common.scss` file and remove `chosen.css`
+
 now your drop-down list will have default bootstrap style.
 
 ## 6 Dec 2018
