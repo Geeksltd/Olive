@@ -145,7 +145,16 @@ namespace Olive.Entities.Data
             var factory = GetProviderFactory(type);
             if (factory != null)
                 lock (TypeProviders)
-                    return TypeProviders[type] = factory.GetProvider(type);
+                {
+                    try
+                    {
+                        return TypeProviders[type] = factory.GetProvider(type);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
 
             if (type.IsInterface) return new InterfaceDataProvider(type);
             else return null;
