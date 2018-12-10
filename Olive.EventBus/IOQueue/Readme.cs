@@ -12,6 +12,4 @@
 //    - After that it should register a FileSystemWatcher, and every time a file is added, it should be trigger also.
 // Once the message is processed, the file shall be deleted.
 
-
-
 // In Startup.cs file, under ConfigureServices, we will call services.AddIOEventBus();

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Olive
+﻿namespace Olive
 {
     class IOEventBusProvider : IEventBusQueueProvider
     {
-        public IEventBusQueue Provide(string queueUrl)
-        {
-            throw new NotImplementedException();
-        }
+        public IEventBusQueue Provide(string queueUrl) => new IOEventBusQueue(queueUrl);
     }
 }
