@@ -9,6 +9,7 @@ namespace Olive
     class IOEventBusQueue : IEventBusQueue
     {
         internal DirectoryInfo Folder;
+        AsyncLock SyncLock = new AsyncLock();
 
         public IOEventBusQueue(string queueUrl)
         {
@@ -21,8 +22,10 @@ namespace Olive
 
         public async Task<string> Publish(IEventBusMessage message)
         {
-            await Task.Delay(50);
-            var path = Folder.GetFile(DateTime.UtcNow.ToOADate().ToString());
+            using (await SyncLock.Lock())
+                await Task.Delay(5.Milliseconds()); // Ensure the file names are unique.
+
+            var path = Folder.GetFile(DateTime.UtcNow.Ticks.ToString());
             await path.WriteAllTextAsync(JsonConvert.SerializeObject(message));
             return path.Name;
         }
