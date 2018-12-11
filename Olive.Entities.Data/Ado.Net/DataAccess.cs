@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -69,7 +70,7 @@ namespace Olive.Entities.Data
         }
 
         async Task<DbCommand> CreateCommand(CommandType type, string commandText, params IDataParameter[] @params) =>
-            await CreateCommand(type, commandText, default(TConnection), @params);
+             await CreateCommand(type, commandText, default(TConnection), @params);
 
         async Task<DbCommand> CreateCommand(CommandType type, string commandText, IDbConnection connection, params IDataParameter[] @params)
         {
@@ -86,7 +87,14 @@ namespace Olive.Entities.Data
                 Config.Get("Sql.Command.TimeOut", defaultValue: command.CommandTimeout);
 
             foreach (var param in @params)
-                command.Parameters.Add(param);
+            {
+                var parameter = command.CreateParameter();
+
+                parameter.ParameterName = param.ParameterName;
+                parameter.Value = param.Value;
+
+                command.Parameters.Add(parameter);
+            }
 
             return command;
         }
