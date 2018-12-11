@@ -16,7 +16,13 @@ namespace Olive.Entities.ObjectDataProvider
         internal IEntity Parse(IDataReader reader, IEnumerable<QueryColumn> fieldsinput = null)
         {
             if (ObjectType.IsAbstract)
-                throw new Exception($"The record with ID of '{{reader[\"{ObjectType.TableName}_Id\"]}}' exists only in the abstract database table of '{ObjectType.TableName}' and no concrete table. The data needs cleaning-up.");
+            {
+                foreach (var item in fieldsinput.Where(f => f.Type != null && f.Type != ObjectType.Type))
+                    if (reader[item.Identifier] != DBNull.Value)
+                        return ((ObjectDataProvider)Context.Current.Database().GetProvider(item.Type)).Parse(reader);
+
+                throw new Exception($"The record with ID of '{reader[$"{ObjectType.TableName}_Id"]}' exists only in the abstract database table of '{ObjectType.TableName}' and no concrete table. The data needs cleaning-up.");
+            }
 
             var result = Activator.CreateInstance(Type.GetType(ObjectType.AssemblyFullName));
 
@@ -188,10 +194,10 @@ namespace Olive.Entities.ObjectDataProvider
         {
             foreach (var item in fields)
             {
-                var foundedProperty = ObjectType.Properties.FirstOrDefault(x => x.Name == item.Identifier);
+                var foundedProperty = ObjectType.AllProperties.FirstOrDefault(x => x.ColumnIdentifier == item.Identifier);
                 if (foundedProperty == null) continue;
 
-                var propertyType = typeof(object); ;
+                var propertyType = typeof(object);
                 if (foundedProperty is Association)
                     propertyType = typeof(System.Guid);
                 else if (foundedProperty is BinaryProperty)
@@ -202,7 +208,7 @@ namespace Olive.Entities.ObjectDataProvider
 
                 var method = typeof(NullSafeGetter).GetMethods().Single(m =>
                                                                        m.Name == "GetValueOrDefault" &&
-                                                                       m.GetParameters()[1].ParameterType == typeof(string));
+                                                                       m.GetParameters()[1].ParameterType == typeof(QueryColumn));
 
                 var readerValue = method.MakeGenericMethod(propertyType).Invoke(null, new object[] { reader, item });
 

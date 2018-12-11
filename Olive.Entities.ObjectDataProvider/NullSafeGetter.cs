@@ -5,9 +5,9 @@ namespace Olive.Entities.ObjectDataProvider
 {
     static class NullSafeGetter
     {
-        public static T GetValueOrDefault<T>(this IDataRecord @this, string fieldName)
+        public static T GetValueOrDefault<T>(this IDataRecord @this, QueryColumn queryColumn)
         {
-            var ordinal = @this.GetOrdinal(fieldName);
+            var ordinal = @this.GetOrdinal(queryColumn.Identifier);
             return @this.GetValueOrDefault<T>(ordinal);
         }
 

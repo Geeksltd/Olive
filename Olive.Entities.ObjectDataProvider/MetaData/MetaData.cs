@@ -354,7 +354,7 @@ namespace Olive.Entities.ObjectDataProvider
                     {
                         SqlExpression = value,
                         Property = p,
-                        Identifier = $"[{p.ColumnIdentifier}]"
+                        Identifier = $"{p.ColumnIdentifier}"
                     });
                 }
             }
@@ -420,8 +420,10 @@ namespace Olive.Entities.ObjectDataProvider
             var rootTable = getAlias(RootType);
             var rootId = RootType.IdColumnName;
 
-            foreach (var child in AllTypesInMyHierarchy.Skip(1))
+            foreach (var child in AllTypesInMyHierarchy)
             {
+                if (child == RootType) continue;
+
                 var table = GetTableIdentifier(child, alias: getAlias(child));
 
                 r.Append($" LEFT OUTER JOIN {table} ON {getAlias(child)}.Id = {rootTable}.{rootId} ");
@@ -433,7 +435,7 @@ namespace Olive.Entities.ObjectDataProvider
         internal string GetFieldsString()
         {
             var separator = ", ";
-            return FullHierarchyFields.Select(x => x.GetCode($"{x.SqlExpression} AS {x.Identifier}")).ToString(separator);
+            return FullHierarchyFields.Select(x => x.GetCode($"{x.SqlExpression} AS [{x.Identifier}]")).ToString(separator);
         }
 
         internal static string GetTableIdentifier(EntityType type, string alias = null)
