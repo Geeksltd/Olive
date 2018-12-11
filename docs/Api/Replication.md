@@ -11,10 +11,10 @@ The consumer processes may frequently need access to the publisher's data. If th
 But more importantly, what if the publisher service is unavailable? Well, the consumer service will also fail!
 This defeats the purpose of using microservices architecture in the first place.
 
-To solve the performance problem, the consumer service can cache the data for a desired period of time.
+- To solve the performance problem, the consumer service can cache the data for a desired period of time.
 A support for this is built-in to the Olive `ApiClient` framework.
 
-To solve the resiliency problem, the `ApiClient` framework in Olive, allows reusing the earlier snapshots of the cached data, even when the cache lifetime is passed.
+- To solve the resiliency problem, the `ApiClient` framework in Olive, allows reusing the earlier snapshots of the cached data, even when the cache lifetime is passed.
 
 ### Data recency
 While the caching approach can somewhat solve the performance and resiliency problem, but it introduces another problem, which is data recency.
@@ -58,7 +58,7 @@ namespace CustomerService
     }
     
     [ExportData(typeof(Customer))]
-    public class OrdersEndPoint : DataReplicationEndPoint { }
+    public class OrdersEndpoint : SourceEndpoint { }
 }
 ```
 The `Customer` class here provides a definition for a data table to expose. It inherits from `ReplicatedData<...>` which is a special class in Olive. The above code is saying *"Export the data from my local `Domain.Customer` type into a type, also called `Customer`. But only export the `Email` and `Name` fields."*.
@@ -78,61 +78,31 @@ public class CustomerAddress : ReplicatedData<Domain.CustomerAddress>
 
 [ExportData(typeof(Customer))]
 [ExportData(typeof(CustomerAddress))]
-public class OrdersEndPoint : DataReplicationEndPoint { }
+public class OrdersEndpoint : SourceEndpoint { }
 ```
 
-Here, a data end point is created, called `OrdersEndPoint`. Using an `ExportData` attribute, it's linking  The end point can export data for multiple data replication definitions. In the above example
+Here, a data end point is created, called `OrdersEndpoint`. Using an `ExportData` attribute, it's linking  The end point can export data for multiple data replication definitions. In the above example
 
 ### Generating a proxy
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
 
 ```batch
 C:\> dotnet tool install -g generate-data-endpoint-proxy
-C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndPoint:OrdersEndPoint /out:"c:\temp\generated-packages\"
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndPoint:OrdersEndpoint /out:"c:\temp\generated-packages\"
 ```
 
-It will generate the following two nuget packages.
+It will generate the following two nuget packages:
 
-#### CustomerService.OrdersEndPoint
+#### Package 1: CustomerService.OrdersEndpoint
 
-This package will have the following generated class:
-```c#
-namespace CustomerService
-{
-   public class OrdersEndPoint : DataReplicationEndPointConsumer   
-   {   
-       static Type CustomerType => Type.GetType("CustomerService.Customer");
-       static Type CustomerAddressType => Type.GetType("CustomerService.CustomerAddress");
-   
-       /// <summary> Clears all messages from the queue of customer data. It will then 
-       /// fetch the current data directly from the CustomerService. </summary>
-       public static Task RefreshCustomerData() => RefreshData(CustomerType);
-              
-       /// <summary> Clears all messages from the queue of customer address data. It will then 
-       /// fetch the current data directly from the CustomerService. </summary>
-       public static async Task RefreshCustomerAddressData() => RefreshData(CustomerAddressType);
-       
-       /// <summary> It will start listening to queue messages to keep the local database up to date
-       /// with the changes in the Customer service. But before it starts that, if the local table 
-       /// is empty, it will refresh the full data. </summary>
-       public static async Task Subscribe()
-       {
-           await Subscribe(CustomerType);
-           await Subscribe(CustomerAddressType);
-       }
-   }
-}
-```
-
-To see how the above code works, look into [this class](https://github.com/Geeksltd/Olive/blob/master/Olive.Entities.Data.Replication/DataReplicationEndPointConsumer.cs).
-
-This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice). In the `Startup.cs` file to kick start the engine, it should call:
+This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice).
+In the `Startup.cs` file to kick start the engine, call:
 
 ```c#
 public override async Task OnStartUpAsync(IApplicationBuilder app)
 {
     await base.OnStartUpAsync(app);
-    await CustomerService.OrderssEndPoint.Subscribe();
+    await new CustomerService.OrdersEndpoint(typeof(CustomerService.Order).Subscribe();
 }
 ```
 
@@ -142,7 +112,7 @@ When the `Subscribe()` method is called, it will do the following:
   - It invokes a Web Api on the `CustomerService` to fetch the full database as a clean starting point.
 - It will then watch all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
 
-#### CustomerService.OrdersEndPoint.MSharp
+#### Package 2: CustomerService.OrdersEndpoint.MSharp
 This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
 
 Each subclass of `ReplicatedData<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
