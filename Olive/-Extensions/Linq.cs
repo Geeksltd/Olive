@@ -13,39 +13,81 @@ namespace Olive
     {
         static Random RandomProvider = new Random(LocalTime.Now.TimeOfDay.Milliseconds);
 
-        public static string ToString(this IEnumerable @this, string seperator)
+        /// <summary>
+        /// Concatenates all members of this object and inserts {separator} among them.  
+        /// </summary>
+        /// <param name="separator">It is located among all characters.</param>
+        public static string ToString(this IEnumerable @this, string separator)
         {
             if (@this == null) return "{NULL}";
             return ToString(@this.Cast<object>(), seperator);
         }
 
-        public static Task<string> ToString(this Task<IEnumerable> @this, string seperator)
+        /// <summary>
+        /// Concatenates all members of this object and inserts {separator} among them.  
+        /// </summary>
+        /// <param name="separator">It is located among all characters.</param>
+        public static Task<string> ToString(this Task<IEnumerable> @this, string separator)
         {
             if (@this == null) return Task.FromResult("{NULL}");
             return @this.Get(x => x.ToString(seperator));
         }
 
+        /// <summary>
+        /// Concatenates all members of this object and inserts {separator} among them.  
+        /// </summary>
+        /// <param name="separator">It is located among all characters.</param>
         public static Task<string> ToString<T>(this Task<IEnumerable<T>> @this, string seperator)
         {
             if (@this == null) return Task.FromResult("{NULL}");
             return @this.Get(x => x.ToString(seperator));
         }
 
-        public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string seperator, string lastSeperator) =>
+        /// <summary>
+        /// Concatenates all members of this object and inserts {separator} among them.  
+        /// </summary>
+        /// <param name="format">The format string which determines the output format.</param>
+        /// <param name="separator">It is located among all characters.</param>
+        /// <param name="lastSeparator">It is located between last two members.</param>
+        public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string separator, string lastSeparator) =>
             @this.Select(i => format.FormatWith(i)).ToString(seperator, lastSeperator);
 
+        /// <summary>
+        /// Determines if this is null or an empty list.  
+        /// </summary>
+        /// <param name="predicate">Determines the pattern.</param>
         public static bool Any<T>(this IEnumerable<T> @this, Func<T, int, bool> predicate) => @this.Any(predicate);
 
         [EscapeGCop("I am the solution to this GCop warning")]
+
+        /// <summary>
+        /// Determines if this is null or an empty list.
+        /// </summary>
+        /// <param name="predicate">Determines the pattern.</param>
         public static bool None<T>(this IEnumerable<T> @this, Func<T, int, bool> predicate) => !@this.Any(predicate);
 
-        public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string seperator)
+        /// <summary>
+        /// Concatenates all members of this object and inserts {separator} among them.  
+        /// </summary>
+        /// <param name="separator">It is located among all characters.</param>
+        /// <param name="lastSeparator">It is located between last two members.</param>
+        public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string separator)
             => @this.Select(i => format.FormatWith(i)).ToString(seperator);
 
-        public static string ToString<T>(this IEnumerable<T> @this, string seperator)
+        /// <summary>
+        /// Concatenates all members of this object and inserts {separator} among them.  
+        /// </summary>
+        /// <param name="separator">It is located among all characters.</param>
+        public static string ToString<T>(this IEnumerable<T> @this, string separator)
             => ToString(@this, seperator, seperator);
 
-        public static string ToString<T>(this IEnumerable<T> @this, string seperator, string lastSeperator)
+        /// <summary>
+        /// Concatenates all members of this object and inserts {separator} among them and inserts {lastSeparator} between last two members.  
+        /// If {lastSeparator} is not declared, it is equal to {separator}.
+        /// </summary>
+        /// <param name="separator">It is located among all characters.</param>
+        /// <param name="lastSeparator">It is located between last two members.</param>
+        public static string ToString<T>(this IEnumerable<T> @this, string separator, string lastSeparator)
         {
             var result = new StringBuilder();
 
@@ -68,6 +110,10 @@ namespace Olive
             return result.ToString();
         }
 
+        /// <summary>
+        /// Gets the index of the first item in this list which matches the specified criteria. Otherwise, it returns -1.
+        /// </summary>
+        /// <param name="element">The item which is searched.</param>
         public static int IndexOf<T>(this IEnumerable<T> @this, T element)
         {
             if (@this == null)
@@ -92,8 +138,9 @@ namespace Olive
         }
 
         /// <summary>
-        /// Gets the index of the first item in this list which matches the specified criteria.
+        /// Gets the index of the first item in this list which matches the specified criteria determined by a Func<>. Otherwise, it returns -1.
         /// </summary>
+        /// <param name="criteria">The item which is searched.</param>
         public static int IndexOf<T>(this IEnumerable<T> @this, Func<T, bool> criteria)
         {
             var result = 0;
@@ -108,6 +155,10 @@ namespace Olive
             return -1;
         }
 
+        /// <summary>
+        /// Removes the specific items from a list according to the specific condition which declared by {selector} as a Func().
+        /// </summary>
+        /// <param name="selector">The specific condition which declared by a Func()</param>
         public static void RemoveWhere<T>(this IList<T> @this, Func<T, bool> selector)
         {
             lock (@this)
@@ -124,9 +175,17 @@ namespace Olive
         [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static IEnumerable<T> Except<T>(this IEnumerable<T> list, Func<T, bool> criteria) => list.Where(i => !criteria(i));
 
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
+        /// <param name="item">The item which is not returned.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, T item) => @this.Except(new T[] { item });
 
         [EscapeGCop("It is the Except definition and so it cannot call itself")]
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
+        /// <param name="items">The list of  items which are not returned.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> list, params T[] items)
         {
             if (items == null) return list;
@@ -134,11 +193,24 @@ namespace Olive
             return list.Where(x => !items.Contains(x));
         }
 
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
+        /// <param name="itemsToExclude">The list of  items which are not returned.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, List<T> itemsToExclude) => @this.Except(itemsToExclude.ToArray());
 
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
+        /// <param name="itemsToExclude">The list of  items which are not returned.</param>
         public static IEnumerable<char> Except(this IEnumerable<char> @this, IEnumerable<char> itemsToExclude) =>
             @this.Except(itemsToExclude.ToArray());
 
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
+        /// <param name="itemsToExclude">The list of items which are not returned.</param>
+        /// <param name="alsoDistinct">if {alsoDistinct} is true, it returns distinct elements from a sequence. The default value is false.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, IEnumerable<T> itemsToExclude, bool alsoDistinct = false)
         {
             var result = @this.Except(itemsToExclude.ToArray());
@@ -148,6 +220,10 @@ namespace Olive
             return result;
         }
 
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
+        /// <param name="itemsToExclude">The list of  items which are not returned.</param>
         public static IEnumerable<string> Except(this IEnumerable<string> @this, IEnumerable<string> itemsToExclude) =>
             @this.Except(itemsToExclude.ToArray());
 
@@ -196,8 +272,15 @@ namespace Olive
         /// </summary>
         public static IEnumerable<Guid> ExceptNull(this IEnumerable<Guid?> @this) => @this.Where(i => i.HasValue).Select(x => x.Value);
 
+        /// <summary>
+        /// Determines whether this value has one item or not. If this value has one item, it returns true. Otherwise, it returns false.
+        /// </summary>
         public static bool IsSingle<T>(this IEnumerable<T> @this) => IsSingle<T>(@this, x => true);
 
+        /// <summary>
+        /// Determines whether this value has one item or not. If this value has one item, it returns true. Otherwise, it returns false.
+        /// </summary>
+        /// <param name="criteria">The condition of checking</param>
         public static bool IsSingle<T>(this IEnumerable<T> @this, Func<T, bool> criteria)
         {
             var visitedAny = false;
@@ -212,6 +295,10 @@ namespace Olive
         }
 
         [EscapeGCop("This is for performance reasons.")]
+        /// <summary>
+        /// Determines whether this value has one item or not. If this value has one item, it returns true. Otherwise, it returns false.
+        /// </summary>
+        /// <param name="first">The output value</param>
         public static bool IsSingle<T>(this IEnumerable<T> list, out T first) where T : class
         {
             first = null;
@@ -224,6 +311,10 @@ namespace Olive
         }
 
         [EscapeGCop("This is impossible to instantiate an interface so, we cannot use IEnumerable.")]
+        /// <summary>
+        /// Clone is a full-featured language includes methods that may not be recommended. 
+        /// In C# (for example) the Clone method and ICloneable interface are available. But using these features causes confusion.
+        /// </summary>
         public static List<T> Clone<T>(this List<T> list)
         {
             if (list == null) return list;
@@ -233,15 +324,18 @@ namespace Olive
         /// <summary>
         /// Adds the specified list to the beginning of this list.
         /// </summary>
+        /// <param name="prefix">The specified item(s) which is added to the beginning of the list.</param>
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> @this, IEnumerable<T> prefix) => prefix.Concat(@this);
 
         /// <summary>
-        /// Adds the specified item(s) to the beginning of this list.
+        /// Adds the specified list to the beginning of this list.
         /// </summary>
+        /// <param name="prefix">The specified item(s) which is added to the beginning of the list.</param>
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> @this, params T[] prefix) => prefix.Concat(@this);
 
         /// <summary>
         /// Performs an action for all items within the list.
+        /// It will provide the index of the item in the list to the action handler as well.
         /// </summary>
         public static void Do<T>(this IEnumerable<T> @this, ItemHandler<T> action)
         {
@@ -253,6 +347,7 @@ namespace Olive
 
         /// <summary>
         /// Performs an action for all items within the list.
+        /// It will provide the index of the item in the list to the action handler as well.
         /// </summary>
         public static async Task Do<T>(this IEnumerable<T> @this, Func<T, Task> func)
         {
@@ -296,7 +391,10 @@ namespace Olive
         }
 
         public delegate void ItemHandler<in T>(T arg);
-
+        /// <summary>
+        /// Adds the specified list to the beginning of this list.
+        /// </summary>
+        /// <param name="item">The specified item(s) which is added to the beginning of the list.</param>
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> @this, T item) => @this.Concat(new T[] { item });
 
         public static void AddRange<T>(this IList<T> @this, IEnumerable<T> items)
@@ -308,6 +406,7 @@ namespace Olive
         /// <summary>
         /// Gets the minimum value of a specified expression in this list. If the list is empty, then the default value of the expression will be returned.
         /// </summary>
+        /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R MinOrDefault<T, R>(this IEnumerable<T> @this, Func<T, R> expression)
         {
             if (@this.None()) return default(R);
@@ -317,6 +416,7 @@ namespace Olive
         /// <summary>
         /// Gets the maximum value of a specified expression in this list. If the list is empty, then the default value of the expression will be returned.
         /// </summary>
+        /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R MaxOrDefault<T, R>(this IEnumerable<T> @this, Func<T, R> expression)
         {
             if (@this.None()) return default(R);
@@ -327,6 +427,7 @@ namespace Olive
         /// Gets the maximum value of the specified expression in this list. 
         /// If no items exist in the list then null will be returned. 
         /// </summary>     
+        /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R? MaxOrNull<T, R>(this IEnumerable<T> @this, Func<T, R?> expression) where R : struct
         {
             if (@this.None()) return default(R?);
@@ -337,6 +438,7 @@ namespace Olive
         /// Gets the maximum value of the specified expression in this list. 
         /// If no items exist in the list then null will be returned. 
         /// </summary>     
+        /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R? MaxOrNull<T, R>(this IEnumerable<T> @this, Func<T, R> expression) where R : struct =>
             @this.MaxOrNull(item => (R?)expression(item));
 
@@ -344,6 +446,7 @@ namespace Olive
         /// Gets the minimum value of the specified expression in this list. 
         /// If no items exist in the list then null will be returned. 
         /// </summary>     
+        /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R? MinOrNull<T, R>(this IEnumerable<T> @this, Func<T, R?> expression) where R : struct
         {
             if (@this.None()) return default(R?);
@@ -354,14 +457,20 @@ namespace Olive
         /// Gets the minimum value of the specified expression in this list. 
         /// If no items exist in the list then null will be returned. 
         /// </summary>     
+        /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R? MinOrNull<T, R>(this IEnumerable<T> @this, Func<T, R> expression) where R : struct =>
             @this.MinOrNull(item => (R?)expression(item));
 
+        /// <summary>
+        /// Determines whether a list contains all members of another list.
+        /// </summary>     
+        /// <param name="target">The list which is used in comparing to the main list.</param>
         public static bool IsSubsetOf<T>(this IEnumerable<T> @this, IEnumerable<T> target) => target.ContainsAll(@this);
 
         /// <summary>
         /// Determines whether this list is equivalent to another specified list. Items in the list should be distinct for accurate result.
         /// </summary>
+        /// <param name="other">Is a list which is checked by the this list.</param>
         public static bool IsEquivalentTo<T>(this IEnumerable<T> @this, IEnumerable<T> other)
         {
             if (@this == null) @this = new T[0];
@@ -377,6 +486,7 @@ namespace Olive
         /// <summary>
         /// Counts the number of items in this list matching the specified criteria.
         /// </summary>
+        /// <param name="criteria">Is a Func() which determines the condition of count.</param>
         public static int Count<T>(this IEnumerable<T> @this, Func<T, int, bool> criteria) => @this.Count((x, i) => criteria(x, i));
 
         /// <summary>
@@ -392,6 +502,10 @@ namespace Olive
             else return default(T);
         }
 
+        /// <summary>
+        /// Picks an item from the list.
+        /// </summary>
+        /// <param name="number">The number of items which are picked from the list.</param>
         public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> @this, int number)
         {
             if (number < 1) throw new ArgumentException("number should be greater than 0.");
@@ -409,18 +523,24 @@ namespace Olive
         /// <summary>
         /// Works as opposite of Contains().
         /// </summary>        
+        /// <param name="item">The item which is searched in the list.</param>
         public static bool Lacks<T>(this IEnumerable<T> @this, T item) => !@this.Contains(item);
 
         /// <summary>
         /// Determines if this list lacks any item in the specified list.
         /// </summary>        
+        /// <param name="items">The item which is searched in the list.</param>
         public static bool LacksAny<T>(this IEnumerable<T> @this, IEnumerable<T> items) => !@this.ContainsAll(items);
 
         /// <summary>
         /// Determines if this list lacks all items in the specified list.
         /// </summary>        
+        /// <param name="items">The item which is searched in the list.</param>
         public static bool LacksAll<T>(this IEnumerable<T> @this, IEnumerable<T> items) => !@this.ContainsAny(items.ToArray());
 
+        /// <summary>
+        /// Picks a random item from the list.
+        /// </summary>        
         public static IEnumerable<T> Randomize<T>(this IEnumerable<T> @this)
         {
             if (@this.None()) return new T[0];
@@ -433,6 +553,8 @@ namespace Olive
         /// <summary>
         /// Returns a subset of the items in this collection.
         /// </summary>
+        /// <param name="lowerBound">The first index of item which is taken from the list.</param>
+        /// <param name="count">The count of items which are taken from the list.</param>
         public static IEnumerable<T> Take<T>(this IEnumerable<T> @this, int lowerBound, int count)
         {
             if (lowerBound < 0) throw new ArgumentOutOfRangeException(nameof(lowerBound));
@@ -442,6 +564,10 @@ namespace Olive
             return @this.Skip(lowerBound).Take(count);
         }
 
+        /// <summary>
+        /// Returns distinct elements from a sequence by using the default equality comparer to compare values.
+        /// </summary>
+        /// <param name="selector">The Func() which determines how items selected from the list.</param>
         public static IEnumerable<T> Distinct<T, TResult>(this IEnumerable<T> @this, Func<T, TResult> selector)
         {
             var keys = new List<TResult>();
@@ -460,17 +586,20 @@ namespace Olive
         /// <summary>
         /// Determines of this list contains all items of another given list.
         /// </summary>        
+        /// <param name="items">Determines the list of items which checked with the main list.</param>
         public static bool ContainsAll<T>(this IEnumerable<T> @this, IEnumerable<T> items) =>
             items.All(i => @this.Contains(i));
 
         /// <summary>
         /// Determines if this list contains any of the specified items.
         /// </summary>
+        /// <param name="items">Determines the list of items which checked with the main list.</param>
         public static bool ContainsAny<T>(this IEnumerable<T> @this, params T[] items) => @this.Intersects(items);
 
         /// <summary>
         /// Determines if none of the items in this list meet a given criteria.
         /// </summary>
+        /// <param name="criteria">The Func() which determines the rule.</param>
         [EscapeGCop("I am the solution to this GCop warning")]
         public static bool None<T>(this IEnumerable<T> @this, Func<T, bool> criteria) => !@this.Any(criteria);
 
@@ -488,6 +617,7 @@ namespace Olive
         /// <summary>
         /// Determines if this list intersects with another specified list.
         /// </summary>
+        /// <param name="otherList">Determines the list of items which checked with the main list.</param>
         public static bool Intersects<T>(this IEnumerable<T> @this, IEnumerable<T> otherList)
         {
             var countList = (@this as ICollection)?.Count;
@@ -510,12 +640,14 @@ namespace Olive
         /// <summary>
         /// Determines if this list intersects with another specified list.
         /// </summary>
+        /// <param name="items">Determines the list of items which used in the method.</param>
         public static bool Intersects<T>(this IEnumerable<T> @this, params T[] items) => @this.Intersects((IEnumerable<T>)items);
 
         /// <summary>
         /// Selects the item with maximum of the specified value.
         /// If this list is empty, NULL (or default of T) will be returned.
         /// </summary>
+        /// <param name="keySelector">The func() which determines how the maximum value calculated.</param>
         public static T WithMax<T, TKey>(this IEnumerable<T> @this, Func<T, TKey> keySelector)
         {
             if (@this.None()) return default(T);
@@ -525,6 +657,7 @@ namespace Olive
         /// <summary>
         /// Selects the item with minimum of the specified value.
         /// </summary>
+        /// <param name="keySelector">The func() which determines how the minimum value calculated.</param>
         public static T WithMin<T, TKey>(this IEnumerable<T> @this, Func<T, TKey> keySelector)
         {
             if (@this.None()) return default(T);
@@ -536,6 +669,7 @@ namespace Olive
         /// If the specified element does not exist in this list, an ArgumentException will be thrown.
         /// If the specified element is the last in the list, NULL will be returned.
         /// </summary>        
+        /// <param name="item">The specified item.</param>
         public static T GetElementAfter<T>(this IEnumerable<T> @this, T item) where T : class
         {
             if (item == null)
@@ -555,6 +689,7 @@ namespace Olive
         /// If the specified element does not exist in this list, an ArgumentException will be thrown.
         /// If the specified element is the first in the list, NULL will be returned.
         /// </summary>        
+        /// <param name="item">The specified item.</param>
         public static T GetElementBefore<T>(this IEnumerable<T> @this, T item) where T : class
         {
             if (item == null)
@@ -569,17 +704,32 @@ namespace Olive
             return @this.ElementAt(index - 1);
         }
 
+        /// <summary>
+        /// Adds a item to a List with a specific format.
+        /// </summary>        
+        /// <param name="format">The format string which is used in method.</param>
+        /// <param name="arguments">The specified items of values.</param>
         public static void AddFormat(this IList<string> @this, string format, params object[] arguments) =>
             @this.Add(string.Format(format, arguments));
 
+        /// <summary>
+        /// Adds a item to a List with a specific format and add \r\n to the end of this item.
+        /// </summary>        
+        /// <param name="format">The format string which is used in method.</param>
+        /// <param name="arguments">The specified items of values.</param>
         public static void AddFormattedLine(this IList<string> @this, string format, params object[] arguments) =>
             @this.Add(string.Format(format + Environment.NewLine, arguments));
 
+        /// <summary>
+        /// Adds the {text} and \r\n to the item and adds item to this List.
+        /// </summary>        
+        /// <param name="text">The format string which is used in method.</param>
         public static void AddLine(this IList<string> @this, string text) => @this.Add(text + Environment.NewLine);
 
         /// <summary>
         /// Removes a list of items from this list.
         /// </summary>
+        /// <param name="itemsToRemove">The list of items which are removed.</param>
         public static void Remove<T>(this IList<T> @this, IEnumerable<T> itemsToRemove)
         {
             if (itemsToRemove != null)
@@ -602,7 +752,7 @@ namespace Olive
         /// <summary>
         /// Returns the union of this list with the specified other lists.
         /// </summary>
-
+        /// <param name="otherLists">The list of items which are unioned.</param>
         public static IEnumerable<T> Union<T>(this IEnumerable<T> @this, params IEnumerable<T>[] otherLists)
         {
             var result = @this;
@@ -616,8 +766,13 @@ namespace Olive
         /// <summary>
         /// Returns the union of this list with the specified items.
         /// </summary>
+        /// <param name="otherItems">The list of items which are unioned.</param>
         public static IEnumerable<T> Union<T>(this IEnumerable<T> @this, params T[] otherItems) => @this.Union((IEnumerable<T>)otherItems);
 
+        /// <summary>
+        /// Returns the union of this list with the specified items.
+        /// </summary>
+        /// <param name="otherLists">The list of items which are Concatenated.</param>
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> @this, params IEnumerable<T>[] otherLists)
         {
             var result = @this;
@@ -631,6 +786,7 @@ namespace Olive
         /// Gets the average of the specified expression on all items of this list.
         /// If the list is empty, null will be returned.
         /// </summary>
+        /// <param name="selector">The func() which is used in method.</param>
         public static double? AverageOrDefault<T>(this IEnumerable<T> @this, Func<T, int> selector)
         {
             if (@this.None()) return null;
@@ -641,6 +797,7 @@ namespace Olive
         /// Gets the average of the specified expression on all items of this list.
         /// If the list is empty, null will be returned.
         /// </summary>
+        /// <param name="selector">The func() which is used in method.</param>
         public static double? AverageOrDefault<T>(this IEnumerable<T> @this, Func<T, int?> selector)
         {
             if (@this.None()) return null;
@@ -651,6 +808,7 @@ namespace Olive
         /// Gets the average of the specified expression on all items of this list.
         /// If the list is empty, null will be returned.
         /// </summary>
+        /// <param name="selector">The func() which is used in method.</param>
         public static double? AverageOrDefault<T>(this IEnumerable<T> @this, Func<T, double> selector)
         {
             if (@this.None()) return null;
@@ -661,6 +819,7 @@ namespace Olive
         /// Gets the average of the specified expression on all items of this list.
         /// If the list is empty, null will be returned.
         /// </summary>
+        /// <param name="selector">The func() which is used in method.</param>
         public static double? AverageOrDefault<T>(this IEnumerable<T> @this, Func<T, double?> selector)
         {
             if (@this.None()) return null;
@@ -671,6 +830,7 @@ namespace Olive
         /// Gets the average of the specified expression on all items of this list.
         /// If the list is empty, null will be returned.
         /// </summary>
+        /// <param name="selector">The func() which is used in method.</param>
         public static decimal? AverageOrDefault<T>(this IEnumerable<T> @this, Func<T, decimal> selector)
         {
             if (@this.None()) return null;
@@ -681,6 +841,7 @@ namespace Olive
         /// Gets the average of the specified expression on all items of this list.
         /// If the list is empty, null will be returned.
         /// </summary>
+        /// <param name="selector">The func() which is used in method.</param>
         public static decimal? AverageOrDefault<T>(this IEnumerable<T> @this, Func<T, decimal?> selector)
         {
             if (@this.None()) return null;
@@ -700,6 +861,8 @@ namespace Olive
         /// <summary>
         /// Determines whether this list of strings contains the specified string.
         /// </summary>
+        /// <param name="instance">The specified string which is checked in method.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
         public static bool Contains(this IEnumerable<string> @this, string instance, bool caseSensitive)
         {
             if (caseSensitive || instance.IsEmpty())
@@ -710,6 +873,8 @@ namespace Olive
         /// <summary>
         /// Determines whether this list of strings contains the specified string.
         /// </summary>
+        /// <param name="instance">The specified string which is checked in method.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
         public static bool Lacks(this IEnumerable<string> @this, string instance, bool caseSensitive) =>
             !Contains(@this, instance, caseSensitive);
 
@@ -723,6 +888,7 @@ namespace Olive
         /// new int[] { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 }.Chop(5)
         /// will return: { {1,2,3,4,5}, {6,7,8,9,10}, {11,12,13,14,15}, {16} }
         /// </summary>
+        /// <param name="chopSize">The number of items of output lists.</param>
         public static IEnumerable<IEnumerable<T>> Chop<T>(this IEnumerable<T> @this, int chopSize)
         {
             if (chopSize == 0 || @this.None())
@@ -745,6 +911,7 @@ namespace Olive
         /// <summary>
         /// Returns the sum of a timespan selector on this list.
         /// </summary>
+        /// <param name="selector">The func() which is used in method.</param>
         public static TimeSpan Sum<T>(this IEnumerable<T> @this, Func<T, TimeSpan> selector)
         {
             var result = TimeSpan.Zero;
@@ -753,8 +920,9 @@ namespace Olive
         }
 
         /// <summary>
-        /// Returns the indices of all items which matche a specified criteria.
+        /// Returns the indices of all items which match a specified criteria.
         /// </summary>
+        /// <param name="criteria">The func() which is used in method.</param>
         public static IEnumerable<int> AllIndicesOf<T>(IEnumerable<T> list, Func<T, bool> criteria)
         {
             var index = 0;
@@ -767,9 +935,12 @@ namespace Olive
             }
         }
 
+
         /// <summary>
         /// Replaces the specified item in this list with the specified new item.
         /// </summary>
+        /// <param name="oldItem">Is the value to be replaced.</param>
+        /// <param name="newItem">Is the value to replace all occurrences of OldChar.</param>
         public static void Replace<T>(this IList<T> @this, T oldItem, T newItem)
         {
             @this.Remove(oldItem);
@@ -779,12 +950,14 @@ namespace Olive
         /// <summary>
         /// Returns all elements of this list except those at the specified indices.
         /// </summary>
+        /// <param name="indices">The list of indices of items.</param>
         public static IEnumerable<T> ExceptAt<T>(this IEnumerable<T> @this, params int[] indices) =>
             @this.Where((item, index) => !indices.Contains(index));
 
         /// <summary>
         /// Returns all elements of this list except the last X items.
         /// </summary>
+        /// <param name="count">The number of items.</param>
         public static IEnumerable<T> ExceptLast<T>(this IEnumerable<T> @this, int count = 1)
         {
             var last = @this.Count();
@@ -794,6 +967,7 @@ namespace Olive
         /// <summary>
         /// Returns all elements of this list except the first X items.
         /// </summary>
+        /// <param name="count">The number of items.</param>
         public static IEnumerable<T> ExceptFirst<T>(this IEnumerable<T> @this, int count = 1) =>
             @this.ExceptAt(Enumerable.Range(0, count).ToArray());
 
@@ -806,6 +980,7 @@ namespace Olive
         /// Determines whether this list contains at least the specified number of items.
         /// This can be faster than calling "x.Count() >= N" for complex iterators.
         /// </summary>
+        /// <param name="numberOfItems">The number of items.</param>
         public static bool ContainsAtLeast(this System.Collections.IEnumerable @this, int numberOfItems)
         {
             if (numberOfItems < 0) throw new ArgumentException("The numberOfItems should be greater than or equal to 0.");            
@@ -829,6 +1004,8 @@ namespace Olive
         /// <summary>
         /// Adds the specified key/value pair to this list.
         /// </summary>
+        /// <param name="key">The key of item which is added to the list.</param>
+        /// <param name="value">The value of item which is added to the list.</param>
         public static KeyValuePair<TKey, TValue> Add<TKey, TValue>(this IList<KeyValuePair<TKey, TValue>> @this, TKey key, TValue value)
         {
             var result = new KeyValuePair<TKey, TValue>(key, value);
@@ -840,6 +1017,7 @@ namespace Olive
         /// <summary>
         /// Adds the specified items to this set.
         /// </summary>
+        /// <param name="items">The list of items which is added to the list.</param>
         public static void AddRange<T>(this HashSet<T> @this, IEnumerable<T> items)
         {
             if (items == null) return;
@@ -865,6 +1043,7 @@ namespace Olive
         /// <summary>
         /// Gets all indices of the specified item in this collection.
         /// </summary>
+        /// <param name="item">The item which is searched into the list.</param>
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, T item)
         {
             var index = 0;
@@ -892,6 +1071,7 @@ namespace Olive
         /// <summary>
         /// Determines if the specified item exists in this list. 
         /// </summary>
+        /// <param name="item">The item which is searched into the list.</param>
         public static bool Contains<T>(this IEnumerable<T> @this, T? item) where T : struct
         {
             if (item == null) return false;
@@ -902,11 +1082,13 @@ namespace Olive
         /// <summary>
         /// Determines if the specified item exists in this list. 
         /// </summary>
+        /// <param name="item">The item which is searched into the list.</param>
         public static bool Lacks<T>(this IEnumerable<T> @this, T? item) where T : struct => !@this.Contains(item);
 
         /// <summary>
         /// Determines if this item is in the specified list.
         /// </summary>
+        /// <param name="items">The items which are searched into the list.</param>
         public static bool IsAnyOf<T>(this T? @this, IEnumerable<T> items) where T : struct
         {
             if (@this == null) return false;
@@ -915,13 +1097,15 @@ namespace Olive
         }
 
         /// <summary>
-        /// Determines if this item is in the specified list.
+        /// Determines if this items are in the specified list.
         /// </summary>
+        /// <param name="items">The items which are searched into the list.</param>
         public static bool IsAnyOf(this int @this, IEnumerable<int> items) => items.Contains(@this);
 
         /// <summary>
         /// Specifies whether this list contains any of the specified values.
         /// </summary>
+        /// <param name="ids">The items which are searched into the list.</param>
         public static bool ContainsAny(this IEnumerable<Guid> @this, params Guid?[] ids) => @this.ContainsAny(ids.ExceptNull().ToArray());
 
         /// <summary>
@@ -948,15 +1132,23 @@ namespace Olive
         /// <summary>
         /// If this list is null or empty, then the specified alternative will be returned, otherwise this will be returned.
         /// </summary>
+        /// <param name="valueIfEmpty">The items which are searched into the list.</param>
         public static IEnumerable<T> Or<T>(this IEnumerable<T> @this, IEnumerable<T> valueIfEmpty)
         {
             if (@this.None()) return valueIfEmpty;
             else return @this;
         }
 
+        /// <summary>
+        /// Converts a KeyValuePair IEnumerable object to a dictionary.
+        /// </summary>
         public static Dictionary<T, K> ToDictionary<T, K>(this IEnumerable<KeyValuePair<T, K>> @this) =>
             @this.ToDictionary(x => x.Key, x => x.Value);
 
+        /// <summary>
+        /// Returns all elements of this list except those at the specified indices.
+        /// </summary>
+        /// <param name="excludedType">The Type which is excepted in output.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, Type excludedType)
         {
             if (@this == null) throw new NullReferenceException("No collection is given for the extension method Except().");
@@ -998,6 +1190,7 @@ namespace Olive
         /// <summary>
         /// Creates a list of the specified runtime type including all items of this collection.
         /// </summary>
+        /// <param name="type">The Type of output.</param>
         public static IEnumerable Cast(this IEnumerable @this, Type type)
         {
             if (type == null)
@@ -1014,6 +1207,11 @@ namespace Olive
             return result;
         }
 
+        /// <summary>
+        /// Sorts this list by the specified property name. 
+        /// It sorts the items in ascending order by default. To sort the items in descending order, use the OrderByDescending().
+        /// </summary>
+        /// <param name="propertyName">The name of property.</param>
         public static IEnumerable<TSource> OrderBy<TSource>(this IEnumerable<TSource> @this, string propertyName)
         {
             if (propertyName.IsEmpty())
@@ -1029,6 +1227,7 @@ namespace Olive
         /// <summary>
         /// Sorts this list by the specified property name.
         /// </summary>
+        /// <param name="propertyName">The name of property.</param>
         public static IEnumerable OrderBy(this IEnumerable @this, string propertyName)
         {
             if (propertyName.IsEmpty())
@@ -1062,6 +1261,11 @@ namespace Olive
             return result;
         }
 
+        /// <summary>
+        /// Sorts this list by the specified property name. 
+        ///It sorts the items in ascending order by default. To sort the items in descending order, use the OrderByDescending().
+        /// </summary>
+        /// <param name="property">The name of property.</param>
         public static IEnumerable OrderByDescending(this IEnumerable @this, string property)
         {
             if (property.IsEmpty()) throw new ArgumentNullException(nameof(property));
@@ -1073,6 +1277,11 @@ namespace Olive
             return result;
         }
 
+        /// <summary>
+        /// Sorts this list by the specified property name. 
+        ///It sorts the items in ascending order by default. To sort the items in descending order, use the OrderByDescending().
+        /// </summary>
+        /// <param name="propertyName">The name of property.</param>
         public static IEnumerable<TSource> OrderByDescending<TSource>(this IEnumerable<TSource> @this, string propertyName)
         {
             if (propertyName.IsEmpty()) throw new ArgumentNullException(nameof(propertyName));
@@ -1085,6 +1294,12 @@ namespace Olive
             return @this.OrderByDescending(new Func<TSource, object>((new PropertyComparer(property)).ExtractValue<TSource, object>));
         }
 
+        /// <summary>
+        /// FirstOrDefault is almost the same as First. The difference is how it handles empty collections. 
+        ///If a collection is empty, it returns the default value for the type; otherwise, it returns {selector} output.
+        ///The method internally checks if an element exists.
+        /// </summary>
+        /// <param name="selector">The Func() method which determines the rule.</param>
         public static T FirstOrDefault<T>(this ICollection<T> @this, Func<T, bool> selector)
         {
             foreach (var item in @this)
@@ -1093,6 +1308,11 @@ namespace Olive
             return default(T);
         }
 
+        /// <summary>
+        /// With async and await in C# we call functions in an asynchronous way. Like the rivers these tasks can run with no interference. Many things happen at once.
+        /// This extension method causes to all tasks are run as await.
+        /// </summary>
+        /// <param name="task">The task of method.</param>
         public static Task AwaitAll<T>(this IEnumerable<T> @this, Func<T, Task> task)
         {
             var tasks = new List<Task>();
@@ -1104,6 +1324,11 @@ namespace Olive
             return Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// With async and await in C# we call functions in an asynchronous way. Like the rivers these tasks can run with no interference. Many things happen at once.
+        /// This extension method causes to all tasks are run as await.
+        /// </summary>
+        /// <param name="task">The task of method.</param>
         public static async Task AwaitSequential<T>(this IEnumerable<T> @this, Func<T, Task> task)
         {
             var tasks = new List<Task>();
@@ -1115,7 +1340,11 @@ namespace Olive
                 if (awaitable != null) await awaitable;
             }
         }
-
+        /// <summary>
+        /// With async and await in C# we call functions in an asynchronous way. Like the rivers these tasks can run with no interference. Many things happen at once.
+        /// This extension method causes to all tasks are run as await.
+        /// </summary>
+        /// <param name="task">The task of method.</param>
         public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<T> @this, Func<T, Task<T>> task)
         {
             var tasks = new List<Task<T>>();
@@ -1129,6 +1358,11 @@ namespace Olive
             return tasks.Select(x => x.GetAlreadyCompletedResult());
         }
 
+        /// <summary>
+        /// Add padItemValue to the right of this list if the size parameter is greater than the lenght of the list.
+        /// </summary>
+        /// <param name="size">The number of items.</param>
+        /// <param name="padItemValue">The string should be added to the right side of the list.</param>
         public static T[] PadRight<T>(this T[] @this, int size, T padItemValue)
         {
             if (@this.Length >= size) return @this;
@@ -1146,6 +1380,8 @@ namespace Olive
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
         /// </summary>
+        /// <param name="condition">If true, the filter predicate will be executed .</param>
+        /// <param name="predicate">The Func() which is executed if the condition is true.</param>
         [EscapeGCop("The condition param should not be last in this case.")]
         public static IEnumerable<T> FilterIf<T>(this IEnumerable<T> source,
              bool condition, Func<T, bool> predicate)
