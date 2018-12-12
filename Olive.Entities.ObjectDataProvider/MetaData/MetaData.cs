@@ -118,7 +118,7 @@ namespace Olive.Entities.ObjectDataProvider
                 AssignIDByDatabase = assignIdByDatabase,
                 HasCustomPrimaryKeyColumn = hasCustomPrimaryKeyColumn,
                 HasDataAccessClass = true,
-                HasKnownDatabase = Attribute.IsDefined(runtimeType, typeof(HasKnownDatabase)),
+                //HasKnownDatabase = Attribute.IsDefined(runtimeType, typeof(HasKnownDatabaseAttribute)),
                 BaseType = GetSmallEntityType(runtimeType.BaseType),
             };
         }
@@ -229,7 +229,7 @@ namespace Olive.Entities.ObjectDataProvider
                 SoftDelete = Attribute.IsDefined(runtimeType, typeof(SoftDeleteAttribute)),
 
                 HasDataAccessClass = Attribute.IsDefined(runtimeType, typeof(DatabaseGeneratedAttribute)),
-                HasKnownDatabase = Attribute.IsDefined(runtimeType, typeof(DatabaseGeneratedAttribute)),
+                //HasKnownDatabase = Attribute.IsDefined(runtimeType, typeof(HasKnownDatabaseAttribute)),
 
                 BaseType = GetSmallEntityType(runtimeType.BaseType),
 
