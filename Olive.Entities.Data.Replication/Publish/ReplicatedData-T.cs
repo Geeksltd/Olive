@@ -50,7 +50,7 @@ namespace Olive.Entities.Replication
 
             foreach (var p in properties)
             {
-                if (p.PropertyType == typeof(Guid?) && p.Name.EndsWith("Id") && properties.Any(x => x.Name ==
+                if (p.PropertyType  == typeof(Guid?) && p.Name.EndsWith("Id") && properties.Any(x => x.Name ==
                 p.Name.TrimEnd(2))) continue;
 
                 Fields.Add(new ExportedField(p));

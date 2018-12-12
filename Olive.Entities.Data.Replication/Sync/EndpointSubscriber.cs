@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
@@ -33,7 +34,16 @@ namespace Olive.Entities.Replication
                 return Task.CompletedTask;
             }
 
-            var entity = (IEntity)JsonConvert.DeserializeObject(message.Entity, DomainType);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(message.Entity);
+            var entity = DomainType.CreateInstance<IEntity>();
+            foreach (var field in data)
+            {
+                var property = DomainType.GetProperty(field.Key);
+                if (property.PropertyType.IsA<IEntity>())
+                    property = property.DeclaringType.GetProperty(property.Name + "Id");
+
+                property.SetValue(entity, field.Value.To(property.PropertyType));
+            }
 
             return Import(entity);
         }
@@ -53,6 +63,7 @@ namespace Olive.Entities.Replication
             }
             catch (Exception ex)
             {
+                Log.For(this).Error(ex, "Failed to import " + entity.GetType().Name);
                 throw;
             }
         }
