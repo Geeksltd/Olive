@@ -12,13 +12,22 @@ namespace Olive.Entities.Replication
 
         string UrlPattern => Config.GetOrThrow("DataReplication:" + GetType().FullName + ":Url");
 
+        protected virtual IEnumerable<Type> GetTypes()
+        {
+            return GetType().GetCustomAttributes<ExportDataAttribute>()
+                .Select(x => x.Type)
+                .Concat(GetType().GetNestedTypes().Where(x => x.IsA<ReplicatedData>()))
+                .Distinct()
+                .ToArray();
+        }
+
         /// <summary>
         /// Starts publishing an end point for the specified data types. 
         /// It handles all save events on such objects, and publishes them on the event bus.
         /// </summary>
         public void Publish()
         {
-            var types = GetType().GetCustomAttributes<ExportDataAttribute>().Select(x => x.Type).Distinct();
+            var types = GetTypes();
 
             if (types.None())
                 throw new Exception("No data is exported on " + GetType().FullName);
