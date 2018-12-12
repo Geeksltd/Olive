@@ -21,7 +21,7 @@ namespace Olive.Entities.Replication
 
         public async Task RefreshData()
         {
-            var request = new RefreshMessage { TypeName = DomainType.FullName, RequestUtc = DateTime.UtcNow };
+            var request = new RefreshMessage { TypeName = DomainType.Namespace + "." + DomainType.Name, RequestUtc = DateTime.UtcNow };
             RefreshRequestUtc = request.RequestUtc;
             await Endpoint.RefreshQueue.Publish(request);
         }

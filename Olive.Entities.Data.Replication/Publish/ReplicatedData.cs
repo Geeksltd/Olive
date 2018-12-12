@@ -27,7 +27,7 @@ namespace Olive.Entities.Replication
 
             return new ReplicateDataMessage
             {
-                TypeFullName = GetType().FullName,
+                TypeFullName = GetType().Namespace + "." + GetType().Name,
                 Entity = serialized,
                 CreationUtc = DateTime.UtcNow
             };
@@ -37,6 +37,6 @@ namespace Olive.Entities.Replication
 
         internal abstract Task UploadAll();
 
-        protected internal abstract void Define();
+        public abstract void Define();
     }
 }

@@ -19,6 +19,11 @@
 
     public abstract partial class MySqlDataProvider : DataProvider<MySqlConnection, MySqlParameter>
     {
+        static MySqlDataProvider()
+        {
+            DataAccess.Register<MySqlConnection>("MySql.Data.MySqlClient");
+        }
+
         protected MySqlDataProvider(ICache cache) : base(cache)
         {
         }

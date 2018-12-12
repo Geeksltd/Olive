@@ -24,5 +24,7 @@
         Task<T> ExecuteScalar<T>(string command, CommandType commandType = CommandType.Text, params IDataParameter[] @params);
 
         Task<int> ExecuteBulkNonQueries(CommandType commandType, List<KeyValuePair<string, IDataParameter[]>> commands);
+
+        IDataParameter CreateParameter(string name, object value);
     }
 }

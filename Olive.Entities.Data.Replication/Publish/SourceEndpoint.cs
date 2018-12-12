@@ -12,11 +12,11 @@ namespace Olive.Entities.Replication
 
         string UrlPattern => Config.GetOrThrow("DataReplication:" + GetType().FullName + ":Url");
 
-        protected virtual IEnumerable<Type> GetTypes()
+        public virtual IEnumerable<Type> GetTypes()
         {
             return GetType().GetCustomAttributes<ExportDataAttribute>()
                 .Select(x => x.Type)
-                .Concat(GetType().GetNestedTypes().Where(x => x.IsA<ReplicatedData>()))
+                .Concat(GetType().GetNestedTypes(BindingFlags.NonPublic).Where(x => x.IsA<ReplicatedData>()))
                 .Distinct()
                 .ToArray();
         }
@@ -38,7 +38,7 @@ namespace Olive.Entities.Replication
                 agent.Define();
 
                 agent.QueueUrl = UrlPattern;
-                Agents.Add(type.FullName, agent);
+                Agents.Add(type.Namespace + "." + type.Name, agent);
                 agent.Start();
             }
 
@@ -49,8 +49,15 @@ namespace Olive.Entities.Replication
         {
             EventBus.Queue(UrlPattern.TrimEnd(".fifo") + "-REFRESH.fifo").Subscribe<RefreshMessage>(message =>
             {
-                Agents[message.TypeName].UploadAll();
-                return Task.CompletedTask;
+                if (Agents.TryGetValue(message.TypeName, out var agent))
+                {
+                    Agents[message.TypeName].UploadAll();
+                    return Task.CompletedTask;
+                }
+                else
+                {
+                    throw new Exception("There is no agent with the key: " + message.TypeName);
+                }
             });
         }
     }

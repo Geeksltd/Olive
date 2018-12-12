@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
-    public abstract class DataAccess
+    public abstract partial class DataAccess
     {
         public static string GetCurrentConnectionString()
         {
@@ -30,6 +30,13 @@ namespace Olive.Entities.Data
     public class DataAccess<TConnection> : DataAccess, IDataAccess
         where TConnection : DbConnection, new()
     {
+        static DbCommand ParameterFactory;
+
+        static DataAccess()
+        {
+            ParameterFactory = new TConnection().CreateCommand();
+        }
+
         public DataAccess(string connectionString = null)
         {
             if (connectionString.IsEmpty())
@@ -189,7 +196,7 @@ namespace Olive.Entities.Data
             {
                 var result = await dbCommand.ExecuteScalarAsync();
 
-                if (!command.ToLowerOrEmpty().StartsWith("select "))
+                if (command.Contains("UPDATE ") || !command.ToLowerOrEmpty().StartsWith("select "))
                     DatabaseStateChangeCommand.Raise(command, commandType, @params);
 
                 return result;
@@ -268,6 +275,17 @@ namespace Olive.Entities.Data
             {
                 CloseConnection(connection);
             }
+        }
+
+        public IDataParameter CreateParameter(string name, object value)
+        {
+            var result = ParameterFactory.CreateParameter();
+            result.ParameterName = name;
+            result.Value = value;
+
+            if (value is DateTime) result.DbType = DbType.DateTime2;
+
+            return result;
         }
     }
 }

@@ -20,6 +20,11 @@ namespace Olive.Entities.Data
     /// </summary>
     public abstract partial class SqlDataProvider : DataProvider<SqlConnection, SqlParameter>
     {
+        static SqlDataProvider()
+        {
+            DataAccess.Register<SqlConnection>("System.Data.SqlClient");
+        }
+
         protected SqlDataProvider(ICache cache) : base(cache)
         {
         }
