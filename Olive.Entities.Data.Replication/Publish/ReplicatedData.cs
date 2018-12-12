@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
@@ -19,8 +20,8 @@ namespace Olive.Entities.Replication
 
             properties["ID"] = entity.GetId();
 
-            foreach (var f in Fields.Except(x => x.IsInverseAssociation))
-                properties[f.Property.Name] = f.GetValue(entity);
+            foreach (var f in Fields.Where(x => x.ShouldSerialize()))
+                properties[f.GetName()] = f.GetSerializableValue(entity);
 
             var serialized = JsonConvert.SerializeObject(properties);
 
