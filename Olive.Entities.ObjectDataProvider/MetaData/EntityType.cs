@@ -12,7 +12,9 @@ namespace Olive.Entities.ObjectDataProvider
         public EntityType BaseType;
 
         public bool SoftDelete, IsTransient, IsAbstract, HasDataAccessClass,
-            HasCustomPrimaryKeyColumn, AssignIDByDatabase, HasKnownDatabase;
+            HasCustomPrimaryKeyColumn, AssignIDByDatabase;//, HasKnownDatabase;
+
+        public bool HasKnownDatabase => !IsTransient;
 
         public EntityType[] Derivatives, WithAllParents, AllParents, AllChildren;
 
