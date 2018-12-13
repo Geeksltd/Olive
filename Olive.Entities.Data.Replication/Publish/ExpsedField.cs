@@ -3,17 +3,17 @@ using System.Reflection;
 
 namespace Olive.Entities.Replication
 {
-    public abstract class ExportedField
+    public abstract class ExposedField
     {
         protected string title, name;
         protected Type type;
         public bool IsAssociation { get; set; }
 
-        public ExportedField Title(string exportTitle) { title = exportTitle; return this; }
+        public ExposedField Title(string title) { this.title = title; return this; }
 
-        public ExportedField Name(string exportName) { name = exportName; return this; }
+        public ExposedField Name(string name) { this.name = name; return this; }
 
-        public ExportedField Type(Type propertyType) { type = propertyType; return this; }
+        public ExposedField Type(Type propertyType) { type = propertyType; return this; }
 
         public string GetTitle() => title;
 
@@ -33,11 +33,11 @@ namespace Olive.Entities.Replication
         protected internal virtual bool ShouldSerialize() => true;
     }
 
-    public class CustomExportedField : ExportedField
+    public class CustomExposedField : ExposedField
     {
         Func<IEntity, object> ValueProvider;
 
-        internal CustomExportedField(string title, Type propertyType, Func<IEntity, object> valueProvider)
+        internal CustomExposedField(string title, Type propertyType, Func<IEntity, object> valueProvider)
         {
             this.title = title;
             type = propertyType;
@@ -48,12 +48,12 @@ namespace Olive.Entities.Replication
         protected override object GetValue(IEntity entity) => ValueProvider(entity);
     }
 
-    public class ExportedPropertyInfo : ExportedField
+    public class ExposedPropertyInfo : ExposedField
     {
         public PropertyInfo Property { get; }
         public bool IsInverseAssociation { get; }
 
-        public ExportedPropertyInfo(PropertyInfo property)
+        public ExposedPropertyInfo(PropertyInfo property)
         {
             Property = property;
             type = property.PropertyType;

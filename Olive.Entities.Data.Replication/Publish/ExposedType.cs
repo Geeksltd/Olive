@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
-    public abstract class ReplicatedData
+    public abstract class ExposedType
     {
         internal string QueueUrl { get; set; }
 
-        public List<ExportedField> Fields = new List<ExportedField>();
+        public List<ExposedField> Fields = new List<ExposedField>();
 
         public abstract Type DomainType { get; }
 

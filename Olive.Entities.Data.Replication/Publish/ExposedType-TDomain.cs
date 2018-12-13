@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
-    public abstract class ReplicatedData<TDomain> : ReplicatedData where TDomain : IEntity
+    public abstract class ExposedType<TDomain> : ExposedType where TDomain : IEntity
     {
         Type domainType;
 
@@ -33,25 +33,25 @@ namespace Olive.Entities.Replication
             });
         }
 
-        public ExportedPropertyInfo Export<T>(Expression<Func<TDomain, T>> field)
+        public ExposedPropertyInfo Expose<T>(Expression<Func<TDomain, T>> field)
         {
-            var result = new ExportedPropertyInfo(field.GetProperty());
+            var result = new ExposedPropertyInfo(field.GetProperty());
             Fields.Add(result);
             return result;
         }
 
-        public CustomExportedField Export<TProperty>(string title, Func<TDomain, TProperty> valueProvider)
+        public CustomExposedField Expose<TProperty>(string title, Func<TDomain, TProperty> valueProvider)
         {
-            return Export(new CustomExportedField(title, typeof(TProperty), x => valueProvider((TDomain)x)));
+            return Expose(new CustomExposedField(title, typeof(TProperty), x => valueProvider((TDomain)x)));
         }
 
-        public CustomExportedField Export(CustomExportedField field)
+        public CustomExposedField Expose(CustomExposedField field)
         {
             Fields.Add(field);
             return field;
         }
 
-        public void ExportAll()
+        public void ExposeEverything()
         {
             var properties = DomainType.GetProperties()
                .Where(x => x.CanRead && x.CanWrite)
@@ -63,7 +63,7 @@ namespace Olive.Entities.Replication
                 if (p.PropertyType == typeof(Guid?) && p.Name.EndsWith("Id") && properties.Any(x => x.Name ==
                p.Name.TrimEnd(2))) continue;
 
-                Fields.Add(new ExportedPropertyInfo(p));
+                Fields.Add(new ExposedPropertyInfo(p));
             }
         }
 
