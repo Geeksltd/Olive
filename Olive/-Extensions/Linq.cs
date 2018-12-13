@@ -37,10 +37,10 @@ namespace Olive
         /// Concatenates all members of this object and inserts {separator} among them.  
         /// </summary>
         /// <param name="separator">It is located among all characters.</param>
-        public static Task<string> ToString<T>(this Task<IEnumerable<T>> @this, string seperator)
+        public static Task<string> ToString<T>(this Task<IEnumerable<T>> @this, string separator)
         {
             if (@this == null) return Task.FromResult("{NULL}");
-            return @this.Get(x => x.ToString(seperator));
+            return @this.Get(x => x.ToString(separator));
         }
 
         /// <summary>
@@ -49,8 +49,8 @@ namespace Olive
         /// <param name="format">The format string which determines the output format.</param>
         /// <param name="separator">It is located among all characters.</param>
         /// <param name="lastSeparator">It is located between last two members.</param>
-        public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string separator, string lastSeparator) =>
-            @this.Select(i => format.FormatWith(i)).ToString(separator, lastSeparator);
+        public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string separator, string lastSeparator)
+            => @this.Select(i => format.FormatWith(i)).ToString(separator, lastSeparator);
 
         /// <summary>
         /// Determines if this is null or an empty list.  
@@ -70,7 +70,6 @@ namespace Olive
         /// Concatenates all members of this object and inserts {separator} among them.  
         /// </summary>
         /// <param name="separator">It is located among all characters.</param>
-        /// <param name="lastSeparator">It is located between last two members.</param>
         public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string separator)
             => @this.Select(i => format.FormatWith(i)).ToString(separator);
 
@@ -983,7 +982,7 @@ namespace Olive
         /// <param name="numberOfItems">The number of items.</param>
         public static bool ContainsAtLeast(this System.Collections.IEnumerable @this, int numberOfItems)
         {
-            if (numberOfItems < 0) throw new ArgumentException("The numberOfItems should be greater than or equal to 0.");            
+            if (numberOfItems < 0) throw new ArgumentException("The numberOfItems should be greater than or equal to 0.");
             // Special case for List:
             if (@this is ICollection asList) return asList.Count >= numberOfItems;
 
