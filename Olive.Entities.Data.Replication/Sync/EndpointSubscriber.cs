@@ -2,16 +2,28 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
     public class EndpointSubscriber
     {
+        static FieldInfo IsImmutableField;
+        static PropertyInfo IsNewProperty;
         public Type DomainType { get; set; }
         public DestinationEndpoint Endpoint { get; }
         DateTime? RefreshRequestUtc;
         ILogger Log;
+
+        static EndpointSubscriber()
+        {
+            IsImmutableField = typeof(Entity).GetField("IsImmutable", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? throw new Exception("Field IsImmutable was not found on type Entity.");
+
+            IsNewProperty = typeof(Entity).GetProperty("IsNew")
+                ?? throw new Exception("Property IsNew was not found on type Entity.");
+        }
 
         public EndpointSubscriber(DestinationEndpoint endpoint, Type domainType)
         {
@@ -79,15 +91,11 @@ namespace Olive.Entities.Replication
         {
             var existing = await Database.GetOrDefault(entity.GetId(), DomainType);
 
-            using (var scope = Database.CreateTransactionScope())
-            {
-                entity.GetType().GetProperty("IsNew").SetValue(entity, existing == null);
-                entity.GetType().GetField("IsImmutable").SetValue(entity, false);
+            IsNewProperty.SetValue(entity, existing == null);
+            IsImmutableField.SetValue(entity, false);
 
-                await Database.Save(entity, SaveBehaviour.BypassAll);
-                Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
-                scope.Complete();
-            }
+            await Database.Save(entity, SaveBehaviour.BypassAll);
+            Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
         }
     }
 }
