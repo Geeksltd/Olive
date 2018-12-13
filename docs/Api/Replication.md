@@ -40,7 +40,7 @@ namespace CustomerService
 {    
     public class OrdersEndpoint : SourceEndpoint 
     {
-        class Customer : ExpseedTypeDefinition<Domain.Customer>
+        class Customer : ExpseedType<Domain.Customer>
         {
             protected override void Define()
             {
@@ -82,7 +82,7 @@ namespace CustomerService
 }
 ```
 ### One exposed type definition, multiple endpoints
-It is strongly recommended that you do not share the same data definition across multiple endpoints. For security, efficiency and ease of future changes, it's advisable to dedicate each data definition to one endpoint, which is used by one consumer client service.
+It is strongly recommended that you do not share the same exposed type definition across multiple endpoints. For security, efficiency and ease of future changes, it's advisable to dedicate each exposed type definition to one endpoint, which is used by one consumer client service.
 
 But, if you have a strong reason to do this, then:
 - Instead of clraing the `ExposedType` subclass as a *nested class* of one endpoint class, define it as a whole class directly in the namespace.
@@ -110,6 +110,20 @@ public class Customer : NakedExposedType<Domain.CustomerAddress> { }
 ```
 
 The `NakedExposedType<TDomain>` class will automatically expose all properties of the specified domain type.
+
+### Exposing custom fields / mappings
+You do not have to expose your data fields exactly as they are in the source type definition. For example, let's say you have multiple address fields in your Customer entity. But for a consumer service, you'd rather export the address as a single field.
+
+To achieve that, you can define a custom exposed field, with a custom value expression. For example:
+
+```c#
+...
+protected override void Define()
+{
+    Expose(x => x.Name);
+    Expose("Address", x => new { x.AddressLine1, x.AddressLine2 + x.Town + x.Postcode }.Trim().ToString(", "));
+}
+```
 
 ---
 
