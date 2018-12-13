@@ -17,12 +17,13 @@ namespace Olive.Entities.ObjectDataProvider.V2
         readonly Type entityType;
 
         string Fields = null;
+        string TablesTemplate = null;
 
         public SqlDialect SqlDialect { get; }
 
         public SqlCommandGenerator SqlCommandGenerator { get; }
 
-        public DataProviderMedaData MedaData {get;}
+        public DataProviderMetaData MetaData {get;}
 
         public override Type EntityType => entityType;
 
@@ -33,19 +34,19 @@ namespace Olive.Entities.ObjectDataProvider.V2
             SqlDialect = sqlDialect;
             SqlCommandGenerator = sqlCommandGenerator;
 
-            MedaData = ObjectDataProviderFactory.Create(type);
+            MetaData = DataProviderMetaDataGenerator.Generate(type);
         }
 
         public override string MapColumn(string propertyName)
         {
-            if (propertyName == "ID" || MedaData.Properties.Any(p => p.IsPrimaryKey))
-                return GetSqlCommandColumn(MedaData, MedaData.Properties.First(p => p.IsPrimaryKey));
+            if (propertyName == "ID" || MetaData.Properties.Any(p => p.IsPrimaryKey))
+                return GetSqlCommandColumn(MetaData, MetaData.Properties.First(p => p.IsPrimaryKey));
 
-            foreach (var prop in MedaData.Properties)
+            foreach (var prop in MetaData.Properties)
                 if (prop.Name == propertyName)
-                    return GetSqlCommandColumn(MedaData, prop);
+                    return GetSqlCommandColumn(MetaData, prop);
 
-            foreach (var parent in MedaData.BaseClassesInOrder)
+            foreach (var parent in MetaData.BaseClassesInOrder)
                 foreach (var prop in parent.Properties)
                     if (prop.Name == propertyName)
                         return GetSqlCommandColumn(parent, prop);
@@ -60,7 +61,7 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public override Task Delete(IEntity record)
         {
-            return ExecuteNonQuery(GetDeleteCommand(), CommandType.Text, CreateParameter("Id", record.GetId()));
+            return ExecuteNonQuery(GetDeleteCommand(), CommandType.Text, Access.CreateParameter("Id", record.GetId()));
         }
 
         public override Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property)
@@ -82,16 +83,16 @@ namespace Olive.Entities.ObjectDataProvider.V2
             {
                 Fields = "";
 
-                foreach (var parent in MedaData.BaseClassesInOrder)
+                foreach (var parent in MetaData.BaseClassesInOrder)
                     foreach (var prop in parent.Properties)
-                        Fields += $"{GetSqlCommandColumn(parent, prop)} as {parent.TableName}_{prop.Name}";
+                        Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}";
 
-                foreach (var prop in MedaData.Properties)
-                    Fields += $"{GetSqlCommandColumn(MedaData, prop)} as {MedaData.TableName}_{prop.Name}";
+                foreach (var prop in MetaData.Properties)
+                    Fields += $"{GetSqlCommandColumn(MetaData, prop)} as {GetSqlCommandColumnAlias(MetaData, prop)}";
 
-                foreach (var parent in MedaData.DrivedClasses)
+                foreach (var parent in MetaData.DrivedClasses)
                     foreach (var prop in parent.Properties)
-                        Fields += $"{GetSqlCommandColumn(parent, prop)} as {parent.TableName}_{prop.Name}";
+                        Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}";
             }
 
             return Fields;
@@ -99,12 +100,53 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public override string GetTables(string prefix = null)
         {
-            throw new NotImplementedException();
+            if (TablesTemplate.IsEmpty())
+            {
+                TablesTemplate = "";
+                DataProviderMetaData temp = null;
+
+                void addTable(DataProviderMetaData medaData)
+                {
+                    TablesTemplate += "LEFT OUTER JOIN ".OnlyWhen(temp != null) +
+                        $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
+                        $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{temp?.TableAlias}.{temp?.IdColumnName}".OnlyWhen(temp != null);
+
+                    temp = medaData;
+                }
+
+                foreach (var parent in MetaData.BaseClassesInOrder)
+                    addTable(parent);
+
+                addTable(MetaData);
+
+                foreach (var drived in MetaData.DrivedClasses)
+                    addTable(drived);
+            }
+
+            return TablesTemplate.FormatWith(prefix);
         }
 
         public override IEntity Parse(IDataReader reader)
         {
-            throw new NotImplementedException();
+            for (int index = MetaData.DrivedClasses.Length - 1; index > -1; index++)
+            {
+                var current = MetaData.DrivedClasses[index];
+
+                if (reader[GetSqlCommandColumnAlias(current, current.IdColumnName)] != DBNull.Value)
+                    return ObjectDataProviderFactory.Get<TConnection, TDataParameter>(current.Type).Parse(reader);
+            }
+
+            if(MetaData.Type.IsAbstract)
+                throw new Exception($"The record with ID of '{reader[GetSqlCommandColumnAlias(MetaData, MetaData.IdColumnName)]}' exists only in the abstract database table of '{MetaData.TableName}' and no concrete table. The data needs cleaning-up.");
+
+            var result = (IEntity) Activator.CreateInstance(EntityType);
+
+            FillData(reader, result);
+
+            foreach (var parent in MetaData.BaseClassesInOrder)
+                ObjectDataProviderFactory.Get<TConnection, TDataParameter>(parent.Type).FillData(reader, result);
+
+            return result;
         }
 
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields)
@@ -132,6 +174,24 @@ namespace Olive.Entities.ObjectDataProvider.V2
             throw new NotImplementedException();
         }
 
-        string GetSqlCommandColumn(DataProviderMedaData medaData, PropertyData property) => $"{medaData.TableAlias}.[{property.Name}]";
+        void FillData(IDataReader reader, IEntity entity)
+        {
+            foreach (var property in MetaData.Properties)
+            {
+                var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
+
+                if(value != DBNull.Value)
+                    property.PropertyInfo.SetValue(entity, value);
+            }
+        }
+
+        string GetSqlCommandColumn(DataProviderMetaData medaData, PropertyData property)
+            => $"{medaData.TableAlias}.[{property.Name}]";
+
+        string GetSqlCommandColumnAlias(DataProviderMetaData medaData, PropertyData property)
+            => GetSqlCommandColumnAlias(medaData, property.Name);
+
+        private string GetSqlCommandColumnAlias(DataProviderMetaData medaData, string propertyName) 
+            => $"{medaData.TableName}_{propertyName}";
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Olive.Entities.ObjectDataProvider.V2
 {
-    internal class DataProviderMedaDataGenerator
+    internal class DataProviderMetaDataGenerator
     {
-        internal static DataProviderMedaData Generate(Type type)
+        internal static DataProviderMetaData Generate(Type type)
         {
             throw new NotImplementedException();
         }
