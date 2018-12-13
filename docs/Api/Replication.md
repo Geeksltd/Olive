@@ -27,6 +27,8 @@ But that will be:
 - Unreliable (what if the consumer service isn't available at that moment?)
 - Inefficient (a single record change can invalidate a whole set of cached data unnecessarily)
 
+---
+
 ## Better approach: Replication
 To solve the problems mentioned above with an Api-based integration fo data, you can use the data replication approach.
 In this approach, a read-only copy of the data will be created in the consumer service's database, and it's kept up-to-date via an event bus and queueing system, for a reliable, fast and efficient result.
@@ -45,43 +47,72 @@ To implement this, in the customer microserice project, we will create the follo
 
 ```c#
 namespace CustomerService
-{
-    using Olive.Entities;
-
-    public class Customer : ReplicatedData<Domain.Customer>
+{    
+    public class OrdersEndpoint : SourceEndpoint 
     {
-        protected override void Define()
+        class Customer : ReplicatedData<Domain.Customer>
         {
-            Export(x => x.Email);
-            Export(x => x.Name);
+            protected override void Define()
+            {
+                Export(x => x.Email);
+                Export(x => x.Name);
+            }
         }
     }
-    
-    [ExportData(typeof(Customer))]
-    public class OrdersEndpoint : SourceEndpoint { }
 }
 ```
 The `Customer` class here provides a definition for a data table to expose. It inherits from `ReplicatedData<...>` which is a special class in Olive. The above code is saying *"Export the data from my local `Domain.Customer` type into a type, also called `Customer`. But only export the `Email` and `Name` fields."*.
 
-#### Exporting multiple data tables
-In the same endpoint, you can export multiple data types. For each data type you need to define a sub-class of `ReplicatedData` and then add that to the endpoint using another `ExportData` attribute. For example:
+### Exporting multiple data tables
+In the same endpoint, you can export multiple data types. For each data type you need to define a **nested class** which inherits from`ReplicatedData<TDomain>`.
 
 ```c#
-public class CustomerAddress : ReplicatedData<Domain.CustomerAddress>
-{
-    protected override void Define()
+namespace CustomerService
+{    
+    public class OrdersEndpoint : SourceEndpoint 
     {
-        Export(x => x.Line1);
-        ...
+        class Customer : ReplicatedData<Domain.Customer>
+        {
+            protected override void Define()
+            {
+                Export(x => x.Email);
+                Export(x => x.Name);
+            }
+        }
+        
+        public class CustomerAddress : ReplicatedData<Domain.CustomerAddress>
+        {
+            protected override void Define()
+            {
+                Export(x => x.Line1);
+                ...
+            }
+        }
     }
+}
+```
+### Exporting a data table in multiple endpoints
+It is strongly recommended that you do not share the same data definition across multiple endpoints. For security, efficiency and ease of future changes, it's advisable to dedicate each data definition to one endpoint, which is used by one consumer client service.
+
+But, if you have a strong reason to do this, then:
+- Instead of defining the data table definition (subclass of ReplicatedData) as a nested class of one endpoint, define it as a whole class directly in the namespace.
+- In each of the endpoints that you want to publish it, add a `[ExportData(typeof(...))]` attribute.
+For example:
+
+```c#
+public class Customer : ReplicatedData<Domain.CustomerAddress>
+{
+   ...
 }
 
 [ExportData(typeof(Customer))]
-[ExportData(typeof(CustomerAddress))]
 public class OrdersEndpoint : SourceEndpoint { }
+
+[ExportData(typeof(Customer))]
+public class ShippingEndpoint : SourceEndpoint { }
 ```
 
-Here, a data end point is created, called `OrdersEndpoint`. Using an `ExportData` attribute, it's linking  The end point can export data for multiple data replication definitions. In the above example
+---
 
 ### Generating a proxy
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
