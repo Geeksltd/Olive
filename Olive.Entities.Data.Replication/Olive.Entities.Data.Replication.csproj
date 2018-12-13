@@ -5,7 +5,7 @@
     <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.Replication.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Entities.Data.Replication</PackageId>
-    <Version>1.0.90</Version>
+    <Version>1.0.104</Version>
     <Title>Olive Entities Data Replication</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -16,6 +16,7 @@
     <RootNamespace>Olive.Entities</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />

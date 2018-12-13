@@ -32,6 +32,9 @@
       <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Olive.Entities.ObjectDataProvider">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.ObjectDataProvider.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;&#xD;&#xA;update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />

@@ -1,32 +1,16 @@
-﻿namespace Olive.Entities.Data
+﻿namespace Olive.Entities.ObjectDataProvider
 {
-    using global::MySql.Data.MySqlClient;
+    using MySql.Data.MySqlClient;
+    using Olive.Entities.Data;
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using System.Reflection;
     using System.Text;
-
-    public abstract class MySqlDataProvider<TTargetEntity> : MySqlDataProvider where TTargetEntity : IEntity
+    public class MySqlObjectDataAccessProvider : ObjectDataProvider
     {
-        protected MySqlDataProvider(ICache cache) : base(cache)
-        {
-        }
-
-        public override Type EntityType => typeof(TTargetEntity);
-    }
-
-    public abstract partial class MySqlDataProvider : DataProvider<MySqlConnection, MySqlParameter>
-    {
-        static MySqlDataProvider()
-        {
-            DataAccess.Register<MySqlConnection>("MySql.Data.MySqlClient");
-        }
-
-        protected MySqlDataProvider(ICache cache) : base(cache)
-        {
-        }
+        public MySqlObjectDataAccessProvider(Type runtimeType, IDataAccess dataAccess) : base(runtimeType, dataAccess) { Db = dataAccess; }
 
         public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
         {
@@ -52,7 +36,7 @@
 
             var r = new StringBuilder("SELECT");
 
-            r.AppendLine($" {fields} FROM {GetTables(query.AliasPrefix)}");
+            r.AppendLine($" {fields} FROM {TableString}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
             r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
@@ -76,7 +60,7 @@
             return r.ToString();
         }
 
-        protected override string GenerateAssociationLoadingCriteria(string id, string uniqueItems, PropertyInfo association)
+        public override string GenerateAssociationLoadingCriteria(string id, string uniqueItems, PropertyInfo association)
         {
             return $"{id} IN (SELECT `{association.Name}` FROM ({uniqueItems}) Alias)";
         }
@@ -85,7 +69,7 @@
         {
             var parts = new List<string>();
 
-            parts.AddRange(query.OrderByParts.Select(p => query.MapColumn(p.Property) + " DESC".OnlyWhen(p.Descending)));
+            parts.AddRange(query.OrderByParts.Select(p => MapColumn(p.Property) + " DESC".OnlyWhen(p.Descending)));
 
             var offset = string.Empty;
             if (query.PageSize > 0)
@@ -93,7 +77,5 @@
 
             return parts.ToString(", ") + offset;
         }
-
-        protected override string SafeId(string objectName) => $"`{objectName}`";
     }
 }

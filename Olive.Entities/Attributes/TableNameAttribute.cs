@@ -13,10 +13,7 @@ namespace Olive.Entities
     {
         public string TableName { get; }
 
-        public TableNameAttribute(string tableName)
-        {
-            TableName = tableName;
-        }
+        public TableNameAttribute(string tableName) => TableName = tableName;
 
         public static string GetTableName(Type entityType)
         {
@@ -24,7 +21,7 @@ namespace Olive.Entities
             if (result.HasValue()) return result;
 
             var title = entityType.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
-            title = title ?? entityType.Name.ToProperCase();
+            title = title.Or(entityType.Name.ToProperCase());
 
             return title.ToPlural().ToPascalCaseId();
         }
