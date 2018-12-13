@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.ObjectDataProvider
 {
-    public abstract partial class ObjectDataProvider : IDataProvider
+    abstract partial class ObjectDataProvider
     {
         internal IEntity Parse(IDataReader reader, IEnumerable<QueryColumn> fieldsinput = null)
         {
