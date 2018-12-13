@@ -40,7 +40,7 @@ namespace CustomerService
 {    
     public class OrdersEndpoint : SourceEndpoint 
     {
-        class Customer : ReplicatedData<Domain.Customer>
+        class Customer : ExportedTypeDefinition<Domain.Customer>
         {
             protected override void Define()
             {
@@ -51,17 +51,17 @@ namespace CustomerService
     }
 }
 ```
-The `Customer` class here provides a definition for a data table to expose. It inherits from `ReplicatedData<...>` which is a special class in Olive. The above code is saying *"Export the data from my local `Domain.Customer` type into a type, also called `Customer`. But only export the `Email` and `Name` fields."*.
+The `Customer` class here provides a definition for a data table to expose. It inherits from `ExportedTypeDefinition<...>` which is a special class in Olive. The above code is saying *"Export the data from my local `Domain.Customer` type into a type, also called `Customer`. But only export the `Email` and `Name` fields."*.
 
-### Exporting multiple data tables
-In the same endpoint, you can export multiple data types. For each data type you need to define a **nested class** which inherits from`ReplicatedData<TDomain>`.
+### One endpoint, multiple exported data types
+In the same endpoint, you can export multiple data types. For each data type you need to define a **nested class** which inherits from`ExportedTypeDefinition<TDomain>`.
 
 ```c#
 namespace CustomerService
 {    
     public class OrdersEndpoint : SourceEndpoint 
     {
-        class Customer : ReplicatedData<Domain.Customer>
+        class Customer : ExportedTypeDefinition<Domain.Customer>
         {
             protected override void Define()
             {
@@ -70,7 +70,7 @@ namespace CustomerService
             }
         }
         
-        public class CustomerAddress : ReplicatedData<Domain.CustomerAddress>
+        public class CustomerAddress : ExportedTypeDefinition<Domain.CustomerAddress>
         {
             protected override void Define()
             {
@@ -81,16 +81,16 @@ namespace CustomerService
     }
 }
 ```
-### Exporting a data table in multiple endpoints
+### One data type export definition, multiple endpoints
 It is strongly recommended that you do not share the same data definition across multiple endpoints. For security, efficiency and ease of future changes, it's advisable to dedicate each data definition to one endpoint, which is used by one consumer client service.
 
 But, if you have a strong reason to do this, then:
-- Instead of defining the data table definition (subclass of ReplicatedData) as a nested class of one endpoint, define it as a whole class directly in the namespace.
+- Instead of clraing the ExportedTypeDefinition subclass as a nested class of one endpoint class, define it as a whole class directly in the namespace.
 - In each of the endpoints that you want to publish it, add a `[ExportData(typeof(...))]` attribute.
 For example:
 
 ```c#
-public class Customer : ReplicatedData<Domain.CustomerAddress>
+public class Customer : ExportedTypeDefinition<Domain.CustomerAddress>
 {
    ...
 }
@@ -102,9 +102,18 @@ public class OrdersEndpoint : SourceEndpoint { }
 public class ShippingEndpoint : SourceEndpoint { }
 ```
 
+### Exporting all fields implicitly
+You should normally only export the data fields needed by the endpoint consumer. As explained before, to specify the fields in an `ExportedTypeDefinition<T>` you will override the `Define()` method. However if your entity is basic or of a reference type nature (rather than transactional data) and you do not have security concerns, then you can use the following shortcut as an alternative to declaring each property directly:
+
+```c#
+public class Customer : NakedExportedTypeDefinition<Domain.CustomerAddress> { }
+```
+
+The `NakedExportedTypeDefinition<TDomain>` class will automatically export all properties of the specified domain type.
+
 ---
 
-### Generating a proxy
+## Generating a proxy
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
 
 ```batch
@@ -136,11 +145,11 @@ When the `Subscribe()` method is called, it will do the following:
 #### Package 2: CustomerService.OrdersEndpoint.MSharp
 This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
 
-Each subclass of `ReplicatedData<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
+Each subclass of `ExportedTypeDefinition<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
 - We have a `Domain.Customer` class in the publisher service (`Customer Service`) which has the full customer data, perhaps with 20 fields.
 - In the consumer service (Orders) we need to have the `customer` concept for various programming activities. We may want to add business logic to it, or add associations to other entities, etc. But we only care about its Name and Email fields (and ID of course).
 - For security, efficiency and simplicity, we want the Order service to only see a limited view of the main `Customer` entity.
-- The `PeopleService.Customer` class which inherits from `ReplicatedData<Domain.Customer>` serves that purpose. It is in fact a remote representative of the customer concept with limited data in the consumer's world.
+- The `PeopleService.Customer` class which inherits from `ExportedTypeDefinition<Domain.Customer>` serves that purpose. It is in fact a remote representative of the customer concept with limited data in the consumer's world.
 - In the consumer service (Orders) we will need that Customer concept to be present, giving us programmatic access, intellisense, data querying, etc. 
 
 To make it all happen, we generate an M# nuget package which contains the definition of the `Customer` entity from the perspective of the consumer application. It's basically a DLL with a normal M# entity definition.
