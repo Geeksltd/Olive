@@ -9,7 +9,7 @@ namespace Olive.Log.EventBus
         /// <summary>
         /// list of Log Messages which publish in an interval
         /// </summary>
-        public IEnumerable<LogMessage> LogMessages { set; get; }
+        public IEnumerable<Olive.Logging.LogMessage> LogMessages { set; get; }
 
         /// <summary>
         /// The DateTime when this message published

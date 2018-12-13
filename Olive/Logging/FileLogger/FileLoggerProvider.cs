@@ -24,7 +24,7 @@ namespace Olive
             MaxRetainedFiles = options.Value.RetainedFiles;
         }
 
-        internal override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken cancellationToken)
+        public override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken cancellationToken)
         {
             foreach (var group in messages.GroupBy(x => x.Timestamp.Date))
             {

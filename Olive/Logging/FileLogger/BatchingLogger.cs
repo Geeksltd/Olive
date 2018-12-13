@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Olive.Logging
 {
-    class BatchingLogger : ILogger
+    public class BatchingLogger : ILogger
     {
         BatchingLoggerProvider Provider;
         string Category;

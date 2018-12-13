@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Title>Olive Logger EventBus</Title>
+    <Version>1.0.0</Version>
     <Authors>Geeks Ltd</Authors>
     <Company>Geeks Ltd</Company>
     <Description>A plugin for Olive Framework</Description>
@@ -14,7 +15,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin</OutputPath>
-    <DocumentationFile>..\bin\netcoreapp2.1\Olive.Log.EventBus.xml</DocumentationFile>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Log.EventBus.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -20,7 +20,7 @@ namespace Olive
         public static string ToString(this IEnumerable @this, string separator)
         {
             if (@this == null) return "{NULL}";
-            return ToString(@this.Cast<object>(), seperator);
+            return ToString(@this.Cast<object>(), separator);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Olive
         public static Task<string> ToString(this Task<IEnumerable> @this, string separator)
         {
             if (@this == null) return Task.FromResult("{NULL}");
-            return @this.Get(x => x.ToString(seperator));
+            return @this.Get(x => x.ToString(separator));
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Olive
         /// <param name="separator">It is located among all characters.</param>
         /// <param name="lastSeparator">It is located between last two members.</param>
         public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string separator, string lastSeparator) =>
-            @this.Select(i => format.FormatWith(i)).ToString(seperator, lastSeperator);
+            @this.Select(i => format.FormatWith(i)).ToString(separator, lastSeparator);
 
         /// <summary>
         /// Determines if this is null or an empty list.  
@@ -72,14 +72,14 @@ namespace Olive
         /// <param name="separator">It is located among all characters.</param>
         /// <param name="lastSeparator">It is located between last two members.</param>
         public static string ToFormatString<T>(this IEnumerable<T> @this, string format, string separator)
-            => @this.Select(i => format.FormatWith(i)).ToString(seperator);
+            => @this.Select(i => format.FormatWith(i)).ToString(separator);
 
         /// <summary>
         /// Concatenates all members of this object and inserts {separator} among them.  
         /// </summary>
         /// <param name="separator">It is located among all characters.</param>
         public static string ToString<T>(this IEnumerable<T> @this, string separator)
-            => ToString(@this, seperator, seperator);
+            => ToString(@this, separator, separator);
 
         /// <summary>
         /// Concatenates all members of this object and inserts {separator} among them and inserts {lastSeparator} between last two members.  
@@ -101,10 +101,10 @@ namespace Olive
                 else result.Append(item.ToString());
 
                 if (i < items.Length - 2)
-                    result.Append(seperator);
+                    result.Append(separator);
 
                 if (i == items.Length - 2)
-                    result.Append(lastSeperator);
+                    result.Append(lastSeparator);
             }
 
             return result.ToString();

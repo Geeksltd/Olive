@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Logging
 {
-    abstract class BatchingLoggerProvider : ILoggerProvider
+    public abstract class BatchingLoggerProvider : ILoggerProvider
     {
         readonly List<LogMessage> CurrentBatch = new List<LogMessage>();
         readonly TimeSpan Interval;
@@ -37,7 +37,7 @@ namespace Olive.Logging
             Start();
         }
 
-        internal abstract Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken token);
+        public abstract Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken token);
 
         async Task ProcessLogQueue(object _)
         {
@@ -66,7 +66,7 @@ namespace Olive.Logging
             }
         }
 
-        internal void AddMessage(DateTimeOffset timestamp, string message)
+        public void AddMessage(DateTimeOffset timestamp, string message)
         {
             if (!MessageQueue.IsAddingCompleted)
             {
