@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
+    <ProjectReference Include="..\Olive\Olive.csproj" />
+  </ItemGroup>
+
+</Project>
