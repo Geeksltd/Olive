@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Olive.Log.EventBus
+﻿namespace Olive.Logging
 {
-    public class EventBusLoggerOptions : Olive.Logging.BatchingLoggerOptions
+    public class EventBusLoggerOptions : BatchingLoggerOptions
     {
-        /// <summary>
-        /// the queue url
-        /// </summary>
         public string QueueUrl { set; get; }
     }
 }

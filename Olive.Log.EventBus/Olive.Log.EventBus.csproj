@@ -1,26 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Olive Logger EventBus</Title>
-    <Version>1.0.0</Version>
+    <Version>1.0.2</Version>
     <Authors>Geeks Ltd</Authors>
     <Company>Geeks Ltd</Company>
     <Description>A plugin for Olive Framework</Description>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageLicenseUrl>
+    </PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RootNamespace>Olive.Logging</RootNamespace>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Log.EventBus.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
-
 </Project>

@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <NoWarn>1587;1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive</PackageId>
     <Title>Olive</Title>
     <Authors>Geeks Ltd</Authors>
@@ -11,7 +11,7 @@
     <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <Version>1.0.143</Version>
+    <Version>1.0.144</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

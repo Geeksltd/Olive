@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Olive.Log.EventBus
+namespace Olive.Logging
 {
-    public static class Extensions
+    public static class EventBusExtensions
     {
         public static ILoggingBuilder AddEventBusLogger(this ILoggingBuilder @this, Action<EventBusLoggerOptions> configure = null)
         {

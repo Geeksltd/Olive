@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Olive.Logging;
+﻿using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Olive.Log.EventBus
+namespace Olive.Logging
 {
-    public class EventBusLoggerProvider : Olive.Logging.BatchingLoggerProvider
+    public class EventBusLoggerProvider : BatchingLoggerProvider
     {
         string QueueUrl;
 
@@ -20,9 +15,9 @@ namespace Olive.Log.EventBus
             QueueUrl = options.Value.QueueUrl;
         }
 
-        public override Task WriteMessagesAsync(IEnumerable<Logging.LogMessage> messages, CancellationToken token)
+        public override Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken token)
         {
-            return Olive.EventBus.Queue(QueueUrl).Publish(new EventBusLoggerMessage() { LogMessages = messages, PublishDateTime = DateTime.Now });
+            return EventBus.Queue(QueueUrl).Publish(new EventBusLoggerMessage { Messages = messages, Date = DateTime.Now });
         }
     }
 }
