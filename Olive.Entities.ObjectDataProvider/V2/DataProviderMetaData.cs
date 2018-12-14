@@ -5,19 +5,23 @@ namespace Olive.Entities.ObjectDataProvider.V2
 {
     public class DataProviderMetaData
     {
-        Type[] BaseClassTypesInOrder;
         DataProviderMetaData[] baseClassesInOrder;
-        
-        Type[] DrivedClassTypesInOrder;
         DataProviderMetaData[] drivedClassesInOrder;
+        string idColumnName = null;
+        bool? hasAutoNumber;
+        PropertyData autoNumberProperty;
 
-        public string TableName { get; set; }
+        public string TableName { get; internal set; }
 
-        public string TableAlias { get; set; }
+        public string TableAlias { get; internal set; }
 
-        public string Schema { get; set; }
+        public string Schema { get; internal set; }
 
-        public PropertyData[] Properties { get; set; }
+        public PropertyData[] Properties { get; internal set; }
+
+        public Type[] BaseClassTypesInOrder { get; internal set; }
+
+        public Type[] DrivedClassTypes { get; internal set; }
 
         public Type Type { get; }
 
@@ -37,14 +41,44 @@ namespace Olive.Entities.ObjectDataProvider.V2
             get
             {
                 if (drivedClassesInOrder == null)
-                    drivedClassesInOrder = DrivedClassTypesInOrder.Select(b => DataProviderMetaDataGenerator.Generate(b)).ToArray();
+                    drivedClassesInOrder = DrivedClassTypes.Select(b => DataProviderMetaDataGenerator.Generate(b)).ToArray();
 
                 return drivedClassesInOrder;
             }
         }
 
-        public string IdColumnName => 
-            Properties.FirstOrDefault(p => p.IsPrimaryKey)?.Name ?? PropertyData.DEFAULT_ID_COLUMN;
+        public string IdColumnName
+        {
+            get
+            {
+                if (idColumnName.IsEmpty())
+                    idColumnName = Properties.FirstOrDefault(p => p.IsPrimaryKey)?.Name ?? PropertyData.DEFAULT_ID_COLUMN;
+
+                return idColumnName;
+            }
+        }
+
+        public bool HasAutoNumber { get
+            {
+                if(hasAutoNumber == null)
+                    hasAutoNumber = Properties.Any(p => p.IsAutoNumber);
+
+                return hasAutoNumber.Value;
+            }
+        }
+
+        public PropertyData AutoNumberProperty
+        {
+            get
+            {
+                if (HasAutoNumber == false) return null;
+
+                if(autoNumberProperty == null)
+                    autoNumberProperty = Properties.First(p => p.IsAutoNumber);
+
+                return autoNumberProperty;
+            }
+        }
 
         internal DataProviderMetaData(Type type) => Type = type;
     }

@@ -13,21 +13,26 @@ namespace Olive.Entities
         /// <summary>
         /// Determines if soft delete is enabled for a given type.
         /// </summary>
-        public static bool IsEnabled(Type type)
+        public static bool IsEnabled(Type type) => IsEnabled(type, inherit: true);
+
+        /// <summary>
+        /// Determines if soft delete is enabled for a given type.
+        /// </summary>
+        public static bool IsEnabled(Type type, bool inherit)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
             if (Cache.TryGetValue(type, out var result)) return result;
 
-            return DetectAndCache(type);
+            return DetectAndCache(type, inherit);
         }
 
-        static bool DetectAndCache(Type type)
+        static bool DetectAndCache(Type type, bool inherit)
         {
             lock (DetectAndCacheShouldBeStaticMethod)
             {
-                var result = type.IsDefined(typeof(SoftDeleteAttribute), inherit: true);
+                var result = type.IsDefined(typeof(SoftDeleteAttribute), inherit);
 
                 try { return Cache[type] = result; }
                 catch

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.ObjectDataProvider.V2
 {
-    public abstract class ObjectDataProvider<TConnection, TDataParameter> : DataProvider<TConnection, TDataParameter>
+    public class ObjectDataProvider<TConnection, TDataParameter> : DataProvider<TConnection, TDataParameter>
          where TConnection : DbConnection, new()
          where TDataParameter : IDbDataParameter, new()
     {
@@ -18,8 +18,9 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         string Fields = null;
         string TablesTemplate = null;
-
-        public SqlDialect SqlDialect { get; }
+        string deleteCommand = null;
+        string updateCommand = null;
+        string insertCommand = null;
 
         public SqlCommandGenerator SqlCommandGenerator { get; }
 
@@ -27,11 +28,43 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public override Type EntityType => entityType;
 
-        protected ObjectDataProvider(Type type, ICache cache, SqlDialect sqlDialect, SqlCommandGenerator sqlCommandGenerator)
+        public string DeleteCommand
+        {
+            get
+            {
+                if (deleteCommand.IsEmpty())
+                    deleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
+
+                return deleteCommand;
+            }
+        }
+
+        public string UpdateCommand
+        {
+            get
+            {
+                if (updateCommand.IsEmpty())
+                    updateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
+
+                return updateCommand;
+            }
+        }
+
+        public string InsertCommand
+        {
+            get
+            {
+                if (insertCommand.IsEmpty())
+                    insertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
+
+                return insertCommand;
+            }
+        }
+
+        protected ObjectDataProvider(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
             : base(cache)
         {
             entityType = type;
-            SqlDialect = sqlDialect;
             SqlCommandGenerator = sqlCommandGenerator;
 
             MetaData = DataProviderMetaDataGenerator.Generate(type);
@@ -61,7 +94,10 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public override Task Delete(IEntity record)
         {
-            return ExecuteNonQuery(GetDeleteCommand(), CommandType.Text, Access.CreateParameter("Id", record.GetId()));
+            if (MetaData.BaseClassesInOrder.Any())
+                return MetaData.BaseClassesInOrder.First().GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Delete(record);
+
+            return ExecuteNonQuery(DeleteCommand, CommandType.Text, Access.CreateParameter("Id", record.GetId()));
         }
 
         public override Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property)
@@ -133,7 +169,7 @@ namespace Olive.Entities.ObjectDataProvider.V2
                 var current = MetaData.DrivedClasses[index];
 
                 if (reader[GetSqlCommandColumnAlias(current, current.IdColumnName)] != DBNull.Value)
-                    return ObjectDataProviderFactory.Get<TConnection, TDataParameter>(current.Type).Parse(reader);
+                    return current.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Parse(reader);
             }
 
             if(MetaData.Type.IsAbstract)
@@ -144,34 +180,55 @@ namespace Olive.Entities.ObjectDataProvider.V2
             FillData(reader, result);
 
             foreach (var parent in MetaData.BaseClassesInOrder)
-                ObjectDataProviderFactory.Get<TConnection, TDataParameter>(parent.Type).FillData(reader, result);
+                parent.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).FillData(reader, result);
 
             return result;
         }
 
-        public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields)
+        public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields) =>
+            SqlCommandGenerator.GenerateSelectCommand(iquery, MetaData, fields);
+
+        public override string GenerateWhere(DatabaseQuery query) =>
+            SqlCommandGenerator.GenerateWhere(query, MetaData);
+
+        async Task Update(IEntity record)
+        {
+            async Task saveAll()
+            {
+                foreach (var parent in MetaData.BaseClassesInOrder)
+                    await parent.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Update(record);
+
+                if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record))).ToStringOrEmpty().IsEmpty())
+                {
+                    Cache.Remove(record);
+                    throw new ConcurrencyException($"Failed to update the '{MetaData.TableName}' table. There is no row with the ID of {record.GetId()}.");
+                }
+            }
+
+            if (Database.AnyOpenTransaction()) await saveAll();
+            else using (var scope = Database.CreateTransactionScope()) { await saveAll(); scope.Complete(); }
+        }
+
+        private IDataParameter[] CreateParameters(IEntity record)
         {
             throw new NotImplementedException();
         }
 
-        public override string GenerateWhere(DatabaseQuery query)
+        async Task Insert(IEntity record)
         {
-            throw new NotImplementedException();
-        }
+            async Task saveAll()
+            {
+                foreach (var parent in MetaData.BaseClassesInOrder)
+                    await parent.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Insert(record);
 
-        private Task Update(IEntity record)
-        {
-            throw new NotImplementedException();
-        }
+                var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record));
 
-        private Task Insert(IEntity record)
-        {
-            throw new NotImplementedException();
-        }
+                if (MetaData.HasAutoNumber)
+                    MetaData.AutoNumberProperty.PropertyInfo.SetValue(record, result);
+            }
 
-        private string GetDeleteCommand()
-        {
-            throw new NotImplementedException();
+            if (Database.AnyOpenTransaction()) await saveAll();
+            else using (var scope = Database.CreateTransactionScope()) { await saveAll(); scope.Complete(); }
         }
 
         void FillData(IDataReader reader, IEntity entity)
@@ -185,13 +242,13 @@ namespace Olive.Entities.ObjectDataProvider.V2
             }
         }
 
-        string GetSqlCommandColumn(DataProviderMetaData medaData, PropertyData property)
-            => $"{medaData.TableAlias}.[{property.Name}]";
+        string GetSqlCommandColumn(DataProviderMetaData medaData, PropertyData property) => 
+            $"{medaData.TableAlias}.[{property.Name}]";
 
-        string GetSqlCommandColumnAlias(DataProviderMetaData medaData, PropertyData property)
-            => GetSqlCommandColumnAlias(medaData, property.Name);
+        string GetSqlCommandColumnAlias(DataProviderMetaData medaData, PropertyData property) => 
+            GetSqlCommandColumnAlias(medaData, property.Name);
 
-        private string GetSqlCommandColumnAlias(DataProviderMetaData medaData, string propertyName) 
-            => $"{medaData.TableName}_{propertyName}";
+        string GetSqlCommandColumnAlias(DataProviderMetaData medaData, string propertyName) => 
+            $"{medaData.TableName}_{propertyName}";
     }
 }
