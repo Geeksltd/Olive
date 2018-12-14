@@ -92,6 +92,7 @@ namespace Olive.Entities.Replication
             var existing = await Database.GetOrDefault(entity.GetId(), DomainType);
 
             IsNewProperty.SetValue(entity, existing == null);
+
             IsImmutableField.SetValue(entity, false);
 
             await Database.Save(entity, SaveBehaviour.BypassAll);

@@ -2,7 +2,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Olive Logger EventBus</Title>
-    <Version>1.0.2</Version>
+    <PackageId>Olive.Log.EventBus</PackageId>
+    <Version>1.0.5</Version>
     <Authors>Geeks Ltd</Authors>
     <Company>Geeks Ltd</Company>
     <Description>A plugin for Olive Framework</Description>
@@ -23,4 +24,7 @@
     <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+  </Target>
 </Project>
