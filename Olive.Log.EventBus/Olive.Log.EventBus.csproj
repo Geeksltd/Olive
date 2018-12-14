@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Olive Logger EventBus</Title>
     <PackageId>Olive.Log.EventBus</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>Geeks Ltd</Authors>
     <Company>Geeks Ltd</Company>
     <Description>A plugin for Olive Framework</Description>

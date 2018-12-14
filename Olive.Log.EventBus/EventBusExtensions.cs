@@ -6,7 +6,7 @@ namespace Olive.Logging
 {
     public static class EventBusExtensions
     {
-        public static ILoggingBuilder AddEventBusLogger(this ILoggingBuilder @this, Action<EventBusLoggerOptions> configure = null)
+        public static ILoggingBuilder AddEventBus(this ILoggingBuilder @this, Action<EventBusLoggerOptions> configure = null)
         {
             @this.Services.AddSingleton<ILoggerProvider, EventBusLoggerProvider>();
             if (configure != null) @this.Services.Configure(configure);
