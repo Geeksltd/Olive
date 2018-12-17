@@ -16,11 +16,9 @@ namespace Olive.Entities.ObjectDataProvider.V2
     {
         readonly Type entityType;
 
-        string Fields = null;
-        string TablesTemplate = null;
-        string deleteCommand = null;
-        string updateCommand = null;
-        string insertCommand = null;
+        string Fields;
+        string TablesTemplate;
+        Dictionary<string, string> ColumnMapping = new Dictionary<string, string>();
 
         public SqlCommandGenerator SqlCommandGenerator { get; }
 
@@ -28,64 +26,45 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public override Type EntityType => entityType;
 
-        public string DeleteCommand
-        {
-            get
-            {
-                if (deleteCommand.IsEmpty())
-                    deleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
+        public string DeleteCommand { get; }
 
-                return deleteCommand;
-            }
-        }
+        public string UpdateCommand { get; }
 
-        public string UpdateCommand
-        {
-            get
-            {
-                if (updateCommand.IsEmpty())
-                    updateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
+        public string InsertCommand { get; }
 
-                return updateCommand;
-            }
-        }
-
-        public string InsertCommand
-        {
-            get
-            {
-                if (insertCommand.IsEmpty())
-                    insertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
-
-                return insertCommand;
-            }
-        }
-
-        protected ObjectDataProvider(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
+        public ObjectDataProvider(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
             : base(cache)
         {
             entityType = type;
             SqlCommandGenerator = sqlCommandGenerator;
 
             MetaData = DataProviderMetaDataGenerator.Generate(type);
+
+            DeleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
+            UpdateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
+            InsertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
+
+            PrepareTableTemplate();
+            PrepareFields();
+            PrepareColumnMappingDictonary();
         }
 
-        public override string MapColumn(string propertyName)
-        {
-            if (propertyName == "ID" || MetaData.Properties.Any(p => p.IsPrimaryKey))
-                return GetSqlCommandColumn(MetaData, MetaData.Properties.First(p => p.IsPrimaryKey));
+        public override string MapColumn(string propertyName) => ColumnMapping[propertyName];
+        //{
+        //    if (propertyName == "ID" || MetaData.Properties.Any(p => p.IsPrimaryKey))
+        //        return GetSqlCommandColumn(MetaData, MetaData.Properties.First(p => p.IsPrimaryKey));
 
-            foreach (var prop in MetaData.Properties)
-                if (prop.Name == propertyName)
-                    return GetSqlCommandColumn(MetaData, prop);
+        //    foreach (var prop in MetaData.Properties)
+        //        if (prop.Name == propertyName)
+        //            return GetSqlCommandColumn(MetaData, prop);
 
-            foreach (var parent in MetaData.BaseClassesInOrder)
-                foreach (var prop in parent.Properties)
-                    if (prop.Name == propertyName)
-                        return GetSqlCommandColumn(parent, prop);
+        //    foreach (var parent in MetaData.BaseClassesInOrder)
+        //        foreach (var prop in parent.Properties)
+        //            if (prop.Name == propertyName)
+        //                return GetSqlCommandColumn(parent, prop);
 
-            throw new ArgumentOutOfRangeException(nameof(propertyName));
-        }
+        //    throw new ArgumentOutOfRangeException(nameof(propertyName));
+        //}
 
         protected override string SafeId(string objectName)
         {
@@ -113,58 +92,13 @@ namespace Olive.Entities.ObjectDataProvider.V2
                 await Update(record);
         }
 
-        public override string GetFields()
-        {
-            if (Fields.IsEmpty())
-            {
-                Fields = "";
+        public override string GetFields() => Fields;
 
-                foreach (var parent in MetaData.BaseClassesInOrder)
-                    foreach (var prop in parent.Properties)
-                        Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}";
-
-                foreach (var prop in MetaData.Properties)
-                    Fields += $"{GetSqlCommandColumn(MetaData, prop)} as {GetSqlCommandColumnAlias(MetaData, prop)}";
-
-                foreach (var parent in MetaData.DrivedClasses)
-                    foreach (var prop in parent.Properties)
-                        Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}";
-            }
-
-            return Fields;
-        }
-
-        public override string GetTables(string prefix = null)
-        {
-            if (TablesTemplate.IsEmpty())
-            {
-                TablesTemplate = "";
-                DataProviderMetaData temp = null;
-
-                void addTable(DataProviderMetaData medaData)
-                {
-                    TablesTemplate += "LEFT OUTER JOIN ".OnlyWhen(temp != null) +
-                        $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
-                        $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{temp?.TableAlias}.{temp?.IdColumnName}".OnlyWhen(temp != null);
-
-                    temp = medaData;
-                }
-
-                foreach (var parent in MetaData.BaseClassesInOrder)
-                    addTable(parent);
-
-                addTable(MetaData);
-
-                foreach (var drived in MetaData.DrivedClasses)
-                    addTable(drived);
-            }
-
-            return TablesTemplate.FormatWith(prefix);
-        }
+        public override string GetTables(string prefix = null) => TablesTemplate.FormatWith(prefix);
 
         public override IEntity Parse(IDataReader reader)
         {
-            for (int index = MetaData.DrivedClasses.Length - 1; index > -1; index++)
+            for (int index = MetaData.DrivedClasses.Length - 1; index > -1; index--)
             {
                 var current = MetaData.DrivedClasses[index];
 
@@ -182,14 +116,16 @@ namespace Olive.Entities.ObjectDataProvider.V2
             foreach (var parent in MetaData.BaseClassesInOrder)
                 parent.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).FillData(reader, result);
 
+            Entity.Services.SetSaved(result, saved: true);
+
             return result;
         }
 
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields) =>
-            SqlCommandGenerator.GenerateSelectCommand(iquery, MetaData, fields);
+            SqlCommandGenerator.GenerateSelectCommand(iquery, GetTables(iquery.AliasPrefix), fields);
 
         public override string GenerateWhere(DatabaseQuery query) =>
-            SqlCommandGenerator.GenerateWhere(query, MetaData);
+            SqlCommandGenerator.GenerateWhere(query);
 
         async Task Update(IEntity record)
         {
@@ -211,7 +147,12 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         private IDataParameter[] CreateParameters(IEntity record)
         {
-            throw new NotImplementedException();
+            var result = new List<IDataParameter>();
+
+            foreach (var prop in MetaData.Properties)
+                result.Add(Access.CreateParameter(prop.ParameterName, prop.PropertyInfo.GetValue(record) ?? DBNull.Value));
+
+            return result.ToArray();
         }
 
         async Task Insert(IEntity record)
@@ -233,22 +174,83 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         void FillData(IDataReader reader, IEntity entity)
         {
-            foreach (var property in MetaData.Properties)
+            foreach (var property in MetaData.UserDefienedAndIdProperties)
             {
                 var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
 
                 if(value != DBNull.Value)
-                    property.PropertyInfo.SetValue(entity, value);
+                    property.PropertyInfo.SetValue(entity, Convert.ChangeType(value, property.NonGenericType));
             }
         }
 
-        string GetSqlCommandColumn(DataProviderMetaData medaData, PropertyData property) => 
-            $"{medaData.TableAlias}.[{property.Name}]";
+        string GetSqlCommandColumn(DataProviderMetaData medaData, PropertyData property) =>
+            GetSqlCommandColumn(medaData, property.Name);
+
+        string GetSqlCommandColumn(DataProviderMetaData medaData, string propertyName) =>
+            $"{medaData.TableAlias}.[{propertyName}]";
 
         string GetSqlCommandColumnAlias(DataProviderMetaData medaData, PropertyData property) => 
             GetSqlCommandColumnAlias(medaData, property.Name);
 
         string GetSqlCommandColumnAlias(DataProviderMetaData medaData, string propertyName) => 
             $"{medaData.TableName}_{propertyName}";
+
+        void PrepareTableTemplate()
+        {
+            TablesTemplate = "";
+            DataProviderMetaData temp = null;
+
+            void addTable(DataProviderMetaData medaData)
+            {
+                TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(temp != null) +
+                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
+                    $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{temp?.TableAlias}.{temp?.IdColumnName}".OnlyWhen(temp != null);
+
+                temp = medaData;
+            }
+
+            foreach (var parent in MetaData.BaseClassesInOrder)
+                addTable(parent);
+
+            addTable(MetaData);
+
+            foreach (var drived in MetaData.DrivedClasses)
+                addTable(drived);
+        }
+
+        void PrepareFields()
+        {
+            Fields = "";
+
+            foreach (var parent in MetaData.BaseClassesInOrder)
+                foreach (var prop in parent.UserDefienedAndIdProperties)
+                    Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}, ";
+
+            foreach (var prop in MetaData.UserDefienedAndIdProperties)
+                Fields += $"{GetSqlCommandColumn(MetaData, prop)} as {GetSqlCommandColumnAlias(MetaData, prop)}, ";
+
+            foreach (var parent in MetaData.DrivedClasses)
+                foreach (var prop in parent.UserDefienedAndIdProperties)
+                    Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}, ";
+
+            Fields = Fields.TrimEnd(2);
+        }
+
+        void PrepareColumnMappingDictonary()
+        {
+            ColumnMapping.Add(PropertyData.DEFAULT_ID_COLUMN, GetSqlCommandColumn(MetaData, MetaData.IdColumnName));
+
+            if(MetaData.IsSoftDeleteEnabled)
+                ColumnMapping.Add(
+                    PropertyData.IS_MARKED_SOFT_DELETED, 
+                    GetSqlCommandColumn(MetaData, MetaData.Properties.First(p => p.IsDeleted)));
+
+            foreach (var prop in MetaData.UserDefienedProperties)
+                ColumnMapping.Add(prop.Name, GetSqlCommandColumn(MetaData, prop));
+
+            foreach (var parent in MetaData.BaseClassesInOrder)
+                foreach (var prop in parent.UserDefienedProperties)
+                    ColumnMapping.Add(prop.Name, GetSqlCommandColumn(MetaData, prop));
+        }
     }
 }

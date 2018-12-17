@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Olive.Entities.ObjectDataProvider.V2
@@ -47,12 +48,16 @@ namespace Olive.Entities.ObjectDataProvider.V2
             }
         }
 
+        public IEnumerable<PropertyData> UserDefienedAndIdProperties => Properties?.Where(p => p.IsUserDefined || p.IsDefaultId);
+
+        public IEnumerable<PropertyData> UserDefienedProperties => Properties?.Where(p => p.IsUserDefined);
+
         public string IdColumnName
         {
             get
             {
                 if (idColumnName.IsEmpty())
-                    idColumnName = Properties.FirstOrDefault(p => p.IsPrimaryKey)?.Name ?? PropertyData.DEFAULT_ID_COLUMN;
+                    idColumnName = Properties.FirstOrDefault(p => p.IsCustomPrimaryKey)?.Name ?? PropertyData.DEFAULT_ID_COLUMN;
 
                 return idColumnName;
             }
@@ -79,6 +84,8 @@ namespace Olive.Entities.ObjectDataProvider.V2
                 return autoNumberProperty;
             }
         }
+
+        public bool IsSoftDeleteEnabled { get; internal set; }
 
         internal DataProviderMetaData(Type type) => Type = type;
     }
