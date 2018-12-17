@@ -27,20 +27,22 @@ namespace Olive.Entities.ObjectDataProvider.V2
         {
             var infos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 
-            foreach (var info in infos.Except(t => CalculatedAttribute.IsCalculated(t)))
+            foreach (var (info, dbProp) in FilterProperties(infos))
             {
+                var targetProp = dbProp ?? info;
+
                 yield return new PropertyData
                 {
                     IsAutoNumber = AutoNumberAttribute.IsAutoNumber(info),
                     IsCustomPrimaryKey = PrimaryKeyAttribute.IsPrimaryKey(info),
                     Name = info.Name,
                     ParameterName = info.Name,
-                    PropertyInfo = info,
-                    NonGenericType = IsNullableType(info) ? Nullable.GetUnderlyingType(info.PropertyType) : info.PropertyType
+                    PropertyInfo = targetProp,
+                    NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType
                 };
             }
 
-            if(infos.None(t => PrimaryKeyAttribute.IsPrimaryKey(t)))
+            if (infos.None(t => PrimaryKeyAttribute.IsPrimaryKey(t)))
             {
                 var info = type.GetProperty(PropertyData.DEFAULT_ID_COLUMN);
                 yield return new PropertyData
@@ -73,6 +75,27 @@ namespace Olive.Entities.ObjectDataProvider.V2
                 NonGenericType = type.GetProperty(PropertyData.ORIGINAL_ID).PropertyType,
                 IsOriginalId = true
             };
+        }
+
+        static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
+        {
+            var nonCalculated = infos.Except(t => CalculatedAttribute.IsCalculated(t));
+            var associations = nonCalculated.Where(predicate => predicate.PropertyType.IsA<IEntity>());
+            var rest = nonCalculated.Except(associations);
+
+            var ids = new List<PropertyInfo>();
+
+            PropertyInfo getIdFor(PropertyInfo info){
+                var result = rest.FirstOrDefault(p => p.Name == info.Name.WithSuffix("Id"));
+                ids.Add(result);
+                return result;
+            }
+
+            foreach (var prop in associations)
+                yield return (prop, getIdFor(prop));
+
+            foreach (var prop in rest.Except(ids))
+                yield return (prop, null);
         }
 
         static Type[] GetDrivedClasses(Type type) =>
