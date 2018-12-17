@@ -922,7 +922,7 @@ namespace Olive
         /// Returns the indices of all items which match a specified criteria.
         /// </summary>
         /// <param name="criteria">The func() which is used in method.</param>
-        public static IEnumerable<int> AllIndicesOf<T>(IEnumerable<T> list, Func<T, bool> criteria)
+        public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> list, Func<T, bool> criteria)
         {
             var index = 0;
 
@@ -934,6 +934,27 @@ namespace Olive
             }
         }
 
+        /// <summary>
+        /// Returns the indices of all items which match a specified criteria.
+        /// </summary>
+        /// <param name="criteria">The func() which is used in method.</param>
+        /// <param name="CaseSensitive">Determines whether case sensitive is important or not.</param>
+        public static IEnumerable<int> AllIndicesOf(this IEnumerable<string> list, Func<string, bool> criteria,bool CaseSensitive)
+        {
+            var index = 0;
+            if (CaseSensitive == false)
+            {
+                list = list.Select(x => x.ToLower());
+            }
+
+            foreach (var item in list)
+            {
+                if (criteria(item)) yield return index;
+
+                index++;
+            }
+        }
+        
 
         /// <summary>
         /// Replaces the specified item in this list with the specified new item.
