@@ -1060,6 +1060,36 @@ namespace Olive
                 index++;
             }
         }
+        
+        /// <summary>
+        /// Gets all indices of the specified item in this collection.
+        /// </summary>
+        /// <param name="item">The item which is searched into the list.</param>
+        /// <param name="CaseSensitive">Determines whether case sensitive is important or not.</param>
+        public static IEnumerable<int> AllIndicesOf(this IEnumerable<string> all, string item, bool CaseSensitive)
+        {
+            var index = 0;
+            
+            if (CaseSensitive == false)
+            {
+                item = item.ToLower();
+                all = all.Select(x => x.ToLower());
+            }
+
+            foreach (var i in all)
+            {
+                if (ReferenceEquals(item, null))
+                {
+                    if (ReferenceEquals(i, null)) yield return index;
+                }
+                else
+                {
+                    if (item.Equals(i)) yield return index;
+                }
+                index++;
+            }
+        }
+        
 
         /// <summary>
         /// Returns an empty collection if this collection is null.
