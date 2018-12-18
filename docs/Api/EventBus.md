@@ -63,4 +63,44 @@ partial class Product
 When you call the `Publish(...)` method, your message object will be serialized and passed to the queue. 
 
 ## Subscribing to a message
-To receive and handle messages from a queue, you will need to subscribe to the queue.
+To receive and handle messages from a queue, you will need to subscribe to the queue. Normally you will write the subscription code in your `Startup.cs` file.
+
+```c#
+public override async Task OnStartUpAsync(IApplicationBuilder app)
+{
+    ...
+    var productPriceQueue = EventBus.Queue(Config.Get("Queues:ProductPrice:Url"));
+    productPriceQueue.Subscribe<ProductPriceChangedMessage>(m => ProductPriceChangedHandler.Process(m));
+}
+```
+The handler is a method that takes an instance of the queue message type and retrns a `Task`. For example:
+```c#
+public class ProductPriceChangedHandler
+{
+    public static async Task Process(ProductPriceChangedMessage message)
+    {
+       ...
+    }
+}
+```
+
+If the method executes without throwig an exception, the message will automatically be deleted from the queue.
+
+## Configuration
+The publisher and subscriber microservices need to share the same queue url and message schema.
+They do not have to reference each other directly, or in fact have any knowledge of each other.
+
+For example you can add the following to both applications' `appSettings.json` files:
+
+```json
+{
+   ...
+   "Queues": {
+      "ProductPrice": {
+         "Url": "https://....{queue url}..."
+      }
+   }
+}
+```
+
+Note: The queue url can be the same for development as well as production environments. When you configure the `IOEventBus` in your `Startup.cs` file, it will just create a folder with that URL to simulated the queue.
