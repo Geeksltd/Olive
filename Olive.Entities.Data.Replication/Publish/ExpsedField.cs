@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
@@ -21,11 +22,11 @@ namespace Olive.Entities.Replication
 
         public Type GetPropertyType() => type;
 
-        protected abstract object GetValue(IEntity entity);
+        protected abstract Task<object> GetValue(IEntity entity);
 
-        public object GetSerializableValue(IEntity entity)
+        public async Task<object> GetSerializableValue(IEntity entity)
         {
-            var result = GetValue(entity);
+            var result = await GetValue(entity);
             if (result is IEntity ent) return ent.GetId();
             else return result;
         }
@@ -35,9 +36,9 @@ namespace Olive.Entities.Replication
 
     public class CustomExposedField : ExposedField
     {
-        Func<IEntity, object> ValueProvider;
+        Func<IEntity, Task<object>> ValueProvider;
 
-        internal CustomExposedField(string title, Type propertyType, Func<IEntity, object> valueProvider)
+        internal CustomExposedField(string title, Type propertyType, Func<IEntity, Task<object>> valueProvider)
         {
             this.title = title;
             type = propertyType;
@@ -45,7 +46,7 @@ namespace Olive.Entities.Replication
             ValueProvider = valueProvider;
         }
 
-        protected override object GetValue(IEntity entity) => ValueProvider(entity);
+        protected override Task<object> GetValue(IEntity entity) => ValueProvider(entity);
     }
 
     public class ExposedPropertyInfo : ExposedField
@@ -65,7 +66,18 @@ namespace Olive.Entities.Replication
             if (title.IsEmpty()) title = name.ToLiteralFromPascalCase();
         }
 
-        protected override object GetValue(IEntity entity) => Property.GetValue(entity);
+        protected override async Task<object> GetValue(IEntity entity)
+        {
+            var result = Property.GetValue(entity);
+
+            if (result is Task t)
+            {
+                await t;
+                result = t.GetType().GetProperty("Result").GetValue(t);
+            }
+
+            return result;
+        }
 
         protected internal override bool ShouldSerialize() => !IsInverseAssociation;
     }

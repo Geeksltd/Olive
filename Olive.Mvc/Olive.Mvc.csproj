@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -11,8 +12,10 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Mvc Utilities for Olive</Description>
-    <Version>1.0.181</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
+    <PackageVersion>2.1.102</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />

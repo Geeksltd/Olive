@@ -3,16 +3,34 @@
 dotnet build Olive
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.EventBus
+if ERRORLEVEL 1 (goto error)
+
+dotnet build Olive.Log.EventBus
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Entities
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Audit
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Audit.DatabaseLogger
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Encryption
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Globalization
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Entities.Data
+if ERRORLEVEL 1 (goto error)
+
+dotnet build Olive.Entities.Data.Replication
+if ERRORLEVEL 1 (goto error)
+
+dotnet build Olive.Entities.ObjectDataProvider
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Entities.Data.MySql
@@ -33,6 +51,9 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Aws
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Aws.EventBus
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Blob.Aws
 if ERRORLEVEL 1 (goto error)
 
@@ -45,7 +66,7 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Drawing
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Olive.Excel
+dotnet build Olive.Export
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.GeoLocation
@@ -72,13 +93,22 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Security
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Security.Aws
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Mvc
+if ERRORLEVEL 1 (goto error)
+
+dotnet build Olive.Mvc.Paging
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Mvc.Testing
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Email
+if ERRORLEVEL 1 (goto error)
+
+dotnet build Olive.Aws.Ses
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Security.Impersonation
@@ -88,9 +118,6 @@ dotnet build Olive.Mvc.IpFilter
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Mvc.Security.Auth0
-if ERRORLEVEL 1 (goto error)
-
-dotnet build Olive.ApiProxyGenerator
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Hangfire

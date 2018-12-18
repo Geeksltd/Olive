@@ -14,14 +14,14 @@ namespace Olive.Entities.Replication
 
         public abstract Type DomainType { get; }
 
-        public ReplicateDataMessage ToMessage(IEntity entity)
+        public async Task< ReplicateDataMessage> ToMessage(IEntity entity)
         {
             var properties = new Dictionary<string, object>();
 
             properties["ID"] = entity.GetId();
 
             foreach (var f in Fields.Where(x => x.ShouldSerialize()))
-                properties[f.GetName()] = f.GetSerializableValue(entity);
+                properties[f.GetName()] = await f.GetSerializableValue(entity);
 
             var serialized = JsonConvert.SerializeObject(properties);
 
