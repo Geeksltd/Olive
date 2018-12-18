@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Olive.Aws.EventBus</PackageId>
-    
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive AWS EventBus</Title>
@@ -15,7 +14,7 @@
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.EventBus.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
-    <PackageVersion>2.1.103</PackageVersion>
+    <PackageVersion>2.1.104</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SQS" Version="3.3.3.38" />
