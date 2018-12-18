@@ -24,6 +24,9 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Entities.Data.SQLite
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Entities.ObjectDataProvider
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Entities.Data.SqlServer
 if ERRORLEVEL 1 (goto error)
 
@@ -88,9 +91,6 @@ dotnet build Olive.Mvc.IpFilter
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Mvc.Security.Auth0
-if ERRORLEVEL 1 (goto error)
-
-dotnet build Olive.ApiProxyGenerator
 if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Hangfire
