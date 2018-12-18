@@ -27,7 +27,7 @@ namespace Olive.Logging
             if (QueueUrl.IsEmpty())
                 throw new Exception("No queue url is specified in either EventBusLoggerOptions or under config key of " + ConfigKey);
 
-            Source = options?.Value?.QueueUrl;
+            Source = options?.Value?.Source;
 
             if (Source.IsEmpty())
                 Source = config.GetValue<string>(SourceKey);
