@@ -590,6 +590,14 @@ namespace Olive
             items.All(i => @this.Contains(i));
 
         /// <summary>
+        /// Determines of this list contains all items of another given list.
+        /// </summary>        
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool ContainsAll(this IEnumerable<string> @this, IEnumerable<string> items, bool caseSensitive) =>
+            items.All(i => @this.Contains(i,caseSensitive));
+        
+        
+        /// <summary>
         /// Determines if this list contains any of the specified items.
         /// </summary>
         /// <param name="items">Determines the list of items which checked with the main list.</param>
