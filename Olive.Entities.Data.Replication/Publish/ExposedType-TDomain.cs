@@ -26,10 +26,21 @@ namespace Olive.Entities.Replication
 
         internal override void Start()
         {
+            var log = Log.For(this);
             GlobalEntityEvents.InstanceSaved.Handle(async x =>
             {
-                if (!x.Entity.GetType().IsA(DomainType)) return;
-                await Queue.Publish(ToMessage(x.Entity));
+                log.Debug("Instance saved. Initiating publish checks.");
+
+                if (!x.Entity.GetType().IsA(DomainType))
+                {
+                    log.Debug("Publish aborted: " + x.Entity.GetType().Name + " is not of type " + DomainType.Name);
+                    return;
+                }
+                else
+                {
+                    log.Debug("Publishing the " + x.Entity.GetType().Name + " record of " + x.Entity.GetId());
+                    await Queue.Publish(await ToMessage(x.Entity));
+                }
             });
         }
 
@@ -42,7 +53,13 @@ namespace Olive.Entities.Replication
 
         public CustomExposedField Expose<TProperty>(string title, Func<TDomain, TProperty> valueProvider)
         {
-            return Expose(new CustomExposedField(title, typeof(TProperty), x => valueProvider((TDomain)x)));
+            return Expose(new CustomExposedField(title, typeof(TProperty), x => Task.FromResult<object>(valueProvider((TDomain)x))));
+        }
+
+        public CustomExposedField Expose<TProperty>(string title, Func<TDomain, Task<TProperty>> valueProvider)
+        {
+            return Expose(new CustomExposedField(title, typeof(TProperty),
+                x => valueProvider((TDomain)x).AsTask<TProperty, object>()));
         }
 
         public CustomExposedField Expose(CustomExposedField field)
@@ -70,7 +87,7 @@ namespace Olive.Entities.Replication
         internal override async Task UploadAll()
         {
             foreach (var item in await Context.Current.Database().GetList<TDomain>())
-                await Queue.Publish(ToMessage(item)); // TODO: Should this be done in parallel batches?
+                await Queue.Publish(await ToMessage(item)); // TODO: Should this be done in parallel batches?
         }
     }
 }

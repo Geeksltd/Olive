@@ -1,28 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Olive Logger EventBus</Title>
-    <PackageId>Olive.Log.EventBus</PackageId>
-    <Version>1.0.6</Version>
+    <PackageId>Olive.Log.EventBus</PackageId>    
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
     <Authors>Geeks Ltd</Authors>
     <Company>Geeks Ltd</Company>
     <Description>A plugin for Olive Framework</Description>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
-    <PackageLicenseUrl>
-    </PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Olive.Logging</RootNamespace>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Log.EventBus.xml</DocumentationFile>
     <NoWarn>1701;1702;1591</NoWarn>
+    <PackageVersion>2.1.103</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
-    <ProjectReference Include="..\Olive\Olive.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <Reference Include="Olive">
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\bin\netstandard2.0\Olive.EventBus.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />

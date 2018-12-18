@@ -12,6 +12,7 @@ namespace MSharp.Build
             Add(() => InstallChocolatey());
             Add(() => InstallDotnetCoreSdk());
             Add(() => InstallReplaceInFiles());
+            Add(() => InstallAcceleratePackageRestore());
             Add(() => InstallNodeJs());
             Add(() => InstallYarn());
             Add(() => InstallTypescript());
@@ -24,6 +25,7 @@ namespace MSharp.Build
         void InstallDotnetCoreSdk() => WindowsCommand.DotNet = Install<DotNet>();
 
         void InstallReplaceInFiles() => Install<ReplaceInFile>();
+        void InstallAcceleratePackageRestore() => Install<AcceleratePackageRestore>();
 
         void InstallNodeJs() => WindowsCommand.NodeJs = Install<NodeJs>();
 

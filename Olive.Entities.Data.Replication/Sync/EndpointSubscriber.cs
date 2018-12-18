@@ -47,7 +47,7 @@ namespace Olive.Entities.Replication
             if (message.CreationUtc < RefreshRequestUtc)
             {
                 // Ignore this. We will receive a full table after this anyway.
-                Log.Info("Ignoring expired ReplicateDataMessage " + message.DeduplicationId);
+                Log.Info("Ignoring importing expired ReplicateDataMessage " + message.DeduplicationId);
                 return;
             }
 
@@ -55,14 +55,18 @@ namespace Olive.Entities.Replication
 
             IEntity entity;
 
-            try { entity = Deserialize(message.Entity); }
+            try { entity = await Deserialize(message.Entity); }
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to deserialize.");
                 throw;
             }
 
-            try { await Import(entity); }
+            try
+            {
+                await Database.Save(entity, SaveBehaviour.BypassAll);
+                Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
+            }
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to import.");
@@ -70,10 +74,12 @@ namespace Olive.Entities.Replication
             }
         }
 
-        IEntity Deserialize(string serialized)
+        async Task<IEntity> Deserialize(string serialized)
         {
             var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(serialized);
-            var result = DomainType.CreateInstance<IEntity>();
+
+            var result = (await Database.GetOrDefault(data["ID"], DomainType))?.Clone();
+            if (result == null) result = DomainType.CreateInstance<IEntity>();
 
             foreach (var field in data)
             {
@@ -85,18 +91,6 @@ namespace Olive.Entities.Replication
             }
 
             return result;
-        }
-
-        async Task Import(IEntity entity)
-        {
-            var existing = await Database.GetOrDefault(entity.GetId(), DomainType);
-
-            IsNewProperty.SetValue(entity, existing == null);
-
-            IsImmutableField.SetValue(entity, false);
-
-            await Database.Save(entity, SaveBehaviour.BypassAll);
-            Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
         }
     }
 }
