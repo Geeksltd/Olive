@@ -749,6 +749,24 @@ namespace Olive
         }
 
         /// <summary>
+        /// Determines if all items in this collection are unique.
+        /// </summary>
+        /// <param name="CaseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool AreItemsUnique(this IEnumerable<string> collection, bool CaseSensitive)
+        {
+            if (collection.None()) return true;
+            if (CaseSensitive==false)
+            {
+                var lowerlist = (from x in collection select new {item = x.ToLower()}).Distinct();
+
+                return collection.Count() == lowerlist.Count();
+            }
+
+            return collection.Distinct().Count() == collection.Count();
+        }
+        
+        
+        /// <summary>
         /// Returns the union of this list with the specified other lists.
         /// </summary>
         /// <param name="otherLists">The list of items which are unioned.</param>
