@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -5,14 +6,15 @@
     <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.Replication.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Entities.Data.Replication</PackageId>
-    <Version>1.0.104</Version>
+    <PackageVersion>2.1.103</PackageVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Entities Data Replication</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Olive.Entities</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -25,6 +27,7 @@
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
+      <SpecificVersion>false</SpecificVersion>
     </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
@@ -34,6 +37,6 @@
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;&#xD;&#xA;update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
 </Project>

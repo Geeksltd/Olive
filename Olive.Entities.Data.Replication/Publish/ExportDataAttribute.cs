@@ -11,8 +11,8 @@ namespace Olive.Entities.Replication
         {
             Type = type ?? throw new ArgumentNullException(nameof(type));
 
-            if (!type.IsA<ReplicatedData>())
-                throw new ArgumentException(type.FullName + " is not a subclass of " + typeof(ReplicatedData).FullName);
+            if (!type.IsA<ExposedType>())
+                throw new ArgumentException(type.FullName + " is not a subclass of " + typeof(ExposedType).FullName);
         }
     }
 }

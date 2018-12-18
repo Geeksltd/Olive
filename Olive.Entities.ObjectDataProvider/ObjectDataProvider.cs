@@ -70,20 +70,15 @@ namespace Olive.Entities.ObjectDataProvider
         }
 
         public IDataParameter[] GenerateParameters(Dictionary<string, object> parametersData) =>
-            parametersData.Select(GenerateParameter).ToArray();
-
-        public virtual IDataParameter GenerateParameter(KeyValuePair<string, object> data)
-        {
-            return new ObjectDataProviderTDataParameter(data.Key.Remove(" "), data.Value, Type.GetType(data.Value.GetType().ToString()).ToDbType());
-        }
+            parametersData.Select(x => Db.CreateParameter(x.Key, x.Value)).ToArray();
 
         public abstract string GenerateSelectCommand(IDatabaseQuery iquery, string fields);
 
         Type IDataProvider.EntityType { get => RunTimeType; }
 
-        string IDataProvider.ConnectionString { get => DataAccess.GetCurrentConnectionString(); set { }}
+        string IDataProvider.ConnectionString { get => DataAccess.GetCurrentConnectionString(); set { } }
 
-        string IDataProvider.ConnectionStringKey { get => DataAccess.GetCurrentConnectionString(); set { }}
+        string IDataProvider.ConnectionStringKey { get => DataAccess.GetCurrentConnectionString(); set { } }
 
         IDataAccess IDataProvider.Access => Db;
 

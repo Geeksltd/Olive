@@ -11,21 +11,6 @@ namespace Olive.Entities.Data
         public SqlObjectDataAccessProvider(Type runtimeType, IDataAccess dataAccess, ICache cache)
             : base(runtimeType, dataAccess, cache, ObjectDataProvider.SqlDialect.MSSQL) { }
 
-        public override IDataParameter GenerateParameter(KeyValuePair<string, object> data)
-        {
-            var value = data.Value;
-
-            var result = new SqlParameter { Value = value, ParameterName = data.Key.Remove(" ") };
-
-            if (value is DateTime)
-            {
-                result.DbType = DbType.DateTime2;
-                result.SqlDbType = SqlDbType.DateTime2;
-            }
-
-            return result;
-        }
-
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields)
         {
             var query = (DatabaseQuery)iquery;

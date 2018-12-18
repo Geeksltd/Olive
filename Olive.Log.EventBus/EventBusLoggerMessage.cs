@@ -1,23 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Olive.Log.EventBus
+namespace Olive.Logging
 {
-    public class EventBusLoggerMessage : IEventBusMessage
+    public class EventBusLoggerMessage : EventBusMessage
     {
         /// <summary>
         /// list of Log Messages which publish in an interval
         /// </summary>
-        public IEnumerable<Olive.Logging.LogMessage> LogMessages { set; get; }
-
-        /// <summary>
-        /// The DateTime when this message published
-        /// </summary>
-        public DateTime PublishDateTime { set; get; }
-
-        public string DeduplicationId => Guid.NewGuid().ToString();
+        public IEnumerable<LogMessage> Messages { set; get; }
 
         public string Source { set; get; }
+
+        public DateTime Date { set; get; }
     }
 }

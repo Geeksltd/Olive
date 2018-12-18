@@ -1,20 +1,35 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
     public class EndpointSubscriber
     {
+        static FieldInfo IsImmutableField;
+        static PropertyInfo IsNewProperty;
         public Type DomainType { get; set; }
         public DestinationEndpoint Endpoint { get; }
         DateTime? RefreshRequestUtc;
+        ILogger Log;
+
+        static EndpointSubscriber()
+        {
+            IsImmutableField = typeof(Entity).GetField("IsImmutable", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? throw new Exception("Field IsImmutable was not found on type Entity.");
+
+            IsNewProperty = typeof(Entity).GetProperty("IsNew")
+                ?? throw new Exception("Property IsNew was not found on type Entity.");
+        }
 
         public EndpointSubscriber(DestinationEndpoint endpoint, Type domainType)
         {
             Endpoint = endpoint;
             DomainType = domainType;
+            Log = Olive.Log.For(this);
         }
 
         protected IDatabase Database => Context.Current.Database();
@@ -24,48 +39,58 @@ namespace Olive.Entities.Replication
             var request = new RefreshMessage { TypeName = DomainType.Namespace + "." + DomainType.Name, RequestUtc = DateTime.UtcNow };
             RefreshRequestUtc = request.RequestUtc;
             await Endpoint.RefreshQueue.Publish(request);
+            await Database.Refresh();
         }
 
-        internal Task Import(ReplicateDataMessage message)
+        internal async Task Import(ReplicateDataMessage message)
         {
             if (message.CreationUtc < RefreshRequestUtc)
             {
                 // Ignore this. We will receive a full table after this anyway.
-                return Task.CompletedTask;
+                Log.Info("Ignoring importing expired ReplicateDataMessage " + message.DeduplicationId);
+                return;
             }
 
-            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(message.Entity);
-            var entity = DomainType.CreateInstance<IEntity>();
+            Log.Debug($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
+
+            IEntity entity;
+
+            try { entity = await Deserialize(message.Entity); }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to deserialize.");
+                throw;
+            }
+
+            try
+            {
+                await Database.Save(entity, SaveBehaviour.BypassAll);
+                Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to import.");
+                throw;
+            }
+        }
+
+        async Task<IEntity> Deserialize(string serialized)
+        {
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(serialized);
+
+            var result = (await Database.GetOrDefault(data["ID"], DomainType))?.Clone();
+            if (result == null) result = DomainType.CreateInstance<IEntity>();
+
             foreach (var field in data)
             {
                 var property = DomainType.GetProperty(field.Key);
                 if (property.PropertyType.IsA<IEntity>())
                     property = property.DeclaringType.GetProperty(property.Name + "Id");
 
-                property.SetValue(entity, field.Value.To(property.PropertyType));
+                property.SetValue(result, field.Value.To(property.PropertyType));
             }
 
-            return Import(entity);
-        }
-
-        async Task Import(IEntity entity)
-        {
-            try
-            {
-                var existing = await Database.GetOrDefault(entity.GetId(), DomainType);
-                if (existing != null)
-                    await Database.Delete(existing);
-
-                if (!entity.IsNew)
-                    entity.GetType().GetProperty("IsNew").SetValue(entity, true);
-
-                await Database.Save(entity, SaveBehaviour.BypassAll);
-            }
-            catch (Exception ex)
-            {
-                Log.For(this).Error(ex, "Failed to import " + entity.GetType().Name);
-                throw;
-            }
+            return result;
         }
     }
 }

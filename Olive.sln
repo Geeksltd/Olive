@@ -14,11 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Compression", "Olive.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Csv", "Olive.CSV\Olive.Csv.csproj", "{50ABA031-EAD6-4554-AC73-8BCA56C637B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Olive.Excel\Olive.Export.csproj", "{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.GeoLocation", "Olive.GeoLocation\Olive.GeoLocation.csproj", "{253531A7-A460-4D61-9A85-A3E29B33AA94}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Globalization", "Olive.Mvc.Globalization\Olive.Globalization.csproj", "{5EE54E7F-07C7-4966-9EFA-5E2252206B77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Globalization", "Olive.Globalization\Olive.Globalization.csproj", "{5EE54E7F-07C7-4966-9EFA-5E2252206B77}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PDF", "Olive.PDF\Olive.PDF.csproj", "{5B7D4B8F-66B2-4A74-A42F-37298CF1878F}"
 EndProject
@@ -130,13 +128,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.EventBus", "Olive.EventBus\Olive.EventBus.csproj", "{CE18C25B-E11F-429F-A3B3-F23C30B00731}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.EventBus", "Olive.Aws.Sqs\Olive.Aws.EventBus.csproj", "{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.EventBus", "Olive.Aws.EventBus\Olive.Aws.EventBus.csproj", "{0E4F7C8B-D7C4-4EFF-9163-0DD377E7CAF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication", "Olive.Entities.Data.Replication\Olive.Entities.Data.Replication.csproj", "{BFDA766C-CEA4-4318-86B4-F3E094B7B502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Log.EventBus", "Olive.Log.EventBus\Olive.Log.EventBus.csproj", "{E107920A-21F0-43C4-93BE-47CE0F2797C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Log.EventBus", "Olive.Log.EventBus\Olive.Log.EventBus.csproj", "{E107920A-21F0-43C4-93BE-47CE0F2797C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.ObjectDataProvider", "Olive.Entities.ObjectDataProvider\Olive.Entities.ObjectDataProvider.csproj", "{546A6341-7E5D-4482-8103-F6E579E0F41C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Olive.Export\Olive.Export.csproj", "{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,10 +168,6 @@ Global
 		{50ABA031-EAD6-4554-AC73-8BCA56C637B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50ABA031-EAD6-4554-AC73-8BCA56C637B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50ABA031-EAD6-4554-AC73-8BCA56C637B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6C2B0FC-8C65-4AD9-A50F-21484D0E9F06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{253531A7-A460-4D61-9A85-A3E29B33AA94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{253531A7-A460-4D61-9A85-A3E29B33AA94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{253531A7-A460-4D61-9A85-A3E29B33AA94}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -351,17 +347,18 @@ Global
 		{BFDA766C-CEA4-4318-86B4-F3E094B7B502}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFDA766C-CEA4-4318-86B4-F3E094B7B502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFDA766C-CEA4-4318-86B4-F3E094B7B502}.Release|Any CPU.Build.0 = Release|Any CPU
-
 		{E107920A-21F0-43C4-93BE-47CE0F2797C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E107920A-21F0-43C4-93BE-47CE0F2797C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E107920A-21F0-43C4-93BE-47CE0F2797C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E107920A-21F0-43C4-93BE-47CE0F2797C7}.Release|Any CPU.Build.0 = Release|Any CPU
-
 		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Release|Any CPU.Build.0 = Release|Any CPU
-
+		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
