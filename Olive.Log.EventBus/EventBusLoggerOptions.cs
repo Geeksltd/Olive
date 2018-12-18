@@ -10,5 +10,10 @@ namespace Olive.Log.EventBus
         /// the queue url
         /// </summary>
         public string QueueUrl { set; get; }
+
+        /// <summary>
+        /// the Source: Service,...
+        /// </summary>
+        public string Source { set; get; }
     }
 }

@@ -66,13 +66,13 @@ namespace Olive.Logging
             }
         }
 
-        public void AddMessage(DateTimeOffset timestamp, string message)
+        public void AddMessage(DateTimeOffset timestamp, string message, int severity = 0)
         {
             if (!MessageQueue.IsAddingCompleted)
             {
                 try
                 {
-                    MessageQueue.Add(new LogMessage { Message = message, Timestamp = timestamp }, CancellationTokenSource.Token);
+                    MessageQueue.Add(new LogMessage { Message = message, Timestamp = timestamp , Severity = severity }, CancellationTokenSource.Token);
                 }
                 catch
                 {

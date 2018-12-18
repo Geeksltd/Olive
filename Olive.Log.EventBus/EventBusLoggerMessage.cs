@@ -17,5 +17,7 @@ namespace Olive.Log.EventBus
         public DateTime PublishDateTime { set; get; }
 
         public string DeduplicationId => Guid.NewGuid().ToString();
+
+        public string Source { set; get; }
     }
 }
