@@ -42,9 +42,6 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Entities.Data.SQLite
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Olive.Entities.ObjectDataProvider
-if ERRORLEVEL 1 (goto error)
-
 dotnet build Olive.Entities.Data.SqlServer
 if ERRORLEVEL 1 (goto error)
 
