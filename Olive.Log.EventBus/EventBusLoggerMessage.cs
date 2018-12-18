@@ -10,9 +10,8 @@ namespace Olive.Logging
         /// </summary>
         public IEnumerable<LogMessage> Messages { set; get; }
 
-        /// <summary>
-        /// The DateTime when this message published
-        /// </summary>
+        public string Source { set; get; }
+
         public DateTime Date { set; get; }
     }
 }

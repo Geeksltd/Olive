@@ -28,9 +28,8 @@
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Olive.Entities">
+    <Reference Include="Olive.EventBus">
       <HintPath>..\bin\netstandard2.0\Olive.EventBus.dll</HintPath>
-      <Private>false</Private>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
