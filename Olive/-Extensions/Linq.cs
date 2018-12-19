@@ -583,6 +583,24 @@ namespace Olive
         }
 
         /// <summary>
+        /// Returns distinct elements from a sequence by using the default equality comparer to compare values.
+        /// </summary>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static IEnumerable<string> Distinct(this IEnumerable<string> list,bool caseSensitive)
+        {
+            var keys =new List<string>();
+
+            foreach (var item in list)
+            {
+                if (keys.Contains(item,caseSensitive)) continue;
+
+                keys.Add(item);
+                yield return item;
+            }
+        }
+        
+        
+        /// <summary>
         /// Determines of this list contains all items of another given list.
         /// </summary>        
         /// <param name="items">Determines the list of items which checked with the main list.</param>
