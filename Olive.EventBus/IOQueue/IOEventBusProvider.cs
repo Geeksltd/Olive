@@ -6,7 +6,6 @@ namespace Olive
     {
         ConcurrentDictionary<string, IOEventBusQueue> Queues = new ConcurrentDictionary<string, IOEventBusQueue>();
 
-        public IEventBusQueue Provide(string queueUrl)
-            => Queues.GetOrAdd(queueUrl, x => new IOEventBusQueue(queueUrl));
+        public IEventBusQueue Provide(string queueUrl) => Queues.GetOrAdd(queueUrl, x => new IOEventBusQueue(x));
     }
 }

@@ -2,6 +2,7 @@
 using Amazon.SQS.Model;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace Olive.Aws
@@ -22,10 +23,14 @@ namespace Olive.Aws
             var request = new SendMessageRequest
             {
                 QueueUrl = QueueUrl,
-                MessageBody = JsonConvert.SerializeObject(message),
-                MessageDeduplicationId = message.DeduplicationId,
-                MessageGroupId = "Default"
+                MessageBody = JsonConvert.SerializeObject(message)
             };
+
+            if (QueueUrl.EndsWith(".fifo"))
+            {
+                request.MessageDeduplicationId = message.DeduplicationId;
+                request.MessageGroupId = "Default";
+            }
 
             var response = await Client.SendMessageAsync(request);
             return response.MessageId;
@@ -45,6 +50,8 @@ namespace Olive.Aws
 
     public class EventBusProvider : IEventBusQueueProvider
     {
-        public IEventBusQueue Provide(string queueUrl) => new EventBusQueue(queueUrl);
+        static ConcurrentDictionary<string, IEventBusQueue> Cache = new ConcurrentDictionary<string, IEventBusQueue>();
+
+        public IEventBusQueue Provide(string queueUrl) => Cache.GetOrAdd(queueUrl, u => new EventBusQueue(u));
     }
 }

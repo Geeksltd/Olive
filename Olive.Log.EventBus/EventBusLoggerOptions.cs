@@ -5,7 +5,7 @@
         public string QueueUrl { set; get; }
 
         /// <summary>
-        /// the Source: Service,...
+        /// The Source of the log. This is normally the name of the Microservice that generated the log.
         /// </summary>
         public string Source { set; get; }
     }

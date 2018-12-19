@@ -9,7 +9,7 @@ namespace Olive
     public interface IEventBusMessage
     {
         /// <summary>
-        /// The ID used by queue systems to deduplicate a message (in cases of double delivery).
+        /// The ID used by queue systems to deduplicate a message in a FIFO (first-in-first-out) queue. (in cases of double delivery).
         /// </summary>
         string DeduplicationId { get; }
     }
