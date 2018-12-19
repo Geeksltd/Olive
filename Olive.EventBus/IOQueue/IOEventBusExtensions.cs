@@ -8,5 +8,14 @@ namespace Olive
         {
             return @this.AddTransient<IEventBusQueueProvider, IOEventBusProvider>();
         }
+
+        /// <summary>
+        /// Registers a command-based event bus message handler that handles itself.
+        /// </summary>
+        public static void Subscribe<TCommandMessage>(this EventBusQueue<TCommandMessage> @this)
+            where TCommandMessage : EventBusCommandMessage, new()
+        {
+            @this.Subscribe(x => new TCommandMessage().Process());
+        }
     }
 }
