@@ -150,7 +150,7 @@ namespace Olive.Entities.ObjectDataProvider.V2
             var result = new List<IDataParameter>();
 
             foreach (var prop in MetaData.Properties)
-                result.Add(Access.CreateParameter(prop.ParameterName, prop.PropertyInfo.GetValue(record) ?? DBNull.Value));
+                result.Add(Access.CreateParameter(prop.ParameterName, prop.GetValue(record) ?? DBNull.Value));
 
             return result.ToArray();
         }
@@ -179,7 +179,7 @@ namespace Olive.Entities.ObjectDataProvider.V2
                 var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
 
                 if(value != DBNull.Value)
-                    property.PropertyInfo.SetValue(entity, Convert.ChangeType(value, property.NonGenericType));
+                    property.SetValue(entity, value);
             }
         }
 
