@@ -15,15 +15,28 @@ The process is very straight forward.
 
 For example:
 ```c#
-public class FooCommand : EventBusCommandMessage
+namespace BarService
 {
-    public string Argument1;
-    public int Argument2;
-    
-    public override async Task Process()
+    public class FooCommand : EventBusCommandMessage
     {
-         Console.WriteLine($"Command received. I will foo with {Argument1} and {Argument2}.");
-         ...
+        public string Argument1;
+        public int Argument2;
+        
+        public override async Task Process()
+        {
+             Console.WriteLine($"Command received. I will foo with {Argument1} and {Argument2}.");
+             ...
+        }
     }
 }
 ```
+To register the command, you need to add the following to your `Startup.cs` file:
+```c#
+public override async Task OnStartUpAsync(IApplicationBuilder app)
+{
+    ...
+    EventBus.Queue<BarService.FooCommand>().Subscribe();
+}
+```
+
+## Queue Configuration
