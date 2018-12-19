@@ -75,6 +75,8 @@ Of course with the above manual approach, you may end up in a situation where th
 
 To generate the nuget package, run the following command.
 ```
-c:\> dotnet tool install -g generate-eventbus-command-client
-c:\> generate-eventbus-command-client 
+C:\> dotnet tool install -g generate-eventbus-command-proxy
+
+C:\> generate-eventbus-command-proxy /assembly:C:\Projects\...\website.dll /command:FooCommand /out:C:\...\PrivatePackages
 ```
+Or, if you want to directly publish the generated nuget package to a nuget server, instead of `/out:...` parameter add `/push:http://my-nuget-server.com/nuget /apiKey:...`
