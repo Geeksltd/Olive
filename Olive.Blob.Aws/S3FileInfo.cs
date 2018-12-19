@@ -10,8 +10,7 @@ namespace Olive.BlobAws
     public class S3FileInfo : IFileInfo
     {
         readonly IAmazonS3 amazonS3;
-        readonly string bucketName;
-        readonly string key;
+        readonly string bucketName, key;
 
         GetObjectResponse fileObject;
         bool? exists;

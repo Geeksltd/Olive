@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Olive;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Olive;
 
 namespace Olive.Logging
 {
@@ -12,7 +12,6 @@ namespace Olive.Logging
     {
         const string ConfigKey = "Logging:EventBus:QueueUrl";
         const string SourceKey = "Logging:EventBus:Source";
-        IEventBusQueue Queue;
         string QueueUrl;
         string Source;
 
@@ -38,7 +37,7 @@ namespace Olive.Logging
 
         public override Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken token)
         {
-            return Olive.EventBus.Queue(QueueUrl).Publish(new EventBusLoggerMessage { Messages = messages, Date = DateTime.Now, Source = Source });
+            return EventBus.Queue(QueueUrl).Publish(new EventBusLoggerMessage { Messages = messages, Date = DateTime.Now, Source = Source });
         }
     }
 }
