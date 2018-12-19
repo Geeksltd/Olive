@@ -71,6 +71,7 @@ namespace BarService
 }
 ```
 
+## Generating a proxy
 Of course with the above manual approach, you may end up in a situation where the class schemas across the handler and calling services go out of sync when changes occure. To simplify this process and also guarantee **consistency of the schema**, you can generate a client nuget package directly from the handler service and use that in the calling services. That way you won't have to copy the command message schema code.
 
 To generate the nuget package, run the following command.
@@ -80,3 +81,21 @@ C:\> dotnet tool install -g generate-eventbus-command-proxy
 C:\> generate-eventbus-command-proxy /assembly:C:\Projects\...\website.dll /command:FooCommand /out:C:\...\PrivatePackages
 ```
 Or, if you want to directly publish the generated nuget package to a nuget server, instead of `/out:...` parameter add `/push:http://my-nuget-server.com/nuget /apiKey:...`
+
+The generated proxy dll will generate the class, plus a method named `Publish()` for convinience. For example:
+```c#
+namespace BarService
+{
+    public class FooCommand : EventBusMessage
+    {
+        public string Argument1 {get; set;}
+        public int Argument2 {get; set;}
+        
+        public Task Publish () => EventBus.Queue<BarService.FooCommand>().Publish(this);
+    }
+}
+```
+So that you can simply invoke the command by writing the following in the services:
+```c#
+await new BarService.FooCommand { ... }.Publish();
+```
