@@ -40,3 +40,31 @@ public override async Task OnStartUpAsync(IApplicationBuilder app)
 ```
 
 ## Queue Configuration
+By convention, the queue url is expected in your `appSettings.json` file under the following key:
+```json
+...
+"EventBus": {
+    "Queues": {
+        "BarService.FooCommand": {
+            "Url": "https://sqs.xxx.amazonaws.com/.../BarService-FooCommand"
+        }
+},
+```
+The above queue configuration should be added to the config file of both the service that handles the command, as well as each service that invokes it.
+
+## Invoking a command
+To invoke a command in other services, all you need to do is to get a handle to the same queue and invoke the `Publish` command.
+```c#
+await EventBus.Queue<BarService.FooCommand>().Publish(new BarService.FooCommand { ... });
+```
+Of course for the above to compile, you will need the command schema defined in the calling service as well. Note that the Process method will not be required. For the above example you can add the following class:
+```c#
+namespace BarService
+{
+    public class FooCommand : EventBusCommandMessage
+    {
+        public string Argument1;
+        public int Argument2;
+    }
+}
+```
