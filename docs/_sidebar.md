@@ -68,6 +68,7 @@
     * [Api Proxy](Api/Proxy.md)
     * [Api Versioning](Api/Versioning.md)
     * [EventBus](Api/EventBus.md)
+    * [EventBus Commands](Api/EventBusCommands.md)
     * [Data Replication](Api/Replication.md)
 
 * Olive Javascript Fx (MvcJS)
