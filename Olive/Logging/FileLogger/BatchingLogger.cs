@@ -6,8 +6,8 @@ namespace Olive.Logging
 {
     public class BatchingLogger : ILogger
     {
-        BatchingLoggerProvider Provider;
-        string Category;
+        protected BatchingLoggerProvider Provider;
+        protected string Category;
 
         public BatchingLogger(BatchingLoggerProvider provider, string category)
         {
@@ -19,7 +19,7 @@ namespace Olive.Logging
 
         public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
-        public void Log<TState>(DateTimeOffset timestamp, LogLevel logLevel, EventId _, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public virtual void Log<TState>(DateTimeOffset timestamp, LogLevel logLevel, EventId _, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel)) return;
 
@@ -37,7 +37,7 @@ namespace Olive.Logging
             Provider.AddMessage(timestamp, r.ToString(), (int)logLevel);
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             Log(DateTimeOffset.Now, logLevel, eventId, state, exception, formatter);
         }
