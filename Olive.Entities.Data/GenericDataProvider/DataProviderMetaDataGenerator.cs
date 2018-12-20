@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
     internal class DataProviderMetaDataGenerator
     {

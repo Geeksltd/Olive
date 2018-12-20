@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
     public class DataProviderMetaData
     {

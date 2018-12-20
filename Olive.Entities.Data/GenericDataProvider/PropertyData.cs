@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
     public class PropertyData
     {

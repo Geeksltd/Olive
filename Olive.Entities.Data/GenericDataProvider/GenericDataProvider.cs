@@ -8,9 +8,9 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
-    public class ObjectDataProvider<TConnection, TDataParameter> : DataProvider<TConnection, TDataParameter>
+    public class GenericDataProvider<TConnection, TDataParameter> : DataProvider<TConnection, TDataParameter>
          where TConnection : DbConnection, new()
          where TDataParameter : IDbDataParameter, new()
     {
@@ -33,7 +33,7 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public string InsertCommand { get; }
 
-        public ObjectDataProvider(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
+        public GenericDataProvider(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
             : base(cache)
         {
             entityType = type;

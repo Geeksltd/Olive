@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Olive.Entities.Data;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
     public abstract class SqlCommandGenerator
     {

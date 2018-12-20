@@ -4,11 +4,11 @@ using System.Data;
 using System.Data.Common;
 using System.Text;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
-    public static class ObjectDataProviderExtensions
+    public static class GenericDataProviderExtensions
     {
-        public static ObjectDataProvider<TConnection, TDataParameter> GetProvider<TConnection, TDataParameter>(
+        public static GenericDataProvider<TConnection, TDataParameter> GetProvider<TConnection, TDataParameter>(
                 this DataProviderMetaData @this, ICache cache, SqlCommandGenerator sqlCommandGenerator)
             where TConnection : DbConnection, new()
             where TDataParameter : IDbDataParameter, new()
@@ -16,12 +16,12 @@ namespace Olive.Entities.ObjectDataProvider.V2
             return GetProvider<TConnection, TDataParameter>(@this.Type, cache, sqlCommandGenerator);
         }            
         
-        public static ObjectDataProvider<TConnection, TDataParameter> GetProvider<TConnection, TDataParameter>(
+        public static GenericDataProvider<TConnection, TDataParameter> GetProvider<TConnection, TDataParameter>(
                 this Type @this, ICache cache, SqlCommandGenerator sqlCommandGenerator)
             where TConnection : DbConnection, new()
             where TDataParameter : IDbDataParameter, new()
         {
-            return ObjectDataProviderFactory<TConnection, TDataParameter>.Get(@this, cache, sqlCommandGenerator);
+            return GenericDataProviderFactory<TConnection, TDataParameter>.Get(@this, cache, sqlCommandGenerator);
         }
     }
 }
