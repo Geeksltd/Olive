@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
     internal class DataProviderMetaDataGenerator
     {
@@ -28,46 +28,46 @@ namespace Olive.Entities.ObjectDataProvider.V2
             var infos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 
             foreach (var (info, dbProp) in FilterProperties(infos))
-            {
-                var targetProp = dbProp ?? info;
-
-                yield return new PropertyData
-                {
-                    IsAutoNumber = AutoNumberAttribute.IsAutoNumber(info),
-                    IsCustomPrimaryKey = PrimaryKeyAttribute.IsPrimaryKey(info),
-                    Name = info.Name,
-                    ParameterName = info.Name,
-                    PropertyInfo = targetProp,
-                    NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType
-                };
-            }
+                yield return GetUserDefinedPropertyData(info, dbProp);
 
             if (infos.None(t => PrimaryKeyAttribute.IsPrimaryKey(t)))
-            {
-                var info = type.GetProperty(PropertyData.DEFAULT_ID_COLUMN);
-                yield return new PropertyData
-                {
-                    Name = PropertyData.DEFAULT_ID_COLUMN,
-                    ParameterName = PropertyData.DEFAULT_ID_COLUMN,
-                    PropertyInfo = info,
-                    NonGenericType = info.PropertyType,
-                    IsDefaultId = true
-                };
-            }
+                yield return GetDefaultIdPropertyData(type);
 
             if (SoftDeleteAttribute.IsEnabled(type, inherit: false))
-            {
-                yield return new PropertyData
-                {
-                    Name = ".Deleted",
-                    ParameterName = "_Deleted",
-                    PropertyInfo = type.GetProperty("IsMarkedSoftDeleted"),
-                    NonGenericType = typeof(bool),
-                    IsDeleted = true
-                };
-            }
+                yield return GetDeletedPropertyData(type);
 
-            yield return new PropertyData
+            yield return GetOriginalIdPropertyData(type);
+        }
+
+        static PropertyData GetDefaultIdPropertyData(Type type)
+        {
+            var info = type.GetProperty(PropertyData.DEFAULT_ID_COLUMN);
+
+            return new PropertyData(isBlob: false)
+            {
+                Name = PropertyData.DEFAULT_ID_COLUMN,
+                ParameterName = PropertyData.DEFAULT_ID_COLUMN,
+                PropertyInfo = info,
+                NonGenericType = info.PropertyType,
+                IsDefaultId = true
+            };
+        }
+
+        static PropertyData GetDeletedPropertyData(Type type)
+        {
+            return new PropertyData(isBlob: false)
+            {
+                Name = ".Deleted",
+                ParameterName = "_Deleted",
+                PropertyInfo = type.GetProperty("IsMarkedSoftDeleted"),
+                NonGenericType = typeof(bool),
+                IsDeleted = true
+            };
+        }
+
+        static PropertyData GetOriginalIdPropertyData(Type type)
+        {
+            return new PropertyData(isBlob: false)
             {
                 Name = PropertyData.ORIGINAL_ID,
                 ParameterName = PropertyData.ORIGINAL_ID,
@@ -77,11 +77,32 @@ namespace Olive.Entities.ObjectDataProvider.V2
             };
         }
 
+        static PropertyData GetUserDefinedPropertyData(PropertyInfo info, PropertyInfo dbProp)
+        {
+            var isBlob = info.PropertyType.IsA<Blob>();
+            var targetProp = dbProp ?? info;
+            var columnName = info.Name + "_FileName".OnlyWhen(isBlob);
+
+            return new PropertyData(isBlob)
+            {
+                IsAutoNumber = AutoNumberAttribute.IsAutoNumber(info),
+                IsCustomPrimaryKey = PrimaryKeyAttribute.IsPrimaryKey(info),
+                Name = columnName,
+                ParameterName = columnName,
+                PropertyInfo = targetProp,
+                NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType,
+                AssociateType = dbProp != null ? info.PropertyType : null
+            };
+        }
+
         static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
         {
-            var nonCalculated = infos.Except(t => CalculatedAttribute.IsCalculated(t));
-            var associations = nonCalculated.Where(predicate => predicate.PropertyType.IsA<IEntity>());
-            var rest = nonCalculated.Except(associations);
+            var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p));
+
+            var nonOverriden = nonCalculated.Except(p => p.GetGetMethod() != p.GetGetMethod().GetBaseDefinition());
+
+            var associations = nonOverriden.Where(predicate => predicate.PropertyType.IsA<IEntity>());
+            var rest = nonOverriden.Except(associations);
 
             var ids = new List<PropertyInfo>();
 
@@ -116,6 +137,7 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
             return result.ToArray();
         }
+
         static bool IsNullableType(PropertyInfo property)
         {
             return property.PropertyType.IsGenericType && 

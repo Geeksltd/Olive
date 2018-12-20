@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Olive
 {
-    public interface IEventBusMessage
-    {
-        string DeduplicationId { get; }
-    }
-
+    /// <summary>
+    /// A basic implementation of IEventBusMessage with a new Guid used as DeduplicationId.
+    /// </summary>
     public abstract class EventBusMessage : IEventBusMessage
     {
         /// <summary>

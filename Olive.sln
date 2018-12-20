@@ -134,8 +134,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replica
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Log.EventBus", "Olive.Log.EventBus\Olive.Log.EventBus.csproj", "{E107920A-21F0-43C4-93BE-47CE0F2797C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.ObjectDataProvider", "Olive.Entities.ObjectDataProvider\Olive.Entities.ObjectDataProvider.csproj", "{546A6341-7E5D-4482-8103-F6E579E0F41C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Olive.Export\Olive.Export.csproj", "{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}"
 EndProject
 Global
@@ -351,10 +349,6 @@ Global
 		{E107920A-21F0-43C4-93BE-47CE0F2797C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E107920A-21F0-43C4-93BE-47CE0F2797C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E107920A-21F0-43C4-93BE-47CE0F2797C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{546A6341-7E5D-4482-8103-F6E579E0F41C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Release|Any CPU.ActiveCfg = Release|Any CPU

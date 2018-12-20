@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Olive.Entities.ObjectDataProvider.V2
+namespace Olive.Entities.Data
 {
     public class DataProviderMetaData
     {
@@ -51,6 +51,8 @@ namespace Olive.Entities.ObjectDataProvider.V2
         public IEnumerable<PropertyData> UserDefienedAndIdProperties => Properties?.Where(p => p.IsUserDefined || p.IsDefaultId);
 
         public IEnumerable<PropertyData> UserDefienedProperties => Properties?.Where(p => p.IsUserDefined);
+
+        public IEnumerable<PropertyData> AssociateProperties => Properties?.Where(p => p.AssociateType != null);
 
         public string IdColumnName
         {

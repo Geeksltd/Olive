@@ -21,9 +21,4 @@ namespace Olive
         /// </summary>
         Task Purge();
     }
-
-    public interface IEventBusQueueProvider
-    {
-        IEventBusQueue Provide(string queueUrl);
-    }
 }
