@@ -52,6 +52,8 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public IEnumerable<PropertyData> UserDefienedProperties => Properties?.Where(p => p.IsUserDefined);
 
+        public IEnumerable<PropertyData> AssociateProperties => Properties?.Where(p => p.AssociateType != null);
+
         public string IdColumnName
         {
             get

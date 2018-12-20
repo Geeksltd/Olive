@@ -19,6 +19,7 @@ namespace Olive.Entities.ObjectDataProvider.V2
         string Fields;
         string TablesTemplate;
         Dictionary<string, string> ColumnMapping = new Dictionary<string, string>();
+        Dictionary<string, string> SubqueryMapping = new Dictionary<string, string>();
 
         public SqlCommandGenerator SqlCommandGenerator { get; }
 
@@ -47,24 +48,15 @@ namespace Olive.Entities.ObjectDataProvider.V2
             PrepareTableTemplate();
             PrepareFields();
             PrepareColumnMappingDictonary();
+            PrepareSubqueryMappingDictonary();
         }
 
-        public override string MapColumn(string propertyName) => ColumnMapping[propertyName];
-        //{
-        //    if (propertyName == "ID" || MetaData.Properties.Any(p => p.IsPrimaryKey))
-        //        return GetSqlCommandColumn(MetaData, MetaData.Properties.First(p => p.IsPrimaryKey));
+        public override string MapColumn(string propertyName)
+        {
+            if(ColumnMapping.TryGetValue(propertyName, out string result)) return result;
 
-        //    foreach (var prop in MetaData.Properties)
-        //        if (prop.Name == propertyName)
-        //            return GetSqlCommandColumn(MetaData, prop);
-
-        //    foreach (var parent in MetaData.BaseClassesInOrder)
-        //        foreach (var prop in parent.Properties)
-        //            if (prop.Name == propertyName)
-        //                return GetSqlCommandColumn(parent, prop);
-
-        //    throw new ArgumentOutOfRangeException(nameof(propertyName));
-        //}
+            return $"{MetaData.TableAlias}.[{propertyName}]";
+        }
 
         protected override string SafeId(string objectName)
         {
@@ -126,6 +118,14 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public override string GenerateWhere(DatabaseQuery query) =>
             SqlCommandGenerator.GenerateWhere(query);
+
+        public override string MapSubquery(string path, string parent)
+        {
+            if (SubqueryMapping.TryGetValue(path, out string value))
+                return value.FormatWith(parent, parent.Or(MetaData.TableAlias));
+
+            return base.MapSubquery(path, parent);
+        }
 
         async Task Update(IEntity record)
         {
@@ -251,6 +251,28 @@ namespace Olive.Entities.ObjectDataProvider.V2
             foreach (var parent in MetaData.BaseClassesInOrder)
                 foreach (var prop in parent.UserDefienedProperties)
                     ColumnMapping.Add(prop.Name, GetSqlCommandColumn(MetaData, prop));
+        }
+
+        void PrepareSubqueryMappingDictonary()
+        {
+            foreach (var association in MetaData.AssociateProperties)
+            {
+                var associateProvider = association.AssociateType.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator);
+
+                var alias = $"[{{0}}.{association.Name}_{association.AssociateType.Name}]";
+
+                var template = $@"SELECT {alias}.{associateProvider.MetaData.IdColumnName}
+                    FROM {associateProvider.MetaData.TableName} AS {alias}
+                    WHERE {alias}.{associateProvider.MetaData.IdColumnName} = [{{1}}].{association.Name}";
+
+                SubqueryMapping.Add(
+                    association.Name.WithSuffix(".*"),
+                    template);
+            }
+
+            foreach (var baseClass in MetaData.BaseClassesInOrder)
+                foreach (var pair in baseClass.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).SubqueryMapping)
+                    SubqueryMapping.Add(pair.Key, pair.Value);
         }
     }
 }

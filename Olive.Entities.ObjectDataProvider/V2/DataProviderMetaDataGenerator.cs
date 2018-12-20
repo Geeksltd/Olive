@@ -90,15 +90,19 @@ namespace Olive.Entities.ObjectDataProvider.V2
                 Name = columnName,
                 ParameterName = columnName,
                 PropertyInfo = targetProp,
-                NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType
+                NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType,
+                AssociateType = dbProp != null ? info.PropertyType : null
             };
         }
 
         static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
         {
-            var nonCalculated = infos.Except(t => CalculatedAttribute.IsCalculated(t));
-            var associations = nonCalculated.Where(predicate => predicate.PropertyType.IsA<IEntity>());
-            var rest = nonCalculated.Except(associations);
+            var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p));
+
+            var nonOverriden = nonCalculated.Except(p => p.GetGetMethod() != p.GetGetMethod().GetBaseDefinition());
+
+            var associations = nonOverriden.Where(predicate => predicate.PropertyType.IsA<IEntity>());
+            var rest = nonOverriden.Except(associations);
 
             var ids = new List<PropertyInfo>();
 

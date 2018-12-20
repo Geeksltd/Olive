@@ -27,6 +27,8 @@ namespace Olive.Entities.ObjectDataProvider.V2
 
         public bool IsDefaultId { get; internal set; }
 
+        public Type AssociateType { get; internal set; }
+
         public Action<IEntity, object> SetValue { get; }
 
         public Func<IEntity, object> GetValue { get; }

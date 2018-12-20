@@ -16,6 +16,6 @@ namespace Olive.Entities
         public SchemaAttribute(string schema) => Schema = schema;
 
         public static string GetSchema(Type entityType) =>
-            entityType.GetCustomAttribute<SchemaAttribute>()?.Schema;
+            entityType.GetCustomAttribute<SchemaAttribute>(inherit: false)?.Schema;
     }
 }

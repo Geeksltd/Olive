@@ -13,7 +13,15 @@ namespace Olive.Entities.ObjectDataProvider.V2
             where TConnection : DbConnection, new()
             where TDataParameter : IDbDataParameter, new()
         {
-            return ObjectDataProviderFactory<TConnection, TDataParameter>.Get(@this.Type, cache, sqlCommandGenerator);
+            return GetProvider<TConnection, TDataParameter>(@this.Type, cache, sqlCommandGenerator);
+        }            
+        
+        public static ObjectDataProvider<TConnection, TDataParameter> GetProvider<TConnection, TDataParameter>(
+                this Type @this, ICache cache, SqlCommandGenerator sqlCommandGenerator)
+            where TConnection : DbConnection, new()
+            where TDataParameter : IDbDataParameter, new()
+        {
+            return ObjectDataProviderFactory<TConnection, TDataParameter>.Get(@this, cache, sqlCommandGenerator);
         }
     }
 }
