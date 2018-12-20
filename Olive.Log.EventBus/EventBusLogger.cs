@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Text;
-using Microsoft.Extensions.Logging;
 
 namespace Olive.Logging
 {
-    public class EventBusLogger : Olive.Logging.BatchingLogger
+    public class EventBusLogger : BatchingLogger
     {
-        public EventBusLogger(EventBusLoggerProvider provider, string category)
-            : base(provider, category)
-        {
-        }
+        public EventBusLogger(EventBusLoggerProvider provider, string category) : base(provider, category) { }
 
         public override void Log<TState>(DateTimeOffset timestamp, LogLevel logLevel, EventId _, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
@@ -24,6 +20,5 @@ namespace Olive.Logging
 
             Provider.AddMessage(timestamp, r.ToString(), (int)logLevel);
         }
-        
     }
 }
