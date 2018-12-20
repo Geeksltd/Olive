@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Olive.Logging
 {
-    public class EventBusLoggerProvider : BatchingLoggerProvider
+    public class EventBusLoggerProvider : BatchingLoggerProvider, ILoggerProvider
     {
         const string ConfigKey = "Logging:EventBus:QueueUrl";
         const string SourceKey = "Logging:EventBus:Source";
@@ -47,5 +48,7 @@ namespace Olive.Logging
                 Console.WriteLine(ex.ToFullMessage());
             }
         }
+
+        ILogger ILoggerProvider.CreateLogger(string categoryName) => new EventBusLogger(this, categoryName);
     }
 }
