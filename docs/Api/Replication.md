@@ -125,6 +125,28 @@ protected override void Define()
 }
 ```
 
+### Filtering which records get exposed
+Your endpoint does not have to publish all records of the type. Just like how you limit the published fields, you may want to limit the records that get replicated to a consumer service. To achieve this, you should override a method named `Filter(...)`. For example:
+```c#
+class Customer : ExpseedType<Domain.Customer>
+{
+   protected override void Define()
+   {
+        Expose(x => x.Email);
+        Expose(x => x.Name);
+   }
+    
+   protected override async bool Filter(Domain.Customer customer) => customer.Status == customer.Approved;
+}
+```
+
+When it returns `false` for any given record, the record will not be published to the replication queue, and will simply not arrive in the destination database.
+
+**Tips:**
+- If your condition logic involves *async* code, override the `FilterAsync(...)` method instead.
+- Warning: If you return `false` for a record which has previously been published (either because the condition previously evaluated to `true` or because you didn't have the filter before), this will not *unpublish* or *update* the record, and it will remain in the destination system's database untouched.
+
+
 ---
 
 ## Generating a proxy
