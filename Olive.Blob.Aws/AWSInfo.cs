@@ -1,4 +1,5 @@
 ﻿using Amazon;
+using Amazon.S3;
 using Microsoft.Extensions.Configuration;
 
 namespace Olive.BlobAws
@@ -6,6 +7,13 @@ namespace Olive.BlobAws
     /// <summary>This class is to help the AWS Bucket</summary>
     static class AWSInfo
     {
+        static AWSInfo()
+        {
+            AmazonS3Client = new AmazonS3Client(Config.GetValue<string>("Blob:S3:awsAccessKeyId"), Config.GetValue<string>("Blob:S3:awsSecretAccessKey"), RegionEndpoint.USWest2);
+        }
+
+        internal static AmazonS3Client AmazonS3Client { get; private set; }
+
         static IConfiguration Config => Context.Current.Config;
 
         internal static string S3BucketName => Config.GetValue<string>("Blob:S3:Bucket");

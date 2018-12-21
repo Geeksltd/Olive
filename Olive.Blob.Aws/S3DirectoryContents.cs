@@ -14,23 +14,23 @@ namespace Olive.BlobAws
     /// </summary>
     public class S3DirectoryContents : IDirectoryContents
     {
-        readonly IAmazonS3 amazonS3;
-        readonly string bucketName;
-        readonly string subpath;
+        readonly IAmazonS3 AmazonS3;
+        readonly string BucketName;
+        readonly string Subpath;
 
         IEnumerable<IFileInfo> contents;
 
         /// <summary>
         /// Initializes a <see cref="S3DirectoryContents"/> instance.
         /// </summary>
-        public S3DirectoryContents(IAmazonS3 amazonS3, string bucketName, string subpath)
+        public S3DirectoryContents(string subpath)
         {
-            this.amazonS3 = amazonS3;
-            this.bucketName = bucketName;
-            this.subpath = subpath.TrimEnd('/') + "/";
+            AmazonS3 = AWSInfo.AmazonS3Client;
+            BucketName = AWSInfo.S3BucketName;
+            Subpath = subpath.TrimEnd('/') + "/";
         }
 
-        bool isRoot => subpath == "/";
+        bool IsRoot => Subpath == "/";
 
         /// <summary>
         /// True if a directory is located at the given path. 
@@ -42,10 +42,10 @@ namespace Olive.BlobAws
                 try
                 {
                     // Root folder always exists
-                    if (isRoot)
+                    if (IsRoot)
                         return true;
 
-                    amazonS3.GetObjectMetadataAsync(bucketName, subpath).Wait();
+                    AmazonS3.GetObjectMetadataAsync(BucketName, Subpath).Wait();
                     return true;
                 }
                 catch (AggregateException e)
@@ -67,33 +67,33 @@ namespace Olive.BlobAws
         /// <inheritdoc />
         public IEnumerator<IFileInfo> GetEnumerator()
         {
-            enumerateContents();
+            EnumerateContents();
             return contents.GetEnumerator();
         }
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
-            enumerateContents();
+            EnumerateContents();
             return contents.GetEnumerator();
         }
 
-        void enumerateContents()
+        void EnumerateContents()
         {
             var request = new ListObjectsV2Request()
             {
-                BucketName = bucketName,
+                BucketName = BucketName,
                 Delimiter = "/",
-                Prefix = isRoot ? "" : subpath
+                Prefix = IsRoot ? "" : Subpath
             };
-            var response = amazonS3.ListObjectsV2Async(request).Result;
+            var response = AmazonS3.ListObjectsV2Async(request).Result;
 
             var files = response.S3Objects
-                                .Where(x => x.Key != subpath)
-                                .Select(x => new S3FileInfo(amazonS3, bucketName, x.Key));
+                                .Where(x => x.Key != Subpath)
+                                .Select(x => new S3BlobFileInfo(x.Key));
 
             var directories = response.CommonPrefixes
-                                      .Select(x => new S3FileInfo(amazonS3, bucketName, x));
+                                      .Select(x => new S3BlobFileInfo(x));
 
             contents = directories.Concat(files);
         }
