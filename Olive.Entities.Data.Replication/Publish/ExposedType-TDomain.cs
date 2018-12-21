@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
-    public abstract class ExposedType<TDomain> : ExposedType where TDomain : IEntity
+    public abstract class ExposedType<TDomain> : ExposedType where TDomain : class, IEntity
     {
         Type domainType;
+        ILogger Logger;
 
         public override Type DomainType => domainType ?? (domainType = GetType().BaseType.GenericTypeArguments.Single());
 
@@ -26,22 +28,28 @@ namespace Olive.Entities.Replication
 
         internal override void Start()
         {
-            var log = Log.For(this);
-            GlobalEntityEvents.InstanceSaved.Handle(async x =>
-            {
-                log.Debug("Instance saved. Initiating publish checks.");
+            Logger = Log.For(this);
+            GlobalEntityEvents.InstanceSaved.Handle(x => OnInstanceSaved(x.Entity));
+        }
 
-                if (!x.Entity.GetType().IsA(DomainType))
-                {
-                    log.Debug("Publish aborted: " + x.Entity.GetType().Name + " is not of type " + DomainType.Name);
-                    return;
-                }
-                else
-                {
-                    log.Debug("Publishing the " + x.Entity.GetType().Name + " record of " + x.Entity.GetId());
-                    await Queue.Publish(await ToMessage(x.Entity));
-                }
-            });
+        async Task OnInstanceSaved(IEntity item)
+        {
+            Logger.Debug("Instance saved. Initiating publish checks.");
+
+            if (!(item is TDomain entity))
+            {
+                Logger.Debug("Publish aborted: " + item.GetType().Name + " is not of type " + DomainType.Name);
+                return;
+            }
+
+            if (!Filter(entity) || !(await FilterAsync(entity)))
+            {
+                Logger.Debug("Skipped publishing the " + entity.GetType().Name + " record of " + entity.GetId() + ". It does not match the filter.");
+                return;
+            }
+
+            Logger.Debug("Publishing the " + entity.GetType().Name + " record of " + entity.GetId());
+            await Queue.Publish(await ToMessage(entity));
         }
 
         public ExposedPropertyInfo Expose<T>(Expression<Func<TDomain, T>> field)
@@ -89,5 +97,17 @@ namespace Olive.Entities.Replication
             foreach (var item in await Context.Current.Database().GetList<TDomain>())
                 await Queue.Publish(await ToMessage(item)); // TODO: Should this be done in parallel batches?
         }
+
+        /// <summary>
+        /// If it returns false for any given record, it will not be published in the replication queue.
+        /// Warning: This will not unpublish or modify a record that was previously published, and which no longers meet the filter criteria.
+        /// </summary>
+        protected virtual Task<bool> FilterAsync(TDomain record) => Task.FromResult(true);
+
+        /// <summary>
+        /// If it returns false for any given record, it will not be published in the replication queue.
+        /// Warning: This will not unpublish or modify a record that was previously published, and which no longers meet the filter criteria.
+        /// </summary>
+        protected virtual bool Filter(TDomain record) => true;
     }
 }
