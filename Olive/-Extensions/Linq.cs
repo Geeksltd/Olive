@@ -684,6 +684,34 @@ namespace Olive
         }
 
         /// <summary>
+        /// Gets the element after a specified item in this list.
+        /// If the specified element does not exist in this list, an ArgumentException will be thrown.
+        /// If the specified element is the last in the list, NULL will be returned.
+        /// </summary>        
+        /// <param name="item">The specified item.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static string GetElementAfter(this IEnumerable<string> @this, string item, bool caseSensitive) 
+        {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+
+            if (caseSensitive==false)
+            {
+                item = item.ToLower();
+                @this = @this.Select(x => x.ToLower());
+            }
+
+            var index = @this.IndexOf(item);
+            if (index == -1)
+                throw new ArgumentException("The specified item does not exist to this list.");
+
+            if (index == @this.Count() - 1) return null;
+
+            return @this.ElementAt(index + 1);
+        }
+        
+        
+        /// <summary>
         /// Gets the element before a specified item in this list.
         /// If the specified element does not exist in this list, an ArgumentException will be thrown.
         /// If the specified element is the first in the list, NULL will be returned.
