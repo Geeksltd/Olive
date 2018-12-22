@@ -195,6 +195,18 @@ namespace Olive
         /// <summary>
         /// Gets all items of this list except those meeting a specified criteria.
         /// </summary>
+        /// <param name="items">The list of  items which are not returned.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static IEnumerable<string> Except(this IEnumerable<string> list, bool caseSensitive = true, params string[] items)
+        {
+            if (items == null) return list;
+
+            return list.Where(x => !items.Contains(x,caseSensitive));
+        }
+        
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
         /// <param name="itemsToExclude">The list of  items which are not returned.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, List<T> itemsToExclude) => @this.Except(itemsToExclude.ToArray());
 
