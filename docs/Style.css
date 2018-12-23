@@ -1,19 +1,14 @@
-.markdown-section code,
-.markdown-section pre,
-.markdown-section pre > code {
-    color: #eee; /* default color for elements not styled by prism theme */
-    background-color: #2d2d2d; /* dark background, because vue.css modify it */
+.markdown-section pre, .markdown-section pre > code {
+    color: #eee; 
+    background-color: #2d2d2d;
     line-height: 1.1rem;
-    padding: 3px 5px;
-}
-
-.markdown-section pre > code {
     padding: 8px;
 }
 
-/* because the bgcolor change in previous css rule. font-color when using inline code tag */
 .markdown-section code {
-    color: #eccb84; 
+    color: #000;
+    background: #e3e8e8;
+    padding: 2px 4px;
 }
 
 .sidebar li li { margin: 0; line-height: 22px; color:red; font-size: 13px;}
