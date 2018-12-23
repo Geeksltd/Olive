@@ -15,9 +15,9 @@
 .sidebar-nav > ul > li > ul { margin-left: 0; }
 .sidebar li li { margin: 0; line-height: 22px; color:red; font-size: 11pt;}
 .sidebar li li li { color: #203d3b; }
-.sidebar li li li a { color: #203d3b; }
+.sidebar li li li a { color: #007ddb; }
+.sidebar li li li li a { color: #999; }
 
 .sidebar li > p { margin-top: 15px; font-size:14pt; }
-.sidebar ul li a {font-size: 13px;}
 
 .sidebar ul li.active > a { display:inline-block; background: #42AAA9; color:#fff; border-radius: 12px; padding: 0 10px; margin-left:-11px; font-weight:normal}
