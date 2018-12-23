@@ -34,5 +34,5 @@
 .markdown-section h1 { font-size: 3rem; margin: 3rem 0; }
 .markdown-section h2 { background: #eee; padding: 12px; } 
 .markdown-section h3 { margin-top: 50px; }
-.markdown-section h4 { margin-bottom: 0; }
+.markdown-section h4 { margin-bottom: 0; margin-top: 40px}
 .markdown-section blockquote p { font-weight: normal; }
