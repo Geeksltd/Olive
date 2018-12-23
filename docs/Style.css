@@ -12,6 +12,7 @@
     padding: 2px 4px;
 }
 
+.sidebar-nav > ul > li > ul { margin-left: 0; }
 .sidebar li li { margin: 0; line-height: 22px; color:red; font-size: 11pt;}
 .sidebar li li li { color: #203d3b; }
 .sidebar li li li a { color: #203d3b; }
