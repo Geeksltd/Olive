@@ -10,7 +10,7 @@ Initially by running a project, *Olive framework* load `olivePage.js`. [olivePag
 
 #### olivePage.ts
 
-```TS
+```typescript
 import Config from "olive/config"
 [...]
 
@@ -48,7 +48,7 @@ export default class OlivePage {
 
 When user click on any navigation links, a jQery Ajax `get` call will be sent to the server from [ajaxRedirect](https://github.com/Geeksltd/Olive.MvcJs/blob/master/src/mvc/ajaxRedirect.ts#L42) and depending on what has been configured in the project page, by calling `Layout(Layouts.FrontEnd);` method M# will use selected template, for example, in `FrontEnd` template M# decide that is this request an Ajax call or not and set page layout accordingly.
 
-```HTML
+```html
 @{Layout = Request.IsAjaxCall() ? null : "~/Views/Layouts/FrontEnd.Container.cshtml";}
 @{ var leftMenu = ViewData["LeftMenu"].ToStringOrEmpty(); }
 
