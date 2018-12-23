@@ -6,8 +6,7 @@ Comments have been added to explain each step.
 - The context in which this batch file is executed is the `Jenkins workspace` for the project, which looks similar to your local project directory. 
 - All paths are relative to the project workspace unless an absolute path is specified.
 
-```bat
-
+```batch
 
 @echo off
 
