@@ -3,6 +3,8 @@
 .markdown-section pre > code {
     color: #eee; /* default color for elements not styled by prism theme */
     background-color: #2d2d2d; /* dark background, because vue.css modify it */
+    line-height: 1.1rem;
+    padding: 3px 5px;
 }
 
 /* because the bgcolor change in previous css rule. font-color when using inline code tag */
