@@ -3,6 +3,7 @@
     background-color: #2d2d2d;
     line-height: 1.1rem;
     padding: 8px;
+    white-space: pre-wrap;
 }
 
 .markdown-section code {
