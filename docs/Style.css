@@ -25,10 +25,11 @@
 
 
 .markdown-section blockquote {
-    background: #f9f5d0;
+    background: #faf8e0;
     color:#222;
     border: none;
     padding: 1px 15px;
-    box-shadow: #000 0 2px 10px -4px;    
+    box-shadow: #000 0 2px 10px -4px;
+    margin: 0;
 }
 .markdown-section blockquote p { font-weight: normal; }
