@@ -11,7 +11,7 @@ Now add `using Olive;` in top of your csharp file and start using `Olive.Compres
 
 It's really easy to compress a folder. Just make a **DirectoryInfo** object then make a compressed file using `Compress()`extension method. Here is a full example:
 
-```cs
+```csharp
 var folder = new DirectoryInfo("e:\\somewhere");
 var file = new FileInfo("e:\\somewhereelse\\something.zip");
 folder.Compress(CompressionFormat.Zip, file, overwrite: true);
@@ -23,7 +23,7 @@ You can compress your folder either in formats of **Zip** , **GZip** and **Tar**
 
 You can decompress your compressed file into a directory by making a **FileInfo** object then decompress it into a directory using `decompress()`extension method; Here is an example:
 
-```cs
+```csharp
 var file = new FileInfo("e:\\somewhereelse\\something.zip");
 var folder = new DirectoryInfo("e:\\somewhere");
 file.Decompress(folder);
