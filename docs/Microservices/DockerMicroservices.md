@@ -89,3 +89,51 @@ When building Docker images for developers, Microsoft focused on the following m
 - Images used to __develop and build__ .NET Core apps.
 - Images used to __run__ .NET Core apps.
 Why multiple images? When developing, building, and running containerized applications, you usually have different priorities. By providing different images for these separate tasks, Microsoft helps optimize the separate processes of developing, building, and deploying apps. 
+
+### Base OS image for development
+During development, what is important is how fast you can iterate changes, and the ability to debug the changes. The size of the image is not as important. 
+
+For example you can use the development ASP.NET Core image [(microsoft/aspnetcore-build)](https://hub.docker.com/r/microsoft/aspnetcore-build/) during development which includes the compiler, npm, Gulp, and Bower.  
+
+You do not deploy this image to production. But it would be used in your continuous integration (CI) environment. Rather than manually installing all your application dependencies directly on a build server, the build agent (e.g. Jenkins) would instantiate a .NET Core build image with all the dependencies required to build the application. This simplifies your CI environment and makes it much more predictable.  
+
+### Base OS image for production
+What is important in production is how fast you can deploy and start your containers based on a production .NET Core image. Therefore, the runtime-only image based on [microsoft/aspnetcore](https://hub.docker.com/r/microsoft/aspnetcore/) is small so that it can travel quickly across the network from your Docker registry to your Docker hosts. The contents are ready to run, enabling the fastest time from starting the container to processing results. 
+
+## State and data persistence 
+In most cases, you can think of a container as an instance of a process. A process does not maintain persistent state. While a container can write to its local storage, that should not be used unless the data is temporary. Assuming that an instance will be around indefinitely would be like assuming that a single location in memory will be durable, which is not the case. Containers can be destroyed at any time.
+
+### Databases
+To persist business data, you should use a reliable database service in the local network or a cloud database service such as Amazon RDS, Azure SQL Database, etc. During development you can also use an instance of SQL Server running on the host dev machine, which is accessed by your containerized apps.
+
+### Long term durable files (e.g. Business Documents)
+To storage files and documents, you should normally also use a cloud service such as AWS S3 or Azure File Storage service.
+
+### Short term durable files
+Docker allows you to use the file system of the host computer (the host machine on which the docker container is running) inside a Container running on the same computer.
+
+**Bind mounts** can map to any folder in the host filesystem, In some cases, such as when you don’t trust the docker image, this can pose a security risk as a container could access sensitive OS folders. So your default choice should be Volumes.
+
+**Volumes** are directories mapped from the host OS to directories in containers. When code in the container has access to the directory, that access is actually to a directory on the host OS. This directory is not tied to the lifetime of the container itself, Data volumes are designed to persist data independently of the life of the container. If you delete a container or an image from the Docker host, the data persisted in the data volume is not deleted.  
+
+Volumes can be named or anonymous (the default). Named volumes make it easy to share data between containers.
+
+**NOTE:** Volumes are limited to the host machine that runs the Docker host. It is not possible to use data shared between containers that run on different Docker host computers or VMs, while for scalability you need the ability to run your containers on multiple host computers and VMs. In addition, when Docker containers are managed by an orchestrator, containers might “move” between hosts, So for most scenarios you should use a cloud file storage service. But volumes are a good mechanism to work with temp files, logs, trace files or similar that will not impact business data consistency.
+
+![annotation 2018-12-27 193153](https://user-images.githubusercontent.com/1321544/50486198-19ca0280-0a0e-11e9-87f8-f750b6ca57df.jpg)
+
+## Database server running as a container
+Your live application’s database should be properly hosted and reliable. Normally you would be using a reliable and cloud database as a service service such as Amazon RDS or Aurora, or Azure Cosmos DB, where the infrastructure is managed for you. 
+
+As great as Containers are for Processing, and running your application service, their volatile nature make them inappropriate for hosting real durable data. Yet again they are perfect for when you don’t want the database to be durable, such as when running automated tests. 
+
+You can create a Docker image dedicated to SQL Server to run the database of your application or service during development and automated testing.
+
+### Creating a Sql Server container
+The simplest way to create one is the following docker run command: 
+
+```csharp
+docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD= your@password' -p 1433:1433 -d microsoft/mssql-server-linux
+```
+
+It creates a Linux container with Sql Server running on it. You can connect to it through any regular SQL connection, such as from SQL Server Management Studio or C# code. 
