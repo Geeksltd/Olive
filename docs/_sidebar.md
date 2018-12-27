@@ -52,6 +52,7 @@
     * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
+    * [Docker and Microservices](Microservices/DockerMicroservices.md)
 
 * DevOps
     * [Docker support](DevOps/Docker.md)
