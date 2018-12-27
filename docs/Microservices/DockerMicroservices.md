@@ -76,4 +76,16 @@ For Linux, multiple distros are available and supported in official .NET Docker 
 ![annotation 2018-12-27 191419](https://user-images.githubusercontent.com/1321544/50485718-a9ba7d00-0a0b-11e9-8597-439b41d45b58.jpg)
 
 
-## Official .NET OS images 
+### Official .NET OS images 
+The Official .NET Docker images are Docker images created and optimized by Microsoft. They are publicly available in the Microsoft repositories on Docker Hub. 
+
+Microsoft’s vision for .NET repositories is to have granular and focused repos, where a repo represents a specific scenario or workload. For instance, the [microsoft/aspnetcore](https://hub.docker.com/r/microsoft/aspnetcore/) images should be used when using ASP.NET Core on Docker, because those ASP.NET Core images provide additional optimizations so containers can start faster.
+
+On the other hand, the .NET Core images [(microsoft/dotnet)](https://hub.docker.com/r/microsoft/dotnet/) are intended for console apps based on 
+.NET Core console apps and do not include the ASP.NET Core stack, resulting in a smaller container image. 
+
+#### Development vs production 
+When building Docker images for developers, Microsoft focused on the following main scenarios:  
+- Images used to __develop and build__ .NET Core apps.
+- Images used to __run__ .NET Core apps.
+Why multiple images? When developing, building, and running containerized applications, you usually have different priorities. By providing different images for these separate tasks, Microsoft helps optimize the separate processes of developing, building, and deploying apps. 
