@@ -22,7 +22,7 @@ For each new solution (consisting of multiple microservices) you can simply:
 
 ### People Service
 Almost every application will need a database to store the system users and their permissions. Often that database will have a custom structure, depending on the requirements of the application. [Learn more here](https://geeksltd.github.io/Olive/#/Microservices/Security?id=authorisation-via-people-service)
-<br/>You can clone People Service form [here](https://gitlab.com/Geeks.Microservices/People)
+<br/>You can clone People Service form [here](https://bitbucket.org/geeks-ltd/geeksms.people/src/master/)
 
 ### BigPicture
 This project provides a bird's eye view to the solution. It contains information about:
