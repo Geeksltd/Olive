@@ -35,7 +35,7 @@ In the orders service, we need access to the customer data, for example to assoc
 
 To implement this, in the customer microserice project, we will create the following class:
 
-```c#
+```csharp
 namespace CustomerService
 {    
     public class OrdersEndpoint : SourceEndpoint 
@@ -56,7 +56,7 @@ The `Customer` class here provides a definition for a data table to expose. It i
 ### One endpoint, multiple exposed data types
 In the same endpoint, you can expose multiple data types. For each data type you need to define a **nested class** which inherits from`ExposedType<TDomain>`.
 
-```c#
+```csharp
 namespace CustomerService
 {    
     public class OrdersEndpoint : SourceEndpoint 
@@ -89,7 +89,7 @@ But, if you have a strong reason to do this, then:
 - In each of the endpoints that you want to publish it, add a `[ExportData(typeof(...))]` attribute.
 For example:
 
-```c#
+```csharp
 public class Customer : ExposedType<Domain.CustomerAddress>
 {
    ...
@@ -105,7 +105,7 @@ public class ShippingEndpoint : SourceEndpoint { }
 ### Exposing all fields implicitly
 You should normally only expose the data fields needed by the endpoint consumer. As explained before, to specify the fields in an `ExposedType<T>` you will override the `Define()` method. However if your entity is basic or of a reference type nature (rather than transactional data) and you do not have security concerns, then you can use the following shortcut as an alternative to declaring each property directly:
 
-```c#
+```csharp
 public class Customer : NakedExposedType<Domain.CustomerAddress> { }
 ```
 
@@ -116,7 +116,7 @@ You do not have to expose your data fields exactly as they are in the source typ
 
 To achieve that, you can define a custom exposed field, with a custom value expression. For example:
 
-```c#
+```csharp
 ...
 protected override void Define()
 {
@@ -124,6 +124,28 @@ protected override void Define()
     Expose("Address", x => new { x.AddressLine1, x.AddressLine2 + x.Town + x.Postcode }.Trim().ToString(", "));
 }
 ```
+
+### Filtering which records get exposed
+Your endpoint does not have to publish all records of the type. Just like how you limit the published fields, you may want to limit the records that get replicated to a consumer service. To achieve this, you should override a method named `Filter(...)`. For example:
+```csharp
+class Customer : ExpseedType<Domain.Customer>
+{
+   protected override void Define()
+   {
+        Expose(x => x.Email);
+        Expose(x => x.Name);
+   }
+    
+   protected override async bool Filter(Domain.Customer customer) => customer.Status == customer.Approved;
+}
+```
+
+When it returns `false` for any given record, the record will not be published to the replication queue, and will simply not arrive in the destination database.
+
+**Tips:**
+- If your condition logic involves *async* code, override the `FilterAsync(...)` method instead.
+- Warning: If you return `false` for a record which has previously been published (either because the condition previously evaluated to `true` or because you didn't have the filter before), this will not *unpublish* or *update* the record, and it will remain in the destination system's database untouched.
+
 
 ---
 
@@ -143,7 +165,7 @@ It will generate the following two nuget packages:
 This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice).
 In the `Startup.cs` file to kick start the engine, call:
 
-```c#
+```csharp
 public override async Task OnStartUpAsync(IApplicationBuilder app)
 {
     await base.OnStartUpAsync(app);
@@ -170,7 +192,7 @@ Each subclass of `ExposedType<TDomain>` defined in the publisher service, repres
 To make it all happen, we generate an M# nuget package which contains the definition of the `Customer` entity from the perspective of the consumer application. It's basically a DLL with a normal M# entity definition.
 
 The following code is therefore generted by the **generate-data-endpoint-proxy** tool, from the `PeopleService.Customer` class.
-```c#
+```csharp
 using MSharp;
 namespace PeopleService
 {

@@ -6,8 +6,7 @@
 - It installs `webpack` using `yarn`
 - It installs `TypeScript` using `npm`.
 
-```bat
-
+```batch
 @echo off
 
 ECHO ::::::::: Ensuring Chocolatey is installed ::::::::::::::::::::::

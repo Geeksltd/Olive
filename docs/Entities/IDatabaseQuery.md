@@ -6,7 +6,7 @@ In order to achieve a better performance in the Olive framework, you can benefit
 ## Sample
 Let's refactor the following code to see how IDatabaseQueries work:
 
-```c#
+```csharp
 async Task<IEnumerable<TaskItem>> GetPage(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null, bool excludeRejected = false)
 {
     var excludeList = await Database.GetList<Comment>(c => c.Rejected).Select(c => c.TaskItem);
@@ -31,11 +31,11 @@ async Task<IEnumerable<TaskItem>> GetPage(int pageIndex, int pageSize, DateTime?
 
 #### FYI
 Yes, you can write the date conditions in a single line as below, but it is not as easy to read.
-```c#
+```csharp
 var temp = await Database.GetList<TaskItem>(t => (from == null || t.DueDate > from) && (to == null || t.DueDate < to));
 ```
 With the following code all the conditions and paging will apply at the database level.
-```c#
+```csharp
 async Task<IEnumerable<TaskItem>> GetPage(int pageIndex, int pageSize, DateTime? from = null, DateTime? to = null, bool excludeRejected = false)
 {
     var query = Database.Of<TaskItem>();

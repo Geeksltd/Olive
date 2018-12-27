@@ -12,14 +12,14 @@ now your drop-down list will have default bootstrap style.
 ## 6 Dec 2018
 - In `Website.csproj` set `<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>`
 - In `Startup.cs` change use just `app.UseScheduledTasks<TaskManager>();` instead of the following block:
-```c#
+```csharp
 if (Config.Get<bool>("Automated.Tasks:Enabled"))
     app.UseScheduledTasks(TaskManager.Run);
 ```
 
 ## 4 Dec 2018
 In `Startup.cs` add an instance of `ILoggerFactory` to the constructor, and just pass it to the base constructor.
-```c#
+```csharp
 public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory) 
        : base(env, config, loggerFactory)`
 {

@@ -1,8 +1,8 @@
-## Introduction
+# Preparing Jenkins Server
 
 The MC# application repositories only contain MSharp metadata files. The CI/CD process pulls the metadata and builds the application by MSharp, which currently requires .NetFramework on Windows to run. 
 
-#### Production Linux Runtime
+## Production Linux Runtime
 If you choose, or even have to, run your application in Linux servers there are a few more steps to be taken. In order to run a service on Linux servers we have to generate Linux Docker images. Generating linux docker images require the Linux Docker engine on the build server. 
 Running Linux Docker engine on Windows is achieved by running a Linux VM. Unfortunately since AWS EC2 instances are virtual machines, it is not possible to run another VM on top of them (at least not easily). 
 To have access to both Windows and Linux environments on the build server we need to add a Linux worker node to Jenkins. Fortunately Jenkins pipeline supports running stages on different nodes which enables us to build the application on a Windows node and use the generated artefacts on a Linux node and generate the Linux docker image.
@@ -15,7 +15,7 @@ Below is the instruction for preparing the Windows master and Linux worker node.
 This document is based on AWS but the same instructions applys to other cloud providers such as Azure and Google Cloud.
 
 
-### Master
+## Master
 
 #### AWS
 First create a EC2 instance (Windows) on AWS. Make sure you store the keypair somewhere safe. 
@@ -83,7 +83,7 @@ After the instance is launched and running, RDP to it and install the following.
 TODO : Enable SSL for Jenkins
 
 
-### Plugins
+## Plugins
 The current build script uses some 3rd party APIs such as AWS, Docker and Kubernetes as well as some custom functionalities in Jenkins implemented as plugins which we have to install in Jenkins. 
 
 Below is a list of all plugins :

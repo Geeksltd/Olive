@@ -1,0 +1,38 @@
+.markdown-section pre, .markdown-section pre > code {
+    color: #eee; 
+    background-color: #2d2d2d;
+    line-height: 1.1rem;
+    padding: 8px;
+    white-space: pre-wrap;
+}
+
+.markdown-section code {
+    color: #000;
+    background: #e3e8e8;
+    padding: 2px 4px;
+}
+
+.sidebar .sidebar-nav > ul > li > ul { margin-left: 0; }
+.sidebar li li { margin: 0; line-height: 22px; color:red; font-size: 11pt;}
+.sidebar li li li { color: #203d3b; }
+.sidebar li li li a { color: #007ddb; }
+.sidebar li li li li a { color: #999; }
+.sidebar li > p { margin-top: 15px; font-size:14pt; }
+.sidebar ul li.active > a { display:inline-block; background: #42AAA9; color:#fff; border-radius: 12px; padding: 0 10px; margin-left:-11px; font-weight:normal}
+
+
+.markdown-section p { line-height: 1.35rem; word-spacing: .08rem;}
+
+.markdown-section blockquote {
+    background: #faf8e0;
+    color:#222;
+    border: none;
+    padding: 1px 15px;
+    box-shadow: #000 0 2px 10px -4px;    
+}
+
+.markdown-section h1 { font-size: 3rem; line-height:3.5rem; margin: 3rem 0; }
+.markdown-section h2 { background: #eee; padding: 12px; } 
+.markdown-section h3 { margin-top: 50px; }
+.markdown-section h4 { margin-bottom: 0; margin-top: 40px}
+.markdown-section blockquote p { font-weight: normal; }

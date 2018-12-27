@@ -14,7 +14,7 @@ The process is very straight forward.
 1. Override the `Process()` method and write the handling logic.
 
 For example:
-```c#
+```csharp
 namespace BarService
 {
     public class FooCommand : EventBusCommandMessage
@@ -31,7 +31,7 @@ namespace BarService
 }
 ```
 To register the command, you need to add the following to your `Startup.cs` file:
-```c#
+```csharp
 public override async Task OnStartUpAsync(IApplicationBuilder app)
 {
     ...
@@ -54,13 +54,13 @@ The above queue configuration should be added to the config file of both the ser
 
 ## Invoking a command
 To invoke a command in other services, all you need to do is to get a handle to the same queue and invoke the `Publish` command.
-```c#
+```csharp
 await EventBus.Queue<BarService.FooCommand>().Publish(new BarService.FooCommand { ... });
 ```
 Of course for the above to compile, you will need the command schema defined in the calling service as well. Note that the Process method will not be required, and also the base class should be just `EventBusMessage` rather than `EventBusCommandMessage`.
 
 For the above example you can add the following class:
-```c#
+```csharp
 namespace BarService
 {
     public class FooCommand : EventBusMessage
@@ -83,7 +83,7 @@ C:\> generate-eventbus-command-proxy /assembly:C:\Projects\...\website.dll /comm
 Or, if you want to directly publish the generated nuget package to a nuget server, instead of `/out:...` parameter add `/push:http://my-nuget-server.com/nuget /apiKey:...`
 
 The generated proxy dll will generate the class, plus a method named `Publish()` for convinience. For example:
-```c#
+```csharp
 namespace BarService
 {
     public class FooCommand : EventBusMessage
@@ -96,6 +96,6 @@ namespace BarService
 }
 ```
 So that you can simply invoke the command by writing the following in the services:
-```c#
+```csharp
 await new BarService.FooCommand { ... }.Publish();
 ```

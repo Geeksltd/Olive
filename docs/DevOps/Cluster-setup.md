@@ -128,7 +128,7 @@ You either need to have a machine with Linux running on it, or run a Linux virtu
 
 #### Creating the Cluster
 For our current production environment we are planning to have one master and 3 worker nodes. We want the worker nodes to be in different availability zones so that if one availability zone goes down the other nodes will be up and host our pods. Below is the command which creates our cluster :
-```shell 
+```powershell 
 kops create cluster app.geeks.ltd --node-count 3 --zones eu-west-1a,eu-west-1b,eu-west-1c --master-size t2.medium --master-count 1 --node-size t2.small --cloud aws  --master-zones eu-west-1a --dns-zone app.geeks.ltd --yes
 ```
 The above command creates :
@@ -152,7 +152,7 @@ A common way to manage azure resouces is to use the Azure Cli. You can obviously
 ### Resource Group
 We start off by creating a resource group. A [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-overview) is a container to hold all related Azure resources together. Without resource groups managing resources will be very complicated. Imagine you want to add a couple of VMs temporarily for testing, and have to add a couple of other resources to work with them. If you already have a lot of resources in your account, your new resources will be lost among the existing ones and it will be hard to find them, specially if you want to delete everything after your test is done. With resource groups you can create one group and add all related resources to that. Deleting the resource group will remove all the resources associated with it which makes the clean up process very easy and straight forward. 
 
-```
+```powershell
 az group create --name ResourceGroupName --location Locatioin
 ```
 Description :
@@ -164,7 +164,7 @@ Description :
 ### Creating the cluster
 Once you have the resource group created you can now create the cluster by running:
 
-```
+```powershell
 az aks create --resource-group ResourceGroupName --name ClusterName --node-count 1 --generate-ssh-keys --os-type Windows
 ```
 Description:
@@ -178,7 +178,7 @@ Description:
 ### Connect to the cluster
 To be able to connect to the cluster we need to switch kubectl to point to the new cluster. To do that we need to get the cluster credentials to be used to connect. We can use the Azure cli to get the credentials using the command below:
 
-```
+```powershell
 az aks get-credentials --resource-group ResourceGroupName --name ClusterName
 ```
 
