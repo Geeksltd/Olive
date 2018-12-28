@@ -46,9 +46,8 @@ A single repo can contain platform variants, such as a Linux image and a Windows
 Alternatively you can specify a tag, targeting a platform explicitly:
 
 |   |   |
-|:-:|:-:|
-| microsoft/aspnetcore:2.0.0-jessie | .NET Core 2.0 runtime-only on Linux   |
-| microsoft/dotnet: 2.0.0-nanoserver | .NET Core 2.0 runtime-only on Windows Nano Server   |
+| microsoft/aspnetcore:2.0.0-jessie :-:| .NET Core 2.0 runtime-only on Linux   :-:|
+| microsoft/dotnet: 2.0.0-nanoserver :-:| .NET Core 2.0 runtime-only on Windows Nano Server   :-:|
 
 #### Step 3. Build the image from Dockerfile
 The Docker images are built automatically for you in Visual Studio when pressing F5. Underneath, it uses docker build command:
