@@ -45,7 +45,7 @@ When using asynchronous event-driven communication, a microservice publishes an 
 
 Interested other microservices subscribe to the events so they can receive them asynchronously. When that happens, the receivers might update their own domain entities, which can cause more integration events to be published.
 
-For orchestration and reliability, this publish/subscribe system is usually implemented via an **event **bus or **messaging broker** such as **RabbitMQ**.
+For orchestration and reliability, this publish/subscribe system is usually implemented via an **event bus** or **messaging broker** such as **RabbitMQ**.
 
 #### Multiple message receivers
 Most Async messages are commands sent from one microservice to another. 
