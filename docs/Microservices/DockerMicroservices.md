@@ -137,3 +137,24 @@ docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD= your@password' -p 1433:1433 -d mi
 ```
 
 It creates a Linux container with Sql Server running on it. You can connect to it through any regular SQL connection, such as from SQL Server Management Studio or C# code. 
+
+### Environment independence
+Having your databases running as containers is convenient, because you do not have any external dependency to the host’s configuration, whether Sql server is installed, it’s instance name and credentials, etc. 
+
+This is great for integration tests, because the database started in the container is always populated with the same sample data, so tests can be more predictable.
+
+### Running the app using docker-compose.yml 
+Instead of running the docker run command manually you can use a `docker-compose.yml` file such as the following, and run it using the docker-compose up command:
+
+![annotation 2018-12-27 193835](https://user-images.githubusercontent.com/1321544/50486394-0a978480-0a0f-11e9-8035-262ced5f9350.jpg)
+
+Normally you will also add additional commands for creating another container for your asp.net app. So each one of your microservices will be a multi-container application. Then simply using the docker-compose up command will deploy all the required containers for the application.
+
+### Seeding with test data on Web application startup 
+Once the containers are up and running, you can execute the Sql scripts in your web app to set up a database and create tables and other sql objects. 
+
+This is done automatically when you run an Olive application upon startup through the WebTestManager component from the `Olive.Mvc.Testing` nuget package.
+
+Once the database is created from the sql files you can insert some reference or sample seed data using C# code in the `ReferenceData.cs` class in the Domain project.
+
+Having the whole database and seed data created from scratch every time the application is started during development and testing provides consistency and predictability, which is ideal in a TDD environment. 

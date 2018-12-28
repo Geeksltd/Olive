@@ -53,6 +53,13 @@
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
     * [Docker and Microservices](Microservices/DockerMicroservices.md)
+    * [Understanding Microservices](Microservices/UnderstandingMicroservices.md)
+    * [Distributed Data in Microservices](Microservices/DistributedDataInMicroservices.md)
+    * [Microservice Boundaries](Microservices/MicroserviceBoundaries.md)
+    * [Intra-service Communication](Microservices/IntraServiceCommunication.md)
+    * [Implementing Resilient Applications](Microservices/ImplementingResilientApplications.md)
+    * [Development Process for Docker-Based Applications](Microservices/DockerBasedApplications.md)
+    * [Security in Microservices](Microservices/SecurityInMicroservices.md)
 
 * DevOps
     * [Docker support](DevOps/Docker.md)
