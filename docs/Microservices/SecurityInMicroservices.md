@@ -7,7 +7,7 @@ In microservice scenarios, authentication is typically handled centrally. Learn 
 To connect with protected cloud resources and other services, ASP.NET applications typically need to use secret tokens (keys, passwords, connection strings, etc). If you simply add them to the source code (e.g. appSettings.json file) this can open up security risks as sensitive information can become accessible to unauthorised team members.
 
 ### Storing secrets in environment variables 
-One way to keep secrets out of source code to set string-based secrets as [environment variables](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets#environment-variables) on your development machines. For example, setting an environment variable Logging:LogLevel:Default to Debug would be equivalent to a configuration value from the following JSON file: 
+One way to keep secrets out of source code to set string-based secrets as [environment variables](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets#environment-variables) on your development machines. For example, setting an environment variable `Logging:LogLevel:Default` to Debug would be equivalent to a configuration value from the following JSON file: 
 
 ```json
 { 
