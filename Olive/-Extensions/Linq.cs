@@ -636,12 +636,47 @@ namespace Olive
             return false;
         }
 
+
+        /// <summary>
+        /// Determines if this list intersects with another specified list.
+        /// </summary>
+        /// <param name="otherList">Determines the list of items which checked with the main list.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool Intersects(this IEnumerable<string> @this, IEnumerable<string> otherList, bool caseSensitive)
+        {
+            var countList = (@this as ICollection)?.Count;
+            var countOther = (otherList as ICollection)?.Count;
+
+            if (countList == null || countOther == null || countOther < countList)
+            {
+                foreach (var item in otherList)
+                    if (@this.Contains(item,caseSensitive)) return true;
+            }
+            else
+            {
+                foreach (var item in @this)
+                    if (otherList.Contains(item,caseSensitive)) return true;
+            }
+
+            return false;
+        }
+        
+        
         /// <summary>
         /// Determines if this list intersects with another specified list.
         /// </summary>
         /// <param name="items">Determines the list of items which used in the method.</param>
         public static bool Intersects<T>(this IEnumerable<T> @this, params T[] items) => @this.Intersects((IEnumerable<T>)items);
 
+
+        /// <summary>
+        /// Determines if this list intersects with another specified list.
+        /// </summary>
+        /// <param name="items">Determines the list of items which used in the method.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool Intersects(this IEnumerable<string> @this, bool caseSensitive, params string[] items) => @this.Intersects((IEnumerable<string>)items,caseSensitive);
+        
+        
         /// <summary>
         /// Selects the item with maximum of the specified value.
         /// If this list is empty, NULL (or default of T) will be returned.
