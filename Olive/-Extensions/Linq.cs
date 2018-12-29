@@ -1101,6 +1101,32 @@ namespace Olive
         /// <param name="items">The items which are searched into the list.</param>
         public static bool IsAnyOf(this int @this, IEnumerable<int> items) => items.Contains(@this);
 
+        
+        /// <summary>
+        /// Determines if this items are in the specified list.
+        /// </summary>
+        /// <param name="items">The items which are searched into the list.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool IsAnyOf(this string @this, IEnumerable<string> items, bool caseSensitive)
+        {
+            if (@this == null) return false;
+
+            return items.Contains(@this, caseSensitive);
+        }
+        
+        /// <summary>
+        /// Determines if this items are in the specified list.
+        /// </summary>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        /// <param name="items">The items which are searched into the list.</param>
+        public static bool IsAnyOf(this string @this, bool caseSensitive, params string[] items)
+        {
+            if (@this == null) return items.Any(x => x == null);
+
+            return items.Contains(@this, caseSensitive);
+        }
+
+
         /// <summary>
         /// Specifies whether this list contains any of the specified values.
         /// </summary>
