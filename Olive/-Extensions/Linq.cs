@@ -137,6 +137,34 @@ namespace Olive
         }
 
         /// <summary>
+        /// Gets the index of the first item in this list which matches the specified criteria. Otherwise, it returns -1.
+        /// </summary>
+        /// <param name="element">The item which is searched.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive in searching is important or not.</param>
+        public static int IndexOf(this IEnumerable<string> @this, string element, bool caseSensitive)
+        {
+            if (@this == null)
+                throw new NullReferenceException("No collection is given for the extension method IndexOf().");
+
+            if (@this.Contains(element,caseSensitive) == false) return -1;
+
+            var result = 0;
+            foreach (var el in @this)
+            {
+                if (el == null)
+                {
+                    if (element == null) return result;
+                    else continue;
+                }
+
+                if (el.Equals(element,caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return result;
+                result++;
+            }
+
+            return -1;
+        }
+        
+        /// <summary>
         /// Gets the index of the first item in this list which matches the specified criteria determined by a Func<>. Otherwise, it returns -1.
         /// </summary>
         /// <param name="criteria">The item which is searched.</param>
