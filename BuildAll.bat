@@ -30,9 +30,6 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Entities.Data.Replication
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Olive.Entities.ObjectDataProvider
-if ERRORLEVEL 1 (goto error)
-
 dotnet build Olive.Entities.Data.MySql
 if ERRORLEVEL 1 (goto error)
 
