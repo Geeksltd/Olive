@@ -482,6 +482,24 @@ namespace Olive
             return true;
         }
 
+        
+        /// <summary>
+        /// Determines whether this list is equivalent to another specified list. Items in the list should be distinct for accurate result.
+        /// </summary>
+        /// <param name="other">Is a list which is checked by the this list.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool IsEquivalentTo(this IEnumerable<string> @this, IEnumerable<string> other, bool caseSensitive)
+        {
+            if (@this == null) @this = new string[0];
+            if (other == null) other = new string[0];
+
+            if (@this.Count() != other.Count()) return false;
+
+            foreach (var item in @this)
+                if (!other.Contains(item, caseSensitive)) return false;
+            return true;
+        }
+        
         /// <summary>
         /// Counts the number of items in this list matching the specified criteria.
         /// </summary>
