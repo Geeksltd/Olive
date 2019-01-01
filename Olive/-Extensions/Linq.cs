@@ -467,6 +467,13 @@ namespace Olive
         public static bool IsSubsetOf<T>(this IEnumerable<T> @this, IEnumerable<T> target) => target.ContainsAll(@this);
 
         /// <summary>
+        /// Determines whether a list contains all members of another list.
+        /// </summary>     
+        /// <param name="target">The list which is used in comparing to the main list.</param>
+        /// <param name="caseSensitive">Determines whether the case sensitive of method is important or not.</param>
+        public static bool IsSubsetOf(this IEnumerable<string> @this, IEnumerable<string> target, bool caseSensitive) => target.ContainsAll(@this,caseSensitive);
+        
+        /// <summary>
         /// Determines whether this list is equivalent to another specified list. Items in the list should be distinct for accurate result.
         /// </summary>
         /// <param name="other">Is a list which is checked by the this list.</param>
