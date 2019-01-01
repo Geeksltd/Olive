@@ -532,6 +532,13 @@ namespace Olive
         public static bool LacksAny<T>(this IEnumerable<T> @this, IEnumerable<T> items) => !@this.ContainsAll(items);
 
         /// <summary>
+        /// Determines if this list lacks any item in the specified list.
+        /// </summary>        
+        /// <param name="items">The item which is searched in the list.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool LacksAny(this IEnumerable<string> @this, IEnumerable<string> items, bool caseSensitive) => !@this.ContainsAll(items,caseSensitive);
+        
+        /// <summary>
         /// Determines if this list lacks all items in the specified list.
         /// </summary>        
         /// <param name="items">The item which is searched in the list.</param>
