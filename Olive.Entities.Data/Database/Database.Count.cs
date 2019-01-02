@@ -4,13 +4,12 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    public partial class Database
+    partial class Database
     {
         /// <summary>
         /// Gets a list of entities of the given type from the database.
         /// </summary>
-        public Task<int> Count<T>() where T : IEntity
-=> Of<T>().Count();
+        public Task<int> Count<T>() where T : IEntity => Of<T>().Count();
 
         /// <summary>
         /// Gets a list of entities of the given type from the database.

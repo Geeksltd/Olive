@@ -13,6 +13,7 @@ namespace Olive.Entities.Data
             @this.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
             @this.AddSingleton<ICache, Cache>();
             @this.AddSingleton<IDatabase, Database>();
+
             return @this;
         }
 

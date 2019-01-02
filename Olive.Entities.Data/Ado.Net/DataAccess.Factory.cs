@@ -12,10 +12,17 @@ namespace Olive.Entities.Data
     {
         static Dictionary<string, IDataAccess> Accessors = new Dictionary<string, IDataAccess>();
 
-        public static void Register<TConnection>(string dataProviderType)
+        public static void Register<TConnection>(ISqlCommandGenerator sqlCommandGenerator, string dataProviderType)
             where TConnection : DbConnection, new()
         {
-            Accessors[dataProviderType] = new DataAccess<TConnection>();
+            Accessors[dataProviderType] = new DataAccess<TConnection>(sqlCommandGenerator);
+        }
+
+        public static void Register(Type connectionType, ISqlCommandGenerator sqlCommandGenerator, string dataProviderType)
+        {
+            var dataAccessType = typeof(DataAccess<>).MakeGenericType(connectionType);
+
+            Accessors[dataProviderType] = (IDataAccess)Activator.CreateInstance(dataAccessType, sqlCommandGenerator, null);
         }
 
         public static IDataAccess GetDataAccess(string dataProviderType)

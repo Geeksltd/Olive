@@ -14,7 +14,7 @@ namespace Olive.Entities.Data
         {
             Task<IDataReader> read()
             {
-                return new DataAccess<SqliteConnection>()
+                return new DataAccess<SqliteConnection>(new SQLitSqlCommandGenerator())
                 .ExecuteReader("SELECT NAME FROM sqlite_master where type = 'table'");
             }
 

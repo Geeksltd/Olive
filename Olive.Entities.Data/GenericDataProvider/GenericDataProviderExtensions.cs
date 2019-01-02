@@ -6,22 +6,18 @@ using System.Text;
 
 namespace Olive.Entities.Data
 {
-    public static class GenericDataProviderExtensions
+    public static class DataProviderExtensions
     {
-        public static GenericDataProvider<TConnection, TDataParameter> GetProvider<TConnection, TDataParameter>(
-                this DataProviderMetaData @this, ICache cache, SqlCommandGenerator sqlCommandGenerator)
-            where TConnection : DbConnection, new()
-            where TDataParameter : IDbDataParameter, new()
+        public static DataProvider GetProvider(
+                this IDataProviderMetaData @this, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {
-            return GetProvider<TConnection, TDataParameter>(@this.Type, cache, sqlCommandGenerator);
+            return GetProvider(@this.Type, cache, access, sqlCommandGenerator);
         }            
         
-        public static GenericDataProvider<TConnection, TDataParameter> GetProvider<TConnection, TDataParameter>(
-                this Type @this, ICache cache, SqlCommandGenerator sqlCommandGenerator)
-            where TConnection : DbConnection, new()
-            where TDataParameter : IDbDataParameter, new()
+        public static DataProvider GetProvider(
+                this Type @this, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {
-            return GenericDataProviderFactory<TConnection, TDataParameter>.Get(@this, cache, sqlCommandGenerator);
+            return InternalDataProviderFactory.Get(@this, cache, access, sqlCommandGenerator);
         }
     }
 }
