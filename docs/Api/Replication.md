@@ -149,6 +149,24 @@ When it returns `false` for any given record, the record will not be published t
 
 ---
 
+## Starting the endpoint engine
+
+In the `Startup.cs` file to kick start the data publishing engine, call:
+
+```csharp
+public override async Task OnStartUpAsync(IApplicationBuilder app)
+{
+    ...
+    await new CustomerService.OrdersEndpoint().Publish();
+}
+```
+
+When the `Publish()` method is called, it will do the following:
+- It listens to all database events related to its exposed domain type(s). Each time a record is added or updated, it will serialize the whole record onto the eventbus queue. The message is expected to be subsequently picked up by the consumer service, which will then automatically apply the same change to its local copy of the replicated data.
+- It will also handle to the *REFRESH* eventbus queue, in case the consumer service requests an initial full data dump.
+
+> NOTE: **Delete operations** will not be replicated. When replicating data types, you must not use hard-delete. Instead use a logical softdelete as a boolean property (e.g. IsArchived) in order to turn all delete operations into updates.
+
 ## Generating a proxy
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
 
@@ -174,10 +192,8 @@ public override async Task OnStartUpAsync(IApplicationBuilder app)
 ```
 
 When the `Subscribe()` method is called, it will do the following:
-- If its local database table of *CustomerService.Customers* is empty, then it assumes that a full table fetch is required:
-  - It invokes `EventBus.Purge(queueKey)` to clear any unprocessed messages on the sync queue.  
-  - It invokes a Web Api on the `CustomerService` to fetch the full database as a clean starting point.
-- It will then watch all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
+- It will handle messages posted to the eventbus queue by the publisher service to receive all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
+- If the replicated table has no records, it assumes that it's the first run and a full initial data dump is required. To make that happen, it will insert an eventbus message to the *REFRESH* queue, which instructs the publisher service to dump all current records to the queue.
 
 #### Package 2: CustomerService.OrdersEndpoint.MSharp
 This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
