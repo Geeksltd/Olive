@@ -28,6 +28,10 @@ In this approach, the `publisher service` will define an `Data Endpoint` for the
 - What fields
 - What filter criteria (to limit the data to a subset if required)
 
+
+([edit the diagram](https://www.draw.io/#HGeeksltd%2FOlive%2Fmaster%2Fdocs%2FApi%2FDataReplication.png))
+![Olive DataReplication](DataReplication.png)
+
 ### Example
 The following example is defined in an imaginary publisher microservice called the `Customer Service` which holds customer data.
 Let's say there is another microservice called `Order Service` which is responsible for managing customer orders.
