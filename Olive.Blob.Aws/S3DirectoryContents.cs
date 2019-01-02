@@ -64,14 +64,12 @@ namespace Olive.BlobAws
             }
         }
 
-        /// <inheritdoc />
         public IEnumerator<IFileInfo> GetEnumerator()
         {
             EnumerateContents();
             return contents.GetEnumerator();
         }
 
-        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             EnumerateContents();

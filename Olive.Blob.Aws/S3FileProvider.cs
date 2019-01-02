@@ -12,12 +12,11 @@ namespace Olive.BlobAws
     public class S3FileProvider : IFileProvider, IDisposable
     {
         static readonly char[] pathSeparators = new[] { '/' };
-        static readonly char[] invalidFileNameChars = new[] { '\\', '{', '}', '^', '%', '`', '[', ']', '\'', '"', '>', '<', '~', '#', '|' }
-                                                              .Concat(Enumerable.Range(128, 255).Select(x => (char)x))
-                                                              .ToArray();
+        static readonly char[] invalidFileNameChars = "\\{}^%`[]\'\"><~#|".ToCharArray()
+            .Concat(Enumerable.Range(128, 255).Select(x => (char)x)).ToArray();
 
-        readonly IAmazonS3 amazonS3;
-        readonly string bucketName;
+        readonly IAmazonS3 AmazonS3;
+        readonly string BucketName;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="S3FileProvider"/> at the given bucket.
@@ -26,8 +25,8 @@ namespace Olive.BlobAws
         /// <param name="bucketName">Name of the bucket that will be used</param>
         public S3FileProvider(IAmazonS3 amazonS3, string bucketName)
         {
-            this.amazonS3 = amazonS3;
-            this.bucketName = bucketName;
+            AmazonS3 = amazonS3;
+            BucketName = bucketName;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -38,7 +37,7 @@ namespace Olive.BlobAws
             // Relative paths starting with leading slashes are okay
             subpath = subpath.TrimStart(pathSeparators);
 
-            return new S3DirectoryContents(amazonS3, bucketName, subpath);
+            return new S3DirectoryContents(AmazonS3, BucketName, subpath);
         }
 
         /// <summary>
@@ -60,7 +59,7 @@ namespace Olive.BlobAws
             if (string.IsNullOrEmpty(subpath))
                 return new NotFoundFileInfo(subpath);
 
-            return new S3FileInfo(amazonS3, bucketName, subpath);
+            return new S3FileInfo(AmazonS3, BucketName, subpath);
         }
 
         /// <summary>
@@ -71,7 +70,7 @@ namespace Olive.BlobAws
         /// <summary>
         /// Disposes the file provider.
         /// </summary>
-        public void Dispose() => amazonS3.Dispose();
+        public void Dispose() => AmazonS3.Dispose();
 
         bool HasInvalidFileNameChars(string path) => path.IndexOfAny(invalidFileNameChars) != -1;
     }

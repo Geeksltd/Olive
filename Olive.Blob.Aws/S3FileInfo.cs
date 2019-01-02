@@ -4,69 +4,70 @@ using Microsoft.Extensions.FileProviders;
 using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Olive.BlobAws
 {
     public class S3FileInfo : IFileInfo
     {
-        readonly IAmazonS3 amazonS3;
-        readonly string bucketName, key;
+        readonly IAmazonS3 AmazonS3;
+        readonly string BucketName, Key;
 
-        GetObjectResponse fileObject;
+        GetObjectResponse FileObject;
         bool? exists;
 
         public S3FileInfo(IAmazonS3 amazonS3, string bucketName, string key)
         {
-            this.amazonS3 = amazonS3;
-            this.bucketName = bucketName;
-            this.key = key;
+            AmazonS3 = amazonS3;
+            BucketName = bucketName;
+            Key = key;
         }
 
-        GetObjectResponse getfileObject()
+        GetObjectResponse GetFileObject()
         {
-            if (fileObject == null)
-                fileObject = AsyncHelper.RunSync(() => amazonS3.GetObjectAsync(bucketName, key));
+            if (FileObject == null)
+                FileObject = Task.Factory.RunSync(() => AmazonS3.GetObjectAsync(BucketName, Key));
 
-            return fileObject;
+            return FileObject;
         }
 
-        public string MD5 => getfileObject().Metadata["Content-MD5"];
+        public string MD5 => GetFileObject().Metadata["Content-MD5"];
 
         public bool Exists
         {
             get
             {
-                if (!exists.HasValue)
+                if (exists.HasValue) return exists.Value;
+
+                try
                 {
-                    try
-                    {
-                        getfileObject();
-                        exists = true;
-                    }
-                    catch (AmazonS3Exception e)
-                    {
-                        if (e.StatusCode == HttpStatusCode.NotFound) exists = false;
-                        throw;
-                    }
+                    GetFileObject();
+                    exists = true;
+                }
+                catch (AmazonS3Exception e)
+                {
+                    if (e.StatusCode == HttpStatusCode.NotFound) exists = false;
+                    else throw;
                 }
 
                 return exists.Value;
             }
         }
 
-        public long Length => getfileObject().ContentLength;
+        public long Length => GetFileObject().ContentLength;
+
+        public string Name => Path.GetFileName(GetFileObject().Key.TrimEnd('/'));
 
         /// <summary>
         /// A http url to the file, including the file name.
         /// </summary>
-        public string PhysicalPath => $"s3-{amazonS3.Config.RegionEndpoint.SystemName}.amazonaws.com/{getfileObject().BucketName}/{getfileObject().Key}";
+        public string PhysicalPath
+            => $"s3-{AmazonS3.Config.RegionEndpoint.SystemName}.amazonaws.com/{GetFileObject().BucketName}/{GetFileObject().Key}";
 
-        public string Name => Path.GetFileName(getfileObject().Key.TrimEnd('/'));
+        public DateTimeOffset LastModified => GetFileObject().LastModified;
 
-        public DateTimeOffset LastModified => getfileObject().LastModified;
+        public bool IsDirectory => GetFileObject().Key.EndsWith("/");
 
-        public bool IsDirectory => getfileObject().Key.EndsWith("/");
-
-        public Stream CreateReadStream() => getfileObject().ResponseStream;
+        public Stream CreateReadStream() => GetFileObject().ResponseStream;
     }
 }
