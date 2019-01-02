@@ -31,7 +31,7 @@ namespace Olive
                 throw new InvalidOperationException("This task is not completed yet. Do you need to await it?");
 
             if (@this.Exception != null)
-                throw @this.Exception.InnerException;
+                throw @this.Exception.InnerException ?? @this.Exception;
 
             return @this.Result;
         }

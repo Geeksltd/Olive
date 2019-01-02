@@ -203,8 +203,8 @@ namespace Olive
             {
                 if (targetType.IsAnyOf(typeof(int), typeof(long)))
                 {
-                    if (text.Contains(".") && text.TrimBefore(".", caseSensitive: true, trimPhrase: true).All(x => x == '0'))
-                        result = text.TrimAfter(".").To(actualTargetType);
+                    if (text.Contains(".") && text.RemoveBeforeAndIncluding(".", caseSensitive: true).All(x => x == '0'))
+                        result = text.RemoveFrom(".").To(actualTargetType);
                 }
 
                 if (isNullable)
