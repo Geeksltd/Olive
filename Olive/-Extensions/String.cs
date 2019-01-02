@@ -1511,13 +1511,32 @@ namespace Olive
             return @this.Split(' ').Trim().Select(x => x.First().ToUpper() + x.Substring(1)).ToString(" ");
         }
 
-        /// <summary>
-        /// Trims all text before the specified search phrase.
-        /// </summary>
-        /// <param name="search">Trims all text before it.</param>
-        /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
-        /// <param name="trimPhrase">If {trimPhrase} is true, only phrases are returned instead of all characters. The defalt value is false.</param>
+        [Obsolete("Use either RemoveBefore() or RemoveBeforeAndIncluding().", error: true)]
         public static string TrimBefore(this string @this, string search, bool trimPhrase = false, bool caseSensitive = false)
+        {
+            return @this.RemoveStart(search, trimPhrase, caseSensitive);
+        }
+
+        /// <summary>
+        /// Removes all text before and including the specified search phrase.
+        /// If the phrase is not found, the original string will be returned.
+        /// </summary>
+        public static string RemoveBeforeAndIncluding(this string @this, string search, bool caseSensitive = false)
+        {
+            return @this.RemoveStart(search, trimPhrase: true, caseSensitive: caseSensitive);
+        }
+
+        /// <summary>
+        /// Removes all text before the first occurance of a specified search phrase.
+        /// If the phrase is not found, the original string will be returned.
+        /// </summary>
+        public static string RemoveBefore(this string @this, string phrase, bool caseSensitive = false)
+        {
+            return @this.RemoveStart(phrase, trimPhrase: false, caseSensitive: caseSensitive);
+        }
+
+
+        static string RemoveStart(this string @this, string search, bool trimPhrase = false, bool caseSensitive = false)
         {
             if (@this.IsEmpty()) return @this;
 
@@ -1553,27 +1572,44 @@ namespace Olive
         }
 
         /// <summary>
-        /// Removes all leading occurrences of a set of characters specified in this string. 
-        /// The string that remains after all occurrences of characters in this string are removed from the start of the current string.
-        /// </summary>
-        /// <param name="phrase">The string which is searched into this value.</param>
-        /// <param name="trimPhrase">If it is true, only phrases are returned instead of all characters. The default value is false.</param>
-        /// <param name="caseSensitive">Determines whether the case sensitive is important or not.</param>
-        public static string TrimAfter(this string @this, string phrase, bool trimPhrase = true, bool caseSensitive = false)
+        /// Removes all characters from the first occurrence of the specified phrase. 
+        /// If the phrase is not found, the original string will be returned.
+        /// </summary>        
+        public static string RemoveFrom(this string @this, string phrase, bool caseSensitive = false)
+        {
+            return @this.RemoveFromOrAfter(phrase, trimPhrase: true, caseSensitive: caseSensitive);
+        }
+
+        /// <summary>
+        /// Removes all characters from after the first occurrence of the specified phrase.
+        /// If the phrase is not found, the original string will be returned.
+        /// </summary>        
+        public static string RemoveFromAfter(this string @this, string phrase, bool caseSensitive = false)
+        {
+            return @this.RemoveFromOrAfter(phrase, trimPhrase: false, caseSensitive: caseSensitive);
+        }
+
+        static string RemoveFromOrAfter(this string @this, string phrase, bool trimPhrase, bool caseSensitive)
         {
             if (@this.IsEmpty()) return @this;
 
             int index;
 
             if (caseSensitive) index = @this.IndexOf(phrase);
-            else
-                index = @this.IndexOf(phrase, StringComparison.OrdinalIgnoreCase);
+            else index = @this.IndexOf(phrase, StringComparison.OrdinalIgnoreCase);
 
             if (index == -1) return @this;
 
             if (!trimPhrase) index += phrase.Length;
 
             return @this.Substring(0, index);
+        }
+
+        [Obsolete("Use either RemoveFromAfter() or RemoveFrom().", error: true)]
+        public static string TrimAfter(this string @this, string phrase, bool trimPhrase = true, bool caseSensitive = false)
+        {
+            if (trimPhrase) return @this.RemoveFrom(phrase, caseSensitive);
+            else return @this.RemoveFromAfter(phrase, caseSensitive);
         }
 
         /// <summary>

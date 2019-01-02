@@ -202,8 +202,7 @@ namespace Olive
 
                 if (responseBody.Contains("<div class=\"titleerror\">"))
                 {
-                    return responseBody.TrimBefore("<div class=\"titleerror\">", trimPhrase: true)
-                         .TrimAfter("</div>").HtmlDecode();
+                    return responseBody.RemoveBeforeAndIncluding("<div class=\"titleerror\">").RemoveFrom("</div>").HtmlDecode();
                 }
 
                 return responseBody;
