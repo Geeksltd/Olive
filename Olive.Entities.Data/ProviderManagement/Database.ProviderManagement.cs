@@ -36,7 +36,7 @@ namespace Olive.Entities.Data
             if (Configuration == null)
                 Config.Bind("Database", Configuration = new DatabaseConfig());
 
-            foreach (var factoryInfo in Configuration.Providers.OrEmpty())
+            foreach (var factoryInfo in Configuration.ProviderMappings.OrEmpty())
                 RegisterDataProviderFactory(factoryInfo);
         }
 
@@ -50,7 +50,7 @@ namespace Olive.Entities.Data
 
         #endregion
 
-        public void RegisterDataProviderFactory(DatabaseConfig.Provider factoryInfo)
+        public void RegisterDataProviderFactory(DatabaseConfig.ProviderMapping factoryInfo)
         {
             if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));
 

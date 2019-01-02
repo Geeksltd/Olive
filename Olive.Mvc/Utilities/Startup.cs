@@ -77,7 +77,9 @@ namespace Olive.Mvc
         {
             Context.Current.Set(app.ApplicationServices).Set(Environment);
 
-            app.ApplicationServices.GetService<IDatabase>().Configure();
+            app.ApplicationServices.GetService<IDatabase>()
+                .ConfigDataAccess()
+                .Configure();
 
             if (Environment.IsDevelopment())
                 app.UseMiddleware<DevCommandMiddleware>();

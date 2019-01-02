@@ -1,36 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
+using System.Reflection;
+using System.Text;
 
 namespace Olive.Entities.Data
 {
-    public static class GenericDataProviderFactory<TConnection, TDataParameter>
-             where TConnection : DbConnection, new()
-             where TDataParameter : IDbDataParameter, new()
+    public class DataProviderFactory : IDataProviderFactory
     {
-        static Dictionary<Type, GenericDataProvider<TConnection, TDataParameter>> Cache = 
-            new Dictionary<Type, GenericDataProvider<TConnection, TDataParameter>>();
+        readonly string ConnectionStringKey;
+        readonly Type MappedType;
+        readonly Assembly MappedAssembly;
+        readonly IDataAccess DataAccess;
 
+        public string ConnectionString { get; }
 
-        public static GenericDataProvider<TConnection, TDataParameter> Get(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
+        public DataProviderFactory(DatabaseConfig.ProviderMapping mapping)
         {
-            lock (Cache)
-            {
-                if (Cache.ContainsKey(type)) return Cache[type];
-
-                var result = Create(type, cache, sqlCommandGenerator);
-                Cache.Add(type, result);
-
-                return result;
-            }
+            DataAccess = mapping.GetDataAccess();
+            ConnectionString = mapping.ConnectionString.Or(Data.DataAccess.GetCurrentConnectionString());
+            ConnectionStringKey = mapping.ConnectionStringKey;
+            MappedType = mapping.GetMappedType();
+            MappedAssembly = mapping.GetAssembly();             
         }
 
-        static GenericDataProvider<TConnection, TDataParameter> Create(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
-        {
-            var resultType = typeof(GenericDataProvider<,>).MakeGenericType(typeof(TConnection), typeof(TDataParameter));
+        public IDataAccess GetAccess() => DataAccess;
 
-            return (GenericDataProvider<TConnection, TDataParameter>) Activator.CreateInstance(resultType, type, cache, sqlCommandGenerator);
+        public IDataProvider GetProvider(Type type)
+        {
+            IDataProvider result = null;
+
+            if (IsRelevant(type)) result = CreateProvider(type);
+            else if (type.IsInterface) result = new InterfaceDataProvider(type);
+
+            if (result == null)
+                throw new NotSupportedException(type + " is not a data-supported type.");
+
+            else if (ConnectionString.HasValue())
+                result.ConnectionString = ConnectionString;
+
+            else if (ConnectionStringKey.HasValue())
+                result.ConnectionStringKey = ConnectionStringKey;
+
+            return result;
         }
+
+        IDataProvider CreateProvider(Type type)
+        {
+            return new DataProvider(type, Context.Current.Cache(), DataAccess, DataAccess.GetSqlCommandGenerator());
+        }
+
+        protected virtual bool IsRelevant(Type type)
+        {
+            if (MappedType != null && MappedType != type) return false;
+            if (MappedAssembly != type.Assembly) return false;
+            if (TransientEntityAttribute.IsTransient(type)) return false;
+
+            return true;
+        }
+
+        public virtual bool SupportsPolymorphism() => true;
     }
 }

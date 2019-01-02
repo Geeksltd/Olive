@@ -11,31 +11,17 @@ namespace Olive.Entities.Data
     /// <summary>
     /// Provides a DataProvider for accessing data from the database using ADO.NET.
     /// </summary>
-    public abstract class DataProvider<TConnection, TDataParameter> : IDataProvider
-        where TConnection : DbConnection, new()
-        where TDataParameter : IDbDataParameter, new()
+    public partial class DataProvider: IDataProvider
     {
         string connectionString, connectionStringKey = "Default";
         readonly static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
 
-        public IDataAccess Access { get; } = new DataAccess<TConnection>();
+        public IDataAccess Access { get; }
+        public Type EntityType { get; }
 
         public static IDatabase Database => Context.Current.Database();
         protected ICache Cache;
-        protected DataProvider(ICache cache)
-        {
-            Cache = cache;
-        }
-
-        public abstract string MapColumn(string propertyName);
-
-        protected abstract string SafeId(string objectName);
-
-        public virtual string MapSubquery(string path, string parent)
-        {
-            throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
-        }
-
+        
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
@@ -175,31 +161,28 @@ namespace Olive.Entities.Data
             return result;
         }
 
-        /// <summary>
-        /// Creates a data parameter with the specified name and value.
-        /// </summary>
-        public IDataParameter CreateParameter(string parameterName, object value)
-        {
-            if (value == null) value = DBNull.Value;
-            else if (value is Blob blob) value = blob.FileName;
+        ///// <summary>
+        ///// Creates a data parameter with the specified name and value.
+        ///// </summary>
+        //public IDataParameter CreateParameter(string parameterName, object value)
+        //{
+        //    if (value == null) value = DBNull.Value;
+        //    else if (value is Blob blob) value = blob.FileName;
 
-            return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value };
-        }
+        //    return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value };
+        //}
 
-        /// <summary>
-        /// Creates a data parameter with the specified name and value and type.
-        /// </summary>
-        public IDataParameter CreateParameter(string parameterName, object value, DbType columnType)
-        {
-            if (value == null) value = DBNull.Value;
+        ///// <summary>
+        ///// Creates a data parameter with the specified name and value and type.
+        ///// </summary>
+        //public IDataParameter CreateParameter(string parameterName, object value, DbType columnType)
+        //{
+        //    if (value == null) value = DBNull.Value;
 
-            return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value, DbType = columnType };
-        }
+        //    return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value, DbType = columnType };
+        //}
 
-        /// <summary>
-        /// Deletes the specified record.
-        /// </summary>
-        public abstract Task Delete(IEntity record);
+        
 
         /// <summary>
         /// Gets the specified record by its type and ID.
@@ -208,7 +191,7 @@ namespace Olive.Entities.Data
         {
             var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("ID")} = @ID";
 
-            using (var reader = await ExecuteReader(command, CommandType.Text, CreateParameter("ID", objectID)))
+            using (var reader = await ExecuteReader(command, CommandType.Text, Access.CreateParameter("ID", objectID)))
             {
                 var result = new List<IEntity>();
 
@@ -231,16 +214,6 @@ namespace Olive.Entities.Data
         }
 
         /// <summary>
-        /// Reads the many to many relation.
-        /// </summary>
-        public abstract Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property);
-
-        /// <summary>
-        /// Saves the specified record.
-        /// </summary>
-        public abstract Task Save(IEntity record);
-
-        /// <summary>
         /// Generates data provider specific parameters for the specified data items.
         /// </summary>
         public IDataParameter[] GenerateParameters(Dictionary<string, object> parametersData) =>
@@ -250,7 +223,7 @@ namespace Olive.Entities.Data
         /// Generates a data provider specific parameter for the specified data.
         /// </summary>
         public virtual IDataParameter GenerateParameter(KeyValuePair<string, object> data) =>
-            new TDataParameter { Value = data.Value, ParameterName = data.Key.Remove(" ") };
+            Access.CreateParameter(data.Key.Remove(" "), data.Value);
 
         public Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName)
         {
@@ -299,20 +272,11 @@ namespace Olive.Entities.Data
         #endregion
 
         #region Common things in DataProvider classes
-        public abstract Type EntityType { get; }
-
-        public abstract string GetFields();
-
-        public abstract string GetTables(string prefix = null);
-
-        public abstract IEntity Parse(IDataReader reader);
-
+        
         public virtual string GenerateSelectCommand(IDatabaseQuery iquery)
         {
             return GenerateSelectCommand(iquery, GetFields());
         }
-
-        public abstract string GenerateSelectCommand(IDatabaseQuery iquery, string fields);
 
         public async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)
         {
@@ -353,8 +317,6 @@ namespace Olive.Entities.Data
             return $"SELECT Count(*) FROM {GetTables()} {GenerateWhere(query)}";
         }
 
-        public abstract string GenerateWhere(DatabaseQuery query);
-
         public virtual string GenerateSort(DatabaseQuery query)
         {
             var parts = new List<string>();
@@ -389,7 +351,7 @@ namespace Olive.Entities.Data
             if (masterQuery.PageSize.HasValue && masterQuery.OrderByParts.None())
                 throw new ArgumentException("PageSize cannot be used without OrderBy.");
 
-            var masterProvider = masterQuery.Provider as DataProvider<TConnection, TDataParameter>;
+            var masterProvider = masterQuery.Provider as DataProvider;
 
             var uniqueItems = masterProvider.GenerateSelectCommand(masterQuery, masterQuery.Column(association.Name));
 

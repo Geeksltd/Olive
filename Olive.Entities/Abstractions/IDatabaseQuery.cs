@@ -29,6 +29,8 @@ namespace Olive.Entities
         IDatabaseQuery OrderBy(string property);
 
         IDataProvider Provider { get; }
+        List<ICriterion> Criteria { get; }
+        List<OrderByPart> OrderByParts { get; }
 
         Task<IEntity> WithMax(string property);
         Task<IEntity> WithMin(string property);

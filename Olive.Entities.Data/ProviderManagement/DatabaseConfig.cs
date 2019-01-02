@@ -6,7 +6,7 @@ namespace Olive.Entities.Data
 {
     public class DatabaseConfig
     {
-        public List<Provider> Providers { get; set; }
+        public List<ProviderMapping> ProviderMappings { get; set; }
         public bool Profile { get; set; }
         public CacheConfig Cache { get; set; }
         public TransactionConfig Transaction { get; set; }
@@ -23,13 +23,15 @@ namespace Olive.Entities.Data
             public bool EnforceForSave { get; set; }
         }
 
-        public class Provider
+        public class ProviderMapping
         {
             public string AssemblyName { get; set; }
             public string TypeName { get; set; }
             public string ProviderFactoryType { get; set; }
             public string ConnectionStringKey { get; set; }
             public string ConnectionString { get; set; }
+
+            public string SqlClient { get; set; } = "System.Data.SqlClient";
 
             public Assembly Assembly { get; set; }
             public Type Type { get; set; }
@@ -43,6 +45,8 @@ namespace Olive.Entities.Data
                 if (TypeName.HasValue()) Type = GetAssembly().GetType(TypeName);
                 return Type;
             }
+
+            internal IDataAccess GetDataAccess() => DataAccess.GetDataAccess(SqlClient);
         }
     }
 }

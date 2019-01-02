@@ -26,5 +26,9 @@
         Task<int> ExecuteBulkNonQueries(CommandType commandType, List<KeyValuePair<string, IDataParameter[]>> commands);
 
         IDataParameter CreateParameter(string name, object value);
+
+        IDataParameter CreateParameter(string name, object value, DbType? dbType);
+
+        ISqlCommandGenerator GetSqlCommandGenerator();
     }
 }

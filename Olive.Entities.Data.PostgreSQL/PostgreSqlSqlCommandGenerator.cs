@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Olive.Entities.Data
 {
-    public class SqlServerSqlCommandGenerator : SqlCommandGenerator
+    public class PostgreSqlSqlCommandGenerator : SqlCommandGenerator
     {
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string tables, string fields)
         {
@@ -15,16 +15,16 @@ namespace Olive.Entities.Data
 
             var r = new StringBuilder("SELECT");
 
-            r.Append(query.TakeTop.ToStringOrEmpty().WithPrefix(" TOP "));
             r.AppendLine($" {fields} FROM {tables}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
+            r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
 
             return r.ToString();
         }
 
-        public override string SafeId(string id) => "[" + id + "]";
+        public override string SafeId(string id) => $"\"{id}\"";
 
-        public override string UnescapeId(string id) => id.Trim('[', ']');
+        public override string UnescapeId(string id) => id.Trim('\"');
     }
 }
