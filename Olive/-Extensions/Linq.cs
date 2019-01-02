@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace Olive
 {
@@ -1373,6 +1374,30 @@ namespace Olive
                 result[i] = padItemValue;
 
             return result;
+        }
+        
+        /// <summary>
+        /// Shuffles a list.
+        /// </summary>
+        /// <param name="list">Source list</param>
+        public static IList<T> Shuffle<T>(this IList<T> list)
+        {
+            using (var provider = new RNGCryptoServiceProvider())
+            {
+                var listCount = list.Count;
+                while (listCount > 1)
+                {
+                    var box = new byte[1];
+                    do provider.GetBytes(box);
+                    while (!(box[0] < listCount * (byte.MaxValue / listCount)));
+                    int k = box[0] % listCount;
+                    listCount--;
+                    var value = list[k];
+                    list[k] = list[listCount];
+                    list[listCount] = value;
+                }
+                return list;
+            }
         }
 
         /// <summary>
