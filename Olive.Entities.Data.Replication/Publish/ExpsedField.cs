@@ -28,14 +28,14 @@ namespace Olive.Entities.Replication
         {
             var result = await GetValue(entity);
 
-            if (result is Task t)
+            while (result is Task t)
             {
                 await t;
                 result = t.GetType().GetProperty("Result").GetValue(t);
             }
 
             if (result is IEntity ent) return ent.GetId();
-            else return result;
+            else return Task.FromResult(result);
         }
 
         protected internal virtual bool ShouldSerialize() => true;
