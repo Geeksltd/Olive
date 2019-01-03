@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 3 Jan 2019
+Update `#Model.csproj` and `#UI.csproj` files. At the end of the file, locate the `Generate code` task. Add `/warn` to the end of the command.
+
 ## 7 Dec 2018
 We have removed [Chosen](https://github.com/harvesthq/chosen) library and replaced it with [Bootstrap-select](https://github.com/snapappointments/bootstrap-select/), now you can safely remove `chosen` from your project.
 1. Open `package.json` or `bower.json` and remove `chosen` then update `olive.mvc` to the version `0.9.175`
