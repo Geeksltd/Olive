@@ -10,18 +10,17 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class InMemoryCacheProvider : ICacheProvider
     {
-        object SyncLock = new object();
+        object TypesSyncLock = new object();
+        object ListsSyncLock = new object();
 
         Dictionary<Type, Dictionary<string, IEntity>> Types = new Dictionary<Type, Dictionary<string, IEntity>>();
         Dictionary<Type, Dictionary<string, IEnumerable>> Lists = new Dictionary<Type, Dictionary<string, IEnumerable>>();
 
         Dictionary<string, IEntity> GetEntities(Type type)
         {
-            if (Types.TryGetValue(type, out var result)) return result;
-
-            lock (SyncLock)
+            lock (TypesSyncLock)
             {
-                if (Types.TryGetValue(type, out result)) return result;
+                if (Types.TryGetValue(type, out var result)) return result;
 
                 result = new Dictionary<string, IEntity>();
                 Types.Add(type, result);
@@ -31,22 +30,21 @@ namespace Olive.Entities.Data
 
         Dictionary<string, IEnumerable> GetLists(Type type, bool autoCreate = true)
         {
-            var result = Lists.TryGet(type);
-
-            if (result == null && autoCreate)
+            lock (ListsSyncLock)
             {
-                lock (SyncLock)
+                var result = Lists.TryGet(type);
+
+                if (result == null && autoCreate)
                 {
-                    result = Lists.TryGet(type);
                     if (result == null)
                     {
                         result = new Dictionary<string, IEnumerable>();
                         Lists.Add(type, result);
                     }
                 }
-            }
 
-            return result;
+                return result;
+            }
         }
 
         public IEntity Get(Type entityType, string id)
@@ -128,10 +126,14 @@ namespace Olive.Entities.Data
 
         public void ClearAll()
         {
-            lock (SyncLock)
+            RowVersionCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
+
+            lock (TypesSyncLock)
             {
-                RowVersionCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
                 Types.Clear();
+            }
+            lock (ListsSyncLock)
+            {
                 Lists.Clear();
             }
         }
