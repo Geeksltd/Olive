@@ -6,13 +6,15 @@ Update `#Model.csproj` and `#UI.csproj` files add `/warn` to the end of the Afte
 **#Model.csproj**
 ```xml
 <Target Name="Generate code" AfterTargets="AfterBuild">
-    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /model /warn" />
+    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" 
+	  Command="dotnet msharp.dsl.dll /build /model /warn" />
 </Target>
 ```
 **#UI.csproj**
 ```xml
 <Target Name="Generate code" AfterTargets="AfterBuild">
-    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /ui /warn" />
+    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" 
+	  Command="dotnet msharp.dsl.dll /build /ui /warn" />
 </Target>
 ```
 
