@@ -2,16 +2,18 @@
 
 Typically, in microservices architecture, you will have services that need data from other services.
 Let's say we have a `publisher service` that owns some data which is needed by a `consumer service`.
-Of course, the publisher service can make its data available to the consumer service, via an API.
 
-### Api approach: Performance and resiliency
+## Background: API Approach
+Of course, the publisher service can make its data available to the consumer service, via an API. But as you read below, this can be far from perfect.
+
+#### Performance and resiliency
 The consumer processes may frequently need access to the publisher's data. If they make an API call every time they need it, it can be very slow.  But more importantly, what if the publisher service is unavailable? Well, the consumer service will also fail!
 This defeats the purpose of using microservices architecture in the first place.
 
 > To solve the performance problem, the consumer service can cache the data for a desired period of time.
 A support for this is built-in to the Olive `ApiClient` framework. To solve the resiliency problem, the `ApiClient` framework in Olive, allows reusing the earlier snapshots of the cached data, even when the cache lifetime is passed.
 
-### Api approach: Data recency
+#### Api approach: Data recency
 While the caching approach can somewhat solve the performance and resiliency problem, but it introduces another problem, which is data recency. In other words, a change in the publisher data will not be seen immediately by the consumer and so its cache will not be automatically updated.
 
 > You can, of course, make a two way system where every change in the publisher data would notify the consumer to refresh its cache. 
@@ -28,11 +30,10 @@ In this approach, the `publisher service` will define an `Data Endpoint` for the
 - What fields
 - What filter criteria (to limit the data to a subset if required)
 
----
 
-([edit the diagram](https://www.draw.io/#HGeeksltd%2FOlive%2Fmaster%2Fdocs%2FApi%2FDataReplication.png))
+([edit the diagram](https://www.draw.io/#HGeeksltd%2FOlive%2Fmaster%2Fdocs%2FApi%2FDataReplicationOverview.png))
 
-![Olive DataReplication](DataReplication.png)
+![Olive Data Replication Overview](DataReplicationOverview.png)
 
 ---
 
@@ -60,6 +61,100 @@ namespace CustomerService
 }
 ```
 The `Customer` class here provides a definition for a data table to expose. It inherits from `ExposedType<...>` which is a special class in Olive. The above code is saying *"expose the data from my local `Domain.Customer` type as a type, also called `Customer`. But only expose the `Email` and `Name` fields."*.
+
+---
+
+## Starting the endpoint engine
+
+In the `Startup.cs` file to kick start the data publishing engine, call:
+
+```csharp
+public override async Task OnStartUpAsync(IApplicationBuilder app)
+{
+    ...
+    await new CustomerService.OrdersEndpoint().Publish();
+}
+```
+
+---
+
+## Overall architecture
+
+([edit the diagram](https://www.draw.io/#HGeeksltd%2FOlive%2Fmaster%2Fdocs%2FApi%2FDataReplication.png))
+
+![Olive Data Replication](DataReplication.png)
+
+---
+
+## How does it work?
+
+In the publisher service, when the `Publish()` method is called upon application startup, it will do the following:
+- It listens to all database events related to its exposed domain type(s). Each time a record is added or updated, it will serialize the whole record onto the eventbus queue. The message is expected to be subsequently picked up by the consumer service, which will then automatically apply the same change to its local copy of the replicated data.
+- It will also handle to the *REFRESH* eventbus queue, in case the consumer service requests an initial full data dump.
+
+> NOTE: **Delete operations** will not be replicated. When replicating data types, you must not use hard-delete. Instead use a logical softdelete as a boolean property (e.g. IsArchived) in order to turn all delete operations into updates.
+
+## Generating a proxy
+A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
+
+```batch
+C:\> dotnet tool install -g generate-data-endpoint-proxy
+
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /out:"c:\temp\generated-packages\"
+```
+
+It will generate the following two nuget packages:
+
+#### Package 1: CustomerService.OrdersEndpoint
+
+This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice).
+In the `Startup.cs` file to kick start the engine, call:
+
+```csharp
+public override async Task OnStartUpAsync(IApplicationBuilder app)
+{
+    await base.OnStartUpAsync(app);
+    await new CustomerService.OrdersEndpoint(typeof(CustomerService.Order).Subscribe();
+}
+```
+
+When the `Subscribe()` method is called, it will do the following:
+- It will handle messages posted to the eventbus queue by the publisher service to receive all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
+- If the replicated table has no records, it assumes that it's the first run and a full initial data dump is required. To make that happen, it will insert an eventbus message to the *REFRESH* queue, which instructs the publisher service to dump all current records to the queue.
+
+#### Package 2: CustomerService.OrdersEndpoint.MSharp
+This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
+
+Each subclass of `ExposedType<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
+- We have a `Domain.Customer` class in the publisher service (`Customer Service`) which has the full customer data, perhaps with 20 fields.
+- In the consumer service (Orders) we need to have the `customer` concept for various programming activities. We may want to add business logic to it, or add associations to other entities, etc. But we only care about its Name and Email fields (and ID of course).
+- For security, efficiency and simplicity, we want the Order service to only see a limited view of the main `Customer` entity.
+- The `PeopleService.Customer` class which inherits from `ExposedType<Domain.Customer>` serves that purpose. It is in fact a remote representative of the customer concept with limited data in the consumer's world.
+- In the consumer service (Orders) we will need that Customer concept to be present, giving us programmatic access, intellisense, data querying, etc. 
+
+To make it all happen, we generate an M# nuget package which contains the definition of the `Customer` entity from the perspective of the consumer application. It's basically a DLL with a normal M# entity definition.
+
+The following code is therefore generted by the **generate-data-endpoint-proxy** tool, from the `PeopleService.Customer` class.
+```csharp
+using MSharp;
+namespace PeopleService
+{
+    public class Customer : EntityType
+    {
+        public Customer()
+        {
+            Schema("PeopleService");
+            String("Email");
+            String("Name");
+        }
+    }
+}
+```
+For all intents and purposes, this is a normal M# entity definition. (**TODO: Find a way to prevent save/delete operations on it**)
+
+---
+
+## Tips
 
 ### One endpoint, multiple exposed data types
 In the same endpoint, you can expose multiple data types. For each data type you need to define a **nested class** which inherits from`ExposedType<TDomain>`.
@@ -154,81 +249,3 @@ When it returns `false` for any given record, the record will not be published t
 - If your condition logic involves *async* code, override the `FilterAsync(...)` method instead.
 - Warning: If you return `false` for a record which has previously been published (either because the condition previously evaluated to `true` or because you didn't have the filter before), this will not *unpublish* or *update* the record, and it will remain in the destination system's database untouched.
 
-
----
-
-## Starting the endpoint engine
-
-In the `Startup.cs` file to kick start the data publishing engine, call:
-
-```csharp
-public override async Task OnStartUpAsync(IApplicationBuilder app)
-{
-    ...
-    await new CustomerService.OrdersEndpoint().Publish();
-}
-```
-
-When the `Publish()` method is called, it will do the following:
-- It listens to all database events related to its exposed domain type(s). Each time a record is added or updated, it will serialize the whole record onto the eventbus queue. The message is expected to be subsequently picked up by the consumer service, which will then automatically apply the same change to its local copy of the replicated data.
-- It will also handle to the *REFRESH* eventbus queue, in case the consumer service requests an initial full data dump.
-
-> NOTE: **Delete operations** will not be replicated. When replicating data types, you must not use hard-delete. Instead use a logical softdelete as a boolean property (e.g. IsArchived) in order to turn all delete operations into updates.
-
-## Generating a proxy
-A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
-
-```batch
-C:\> dotnet tool install -g generate-data-endpoint-proxy
-
-C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /out:"c:\temp\generated-packages\"
-```
-
-It will generate the following two nuget packages:
-
-#### Package 1: CustomerService.OrdersEndpoint
-
-This package will be referenced by the `Website` project in the consumer service (e.g. Orders microservice).
-In the `Startup.cs` file to kick start the engine, call:
-
-```csharp
-public override async Task OnStartUpAsync(IApplicationBuilder app)
-{
-    await base.OnStartUpAsync(app);
-    await new CustomerService.OrdersEndpoint(typeof(CustomerService.Order).Subscribe();
-}
-```
-
-When the `Subscribe()` method is called, it will do the following:
-- It will handle messages posted to the eventbus queue by the publisher service to receive all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
-- If the replicated table has no records, it assumes that it's the first run and a full initial data dump is required. To make that happen, it will insert an eventbus message to the *REFRESH* queue, which instructs the publisher service to dump all current records to the queue.
-
-#### Package 2: CustomerService.OrdersEndpoint.MSharp
-This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
-
-Each subclass of `ExposedType<TDomain>` defined in the publisher service, represents one entity type in the consumer service, which is either a full or partial clone of the main `TDomain` entity type in the publisher service. In the above example:
-- We have a `Domain.Customer` class in the publisher service (`Customer Service`) which has the full customer data, perhaps with 20 fields.
-- In the consumer service (Orders) we need to have the `customer` concept for various programming activities. We may want to add business logic to it, or add associations to other entities, etc. But we only care about its Name and Email fields (and ID of course).
-- For security, efficiency and simplicity, we want the Order service to only see a limited view of the main `Customer` entity.
-- The `PeopleService.Customer` class which inherits from `ExposedType<Domain.Customer>` serves that purpose. It is in fact a remote representative of the customer concept with limited data in the consumer's world.
-- In the consumer service (Orders) we will need that Customer concept to be present, giving us programmatic access, intellisense, data querying, etc. 
-
-To make it all happen, we generate an M# nuget package which contains the definition of the `Customer` entity from the perspective of the consumer application. It's basically a DLL with a normal M# entity definition.
-
-The following code is therefore generted by the **generate-data-endpoint-proxy** tool, from the `PeopleService.Customer` class.
-```csharp
-using MSharp;
-namespace PeopleService
-{
-    public class Customer : EntityType
-    {
-        public Customer()
-        {
-            Schema("PeopleService");
-            String("Email");
-            String("Name");
-        }
-    }
-}
-```
-For all intents and purposes, this is a normal M# entity definition. (**TODO: Find a way to prevent save/delete operations on it**)
