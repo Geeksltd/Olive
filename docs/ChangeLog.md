@@ -2,7 +2,20 @@
 # Olive compatibility change log
 
 ## 3 Jan 2019
-Update `#Model.csproj` and `#UI.csproj` files. At the end of the file, locate the `Generate code` task. Add `/warn` to the end of the command.
+Update `#Model.csproj` and `#UI.csproj` files add `/warn` to the end of the AfterBuild commands.
+**#Model.csproj**
+```xml
+<Target Name="Generate code" AfterTargets="AfterBuild">
+    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /model /warn" />
+</Target>
+```
+**#UI.csproj**
+```xml
+<Target Name="Generate code" AfterTargets="AfterBuild">
+    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /ui /warn" />
+</Target>
+```
+
 
 ## 7 Dec 2018
 We have removed [Chosen](https://github.com/harvesthq/chosen) library and replaced it with [Bootstrap-select](https://github.com/snapappointments/bootstrap-select/), now you can safely remove `chosen` from your project.
