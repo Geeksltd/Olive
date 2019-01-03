@@ -64,7 +64,7 @@ The `Customer` class here provides a definition for a data table to expose. It i
 
 ---
 
-## Starting the endpoint engine
+### Starting the endpoint engine
 
 In the `Startup.cs` file to kick start the data publishing engine, call:
 
