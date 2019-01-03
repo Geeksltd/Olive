@@ -3,6 +3,7 @@
 
 ## 3 Jan 2019
 Update `#Model.csproj` and `#UI.csproj` files add `/warn` to the end of the AfterBuild commands.
+
 **#Model.csproj**
 ```xml
 <Target Name="Generate code" AfterTargets="AfterBuild">
