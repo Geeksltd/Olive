@@ -37,8 +37,5 @@
 
             return isValid(value, validationContext);
         }
-
-        internal static string GetVisiblePropertyName(this ValidationContext @this) =>
-            @this.MemberName.TrimEnd("_Text").WithSuffix("_Visible");
     }
 }
