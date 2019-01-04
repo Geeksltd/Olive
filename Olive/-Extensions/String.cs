@@ -598,7 +598,6 @@ namespace Olive
         /// <param name="caseSensitive">The list of strings which are checked whether it is in this value or not.</param>
         public static bool StartsWithAny(this string @this, bool caseSensitive, params string[] listOfBeginnings)
         {
-
             foreach (var option in listOfBeginnings)
             {
                 if (caseSensitive)
@@ -608,9 +607,9 @@ namespace Olive
                 else
                 {
                     if (@this.StartsWith(option, StringComparison.OrdinalIgnoreCase)) return true;
-
                 }
             }
+
             return false;
         }
 
@@ -804,7 +803,6 @@ namespace Olive
         public static string Remove(this string @this, string firstSubstringsToRemove, bool caseSensitive, params string[] otherSubstringsToRemove) =>
                 @this.Remove(firstSubstringsToRemove, caseSensitive).Remove(otherSubstringsToRemove, caseSensitive);
 
-
         /// <summary>
         /// Removes the specified substrings from this string object.
         /// </summary>
@@ -822,7 +820,6 @@ namespace Olive
 
             return result;
         }
-
 
         /// <summary>
         /// Removes the specified substrings from this string object.
@@ -868,8 +865,6 @@ namespace Olive
             return Regex.Replace(text, substringToRemove, string.Empty, comparison);
         }
 
-
-
         /// <summary>
         /// Replaces all occurrences of a specified phrase to a substitute, even if the original phrase gets produced again as the result of substitution. Note: It's an expensive call.
         /// </summary>
@@ -904,7 +899,6 @@ namespace Olive
 
             return @this;
         }
-
 
         /// <summary>
         /// Gets this same string when a specified condition is True, otherwise it returns empty string.
@@ -1534,7 +1528,6 @@ namespace Olive
         {
             return @this.RemoveStart(phrase, trimPhrase: false, caseSensitive: caseSensitive);
         }
-
 
         static string RemoveStart(this string @this, string search, bool trimPhrase = false, bool caseSensitive = false)
         {

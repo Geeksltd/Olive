@@ -8,7 +8,8 @@ namespace Olive.Entities
     /// This is intended to be used by object relational mapping (ORM) tools.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class PrimaryKeyAttribute : Attribute {
+    public class PrimaryKeyAttribute : Attribute
+    {
         /// <summary>
         /// Determines if a given property is primary key.
         /// </summary>

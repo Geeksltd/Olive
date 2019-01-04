@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 namespace Olive.Entities
 {
@@ -18,6 +17,5 @@ namespace Olive.Entities
         {
             TableName = name;
         }
-
     }
 }

@@ -72,7 +72,7 @@ namespace Olive.Logging
             {
                 try
                 {
-                    MessageQueue.Add(new LogMessage { Message = message, Timestamp = timestamp , Severity = severity }, CancellationTokenSource.Token);
+                    MessageQueue.Add(new LogMessage { Message = message, Timestamp = timestamp, Severity = severity }, CancellationTokenSource.Token);
                 }
                 catch
                 {
