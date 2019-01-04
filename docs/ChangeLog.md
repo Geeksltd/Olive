@@ -3,13 +3,9 @@
 
 ## 4 Jan 2019
 
-**Domain.csproj**
+- In **Domain.csproj**, remove the `[GEN-DAL]` folder form the project.
 
-Remove the [GEN-DAL] folder form the project.
-
-**Website.csproj**
-
-In the **appsetting.json** change the following section as provided.
+- In **Website.csproj** in the `appsetting.json` file change the following section:
 ```json
 "Database": {
     "Providers": [
@@ -25,21 +21,21 @@ Should be changed to
 "Database": {
     "ProviderMappings": [
         {
-        "AssemblyName": "Domain.dll",
-        "ProviderFactoryType": "Olive.Entities.Data.DataProviderFactory, Olive.Entities.Data"
+            "AssemblyName": "Domain.dll"
         }
     ],
     ...
 ```
 
-In the **startup.cs** add `services.AddDataAccess<System.Data.SqlClient.SqlConnection, SqlServerSqlCommandGenerator>();` as shown below.
+- In the `startup.cs`, add the following line:
 
 ```csharp
 public override void ConfigureServices(IServiceCollection services)
 {
     base.ConfigureServices(services);
-    services.AddDataAccess<System.Data.SqlClient.SqlConnection, SqlServerSqlCommandGenerator>();
-...
+    services.AddDataAccess(x => x.SqlServer());
+    ...
+}
 ```
 
 ## 3 Jan 2019
