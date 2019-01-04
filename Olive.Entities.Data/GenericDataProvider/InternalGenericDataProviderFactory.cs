@@ -18,6 +18,7 @@ namespace Olive.Entities.Data
                 if (Cache.ContainsKey(type)) return Cache[type];
 
                 var result = new DataProvider(type, cache, access, sqlCommandGenerator);
+                result.Prepare();
                 Cache.Add(type, result);
 
                 return result;

@@ -27,7 +27,7 @@ namespace Olive.Entities.Data
 
         public string InsertCommand { get; }
 
-        public DataProvider(Type type, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
+        internal DataProvider(Type type, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {
             EntityType = type;
             SqlCommandGenerator = sqlCommandGenerator;
@@ -39,7 +39,10 @@ namespace Olive.Entities.Data
             DeleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
             UpdateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
             InsertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
+        }
 
+        internal void Prepare()
+        {
             PrepareTableTemplate();
             PrepareFields();
             PrepareColumnMappingDictonary();
@@ -202,15 +205,14 @@ namespace Olive.Entities.Data
         void PrepareTableTemplate()
         {
             TablesTemplate = "";
-            IDataProviderMetaData temp = null;
-
+            
             void addTable(IDataProviderMetaData medaData)
             {
-                TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(temp != null) +
-                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
-                    $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{temp?.TableAlias}.{temp?.IdColumnName}".OnlyWhen(temp != null);
+                var baseType = medaData.BaseClassesInOrder.LastOrDefault();
 
-                temp = medaData;
+                TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(TablesTemplate.HasValue()) +
+                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
+                    $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{baseType?.TableAlias}.{baseType?.IdColumnName}".OnlyWhen(baseType != null);
             }
 
             foreach (var parent in MetaData.BaseClassesInOrder)
@@ -261,13 +263,13 @@ namespace Olive.Entities.Data
         {
             foreach (var association in MetaData.AssociateProperties)
             {
-                var associateProvider = association.AssociateType.GetProvider(Cache, Access, SqlCommandGenerator);
+                var associateMetaData = DataProviderMetaDataGenerator.Generate(association.AssociateType);
 
                 var alias = $"[{{0}}.{association.Name}_{association.AssociateType.Name}]";
 
-                var template = $@"SELECT {alias}.{associateProvider.MetaData.IdColumnName}
-                    FROM {associateProvider.MetaData.TableName} AS {alias}
-                    WHERE {alias}.{associateProvider.MetaData.IdColumnName} = [{{1}}].{association.Name}";
+                var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
+                    FROM {associateMetaData.TableName} AS {alias}
+                    WHERE {alias}.{associateMetaData.IdColumnName} = [{{1}}].{association.Name}";
 
                 SubqueryMapping.Add(
                     association.Name.WithSuffix(".*"),

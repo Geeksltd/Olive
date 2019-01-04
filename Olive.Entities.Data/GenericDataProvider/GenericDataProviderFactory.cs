@@ -46,7 +46,7 @@ namespace Olive.Entities.Data
 
         IDataProvider CreateProvider(Type type)
         {
-            return new DataProvider(type, Context.Current.Cache(), DataAccess, DataAccess.GetSqlCommandGenerator());
+            return InternalDataProviderFactory.Get(type, Context.Current.Cache(), DataAccess, DataAccess.GetSqlCommandGenerator());
         }
 
         protected virtual bool IsRelevant(Type type)
