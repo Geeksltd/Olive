@@ -27,7 +27,7 @@ namespace Olive.Entities.Data
         {
             public string AssemblyName { get; set; }
             public string TypeName { get; set; }
-            public string ProviderFactoryType { get; set; }
+            public string ProviderFactoryType { get; set; } = "Olive.Entities.Data.DataProviderFactory, Olive.Entities.Data";
             public string ConnectionStringKey { get; set; }
             public string ConnectionString { get; set; }
 

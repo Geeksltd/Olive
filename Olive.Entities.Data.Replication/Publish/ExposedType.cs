@@ -24,6 +24,8 @@ namespace Olive.Entities.Replication
             {
                 try
                 {
+                    Log.For(this).Debug("Finding the value of " + f.GetName() + " field");
+
                     var value = f.GetSerializableValue(entity);
                     if (value == null) properties[f.GetName()] = null;
                     else properties[f.GetName()] = await value;
