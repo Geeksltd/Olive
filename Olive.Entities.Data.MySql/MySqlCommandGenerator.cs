@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Olive.Entities.Data
 {
-    public class MySqlSqlCommandGenerator : SqlCommandGenerator
+    public class MySqlCommandGenerator : SqlCommandGenerator
     {
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string tables, string fields)
         {

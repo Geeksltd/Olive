@@ -8,7 +8,7 @@
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.SqlServer.xml</DocumentationFile>
     <PackageId>Olive.Entities.Data.SqlServer</PackageId>
-    <PackageVersion>2.1.103</PackageVersion>
+    <PackageVersion>2.1.104</PackageVersion>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Entities Data SqlServer</Title>
