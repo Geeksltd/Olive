@@ -6,7 +6,7 @@ namespace Olive.Entities.Data
 {
     public class DatabaseConfig
     {
-        public List<ProviderMapping> ProviderMappings { get; set; }
+        public List<ProviderMapping> Providers { get; set; }
         public bool Profile { get; set; }
         public CacheConfig Cache { get; set; }
         public TransactionConfig Transaction { get; set; }
@@ -31,13 +31,18 @@ namespace Olive.Entities.Data
             public string ConnectionStringKey { get; set; }
             public string ConnectionString { get; set; }
 
-            public string SqlClient { get; set; } = "System.Data.SqlClient";
+            public string SqlClient { get; set; }
 
             public Assembly Assembly { get; set; }
             public Type Type { get; set; }
 
             public Assembly GetAssembly()
-                => Assembly ?? (Assembly = AppDomain.CurrentDomain.LoadAssembly(AssemblyName));
+            {
+                if (Assembly != null) return Assembly;
+                if (AssemblyName.HasValue()) return Assembly = AppDomain.CurrentDomain.LoadAssembly(AssemblyName);
+                if (Type != null) return Assembly = Type.Assembly;
+                return null;
+            }
 
             public Type GetMappedType()
             {

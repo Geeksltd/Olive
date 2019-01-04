@@ -25,8 +25,15 @@ namespace Olive.Entities.Data
             Accessors[dataProviderType] = (IDataAccess)Activator.CreateInstance(dataAccessType, sqlCommandGenerator, null);
         }
 
-        public static IDataAccess GetDataAccess(string dataProviderType)
+        /// <summary>
+        /// Gets the data accessor for the specified provider type.
+        /// </summary>
+        /// <param name="dataProviderType">If null or empty is specified, the first registered data access object will be returned.</param>
+        public static IDataAccess GetDataAccess(string dataProviderType = null)
         {
+            if (dataProviderType.IsEmpty())
+                return Accessors.FirstOrDefault().Value ?? throw new Exception("No data access is registered.");
+
             if (Accessors.TryGetValue(dataProviderType, out var result))
                 return result;
 

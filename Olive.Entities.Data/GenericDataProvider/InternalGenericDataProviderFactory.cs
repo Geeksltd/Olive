@@ -7,9 +7,7 @@ namespace Olive.Entities.Data
 {
     internal static class InternalDataProviderFactory
     {
-        static Dictionary<Type, DataProvider> Cache =
-            new Dictionary<Type, DataProvider>();
-
+        static Dictionary<Type, DataProvider> Cache = new Dictionary<Type, DataProvider>();
 
         public static DataProvider Get(Type type, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {

@@ -36,7 +36,7 @@ namespace Olive.Entities.Data
             if (Configuration == null)
                 Config.Bind("Database", Configuration = new DatabaseConfig());
 
-            foreach (var factoryInfo in Configuration.ProviderMappings.OrEmpty())
+            foreach (var factoryInfo in Configuration.Providers.OrEmpty())
                 RegisterDataProviderFactory(factoryInfo);
         }
 
@@ -127,7 +127,7 @@ namespace Olive.Entities.Data
 
             if (AssemblyProviderFactories.TryGetValue(type.Assembly, out var result)) return result;
 
-            return null;
+            return new DataProviderFactory(type);
         }
 
         public IDataProvider GetProvider(Type type)

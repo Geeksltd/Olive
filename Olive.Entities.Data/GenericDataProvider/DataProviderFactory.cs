@@ -14,13 +14,17 @@ namespace Olive.Entities.Data
 
         public string ConnectionString { get; }
 
+        public DataProviderFactory(Type type) : this(new DatabaseConfig.ProviderMapping { Type = type })
+        {
+        }
+
         public DataProviderFactory(DatabaseConfig.ProviderMapping mapping)
         {
             DataAccess = mapping.GetDataAccess();
             ConnectionString = mapping.ConnectionString.Or(Data.DataAccess.GetCurrentConnectionString());
             ConnectionStringKey = mapping.ConnectionStringKey;
             MappedType = mapping.GetMappedType();
-            MappedAssembly = mapping.GetAssembly();             
+            MappedAssembly = mapping.GetAssembly();
         }
 
         public IDataAccess GetAccess() => DataAccess;

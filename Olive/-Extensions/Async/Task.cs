@@ -93,7 +93,7 @@ namespace Olive
         /// <param name="this">The target task to cast</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<TTarget> AsTask<TOriginal, TTarget>(this Task<TOriginal> @this)
-            where TOriginal : TTarget => @this.ContinueWith(t => (TTarget)t.GetAlreadyCompletedResult());
+            where TOriginal : TTarget => @this?.ContinueWith(t => (TTarget)t.GetAlreadyCompletedResult());
 
         /// <summary>
         /// Casts it into a Task of IEnumerable, so the Linq methods can be invoked on it.
