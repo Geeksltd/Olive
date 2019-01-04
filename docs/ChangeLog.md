@@ -5,7 +5,7 @@
 
 - In **Domain.csproj**, remove the `[GEN-DAL]` folder form the project.
 
-- In **Website.csproj** in the `appsetting.json` file change the following section:
+- In **Website.csproj** in the `appsetting.json` file remove the `Database:Providers` section:
 ```json
 "Database": {
     "Providers": [
@@ -15,16 +15,13 @@
         }
     ],
     ...
+}
 ```
 Should be changed to
 ```json
-"Database": {
-    "ProviderMappings": [
-        {
-            "AssemblyName": "Domain.dll"
-        }
-    ],
+"Database": {    
     ...
+}
 ```
 
 - In the `startup.cs`, add the following line:
