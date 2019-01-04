@@ -113,10 +113,10 @@ namespace Olive.Entities.Data
                  .Concat(AssemblyProviderFactories.Values)
                  .FirstOrDefault(x => x.ConnectionString == connectionString);
 
-            if (factory == null)
-                throw new Exception("No data provider factory's connection string matched the specified connection string.");
+            if (factory != null)
+                return factory.GetAccess();
 
-            return factory.GetAccess();
+            return DataAccess.GetDataAccess();
         }
 
         public IDataProvider GetProvider(IEntity item) => GetProvider(item.GetType());
