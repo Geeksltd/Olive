@@ -10,41 +10,18 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class InMemoryCacheProvider : ICacheProvider
     {
-        object TypesSyncLock = new object();
-        object ListsSyncLock = new object();
+        ConcurrentDictionary<Type, Dictionary<string, IEntity>> Types = new ConcurrentDictionary<Type, Dictionary<string, IEntity>>();
+        ConcurrentDictionary<Type, Dictionary<string, IEnumerable>> Lists = new ConcurrentDictionary<Type, Dictionary<string, IEnumerable>>();
 
-        Dictionary<Type, Dictionary<string, IEntity>> Types = new Dictionary<Type, Dictionary<string, IEntity>>();
-        Dictionary<Type, Dictionary<string, IEnumerable>> Lists = new Dictionary<Type, Dictionary<string, IEnumerable>>();
-
-        Dictionary<string, IEntity> GetEntities(Type type)
-        {
-            lock (TypesSyncLock)
-            {
-                if (Types.TryGetValue(type, out var result)) return result;
-
-                result = new Dictionary<string, IEntity>();
-                Types.Add(type, result);
-                return result;
-            }
-        }
+        Dictionary<string, IEntity> GetEntities(Type type) => 
+            Types.GetOrAdd(type, t => new Dictionary<string, IEntity>());
 
         Dictionary<string, IEnumerable> GetLists(Type type, bool autoCreate = true)
         {
-            lock (ListsSyncLock)
-            {
-                var result = Lists.TryGet(type);
-
-                if (result == null && autoCreate)
-                {
-                    if (result == null)
-                    {
-                        result = new Dictionary<string, IEnumerable>();
-                        Lists.Add(type, result);
-                    }
-                }
-
-                return result;
-            }
+            if (autoCreate)
+                return Lists.GetOrAdd(type, t => new Dictionary<string, IEnumerable>());
+            else
+                return Lists.TryGet(type);
         }
 
         public IEntity Get(Type entityType, string id)
@@ -93,10 +70,8 @@ namespace Olive.Entities.Data
 
         public void Remove(Type type, bool invalidateCachedReferences = false)
         {
-            if (Types.TryGetValue(type, out var entities))
+            if (Types.TryRemove(type, out var entities))
             {
-                lock (entities) Types.Remove(type);
-
                 if (invalidateCachedReferences)
                     entities.Do(e => e.Value.InvalidateCachedReferences());
             }
@@ -127,15 +102,8 @@ namespace Olive.Entities.Data
         public void ClearAll()
         {
             RowVersionCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
-
-            lock (TypesSyncLock)
-            {
-                Types.Clear();
-            }
-            lock (ListsSyncLock)
-            {
-                Lists.Clear();
-            }
+            Types.Clear();
+            Lists.Clear();
         }
     }
 }
