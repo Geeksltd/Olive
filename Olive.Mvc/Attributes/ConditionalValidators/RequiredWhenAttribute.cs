@@ -11,7 +11,7 @@
         /// Check if the specified property is true then validate.
         /// </summary>
         /// <param name="propertyName">The boolean property`s name which will be checked before validating.</param>
-        public RequiredWhenAttribute(string propertyName = null) =>
+        public RequiredWhenAttribute(string propertyName) =>
             PropertyName = propertyName;
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
