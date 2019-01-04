@@ -1,6 +1,47 @@
 
 # Olive compatibility change log
 
+## 4 Jan 2019
+
+**Domain.csproj**
+
+Remove the [GEN-DAL] folder form the project.
+
+**Website.csproj**
+
+In the **appsetting.json** change the following section as provided.
+```json
+"Database": {
+    "Providers": [
+        {
+            "AssemblyName": "Domain.dll",
+            "ProviderFactoryType": "AppData.AdoDotNetDataProviderFactory"
+        }
+    ],
+    ...
+```
+Should be changed to
+```json
+"Database": {
+    "ProviderMappings": [
+        {
+        "AssemblyName": "Domain.dll",
+        "ProviderFactoryType": "Olive.Entities.Data.DataProviderFactory, Olive.Entities.Data"
+        }
+    ],
+    ...
+```
+
+In the **startup.cs** add `services.AddDataAccess<System.Data.SqlClient.SqlConnection, SqlServerSqlCommandGenerator>();` as shown below.
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    services.AddDataAccess<System.Data.SqlClient.SqlConnection, SqlServerSqlCommandGenerator>();
+...
+```
+
 ## 3 Jan 2019
 Update `#Model.csproj` and `#UI.csproj` files add `/warn` to the end of the AfterBuild commands.
 
