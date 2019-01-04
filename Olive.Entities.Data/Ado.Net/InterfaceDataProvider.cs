@@ -12,46 +12,13 @@ namespace Olive.Entities.Data
     public class InterfaceDataProvider : LimitedDataProvider
     {
         Type InterfaceType;
-        static ConcurrentDictionary<Type, List<Type>> ImplementationsCache = new ConcurrentDictionary<Type, List<Type>>();
+        static ConcurrentDictionary<Type, Type[]> ImplementationsCache = new ConcurrentDictionary<Type, Type[]>();
 
         public InterfaceDataProvider(Type interfaceType) => InterfaceType = interfaceType;
 
         public override Type EntityType => InterfaceType;
 
-        List<Type> GetImplementers() => ImplementationsCache.GetOrAdd(InterfaceType, FindImplementers);
-
-        static List<Type> FindImplementers(Type interfaceType)
-        {
-            var result = new List<Type>();
-
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.References(interfaceType.Assembly)))
-            {
-                try
-                {
-                    foreach (var type in assembly.GetTypes())
-                    {
-                        if (type == interfaceType) continue;
-                        if (type.IsInterface) continue;
-
-                        if (type.Implements(interfaceType))
-                            result.Add(type);
-                    }
-                }
-                catch
-                {
-                    // Can't load assembly. No logging is needed.
-                }
-            }
-
-            // For any type, if it's parent is in the list, exclude it:
-
-            var typesWithParentsIn = result.Where(x => result.Contains(x.BaseType)).ToArray();
-
-            foreach (var item in typesWithParentsIn)
-                result.Remove(item);
-
-            return result;
-        }
+        Type[] GetImplementers() => ImplementationsCache.GetOrAdd(InterfaceType, x => AppDomain.CurrentDomain.FindImplementers(x));
 
         List<IDataProvider> FindProviders()
         {

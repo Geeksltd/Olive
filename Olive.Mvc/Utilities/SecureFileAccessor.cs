@@ -58,7 +58,12 @@ namespace Olive.Mvc
         {
             var typeName = PathParts[0].Split('.')[0];
 
-            Type = Database.GetRegisteredAssemblies().Select(a => a.GetExportedTypes().SingleOrDefault(t => t.Name == typeName)).ExceptNull().FirstOrDefault();
+            Type = Database.GetRegisteredAssemblies()
+                .Select(a => a.GetExportedTypes().SingleOrDefault(t => t.Name == typeName))
+                .ExceptNull().FirstOrDefault();
+
+            if (Type == null) Type = AppDomain.CurrentDomain.FindImplementers(typeof(IEntity)).SingleOrDefault(x => x.Name == typeName);
+
             if (Type == null) throw new Exception($"Invalid type name specified: '{typeName}'");
 
             Property = PathParts[0].Split('.')[1];
