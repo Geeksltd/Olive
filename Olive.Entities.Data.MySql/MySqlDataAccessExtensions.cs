@@ -4,7 +4,7 @@ namespace Olive.Entities.Data
 {
     public static class MySqlDataAccessExtensions
     {
-        public static DataAccessOptions SqlServer(this DataAccessOptions @this)
+        public static DataAccessOptions MySql(this DataAccessOptions @this)
         {
             return @this.Add<MySqlConnection, MySqlCommandGenerator>();
         }

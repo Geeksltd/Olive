@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
 
 namespace Olive.Entities.Data
 {
@@ -14,7 +14,7 @@ namespace Olive.Entities.Data
         {
             Task<IDataReader> read()
             {
-                return new DataAccess<SqliteConnection>(new SQLitSqlCommandGenerator())
+                return new DataAccess<SqliteConnection>(new SqliteCommandGenerator())
                 .ExecuteReader("SELECT NAME FROM sqlite_master where type = 'table'");
             }
 

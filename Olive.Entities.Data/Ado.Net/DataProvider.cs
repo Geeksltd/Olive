@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ namespace Olive.Entities.Data
     /// <summary>
     /// Provides a DataProvider for accessing data from the database using ADO.NET.
     /// </summary>
-    public partial class DataProvider: IDataProvider
+    public partial class DataProvider : IDataProvider
     {
         string connectionString, connectionStringKey = "Default";
         readonly static string[] ExtractIdsSeparator = new[] { "</Id>", "<Id>", "," };
@@ -21,7 +20,7 @@ namespace Olive.Entities.Data
 
         public static IDatabase Database => Context.Current.Database();
         protected ICache Cache;
-        
+
         public virtual async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             foreach (var item in entities)
@@ -161,28 +160,26 @@ namespace Olive.Entities.Data
             return result;
         }
 
-        ///// <summary>
-        ///// Creates a data parameter with the specified name and value.
-        ///// </summary>
-        //public IDataParameter CreateParameter(string parameterName, object value)
-        //{
+        // /// <summary>
+        // /// Creates a data parameter with the specified name and value.
+        // /// </summary>
+        // public IDataParameter CreateParameter(string parameterName, object value)
+        // {
         //    if (value == null) value = DBNull.Value;
         //    else if (value is Blob blob) value = blob.FileName;
 
         //    return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value };
-        //}
+        // }
 
-        ///// <summary>
-        ///// Creates a data parameter with the specified name and value and type.
-        ///// </summary>
-        //public IDataParameter CreateParameter(string parameterName, object value, DbType columnType)
-        //{
+        // /// <summary>
+        // /// Creates a data parameter with the specified name and value and type.
+        // /// </summary>
+        // public IDataParameter CreateParameter(string parameterName, object value, DbType columnType)
+        // {
         //    if (value == null) value = DBNull.Value;
 
         //    return new TDataParameter { ParameterName = parameterName.Remove(" "), Value = value, DbType = columnType };
-        //}
-
-        
+        // }
 
         /// <summary>
         /// Gets the specified record by its type and ID.
@@ -272,7 +269,7 @@ namespace Olive.Entities.Data
         #endregion
 
         #region Common things in DataProvider classes
-        
+
         public virtual string GenerateSelectCommand(IDatabaseQuery iquery)
         {
             return GenerateSelectCommand(iquery, GetFields());

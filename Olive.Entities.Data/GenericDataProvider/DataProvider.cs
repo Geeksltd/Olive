@@ -1,10 +1,6 @@
-﻿using Olive.Entities.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Reflection;
-using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,14 +8,13 @@ namespace Olive.Entities.Data
 {
     partial class DataProvider
     {
-        string Fields;
-        string TablesTemplate;
+        string Fields, TablesTemplate;
         Dictionary<string, string> ColumnMapping = new Dictionary<string, string>();
         Dictionary<string, string> SubqueryMapping = new Dictionary<string, string>();
 
         public ISqlCommandGenerator SqlCommandGenerator { get; }
 
-        public IDataProviderMetaData MetaData {get;}
+        public IDataProviderMetaData MetaData { get; }
 
         public string DeleteCommand { get; }
 
@@ -51,7 +46,7 @@ namespace Olive.Entities.Data
 
         public virtual string MapColumn(string propertyName)
         {
-            if(ColumnMapping.TryGetValue(propertyName, out string result)) return result;
+            if (ColumnMapping.TryGetValue(propertyName, out string result)) return result;
 
             return $"{MetaData.TableAlias}.[{propertyName}]";
         }
@@ -85,10 +80,8 @@ namespace Olive.Entities.Data
         /// </summary>
         public virtual async Task Save(IEntity record)
         {
-            if (record.IsNew)
-                await Insert(record);
-            else
-                await Update(record);
+            if (record.IsNew) await Insert(record);
+            else await Update(record);
         }
 
         public virtual string GetFields() => Fields;
@@ -105,10 +98,10 @@ namespace Olive.Entities.Data
                     return current.GetProvider(Cache, Access, SqlCommandGenerator).Parse(reader);
             }
 
-            if(MetaData.Type.IsAbstract)
+            if (MetaData.Type.IsAbstract)
                 throw new Exception($"The record with ID of '{reader[GetSqlCommandColumnAlias(MetaData, MetaData.IdColumnName)]}' exists only in the abstract database table of '{MetaData.TableName}' and no concrete table. The data needs cleaning-up.");
 
-            var result = (IEntity) Activator.CreateInstance(EntityType);
+            var result = (IEntity)Activator.CreateInstance(EntityType);
 
             FillData(reader, result);
 
@@ -152,7 +145,7 @@ namespace Olive.Entities.Data
             else using (var scope = Database.CreateTransactionScope()) { await saveAll(); scope.Complete(); }
         }
 
-        private IDataParameter[] CreateParameters(IEntity record)
+        IDataParameter[] CreateParameters(IEntity record)
         {
             var result = new List<IDataParameter>();
 
@@ -185,7 +178,7 @@ namespace Olive.Entities.Data
             {
                 var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
 
-                if(value != DBNull.Value)
+                if (value != DBNull.Value)
                     property.SetValue(entity, value);
             }
         }
@@ -196,16 +189,16 @@ namespace Olive.Entities.Data
         string GetSqlCommandColumn(IDataProviderMetaData medaData, string propertyName) =>
             $"{medaData.TableAlias}.[{propertyName}]";
 
-        string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, IPropertyData property) => 
+        string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, IPropertyData property) =>
             GetSqlCommandColumnAlias(medaData, property.Name);
 
-        string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, string propertyName) => 
+        string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, string propertyName) =>
             $"{medaData.TableName}_{propertyName}";
 
         void PrepareTableTemplate()
         {
             TablesTemplate = "";
-            
+
             void addTable(IDataProviderMetaData medaData)
             {
                 var baseType = medaData.BaseClassesInOrder.LastOrDefault();
@@ -246,9 +239,9 @@ namespace Olive.Entities.Data
         {
             ColumnMapping.Add(PropertyData.DEFAULT_ID_COLUMN, GetSqlCommandColumn(MetaData, MetaData.IdColumnName));
 
-            if(MetaData.IsSoftDeleteEnabled)
+            if (MetaData.IsSoftDeleteEnabled)
                 ColumnMapping.Add(
-                    PropertyData.IS_MARKED_SOFT_DELETED, 
+                    PropertyData.IS_MARKED_SOFT_DELETED,
                     GetSqlCommandColumn(MetaData, MetaData.Properties.First(p => p.IsDeleted)));
 
             foreach (var prop in MetaData.UserDefienedProperties)
@@ -256,7 +249,7 @@ namespace Olive.Entities.Data
 
             foreach (var parent in MetaData.BaseClassesInOrder)
                 foreach (var prop in parent.UserDefienedProperties)
-                    ColumnMapping.Add(prop.Name, GetSqlCommandColumn(MetaData, prop));
+                    ColumnMapping.Add(prop.Name, GetSqlCommandColumn(parent, prop));
         }
 
         void PrepareSubqueryMappingDictonary()

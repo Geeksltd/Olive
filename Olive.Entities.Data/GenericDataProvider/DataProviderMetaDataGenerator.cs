@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Olive.Entities.Data
@@ -106,7 +106,8 @@ namespace Olive.Entities.Data
 
             var ids = new List<PropertyInfo>();
 
-            PropertyInfo getIdFor(PropertyInfo info){
+            PropertyInfo getIdFor(PropertyInfo info)
+            {
                 var result = rest.FirstOrDefault(p => p.Name == info.Name.WithSuffix("Id"));
                 ids.Add(result);
                 return result;
@@ -140,7 +141,7 @@ namespace Olive.Entities.Data
 
         static bool IsNullableType(PropertyInfo property)
         {
-            return property.PropertyType.IsGenericType && 
+            return property.PropertyType.IsGenericType &&
                 property.PropertyType.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
         }
     }
