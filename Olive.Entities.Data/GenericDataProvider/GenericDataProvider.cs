@@ -256,7 +256,7 @@ namespace Olive.Entities.Data
 
             foreach (var parent in MetaData.BaseClassesInOrder)
                 foreach (var prop in parent.UserDefienedProperties)
-                    ColumnMapping.Add(prop.Name, GetSqlCommandColumn(MetaData, prop));
+                    ColumnMapping.Add(prop.Name, GetSqlCommandColumn(parent, prop));
         }
 
         void PrepareSubqueryMappingDictonary()
