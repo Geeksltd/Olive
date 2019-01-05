@@ -8,7 +8,7 @@ Olive introduces some basic abstractions for business entities, in order to prov
 
 ## IEntity
 The `IEntity` interface is the most basic abstraction, with the following structure.
-```
+```csharp
 interface IEntity : IComparable
 {
     // Determines whether this object has just been instantiated as a new object, or represent an already persisted instance.
@@ -86,7 +86,7 @@ class Customer : GuidEntity
 #### Validate()
 This method is invoked by the framework when saving an entity, right after `OnValidating()` call is completed.
 You should override this method in your business entity types in order to provide custom validation logic.
-It expects a `ValidationException` to be thrown in case of an invalid state.
+It expects a `ValidationException` to be thrown in case of an invalid state. Should that be the case, the saving operation will be terminated.
 
 For example:
 ```csharp
@@ -103,8 +103,29 @@ class Customer : GuidEntity
     }
 }
 ```
+
+#### OnSaving()
+This event is raised just before an entity is saved in the data repository. It is invoked right after a successful call to `Validate()`.
+You can override this method to implement custom business logic in some rare scenarios. 
+
+> Note: You should not normally use this to amend the state of the object, because in that case the validation logic will not be able to catch an error in your modifications. In such cases, use `OnValidating()` instead.
+
+This method contains an argument of type `CancelEventArgs` which allows you to cancel the save operation. For example:
+```csharp
+class Customer : GuidEntity
+{
+    ...
+
+    protected override async Task OnSaving(CancelEventArgs e)
+    {
+        await base.OnSaving(e);
         
-- `OnSaving()`
-- `OnSaved()`
+        if (/*some scenario*/)
+           e.Cancel = true;
+    }
+}
+```
+
+#### OnSaved()
 
 , `OnDeleting()`, `OnDeleted()`. To implement custom business logic related to the lifecycle events of a
