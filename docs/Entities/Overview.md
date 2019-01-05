@@ -127,5 +127,21 @@ class Customer : GuidEntity
 ```
 
 #### OnSaved()
+This event is raised after this instance is saved in the database.
+
+For example:
+```csharp
+class Customer : GuidEntity
+{
+    ...
+
+    protected override async Task OnSaved(SaveEventArgs e)
+    {
+        await base.OnSaved(e);
+        
+        ...
+    }
+}
+```
 
 , `OnDeleting()`, `OnDeleted()`. To implement custom business logic related to the lifecycle events of a
