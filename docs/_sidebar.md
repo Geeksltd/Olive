@@ -41,7 +41,6 @@
     * [Ado.NET & Raw data access](Entities/RawDataAccess.md)
     * [Olive ORM](Entities/ORM.md)
        * [Caching](Entities/Cache.md)
-    * [Ado.NET and Raw data access](Entities/AdoNet.md)
     * [Database Api](Entities/Database.md)
        * [IDatabaseQuery](Entities/IDatabaseQuery.md)
     * [Provider model and DI](Entities/DI.md)
