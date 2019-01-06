@@ -21,10 +21,12 @@ namespace Olive.BlobAws
         /// <summary>
         /// Initializes a new instance of a <see cref="S3FileProvider"/> at the given bucket.
         /// </summary>
-        public S3FileProvider()
+        /// <param name="amazonS3"><see cref="IAmazonS3" /> Amazon S3 service object</param>
+        /// <param name="bucketName">Name of the bucket that will be used</param>
+        public S3FileProvider(IAmazonS3 amazonS3, string bucketName)
         {
-            AmazonS3 = AWSInfo.AmazonS3Client;
-            BucketName = AWSInfo.S3BucketName;
+            AmazonS3 = amazonS3;
+            BucketName = bucketName;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
