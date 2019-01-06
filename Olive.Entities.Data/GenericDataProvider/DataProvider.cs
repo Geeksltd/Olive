@@ -1,31 +1,20 @@
-﻿using Olive.Entities.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Reflection;
-using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
-    public class GenericDataProvider<TConnection, TDataParameter> : DataProvider<TConnection, TDataParameter>
-         where TConnection : DbConnection, new()
-         where TDataParameter : IDbDataParameter, new()
+    partial class DataProvider
     {
-        readonly Type entityType;
-
-        string Fields;
-        string TablesTemplate;
+        string Fields, TablesTemplate;
         Dictionary<string, string> ColumnMapping = new Dictionary<string, string>();
         Dictionary<string, string> SubqueryMapping = new Dictionary<string, string>();
 
-        public SqlCommandGenerator SqlCommandGenerator { get; }
+        public ISqlCommandGenerator SqlCommandGenerator { get; }
 
-        public DataProviderMetaData MetaData {get;}
-
-        public override Type EntityType => entityType;
+        public IDataProviderMetaData MetaData { get; }
 
         public string DeleteCommand { get; }
 
@@ -33,98 +22,109 @@ namespace Olive.Entities.Data
 
         public string InsertCommand { get; }
 
-        public GenericDataProvider(Type type, ICache cache, SqlCommandGenerator sqlCommandGenerator)
-            : base(cache)
+        internal DataProvider(Type type, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {
-            entityType = type;
+            EntityType = type;
             SqlCommandGenerator = sqlCommandGenerator;
+            Cache = cache;
+            Access = access;
 
             MetaData = DataProviderMetaDataGenerator.Generate(type);
 
             DeleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
             UpdateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
             InsertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
+        }
 
+        internal void Prepare()
+        {
             PrepareTableTemplate();
             PrepareFields();
             PrepareColumnMappingDictonary();
             PrepareSubqueryMappingDictonary();
         }
 
-        public override string MapColumn(string propertyName)
+        public virtual string MapColumn(string propertyName)
         {
-            if(ColumnMapping.TryGetValue(propertyName, out string result)) return result;
+            if (ColumnMapping.TryGetValue(propertyName, out string result)) return result;
 
             return $"{MetaData.TableAlias}.[{propertyName}]";
         }
 
-        protected override string SafeId(string objectName)
+        protected virtual string SafeId(string objectName)
         {
             throw new NotImplementedException("Should be moved to data access class.");
         }
 
-        public override Task Delete(IEntity record)
+        /// <summary>
+        /// Deletes the specified record.
+        /// </summary>
+        public virtual Task Delete(IEntity record)
         {
             if (MetaData.BaseClassesInOrder.Any())
-                return MetaData.BaseClassesInOrder.First().GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Delete(record);
+                return MetaData.BaseClassesInOrder.First().GetProvider(Cache, Access, SqlCommandGenerator).Delete(record);
 
             return ExecuteNonQuery(DeleteCommand, CommandType.Text, Access.CreateParameter("Id", record.GetId()));
         }
 
-        public override Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property)
+        /// <summary>
+        /// Reads the many to many relation.
+        /// </summary>
+        public virtual Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property)
         {
-            throw new NotImplementedException();
+            throw new ArgumentException($"The property '{property}' is not supported for the instance of '{instance.GetType()}'");
         }
 
-        public override async Task Save(IEntity record)
+        /// <summary>
+        /// Saves the specified record.
+        /// </summary>
+        public virtual async Task Save(IEntity record)
         {
-            if (record.IsNew)
-                await Insert(record);
-            else
-                await Update(record);
+            if (record.IsNew) await Insert(record);
+            else await Update(record);
         }
 
-        public override string GetFields() => Fields;
+        public virtual string GetFields() => Fields;
 
-        public override string GetTables(string prefix = null) => TablesTemplate.FormatWith(prefix);
+        public virtual string GetTables(string prefix = null) => TablesTemplate.FormatWith(prefix);
 
-        public override IEntity Parse(IDataReader reader)
+        public virtual IEntity Parse(IDataReader reader)
         {
             for (int index = MetaData.DrivedClasses.Length - 1; index > -1; index--)
             {
                 var current = MetaData.DrivedClasses[index];
 
                 if (reader[GetSqlCommandColumnAlias(current, current.IdColumnName)] != DBNull.Value)
-                    return current.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Parse(reader);
+                    return current.GetProvider(Cache, Access, SqlCommandGenerator).Parse(reader);
             }
 
-            if(MetaData.Type.IsAbstract)
+            if (MetaData.Type.IsAbstract)
                 throw new Exception($"The record with ID of '{reader[GetSqlCommandColumnAlias(MetaData, MetaData.IdColumnName)]}' exists only in the abstract database table of '{MetaData.TableName}' and no concrete table. The data needs cleaning-up.");
 
-            var result = (IEntity) Activator.CreateInstance(EntityType);
+            var result = (IEntity)Activator.CreateInstance(EntityType);
 
             FillData(reader, result);
 
             foreach (var parent in MetaData.BaseClassesInOrder)
-                parent.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).FillData(reader, result);
+                parent.GetProvider(Cache, Access, SqlCommandGenerator).FillData(reader, result);
 
             Entity.Services.SetSaved(result, saved: true);
 
             return result;
         }
 
-        public override string GenerateSelectCommand(IDatabaseQuery iquery, string fields) =>
+        public virtual string GenerateSelectCommand(IDatabaseQuery iquery, string fields) =>
             SqlCommandGenerator.GenerateSelectCommand(iquery, GetTables(iquery.AliasPrefix), fields);
 
-        public override string GenerateWhere(DatabaseQuery query) =>
+        public virtual string GenerateWhere(DatabaseQuery query) =>
             SqlCommandGenerator.GenerateWhere(query);
 
-        public override string MapSubquery(string path, string parent)
+        public virtual string MapSubquery(string path, string parent)
         {
             if (SubqueryMapping.TryGetValue(path, out string value))
                 return value.FormatWith(parent, parent.Or(MetaData.TableAlias));
 
-            return base.MapSubquery(path, parent);
+            throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }
 
         async Task Update(IEntity record)
@@ -132,7 +132,7 @@ namespace Olive.Entities.Data
             async Task saveAll()
             {
                 foreach (var parent in MetaData.BaseClassesInOrder)
-                    await parent.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Update(record);
+                    await parent.GetProvider(Cache, Access, SqlCommandGenerator).Update(record);
 
                 if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record))).ToStringOrEmpty().IsEmpty())
                 {
@@ -145,7 +145,7 @@ namespace Olive.Entities.Data
             else using (var scope = Database.CreateTransactionScope()) { await saveAll(); scope.Complete(); }
         }
 
-        private IDataParameter[] CreateParameters(IEntity record)
+        IDataParameter[] CreateParameters(IEntity record)
         {
             var result = new List<IDataParameter>();
 
@@ -160,7 +160,7 @@ namespace Olive.Entities.Data
             async Task saveAll()
             {
                 foreach (var parent in MetaData.BaseClassesInOrder)
-                    await parent.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).Insert(record);
+                    await parent.GetProvider(Cache, Access, SqlCommandGenerator).Insert(record);
 
                 var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record));
 
@@ -178,35 +178,34 @@ namespace Olive.Entities.Data
             {
                 var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
 
-                if(value != DBNull.Value)
+                if (value != DBNull.Value)
                     property.SetValue(entity, value);
             }
         }
 
-        string GetSqlCommandColumn(DataProviderMetaData medaData, PropertyData property) =>
+        string GetSqlCommandColumn(IDataProviderMetaData medaData, IPropertyData property) =>
             GetSqlCommandColumn(medaData, property.Name);
 
-        string GetSqlCommandColumn(DataProviderMetaData medaData, string propertyName) =>
+        string GetSqlCommandColumn(IDataProviderMetaData medaData, string propertyName) =>
             $"{medaData.TableAlias}.[{propertyName}]";
 
-        string GetSqlCommandColumnAlias(DataProviderMetaData medaData, PropertyData property) => 
+        string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, IPropertyData property) =>
             GetSqlCommandColumnAlias(medaData, property.Name);
 
-        string GetSqlCommandColumnAlias(DataProviderMetaData medaData, string propertyName) => 
+        string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, string propertyName) =>
             $"{medaData.TableName}_{propertyName}";
 
         void PrepareTableTemplate()
         {
             TablesTemplate = "";
-            DataProviderMetaData temp = null;
 
-            void addTable(DataProviderMetaData medaData)
+            void addTable(IDataProviderMetaData medaData)
             {
-                TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(temp != null) +
-                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
-                    $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{temp?.TableAlias}.{temp?.IdColumnName}".OnlyWhen(temp != null);
+                var baseType = medaData.BaseClassesInOrder.LastOrDefault();
 
-                temp = medaData;
+                TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(TablesTemplate.HasValue()) +
+                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
+                    $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{baseType?.TableAlias}.{baseType?.IdColumnName}".OnlyWhen(baseType != null);
             }
 
             foreach (var parent in MetaData.BaseClassesInOrder)
@@ -240,9 +239,9 @@ namespace Olive.Entities.Data
         {
             ColumnMapping.Add(PropertyData.DEFAULT_ID_COLUMN, GetSqlCommandColumn(MetaData, MetaData.IdColumnName));
 
-            if(MetaData.IsSoftDeleteEnabled)
+            if (MetaData.IsSoftDeleteEnabled)
                 ColumnMapping.Add(
-                    PropertyData.IS_MARKED_SOFT_DELETED, 
+                    PropertyData.IS_MARKED_SOFT_DELETED,
                     GetSqlCommandColumn(MetaData, MetaData.Properties.First(p => p.IsDeleted)));
 
             foreach (var prop in MetaData.UserDefienedProperties)
@@ -250,20 +249,20 @@ namespace Olive.Entities.Data
 
             foreach (var parent in MetaData.BaseClassesInOrder)
                 foreach (var prop in parent.UserDefienedProperties)
-                    ColumnMapping.Add(prop.Name, GetSqlCommandColumn(MetaData, prop));
+                    ColumnMapping.Add(prop.Name, GetSqlCommandColumn(parent, prop));
         }
 
         void PrepareSubqueryMappingDictonary()
         {
             foreach (var association in MetaData.AssociateProperties)
             {
-                var associateProvider = association.AssociateType.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator);
+                var associateMetaData = DataProviderMetaDataGenerator.Generate(association.AssociateType);
 
                 var alias = $"[{{0}}.{association.Name}_{association.AssociateType.Name}]";
 
-                var template = $@"SELECT {alias}.{associateProvider.MetaData.IdColumnName}
-                    FROM {associateProvider.MetaData.TableName} AS {alias}
-                    WHERE {alias}.{associateProvider.MetaData.IdColumnName} = [{{1}}].{association.Name}";
+                var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
+                    FROM {associateMetaData.TableName} AS {alias}
+                    WHERE {alias}.{associateMetaData.IdColumnName} = [{{1}}].{association.Name}";
 
                 SubqueryMapping.Add(
                     association.Name.WithSuffix(".*"),
@@ -271,7 +270,7 @@ namespace Olive.Entities.Data
             }
 
             foreach (var baseClass in MetaData.BaseClassesInOrder)
-                foreach (var pair in baseClass.GetProvider<TConnection, TDataParameter>(Cache, SqlCommandGenerator).SubqueryMapping)
+                foreach (var pair in baseClass.GetProvider(Cache, Access, SqlCommandGenerator).SubqueryMapping)
                     SubqueryMapping.Add(pair.Key, pair.Value);
         }
     }

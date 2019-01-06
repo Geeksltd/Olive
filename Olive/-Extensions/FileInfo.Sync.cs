@@ -65,7 +65,7 @@ namespace Olive
                 return;
             }
 
-            DoTryHard(@this, () => @this.Delete(harshly),
+            DoTryHard(@this, () => @this.Delete(),
                "The system cannot delete the file, even after several attempts. Path: {0}");
         }
 

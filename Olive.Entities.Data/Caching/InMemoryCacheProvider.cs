@@ -10,43 +10,18 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class InMemoryCacheProvider : ICacheProvider
     {
-        object SyncLock = new object();
+        ConcurrentDictionary<Type, Dictionary<string, IEntity>> Types = new ConcurrentDictionary<Type, Dictionary<string, IEntity>>();
+        ConcurrentDictionary<Type, Dictionary<string, IEnumerable>> Lists = new ConcurrentDictionary<Type, Dictionary<string, IEnumerable>>();
 
-        Dictionary<Type, Dictionary<string, IEntity>> Types = new Dictionary<Type, Dictionary<string, IEntity>>();
-        Dictionary<Type, Dictionary<string, IEnumerable>> Lists = new Dictionary<Type, Dictionary<string, IEnumerable>>();
-
-        Dictionary<string, IEntity> GetEntities(Type type)
-        {
-            if (Types.TryGetValue(type, out var result)) return result;
-
-            lock (SyncLock)
-            {
-                if (Types.TryGetValue(type, out result)) return result;
-
-                result = new Dictionary<string, IEntity>();
-                Types.Add(type, result);
-                return result;
-            }
-        }
+        Dictionary<string, IEntity> GetEntities(Type type) =>
+            Types.GetOrAdd(type, t => new Dictionary<string, IEntity>());
 
         Dictionary<string, IEnumerable> GetLists(Type type, bool autoCreate = true)
         {
-            var result = Lists.TryGet(type);
-
-            if (result == null && autoCreate)
-            {
-                lock (SyncLock)
-                {
-                    result = Lists.TryGet(type);
-                    if (result == null)
-                    {
-                        result = new Dictionary<string, IEnumerable>();
-                        Lists.Add(type, result);
-                    }
-                }
-            }
-
-            return result;
+            if (autoCreate)
+                return Lists.GetOrAdd(type, t => new Dictionary<string, IEnumerable>());
+            else
+                return Lists.TryGet(type);
         }
 
         public IEntity Get(Type entityType, string id)
@@ -95,10 +70,8 @@ namespace Olive.Entities.Data
 
         public void Remove(Type type, bool invalidateCachedReferences = false)
         {
-            if (Types.TryGetValue(type, out var entities))
+            if (Types.TryRemove(type, out var entities))
             {
-                lock (entities) Types.Remove(type);
-
                 if (invalidateCachedReferences)
                     entities.Do(e => e.Value.InvalidateCachedReferences());
             }
@@ -128,12 +101,9 @@ namespace Olive.Entities.Data
 
         public void ClearAll()
         {
-            lock (SyncLock)
-            {
-                RowVersionCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
-                Types.Clear();
-                Lists.Clear();
-            }
+            RowVersionCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
+            Types.Clear();
+            Lists.Clear();
         }
     }
 }

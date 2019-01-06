@@ -56,7 +56,7 @@ namespace Olive.Mvc
             {
                 return "<html><body><h3>Available commands:</h3><ul>" +
                        AvailableCommands()
-                       .Select(x => $"<li>{x.Title}: <href='/cmd/{x.Name}'>/cmd/{x.Name}</a></li>")
+                       .Select(x => $"<li>{x.Title}: <a href='/cmd/{x.Name}'>/cmd/{x.Name}</a></li>")
                        .ToLinesString() + "</ul></body></html>";
             }
 

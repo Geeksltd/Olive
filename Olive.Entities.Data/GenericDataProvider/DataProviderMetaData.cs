@@ -4,13 +4,12 @@ using System.Linq;
 
 namespace Olive.Entities.Data
 {
-    public class DataProviderMetaData
+    public class DataProviderMetaData : IDataProviderMetaData
     {
-        DataProviderMetaData[] baseClassesInOrder;
-        DataProviderMetaData[] drivedClassesInOrder;
-        string idColumnName = null;
+        IDataProviderMetaData[] baseClassesInOrder, drivedClassesInOrder;
+        string idColumnName;
         bool? hasAutoNumber;
-        PropertyData autoNumberProperty;
+        IPropertyData autoNumberProperty;
 
         public string TableName { get; internal set; }
 
@@ -18,7 +17,7 @@ namespace Olive.Entities.Data
 
         public string Schema { get; internal set; }
 
-        public PropertyData[] Properties { get; internal set; }
+        public IPropertyData[] Properties { get; internal set; }
 
         public Type[] BaseClassTypesInOrder { get; internal set; }
 
@@ -26,7 +25,7 @@ namespace Olive.Entities.Data
 
         public Type Type { get; }
 
-        public DataProviderMetaData[] BaseClassesInOrder
+        public IDataProviderMetaData[] BaseClassesInOrder
         {
             get
             {
@@ -37,7 +36,7 @@ namespace Olive.Entities.Data
             }
         }
 
-        public DataProviderMetaData[] DrivedClasses
+        public IDataProviderMetaData[] DrivedClasses
         {
             get
             {
@@ -48,11 +47,11 @@ namespace Olive.Entities.Data
             }
         }
 
-        public IEnumerable<PropertyData> UserDefienedAndIdProperties => Properties?.Where(p => p.IsUserDefined || p.IsDefaultId);
+        public IEnumerable<IPropertyData> UserDefienedAndIdProperties => Properties?.Where(p => p.IsUserDefined || p.IsDefaultId);
 
-        public IEnumerable<PropertyData> UserDefienedProperties => Properties?.Where(p => p.IsUserDefined);
+        public IEnumerable<IPropertyData> UserDefienedProperties => Properties?.Where(p => p.IsUserDefined);
 
-        public IEnumerable<PropertyData> AssociateProperties => Properties?.Where(p => p.AssociateType != null);
+        public IEnumerable<IPropertyData> AssociateProperties => Properties?.Where(p => p.AssociateType != null);
 
         public string IdColumnName
         {
@@ -65,22 +64,24 @@ namespace Olive.Entities.Data
             }
         }
 
-        public bool HasAutoNumber { get
+        public bool HasAutoNumber
+        {
+            get
             {
-                if(hasAutoNumber == null)
+                if (hasAutoNumber == null)
                     hasAutoNumber = Properties.Any(p => p.IsAutoNumber);
 
                 return hasAutoNumber.Value;
             }
         }
 
-        public PropertyData AutoNumberProperty
+        public IPropertyData AutoNumberProperty
         {
             get
             {
                 if (HasAutoNumber == false) return null;
 
-                if(autoNumberProperty == null)
+                if (autoNumberProperty == null)
                     autoNumberProperty = Properties.First(p => p.IsAutoNumber);
 
                 return autoNumberProperty;

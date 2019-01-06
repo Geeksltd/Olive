@@ -23,8 +23,8 @@ namespace Olive.Entities.Data
             return r.ToString();
         }
 
-        protected override string SafeId(string id) => "[" + id + "]";
+        public override string SafeId(string id) => "[" + id + "]";
 
-        protected override string UnescapeId(string id) => id.Trim('[', ']');
+        public override string UnescapeId(string id) => id.Trim('[', ']');
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -46,6 +47,8 @@ namespace Olive.Mvc
 
             ConfigureMvc(services.AddMvc());
 
+            services.AddSingleton<IValidationAttributeAdapterProvider, OliveValidationAttributeAdapterProvider>();
+
             services.AddResponseCompression();
             services.AddResponseCaching();
 
@@ -77,7 +80,9 @@ namespace Olive.Mvc
         {
             Context.Current.Set(app.ApplicationServices).Set(Environment);
 
-            app.ApplicationServices.GetService<IDatabase>().Configure();
+            app.ApplicationServices.GetService<IDatabase>()
+                .ConfigDataAccess()
+                .Configure();
 
             if (Environment.IsDevelopment())
                 app.UseMiddleware<DevCommandMiddleware>();

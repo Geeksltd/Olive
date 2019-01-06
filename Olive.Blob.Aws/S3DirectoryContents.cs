@@ -23,10 +23,10 @@ namespace Olive.BlobAws
         /// <summary>
         /// Initializes a <see cref="S3DirectoryContents"/> instance.
         /// </summary>
-        public S3DirectoryContents(string subpath)
+        public S3DirectoryContents(IAmazonS3 amazonS3, string bucketName, string subpath)
         {
-            AmazonS3 = AWSInfo.AmazonS3Client;
-            BucketName = AWSInfo.S3BucketName;
+            AmazonS3 = amazonS3;
+            BucketName = bucketName;
             Subpath = subpath.TrimEnd('/') + "/";
         }
 
@@ -64,14 +64,12 @@ namespace Olive.BlobAws
             }
         }
 
-        /// <inheritdoc />
         public IEnumerator<IFileInfo> GetEnumerator()
         {
             EnumerateContents();
             return contents.GetEnumerator();
         }
 
-        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             EnumerateContents();
@@ -80,7 +78,7 @@ namespace Olive.BlobAws
 
         void EnumerateContents()
         {
-            var request = new ListObjectsV2Request()
+            var request = new ListObjectsV2Request
             {
                 BucketName = BucketName,
                 Delimiter = "/",
@@ -90,10 +88,10 @@ namespace Olive.BlobAws
 
             var files = response.S3Objects
                                 .Where(x => x.Key != Subpath)
-                                .Select(x => new S3BlobFileInfo(x.Key));
+                                .Select(x => new S3FileInfo(AmazonS3, BucketName, x.Key));
 
             var directories = response.CommonPrefixes
-                                      .Select(x => new S3BlobFileInfo(x));
+                                      .Select(x => new S3FileInfo(AmazonS3, BucketName, x));
 
             contents = directories.Concat(files);
         }

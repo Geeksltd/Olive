@@ -123,7 +123,7 @@ namespace Olive
         {
             if (@this.GetGenericArguments().None()) return @this.Name;
 
-            return @this.Name.TrimAfter("`", trimPhrase: true) + "<" +
+            return @this.Name.RemoveFrom("`") + "<" +
                 @this.GetGenericArguments().Select(t => t.GetCSharpName(includeNamespaces)).ToString(", ") + ">";
         }
 
@@ -407,10 +407,10 @@ namespace Olive
         {
             if (propertyPath.Contains("."))
             {
-                var directProperty = @this.GetProperty(propertyPath.TrimAfter("."));
+                var directProperty = @this.GetProperty(propertyPath.RemoveFrom("."));
 
                 if (directProperty == null)
-                    throw new Exception(@this.FullName + " does not have a property named '" + propertyPath.TrimAfter(".") + "'");
+                    throw new Exception(@this.FullName + " does not have a property named '" + propertyPath.RemoveFrom(".") + "'");
 
                 var associatedObject = directProperty.GetValue(instance);
                 if (associatedObject == null) return null;

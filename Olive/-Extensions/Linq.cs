@@ -934,7 +934,6 @@ namespace Olive
             }
         }
 
-
         /// <summary>
         /// Replaces the specified item in this list with the specified new item.
         /// </summary>
@@ -1339,6 +1338,7 @@ namespace Olive
                 if (awaitable != null) await awaitable;
             }
         }
+
         /// <summary>
         /// With async and await in C# we call functions in an asynchronous way. Like the rivers these tasks can run with no interference. Many things happen at once.
         /// This extension method causes to all tasks are run as await.

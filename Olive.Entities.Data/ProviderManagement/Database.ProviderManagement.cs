@@ -50,7 +50,7 @@ namespace Olive.Entities.Data
 
         #endregion
 
-        public void RegisterDataProviderFactory(DatabaseConfig.Provider factoryInfo)
+        public void RegisterDataProviderFactory(DatabaseConfig.ProviderMapping factoryInfo)
         {
             if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));
 
@@ -113,6 +113,9 @@ namespace Olive.Entities.Data
                  .Concat(AssemblyProviderFactories.Values)
                  .FirstOrDefault(x => x.ConnectionString == connectionString);
 
+            if (factory == null && connectionString.ToLowerOrEmpty() == DataAccess.GetCurrentConnectionString().ToLowerOrEmpty())
+                return DataAccess.GetDataAccess();
+
             if (factory == null)
                 throw new Exception("No data provider factory's connection string matched the specified connection string.");
 
@@ -127,7 +130,7 @@ namespace Olive.Entities.Data
 
             if (AssemblyProviderFactories.TryGetValue(type.Assembly, out var result)) return result;
 
-            return null;
+            return new DataProviderFactory(type);
         }
 
         public IDataProvider GetProvider(Type type)

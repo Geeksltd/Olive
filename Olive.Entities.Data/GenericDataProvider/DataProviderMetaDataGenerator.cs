@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Olive.Entities.Data
 {
     internal class DataProviderMetaDataGenerator
     {
-        internal static DataProviderMetaData Generate(Type type)
+        internal static IDataProviderMetaData Generate(Type type)
         {
             var tableName = TableNameAttribute.GetTableName(type);
 
@@ -23,7 +23,7 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IEnumerable<PropertyData> GetProperties(Type type)
+        static IEnumerable<IPropertyData> GetProperties(Type type)
         {
             var infos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 
@@ -39,7 +39,7 @@ namespace Olive.Entities.Data
             yield return GetOriginalIdPropertyData(type);
         }
 
-        static PropertyData GetDefaultIdPropertyData(Type type)
+        static IPropertyData GetDefaultIdPropertyData(Type type)
         {
             var info = type.GetProperty(PropertyData.DEFAULT_ID_COLUMN);
 
@@ -53,7 +53,7 @@ namespace Olive.Entities.Data
             };
         }
 
-        static PropertyData GetDeletedPropertyData(Type type)
+        static IPropertyData GetDeletedPropertyData(Type type)
         {
             return new PropertyData(isBlob: false)
             {
@@ -65,7 +65,7 @@ namespace Olive.Entities.Data
             };
         }
 
-        static PropertyData GetOriginalIdPropertyData(Type type)
+        static IPropertyData GetOriginalIdPropertyData(Type type)
         {
             return new PropertyData(isBlob: false)
             {
@@ -77,7 +77,7 @@ namespace Olive.Entities.Data
             };
         }
 
-        static PropertyData GetUserDefinedPropertyData(PropertyInfo info, PropertyInfo dbProp)
+        static IPropertyData GetUserDefinedPropertyData(PropertyInfo info, PropertyInfo dbProp)
         {
             var isBlob = info.PropertyType.IsA<Blob>();
             var targetProp = dbProp ?? info;
@@ -98,15 +98,16 @@ namespace Olive.Entities.Data
         static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
         {
             var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p));
-
             var nonOverriden = nonCalculated.Except(p => p.GetGetMethod() != p.GetGetMethod().GetBaseDefinition());
+            var nonTransient = nonOverriden.Except(p => TransientEntityAttribute.IsTransient(p.PropertyType));
 
-            var associations = nonOverriden.Where(predicate => predicate.PropertyType.IsA<IEntity>());
-            var rest = nonOverriden.Except(associations);
+            var associations = nonTransient.Where(predicate => predicate.PropertyType.IsA<IEntity>());
+            var rest = nonTransient.Except(associations);
 
             var ids = new List<PropertyInfo>();
 
-            PropertyInfo getIdFor(PropertyInfo info){
+            PropertyInfo getIdFor(PropertyInfo info)
+            {
                 var result = rest.FirstOrDefault(p => p.Name == info.Name.WithSuffix("Id"));
                 ids.Add(result);
                 return result;
@@ -140,7 +141,7 @@ namespace Olive.Entities.Data
 
         static bool IsNullableType(PropertyInfo property)
         {
-            return property.PropertyType.IsGenericType && 
+            return property.PropertyType.IsGenericType &&
                 property.PropertyType.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
         }
     }

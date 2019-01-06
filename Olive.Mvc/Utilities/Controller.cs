@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
+using Olive;
 using Olive.Entities;
 using System;
 using System.Collections.Generic;
@@ -224,6 +225,8 @@ namespace Olive.Mvc
         [NonAction]
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+            AddDefaultPageTitle(context);
+
             await BindAttributeRunner.Run(context);
 
             if (!await AuthorizeRequestParams(context))
@@ -234,6 +237,30 @@ namespace Olive.Mvc
             {
                 await base.OnActionExecutionAsync(context, next);
             }
+        }
+
+        public virtual string BrowserTitle
+        {
+            get => ViewData["Title"].ToStringOrEmpty();
+            set => ViewData["Title"] = value;
+        }
+
+        protected virtual string GetDefaultBrowserTitle(ActionExecutingContext context)
+        {
+            return Request.Path.Value?.Split('/').Trim()
+                    .Except(x => x.Is<Guid>())
+                    .Select(x => x.UrlDecode().Replace("-", " "))
+                    .Select(x => x.Any(c => c.IsLower()) ? x.ToProperCase() : x)
+                    .ToString(" > ");
+        }
+
+        void AddDefaultPageTitle(ActionExecutingContext context)
+        {
+            if (ViewData["Title"] != null) return;
+            if (!Request.IsGet()) return;
+            if (ControllerContext?.RouteData?.Values["action"].ToStringOrEmpty() != "Index") return;
+
+            BrowserTitle = GetDefaultBrowserTitle(context);
         }
 
         /// <summary>

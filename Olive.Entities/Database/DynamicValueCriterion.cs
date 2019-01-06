@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Olive.Entities
+﻿namespace Olive.Entities
 {
     public class DynamicValueCriterion : Criterion
     {
-        public DynamicValueCriterion(string leftPropertyName, FilterFunction function, string rightPropertyName) 
+        public DynamicValueCriterion(string leftPropertyName, FilterFunction function, string rightPropertyName)
             : base(leftPropertyName, function, rightPropertyName)
         {
         }

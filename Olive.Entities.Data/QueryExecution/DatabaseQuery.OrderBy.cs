@@ -8,15 +8,7 @@ namespace Olive.Entities.Data
     partial class DatabaseQuery
     {
         internal const bool DESC = true;
-        public List<OrderByPart> OrderByParts = new List<OrderByPart>();
-
-        public class OrderByPart
-        {
-            public string Property;
-            public bool Descending;
-
-            public override string ToString() => Property + (DESC ? ".DESC" : null);
-        }
+        public List<OrderByPart> OrderByParts { get; } = new List<OrderByPart>();
 
         IDatabaseQuery IDatabaseQuery.OrderBy(string property, bool descending)
         {

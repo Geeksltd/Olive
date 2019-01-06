@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Olive.Entities.Data;
 
 namespace Olive.Entities.Data
 {
-    public abstract class SqlCommandGenerator
+    public abstract class SqlCommandGenerator : ISqlCommandGenerator
     {
+        public abstract string SafeId(string objectName);
 
-        protected abstract string SafeId(string objectName);
-
-        protected abstract string UnescapeId(string id);
+        public abstract string UnescapeId(string id);
 
         public abstract string GenerateSelectCommand(IDatabaseQuery iquery, string tables, string fields);
 
-        protected virtual string GenerateSort(DatabaseQuery query)
+        public virtual string GenerateSort(IDatabaseQuery query)
         {
             var parts = new List<string>();
 
@@ -28,7 +25,7 @@ namespace Olive.Entities.Data
             return parts.ToString(", ") + offset;
         }
 
-        public virtual string GenerateWhere(DatabaseQuery query)
+        public virtual string GenerateWhere(IDatabaseQuery query)
         {
             var r = new StringBuilder();
 
@@ -43,7 +40,7 @@ namespace Olive.Entities.Data
             return r.ToString();
         }
 
-        public virtual string GenerateUpdateCommand(DataProviderMetaData metaData)
+        public virtual string GenerateUpdateCommand(IDataProviderMetaData metaData)
         {
             var properties = metaData.UserDefienedProperties
                 .Except(p => p.IsAutoNumber);
@@ -54,7 +51,7 @@ namespace Olive.Entities.Data
                 WHERE {metaData.IdColumnName} = @OriginalId";
         }
 
-        public virtual string GenerateInsertCommand(DataProviderMetaData metaData)
+        public virtual string GenerateInsertCommand(IDataProviderMetaData metaData)
         {
             var properties = metaData.UserDefienedAndIdProperties
                 .Except(p => p.IsAutoNumber);
@@ -71,13 +68,13 @@ namespace Olive.Entities.Data
                 ({properties.Select(x => $"@{x.ParameterName}").ToString(", ")})";
         }
 
-        public virtual string GenerateDeleteCommand(DataProviderMetaData metaData) =>
+        public virtual string GenerateDeleteCommand(IDataProviderMetaData metaData) =>
             $"DELETE FROM {GetFullTablaName(metaData)} WHERE {metaData.IdColumnName} = @Id";
 
-        string GetFullTablaName(DataProviderMetaData metaData) =>
+        string GetFullTablaName(IDataProviderMetaData metaData) =>
             metaData.Schema.WithSuffix(".") + metaData.TableName;
 
-        string Generate(DatabaseQuery query, ICriterion criterion)
+        string Generate(IDatabaseQuery query, ICriterion criterion)
         {
             if (criterion == null) return "(1 = 1)";
             else return criterion.ToSql(new SqlConversionContext

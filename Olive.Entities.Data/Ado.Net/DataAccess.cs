@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,16 +30,19 @@ namespace Olive.Entities.Data
         where TConnection : DbConnection, new()
     {
         static DbCommand ParameterFactory;
+        readonly ISqlCommandGenerator SqlCommandGenerator;
 
         static DataAccess()
         {
             ParameterFactory = new TConnection().CreateCommand();
         }
 
-        public DataAccess(string connectionString = null)
+        public DataAccess(ISqlCommandGenerator sqlCommandGenerator, string connectionString = null)
         {
             if (connectionString.IsEmpty())
                 connectionString = GetCurrentConnectionString();
+
+            SqlCommandGenerator = sqlCommandGenerator;
         }
 
         /// <summary>
@@ -277,15 +279,24 @@ namespace Olive.Entities.Data
             }
         }
 
-        public IDataParameter CreateParameter(string name, object value)
+        public IDataParameter CreateParameter(string name, object value) =>
+            CreateParameter(name, value, value is DateTime ? (DbType?)DbType.DateTime2 : null);
+
+        public IDataParameter CreateParameter(string name, object value, DbType? dbType)
         {
             var result = ParameterFactory.CreateParameter();
+
+            if (value == null) value = DBNull.Value;
+            else if (value is Blob blob) value = blob.FileName;
+
             result.ParameterName = name;
             result.Value = value;
 
-            if (value is DateTime) result.DbType = DbType.DateTime2;
+            if (dbType.HasValue) result.DbType = dbType.Value;
 
             return result;
         }
+
+        public ISqlCommandGenerator GetSqlCommandGenerator() => SqlCommandGenerator;
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -105,44 +102,7 @@ namespace Olive
         public static T? NullIfDefault<T>(this T @value, T defaultValue = default(T)) where T : struct
         {
             if (value.Equals(defaultValue)) return null;
-
             return @value;
-        }
-        /// <summary>
-        /// Returns a DirectoryInfo object of the Website root directory.
-        /// </summary>
-        public static DirectoryInfo WebsiteRoot(this AppDomain @this)
-        {
-            var root = @this.BaseDirectory.AsDirectory();
-            if (root.Name.StartsWith("netcoreapp")) return root.Parent.Parent.Parent;
-            else return root;
-        }
-
-        /// <summary>
-        /// Returns DirectoryInfo object of the base directory.
-        /// </summary>
-        public static DirectoryInfo GetBaseDirectory(this AppDomain @this) => @this.BaseDirectory.AsDirectory();
-
-        /// <summary>
-        /// loads an assembly given its name.
-        /// </summary>
-        public static Assembly LoadAssembly(this AppDomain @this, string assemblyName)
-        {
-            var result = @this.GetAssemblies().FirstOrDefault(a => a.FullName == assemblyName);
-            if (result != null) return result;
-
-            // Nothing found with exact name. Try with file name.
-            var fileName = assemblyName.EnsureEndsWith(".dll", caseSensitive: false);
-
-            var file = @this.GetBaseDirectory().GetFile(fileName);
-            if (file.Exists())
-                return Assembly.Load(AssemblyName.GetAssemblyName(file.FullName));
-
-            // Maybe absolute file?
-            if (File.Exists(fileName))
-                return Assembly.Load(AssemblyName.GetAssemblyName(fileName));
-
-            throw new Exception($"Failed to find the requrested assembly: '{assemblyName}'");
         }
     }
 }

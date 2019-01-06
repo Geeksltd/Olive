@@ -1,6 +1,59 @@
 
 # Olive compatibility change log
 
+## 4 Jan 2019
+
+- In **Domain.csproj**, remove the `[GEN-DAL]` folder form the project.
+
+- In **Website.csproj** in the `appsetting.json` file remove the `Database:Providers` section:
+```json
+"Database": {
+    "Providers": [
+        {
+            "AssemblyName": "Domain.dll",
+            "ProviderFactoryType": "AppData.AdoDotNetDataProviderFactory"
+        }
+    ],
+    ...
+}
+```
+Should be changed to
+```json
+"Database": {    
+    ...
+}
+```
+
+- In the `startup.cs`, add the following line:
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    services.AddDataAccess(x => x.SqlServer());
+    ...
+}
+```
+
+## 3 Jan 2019
+Update `#Model.csproj` and `#UI.csproj` files add `/warn` to the end of the AfterBuild commands.
+
+**#Model.csproj**
+```xml
+<Target Name="Generate code" AfterTargets="AfterBuild">
+    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" 
+	  Command="dotnet msharp.dsl.dll /build /model /warn" />
+</Target>
+```
+**#UI.csproj**
+```xml
+<Target Name="Generate code" AfterTargets="AfterBuild">
+    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" 
+	  Command="dotnet msharp.dsl.dll /build /ui /warn" />
+</Target>
+```
+
+
 ## 7 Dec 2018
 We have removed [Chosen](https://github.com/harvesthq/chosen) library and replaced it with [Bootstrap-select](https://github.com/snapappointments/bootstrap-select/), now you can safely remove `chosen` from your project.
 1. Open `package.json` or `bower.json` and remove `chosen` then update `olive.mvc` to the version `0.9.175`

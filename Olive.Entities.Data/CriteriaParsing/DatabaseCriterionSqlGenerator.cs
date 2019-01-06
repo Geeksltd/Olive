@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Olive.Entities.Data
 {
@@ -25,7 +23,7 @@ namespace Olive.Entities.Data
                 ToSafeId = ToSafeId
             });
         }
-        
+
         protected abstract string ToSafeId(string id);
 
         protected abstract string UnescapeId(string id);

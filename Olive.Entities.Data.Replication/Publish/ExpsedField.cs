@@ -27,6 +27,13 @@ namespace Olive.Entities.Replication
         public async Task<object> GetSerializableValue(IEntity entity)
         {
             var result = await GetValue(entity);
+
+            while (result is Task t)
+            {
+                await t;
+                result = t.GetType().GetProperty("Result").GetValue(t);
+            }
+
             if (result is IEntity ent) return ent.GetId();
             else return result;
         }

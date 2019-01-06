@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 namespace Olive.Entities
 {
@@ -9,6 +8,5 @@ namespace Olive.Entities
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public sealed class ReferencedTypeAttribute : Attribute
     {
-
     }
 }
