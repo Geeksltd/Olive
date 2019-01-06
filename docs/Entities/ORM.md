@@ -9,7 +9,7 @@ The Olive ORM framework provides the following essential components.
 
 ### IDataAccess
 This abstraction provides direct data access to the underlying data source. An implementation of `IDataAccess` implements all of its essential database operations including:
-```
+```csharp
 Task<IDbConnection> CreateConnection(string connectionString);
 Task<IDataReader> ExecuteReader(string command, CommandType commandType, params IDataParameter[] @params);
 Task<DataTable> ExecuteQuery(string databaseQuery, CommandType commandType, params IDataParameter[] @params);
@@ -46,6 +46,24 @@ async Task SomeMethod()
 Though, please note that you should avoid running commands against the database directly except for exceptional scenarios.
 In most cases, you should use the ORM Api due to many benefits that it provides, including strong typing and better maintainability.
 
+## AppSettings.json
+...
+
+Also, you will need to register the default data provider in the `Startup.cs` class, under the `ConfigureServices()` method.
+...
+
+## DatabaseContext
+Most applications deal with a single database. Because of that, for maximum clarity and simplicity, Olive data access APIs do not require you to explicitly specify the connection string or the data access middleware technology.
+
+There are cases however, when your application deals with more than one database. To allow you to explicitly specify the target database that you intend to use, Olive provides the `DatabaseContext` class. For example:
+
+```csharp
+using (new DatabaseContext(Config.Get("Database:MyDatabase:ConnectionString")))
+{
+    // Any data access operation written here will be executed against that database.
+}
+```
+Once the execution exists the `using` block, all data operations will be diverted to the primary database again.
 
 ### IDataProvider
 
