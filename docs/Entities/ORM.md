@@ -43,7 +43,20 @@ Assert.IsTrue(myCustomer is CorporateCustomer);
 
 This works with interfaces as well. This means that if you have 2 different types, both implementing the same interface, when you invoke `Get<ISomething>()`, the right object will be returned, with the right type. Internally, the system may send multiple database querying to all matching tables to retrieve the record for you.
 
-## Database.Find<T>({criteria})
+## Database.FirstOrDefault<T>({criteria})
+If you have an object's ID, then with the `Get()` method you can obtain the object. But what if, rather than its ID, you have another value or condition, with which to retrieve an object? Well, that's where the `FirstOrDefault()` method comes in handy.
+  
+Just like the `Get()` method, the `FirstOrDefault()` method allows you to retrieve a single object from the database, rather than a set of objects. Its argument is, however, a predicate, or a lambda function that returns a `boolean`. This method returns the first matched record of the provided Entity Type from the database. Or, if no record is found, it returns `null`.
+
+```csharp
+var myCustomer = await Database.FirstOrDefault<Customer>(c => c.Name == myName && c.Category == someCategory);
+```
+> The framework will automatically convert the provided lambda expression into the equivalent SQL command. It recognised many common patterns, from direct value comparisons to string functions such as `Contains()`, `StartsWith()`, etc. If your expression is not understood, or convertible to the equivalent SQL, then an exception will be thrown.
+
+It also provides other overloads for more advanced querying scenarios. For example when you have dynamic conditions (rather than statically typed lambda expressions), or when you want to provide a sorting expression.
+
+Just like `Get()`, the `FirstOrDefault()` method also support polymorphic queries.
+
 ### IDataProvider
 
 
