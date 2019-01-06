@@ -1,7 +1,7 @@
 # Raw Data Access
 
 
-### IDataAccess
+## IDataAccess interface
 This abstraction provides direct data access to the underlying data source. An implementation of `IDataAccess` implements all of its essential database operations including:
 ```csharp
 Task<IDbConnection> CreateConnection(string connectionString);
@@ -14,14 +14,9 @@ Task<int> ExecuteBulkNonQueries(CommandType commandType, List<KeyValuePair<strin
 IDataParameter CreateParameter(string name, object value, DbType? dbType);
 ```
 
-This inteface is used in the Olive data access framework for gaining access to low level data operations. You can provide your own custom implemation for any database technology. Olive already provides implementations for this interface for common database technologies including: 
+This inteface is used in the Olive data access framework for gaining access to low level data operations. You can provide your own custom implemation for any database technology. Olive already provides implementations for this interface for common database technologies including **SQL Server**, **MySQL**, **PostgreSql**, **SqLite**.
 
-- SQL Server
-- MySQL
-- PostgreSql
-- SqLite
-
-#### DataAccess
+## DataAccess class
 This abstract class provides a basic implementation of the `IDataAccess` for all Ado.NET providers. It is used as the base class of the technology-specific providers such as the built-in `SqlServerDataAccess`. 
 
 In addition, this class provides a number of static methods to enable you to execute raw database commands, without worrying about connection strings, connections, error handling, etc.
@@ -46,7 +41,7 @@ In most cases, you should use the ORM Api due to many benefits that it provides,
 Also, you will need to register the default data provider in the `Startup.cs` class, under the `ConfigureServices()` method.
 ...
 
-## DatabaseContext
+## DatabaseContext class
 Most applications deal with a single database. Because of that, for maximum clarity and simplicity, Olive data access APIs do not require you to explicitly specify the connection string or the data access middleware technology.
 
 There are cases however, when your application deals with more than one database. To allow you to explicitly specify the target database that you intend to use, Olive provides the `DatabaseContext` class. For example:
