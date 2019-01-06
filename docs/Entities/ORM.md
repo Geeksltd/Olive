@@ -34,6 +34,18 @@ In addition, this class provides a number of static methods to enable you to exe
 
 - `DataAccess.GetCurrentConnectionString()` returns the default connection string from the application config file.
 - `DataAccess.GetDataAccess(providerType)` returns an `IDataAccess` instance for the specified provider type. This is useful when you have more than one database technology in the same application. For example to gain a `IDataAccess` for executing commands against SQL Server you can invoke `DataAccess.GetDataAccess("System.Data.SqlClient")`
+- `DataAccess.GetDataAccess()` returns an `IDataAccess` instance for the default provider type. This is useful when you have a single database technology in your application.
+
+For example, if you want to execute a SQL command directly in your business logic, you can do:
+```csharp
+async Task SomeMethod()
+{
+    await DataAccess.GetDataAccess().ExecuteNonQuery("UPDATE Customers SET IsArchived = 1");
+}
+```
+Though, please note that you should avoid running commands against the database directly except for exceptional scenarios.
+In most cases, you should use the ORM Api due to many benefits that it provides, including strong typing and better maintainability.
+
 
 ### IDataProvider
 
