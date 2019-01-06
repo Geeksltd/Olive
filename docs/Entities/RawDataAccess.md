@@ -1,4 +1,22 @@
 # Raw Data Access
+Olive facilitates raw data access in your business applications by eliminating the typical ADO.NET mess in relation to creating connections, commands, handling transactions, etc. It provides you with a simple API to reliably invoke raw database commands against any kind of database system.
+
+## appSettings.json and Connection Strings
+To access a database, you will need to provide a connection string. By default, the data access framework components in Olive expect the connection strings to be specified in the application config files such as `appSettings.json` or its environment-specific alternatives such as `appSettings.Development.json` or `appSettings.Production.json`.
+
+By convention, each database should be specified with a key under the root node of `ConnectionStrings`.
+The following example, introduces two databases, each with a connection string key: one called **Default** and one called **ProductCatalogue**.  
+
+```json
+{
+    "ConnectionStrings": {
+        "Default": "Database=MyDatabase; Server=.\\SQLExpress; Integrated Security=SSPI; MultipleActiveResultSets=True;",
+        "ProductCatalogue": "Database=Products; Server=SomeServer; user=sa; password=1234566; MultipleActiveResultSets=True;"
+    },
+    ...
+}
+```
+Most applications use a single database. Because of that, in Olive, by default, when you don't specify the connection string, the config value under the key `"ConnectionStrings:Default"` will be used. 
 
 
 ## IDataAccess interface
@@ -32,14 +50,19 @@ async Task SomeMethod()
     await DataAccess.GetDataAccess().ExecuteNonQuery("UPDATE Customers SET IsArchived = 1");
 }
 ```
-Though, please note that you should avoid running commands against the database directly except for exceptional scenarios.
-In most cases, you should use the ORM Api due to many benefits that it provides, including strong typing and better maintainability.
+> Avoid running commands against the database directly, except for exceptional scenarios. In most cases, you should use the ORM Api due to many benefits that it provides, including strong typing and better maintainability.
 
-## AppSettings.json
-...
+### Startup.cs
+In the application startup class, you should specify the default data access engine for your application. For example, to use SqlServer data access, add the following line to your `ConfigureServices()` method.
 
-Also, you will need to register the default data provider in the `Startup.cs` class, under the `ConfigureServices()` method.
-...
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    services.AddDataAccess(x => x.SqlServer());
+    ...
+}
+```
 
 ## DatabaseContext class
 Most applications deal with a single database. Because of that, for maximum clarity and simplicity, Olive data access APIs do not require you to explicitly specify the connection string or the data access middleware technology.
@@ -47,10 +70,10 @@ Most applications deal with a single database. Because of that, for maximum clar
 There are cases however, when your application deals with more than one database. To allow you to explicitly specify the target database that you intend to use, Olive provides the `DatabaseContext` class. For example:
 
 ```csharp
-using (new DatabaseContext(Config.Get("Database:MyDatabase:ConnectionString")))
+using (new DatabaseContext(Config.Get("ConnectionStrings:ProductCatalogue")))
 {
     // Any data access operation written here will be executed against that database.
 }
 ```
-Once the execution exists the `using` block, all data operations will be diverted to the primary database again.
+Once the execution exists the `using` block, all data operations will be diverted to the primary database with the default connection string again.
 
