@@ -1385,5 +1385,45 @@ namespace Olive
         public static IEnumerable<T> FilterIf<T>(this IEnumerable<T> source,
              bool condition, Func<T, bool> predicate)
             => condition ? source.Where(predicate) : source;
+        
+        
+        /// <summary>
+        /// Replaces all specified items in this list with another new item.
+        /// </summary>
+        /// <param name="oldItem">Is the value to be replaced.</param>
+        /// <param name="newItem">Is the value to replace all occurrences of OldChar.</param>
+       public static void ReplaceAll<T>(this IList<T> @this, T oldItem, T newItem)
+        {
+            if (oldItem != null || newItem != null)
+               
+            {
+                for (int i = 0; i < @this.Count; i++)
+                {
+                    if (object.Equals(@this[i], oldItem))  @this[i] = newItem;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Replaces all specified items in this list with another new item.
+        /// </summary>
+        /// <param name="oldItem">Is the value to be replaced.</param>
+        /// <param name="newItem">Is the value to replace all occurrences of OldChar.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static void ReplaceAll(this IList<string> @this, string oldItem, string newItem, bool caseSensitive)
+        {
+            if (oldItem != null || newItem != null)
+            {
+
+                for (int i = 0; i < @this.Count; i++)
+                {
+                    if (caseSensitive == true  && object.Equals(@this[i], oldItem)) @this[i] = newItem;
+                    if(caseSensitive == false && object.Equals((@this[i]==null ? "" : @this[i]).ToLower(), (oldItem==null ? "" : oldItem).ToLower())) @this[i] = newItem;
+                }
+            }
+        }
+
+        
+        
     }
 }
