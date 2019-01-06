@@ -131,5 +131,40 @@ class Customer : GuidEntity
 In the above example, we hook into the `OnLoaded()` event to copy of the `Address` value as loaded from the database, into a local field named `PreviousAddress`. This is then compared in the `OnSaved()` event against the new and possibly modified value of Address.
 
 ## Deleting an entity
+When you attempt to delete an entity from the database, the following events will execute in order:
 
-, `OnDeleting()`, `OnDeleted()`. To implement custom business logic related to the lifecycle events of a
+### OnDeleting()
+This method is called by the framework just before a delete command is sent to the database. Just like `OnSaving()`, this method provides an argument of type `CancelEventArgs`. You can use this method to prevent the delete operation in some rare scenarios.
+
+When you override this method, you can write custom business logic to check for certain conditions and optionally cancel the delete operation by setting the `Cancelled` property to `true`.
+
+```csharp
+class Customer : GuidEntity
+{
+    ...
+
+    protected override async Task OnDeleting(CancelEventArgs e)
+    {
+        await base.OnDeleting(e);
+        
+        if (/*some scenario*/)
+           e.Cancel = true; // This will stop the delete operation.
+    }
+}
+```
+
+### OnDeleted()
+This method is called by the framework just after a delete command is executed in the database. When you override this method, you can write custom business logic to execute after an object has been deleted.
+
+```csharp
+class Customer : GuidEntity
+{
+    ...
+
+    protected override async Task OnDeleted()
+    {
+        await base.OnDeleted();        
+        Notifications.ReportCustomerDeletion(this);
+    }
+}
+```
