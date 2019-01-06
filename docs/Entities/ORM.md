@@ -16,12 +16,30 @@ For example, to insert a record in the database, you will use a simple command s
 await Database.Save(new Customer { Name = "My customer" });
 ```
 
-Or to fetch an object given its ID, you will use:
+### How to access IDatabase?
+To gain an instance of `IDatabase`:
+- In an ASP.NET `Controller` classes, simply use the `Database` property (inherited from base classes).
+- In your custom Olive based entity classes, you can use the `Database` property (inherited from base classes).
+- In custom classes (such as Services) use the standard ASP.NET dependency injection.
+
+## Database.Get<TEntity>(id)
+The `Get()` method returns a single object from the database. You will specify the entity type as its generic argument, and provide the object ID as the method's parameter. For example:
 ```csharp
 var myCustomer = await Database.Get<Customer>(myId);
 ```
+The type of the `id` parameter should match the entity type. For example, if your type inherits from `GuidEntity` the ID value should be a valid `Guid`. You can however, provide an `object` parameter (i.e. untyped) as longs as the content is a valid Guid. Alternatively, you can use another overload that takes a `string` object. It will automatically convert the string version of the Guid value before querying the database.
+  
+- If you pass a `null` or an empty string, you will get an `ArgumentNullException`.
 
-You will learn about all of its operations and features later in this guide.
+### Polymorphic
+It supports polymorphism and handles inheritence correctly. For example imagine you have a type named `CorporateCustomer` that inherits from `Customer`. What happens when you specify the generic type argument of the as the base class (i.e. `Customer`) while passing in the ID of an actual `CorporateCustomer` record? Well, Olive will handle it automatically and return the correct object to you:
+```csharp
+Customer myCustomer = await Database.Get<Customer>(idOfACorporateCustomer);
+Assert.IsTrue(myCustomer is CorporateCustomer);
+```
+
+This works with interfaces as well. This means that if you have 2 different types, both implementing the same interface, when you invoke `Get<ISomething>()` right object will be returned, with the right type. Internally, the system may send multiple database querying to all matching tables to retrieve the record for you.
+
 
 ### IDataProvider
 
