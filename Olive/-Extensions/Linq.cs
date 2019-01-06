@@ -739,6 +739,24 @@ namespace Olive
         }
 
         /// <summary>
+        /// Removes a list of items from this list.
+        /// </summary>
+        /// <param name="itemsToRemove">The list of items which are removed.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static IEnumerable<string> Remove(this IEnumerable<string> @this , IEnumerable<string> itemsToRemove, bool caseSensitive)
+        {
+            var tempList = new List<string>();
+            if (itemsToRemove != null)
+            {
+                foreach (var item in @this)
+                    if (!itemsToRemove.Contains(item, caseSensitive))  tempList.Add(item) ;
+            }
+            return tempList;
+        }
+        
+        
+        
+        /// <summary>
         /// Determines if all items in this collection are unique.
         /// </summary>
         public static bool AreItemsUnique<T>(this IEnumerable<T> @this)
