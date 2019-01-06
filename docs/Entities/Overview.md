@@ -127,7 +127,8 @@ class Customer : GuidEntity
 ```
 
 #### OnSaved()
-This event is raised after this instance is saved in the database.
+This event is raised after this instance is saved in the database. You can use it for simple workflows. 
+It takes in an argument of type `SaveEventArgs` with a property named `Mode` which is an enum with the options of `Insert` and `Update`.
 
 For example:
 ```csharp
@@ -139,9 +140,14 @@ class Customer : GuidEntity
     {
         await base.OnSaved(e);
         
-        ...
+        if (e.Mode == SaveMode.Insert)
+        {
+            // A new customer is just inserted. Notify the customer service team:
+            Notifications.ReportRegistration(this);
+        }
     }
 }
 ```
+
 
 , `OnDeleting()`, `OnDeleted()`. To implement custom business logic related to the lifecycle events of a
