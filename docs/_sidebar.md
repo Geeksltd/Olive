@@ -38,6 +38,7 @@
 * Olive Entities
     * [Overview](Entities/Overview.md)
     * [Lifecycle events](Entities/Lifecycle.md)
+    * [Ado.NET & Raw data access](Entities/RawDataAccess.md)
     * [Olive ORM](Entities/ORM.md)
        * [Caching](Entities/Cache.md)
     * [Ado.NET and Raw data access](Entities/AdoNet.md)
