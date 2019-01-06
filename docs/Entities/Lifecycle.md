@@ -4,7 +4,7 @@ The `Entity` class provides **object lifecycle** methods and events that you can
 ## Saving an entity in the database
 When you save an entity in the database, whether for insert or update operation, the following events will be invoked automatically by the framework. They run in the following order:
 
-#### OnValidating()
+### OnValidating()
 This is invoked automatically as the first step when you try to save an entity in the database using the `Database.Save()` command. This executes before calling the `Validate()` method. You should not use it to implement your validation logic. Instead, use this to do any last-minute object modifications, such as initializing complex values.
 
 For example:
@@ -24,7 +24,7 @@ class Customer : GuidEntity
 }
 ```
         
-#### Validate()
+### Validate()
 This method is invoked by the framework when saving an entity, right after `OnValidating()` call is completed.
 You should override this method in your business entity types in order to provide custom validation logic.
 It expects a `ValidationException` to be thrown in case of an invalid state. Should that be the case, the saving operation will be terminated.
@@ -45,7 +45,7 @@ class Customer : GuidEntity
 }
 ```
 
-#### OnSaving()
+### OnSaving()
 This event is raised just before an entity is saved in the data repository. It is invoked right after a successful call to `Validate()`.
 You can override this method to implement custom business logic in some rare scenarios. 
 
@@ -67,7 +67,7 @@ class Customer : GuidEntity
 }
 ```
 
-#### OnSaved()
+### OnSaved()
 This event is raised after this instance is saved in the database. You can use it for simple workflows. 
 It takes in an argument of type `SaveEventArgs` with a property named `Mode` which is an enum with the options of `Insert` and `Update`.
 
@@ -89,6 +89,47 @@ class Customer : GuidEntity
     }
 }
 ```
+### IsNew property
+The base `Entity` class provides a property named `IsNew`. When a new object is instantiated in memory, it is set to `True` by default. 
+However, when you load an entity from the database, the value will be set to `False` by the framework.
 
+When writing custom business logic, by querying the value of `IsNew` you can determine whether the object is just created, or is loaded from the database. This value is available to you in all lifecycle event methods.
+
+> The value of `IsNew` is also automatically set to `False` when an entity is saved in the database. This means that you should be very careful when writing lifecycle business logic in the `OnSaved()` event, because in that context, the value of `IsNew` is always false. You should instead use `e.Mode` to differentiate between insert and update scenarios.
+
+## Loading an object from database
+When you fetch an entity from the database, the framework will create a new instance of your entity type (e.g. `Customer`) and then load the data into it.
+
+It will then immediately invoke the `OnLoaded()` event method on it, where you can add your own business logic.
+In the following example, we use a mix of the `OnLoaded()` and `OnSaved()` events to track changes to the customer's address to notify them of the customer department team.
+
+```csharp
+class Customer : GuidEntity
+{
+    ...
+    public string Address {get; set;}
+    
+    private string PreviousAddress;
+    
+    protected override async Task OnLoaded()
+    {
+        await base.OnLoaded(e);
+        PreviousAddress = Address;
+    }
+
+    protected override async Task OnSaved(SaveEventArgs e)
+    {
+        await base.OnSaved(e);
+        
+        if (e.Mode == SaveMode.Update && Address != PreviousAddress)
+        {
+            Notifications.ReportCustomerRelocation(this);
+        }
+    }
+}
+```
+In the above example, we hook into the `OnLoaded()` event to copy of the `Address` value as loaded from the database, into a local field named `PreviousAddress`. This is then compared in the `OnSaved()` event against the new and possibly modified value of Address.
+
+## Deleting an entity
 
 , `OnDeleting()`, `OnDeleted()`. To implement custom business logic related to the lifecycle events of a
