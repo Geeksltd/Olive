@@ -22,25 +22,28 @@ To gain an instance of `IDatabase`:
 - In your custom Olive based entity classes, you can use the `Database` property (inherited from base classes).
 - In custom classes (such as Services) use the standard ASP.NET dependency injection.
 
-## Database.Get<TEntity>(id)
+## Database.Get<T>(id)
 The `Get()` method returns a single object from the database. You will specify the entity type as its generic argument, and provide the object ID as the method's parameter. For example:
 ```csharp
 var myCustomer = await Database.Get<Customer>(myId);
 ```
 The type of the `id` parameter should match the entity type. For example, if your type inherits from `GuidEntity` the ID value should be a valid `Guid`. You can however, provide an `object` parameter (i.e. untyped) as longs as the content is a valid Guid. Alternatively, you can use another overload that takes a `string` object. It will automatically convert the string version of the Guid value before querying the database.
   
-- If you pass a `null` or an empty string, you will get an `ArgumentNullException`.
+### GetOrDefault<T>(id)
+With the `Get()` method, an `ArgumentNullException` will be thrown if you pass an empty argument such as `null`, `string.Empty` or `Guid.Empty`. If you send an invalid ID or when no record is found with the ID and type that you specify, an `ArgumentException` will be thrown.
+
+In such cases, if you would rather receive a `null` object back instead of an exception, use `Database.GetOrDefault<T>(...)` instead.
 
 ### Polymorphic
-It supports polymorphism and handles inheritence correctly. For example imagine you have a type named `CorporateCustomer` that inherits from `Customer`. What happens when you specify the generic type argument of the as the base class (i.e. `Customer`) while passing in the ID of an actual `CorporateCustomer` record? Well, Olive will handle it automatically and return the correct object to you:
+The `Get()` and `GetOrDefault()` methods support polymorphism and handle inheritence correctly. For example imagine you have a type named `CorporateCustomer` that inherits from `Customer`. What happens when you specify the generic type argument of the as the base class (i.e. `Customer`) while passing in the ID of an actual `CorporateCustomer` record? Well, Olive will handle it automatically and return the correct object to you:
 ```csharp
 Customer myCustomer = await Database.Get<Customer>(idOfACorporateCustomer);
 Assert.IsTrue(myCustomer is CorporateCustomer);
 ```
 
-This works with interfaces as well. This means that if you have 2 different types, both implementing the same interface, when you invoke `Get<ISomething>()` right object will be returned, with the right type. Internally, the system may send multiple database querying to all matching tables to retrieve the record for you.
+This works with interfaces as well. This means that if you have 2 different types, both implementing the same interface, when you invoke `Get<ISomething>()`, the right object will be returned, with the right type. Internally, the system may send multiple database querying to all matching tables to retrieve the record for you.
 
-
+## Database.Find<T>({criteria})
 ### IDataProvider
 
 
