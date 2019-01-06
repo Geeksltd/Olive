@@ -941,10 +941,9 @@ namespace Olive
         /// <param name="newItem">Is the value to replace all occurrences of OldChar.</param>
         public static void Replace<T>(this IList<T> @this, T oldItem, T newItem)
         {
-            @this.Remove(oldItem);
-            @this.Add(newItem);
+            if (oldItem != null || newItem != null) @this[@this.IndexOf<T>(oldItem)] = newItem;
         }
-
+        
         /// <summary>
         /// Returns all elements of this list except those at the specified indices.
         /// </summary>
