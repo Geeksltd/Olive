@@ -77,3 +77,15 @@ using (new DatabaseContext(Config.Get("ConnectionStrings:ProductCatalogue")))
 ```
 Once the execution exists the `using` block, all data operations will be diverted to the primary database with the default connection string again.
 
+## ACID Transactions
+The Olive data access framework provides a declarative transaction style for atomic (all success or all rollback) operations that involve multiple data operations.
+
+```csharp
+using (var scope = Database.CreateTransactionScope())
+{
+     // ... operation A
+     // ... operation B
+     scope.Complete();
+}
+```
+If any of the operations fails, the whole transaction will be rolled back.
