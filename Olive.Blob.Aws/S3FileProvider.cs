@@ -11,8 +11,8 @@ namespace Olive.BlobAws
     /// </summary>
     public class S3FileProvider : IFileProvider, IDisposable
     {
-        static readonly char[] pathSeparators = new[] { '/' };
-        static readonly char[] invalidFileNameChars = "\\{}^%`[]\'\"><~#|".ToCharArray()
+        static readonly char[] PathSeparators = new[] { '/' };
+        static readonly char[] InvalidFileNameChars = "\\{}^%`[]\'\"><~#|".ToCharArray()
             .Concat(Enumerable.Range(128, 255).Select(x => (char)x)).ToArray();
 
         readonly IAmazonS3 AmazonS3;
@@ -21,12 +21,10 @@ namespace Olive.BlobAws
         /// <summary>
         /// Initializes a new instance of a <see cref="S3FileProvider"/> at the given bucket.
         /// </summary>
-        /// <param name="amazonS3"><see cref="IAmazonS3" /> Amazon S3 service object</param>
-        /// <param name="bucketName">Name of the bucket that will be used</param>
-        public S3FileProvider(IAmazonS3 amazonS3, string bucketName)
+        public S3FileProvider()
         {
-            AmazonS3 = amazonS3;
-            BucketName = bucketName;
+            AmazonS3 = AWSInfo.AmazonS3Client;
+            BucketName = AWSInfo.S3BucketName;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -35,7 +33,7 @@ namespace Olive.BlobAws
             if (HasInvalidFileNameChars(subpath)) return NotFoundDirectoryContents.Singleton;
 
             // Relative paths starting with leading slashes are okay
-            subpath = subpath.TrimStart(pathSeparators);
+            subpath = subpath.TrimStart(PathSeparators);
 
             return new S3DirectoryContents(AmazonS3, BucketName, subpath);
         }
@@ -54,7 +52,7 @@ namespace Olive.BlobAws
                 return new NotFoundFileInfo(subpath);
 
             // Relative paths starting with leading slashes are okay
-            subpath = subpath.TrimStart(pathSeparators);
+            subpath = subpath.TrimStart(PathSeparators);
 
             if (string.IsNullOrEmpty(subpath))
                 return new NotFoundFileInfo(subpath);
@@ -72,6 +70,6 @@ namespace Olive.BlobAws
         /// </summary>
         public void Dispose() => AmazonS3.Dispose();
 
-        bool HasInvalidFileNameChars(string path) => path.IndexOfAny(invalidFileNameChars) != -1;
+        bool HasInvalidFileNameChars(string path) => path.IndexOfAny(InvalidFileNameChars) != -1;
     }
 }
