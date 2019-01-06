@@ -16,7 +16,7 @@ namespace Olive.BlobAws
     {
         const string FILE_NOT_FOUND = "NotFound";
 
-        AmazonS3Client CreateClient() => new AmazonS3Client();
+        AmazonS3Client CreateClient => new AmazonS3Client();
 
         public bool CostsToCheckExistence() => true;
 
@@ -25,7 +25,7 @@ namespace Olive.BlobAws
         /// </summary>
         public async Task SaveAsync(Blob document)
         {
-            using (var client = CreateClient())
+            using (var client = CreateClient)
             {
                 var request = await CreateUploadRequest(document);
                 var response = await client.PutObjectAsync(request);
@@ -43,7 +43,7 @@ namespace Olive.BlobAws
         {
             try
             {
-                using (var client = CreateClient())
+                using (var client = CreateClient)
                 {
                     return await client.GetObjectMetadataAsync(AWSInfo.S3BucketName, GetKey(document)) != null;
                 }
@@ -64,7 +64,7 @@ namespace Olive.BlobAws
         public async Task DeleteAsync(Blob document)
         {
             var key = GetKey(document);
-            using (var client = CreateClient())
+            using (var client = CreateClient)
             {
                 var response = await client.DeleteObjectAsync(AWSInfo.S3BucketName, key);
 
@@ -80,7 +80,7 @@ namespace Olive.BlobAws
 
         async Task<byte[]> Load(string documentKey)
         {
-            using (var client = CreateClient())
+            using (var client = CreateClient)
             {
                 var request = CreateGetObjectRequest(documentKey);
 
@@ -109,7 +109,7 @@ namespace Olive.BlobAws
             var oldVersionKeys = await GetOldVersionKeys(document);
 
             if (oldVersionKeys.Any())
-                using (var client = CreateClient())
+                using (var client = CreateClient)
                 {
                     var request = CreateDeleteOldsRequest(oldVersionKeys);
                     var response = await client.DeleteObjectsAsync(request);
@@ -145,7 +145,7 @@ namespace Olive.BlobAws
         {
             var key = GetKey(document);
 
-            using (var client = CreateClient())
+            using (var client = CreateClient)
             {
                 var request = CreateGetObjectsRequest(document);
                 return (await client.ListObjectsAsync(request))
