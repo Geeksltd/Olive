@@ -2,6 +2,8 @@
 With a vast range of extension methods on top of many basic .NET types (int, string, DateTime, ...) it makes your code more readable, concise and efficient code.
 
 The following table shows all olive extension methods
+
+
 | extension methods | extension methods | extension methods | extension methods | extension methods |
 |:-:|:-:|:-:|:-:|:-:|
 | [EmbeddedResource](Extensions/EmbeddedResource.md) | [StringConversion](Extensions/StringConversion.md) | [ClaimsPrincipal](Extensions/ClaimsPrincipal.md) | [DirectoryInfo](Extensions/DirectoryInfo.md) | [FileInfoAsync](Extensions/FileInfoAsync.md) |
