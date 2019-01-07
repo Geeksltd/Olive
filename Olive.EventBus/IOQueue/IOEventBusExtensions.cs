@@ -15,7 +15,7 @@ namespace Olive
         public static void Subscribe<TCommandMessage>(this EventBusQueue<TCommandMessage> @this)
             where TCommandMessage : EventBusCommandMessage, new()
         {
-            @this.Subscribe(x => new TCommandMessage().Process());
+            @this.Subscribe(x => x.Process());
         }
     }
 }
