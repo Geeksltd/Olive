@@ -2,6 +2,9 @@
 # Olive compatibility change log
 
 ## 4 Jan 2019
+M# will no longer generate the `DAL` files. They are handled at runtime now.
+
+- Delete the `[Gen-DAL]` folder from  your `Domain` project.
 
 - In **Domain.csproj**, remove the `[GEN-DAL]` folder form the project.
 
