@@ -41,11 +41,7 @@ namespace Olive.Entities
                 result = GetDomainEntityTypes();
 
             else if (baseType.IsInterface)
-                result =
-                   Context.Current.Database().AssemblyProviderFactories.Except(f => f.Value.SupportsPolymorphism())
-                   .Select(a => a.Key).Where(a => a.References(baseType.Assembly)).Concat(baseType.Assembly)
-                   .SelectMany(a => a.GetExportedTypes())
-                   .Where(t => t.Implements(baseType)).ToList();
+                result = AppDomain.CurrentDomain.FindImplementers(baseType);
 
             else
                 result = baseType.Assembly.GetExportedTypes().Where(t => t.GetParentTypes().Contains(baseType)).Union(new[] { baseType });

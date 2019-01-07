@@ -39,7 +39,10 @@
       <SpecificVersion>false</SpecificVersion>
     </Reference>
   </ItemGroup>
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;&#xD;&#xA;" />
+  </Target> -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell start-process dotnet &quot;$(TargetDir)PushForLocalTesting.dll&quot;&#xD;&#xA;update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+    <Exec Command="update-local-nuget-cache &quot;$(ProjectPath)&quot; &quot;$(TargetPath)&quot; $(TargetName)" />
   </Target>
 </Project>

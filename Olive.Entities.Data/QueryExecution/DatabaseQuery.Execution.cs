@@ -70,7 +70,10 @@
             List<IEntity> result;
             if (NeedsTypeResolution())
             {
-                var queries = ResolveDataProviders().Select(p => p.GetList(this));
+                var queries = EntityFinder.FindPossibleTypes(EntityType, mustFind: true)
+                    .Select(t => CloneFor(t))
+                    .Select(q => q.Provider.GetList(q));
+
                 result = await queries.SelectManyAsync(x => x).ToList();
             }
             else
