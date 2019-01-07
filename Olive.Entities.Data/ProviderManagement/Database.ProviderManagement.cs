@@ -130,7 +130,10 @@ namespace Olive.Entities.Data
 
             if (AssemblyProviderFactories.TryGetValue(type.Assembly, out var result)) return result;
 
-            return new DataProviderFactory(type);
+            if (!type.IsInterface)
+                return new DataProviderFactory(type);
+
+            return null;
         }
 
         public IDataProvider GetProvider(Type type)

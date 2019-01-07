@@ -11,21 +11,21 @@
         /// Check if the specified property is true then skip the validation.
         /// </summary>
         /// <param name="propertyName">The boolean property`s name which will be ckeck to skip the validation.</param>
-        public RangeUnlessAttribute(double minimum, double maximum, string propertyName)
+        public RangeUnlessAttribute(string propertyName, double minimum, double maximum)
             : base(minimum, maximum) => PropertyName = propertyName;
 
         /// <summary>
         /// Check if the specified property is true then skip the validation.
         /// </summary>
         /// <param name="propertyName">The boolean property`s name which will be ckeck to skip the validation.</param>
-        public RangeUnlessAttribute(int minimum, int maximum, string propertyName)
+        public RangeUnlessAttribute(string propertyName, int minimum, int maximum)
             : base(minimum, maximum) => PropertyName = propertyName;
 
         /// <summary>
         /// Check if the specified property is true then skip the validation.
         /// </summary>
         /// <param name="propertyName">The boolean property`s name which will be ckeck to skip the validation.</param>
-        public RangeUnlessAttribute(Type type, string minimum, string maximum, string propertyName)
+        public RangeUnlessAttribute(string propertyName, Type type, string minimum, string maximum)
             : base(type, minimum, maximum) => PropertyName = propertyName;
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
