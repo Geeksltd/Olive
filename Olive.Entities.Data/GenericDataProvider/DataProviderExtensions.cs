@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Text;
 
 namespace Olive.Entities.Data
 {
@@ -12,8 +8,8 @@ namespace Olive.Entities.Data
                 this IDataProviderMetaData @this, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {
             return GetProvider(@this.Type, cache, access, sqlCommandGenerator);
-        }            
-        
+        }
+
         public static DataProvider GetProvider(
                 this Type @this, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {

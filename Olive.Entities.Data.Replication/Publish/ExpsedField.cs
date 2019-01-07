@@ -35,7 +35,7 @@ namespace Olive.Entities.Replication
             }
 
             if (result is IEntity ent) return ent.GetId();
-            else return Task.FromResult(result);
+            else return result;
         }
 
         protected internal virtual bool ShouldSerialize() => true;

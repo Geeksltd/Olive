@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Olive.Entities.Data
 {
-    public class PropertyData: IPropertyData
+    public class PropertyData : IPropertyData
     {
         internal const string DEFAULT_ID_COLUMN = "ID";
         internal const string IS_MARKED_SOFT_DELETED = "IsMarkedSoftDeleted";

@@ -1,4 +1,5 @@
 ﻿using Amazon;
+using Amazon.S3;
 using Microsoft.Extensions.Configuration;
 
 namespace Olive.BlobAws

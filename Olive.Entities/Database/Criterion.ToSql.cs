@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
+﻿using System.Text;
 
 namespace Olive.Entities
 {
@@ -39,7 +33,7 @@ namespace Olive.Entities
 
         public virtual string ToSql(SqlConversionContext context)
         {
-                if (PropertyName.Contains(".")) return ToSubQuerySql(context);
+            if (PropertyName.Contains(".")) return ToSubQuerySql(context);
             else return ToSqlOn(context);
         }
 
@@ -111,7 +105,7 @@ namespace Olive.Entities
                 else return column + " " + function.GetDatabaseOperator() + " " + value;
             }
 
-            if(!NeedsParameter(context))
+            if (!NeedsParameter(context))
                 return $"{column} {function.GetDatabaseOperator()} {value}";
 
             var parameterName = GetUniqueParameterName(context, column);

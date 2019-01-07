@@ -37,9 +37,10 @@
     
 * Olive Entities
     * [Overview](Entities/Overview.md)
+    * [Lifecycle events](Entities/Lifecycle.md)
+    * [Ado.NET & Raw data access](Entities/RawDataAccess.md)
     * [Olive ORM](Entities/ORM.md)
        * [Caching](Entities/Cache.md)
-    * [Ado.NET and Raw data access](Entities/AdoNet.md)
     * [Database Api](Entities/Database.md)
        * [IDatabaseQuery](Entities/IDatabaseQuery.md)
     * [Provider model and DI](Entities/DI.md)
@@ -52,6 +53,14 @@
     * [Security (Auth)](Microservices/Security.md)
     * [Urls and Addressing](Microservices/Addressing.md)
     * [Creating a new microservice](Microservices/Create.New.md)
+    * [Docker and Microservices](Microservices/DockerMicroservices.md)
+    * [Understanding Microservices](Microservices/UnderstandingMicroservices.md)
+    * [Distributed Data in Microservices](Microservices/DistributedDataInMicroservices.md)
+    * [Microservice Boundaries](Microservices/MicroserviceBoundaries.md)
+    * [Intra-service Communication](Microservices/IntraServiceCommunication.md)
+    * [Implementing Resilient Applications](Microservices/ImplementingResilientApplications.md)
+    * [Development Process for Docker-Based Applications](Microservices/DockerBasedApplications.md)
+    * [Security in Microservices](Microservices/SecurityInMicroservices.md)
 
 * DevOps
     * [Docker support](DevOps/Docker.md)

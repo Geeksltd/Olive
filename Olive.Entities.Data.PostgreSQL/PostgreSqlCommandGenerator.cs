@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Olive.Entities.Data
 {
-    public class SQLitSqlCommandGenerator : SqlCommandGenerator
+    public class PostgreSqlCommandGenerator : SqlCommandGenerator
     {
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string tables, string fields)
         {
@@ -23,8 +23,8 @@ namespace Olive.Entities.Data
             return r.ToString();
         }
 
-        public override string SafeId(string id) => $"`{id}`";
+        public override string SafeId(string id) => $"\"{id}\"";
 
-        public override string UnescapeId(string id) => id.Trim('`');
+        public override string UnescapeId(string id) => id.Trim('\"');
     }
 }

@@ -5,7 +5,7 @@ namespace Olive.Entities.Data
 {
     public class Cache : ICache
     {
-        private readonly ICacheProvider CacheProvider;
+        readonly ICacheProvider CacheProvider;
         public Cache(ICacheProvider provider) => CacheProvider = provider;
 
         public DateTime? GetQueryTimestamp()
@@ -23,7 +23,6 @@ namespace Olive.Entities.Data
             }
         }
 
-
         /// <summary>
         /// Removes a given entity from the cache.
         /// </summary>
@@ -39,9 +38,7 @@ namespace Olive.Entities.Data
                 ExpireLists(entity.GetType());
                 CacheProvider.Remove(entity);
             }
-
         }
-
 
         /// <summary>
         /// Removes all entities of a given types from the cache.
@@ -79,7 +76,6 @@ namespace Olive.Entities.Data
             if (type.IsCacheable()) CacheProvider.AddList(type, key, list);
         }
 
-
         public bool IsUpdatedSince(IEntity instance, DateTime since) => CacheProvider.IsUpdatedSince(instance, since);
 
         public void UpdateRowVersion(IEntity entity) => CacheProvider.UpdateRowVersion(entity);
@@ -104,7 +100,5 @@ namespace Olive.Entities.Data
 
             return null;
         }
-
-
     }
 }

@@ -13,7 +13,7 @@ namespace Olive.Entities.Data
         ConcurrentDictionary<Type, Dictionary<string, IEntity>> Types = new ConcurrentDictionary<Type, Dictionary<string, IEntity>>();
         ConcurrentDictionary<Type, Dictionary<string, IEnumerable>> Lists = new ConcurrentDictionary<Type, Dictionary<string, IEnumerable>>();
 
-        Dictionary<string, IEntity> GetEntities(Type type) => 
+        Dictionary<string, IEntity> GetEntities(Type type) =>
             Types.GetOrAdd(type, t => new Dictionary<string, IEntity>());
 
         Dictionary<string, IEnumerable> GetLists(Type type, bool autoCreate = true)

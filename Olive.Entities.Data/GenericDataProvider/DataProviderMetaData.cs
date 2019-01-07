@@ -6,9 +6,8 @@ namespace Olive.Entities.Data
 {
     public class DataProviderMetaData : IDataProviderMetaData
     {
-        IDataProviderMetaData[] baseClassesInOrder;
-        IDataProviderMetaData[] drivedClassesInOrder;
-        string idColumnName = null;
+        IDataProviderMetaData[] baseClassesInOrder, drivedClassesInOrder;
+        string idColumnName;
         bool? hasAutoNumber;
         IPropertyData autoNumberProperty;
 
@@ -65,9 +64,11 @@ namespace Olive.Entities.Data
             }
         }
 
-        public bool HasAutoNumber { get
+        public bool HasAutoNumber
+        {
+            get
             {
-                if(hasAutoNumber == null)
+                if (hasAutoNumber == null)
                     hasAutoNumber = Properties.Any(p => p.IsAutoNumber);
 
                 return hasAutoNumber.Value;
@@ -80,7 +81,7 @@ namespace Olive.Entities.Data
             {
                 if (HasAutoNumber == false) return null;
 
-                if(autoNumberProperty == null)
+                if (autoNumberProperty == null)
                     autoNumberProperty = Properties.First(p => p.IsAutoNumber);
 
                 return autoNumberProperty;

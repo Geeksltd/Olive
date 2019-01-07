@@ -73,8 +73,7 @@ namespace Olive
           this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
             foreach (var item in @this)
-                if (await func(item))
-                    return item;
+                if (await func(item)) return item;
 
             throw new InvalidOperationException("No item in the source sequence matches the provided predicte.");
         }
@@ -82,8 +81,7 @@ namespace Olive
         public static async Task<T> FirstOrDefault<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
             foreach (var item in @this)
-                if (await func(item))
-                    return item;
+                if (await func(item)) return item;
 
             return default(T);
         }
