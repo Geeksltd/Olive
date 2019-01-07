@@ -1,7 +1,7 @@
 # Implementing Resilient Applications
 Failure will certainly happen in a cloud environment. There will be network outages, hardware problems, Windows updates and restarts, and Container or VMs crashing. 
 
-Resiliency is not about avoiding failures, but accepting the fact that failures will happen. It’s about responding to them in a way that avoids downtime or data loss, and returning the application to a fully functioning state automatically.
+Resiliency is not about avoiding failures, but accepting the fact that failures will happen. It's about responding to them in a way that avoids downtime or data loss, and returning the application to a fully functioning state automatically.
 
 ## Handling partial failure
 In distributed systems each individual microservice may fail at any moment. In the meantime if a dependant service were to use synchronous HTTP calls to it with no timeout, it could end up blocking the thread indefinitely and eventually bring that service down too.
@@ -25,7 +25,7 @@ If the original failure was caused by short time or intermittent issue (such as 
 
 ### Use a Circuit Breaker
 
-It’s important to not get into an infinite retry loop, As part of the framework, the client process should track the number of failed requests. If the error rate exceeds a configured limit, a “circuit breaker” kicks in so that further attempts fail immediately without even trying to make a remote call.
+It's important to not get into an infinite retry loop, As part of the framework, the client process should track the number of failed requests. If the error rate exceeds a configured limit, a "circuit breaker" kicks in so that further attempts fail immediately without even trying to make a remote call.
 
 The idea is that if a large number of requests are failing,  the service is probably unavailable for a period of time, and that sending more requests will be pointless. After a timeout period though, it would try again and, if the new requests are successful, close the circuit breaker. 
 
@@ -36,7 +36,7 @@ In this approach, the client process performs fallback logic when a request fail
 The recommended approach for retries with exponential backoff is to take advantage of the open-source [Polly](https://github.com/App-vNext/Polly) library. It provides resilience and transient-fault handling capabilities through declarative policies. Poly is already integrated in the Olive ApiClient library.
 
 ## Resiliency via Containerization
-In today’s world of cloud computing, a microservice needs to be resilient to system failures. In a containerized world, this means being able to restart on another machine very quickly. 
+In today's world of cloud computing, a microservice needs to be resilient to system failures. In a containerized world, this means being able to restart on another machine very quickly. 
 
 As service failures are partial and temporary, on the other end, client apps or services must have a strategy to retry sending messages or requests. This is explained later. 
 
@@ -54,17 +54,17 @@ Logs provide information about how an app or service is running, including excep
 
 In monolithic applications, you can simply write logs to a file or database and then analyze it with any tool. Since application execution is limited to a fixed server or VM, it generally is not too complex to analyze the flow of events. 
 
-However it’s different in distributed systems. A microservice should not store the logs by itself. Instead a central log service should be used via its API by all Microservices. 
+However it's different in distributed systems. A microservice should not store the logs by itself. Instead a central log service should be used via its API by all Microservices. 
 
 ## Health monitoring 
-Health monitoring provides information about the state of your services in real time. Microservices-based applications often use heartbeats, or “I am Alive” signals, to enable interested observers to keep track of them. 
+Health monitoring provides information about the state of your services in real time. Microservices-based applications often use heartbeats, or "I am Alive" signals, to enable interested observers to keep track of them. 
 
 Interested observers often include external performance monitoring tools that aggregate the health signals to provide an overall view of the state of your application. 
 
 Another typical group of observers are schedulers, and container orchestrators (e.g. Kubernetes) that take care of automatic scaling, failover recovery, and server setup, as part of the cloud hosting infrastructure. 
 
 ### Using watchdogs 
-You can set up external web application health monitoring agents to periodically ping your web based services or apis, and notify you if it’s down. There are several SaaS based solutions such as Uptime Robot, which you can use for this purpose. 
+You can set up external web application health monitoring agents to periodically ping your web based services or apis, and notify you if it's down. There are several SaaS based solutions such as Uptime Robot, which you can use for this purpose. 
 
 ### Health checks and orchestrators 
 Orchestrators, like Kubernetes, periodically send health check requests to test each microservices or container. If it fails, Kubernetes will stop routing requests to that instance, and usually creates a new instance of that container. 

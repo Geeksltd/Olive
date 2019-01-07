@@ -12,7 +12,7 @@ You can set up the environment using the following tool:
 
 1. Edit `Settings.json` and set the *name* and *path* settings.
 1. Go to `bin\Debug\netcoreapp2.1\`
-1. Run `dotnet PrepareServiceScript.dll'
+1. Run `dotnet PrepareServiceScript.dll`
 1. If it runs successfuly, you will see a file pop up named `@Instructions.txt`
    * Apply the specified changes. 
 

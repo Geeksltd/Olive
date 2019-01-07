@@ -3,7 +3,7 @@
 ## Data sovereignty per microservice 
 An important rule for microservices architecture is that each microservice must own its domain data and logic under an autonomous lifecycle. 
 
-A business usually has different functional concerns in relation to real world entities. For example for the concept of “Customer” in a business, there are different departments and business processes, each thinking about the “Customer” from their own angle. For example, the sales and CRM function is concerned with the customer’s contact details, inquiry details, and perhaps an overall spending history. But the logistics business processes are concerned about each particular order, its items, delivery address, etc.
+A business usually has different functional concerns in relation to real world entities. For example for the concept of "Customer" in a business, there are different departments and business processes, each thinking about the "Customer" from their own angle. For example, the sales and CRM function is concerned with the customer's contact details, inquiry details, and perhaps an overall spending history. But the logistics business processes are concerned about each particular order, its items, delivery address, etc.
 
 In the traditional (monolithic data) approach you have a single centralized database. This is often a normalized SQL database that is used for the whole application and all its internal subsystems. What you often see in these cases is that certain key entities have a lot of data fields, each related to one or two areas of the overall system. 
 
@@ -31,16 +31,16 @@ You lose that luxury in microservices architecture. Distributed data structures 
 ### Querying data across several microservices
 In a distributed model, a common challenge is how to implement queries that retrieve data from several microservices, while avoiding **chatty communication (sending data back and forth, over and over)** to the microservices from remote client apps. Consider a single screen in a mobile app that needs to show information that is owned by the basket, catalog, and user identity microservices. Instead of sending a request from the mobile app to each of the microservices, you can aggregate the information to improve the efficiency in the communications of your system. The most popular solutions are the following.
 
-**API Gateway**: For simple data aggregation from multiple microservices you can create an API Gateway. Beware of creating a central big Api Gateway that acts as a hub for everything, because it would be a choke point in your system and can violate the principle of microservice autonomy. Instead you can create multiple fined-grained API Gateways each focusing on one vertical “slice” or business area of the system. 
+**API Gateway**: For simple data aggregation from multiple microservices you can create an API Gateway. Beware of creating a central big Api Gateway that acts as a hub for everything, because it would be a choke point in your system and can violate the principle of microservice autonomy. Instead you can create multiple fined-grained API Gateways each focusing on one vertical "slice" or business area of the system. 
 
 **CQRS:** It stands for Command and Query Responsibility Segregation. Basically it means that your database for queries (reads) can be different from your database for writes (commands). In this model you have normalised tables (each owned by a microservice) where Commands (i.e. changes to data) are executed, so that you have a single consistent source of original data. But you also have tables which have aggregated data in a format that is needed by the application UI, often with a one to one mapping between the screen fields and table columns.
 
-With CQRS, you generate, in advance, a special read-only table with the data that is owned by multiple microservices. The table has a format suited to the client app’s needs and is often denormalized. 
+With CQRS, you generate, in advance, a special read-only table with the data that is owned by multiple microservices. The table has a format suited to the client app's needs and is often denormalized. 
 
 CQRS has better performance and reliability than API Gateway, because the data is already locally available to return, without needing to query the other microservices. But CQRS is harder to implement and keep synced.
 
 ### Reporting with COLD DATA
-For complex reports and queries that might not require real-time data, a common approach is to export your “hot data” (transactional data from the microservices) as “cold data” into large databases that are used only for reporting. The original updates and transactions, as your source of truth, have to remain in your microservices data.
+For complex reports and queries that might not require real-time data, a common approach is to export your "hot data" (transactional data from the microservices) as "cold data" into large databases that are used only for reporting. The original updates and transactions, as your source of truth, have to remain in your microservices data.
 
 The way you would synchronize data would be either by using event-driven communication (covered in the next sections) or by using other database import/export tools.
 
