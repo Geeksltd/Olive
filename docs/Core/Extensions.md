@@ -10,5 +10,5 @@ The following table shows all olive extension methods
 | [Reflection](/Extensions/Reflection.md) | [DataTable](//Extensions/DataTable.md) | [DateTime](/Extensions/DateTime.md) | [Delegates](/Extensions/Delegates.md) | [Dictionary](/Extensions/Dictionary.md) |
 | [Exception](/Extensions/Exception.md) | [Boolean](/Extensions/Boolean.md) | [Double](/Extensions/Double.md) | [FileInfo](/Extensions/FileInfo.md) | [Integer](/Extensions/Integer.md) |
 | [Random](/Extensions/Random.md) | [RangeInt](/Extensions/RangeInt.md) | [Stream](/Extensions/Stream.md) | [StringIP](/Extensions/StringIP.md) | [String](/Extensions/String.md) |
-| [Http](/Extensions/Http.md) | [Misc](/Extensions/Misc.md) | [Linq](/Extensions/Linq.md) | [Range](/Extensions/Range.md) | [Uri](/Extensions/Uri.md) |
+| [Http](/Extensions/Http.md) | [Misc](Extensions/Misc.md) | [Linq](/Extensions/Linq.md) | [Range](/Extensions/Range.md) | [Uri](/Extensions/Uri.md) |
 | [Xml](/Extensions/Xml.md) | []() | []() | []() | []() |
