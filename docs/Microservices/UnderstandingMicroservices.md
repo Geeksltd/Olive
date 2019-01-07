@@ -70,7 +70,7 @@ At its core, Microservices comes from some similar ideas as SOA. Some people arg
 
 Traditional SOA included some “big brother” features like Enterprise Service Bus (ESB), big central brokers, and central orchestrators at the organization level. Such central components are considered anti-patterns in the microservice community.
 
-### Microservices takes “Bounded Context” (in DDD) deeper
+### Microservices takes "Bounded Context" (in DDD) deeper
 The concept of microservice also derives from the [Bounded Context (BC) pattern](https://martinfowler.com/bliki/BoundedContext.html) in domain-driven design (DDD). DDD deals with large models by dividing them into multiple BCs that are each explicit about their boundaries. Each BC must have its own model and business entity classes. 
 
 In the general sense of DDD such partitioning is logical and doesn’t have to be physical. It relates to the internal architecture of your application. You can implement that architecture even within a monolith application. A microservice takes things further to the physical layer. It is a Bounded Context that is built and deployed as a **separate process** for each Bounded Context. 

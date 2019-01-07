@@ -14,7 +14,7 @@ An application is composed of your own services plus additional libraries (depen
 
 When you run the application in Visual Studio 2017, it builds the Docker image and runs the multi-container application directly in Docker; it even allows you to debug several containers at once. These features will boost your development speed. 
 
-However, just because Visual Studio makes those steps automatic does not mean that you do not need to know what is going on underneath with Docker. If you were using an CLI development approach (for example, Visual Studio Code plus Docker CLI), you would need to know every step in more detail. Also in the case of problems you need to know what’s going on. Therefore, in the guide we detail every step. 
+However, just because Visual Studio makes those steps automatic does not mean that you do not need to know what is going on underneath with Docker. If you were using an CLI development approach (for example, Visual Studio Code plus Docker CLI), you would need to know every step in more detail. Also in the case of problems you need to know what's going on. Therefore, in the guide we detail every step. 
 
 #### Step 1. Start coding and create your app
 Developing a Docker application is similar to the way you develop an application without Docker. 
@@ -45,9 +45,8 @@ A single repo can contain platform variants, such as a Linux image and a Windows
 
 Alternatively you can specify a tag, targeting a platform explicitly:
 
-|   |   |
-|:-:|:-:|
 | microsoft/aspnetcore:2.0.0-jessie | .NET Core 2.0 runtime-only on Linux   |
+|:-:|:-:|
 | microsoft/dotnet: 2.0.0-nanoserver | .NET Core 2.0 runtime-only on Windows Nano Server   |
 
 #### Step 3. Build the image from Dockerfile
@@ -76,7 +75,7 @@ It binds the internal port 5000 of the container to port 80 of the host machine.
 ### Running a Docker Container
 
 #### Curl command
-You can also test the application using curl from the terminal. On Windows, the default Docker Host IP is always 10.0.75.1 in addition to your machine’s actual IP address. 
+You can also test the application using curl from the terminal. On Windows, the default Docker Host IP is always 10.0.75.1 in addition to your machine's actual IP address. 
 
 ![Curl command](https://user-images.githubusercontent.com/1321544/50515461-21df7c00-0aba-11e9-9ad1-560253c4b0bb.jpg)
 
@@ -99,7 +98,7 @@ COPY . .
 ENTRYPOINT ["dotnet", "run"] 
 ```
 
-While that will work, but it’s far from optimized. In the live environment when a container is started, it should be ready to run. You should not restore NuGet packages or compile the app at run time, which is that using `dotnet run` will do. 
+While that will work, but it's far from optimized. In the live environment when a container is started, it should be ready to run. You should not restore NuGet packages or compile the app at run time, which is that using `dotnet run` will do. 
 
 The base image of `microsoft/dotnet` is a development environment which is far heavier than the running environment alternatives such as the [microsoft/aspnetcore](https://hub.docker.com/r/microsoft/aspnetcore/) image.
 

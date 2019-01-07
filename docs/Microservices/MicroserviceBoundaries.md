@@ -4,7 +4,7 @@ Defining microservice boundaries is probably the first challenge anyone encounte
 
 Each Microservice should be small. But size is not the only factor. Your goal should be to get to the most meaningful separation, guided by your domain knowledge. The emphasis is not on the size, but instead on **business capabilities**.
 
-You need to focus on the application’s logical domain models and data and try to identify **decoupled islands of data** and different contexts within the same application. 
+You need to focus on the application's logical domain models and data and try to identify **decoupled islands of data** and different contexts within the same application. 
 
 ## One microservice per business capability
 As a rule of thumb you need one microservice per business capability. Examples of business capabilities are: Pricing, Custom service, Invoicing, HR management, Supply Chain management, etc.
@@ -19,18 +19,18 @@ As explained before a good starting point would be to create a Microservice for 
 	- Only include data properties needed by that business capability. 
 	- Name entities and properties based on the concerns of that context.
 4. Ensure you have a clear boundary for that Microservice. Your aim should be to achieve a good level of autonomy for each microservice. 
-	- Of course it’s not always possible to have 100% autonomy as your service can depend on data and functionality from other subsystems or business capabilities. 
+	- Of course it's not always possible to have 100% autonomy as your service can depend on data and functionality from other subsystems or business capabilities. 
 	- Establish the integration requirements and API contracts across microservices.
 
 ### How to tell if you got the boundaries right?
 You will know that you designed the right boundaries and sizes of each BC and domain model if you have **few strong relationships** between domain models, and you do not usually need to merge information from multiple domain models when performing typical application operations. 
 
-Aim to achieve an autonomous BC per microservice, as isolated as possible, that enables you to work without having to constantly switch to other microservices’ models.
+Aim to achieve an autonomous BC per microservice, as isolated as possible, that enables you to work without having to constantly switch to other microservices' models.
 
 ## Naming things in each microservice Domain
-The names of entities used in different contexts might be similar, or different. The same real world business concept can have different names in different application / service contexts. When designing a large application, you will see how its domain model can be fragmented. For instance, a person can be referred as a “user” in the identity or membership context, as a “customer” in a CRM context, as a “buyer” in an ordering context, and so forth.
+The names of entities used in different contexts might be similar, or different. The same real world business concept can have different names in different application / service contexts. When designing a large application, you will see how its domain model can be fragmented. For instance, a person can be referred as a "user" in the identity or membership context, as a "customer" in a CRM context, as a "buyer" in an ordering context, and so forth.
 
-When speaking to domain expert (business users) from different domains (different departments) the same real world things may be referred to with different terms. Each may have a different set of data requirements such as data fields. They may even be different and sometimes conflicting rules. For example the address field may be optional from the viewpoint of the sales domain, while it’s mandatory for logistics people. 
+When speaking to domain expert (business users) from different domains (different departments) the same real world things may be referred to with different terms. Each may have a different set of data requirements such as data fields. They may even be different and sometimes conflicting rules. For example the address field may be optional from the viewpoint of the sales domain, while it's mandatory for logistics people. 
 
 It is very hard to disambiguate all domain terms and rules across all the domains related to a large application. But the most important thing is that you should not try to unify the terms and rules; instead, accept the differences and richness provided by each domain. If you try to have a unified database for the whole application, attempts at a unified vocabulary will be awkward and will not sound right to any of the multiple domain experts. Therefore, BCs (implemented as microservices) will help you to clarify where you can use certain domain terms and where you will need to split the system and create additional BCs with different domains.
 
