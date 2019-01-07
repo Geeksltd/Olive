@@ -97,7 +97,7 @@ namespace Olive.Entities.Data
 
         static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
         {
-            var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p));
+            var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p) || p.GetSetMethod() == null);
             var nonOverriden = nonCalculated.Except(p => p.GetGetMethod() != p.GetGetMethod().GetBaseDefinition());
             var nonTransient = nonOverriden.Except(p => TransientEntityAttribute.IsTransient(p.PropertyType));
 
