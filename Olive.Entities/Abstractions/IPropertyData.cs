@@ -12,8 +12,7 @@ namespace Olive.Entities
         bool IsUserDefined { get; }
         Type AssociateType { get; }
         bool IsDefaultId { get; }
-        Action<IEntity, object> SetValue { get; }
-        Func<IEntity, object> GetValue { get; }
+        IPropertyAccessor Accessor { get; }
         PropertyInfo PropertyInfo { get; }
         bool IsCustomPrimaryKey { get; }
     }

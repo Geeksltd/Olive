@@ -29,34 +29,8 @@ namespace Olive.Entities.Data
 
         public Type AssociateType { get; internal set; }
 
-        public Action<IEntity, object> SetValue { get; }
-
-        public Func<IEntity, object> GetValue { get; }
+        public IPropertyAccessor Accessor { get; internal set; }
 
         public bool IsUserDefined => (IsDeleted || IsOriginalId || IsDefaultId) == false;
-
-        public PropertyData(bool isBlob)
-        {
-            if (isBlob)
-            {
-                SetValue = SetBlobValue;
-                GetValue = GetBlobValue;
-            }
-            else
-            {
-                SetValue = SetOtherValue;
-                GetValue = GetOtherValue;
-            }
-        }
-
-        void SetBlobValue(IEntity entity, object value) =>
-            PropertyInfo.SetValue(entity, new Blob { FileName = value as string });
-
-        void SetOtherValue(IEntity entity, object value) =>
-            PropertyInfo.SetValue(entity, Convert.ChangeType(value, NonGenericType));
-
-        object GetBlobValue(IEntity entity) => ((Blob)PropertyInfo.GetValue(entity))?.FileName;
-
-        object GetOtherValue(IEntity entity) => PropertyInfo.GetValue(entity);
     }
 }

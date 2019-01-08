@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Olive.Entities.Data
 {
-    internal class DataProviderMetaDataGenerator
+    internal partial class DataProviderMetaDataGenerator
     {
         internal static IDataProviderMetaData Generate(Type type)
         {
@@ -15,7 +15,7 @@ namespace Olive.Entities.Data
             {
                 BaseClassTypesInOrder = GetParents(type),
                 DrivedClassTypes = GetDrivedClasses(type),
-                Properties = GetProperties(type).ToArray(),
+                Properties = SetAccessors(type, GetProperties(type)),
                 Schema = SchemaAttribute.GetSchema(type),
                 TableName = tableName,
                 TableAlias = tableName,
@@ -23,7 +23,7 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IEnumerable<IPropertyData> GetProperties(Type type)
+        static IEnumerable<PropertyData> GetProperties(Type type)
         {
             var infos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 
@@ -39,11 +39,11 @@ namespace Olive.Entities.Data
             yield return GetOriginalIdPropertyData(type);
         }
 
-        static IPropertyData GetDefaultIdPropertyData(Type type)
+        static PropertyData GetDefaultIdPropertyData(Type type)
         {
             var info = type.GetProperty(PropertyData.DEFAULT_ID_COLUMN);
 
-            return new PropertyData(isBlob: false)
+            return new PropertyData
             {
                 Name = PropertyData.DEFAULT_ID_COLUMN,
                 ParameterName = PropertyData.DEFAULT_ID_COLUMN,
@@ -53,9 +53,9 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IPropertyData GetDeletedPropertyData(Type type)
+        static PropertyData GetDeletedPropertyData(Type type)
         {
-            return new PropertyData(isBlob: false)
+            return new PropertyData
             {
                 Name = ".Deleted",
                 ParameterName = "_Deleted",
@@ -65,9 +65,9 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IPropertyData GetOriginalIdPropertyData(Type type)
+        static PropertyData GetOriginalIdPropertyData(Type type)
         {
-            return new PropertyData(isBlob: false)
+            return new PropertyData
             {
                 Name = PropertyData.ORIGINAL_ID,
                 ParameterName = PropertyData.ORIGINAL_ID,
@@ -77,13 +77,13 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IPropertyData GetUserDefinedPropertyData(PropertyInfo info, PropertyInfo dbProp)
+        static PropertyData GetUserDefinedPropertyData(PropertyInfo info, PropertyInfo dbProp)
         {
             var isBlob = info.PropertyType.IsA<Blob>();
             var targetProp = dbProp ?? info;
             var columnName = info.Name + "_FileName".OnlyWhen(isBlob);
 
-            return new PropertyData(isBlob)
+            return new PropertyData
             {
                 IsAutoNumber = AutoNumberAttribute.IsAutoNumber(info),
                 IsCustomPrimaryKey = PrimaryKeyAttribute.IsPrimaryKey(info),
