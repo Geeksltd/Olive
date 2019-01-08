@@ -22,6 +22,8 @@ namespace Olive.Entities.Data
 
         public string InsertCommand { get; }
 
+        public Func<IEntity, Task> UpdateSelf { get; }
+
         internal DataProvider(Type type, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {
             EntityType = type;
@@ -34,6 +36,11 @@ namespace Olive.Entities.Data
             DeleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
             UpdateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
             InsertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
+
+            if (UpdateCommand.IsEmpty())
+                UpdateSelf = UpdateSelfImpl;
+            else
+                UpdateSelf = entity => Task.CompletedTask;
         }
 
         internal void Prepare()
@@ -134,15 +141,20 @@ namespace Olive.Entities.Data
                 foreach (var parent in MetaData.BaseClassesInOrder)
                     await parent.GetProvider(Cache, Access, SqlCommandGenerator).Update(record);
 
-                if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record))).ToStringOrEmpty().IsEmpty())
-                {
-                    Cache.Remove(record);
-                    throw new ConcurrencyException($"Failed to update the '{MetaData.TableName}' table. There is no row with the ID of {record.GetId()}.");
-                }
+                await UpdateSelf(record);
             }
 
             if (Database.AnyOpenTransaction()) await saveAll();
             else using (var scope = Database.CreateTransactionScope()) { await saveAll(); scope.Complete(); }
+        }
+
+        async Task UpdateSelfImpl(IEntity record)
+        {
+            if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record))).ToStringOrEmpty().IsEmpty())
+            {
+                Cache.Remove(record);
+                throw new ConcurrencyException($"Failed to update the '{MetaData.TableName}' table. There is no row with the ID of {record.GetId()}.");
+            }
         }
 
         IDataParameter[] CreateParameters(IEntity record)

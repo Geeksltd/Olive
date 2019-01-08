@@ -45,6 +45,8 @@ namespace Olive.Entities.Data
             var properties = metaData.UserDefienedProperties
                 .Except(p => p.IsAutoNumber);
 
+            if (properties.None()) return "";
+
             return $@"UPDATE {GetFullTablaName(metaData)} SET
                 {properties.Select(x => $"{SafeId(x.Name)} = @{x.ParameterName}").ToString(", ")}
                 OUTPUT INSERTED.{metaData.IdColumnName}
