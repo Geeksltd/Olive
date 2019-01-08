@@ -38,9 +38,9 @@ namespace Olive.Entities.Data
             InsertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
 
             if (UpdateCommand.IsEmpty())
-                UpdateSelf = UpdateSelfImpl;
-            else
                 UpdateSelf = entity => Task.CompletedTask;
+            else
+                UpdateSelf = UpdateSelfImpl;
         }
 
         internal void Prepare()
