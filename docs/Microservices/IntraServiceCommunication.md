@@ -10,7 +10,7 @@ One solution is to replace many fine-grained calls with few coarser-grained ones
 The goal of each microservice is to be autonomous and available to the client consumer, even if the other services that are part of the end-to-end application are down or unhealthy. If you need to make a call from one microservice to other microservices and await its response before you are able to provide a response to the user, you have an architecture that will not be resilient when some microservices fail. 
 
 ### Http: Synchronous protocol
-HTTP is a synchronous protocol. One sends a request and waits for a response from the service. Note that this is independent and different from the client code’s thread execution that could be sync or async (ie thread is blocked or not), as that’s a different concept. The important point here is that the protocol (HTTP/HTTPS) is synchronous and the client code can only continue its task when it receives the HTTP server response. 
+HTTP is a synchronous protocol. One sends a request and waits for a response from the service. Note that this is independent and different from the client code's thread execution that could be sync or async (ie thread is blocked or not), as that's a different concept. The important point here is that the protocol (HTTP/HTTPS) is synchronous and the client code can only continue its task when it receives the HTTP server response. 
 
 ### AMQP: Asynchronous protocol
 AMQP is a protocol supported by many operating systems and cloud environments which uses asynchronous messages. In this model the client code sends a message but does not wait for a response. Usually the wiring technology, such as RabbitMQ, will handle retries, addressing, or if needed broadcasting to multiple recipients.
@@ -18,9 +18,9 @@ AMQP is a protocol supported by many operating systems and cloud environments wh
 A microservice-based application will often use a combination of both of these styles, with the most common scenario being direct synchronous HTTP calls to Web APIs.
 
 ### Asynchronous integration facilitates microservice autonomy 
-As a rule of thumb choose Async over Sync whenever possible. That does not mean that you have to use a specific protocol (for example, AMQP messaging versus HTTP). It just means that the communication between microservices should be done only by propagating data asynchronously, but try not to depend on other internal microservices as part of the initial service’s HTTP request/response operation. 
+As a rule of thumb choose Async over Sync whenever possible. That does not mean that you have to use a specific protocol (for example, AMQP messaging versus HTTP). It just means that the communication between microservices should be done only by propagating data asynchronously, but try not to depend on other internal microservices as part of the initial service's HTTP request/response operation. 
 
-HTTP dependencies between microservices, like when creating long request/response cycles with HTTP request chains, is bad news for your services’ autonomy as well as performance. The more you add synchronous dependencies between microservices, such as query requests, the worse the overall response time gets for the user. 
+HTTP dependencies between microservices, like when creating long request/response cycles with HTTP request chains, is bad news for your services' autonomy as well as performance. The more you add synchronous dependencies between microservices, such as query requests, the worse the overall response time gets for the user. 
 
 ![Sync vs Async](https://user-images.githubusercontent.com/1321544/50510690-eb950300-0a9f-11e9-9827-6745208e43ec.jpg)
 
@@ -55,7 +55,7 @@ But there are cases when a message should be sent to multiple receivers. In thos
 When you use a publish/subscribe communication, you might be using an event bus interface to publish events to any subscriber.
 
 ### Strict consistency vs Eventual Consistency
-Strict consistency means that when something happens, it has happened from everyone’s point of view. There is a single source of truth (usually a relational database). ACID transactions are used to implement this using locking and other means so no one can have an inconsistent version of the truth even when complex changes or transactions are half way and with yet an uncertain fate (commit vs rollback).
+Strict consistency means that when something happens, it has happened from everyone's point of view. There is a single source of truth (usually a relational database). ACID transactions are used to implement this using locking and other means so no one can have an inconsistent version of the truth even when complex changes or transactions are half way and with yet an uncertain fate (commit vs rollback).
 
 Strict consistency (via ACID compliance) makes the world a simpler place. For example:
 Your bank balance is $50.
@@ -74,11 +74,11 @@ The problem with Strict Consistency is limited scalability and availability, whi
 3. You tell your neighbor that it is going to rain tomorrow.
 4. Eventually, all of the servers (you, me, your neighbor) know the truth (that it's going to rain tomorrow), but in the meantime the client (his wife) came away thinking it is going to be sunny, even though she asked after one or more of the servers (you and me) had a more up-to-date value.
 
-Eventual consistency is scalable and provides autonomy and independence to each microservice. It’s often implemented through event based messaging as you will learn later. 
+Eventual consistency is scalable and provides autonomy and independence to each microservice. It's often implemented through event based messaging as you will learn later. 
 
 If you use eventual consistency make it **completely clear to the end user**. The end user and the business owner have to explicitly embrace eventual consistency in the system. Often a business does not have any problem with this approach, as long as it is explicit. This is important because users might expect to see some results immediately and this might not happen with eventual consistency.
 
-> Note: You can’t use Eventual Consistency when the transactions and real-time consistency are required for the application. To use Eventual Consistency, the business processes often need to be changed to become tolerant of inconsistencies. This means that the business has to buy into this concept and build processes for manual corrections.
+> Note: You can't use Eventual Consistency when the transactions and real-time consistency are required for the application. To use Eventual Consistency, the business processes often need to be changed to become tolerant of inconsistencies. This means that the business has to buy into this concept and build processes for manual corrections.
 
 An eventually consistent transaction is made up of a collection of distributed actions across different microservices.At each action, the related microservice updates a domain entity and publishes another integration event that raises the next action within the same end-to-end business task. You will learn how to implement this using RabbitMQ and MassTransit later.  
 
@@ -177,7 +177,7 @@ The Subscribe method accepts an event handler Action delegate, which is invoked 
 ### Subscribing to events
 The following code shows what each receiver microservice needs to implement when starting (in the Startup class) in order to subscribe to an event.
 
-In this example, the basket microservice needs to subscribe to **ProductPriceChanged** event messages so that it’s aware of any changes to the product price, so it can warn the user..  
+In this example, the basket microservice needs to subscribe to **ProductPriceChanged** event messages so that it's aware of any changes to the product price, so it can warn the user..  
 
 ```csharp
 Olive.EventBus.Current.Subscribe<ProductPriceChanged>(OnPriceChanged);
@@ -220,7 +220,7 @@ You will also have a background scheduled task to actually publish the events:
 ### Message idempotency
 Idempotency means that an operation can be performed multiple times without changing the result. In a messaging environment, an event is idempotent if it can be delivered multiple times without changing the result for the receiver microservice.
 
-This is necessary because of the nature of distributed systems. In general in distributed systems when a remote call is made to publish a message, if the sender receives a positive acknowledgement things are easy. But if it doesn’t receive an acknowledgement (for example due to a network failure), it has no way of knowing if the receiver has received the message or not. So it has no option but to implement a retry mechanism. 
+This is necessary because of the nature of distributed systems. In general in distributed systems when a remote call is made to publish a message, if the sender receives a positive acknowledgement things are easy. But if it doesn't receive an acknowledgement (for example due to a network failure), it has no way of knowing if the receiver has received the message or not. So it has no option but to implement a retry mechanism. 
 
 This means that on the receiving end **the same message might be received multiple times**. 
 
@@ -230,9 +230,9 @@ Sometimes this is not a problem to receive and process a duplicate message. For 
 On the other hand, operations such as calling a payment gateway to charge a credit card will cause trouble and you need to ensure that receiving the same event message multiple times is correctly discarded. The best way to deal with this issue is to have a unique identity per event message so that you can write basic logic to ensure that each unique event ID is processed only once. 
 
 ### Deduplicate messages from RabbitMQ 
-According to the [RabbitMQ documentation](https://www.rabbitmq.com/reliability.html#consumer), “If a message is delivered to a consumer and then requeued (because it was not acknowledged before the consumer connection dropped, for example) then RabbitMQ will set the redelivered flag on it when it is delivered again. 
+According to the [RabbitMQ documentation](https://www.rabbitmq.com/reliability.html#consumer), "If a message is delivered to a consumer and then requeued (because it was not acknowledged before the consumer connection dropped, for example) then RabbitMQ will set the redelivered flag on it when it is delivered again. 
 
-If the “redelivered” flag is set, the receiver must take that into account, because the message might already have been processed. But that is not guaranteed; the message might never have reached the receiver after it left the message broker, perhaps because of network issues. On the other hand, if the “redelivered” flag is not set, it is guaranteed that the message has not been sent more than once. Therefore, the receiver needs to deduplicate messages or process messages in an idempotent way only if the “redelivered” flag is set in the message. 
+If the "redelivered" flag is set, the receiver must take that into account, because the message might already have been processed. But that is not guaranteed; the message might never have reached the receiver after it left the message broker, perhaps because of network issues. On the other hand, if the "redelivered" flag is not set, it is guaranteed that the message has not been sent more than once. Therefore, the receiver needs to deduplicate messages or process messages in an idempotent way only if the "redelivered" flag is set in the message. 
 
 ## Api Input / output types
 The domain model entities in each microservice are private to that service. When you create Web Apis that need to send or receive structured data, the best approach is to define simple DTO (Data Transfer Object) classes dedicated to each Api client, based on exactly what they need. They are also sometimes referred to as View Model classes.
@@ -257,7 +257,7 @@ If your API is used by external applications made by other people, you cannot fo
 You usually need to incrementally deploy new versions of a service in a way that both old and new versions of a service contract are running simultaneously, at least for a period of time. 
 
 ### Internally used APIs: Do you need versioning?
-If your changed API is designed for and dedicated to only internal consumer microservices which are owned and controlled by you, it may be possible to force them to also be updated to use the new version of the Api. That way you don’t have to get into the trouble of maintaining multiple api versions. 
+If your changed API is designed for and dedicated to only internal consumer microservices which are owned and controlled by you, it may be possible to force them to also be updated to use the new version of the Api. That way you don't have to get into the trouble of maintaining multiple api versions. 
 
 But if the consuming microservices have a different release cycle, for example when they are under active development for other changes of their own, this may not be possible to deploy the new version of all services at the same time. This means that you may need to support multiple API versions at the same time. 
 
@@ -270,12 +270,12 @@ When you do need to support multiple API versions, a common pattern for RESTful 
 Your latest API version normally needs a full implementation anyway. But for your older API version(s) you have two options. One option is to keep it intact, so it will also have a full implementation. However in this way you need to also maintain it, apply bug fixes, security updates and so on like any other production code. It can lead to code duplication and maintenance problems.
 
 ### Lightweight adapter implementation
-Alternatively you can change the old API’s implementation to merely delegate the call to the new version, while adding the compatibility logic. This helps you avoid implementation code duplication.
+Alternatively you can change the old API's implementation to merely delegate the call to the new version, while adding the compatibility logic. This helps you avoid implementation code duplication.
 
-Your latest API will be the only one who implements the actual thing, while your old API implementation will only contain the logic to make an old request compatible with the new contract, and also convert the response to the old contract’s format.
+Your latest API will be the only one who implements the actual thing, while your old API implementation will only contain the logic to make an old request compatible with the new contract, and also convert the response to the old contract's format.
 
 ## Api documentation with Swagger
-[Swagger](https://swagger.io/) is an open-source framework for documenting APIs for both humans and the machine. The Swagger specification is the basis of the OpenAPI Specification (OAS) to standardize the way RESTful interfaces are defined. It’s supported by Microsoft as well as all other key vendors.
+[Swagger](https://swagger.io/) is an open-source framework for documenting APIs for both humans and the machine. The Swagger specification is the basis of the OpenAPI Specification (OAS) to standardize the way RESTful interfaces are defined. It's supported by Microsoft as well as all other key vendors.
 
 There is a rich ecosystem of [libraries and frameworks](https://swagger.io/tools/open-source/open-source-integrations/) across all platforms that support Swagger. For example, [AutoRest](https://github.com/Azure/AutoRest) automatically generates .NET client classes. Other tools like [swagger-codegen](https://github.com/swagger-api/swagger-codegen) are also available.
 
