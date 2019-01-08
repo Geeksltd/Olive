@@ -12,11 +12,11 @@ using System.Reflection;
 
 namespace Olive.Entities.Data
 {
-    partial class DataProviderMetaDataGenerator
+    static partial class DataProviderMetaDataGenerator
     {
-        static IPropertyData[] SetAccessors(Type type, IEnumerable<PropertyData> properties)
+        static IPropertyData[] SetAccessors(this IEnumerable<PropertyData> @this, Type type)
         {
-            var list = properties.ToList();
+            var list = @this.ToList();
 
             var code = "";
 

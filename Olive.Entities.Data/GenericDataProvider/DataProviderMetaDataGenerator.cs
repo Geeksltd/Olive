@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
@@ -15,7 +16,7 @@ namespace Olive.Entities.Data
             {
                 BaseClassTypesInOrder = GetParents(type),
                 DrivedClassTypes = GetDrivedClasses(type),
-                Properties = SetAccessors(type, GetProperties(type)),
+                Properties = GetProperties(type).SetAccessors(type),
                 Schema = SchemaAttribute.GetSchema(type),
                 TableName = tableName,
                 TableAlias = tableName,
@@ -91,8 +92,27 @@ namespace Olive.Entities.Data
                 ParameterName = columnName,
                 PropertyInfo = targetProp,
                 NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType,
-                AssociateType = dbProp != null ? info.PropertyType : null
+                AssociateType = dbProp != null ? info.GetAssociateType() : null
             };
+        }
+
+        static Type GetAssociateType(this PropertyInfo @this)
+        {
+            if (@this.IsAssociation())
+                return @this.PropertyType.GenericTypeArguments[0];
+
+            return @this.PropertyType;
+        }
+
+        static bool IsAssociation(this PropertyInfo @this)
+        {
+            if (@this.PropertyType.IsA<IEntity>()) return true;
+
+            if (@this.PropertyType.IsA<Task>() &&
+                @this.PropertyType.IsGenericType &&
+                @this.PropertyType.GenericTypeArguments[0].IsA<IEntity>()) return true;
+
+            return false;
         }
 
         static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
@@ -101,7 +121,7 @@ namespace Olive.Entities.Data
             var nonOverriden = nonCalculated.Except(p => p.GetGetMethod() != p.GetGetMethod().GetBaseDefinition());
             var nonTransient = nonOverriden.Except(p => TransientEntityAttribute.IsTransient(p.PropertyType));
 
-            var associations = nonTransient.Where(predicate => predicate.PropertyType.IsA<IEntity>());
+            var associations = nonTransient.Where(p => p.IsAssociation());
             var rest = nonTransient.Except(associations);
 
             var ids = new List<PropertyInfo>();
