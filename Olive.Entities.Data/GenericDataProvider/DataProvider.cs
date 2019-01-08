@@ -205,7 +205,7 @@ namespace Olive.Entities.Data
 
                 TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(TablesTemplate.HasValue()) +
                     $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
-                    $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{baseType?.TableAlias}.{baseType?.IdColumnName}".OnlyWhen(baseType != null);
+                    $"ON {{0}}{medaData.TableAlias}.[{medaData.IdColumnName}] = {{0}}{baseType?.TableAlias}.[{baseType?.IdColumnName}]".OnlyWhen(baseType != null);
             }
 
             foreach (var parent in MetaData.BaseClassesInOrder)
@@ -262,7 +262,7 @@ namespace Olive.Entities.Data
 
                 var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
                     FROM {associateMetaData.TableName} AS {alias}
-                    WHERE {alias}.{associateMetaData.IdColumnName} = [{{1}}].{association.Name}";
+                    WHERE {alias}.[{associateMetaData.IdColumnName}] = [{{1}}].[{association.Name}]";
 
                 SubqueryMapping.Add(
                     association.Name.WithSuffix(".*"),

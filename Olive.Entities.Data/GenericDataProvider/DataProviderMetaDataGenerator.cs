@@ -98,7 +98,7 @@ namespace Olive.Entities.Data
 
         static Type GetAssociateType(this PropertyInfo @this)
         {
-            if (@this.IsAssociation())
+            if (@this.PropertyType.IsA<Task>())
                 return @this.PropertyType.GenericTypeArguments[0];
 
             return @this.PropertyType;
