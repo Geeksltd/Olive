@@ -1376,6 +1376,16 @@ namespace Olive
         }
 
         /// <summary>
+        /// Tries to the remove an item with the specified key from this dictionary.
+        /// </summary>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static System.Collections.Concurrent.ConcurrentDictionary<string, int> TryRemove(this System.Collections.Concurrent.ConcurrentDictionary<string, int> list, string key, bool caseSensitive)
+        {
+                    list.RemoveWhere(a => a.Key.Equals(key,caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+            return list;
+        }
+        
+        /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
         /// </summary>
