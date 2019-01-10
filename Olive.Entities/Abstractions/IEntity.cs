@@ -47,4 +47,6 @@ namespace Olive.Entities
         /// </summary>
         T ID { get; set; }
     }
+
+    internal interface IOriginalIdHolder { void SetOriginalId(); }
 }

@@ -28,7 +28,8 @@ namespace Olive.Entities
         {
             (entity as Entity).IsNew = !saved;
 
-            entity.GetType().GetProperty("OriginalId").SetValue(entity, entity.GetId());
+            if (entity is IOriginalIdHolder h) h.SetOriginalId();
+            else entity.GetType().GetProperty("OriginalId").SetValue(entity, entity.GetId());
         }
 
         /// <summary>
