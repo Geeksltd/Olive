@@ -207,27 +207,7 @@ namespace Olive.Entities.Data
         string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, string propertyName) =>
             $"{medaData.TableName}_{propertyName}";
 
-        void PrepareTableTemplate()
-        {
-            TablesTemplate = "";
-
-            void addTable(IDataProviderMetaData medaData)
-            {
-                var baseType = medaData.BaseClassesInOrder.LastOrDefault();
-
-                TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(TablesTemplate.HasValue()) +
-                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
-                    $"ON {{0}}{medaData.TableAlias}.[{medaData.IdColumnName}] = {{0}}{baseType?.TableAlias}.[{baseType?.IdColumnName}]".OnlyWhen(baseType != null);
-            }
-
-            foreach (var parent in MetaData.BaseClassesInOrder)
-                addTable(parent);
-
-            addTable(MetaData);
-
-            foreach (var drived in MetaData.DrivedClasses)
-                addTable(drived);
-        }
+        void PrepareTableTemplate() => TablesTemplate = MetaData.GetTableTemplate();
 
         void PrepareFields()
         {
@@ -270,10 +250,11 @@ namespace Olive.Entities.Data
             {
                 var associateMetaData = DataProviderMetaDataGenerator.Generate(association.AssociateType);
 
-                var alias = $"[{{0}}.{association.Name}_{association.AssociateType.Name}]";
+                var alias = $"[{{0}}.{association.Name}_{associateMetaData.TableName}]";
+                var partialAlias = $"{{0}}.{association.Name}_";
 
                 var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
-                    FROM {associateMetaData.TableName} AS {alias}
+                    FROM {associateMetaData.GetTableTemplate().FormatWith(partialAlias)}
                     WHERE {alias}.[{associateMetaData.IdColumnName}] = [{{1}}].[{association.Name}]";
 
                 SubqueryMapping.Add(
