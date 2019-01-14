@@ -763,11 +763,37 @@ namespace Olive
         }
 
         /// <summary>
+        /// Returns the union of this list with the specified other lists.
+        /// </summary>
+        /// <param name="caseSensitive">Determined whether case sensitive is important or not.</param>
+        /// <param name="otherLists">The list of items which are unioned.</param>
+        public static IEnumerable<string> Union(this IEnumerable<string> @this, bool caseSensitive, params IEnumerable<string>[] otherLists)
+        {
+            var result = @this;
+
+            foreach (var other in otherLists)
+                if (caseSensitive)
+                    result = Enumerable.Union(result, other);
+                else
+                    result = Enumerable.Union(result, other).Distinct(caseSensitive);
+
+            return result;
+        }
+        
+        /// <summary>
         /// Returns the union of this list with the specified items.
         /// </summary>
         /// <param name="otherItems">The list of items which are unioned.</param>
         public static IEnumerable<T> Union<T>(this IEnumerable<T> @this, params T[] otherItems) => @this.Union((IEnumerable<T>)otherItems);
 
+        /// <summary>
+        /// Returns the union of this list with the specified items.
+        /// </summary>
+        /// <param name="caseSensitive">Determined whether case sensitive is important or not.</param>
+        /// <param name="otherItems">The list of items which are unioned.</param>
+        public static IEnumerable<string> Union(this IEnumerable<string> @this, bool caseSensitive, params string[] otherItems) => @this.Union(caseSensitive,(IEnumerable<string>)otherItems);
+
+        
         /// <summary>
         /// Returns the union of this list with the specified items.
         /// </summary>
