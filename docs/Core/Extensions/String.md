@@ -592,9 +592,9 @@ When you want to replace some substring from  another string in your application
 "Sample Example".KeepReplacing("xa","pe");// returns "Sample Epemple"
 "Sample Example".KeepReplacing("a","p");// returns "Spmple Expmple"
 "Sample Example".KeepReplacing(" ","");// returns "SampleExample"
-"Sample Example".KeepReplacing("a","p",false);// returns "Spmple Expmple"
-"Sample Example".KeepReplacing("A","P",true);// returns "Sample Example"
-"Sample Example".KeepReplacing("E","p",true);// returns "Sample pxample"
+"Sample Example".KeepReplacing("a","p",false);// returns "Spmple Expmple", caseSensitive is false
+"Sample Example".KeepReplacing("A","P",true);// returns "Sample Example", caseSensitive is true
+"Sample Example".KeepReplacing("E","p",true);// returns "Sample pxample",caseSensitive is true
 ```
 # Lacks({phrase},{caseSensitive})
 Determines whether this string object does not contain the specified phrase.
@@ -688,8 +688,8 @@ When you want to Remove some substring from  another string in your application.
 "Sample Example".Remove("a","b"); //returns "Smple Exmple"
 "Sample Example".Remove("a","x"); //returns "Smple Emple"
 "Sample Example".Remove("a","x","E"); //returns "Smple mple"
-"Sample Example".Remove("a","x","E",caseSensitive: false); //returns "Smple mple"
-"Sample Example".Remove("A","X","E",caseSensitive: true); //returns "Sample xample"
+"Sample Example".Remove("a","x","E",caseSensitive: false); //returns "Smple mple", caseSensitive is false
+"Sample Example".Remove("A","X","E",caseSensitive: true); //returns "Sample xample", caseSensitive is true
 ```
 
 # RemoveHtmlTags()
@@ -835,6 +835,8 @@ When you want to know a `String` begins with other strings in your applications.
 "there".StartsWithAny("there"); //returns true
 "there".StartsWithAny("there "); //returns false
 "there".StartsWithAny("ere"); //returns false
+"there".StartsWithAny("The",false); //returns true
+"there".StartsWithAny("The",true); //returns false, caseSensitive is true
 "there".StartsWithAny("er","th"); //returns true
 "there".StartsWithAny("the","th"); //returns true
 "Sample string".StartsWithAny("s","Sa","Sam"); //returns true
@@ -1312,8 +1314,8 @@ When you want to trim all text before the specified search phrase in your applic
 "Sample String".TrimBefore("le",true); // returns "le String"
 "Sample String".TrimBefore("Le",true); // returns "Sample String"
 "Sample String".TrimBefore("Le",false); // returns "le String"
-"Sample String".TrimBefore("Le",false,false); // returns "le String"
-"Sample String".TrimBefore("Le",false,true); // returns " String"
+"Sample String".TrimBefore("Le",false,false); // returns "le String" caseSensitive is false
+"Sample String".TrimBefore("Le",false,true); // returns " String" caseSensitive is true
 "".TrimBefore("Le"); // returns ""
 "Sample String".TrimBefore(""); // returns ""
 ```        
@@ -1378,8 +1380,8 @@ When you want to the same string unless it is the same as the specified text in 
 "Example".Unless(""); //returns "Example"
 "Example".Unless("Example"); //returns ""
 "Example".Unless("example"); //returns "Example"
-"Example".Unless("example",false); //returns ""
-"Example".Unless("example",true); //returns "Example"
+"Example".Unless("example",false); //returns "", caseSensitive is false
+"Example".Unless("example",true); //returns "Example", caseSensitive is true
 ```
 # WithPrefix({prefixString})
 Returns this text with the specified `prefix` if this has a value. 
