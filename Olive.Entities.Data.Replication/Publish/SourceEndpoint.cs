@@ -47,11 +47,16 @@ namespace Olive.Entities.Replication
 
         void HandleRefreshRequests()
         {
-            EventBus.Queue(UrlPattern.TrimEnd(".fifo") + "-REFRESH.fifo").Subscribe<RefreshMessage>(message =>
+            var url = UrlPattern.TrimEnd(".fifo") + "-REFRESH.fifo";
+
+            Log.For(this).Debug("Subscribing to " + url);
+
+            EventBus.Queue(url).Subscribe<RefreshMessage>(message =>
             {
                 if (Agents.TryGetValue(message.TypeName, out var agent))
                 {
-                    Agents[message.TypeName].UploadAll();
+                    Log.For(this).Debug("Uploading all data for " + message.TypeName);
+                    agent.UploadAll();
                     return Task.CompletedTask;
                 }
                 else
