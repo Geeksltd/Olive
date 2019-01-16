@@ -193,7 +193,7 @@ namespace Olive.Entities.Data
                 var result = new List<IEntity>();
 
                 if (reader.Read()) return Parse(reader);
-                else throw new DataException($"There is no record with the the ID of '{objectID}'.");
+                else throw new DataException($"There is no {EntityType.Name} record with the the ID of '{objectID}'.");
             }
         }
 
