@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Olive.Entities.Data
@@ -40,5 +41,16 @@ namespace Olive.Entities.Data
 
             return result;
         }
+
+        internal static IEnumerable<IPropertyData> GetPropertiesForFillData(this IDataProviderMetaData @this)
+        {
+            if (@this.BaseClassesInOrder.HasAny())
+                return @this.UserDefienedProperties;
+
+            return @this.UserDefienedAndIdProperties;
+        }
+
+        internal static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this) =>
+            @this.UserDefienedAndIdProperties.Except(p => p.IsAutoNumber);
     }
 }

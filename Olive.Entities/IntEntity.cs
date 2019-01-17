@@ -24,7 +24,7 @@
             {
                 if (!IsIdLoaded)
                     if (GetType().Defines<IdByDatabaseAttribute>(inherit: true))
-                        throw new InvalidOperationException($"ID is not avialable for instances of '{GetType().Name}' before being saved to the database.");
+                            throw new InvalidOperationException($"ID is not avialable for instances of '{GetType().Name}' before being saved to the database.");
 
                 return id;
             }

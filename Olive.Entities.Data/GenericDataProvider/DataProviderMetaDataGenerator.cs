@@ -50,7 +50,8 @@ namespace Olive.Entities.Data
                 ParameterName = PropertyData.DEFAULT_ID_COLUMN,
                 PropertyInfo = info,
                 NonGenericType = info.PropertyType,
-                IsDefaultId = true
+                IsDefaultId = true,
+                IsAutoNumber = IdByDatabaseAttribute.IsIdAssignedByDatabase(type)
             };
         }
 

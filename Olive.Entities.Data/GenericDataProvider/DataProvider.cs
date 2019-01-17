@@ -150,18 +150,18 @@ namespace Olive.Entities.Data
 
         async Task UpdateSelfImpl(IEntity record)
         {
-            if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record))).ToStringOrEmpty().IsEmpty())
+            if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record, forInsert: false))).ToStringOrEmpty().IsEmpty())
             {
                 Cache.Remove(record);
                 throw new ConcurrencyException($"Failed to update the '{MetaData.TableName}' table. There is no row with the ID of {record.GetId()}.");
             }
         }
 
-        IDataParameter[] CreateParameters(IEntity record)
+        IDataParameter[] CreateParameters(IEntity record, bool forInsert)
         {
             var result = new List<IDataParameter>();
 
-            foreach (var prop in MetaData.Properties)
+            foreach (var prop in forInsert ? MetaData.GetPropertiesForInsert() : MetaData.Properties)
                 result.Add(Access.CreateParameter(prop.ParameterName, prop.Accessor.Get(record) ?? DBNull.Value));
 
             return result.ToArray();
@@ -174,10 +174,10 @@ namespace Olive.Entities.Data
                 foreach (var parent in MetaData.BaseClassesInOrder)
                     await parent.GetProvider(Cache, Access, SqlCommandGenerator).Insert(record);
 
-                var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record));
+                var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record, forInsert: true));
 
                 if (MetaData.HasAutoNumber)
-                    MetaData.AutoNumberProperty.PropertyInfo.SetValue(record, result);
+                    MetaData.AutoNumberProperty.Accessor.Set(record, result);
             }
 
             if (Database.AnyOpenTransaction()) await saveAll();
@@ -186,7 +186,7 @@ namespace Olive.Entities.Data
 
         void FillData(IDataReader reader, IEntity entity)
         {
-            foreach (var property in MetaData.UserDefienedAndIdProperties)
+            foreach (var property in MetaData.GetPropertiesForFillData())
             {
                 var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
 
