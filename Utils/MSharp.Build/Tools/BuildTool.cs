@@ -57,8 +57,7 @@ namespace MSharp.Build.Tools
         {
             try
             {
-                Path = WindowsCommand.Where.Execute(Name).Trim().ToLines()
-                    .Select(x => x.AsFile()).First(x => x.Extension.HasValue());
+                Path = WindowsCommand.FindExe(Name);
                 return true;
             }
             catch
