@@ -24,9 +24,9 @@ namespace Olive.Entities
         /// <summary>
         /// Sets the state of an entity instance to saved.
         /// </summary>
-        public static void SetSaved(this EntityServices @this, IEntity entity, bool saved = true)
+        public static void SetSaved(this EntityServices @this, IEntity entity)
         {
-            (entity as Entity).IsNew = !saved;
+            (entity as Entity).IsNew = false;
 
             if (entity is IOriginalIdHolder h) h.SetOriginalId();
             else entity.GetType().GetProperty("OriginalId").SetValue(entity, entity.GetId());
@@ -55,25 +55,6 @@ namespace Olive.Entities
             changes?.Invoke(result);
 
             return result;
-        }
-
-        /// <summary>
-        /// Sets the ID of an object explicitly.
-        /// </summary>
-        public static void ResetOriginalId<T>(this EntityServices @this, IEntity<T> entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            ((dynamic)entity).OriginalId = entity.ID;
-        }
-
-        public static void SetSaved<T>(this EntityServices @this, IEntity<T> entity, T id)
-        {
-            ((dynamic)entity).IsNew = false;
-
-            entity.ID = id;
-            @this.ResetOriginalId(entity);
         }
     }
 }
