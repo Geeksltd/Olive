@@ -5,6 +5,27 @@ Often a microservice should invoke a command in another microservice.
 This is somewhat similar to sending POST, PUT or DELETE http messages to APIs, without expecting a return value.
 However, the benefit of using a queue-based approach is that it's more **reliable** and **scalable**.
 
+## Error handling
+When you invoike a Web API synchronously, if it fails, you will know straight away, and can perhaps show a message to the user.
+But with a queue-based approach, things are different. As the calling service will simply write a message in the queue, it's almost guaranteed that it will not fail at that stage. So the user will not know straight away whether the ultimate action would be successful.
+
+#### Think differently
+With a queue-based approach, your design thinking should be different. Rather than an immediate user feedback, you should provide a UX where the user will learn about the failed messages in the queue. This is done in the context of the message processing microservice, rather than the calling microservice.
+
+#### Manual intervention
+A simple resolution in such cases will be to provide a list of failed messages to the user, with the ability to retry, or complete manually and dismiss the item. For example, let's consider a scenario where:
+
+- you want the `e-shop` microservice to invoke a command named `SubmitOrder` in the `Orders` microservice.
+- The context is where an online customer has added products to their basket, and is ready to complete the purchase.
+- If using a Web Api approach, if the `SubmitOrder` fails, you would have to show an error to the customer to say *"sorry there is a problem"*. But then the customer will be lost!
+- If using a message queue approach, the customer will not see an error, even when the `Orders` microservice fails to process the message.
+- To ensure the order doesn't get lost, in the `Orders` microservice, a UI should be shown to the user (perhaps with email notifications) so it can be manually intervened. 
+  - Maybe there is an error in the `Orders` application. Once fixed, the order message can be retried.
+  - Maybe there is a data or logic issue, where e.g. the product is out of stock. Again, a corrective action can be taken by the user (either buy more stock, or have the customer service team call the buyer to discuss alternatives, etc.)
+
+> With a queue-based architecture, the act of *command invocation* is simplified and guarded from the process of *exception resolution*. This brings resiliency to the former, and flexibility to the latter. Nevertheless, this needs a mindset shift in terms of the application or wireframe design.
+
+
 ## EventBusCommandMessage
 The easiest way to implement a queue-based command integration is by using the `EventBusCommandMessage` class.
 The process is very straight forward.
