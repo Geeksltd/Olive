@@ -147,15 +147,18 @@ namespace Olive.Entities.Data
         static Type[] GetParents(Type type)
         {
             var result = new List<Type>();
+            var baseType = type.BaseType;
 
-            if (type.BaseType.IsAnyOf(null,
-                typeof(object),
-                typeof(GuidEntity),
-                typeof(IntEntity),
-                typeof(StringEntity))) return result.ToArray();
+            if (baseType.IsAnyOf(null, 
+                typeof(object), 
+                typeof(GuidEntity), 
+                typeof(IntEntity), 
+                typeof(StringEntity)) ||
+                (baseType.IsGenericType && baseType.GetGenericTypeDefinition() == typeof(Entity<>)))
+                return result.ToArray();
 
-            result.AddRange(GetParents(type.BaseType));
-            result.Add(type.BaseType);
+            result.AddRange(GetParents(baseType));
+            result.Add(baseType);
 
             return result.ToArray();
         }
