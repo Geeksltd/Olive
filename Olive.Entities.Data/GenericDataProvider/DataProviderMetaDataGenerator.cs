@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
-    internal class DataProviderMetaDataGenerator
+    internal partial class DataProviderMetaDataGenerator
     {
         internal static IDataProviderMetaData Generate(Type type)
         {
@@ -15,7 +16,7 @@ namespace Olive.Entities.Data
             {
                 BaseClassTypesInOrder = GetParents(type),
                 DrivedClassTypes = GetDrivedClasses(type),
-                Properties = GetProperties(type).ToArray(),
+                Properties = GetProperties(type).SetAccessors(type),
                 Schema = SchemaAttribute.GetSchema(type),
                 TableName = tableName,
                 TableAlias = tableName,
@@ -23,7 +24,7 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IEnumerable<IPropertyData> GetProperties(Type type)
+        static IEnumerable<PropertyData> GetProperties(Type type)
         {
             var infos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 
@@ -39,23 +40,24 @@ namespace Olive.Entities.Data
             yield return GetOriginalIdPropertyData(type);
         }
 
-        static IPropertyData GetDefaultIdPropertyData(Type type)
+        static PropertyData GetDefaultIdPropertyData(Type type)
         {
             var info = type.GetProperty(PropertyData.DEFAULT_ID_COLUMN);
 
-            return new PropertyData(isBlob: false)
+            return new PropertyData
             {
                 Name = PropertyData.DEFAULT_ID_COLUMN,
                 ParameterName = PropertyData.DEFAULT_ID_COLUMN,
                 PropertyInfo = info,
                 NonGenericType = info.PropertyType,
-                IsDefaultId = true
+                IsDefaultId = true,
+                IsAutoNumber = IdByDatabaseAttribute.IsIdAssignedByDatabase(type)
             };
         }
 
-        static IPropertyData GetDeletedPropertyData(Type type)
+        static PropertyData GetDeletedPropertyData(Type type)
         {
-            return new PropertyData(isBlob: false)
+            return new PropertyData
             {
                 Name = ".Deleted",
                 ParameterName = "_Deleted",
@@ -65,9 +67,9 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IPropertyData GetOriginalIdPropertyData(Type type)
+        static PropertyData GetOriginalIdPropertyData(Type type)
         {
-            return new PropertyData(isBlob: false)
+            return new PropertyData
             {
                 Name = PropertyData.ORIGINAL_ID,
                 ParameterName = PropertyData.ORIGINAL_ID,
@@ -77,13 +79,13 @@ namespace Olive.Entities.Data
             };
         }
 
-        static IPropertyData GetUserDefinedPropertyData(PropertyInfo info, PropertyInfo dbProp)
+        static PropertyData GetUserDefinedPropertyData(PropertyInfo info, PropertyInfo dbProp)
         {
             var isBlob = info.PropertyType.IsA<Blob>();
             var targetProp = dbProp ?? info;
             var columnName = info.Name + "_FileName".OnlyWhen(isBlob);
 
-            return new PropertyData(isBlob)
+            return new PropertyData
             {
                 IsAutoNumber = AutoNumberAttribute.IsAutoNumber(info),
                 IsCustomPrimaryKey = PrimaryKeyAttribute.IsPrimaryKey(info),
@@ -91,17 +93,36 @@ namespace Olive.Entities.Data
                 ParameterName = columnName,
                 PropertyInfo = targetProp,
                 NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType,
-                AssociateType = dbProp != null ? info.PropertyType : null
+                AssociateType = dbProp != null ? info.GetAssociateType() : null
             };
+        }
+
+        static Type GetAssociateType(this PropertyInfo @this)
+        {
+            if (@this.PropertyType.IsA<Task>())
+                return @this.PropertyType.GenericTypeArguments[0];
+
+            return @this.PropertyType;
+        }
+
+        static bool IsAssociation(this PropertyInfo @this)
+        {
+            if (@this.PropertyType.IsA<IEntity>()) return true;
+
+            if (@this.PropertyType.IsA<Task>() &&
+                @this.PropertyType.IsGenericType &&
+                @this.PropertyType.GenericTypeArguments[0].IsA<IEntity>()) return true;
+
+            return false;
         }
 
         static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
         {
-            var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p));
+            var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p) || p.GetSetMethod() == null);
             var nonOverriden = nonCalculated.Except(p => p.GetGetMethod() != p.GetGetMethod().GetBaseDefinition());
             var nonTransient = nonOverriden.Except(p => TransientEntityAttribute.IsTransient(p.PropertyType));
 
-            var associations = nonTransient.Where(predicate => predicate.PropertyType.IsA<IEntity>());
+            var associations = nonTransient.Where(p => p.IsAssociation());
             var rest = nonTransient.Except(associations);
 
             var ids = new List<PropertyInfo>();
@@ -126,15 +147,18 @@ namespace Olive.Entities.Data
         static Type[] GetParents(Type type)
         {
             var result = new List<Type>();
+            var baseType = type.BaseType;
 
-            if (type.BaseType.IsAnyOf(null,
-                typeof(object),
-                typeof(GuidEntity),
-                typeof(IntEntity),
-                typeof(StringEntity))) return result.ToArray();
+            if (baseType.IsAnyOf(null, 
+                typeof(object), 
+                typeof(GuidEntity), 
+                typeof(IntEntity), 
+                typeof(StringEntity)) ||
+                (baseType.IsGenericType && baseType.GetGenericTypeDefinition() == typeof(Entity<>)))
+                return result.ToArray();
 
-            result.AddRange(GetParents(type.BaseType));
-            result.Add(type.BaseType);
+            result.AddRange(GetParents(baseType));
+            result.Add(baseType);
 
             return result.ToArray();
         }

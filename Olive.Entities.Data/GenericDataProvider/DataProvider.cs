@@ -22,6 +22,8 @@ namespace Olive.Entities.Data
 
         public string InsertCommand { get; }
 
+        public Func<IEntity, Task> UpdateSelf { get; }
+
         internal DataProvider(Type type, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
         {
             EntityType = type;
@@ -34,6 +36,11 @@ namespace Olive.Entities.Data
             DeleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
             UpdateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
             InsertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
+
+            if (UpdateCommand.IsEmpty())
+                UpdateSelf = entity => Task.CompletedTask;
+            else
+                UpdateSelf = UpdateSelfImpl;
         }
 
         internal void Prepare()
@@ -103,12 +110,14 @@ namespace Olive.Entities.Data
 
             var result = (IEntity)Activator.CreateInstance(EntityType);
 
+            Entity.Services.SetSaved(result);
+
             FillData(reader, result);
 
             foreach (var parent in MetaData.BaseClassesInOrder)
                 parent.GetProvider(Cache, Access, SqlCommandGenerator).FillData(reader, result);
 
-            Entity.Services.SetSaved(result, saved: true);
+            Entity.Services.SetOriginalId(result);
 
             return result;
         }
@@ -134,23 +143,28 @@ namespace Olive.Entities.Data
                 foreach (var parent in MetaData.BaseClassesInOrder)
                     await parent.GetProvider(Cache, Access, SqlCommandGenerator).Update(record);
 
-                if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record))).ToStringOrEmpty().IsEmpty())
-                {
-                    Cache.Remove(record);
-                    throw new ConcurrencyException($"Failed to update the '{MetaData.TableName}' table. There is no row with the ID of {record.GetId()}.");
-                }
+                await UpdateSelf(record);
             }
 
             if (Database.AnyOpenTransaction()) await saveAll();
             else using (var scope = Database.CreateTransactionScope()) { await saveAll(); scope.Complete(); }
         }
 
-        IDataParameter[] CreateParameters(IEntity record)
+        async Task UpdateSelfImpl(IEntity record)
+        {
+            if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record, forInsert: false))).ToStringOrEmpty().IsEmpty())
+            {
+                Cache.Remove(record);
+                throw new ConcurrencyException($"Failed to update the '{MetaData.TableName}' table. There is no row with the ID of {record.GetId()}.");
+            }
+        }
+
+        IDataParameter[] CreateParameters(IEntity record, bool forInsert)
         {
             var result = new List<IDataParameter>();
 
-            foreach (var prop in MetaData.Properties)
-                result.Add(Access.CreateParameter(prop.ParameterName, prop.GetValue(record) ?? DBNull.Value));
+            foreach (var prop in forInsert ? MetaData.GetPropertiesForInsert() : MetaData.Properties)
+                result.Add(Access.CreateParameter(prop.ParameterName, prop.Accessor.Get(record) ?? DBNull.Value));
 
             return result.ToArray();
         }
@@ -162,10 +176,12 @@ namespace Olive.Entities.Data
                 foreach (var parent in MetaData.BaseClassesInOrder)
                     await parent.GetProvider(Cache, Access, SqlCommandGenerator).Insert(record);
 
-                var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record));
+                var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record, forInsert: true));
+
+                Entity.Services.SetSaved(record);
 
                 if (MetaData.HasAutoNumber)
-                    MetaData.AutoNumberProperty.PropertyInfo.SetValue(record, result);
+                    MetaData.AutoNumberProperty.Accessor.Set(record, result);
             }
 
             if (Database.AnyOpenTransaction()) await saveAll();
@@ -174,12 +190,12 @@ namespace Olive.Entities.Data
 
         void FillData(IDataReader reader, IEntity entity)
         {
-            foreach (var property in MetaData.UserDefienedAndIdProperties)
+            foreach (var property in MetaData.GetPropertiesForFillData())
             {
                 var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
 
                 if (value != DBNull.Value)
-                    property.SetValue(entity, value);
+                    property.Accessor.Set(entity, value);
             }
         }
 
@@ -195,27 +211,7 @@ namespace Olive.Entities.Data
         string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, string propertyName) =>
             $"{medaData.TableName}_{propertyName}";
 
-        void PrepareTableTemplate()
-        {
-            TablesTemplate = "";
-
-            void addTable(IDataProviderMetaData medaData)
-            {
-                var baseType = medaData.BaseClassesInOrder.LastOrDefault();
-
-                TablesTemplate += " LEFT OUTER JOIN ".OnlyWhen(TablesTemplate.HasValue()) +
-                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {{0}}{medaData.TableAlias} " +
-                    $"ON {{0}}{medaData.TableAlias}.{medaData.IdColumnName} = {{0}}{baseType?.TableAlias}.{baseType?.IdColumnName}".OnlyWhen(baseType != null);
-            }
-
-            foreach (var parent in MetaData.BaseClassesInOrder)
-                addTable(parent);
-
-            addTable(MetaData);
-
-            foreach (var drived in MetaData.DrivedClasses)
-                addTable(drived);
-        }
+        void PrepareTableTemplate() => TablesTemplate = MetaData.GetTableTemplate();
 
         void PrepareFields()
         {
@@ -258,11 +254,12 @@ namespace Olive.Entities.Data
             {
                 var associateMetaData = DataProviderMetaDataGenerator.Generate(association.AssociateType);
 
-                var alias = $"[{{0}}.{association.Name}_{association.AssociateType.Name}]";
+                var alias = $"[{{0}}.{association.Name}_{associateMetaData.TableName}]";
+                var partialAlias = $"{{0}}.{association.Name}_";
 
                 var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
-                    FROM {associateMetaData.TableName} AS {alias}
-                    WHERE {alias}.{associateMetaData.IdColumnName} = [{{1}}].{association.Name}";
+                    FROM {associateMetaData.GetTableTemplate().FormatWith(partialAlias)}
+                    WHERE {alias}.[{associateMetaData.IdColumnName}] = [{{1}}].[{association.Name}]";
 
                 SubqueryMapping.Add(
                     association.Name.WithSuffix(".*"),

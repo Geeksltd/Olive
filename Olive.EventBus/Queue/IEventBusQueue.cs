@@ -17,6 +17,13 @@ namespace Olive
         void Subscribe<TMessage>(Func<TMessage, Task> @handler) where TMessage : IEventBusMessage;
 
         /// <summary>
+        /// Pulls a single item from the specified queue, or null if nothing was available.
+        /// After completing the message processing, you must call Complete().
+        /// </summary>
+        Task<QueueMessageHandle<TMessage>> Pull<TMessage>(int timeoutSeconds = 10)
+           where TMessage : IEventBusMessage;
+
+        /// <summary>
         /// Deletes all messages on the specified queue.
         /// </summary>
         Task Purge();

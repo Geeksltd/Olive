@@ -67,7 +67,12 @@ namespace Olive.Entities.Replication
         public CustomExposedField Expose<TProperty>(string title, Func<TDomain, Task<TProperty>> valueProvider)
         {
             return Expose(new CustomExposedField(title, typeof(TProperty),
-                x => valueProvider((TDomain)x).AsTask<TProperty, object>()));
+             async x =>
+             {
+                 var value = valueProvider((TDomain)x);
+                 if (value == null) return null;
+                 return await value;
+             }));
         }
 
         public CustomExposedField Expose(CustomExposedField field)

@@ -36,9 +36,14 @@ namespace Olive.Entities.Replication
 
         public async Task RefreshData()
         {
+            Log.Warning("Data table " + DomainType.Name + " is empty. Adding a refresh message.");
+
             var request = new RefreshMessage { TypeName = DomainType.Namespace + "." + DomainType.Name, RequestUtc = DateTime.UtcNow };
             RefreshRequestUtc = request.RequestUtc;
             await Endpoint.RefreshQueue.Publish(request);
+
+            Log.Warning("Refresh message published to queue.");
+
             await Database.Refresh();
         }
 

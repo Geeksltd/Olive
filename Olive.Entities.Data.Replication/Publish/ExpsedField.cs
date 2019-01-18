@@ -31,7 +31,12 @@ namespace Olive.Entities.Replication
             while (result is Task t)
             {
                 await t;
-                result = t.GetType().GetProperty("Result").GetValue(t);
+
+                var resultProperty = t.GetType().GetProperty("Result");
+                if (resultProperty == null)
+                    throw new Exception(result.GetType().GetProgrammingName() + " is a Task but does not have Result property.");
+
+                result = resultProperty.GetValue(t);
             }
 
             if (result is IEntity ent) return ent.GetId();

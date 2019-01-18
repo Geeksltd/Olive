@@ -32,7 +32,7 @@ namespace Olive.Entities
 
                     declaringType = Property.PropertyType;
 
-                    var propertyTableType = declaringType.GetProperty(parts[i + 1]).DeclaringType.Name;
+                    var propertyTableType = TableNameAttribute.GetTableName(declaringType.GetProperty(parts[i + 1]).DeclaringType);
 
                     TableAlias += "." + part + "_" + propertyTableType;
                 }

@@ -7,7 +7,7 @@
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
-    <PackageId>Olive.Entities</PackageId>    
+    <PackageId>Olive.Entities</PackageId>
     <Title>Olive Entities</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -16,7 +16,7 @@
     <Description>Olive Framework</Description>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.102</PackageVersion>
+    <PackageVersion>2.1.108</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Auditing\**" />

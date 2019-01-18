@@ -8,12 +8,23 @@ namespace MSharp.Build
     {
         DirectoryInfo Root, Lib;
         bool Publish;
+        public bool IsDotNetCore;
 
         public OliveSolution(DirectoryInfo root, bool publish)
         {
             Root = root;
             Publish = publish;
-            Lib = root.CreateSubdirectory(@"M#\lib\netcoreapp2.1\");
+            Lib = root.CreateSubdirectory(@"M#\lib");
+            IsDotNetCore = IsProjectDotNetCore();
+
+            if (IsDotNetCore)
+                Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.1");
+        }
+
+        bool IsProjectDotNetCore()
+        {
+            return Lib.Parent.GetSubDirectory("Model").GetFile("#Model.csproj").ReadAllText()
+                 .Contains("<TargetFramework>netcoreapp");
         }
 
         protected override void AddTasks()
@@ -47,14 +58,29 @@ namespace MSharp.Build
 
         void BuildMSharpModel() => DotnetBuild("M#\\Model");
 
-        void BuildAppDomain() => DotnetBuild(Folder("Domain"));
+        void BuildAppDomain() => DotnetBuild("Domain");
 
         void BuildMSharpUI() => DotnetBuild("M#\\UI");
 
-        void BuildAppWebsite()
-            => DotnetBuild("Website", "publish -o ..\\publish".OnlyWhen(Publish));
+        void BuildAppWebsite() => DotnetBuild("Website", "publish -o ..\\publish".OnlyWhen(Publish));
 
         void DotnetBuild(string folder, string command = null)
+        {
+            if (IsDotNetCore) DotnetCoreBuild(folder, command);
+            else
+            {
+                var solution = Root.GetFiles("*.sln")[0].FullName;
+                var projName = folder;
+                if (folder.StartsWith("M#\\")) projName = "#" + folder.TrimStart("M#\\");
+
+                var dep = " /p:BuildProjectReferences=false".OnlyWhen(folder.StartsWith("M#"));
+
+                WindowsCommand.FindExe("msbuild").Execute($"\"{solution}\" /t:{projName}{dep} -v:m",
+                    configuration: x => x.StartInfo.EnvironmentVariables.Add("MSHARP_BUILD", "FULL"));
+            }
+        }
+
+        void DotnetCoreBuild(string folder, string command = null)
         {
             if (command.IsEmpty()) command = "build -v q";
 
@@ -68,17 +94,23 @@ namespace MSharp.Build
             Log(log);
         }
 
-        void MSharpGenerateModel()
-        {
-            var log = WindowsCommand.DotNet.Execute($"msharp.dsl.dll /build /model /no-domain",
-                configuration: x => x.StartInfo.WorkingDirectory = Folder("M#\\lib\\netcoreapp2.1"));
-            Log(log);
-        }
+        void MSharpGenerateModel() => RunMSharpBuild("/build /model /no-domain");
 
-        void MSharpGenerateUI()
+        void MSharpGenerateUI() => RunMSharpBuild("/build /ui");
+
+        void RunMSharpBuild(string command)
         {
-            var log = WindowsCommand.DotNet.Execute($"msharp.dsl.dll /build /ui",
-                configuration: x => x.StartInfo.WorkingDirectory = Folder("M#\\lib\\netcoreapp2.1"));
+            string log;
+            if (IsDotNetCore)
+            {
+                log = WindowsCommand.DotNet.Execute($"msharp.dsl.dll " + command,
+                   configuration: x => x.StartInfo.WorkingDirectory = Lib.FullName);
+            }
+            else
+            {
+                log = Lib.GetFile("MSharp.dsl.exe").Execute(command, configuration: x => x.StartInfo.WorkingDirectory = Lib.FullName);
+            }
+
             Log(log);
         }
 
@@ -111,6 +143,8 @@ namespace MSharp.Build
 
         void SassCompile()
         {
+            if (!IsDotNetCore) return;
+
             var log = Folder("Website\\wwwroot\\Styles\\Build\\SassCompiler.exe")
                  .AsFile()
                  .Execute("\"" + Folder("Website\\CompilerConfig.json") + "\"");
