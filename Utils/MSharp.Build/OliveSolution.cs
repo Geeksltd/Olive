@@ -8,7 +8,7 @@ namespace MSharp.Build
     {
         DirectoryInfo Root, Lib;
         bool Publish;
-        public bool IsDotNetCore;
+        public bool IsDotNetCore, IsWebForms;
 
         public OliveSolution(DirectoryInfo root, bool publish)
         {
@@ -16,6 +16,7 @@ namespace MSharp.Build
             Publish = publish;
             Lib = root.CreateSubdirectory(@"M#\lib");
             IsDotNetCore = IsProjectDotNetCore();
+            IsWebForms = root.GetSubDirectory("Website").GetFiles("*.csproj").None();
 
             if (IsDotNetCore)
                 Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.1");
@@ -30,6 +31,7 @@ namespace MSharp.Build
         protected override void AddTasks()
         {
             Add(() => BuildRuntimeConfigJson());
+            Add(() => RestoreNuget());
             Add(() => BuildMSharpModel());
             Add(() => MSharpGenerateModel());
             Add(() => BuildAppDomain());
@@ -56,19 +58,46 @@ namespace MSharp.Build
             File.WriteAllText(Path.Combine(Lib.FullName, "MSharp.DSL.runtimeconfig.json"), json);
         }
 
+        void RestoreNuget()
+        {
+            if (!IsDotNetCore)
+                WindowsCommand.FindExe("nuget").Execute("restore",
+                configuration: x => x.StartInfo.WorkingDirectory = Root.FullName);
+        }
+
         void BuildMSharpModel() => DotnetBuild("M#\\Model");
 
         void BuildAppDomain() => DotnetBuild("Domain");
 
         void BuildMSharpUI() => DotnetBuild("M#\\UI");
 
-        void BuildAppWebsite() => DotnetBuild("Website", "publish -o ..\\publish".OnlyWhen(Publish));
+        void BuildAppWebsite()
+        {
+            if (IsWebForms)
+            {
+                RestorePackagesConfig("Website");
+                Console.Write("Skipped");
+            }
+            else DotnetBuild("Website", "publish -o ..\\publish".OnlyWhen(Publish));
+        }
+
+        void RestorePackagesConfig(string folder)
+        {
+            var packages = Folder(folder).AsDirectory().GetFile("packages.config");
+            if (packages.Exists())
+            {
+                WindowsCommand.FindExe("nuget").Execute("restore " + folder + " -packagesdirectory packages",
+              configuration: x => x.StartInfo.WorkingDirectory = Root.FullName);
+            }
+        }
 
         void DotnetBuild(string folder, string command = null)
         {
             if (IsDotNetCore) DotnetCoreBuild(folder, command);
             else
             {
+                RestorePackagesConfig(folder);
+
                 var solution = Root.GetFiles("*.sln")[0].FullName;
                 var projName = folder;
                 if (folder.StartsWith("M#\\")) projName = "#" + folder.TrimStart("M#\\");
