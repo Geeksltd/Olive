@@ -31,6 +31,7 @@ namespace Olive.Mvc.Testing
         public static IServiceCollection AddDevCommands(
             this IServiceCollection @this, Action<DevCommandsOptions> options = null)
         {
+            PredictableGuidGenerator.Reset("Default");
             Entities.GuidEntity.NewIdGenerator = PredictableGuidGenerator.Generate;
             @this.AddSingleton<IDevCommand, TestContextDevCommand>();
             @this.AddSingleton<IDevCommand, InjectTimeDevCommand>();
@@ -42,4 +43,3 @@ namespace Olive.Mvc.Testing
         }
     }
 }
-
