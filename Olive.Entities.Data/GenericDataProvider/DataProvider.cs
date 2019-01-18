@@ -110,12 +110,14 @@ namespace Olive.Entities.Data
 
             var result = (IEntity)Activator.CreateInstance(EntityType);
 
+            Entity.Services.SetSaved(result, setOriginalId: false);
+
             FillData(reader, result);
 
             foreach (var parent in MetaData.BaseClassesInOrder)
                 parent.GetProvider(Cache, Access, SqlCommandGenerator).FillData(reader, result);
 
-            Entity.Services.SetSaved(result);
+            Entity.Services.SetSaved(result, setOriginalId: true);
 
             return result;
         }
@@ -176,7 +178,7 @@ namespace Olive.Entities.Data
 
                 var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record, forInsert: true));
 
-                Entity.Services.SetSaved(record);
+                Entity.Services.SetSaved(record, setOriginalId: false);
 
                 if (MetaData.HasAutoNumber)
                     MetaData.AutoNumberProperty.Accessor.Set(record, result);

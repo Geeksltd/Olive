@@ -106,7 +106,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
             }
 
             if (mode == SaveMode.Insert)
-                Entity.Services.SetSaved(entity);
+                Entity.Services.SetSaved(entity, setOriginalId: false);
 
             Cache.Remove(entity);
 

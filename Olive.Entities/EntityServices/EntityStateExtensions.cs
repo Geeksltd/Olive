@@ -24,12 +24,15 @@ namespace Olive.Entities
         /// <summary>
         /// Sets the state of an entity instance to saved.
         /// </summary>
-        public static void SetSaved(this EntityServices @this, IEntity entity)
+        public static void SetSaved(this EntityServices @this, IEntity entity, bool setOriginalId)
         {
             (entity as Entity).IsNew = false;
 
-            if (entity is IOriginalIdHolder h) h.SetOriginalId();
-            else entity.GetType().GetProperty("OriginalId").SetValue(entity, entity.GetId());
+            if (setOriginalId)
+            {
+                if (entity is IOriginalIdHolder h) h.SetOriginalId();
+                else entity.GetType().GetProperty("OriginalId").SetValue(entity, entity.GetId());
+            }
         }
 
         /// <summary>
