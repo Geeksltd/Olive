@@ -38,8 +38,9 @@ namespace Olive.Aws
 
         async Task<List<KeyValuePair<TMessage, Message>>> FetchEvents()
         {
+            var response = await Fetch();
             var result = new List<KeyValuePair<TMessage, Message>>();
-            var response = await Queue.Client.ReceiveMessageAsync(Request);
+
             foreach (var item in response.Messages)
             {
                 try
@@ -55,6 +56,18 @@ namespace Olive.Aws
             }
 
             return result;
+        }
+
+        async Task<ReceiveMessageResponse> Fetch()
+        {
+            try
+            {
+                return await Queue.Client.ReceiveMessageAsync(Request);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to fetch from Queue " + Queue.QueueUrl, ex);
+            }
         }
 
         async void KeepPolling()
