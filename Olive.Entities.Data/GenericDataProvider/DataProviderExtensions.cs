@@ -50,7 +50,15 @@ namespace Olive.Entities.Data
             return @this.UserDefienedAndIdProperties;
         }
 
-        internal static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this) =>
-            @this.UserDefienedAndIdProperties.Except(p => p.IsAutoNumber);
+        internal static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this)
+        {
+            var result = @this.UserDefienedAndIdProperties.Except(p => p.IsAutoNumber);
+
+            if (@this.IsSoftDeleteEnabled)
+                return result.Concat(@this.Properties.First(p => p.IsDeleted));
+
+            return result;
+        }
+            
     }
 }
