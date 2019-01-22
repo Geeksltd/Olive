@@ -1,9 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>msharp-build</ToolCommandName>    
+    <ToolCommandName>msharp-build</ToolCommandName>
     <Version>1.1.135</Version>
     <Company>Geeks Ltd</Company>
     <Authors>Geeks Ltd</Authors>
@@ -11,12 +12,13 @@
     <AssemblyName>msharp-build</AssemblyName>
     <PackageIconUrl>https://github.com/Geeksltd/MSharp.Docs/raw/master/_media/MSharp.png</PackageIconUrl>
     <AssemblyVersion>1.1.131</AssemblyVersion>
-    <Product>msharp-build</Product>    
+    <Product>msharp-build</Product>
     <PackageId>msharp-build</PackageId>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <FileVersion>1.1.131</FileVersion>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <PackageVersion>1.1.140</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="CICD\" />

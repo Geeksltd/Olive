@@ -31,9 +31,9 @@ namespace Olive
             watcher.EnableRaisingEvents = true;
         }
 
-        async Task<KeyValuePair<FileInfo, TMessage>> FetchNext()
+        internal static async Task<KeyValuePair<FileInfo, TMessage>> FetchOnce(DirectoryInfo folder)
         {
-            var item = Folder.GetFiles().OrderBy("CreationTimeUtc").FirstOrDefault();
+            var item = folder.GetFiles().OrderBy("CreationTimeUtc").FirstOrDefault();
 
             if (item == null) return new KeyValuePair<FileInfo, TMessage>(null, default(TMessage));
 
@@ -57,7 +57,7 @@ namespace Olive
 
         async Task<bool> HandleNext()
         {
-            var item = await FetchNext();
+            var item = await FetchOnce(Folder);
             if (item.Key == null) return false;
 
             try

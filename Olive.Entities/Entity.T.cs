@@ -5,7 +5,7 @@
     using System.Xml.Serialization;
 
     [Serializable]
-    public class Entity<T> : Entity, IEntity<T>
+    public class Entity<T> : Entity, IEntity<T>, IOriginalIdHolder
     {
         /// <summary>Gets or sets the ID of this object.</summary>
         public virtual T ID { get; set; }
@@ -15,6 +15,8 @@
         /// </summary>
         [XmlIgnore, JsonIgnore, System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual T OriginalId { get; internal set; }
+
+        void IOriginalIdHolder.SetOriginalId() => OriginalId = ID;
 
         /// <summary>
         /// Returns a hash code for this instance.

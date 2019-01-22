@@ -42,7 +42,7 @@ namespace Olive.Entities.Data
 
         public virtual string GenerateUpdateCommand(IDataProviderMetaData metaData)
         {
-            var properties = metaData.UserDefienedProperties
+            var properties = metaData.UserDefienedAndDeletedProperties
                 .Except(p => p.IsAutoNumber);
 
             if (properties.None()) return "";
@@ -55,13 +55,12 @@ namespace Olive.Entities.Data
 
         public virtual string GenerateInsertCommand(IDataProviderMetaData metaData)
         {
-            var properties = metaData.UserDefienedAndIdProperties
-                .Except(p => p.IsAutoNumber);
+            var properties = metaData.GetPropertiesForInsert();
 
             if (metaData.IsSoftDeleteEnabled)
                 properties = properties.Concat(metaData.Properties.First(p => p.IsDeleted));
 
-            var autoNumber = metaData.Properties.FirstOrDefault(x => x.IsAutoNumber);
+            var autoNumber = metaData.AutoNumberProperty;
 
             return $@"INSERT INTO {GetFullTablaName(metaData)}
                 ({properties.Select(x => SafeId(x.Name)).ToString(", ")})

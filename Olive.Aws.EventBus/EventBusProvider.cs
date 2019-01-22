@@ -42,6 +42,37 @@ namespace Olive.Aws
             new Subscriber<TMessage>(this, handler).Start();
         }
 
+
+
+        public async Task<QueueMessageHandle<TMessage>> Pull<TMessage>(int timeoutSeconds = 10)
+            where TMessage : IEventBusMessage
+        {
+            var request = new ReceiveMessageRequest
+            {
+                QueueUrl = QueueUrl,
+                WaitTimeSeconds = timeoutSeconds,
+                MaxNumberOfMessages = 1
+            };
+
+            var response = await Client.ReceiveMessageAsync(request);
+            foreach (var item in response.Messages)
+            {
+                try
+                {
+                    var @event = JsonConvert.DeserializeObject<TMessage>(item.Body);
+                    var receipt = new DeleteMessageRequest { QueueUrl = QueueUrl, ReceiptHandle = item.ReceiptHandle };
+                    return new QueueMessageHandle<TMessage>(@event, () => Client.DeleteMessageAsync(receipt));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to deserialize event message to " +
+                        typeof(TMessage).FullName + ":\r\n" + item.Body, ex);
+                }
+            }
+
+            return null;
+        }
+
         public Task Purge()
         {
             return Client.PurgeQueueAsync(new PurgeQueueRequest { QueueUrl = QueueUrl });

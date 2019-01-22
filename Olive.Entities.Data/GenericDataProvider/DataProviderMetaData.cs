@@ -49,6 +49,8 @@ namespace Olive.Entities.Data
 
         public IEnumerable<IPropertyData> UserDefienedAndIdProperties => Properties?.Where(p => p.IsUserDefined || p.IsDefaultId);
 
+        public IEnumerable<IPropertyData> UserDefienedAndDeletedProperties => Properties?.Where(p => p.IsUserDefined || p.IsDeleted);
+
         public IEnumerable<IPropertyData> UserDefienedProperties => Properties?.Where(p => p.IsUserDefined);
 
         public IEnumerable<IPropertyData> AssociateProperties => Properties?.Where(p => p.AssociateType != null);

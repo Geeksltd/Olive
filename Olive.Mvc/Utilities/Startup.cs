@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Routing;
@@ -73,6 +74,12 @@ namespace Olive.Mvc
             {
                 manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
                 manager.FeatureProviders.Add(new ReferencesMetadataReferenceFeatureProvider());
+            });
+
+            mvc.AddMvcOptions(options =>
+            {
+                options.ModelMetadataDetailsProviders.Add(
+                    new SuppressChildValidationMetadataProvider(typeof(IEntity)));
             });
         }
 

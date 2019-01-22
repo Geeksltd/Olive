@@ -30,6 +30,14 @@ namespace Olive
             return path.Name;
         }
 
+        public async Task<QueueMessageHandle<TMessage>> Pull<TMessage>(int timeoutSeconds = 10) where TMessage : IEventBusMessage
+        {
+            var item = await IOSubscriber<TMessage>.FetchOnce(Folder);
+            if (item.Key == null) return null;
+
+            return new QueueMessageHandle<TMessage>(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
+        }
+
         public Task Purge()
         {
             Folder.GetFiles().Do(x => x.DeleteIfExists());
