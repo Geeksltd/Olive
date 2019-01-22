@@ -39,14 +39,14 @@ namespace Olive.Entities.Data
 
         /// <summary>
         /// Gets an Entity of the given type with the given Id from the database.
+        /// If the specified ID is null or empty string, then a null entity will be returned.
         /// If it can't find the object, an exception will be thrown.
         /// </summary>        
         /// <param name="entityId">The primary key value of the object to load in string format.</param>
         public async Task<T> Get<T>(string entityId) where T : IEntity
         {
             if (entityId.IsEmpty()) return default(T);
-
-            return (T)await Get(entityId, typeof(T));
+            else return (T)await Get(entityId, typeof(T));
         }
 
         /// <summary>
@@ -65,6 +65,7 @@ namespace Olive.Entities.Data
 
         /// <summary>
         /// Get an entity with the given type and ID from the database.
+        /// If the specified ID is null, then a null entity will be returned.
         /// If it can't find the object, an exception will be thrown.
         /// </summary>
         /// <typeparam name="T">The type of the object to get</typeparam>
@@ -77,6 +78,7 @@ namespace Olive.Entities.Data
 
         /// <summary>
         /// Get an entity with the given type and ID from the database.
+        /// If the specified ID is null, then a null entity will be returned.
         /// If it can't find the object, an exception will be thrown.
         /// </summary>
         /// <typeparam name="T">The type of the object to get</typeparam>
@@ -87,7 +89,49 @@ namespace Olive.Entities.Data
             return (T)await Get(id.Value, typeof(T));
         }
 
+        /// <summary>
+        /// Get an entity with the given type and ID from the database.
+        /// If the specified ID is null, then a null entity will be returned.
+        /// If it can't find the object, an exception will be thrown.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to get</typeparam>
+        /// <param name="id">The primary key value of the object to load.</param>
+        public async Task<T> Get<T>(short? id) where T : IEntity<short>
+        {
+            if (id == null) return default(T);
+            return (T)await Get(id.Value, typeof(T));
+        }
+
+        /// <summary>
+        /// Get an entity with the given type and ID from the database.
+        /// If the specified ID is null, then a null entity will be returned.
+        /// If it can't find the object, an exception will be thrown.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to get</typeparam>
+        /// <param name="id">The primary key value of the object to load.</param>
+        public async Task<T> Get<T>(long? id) where T : IEntity<long>
+        {
+            if (id == null) return default(T);
+            return (T)await Get(id.Value, typeof(T));
+        }
+
+        /// <summary>
+        /// Get an entity with the given type and ID from the database.
+        /// If the specified ID is null, then a null entity will be returned.
+        /// If it can't find the object, an exception will be thrown.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to get</typeparam>
+        /// <param name="id">The primary key value of the object to load.</param>
+        public async Task<T> Get<T>(byte? id) where T : IEntity<byte>
+        {
+            if (id == null) return default(T);
+            return (T)await Get(id.Value, typeof(T));
+        }
+
         public async Task<T> Get<T>(int id) where T : IEntity<int> => (T)await Get(id, typeof(T));
+        public async Task<T> Get<T>(long id) where T : IEntity<long> => (T)await Get(id, typeof(T));
+        public async Task<T> Get<T>(byte id) where T : IEntity<byte> => (T)await Get(id, typeof(T));
+        public async Task<T> Get<T>(short id) where T : IEntity<short> => (T)await Get(id, typeof(T));
 
         /// <summary>
         /// Get an entity with the given type and ID from the database.

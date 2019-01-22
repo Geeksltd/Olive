@@ -63,12 +63,19 @@ namespace Olive.Entities
         Task<T> Get<T>(string entityId) where T : IEntity;
 
         Task<T> Get<T>(Guid id) where T : IEntity;
-
         Task<T> Get<T>(Guid? id) where T : IEntity;
 
         Task<T> Get<T>(int? id) where T : IEntity<int>;
-
         Task<T> Get<T>(int id) where T : IEntity<int>;
+
+        Task<T> Get<T>(long? id) where T : IEntity<long>;
+        Task<T> Get<T>(long id) where T : IEntity<long>;
+
+        Task<T> Get<T>(short? id) where T : IEntity<short>;
+        Task<T> Get<T>(short id) where T : IEntity<short>;
+
+        Task<T> Get<T>(byte? id) where T : IEntity<byte>;
+        Task<T> Get<T>(byte id) where T : IEntity<byte>;
 
         Task<IEntity<Guid>> Get(Guid entityID, Type objectType);
 
