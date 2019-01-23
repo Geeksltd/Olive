@@ -141,18 +141,42 @@ namespace Olive.Entities.Data
                 yield return (prop, null);
         }
 
-        static Type[] GetDrivedClasses(Type type) =>
-            type.Assembly.GetTypes().Where(t => t.IsA(type) && t != type).ToArray();
+        static Type[] GetDrivedClasses(Type type)
+        {
+            var result = type.Assembly.GetTypes().Where(t => t.IsA(type) && t != type).ToArray();
+
+            Array.Sort(result, new TypeComparer(type));
+
+            return result;
+        }
+
+        class TypeComparer : IComparer<Type>
+        {
+            readonly Type Type;
+
+            public TypeComparer(Type type) => Type = type;
+
+            public int Compare(Type left, Type right) =>
+                CountBaseType(left).CompareTo(CountBaseType(right));
+
+            int CountBaseType(Type type)
+            {
+                if (type == Type) return 0;
+
+                return CountBaseType(type.BaseType) + 1;
+            }
+        }
+
 
         static Type[] GetParents(Type type)
         {
             var result = new List<Type>();
             var baseType = type.BaseType;
 
-            if (baseType.IsAnyOf(null, 
-                typeof(object), 
-                typeof(GuidEntity), 
-                typeof(IntEntity), 
+            if (baseType.IsAnyOf(null,
+                typeof(object),
+                typeof(GuidEntity),
+                typeof(IntEntity),
                 typeof(StringEntity)) ||
                 (baseType.IsGenericType && baseType.GetGenericTypeDefinition() == typeof(Entity<>)))
                 return result.ToArray();
