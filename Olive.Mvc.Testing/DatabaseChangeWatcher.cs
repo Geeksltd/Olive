@@ -76,7 +76,7 @@ namespace Olive.Mvc.Testing
                         {
                             case DbType.DateTime:
                                 sqlParameter.DbType = DbType.DateTime;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : sqlParameter.Value?.ToString().To<DateTime>();
+                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
                                 break;
                             case DbType.Guid:
                                 sqlParameter.DbType = DbType.Guid;
@@ -84,7 +84,7 @@ namespace Olive.Mvc.Testing
                                 break;
                             case DbType.DateTime2:
                                 sqlParameter.DbType = DbType.DateTime2;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : sqlParameter.Value?.ToString().To<DateTime>();
+                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
                                 break;
                             case DbType.Time:
                                 sqlParameter.DbType = DbType.Time;
