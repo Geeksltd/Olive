@@ -99,8 +99,31 @@ namespace Olive.Entities.Replication
 
         internal override async Task UploadAll()
         {
-            foreach (var item in await Context.Current.Database().GetList<TDomain>())
-                await Queue.Publish(await ToMessage(item)); // TODO: Should this be done in parallel batches?
+            var toUpload = await Context.Current.Database().GetList<TDomain>().ToArray();
+
+            var log = Log.For(this);
+
+            log.Warning("Uploading " + toUpload.Count() + " records of " + typeof(TDomain).FullName + " to the queue...");
+
+            foreach (var item in toUpload)
+            {
+                IEventBusMessage message;
+                try { message = await ToMessage(item); }
+                catch (Exception ex)
+                {
+                    log.Error(ex, "Failed to create an event bus message for " + item.GetType().FullName + " with ID of " + item.GetId());
+                    continue;
+                }
+
+                try { await Queue.Publish(message); }
+                catch (Exception ex)
+                {
+                    log.Error(ex, "Failed to publish an event bus message for " + item.GetType().FullName + " with ID of " + item.GetId());
+                    continue;
+                }
+            }
+
+            log.Warning("Finished uploading " + toUpload.Count() + " records of " + typeof(TDomain).FullName + " to the queue.");
         }
 
         /// <summary>
