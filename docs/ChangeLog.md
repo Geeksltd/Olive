@@ -1,6 +1,42 @@
 
 # Olive compatibility change log
 
+## 23 Jan 2019
+Change the following part in the Startup.cs as mentioned.= below.
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    .
+    .
+    .
+    if (Environment.IsDevelopment())
+	services.AddDevCommands(x => x.AddTempDatabase<SqlServerManager, ReferenceData>());
+}
+```
+
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    .
+    .
+    .
+    if (Environment.IsDevelopment())
+	services.AddDevCommands(Configuration, x => x.AddTempDatabase<SqlServerManager, ReferenceData>());
+}
+```
+
+Also, in order to benefit from `PredictableGuidGenerator` for the Pangolin batch runner add the following setting to the `appsettings.josn`.
+
+```json
+{
+	"PredictableGuidEnabled": true
+}
+```
+
 ## 4 Jan 2019
 M# will no longer generate the `DAL` files. They are handled at runtime now.
 
