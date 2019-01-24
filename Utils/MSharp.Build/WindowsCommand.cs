@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MSharp.Build
 {
-    class WindowsCommand
+    internal class WindowsCommand
     {
         public static FileInfo Yarn, Chocolaty, NodeJs, TypeScript, WebPack, Bower, DotNet;
 
@@ -16,9 +16,15 @@ namespace MSharp.Build
                         .Select(x => x.AsFile())
                         .First(x => x.Extension.HasValue());
         }
+        public static FileInfo FindExe(string fileInPathEnv, string workingDirectory)
+        {
+            return Where.Execute(fileInPathEnv, configuration: x => x.StartInfo.WorkingDirectory = workingDirectory).Trim().ToLines()
+                        .Select(x => x.AsFile())
+                        .First(x => x.Extension.HasValue());
+        }
         public static FileInfo Powershell => System32("windowspowershell\\v1.0\\powershell.exe");
 
-        static FileInfo System32(string relative)
+        private static FileInfo System32(string relative)
         {
             return Environment.SpecialFolder.Windows
                 .GetFile("System32\\" + relative)
