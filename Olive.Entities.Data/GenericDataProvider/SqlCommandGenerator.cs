@@ -57,9 +57,6 @@ namespace Olive.Entities.Data
         {
             var properties = metaData.GetPropertiesForInsert();
 
-            if (metaData.IsSoftDeleteEnabled)
-                properties = properties.Concat(metaData.Properties.First(p => p.IsDeleted));
-
             var autoNumber = metaData.AutoNumberProperty;
 
             return $@"INSERT INTO {GetFullTablaName(metaData)}

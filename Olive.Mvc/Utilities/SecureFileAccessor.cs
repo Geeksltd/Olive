@@ -62,7 +62,9 @@ namespace Olive.Mvc
                 .Select(a => a.GetExportedTypes().SingleOrDefault(t => t.Name == typeName))
                 .ExceptNull().FirstOrDefault();
 
-            if (Type == null) Type = AppDomain.CurrentDomain.FindImplementers(typeof(IEntity)).SingleOrDefault(x => x.Name == typeName);
+            if (Type == null)
+                Type = AppDomain.CurrentDomain.FindImplementers(typeof(IEntity), ignoreDrivedClasses: false)
+                    .SingleOrDefault(x => x.Name == typeName);
 
             if (Type == null) throw new Exception($"Invalid type name specified: '{typeName}'");
 

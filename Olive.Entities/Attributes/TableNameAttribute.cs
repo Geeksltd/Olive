@@ -21,7 +21,7 @@ namespace Olive.Entities
             if (result.HasValue()) return result;
 
             var title = entityType.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
-            title = title.Or(entityType.Name.ToProperCase());
+            title = title.Or(entityType.Name.ToLiteralFromPascalCase());
 
             return title.ToPlural().ToPascalCaseId();
         }

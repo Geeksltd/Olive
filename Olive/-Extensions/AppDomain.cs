@@ -45,7 +45,10 @@ namespace Olive
             throw new Exception($"Failed to find the requrested assembly: '{assemblyName}'");
         }
 
-        public static Type[] FindImplementers(this AppDomain @this, Type interfaceType)
+        public static Type[] FindImplementers(this AppDomain @this, Type interfaceType) =>
+            @this.FindImplementers(interfaceType, ignoreDrivedClasses: true);
+
+        public static Type[] FindImplementers(this AppDomain @this, Type interfaceType, bool ignoreDrivedClasses)
         {
             var result = new List<Type>();
 
@@ -69,11 +72,13 @@ namespace Olive
             }
 
             // For any type, if it's parent is in the list, exclude it:
+            if (ignoreDrivedClasses)
+            {
+                var typesWithParentsIn = result.Where(x => result.Contains(x.BaseType)).ToArray();
 
-            var typesWithParentsIn = result.Where(x => result.Contains(x.BaseType)).ToArray();
-
-            foreach (var item in typesWithParentsIn)
-                result.Remove(item);
+                foreach (var item in typesWithParentsIn)
+                    result.Remove(item);
+            }
 
             return result.ToArray();
         }

@@ -3,6 +3,7 @@ using Olive.Entities.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -56,18 +57,16 @@ namespace Olive.Mvc.Testing
                 var changesNodeList = xmlDocument.GetElementsByTagName("Changes")[0];
                 var access = DataAccess.GetDataAccess(dataProviderType);
 
-                foreach (XmlElement xmlElement in changesNodeList.ChildNodes)
+                foreach (var xmlElement in changesNodeList.ChildNodes.OfType<XmlElement>())
                 {
                     var command = xmlElement.GetAttribute("Command").Replace("&#xD;&#xA;", Environment.NewLine);
                     var commandType = CommandType.Text;
                     if (!xmlElement.GetAttribute("Type").IsEmpty())
-                    {
                         commandType = xmlElement.GetAttribute("Type").To<CommandType>();
-                    }
 
                     var dataParameters = new List<IDataParameter>();
 
-                    foreach (XmlElement innerXmlElement in xmlElement.ChildNodes)
+                    foreach (var innerXmlElement in xmlElement.ChildNodes.OfType<XmlElement>())
                     {
                         var value = innerXmlElement.GetAttribute("Value");
                         var sqlDbType = innerXmlElement.GetAttribute("Type").To<DbType>();
@@ -77,7 +76,7 @@ namespace Olive.Mvc.Testing
                         {
                             case DbType.DateTime:
                                 sqlParameter.DbType = DbType.DateTime;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : sqlParameter.Value?.ToString().To<DateTime>();
+                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
                                 break;
                             case DbType.Guid:
                                 sqlParameter.DbType = DbType.Guid;
@@ -85,7 +84,7 @@ namespace Olive.Mvc.Testing
                                 break;
                             case DbType.DateTime2:
                                 sqlParameter.DbType = DbType.DateTime2;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : sqlParameter.Value?.ToString().To<DateTime>();
+                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
                                 break;
                             case DbType.Time:
                                 sqlParameter.DbType = DbType.Time;
@@ -101,9 +100,7 @@ namespace Olive.Mvc.Testing
                     }
 
                     using (new DatabaseContext(Config.GetConnectionString(connectionStringKey)))
-                    {
                         await access.ExecuteNonQuery(command, commandType, dataParameters.ToArray());
-                    }
                 }
 
                 Context.Current.GetService<ICache>().ClearAll();

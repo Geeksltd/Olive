@@ -61,7 +61,9 @@ namespace Olive.Entities.Replication
                 }
                 else
                 {
-                    throw new Exception("There is no agent with the key: " + message.TypeName);
+                    throw new Exception("There is no published endpoint for the type: " + message.TypeName +
+                        "\r\n\r\nRegistered types are:\r\n" +
+                        Agents.Select(x => x.Key).ToLinesString());
                 }
             });
         }
