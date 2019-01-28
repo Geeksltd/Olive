@@ -18,7 +18,7 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <FileVersion>1.1.131</FileVersion>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <PackageVersion>1.1.140</PackageVersion>
+    <PackageVersion>1.1.141</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="CICD\" />
