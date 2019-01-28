@@ -28,8 +28,8 @@ namespace Olive.Entities
                 var sql = subquery.Provider
                     .GenerateSelectCommand(subquery, subquery.MapColumn(targetField));
 
-                sql = $"{MapColumn(myField)} {@operator} ({sql})";
-                Criteria.Add(Criterion.FromSql(sql));
+                sql = $"${{{{{myField}}}}} {@operator} ({sql})";
+                Criteria.Add(Criterion.FromSql(sql, myField));
 
                 foreach (var subQueryParam in subquery.Parameters)
                     Parameters.Add(subQueryParam.Key, subQueryParam.Value);
