@@ -60,6 +60,7 @@ namespace Olive.Mvc
             if (modelType.IsA<List<Guid>>()) modelBinder = new ListModelBinder<Guid>();
             if (modelType.IsA<List<string>>()) modelBinder = new ListModelBinder<string>();
             if (modelType.IsA<List<int>>()) modelBinder = new ListModelBinder<int>();
+            if (modelType.IsA<List<long>>()) modelBinder = new ListModelBinder<long>();
             if (modelType.IsA<List<bool>>()) modelBinder = new ListModelBinder<bool>();
             if (modelType.IsA<List<double>>()) modelBinder = new ListModelBinder<double>();
             if (modelType.IsA<List<decimal>>()) modelBinder = new ListModelBinder<decimal>();
