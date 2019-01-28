@@ -5,10 +5,10 @@ using System.Threading;
 
 namespace MSharp.Build
 {
-    internal class OliveSolution : Builder
+    class OliveSolution : Builder
     {
-        private DirectoryInfo Root, Lib;
-        private readonly bool Publish;
+        DirectoryInfo Root, Lib;
+        readonly bool Publish;
         public bool IsDotNetCore, IsWebForms;
 
         public OliveSolution(DirectoryInfo root, bool publish)
@@ -23,7 +23,7 @@ namespace MSharp.Build
                 Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.1");
         }
 
-        private bool IsProjectDotNetCore()
+        bool IsProjectDotNetCore()
         {
             return Lib.Parent.GetSubDirectory("Model").GetFile("#Model.csproj").ReadAllText()
                  .Contains("<TargetFramework>netcoreapp");
@@ -45,7 +45,7 @@ namespace MSharp.Build
             Add(() => BuildAppWebsite());
         }
 
-        private void BuildRuntimeConfigJson()
+        void BuildRuntimeConfigJson()
         {
             var json = @"{  
    ""runtimeOptions"":{  
@@ -59,29 +59,20 @@ namespace MSharp.Build
             File.WriteAllText(Path.Combine(Lib.FullName, "MSharp.DSL.runtimeconfig.json"), json);
         }
 
-        private void RestoreNuget()
+        void RestoreNuget()
         {
             if (!IsDotNetCore)
                 WindowsCommand.FindExe("nuget", string.Empty).Execute("restore",
                 configuration: x => x.StartInfo.WorkingDirectory = Root.FullName);
         }
 
-        private void BuildMSharpModel()
-        {
-            DotnetBuild("M#\\Model");
-        }
+        void BuildMSharpModel() => DotnetBuild("M#\\Model");
 
-        private void BuildAppDomain()
-        {
-            DotnetBuild("Domain");
-        }
+        void BuildAppDomain() => DotnetBuild("Domain");
 
-        private void BuildMSharpUI()
-        {
-            DotnetBuild("M#\\UI");
-        }
+        void BuildMSharpUI() => DotnetBuild("M#\\UI");
 
-        private void BuildAppWebsite()
+        void BuildAppWebsite()
         {
             if (IsWebForms)
             {
@@ -91,7 +82,7 @@ namespace MSharp.Build
             else DotnetBuild("Website", "publish -o ..\\publish".OnlyWhen(Publish));
         }
 
-        private void RestorePackagesConfig(string folder)
+        void RestorePackagesConfig(string folder)
         {
             var packages = Folder(folder).AsDirectory().GetFile("packages.config");
             if (packages.Exists())
@@ -101,7 +92,7 @@ namespace MSharp.Build
             }
         }
 
-        private void DotnetBuild(string folder, string command = null)
+        void DotnetBuild(string folder, string command = null)
         {
             if (IsDotNetCore) DotnetCoreBuild(folder, command);
             else
@@ -119,7 +110,7 @@ namespace MSharp.Build
             }
         }
 
-        private void DotnetCoreBuild(string folder, string command = null)
+        void DotnetCoreBuild(string folder, string command = null)
         {
             if (command.IsEmpty()) command = "build -v q";
 
@@ -133,11 +124,7 @@ namespace MSharp.Build
             Log(log);
         }
 
-        private void MSharpGenerateModel()
-        {
-            RunMSharpBuild("/build /model /no-domain");
-
-        }
+        void MSharpGenerateModel() => RunMSharpBuild("/build /model /no-domain");
 
         private void MSharpGenerateUI()
         {
@@ -145,12 +132,12 @@ namespace MSharp.Build
             RunMSharpBuild("/build /ui");
         }
 
-        private void RunMSharpBuild(string command)
+        void RunMSharpBuild(string command)
         {
             string log;
             if (IsDotNetCore)
             {
-                log = WindowsCommand.DotNet.Execute($"msharp.dsl.dll " + command,
+                log = WindowsCommand.DotNet.Execute("msharp.dsl.dll " + command,
                    configuration: x => x.StartInfo.WorkingDirectory = Lib.FullName);
             }
             else
@@ -161,16 +148,16 @@ namespace MSharp.Build
             Log(log);
         }
 
-        private void YarnInstall()
+        void YarnInstall()
         {
             var log = WindowsCommand.Yarn.Execute("install",
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
             Log(log);
         }
 
-        private void InstallBowerComponents()
+        void InstallBowerComponents()
         {
-            if (!Folder("Website\\bower.json").AsFile().Exists)
+            if (!Folder("Website\\bower.json").AsFile().Exists())
             {
                 Console.Write("Skipped - bower.json is not found.");
                 return;
@@ -181,14 +168,14 @@ namespace MSharp.Build
             Log(log);
         }
 
-        private void TypescriptCompile()
+        void TypescriptCompile()
         {
             var log = WindowsCommand.TypeScript.Execute("",
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
             Log(log);
         }
 
-        private void SassCompile()
+        void SassCompile()
         {
             if (!IsDotNetCore) return;
 
@@ -199,9 +186,6 @@ namespace MSharp.Build
             Log(log);
         }
 
-        private string Folder(string relative)
-        {
-            return Path.Combine(Root.FullName, relative);
-        }
+        string Folder(string relative) => Path.Combine(Root.FullName, relative);
     }
 }

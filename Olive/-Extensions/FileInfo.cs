@@ -7,14 +7,11 @@ using System.Text;
 
 namespace Olive
 {
-    public partial class OliveExtensions
+    partial class OliveExtensions
     {
-        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
+        static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-        public static string NameWithoutExtension(this FileInfo @this)
-        {
-            return Path.GetFileNameWithoutExtension(@this.FullName);
-        }
+        public static string NameWithoutExtension(this FileInfo @this) => Path.GetFileNameWithoutExtension(@this.FullName);
 
         /// <summary>
         /// Determines whether or not this directory exists.
@@ -40,25 +37,18 @@ namespace Olive
         /// Gets the total size of all files in this directory.
         /// </summary>
         public static long GetSize(this DirectoryInfo @this, bool includeSubDirectories = true)
-        {
-            return @this.GetFiles(includeSubDirectories).Sum(x => x.AsFile().Length);
-        }
+            => @this.GetFiles(includeSubDirectories).Sum(x => x.AsFile().Length);
 
         /// <summary>
         /// Gets the size of this folder in human readable text.
         /// </summary>
-        public static string GetSizeText(this DirectoryInfo @this, bool includeSubDirectories = true, int round = 1)
-        {
-            return @this.GetSize(includeSubDirectories).ToFileSizeString(round);
-        }
+        public static string GetSizeText(this DirectoryInfo @this, bool includeSubDirectories = true, int round = 1) =>
+            @this.GetSize(includeSubDirectories).ToFileSizeString(round);
 
         /// <summary>
         /// Gets the size of this file in human readable text.
         /// </summary>
-        public static string GetSizeText(this FileInfo @this, int round = 1)
-        {
-            return @this.Length.ToFileSizeString(round);
-        }
+        public static string GetSizeText(this FileInfo @this, int round = 1) => @this.Length.ToFileSizeString(round);
 
         /// <summary>
         /// Detects the characters which are not acceptable in File System and replaces them with a hyphen.
@@ -129,7 +119,6 @@ namespace Olive
                     throw new Exception($"Error running '{@this.FullName}':{output}");
                 else process.Dispose();
             }
-
 
             return output.ToString();
         }
