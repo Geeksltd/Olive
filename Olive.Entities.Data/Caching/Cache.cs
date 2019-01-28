@@ -19,7 +19,7 @@ namespace Olive.Entities.Data
             if (entity.GetType().IsCacheable())
             {
                 CacheProvider.Add(entity);
-                ExpireLists(entity.GetType());
+                RemoveList(entity.GetType());
             }
         }
 
@@ -30,12 +30,9 @@ namespace Olive.Entities.Data
         {
             entity.InvalidateCachedReferences();
 
-            foreach (var type in CacheDependentAttribute.GetDependentTypes(entity.GetType()))
-                Remove(type, invalidateCachedReferences: true);
-
             if (entity.GetType().IsCacheable())
             {
-                ExpireLists(entity.GetType());
+                RemoveList(entity.GetType());
                 CacheProvider.Remove(entity);
             }
         }
@@ -47,7 +44,7 @@ namespace Olive.Entities.Data
         {
             if (!type.IsCacheable()) return;
 
-            ExpireLists(type);
+            RemoveList(type);
 
             CacheProvider.Remove(type, invalidateCachedReferences);
 
@@ -55,25 +52,25 @@ namespace Olive.Entities.Data
                 CacheProvider.Remove(inherited, invalidateCachedReferences);
         }
 
-        public virtual void ExpireLists(Type type)
+        public virtual void RemoveList(Type type)
         {
             if (!type.IsCacheable()) return;
 
             for (var parentType = type; parentType != typeof(Entity); parentType = parentType.BaseType)
-                CacheProvider.ExpireLists(type);
+                CacheProvider.RemoveList(type);
         }
 
-        public virtual IEnumerable GetList(Type type, string key)
+        public virtual IEnumerable GetList(Type type)
         {
             if (type.IsCacheable()) return null;
-            return CacheProvider.GetList(type, key);
+            return CacheProvider.GetList(type);
         }
 
         public void ClearAll() => CacheProvider.ClearAll();
 
-        public void AddList(Type type, string key, IEnumerable list)
+        public void AddList(Type type, IEnumerable list)
         {
-            if (type.IsCacheable()) CacheProvider.AddList(type, key, list);
+            if (type.IsCacheable()) CacheProvider.AddList(type, list);
         }
 
         public bool IsUpdatedSince(IEntity instance, DateTime since) => CacheProvider.IsUpdatedSince(instance, since);
