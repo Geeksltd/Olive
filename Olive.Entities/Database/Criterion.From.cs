@@ -8,10 +8,11 @@ namespace Olive.Entities
 {
     partial class Criterion
     {
-        public static Criterion FromSql(string sqlCondition)
-        {
-            return new DirectDatabaseCriterion(sqlCondition);
-        }
+        public static Criterion FromSql(string sqlCondition) =>
+            new DirectDatabaseCriterion(sqlCondition);
+
+        public static Criterion FromSql(string sqlCondition, string propertyName) =>
+            new DirectDatabaseCriterion(sqlCondition) { PropertyName = propertyName };
 
         public static Criterion From<T>(Expression<Func<T, bool>> criterion) where T : IEntity
         {
