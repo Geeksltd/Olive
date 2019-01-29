@@ -128,11 +128,10 @@ namespace Olive
         /// </summary>
         public static string GetMimeType(this FileInfo @this)
         {
-            switch (@this.Extension.OrEmpty().TrimStart("."))
+            switch (@this.Extension.ToLower().OrEmpty().TrimStart("."))
             {
                 case "doc": case "docx": return "application/msword";
                 case "pdf": return "application/pdf";
-                case "ppt": return "application/powerpoint";
                 case "rtf": return "application/rtf";
                 case "gz": return "application/x-gzip";
                 case "zip": return "application/zip";
