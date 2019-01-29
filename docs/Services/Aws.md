@@ -17,11 +17,10 @@ To create one, you can log in to the AWS Console and create a user or role and a
 
 >It is recommended that you use an **IAM Role** rather than a **IAM User** as that gives you more flexibility.
 
-To claim that role in your application, you have 2 options:
+To claim that role in your application, you have 3 options:
 
-- **EC2 Instance Role**: This is the recommended approach for production servers. In this approach, you do not need to use any username, password, token or any other *authentication data*. Instead, when creating the EC2 server instance, you will allocate the role directly to the server. Any calls made to the AWS Apis from your application, running on that server, will automatically be authenticated.
-
-- **API Key pair**: In this approach you can generate an access key pair for the role on the AWS Console and add it to the application config files such as `appSettings.Development.json` using:
+#### API Key pair
+This is useful during development time. In this approach you can generate an access key pair for the role on the AWS Console and add it to the application config files such as `appSettings.Development.json` using the following.
 
 ```json
 {
@@ -33,3 +32,24 @@ To claim that role in your application, you have 2 options:
      }
    }
 }
+```
+
+#### EC2 Instance Role
+This is the recommended approach for production servers. In this approach, you do not need to use any username, password, token or any other *authentication data*. Instead, when creating the EC2 server instance, you will allocate the role directly to the server. Any calls made to the AWS Apis from your application, running on that server, will automatically be authenticated.
+
+The problem with this approach is that all applications running on a single EC2 server will have the same role. When hosting multiple applications on the same server, such as when using containerised microservices, you will need a modified version of this approached, explained below.
+
+#### EC2 Instance + Assume Role 
+In this approach, you will define a specific role for the server, followed by other roles dedicated to each application (microservice) running on that server. You will then create a trust relationship between the server role and the application roles.
+
+In Olive, a service called `RuntimeIdentity` will facilitate this for you. You can activate it by calling `config.LoadAwsIdentity()` as shown below.
+
+
+You will often use a mix of the above two options and switch in between them depending on the runtime config in your `Startup.cs` file:
+```csharp
+public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory factory) : base(env, config, factory)
+{
+      if (env.IsProduction()) config.LoadAwsIdentity();
+      else config.LoadAwsDevIdentity();
+}
+```
