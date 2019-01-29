@@ -42,7 +42,7 @@ The problem with this approach is that all applications running on a single EC2 
 ### EC2 Instance + Assume Role 
 In this approach, you will define a specific role for the server, followed by other roles dedicated to each application (microservice) running on that server. You will then create a trust relationship between the server role and the application roles.
 
-In Olive, a service called `RuntimeIdentity` will facilitate this for you. It is [explained here](../DevOps/Security?id=aws-iam-role-for-pods). You can activate it by calling `config.LoadAwsIdentity()` as shown below.
+In Olive, a service called `RuntimeIdentity` will facilitate this for you. It is [explained here](./../DevOps/Security?id=aws-iam-role-for-pods). You can activate it by calling `config.LoadAwsIdentity()` as shown below.
 
 
 You will often use a mix of the above two options and switch in between them depending on the runtime config in your `Startup.cs` file:
