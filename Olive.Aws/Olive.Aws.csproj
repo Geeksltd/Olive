@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.SecretsManager" Version="3.3.2.6" />
     <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.4.15" />
-    <PackageReference Include="GCop.All.Geeks" Version="2.4.4" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.6.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
