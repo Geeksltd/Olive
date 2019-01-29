@@ -1196,6 +1196,58 @@ items.OrEmpty(); //returns {null}
 IEnumerable<string> items = new string[] {"1","2"};
 items.OrEmpty(); //returns {"1","2"}
 ```
+
+## PadLeft({size},{padItemValue})
+Add {padItemValue} to the left side of this list if the size parameter is greater than the lenght of the list.
+{size} is the number of items.
+{padItemValue} is the string should be added to the left side of the list.
+#### When to use it?
+When you want to fix the number of items of a list and fill missed items with a specific string in left side in your applications.
+
+#### Example:
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadLeft<string>(10,"abc"); //returns {"abc", "abc", "abc", "1", "2", "3", "4", "5", "6", "7" }  newStr has 10 items.
+```
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadLeft<string>(5,"abc"); //returns {"1", "2", "3", "4", "5", "6", "7" }
+```
+```csharp
+string[] intstr = {};
+var newStr = intstr.PadLeft<string>(5,"abc"); //returns {}
+```
+```csharp
+string[] intstr = {null};
+var newStr = intstr.PadLeft<string>(5,"abc"); //returns {"abc","abc","abc","abc",null}
+```
+
+## PadRight({size},{padItemValue})
+Add {padItemValue} to the right side of this list if the size parameter is greater than the lenght of the list.
+{size} is the number of items.
+{padItemValue} is the string should be added to the right side of the list.
+
+#### When to use it?
+When you want to fix the number of items of a list and fill missed items with a specific string in right side in your applications.
+
+#### Example:
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadRight<string>(10,"abc"); //returns {"1", "2", "3", "4", "5", "6", "7", "abc", "abc", "abc" }  newStr has 10 items.
+```
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadRight<string>(5,"abc"); //returns {"1", "2", "3", "4", "5", "6", "7" }
+```
+```csharp
+string[] intstr = {};
+var newStr = intstr.PadRight<string>(5,"abc"); //returns {}
+```
+```csharp
+string[] intstr = {null};
+var newStr = intstr.PadRight<string>(5,"abc"); //returns {null, "abc","abc","abc","abc"}
+```
+
 ## PickRandom({Number})
 Picks an item from the list. {number} is the number of items which are selected randomly. The default value is 1 and it should be greater than 0.
 
