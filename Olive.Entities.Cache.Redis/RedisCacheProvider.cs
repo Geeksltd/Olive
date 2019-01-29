@@ -40,7 +40,7 @@ namespace Olive.Entities.Data
             Db.KeyDelete(keys.ToArray());
         }
 
-        public void ExpireLists(Type type) => RemoveWithPattern(ListPrefix(type) + "*");
+        public void RemoveList(Type type) => RemoveWithPattern(ListPrefix(type) + "*");
 
         public IEntity Get(Type entityType, string id)
             => (IEntity)Get(entityType.FullName + "|" + id);

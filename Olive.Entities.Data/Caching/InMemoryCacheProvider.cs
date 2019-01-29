@@ -11,18 +11,10 @@ namespace Olive.Entities.Data
     public partial class InMemoryCacheProvider : ICacheProvider
     {
         ConcurrentDictionary<Type, Dictionary<string, IEntity>> Types = new ConcurrentDictionary<Type, Dictionary<string, IEntity>>();
-        ConcurrentDictionary<Type, Dictionary<string, IEnumerable>> Lists = new ConcurrentDictionary<Type, Dictionary<string, IEnumerable>>();
+        ConcurrentDictionary<Type, IEnumerable> Lists = new ConcurrentDictionary<Type, IEnumerable>();
 
         Dictionary<string, IEntity> GetEntities(Type type) =>
             Types.GetOrAdd(type, t => new Dictionary<string, IEntity>());
-
-        Dictionary<string, IEnumerable> GetLists(Type type, bool autoCreate = true)
-        {
-            if (autoCreate)
-                return Lists.GetOrAdd(type, t => new Dictionary<string, IEnumerable>());
-            else
-                return Lists.TryGet(type);
-        }
 
         public IEntity Get(Type entityType, string id)
         {
@@ -77,27 +69,11 @@ namespace Olive.Entities.Data
             }
         }
 
-        public void ExpireLists(Type type)
-        {
-            var lists = GetLists(type, autoCreate: false);
-            if (lists != null) lock (lists) lists.Clear();
-        }
+        public void RemoveList(Type type) => Lists.TryRemove(type);
 
-        public IEnumerable GetList(Type type, string key)
-        {
-            var lists = GetLists(type);
-            lock (lists)
-            {
-                if (lists.TryGetValue(key, out var result)) return result;
-                else return null;
-            }
-        }
+        public IEnumerable GetList(Type type) => Lists.GetOrDefault(type);
 
-        public void AddList(Type type, string key, IEnumerable list)
-        {
-            var lists = GetLists(type);
-            lock (lists) lists[key] = list;
-        }
+        public void AddList(Type type, IEnumerable list) => Lists[type] = list;
 
         public void ClearAll()
         {

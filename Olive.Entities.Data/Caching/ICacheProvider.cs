@@ -9,9 +9,9 @@ namespace Olive.Entities.Data
         void Add(IEntity entity);
         void Remove(IEntity entity);
         void Remove(Type type, bool invalidateCachedReferences = false);
-        void AddList(Type type, string key, IEnumerable list);
-        void ExpireLists(Type type);
-        IEnumerable GetList(Type type, string key);
+        void AddList(Type type, IEnumerable list);
+        void RemoveList(Type type);
+        IEnumerable GetList(Type type);
         void ClearAll();
         bool IsUpdatedSince(IEntity instance, DateTime since);
         void UpdateRowVersion(IEntity entity);

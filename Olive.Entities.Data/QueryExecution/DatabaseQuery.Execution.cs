@@ -23,33 +23,14 @@
             return true;
         }
 
-        string GetCacheKey()
-        {
-            var r = new StringBuilder();
-            r.Append(EntityType.GetCachedAssemblyQualifiedName());
-
-            r.Append(':');
-
-            foreach (var c in Criteria)
-            {
-                r.Append(c.ToString());
-                r.Append('|');
-            }
-
-            if (TakeTop.HasValue) r.Append("|N:" + TakeTop);
-
-            r.Append(OrderByParts.Select(x => x.ToString()).ToString(",").WithPrefix("|S:"));
-
-            return r.ToString();
-        }
-
         public async Task<IEnumerable<IEntity>> GetList()
         {
             if (!IsCacheable()) return await LoadFromDatabase();
 
-            var cacheKey = GetCacheKey();
+            if (Criteria.Any() || Context.Current.Database().AnyOpenTransaction())
+                return await LoadFromDatabaseAndCache();
 
-            var result = Cache.GetList(EntityType, cacheKey)?.Cast<IEntity>();
+            var result = Cache.GetList(EntityType)?.Cast<IEntity>();
             if (result != null)
             {
                 await LoadIncludedAssociations(result);
@@ -58,9 +39,7 @@
 
             result = await LoadFromDatabaseAndCache();
 
-            // If there is no transaction open, cache it:
-            if (!Context.Current.Database().AnyOpenTransaction())
-                Cache.AddList(EntityType, cacheKey, result);
+            Cache.AddList(EntityType, result);
 
             return result;
         }
