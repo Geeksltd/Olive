@@ -54,3 +54,8 @@ public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory fa
       else config.LoadAwsDevIdentity();
 }
 ```
+
+## Invoking custom AWS Apis
+Once you enable the above authentication in your application, you can use any AWS SDK service without worrying about authentication. Every AWS Api functionality requires you to create some kind of `AwsXxxClient` object. The constructor of such client objects have multiple overloads. There is one default overload (with no argument) which is what you should use.
+
+Beware: Most examples you will find online will use other overloads that need you to explicitly specify access key, secret or region. Ignore those parts, and always use the parameter-less constructor of the client object.
