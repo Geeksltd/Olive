@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace Olive.Mvc
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public sealed class TimeAttribute : ValidationAttribute, IClientModelValidator
+    public class TimeAttribute : ValidationAttribute, IClientModelValidator
     {
         public override bool IsValid(object value)
         {
