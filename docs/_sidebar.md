@@ -67,6 +67,7 @@
     * [Push Notifications](Services/PushNotification.md)
     * [Image optimization]()
     * [Website IP Filter]()
+    * [AWS integration](Services/Aws.md)
 
 * Security
     * [Olive Security Overview](Security/Security.md)

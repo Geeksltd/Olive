@@ -43,6 +43,8 @@ namespace Olive.Mvc
                 return;
             }
 
+            if (context.Response.HasStarted) return;
+
             var urlReferrer = context.Request.Headers["Referer"].ToString();
             if (urlReferrer.IsEmpty()) context.Response.Redirect("/");
             else context.Response.Redirect(urlReferrer);

@@ -13,7 +13,7 @@ namespace Olive.Mvc
         /// </summary>
         /// <param name="downloadFileName">If specified, the browser will not try to process the file directly (such as PDF files) and instead always opens the file download dialogue.</param>
         protected async Task<ActionResult> File(Blob file,
-            string downloadFileName = null, CacheControlHeaderValue cacheControl = null)
+            string downloadFileName = null, CacheControlHeaderValue cacheControl = null, bool showInline = false)
         {
             if (cacheControl != null)
             {
@@ -22,7 +22,19 @@ namespace Olive.Mvc
                 Response.Headers.Add(Microsoft.Net.Http.Headers.HeaderNames.CacheControl, cacheControl.ToString());
             }
 
-            return File(await file.GetFileDataAsync(), file.GetMimeType(), downloadFileName.Or(file.FileName));
+            var cd = new System.Net.Mime.ContentDisposition
+            {
+                FileName = downloadFileName.Or(file.FileName),
+                Inline = showInline,
+            };
+
+            if (showInline)
+                Response.Headers.Add("X-Content-Type-Options", "nosniff");
+
+            Response.Headers.Remove("Content-Disposition");
+            Response.Headers.Add(Microsoft.Net.Http.Headers.HeaderNames.ContentDisposition, cd.ToString());
+
+            return File(await file.GetFileDataAsync(), file.GetMimeType());
         }
 
         protected JsonResult NonobstructiveFile(byte[] data, string filename)

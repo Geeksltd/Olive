@@ -26,6 +26,8 @@ namespace Olive.Mvc.Testing
             services.AddSingleton<IDevCommand, DatabaseProfileSnapshotDevCommand>();
             services.AddSingleton<IDevCommand, DatabaseProfileStopDevCommand>();
 
+            services.AddSingleton<IDevCommand, CsvImportDataDevCommand>();
+
             return @this;
         }
 
