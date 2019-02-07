@@ -13,6 +13,7 @@ namespace Olive.Mvc.Testing
     class DatabaseChangeWatcher
     {
         static List<XElement> Changes = new List<XElement>();
+        const string NullObject = "¦¦nil¦¦";
 
         static DatabaseChangeWatcher()
         {
@@ -30,7 +31,7 @@ namespace Olive.Mvc.Testing
             foreach (var p in change.Params)
                 node.Add(new XElement("Param",
                     new XAttribute("Name", p.ParameterName),
-                    new XAttribute("Value", p.Value),
+                    new XAttribute("Value", p.Value == DBNull.Value ? NullObject : p.Value),
                     new XAttribute("Type", p.DbType)));
 
             Changes.Add(node);
@@ -70,29 +71,29 @@ namespace Olive.Mvc.Testing
                     {
                         var value = innerXmlElement.GetAttribute("Value");
                         var sqlDbType = innerXmlElement.GetAttribute("Type").To<DbType>();
-                        var sqlParameter = access.CreateParameter(innerXmlElement.GetAttribute("Name"), value.IsEmpty() ? (object)DBNull.Value : value);
+                        var sqlParameter = access.CreateParameter(innerXmlElement.GetAttribute("Name"), value == NullObject ? (object)DBNull.Value : value);
 
                         switch (sqlDbType)
                         {
                             case DbType.DateTime:
                                 sqlParameter.DbType = DbType.DateTime;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
+                                sqlParameter.Value = (value.IsEmpty() || value == NullObject) ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
                                 break;
                             case DbType.Guid:
                                 sqlParameter.DbType = DbType.Guid;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : sqlParameter.Value?.ToString().To<Guid>();
+                                sqlParameter.Value = (value.IsEmpty() || value == NullObject) ? sqlParameter.Value : sqlParameter.Value?.ToString().To<Guid>();
                                 break;
                             case DbType.DateTime2:
                                 sqlParameter.DbType = DbType.DateTime2;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
+                                sqlParameter.Value = (value.IsEmpty() || value == NullObject) ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
                                 break;
                             case DbType.Time:
                                 sqlParameter.DbType = DbType.Time;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : XmlConvert.ToTimeSpan(sqlParameter.Value.ToString());
+                                sqlParameter.Value = (value.IsEmpty() || value == NullObject) ? sqlParameter.Value : XmlConvert.ToTimeSpan(sqlParameter.Value.ToString());
                                 break;
                             case DbType.Boolean:
                                 sqlParameter.DbType = DbType.Boolean;
-                                sqlParameter.Value = value.IsEmpty() ? sqlParameter.Value : sqlParameter.Value?.ToString().To<bool>();
+                                sqlParameter.Value = (value.IsEmpty() || value == NullObject) ? sqlParameter.Value : sqlParameter.Value?.ToString().To<bool>();
                                 break;
                         }
 
