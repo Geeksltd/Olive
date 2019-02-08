@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using Olive.Security;
 using System;
@@ -75,5 +77,8 @@ namespace Olive
             change?.Invoke(clone);
             return clone;
         }
+
+        public static void UserDataProtector(this IApplicationBuilder app, string purpose, Func<string, IDataProtector> dataProtectorFactory) =>
+            ProductionKeyDataProtector.Register(purpose, dataProtectorFactory);
     }
 }
