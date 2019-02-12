@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -105,21 +106,24 @@ namespace Olive.Entities.Data
 
         public IDataAccess GetAccess<TEntity>() where TEntity : IEntity => GetProvider<TEntity>().Access;
 
+        public IDataAccess GetAccess<TConnection>(string connectionString = null) where TConnection : DbConnection, new()
+        {
+            return DataAccess.GetAccess<TConnection>(connectionString);
+        }
+
         public IDataAccess GetAccess(string connectionString = null)
         {
             if (connectionString.IsEmpty()) connectionString = DataAccess.GetCurrentConnectionString();
 
-            var factory = TypeProviderFactories.Values
-                 .Concat(AssemblyProviderFactories.Values)
-                 .FirstOrDefault(x => x.ConnectionString == connectionString);
+            var factory = TypeProviderFactories.Values.Concat(AssemblyProviderFactories.Values)
+                .FirstOrDefault(x => x.ConnectionString == connectionString);
 
-            if (factory == null && connectionString.ToLowerOrEmpty() == DataAccess.GetCurrentConnectionString().ToLowerOrEmpty())
+            if (factory != null) return factory.GetAccess();
+
+            if (connectionString.ToLowerOrEmpty() == DataAccess.GetCurrentConnectionString().ToLowerOrEmpty())
                 return DataAccess.GetDataAccess();
 
-            if (factory == null)
-                throw new Exception("No data provider factory's connection string matched the specified connection string.");
-
-            return factory.GetAccess();
+            throw new Exception("No data provider factory's connection string matched the specified connection string.");
         }
 
         public IDataProvider GetProvider(IEntity item) => GetProvider(item.GetType());
