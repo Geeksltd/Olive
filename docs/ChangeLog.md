@@ -95,9 +95,33 @@ Update `#Model.csproj` and `#UI.csproj` files add `/warn` to the end of the Afte
 
 ## 7 Dec 2018
 We have removed [Chosen](https://github.com/harvesthq/chosen) library and replaced it with [Bootstrap-select](https://github.com/snapappointments/bootstrap-select/), now you can safely remove `chosen` from your project.
-1. Open `package.json` or `bower.json` and remove `chosen` then update `olive.mvc` to the version `0.9.175`
-2. Open `references.js` and remove `chosen`
-3. Open `_common.scss` file and remove `chosen.css`
+1. Open `package.json` or `bower.json` and remove `chosen` then update `olive.mvc` to the version `0.9.175` and add `"bootstrap-select": "1.13.5",`
+2. Open `references.js` and remove `chosen` and add the following lines:
+```js
+requirejs.config({
+    baseUrl: '/lib',
+    paths: {
+        ....,
+        "bootstrap-select": "bootstrap-select/dist/js/bootstrap-select"
+    },
+    ...
+    shim: {
+        ...
+        "bootstrap-select": ['jquery', 'bootstrap'],
+	...
+        }
+	...
+});
+
+requirejs([...., "bootstrap-select"
+]);
+...
+```
+3. Open `_common.scss` file and remove `chosen.css` and add the following lines:
+```scss
+@import "../../lib/bootstrap-select/sass/variables";
+@import "../../lib/bootstrap-select/sass/bootstrap-select";
+```
 
 now your drop-down list will have default bootstrap style.
 
