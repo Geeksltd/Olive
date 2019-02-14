@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 
@@ -7,19 +8,30 @@ namespace Olive.Entities.Data
 {
     partial class DataAccess
     {
+        /// <summary>
+        /// Keys are data proidver types such as 
+        /// </summary>
         static Dictionary<string, IDataAccess> Accessors = new Dictionary<string, IDataAccess>();
 
-        public static void Register<TConnection>(ISqlCommandGenerator sqlCommandGenerator, string dataProviderType)
-            where TConnection : DbConnection, new()
-        {
-            Accessors[dataProviderType] = new DataAccess<TConnection>(sqlCommandGenerator);
-        }
-
+        // <summary>
+        // Registgers a data Data Access instance for a specified provider type.
+        // </summary>
         public static void Register(Type connectionType, ISqlCommandGenerator sqlCommandGenerator, string dataProviderType)
         {
             var dataAccessType = typeof(DataAccess<>).MakeGenericType(connectionType);
 
             Accessors[dataProviderType] = (IDataAccess)Activator.CreateInstance(dataAccessType, sqlCommandGenerator, null);
+        }
+
+        public static IDataAccess GetAccess<TConnection>(string connectionString = null)
+            where TConnection : DbConnection, new()
+        {
+            var commandGenerator = Accessors.GetOrDefault(typeof(TConnection).Namespace)?.GetSqlCommandGenerator();
+            if (commandGenerator == null)
+                throw new Exception("No data provider is registered for " + typeof(TConnection).Namespace +
+                    Environment.NewLine + "Consider setting it in Startup.cs using services.AddDataAccess(x => x....())");
+
+            return new DataAccess<TConnection>(commandGenerator, connectionString);
         }
 
         /// <summary>
