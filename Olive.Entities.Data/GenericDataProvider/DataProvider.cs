@@ -201,8 +201,9 @@ namespace Olive.Entities.Data
             {
                 var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
 
-                if (value != DBNull.Value)
-                    property.Accessor.Set(entity, value);
+                if (value == DBNull.Value)
+                    property.Accessor.Set(entity, null);
+                else property.Accessor.Set(entity, value);
             }
         }
 

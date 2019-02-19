@@ -22,13 +22,22 @@ namespace Olive.Entities.Replication
 
             foreach (var f in Fields.Where(x => x.ShouldSerialize()))
             {
+                var fieldName = f.GetName();
+
                 try
                 {
-                    Log.For(this).Debug("Finding the value of " + f.GetName() + " field");
+                    Log.For(this).Debug($"Finding the value of {fieldName} field");
 
                     var value = f.GetSerializableValue(entity);
                     if (value == null) properties[f.GetName()] = null;
-                    else properties[f.GetName()] = await value;
+                    else
+                    {
+                        var valueData = await value;
+
+                        if (valueData is IEntity e) valueData = e.GetId();
+
+                        properties[f.GetName()] = valueData.ToStringOrEmpty();
+                    }
                 }
                 catch (Exception ex)
                 {

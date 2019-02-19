@@ -19,7 +19,6 @@ namespace Olive.Entities.Data
         /// Finds an object with the specified type matching the specified criteria.
         /// If not found, it returns null.
         /// </summary>
-        public Task<T> FirstOrDefault<T>() where T : IEntity
-=> Of<T>().FirstOrDefault();
+        public Task<T> FirstOrDefault<T>() where T : IEntity => Of<T>().FirstOrDefault();
     }
 }
