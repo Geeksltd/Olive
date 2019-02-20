@@ -18,6 +18,20 @@ namespace Olive.Entities.Data
         {
             var list = @this.ToList();
 
+            GenerateClass(type, list.Where(x => x.CustomAccessorClassName.IsEmpty()).ToList());
+            UseCustomClass(type, list.Where(x => x.CustomAccessorClassName.HasValue()).ToList());
+
+            return list.ToArray();
+        }
+
+        static void UseCustomClass(Type type, List<PropertyData> list) =>
+            list.ForEach(p => p.Accessor = CreateCustomAccessorInstance(type, p.CustomAccessorClassName));
+
+        static IPropertyAccessor CreateCustomAccessorInstance(Type type, string name) =>
+            (IPropertyAccessor)Activator.CreateInstance(type.Assembly.GetType(name));
+
+        static void GenerateClass(Type type, List<PropertyData> list)
+        {
             var code = "";
 
             list.ForEach(p => code += GetAccessorClass(type, p));
@@ -25,8 +39,6 @@ namespace Olive.Entities.Data
             var accessores = GetAccessorTypes(type, code);
 
             list.ForEach(p => p.Accessor = accessores[p.PropertyInfo.Name + "Accessor"]);
-
-            return list.ToArray();
         }
 
         static Dictionary<string, IPropertyAccessor> GetAccessorTypes(Type type, string code)
@@ -116,7 +128,7 @@ namespace Olive.Entities.Data
         static string GetCastingType(Type type)
         {
             if (type.IsNullable())
-                return GetCastingType(type.GenericTypeArguments[0]);//.WithSuffix("?");
+                return GetCastingType(type.GenericTypeArguments[0]).WithSuffix("?");
 
             if(type.IsA<Double>()) return $"({type.Name})(decimal)";
             

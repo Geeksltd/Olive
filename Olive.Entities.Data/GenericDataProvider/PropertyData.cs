@@ -31,6 +31,8 @@ namespace Olive.Entities.Data
 
         public IPropertyAccessor Accessor { get; internal set; }
 
+        internal string CustomAccessorClassName { get; set; }
+
         public bool IsUserDefined => (IsDeleted || IsOriginalId || IsDefaultId) == false;
     }
 }
