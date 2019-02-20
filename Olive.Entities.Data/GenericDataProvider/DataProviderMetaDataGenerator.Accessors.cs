@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
 using System.IO;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -43,7 +39,7 @@ namespace Olive.Entities.Data
 
         static Dictionary<string, IPropertyAccessor> GetAccessorTypes(Type type, string code)
         {
-            var sourceCode = $"using System;\r\nusing Olive.Entities;{code}";
+            var sourceCode = $"using System;\r\nusing Olive.Entities;\r\nusing System.Data;{code}";
             var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
 
             var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
@@ -54,6 +50,7 @@ namespace Olive.Entities.Data
                 MetadataReference.CreateFromFile(type.Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Guid).Assembly.Location),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Private.CoreLib.dll")),
+                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Data.Common.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Console.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")),
                 MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "netstandard.dll")),
@@ -92,9 +89,10 @@ namespace Olive.Entities.Data
 
             string GetValuePart()
             {
-                if (isBlob) return "new Blob { FileName = value as string }";
+                if (isBlob) return "new Blob { FileName = value == DBNull.Value ? null : value as string }";
 
-                return $"{GetCastingType(propertyType)}value";
+                return $"value == DBNull.Value ? {GetCastingType(propertyType)}null : ".OnlyWhen(type.IsNullable()) +
+                    $"{GetCastingType(propertyType)}value";
             }
 
             string getSetBody()
@@ -113,6 +111,29 @@ namespace Olive.Entities.Data
                         obj.{property.PropertyInfo.Name} = {GetValuePart()};";
             }
 
+            string GetValuePartFromReader()
+            {
+                if (isBlob) return "new Blob { FileName = reader.IsDBNull(index) ? null : reader.GetString(index) }";
+
+                return GetGetValueExpression(propertyType);
+            }
+
+            string getSetBodyFromReader()
+            {
+                if (property.IsOriginalId)
+                    return "throw new InvalidOperationException(\"Cannot set the original Id in this way.\");";
+
+                if (property.IsDeleted)
+                    return $@"var obj = ({fullTypeName})entity;
+                        if (reader.GetBoolean(index))
+                            SoftDeleteAttribute.MarkDeleted(obj);
+                        else
+                            SoftDeleteAttribute.UnMark(obj);";
+
+                return $@"var obj = ({fullTypeName})entity;
+                        obj.{property.PropertyInfo.Name} = {GetValuePartFromReader()};";
+            }
+
             return $@"
                 public class {property.PropertyInfo.Name}Accessor : IPropertyAccessor
                 {{
@@ -122,17 +143,45 @@ namespace Olive.Entities.Data
                     {{
                         {getSetBody()}
                     }}
+
+                    public void Set(IEntity entity, IDataReader reader, int index)
+                    {{
+                        {getSetBodyFromReader()}
+                    }}
                 }}";
         }
 
-        static string GetCastingType(Type type)
+        static string GetCastingType(Type type, bool ignoreParentheses = false)
         {
             if (type.IsNullable())
-                return GetCastingType(type.GenericTypeArguments[0]).WithSuffix("?");
+                return $"({GetCastingType(type.GenericTypeArguments[0], ignoreParentheses: true)}?)";
 
-            if(type.IsA<Double>()) return $"({type.Name})(decimal)";
-            
-            return $"({type.Name})";
+            if (type.IsA<double>()) return ignoreParentheses ? $"{type.Name}?)(decimal" : $"({type.Name})(decimal)";
+
+            return ignoreParentheses ? type.Name : $"({type.Name})";
+        }
+
+        static string GetGetValueExpression(Type type)
+        {
+            if (type.IsNullable())
+                return "reader.IsDBNull(index) ? (" +
+                    GetCastingType(type.GenericTypeArguments[0], ignoreParentheses: true) +
+                    $"?)null : {GetGetValueExpression(type.GenericTypeArguments[0])}";
+
+            if (type.IsA<bool>()) return "reader.GetBoolean(index)";
+            if (type.IsA<byte>()) return "reader.GetByte(index)";
+            if (type.IsA<char>()) return "reader.GetChar(index)";
+            if (type.IsA<DateTime>()) return "reader.GetDateTime(index)";
+            if (type.IsA<decimal>()) return "reader.GetDecimal(index)";
+            if (type.IsA<double>()) return "(double) reader.GetDecimal(index)";
+            if (type.IsA<float>()) return "reader.GetFloat(index)";
+            if (type.IsA<short>()) return "reader.GetInt16(index)";
+            if (type.IsA<int>()) return "reader.GetInt32(index)";
+            if (type.IsA<long>()) return "reader.GetInt64(index)";
+            if (type.IsA<string>()) return "reader.GetString(index)";
+            if (type.IsA<Guid>()) return "reader.GetGuid(index)";
+
+            return $"{GetCastingType(type)} reader[index]";
         }
     }
 }
