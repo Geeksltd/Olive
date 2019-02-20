@@ -81,75 +81,7 @@ namespace Olive.Entities.Data
             }
         }
 
-        static string GetAccessorClass(Type type, PropertyData property)
-        {
-            var propertyType = property.PropertyInfo.PropertyType;
-            var isBlob = propertyType.IsA<Blob>();
-            var fullTypeName = $"{type.Namespace}.{type.Name}";
-
-            string GetValuePart()
-            {
-                if (isBlob) return "new Blob { FileName = value == DBNull.Value ? null : value as string }";
-
-                return $"value == DBNull.Value ? {GetCastingType(propertyType)}null : ".OnlyWhen(type.IsNullable()) +
-                    $"{GetCastingType(propertyType)}value";
-            }
-
-            string getSetBody()
-            {
-                if (property.IsOriginalId)
-                    return "throw new InvalidOperationException(\"Cannot set the original Id in this way.\");";
-
-                if(property.IsDeleted)
-                    return  $@"var obj = ({fullTypeName})entity;
-                        if ((Boolean)value)
-                            SoftDeleteAttribute.MarkDeleted(obj);
-                        else
-                            SoftDeleteAttribute.UnMark(obj);";
-
-                return $@"var obj = ({fullTypeName})entity;
-                        obj.{property.PropertyInfo.Name} = {GetValuePart()};";
-            }
-
-            string GetValuePartFromReader()
-            {
-                if (isBlob) return "new Blob { FileName = reader.IsDBNull(index) ? null : reader.GetString(index) }";
-
-                return GetGetValueExpression(propertyType);
-            }
-
-            string getSetBodyFromReader()
-            {
-                if (property.IsOriginalId)
-                    return "throw new InvalidOperationException(\"Cannot set the original Id in this way.\");";
-
-                if (property.IsDeleted)
-                    return $@"var obj = ({fullTypeName})entity;
-                        if (reader.GetBoolean(index))
-                            SoftDeleteAttribute.MarkDeleted(obj);
-                        else
-                            SoftDeleteAttribute.UnMark(obj);";
-
-                return $@"var obj = ({fullTypeName})entity;
-                        obj.{property.PropertyInfo.Name} = {GetValuePartFromReader()};";
-            }
-
-            return $@"
-                public class {property.PropertyInfo.Name}Accessor : IPropertyAccessor
-                {{
-                    public object Get(IEntity entity) => (({fullTypeName})entity).{property.PropertyInfo.Name}{"?.FileName".OnlyWhen(isBlob)};
-
-                    public void Set(IEntity entity, object value)
-                    {{
-                        {getSetBody()}
-                    }}
-
-                    public void Set(IEntity entity, IDataReader reader, int index)
-                    {{
-                        {getSetBodyFromReader()}
-                    }}
-                }}";
-        }
+        static string GetAccessorClass(Type type, PropertyData property) => new AccessorClassGenerator(type, property).Generate();
 
         static string GetCastingType(Type type, bool ignoreParentheses = false)
         {
@@ -182,6 +114,90 @@ namespace Olive.Entities.Data
             if (type.IsA<Guid>()) return "reader.GetGuid(index)";
 
             return $"{GetCastingType(type)} reader[index]";
+        }
+
+        class AccessorClassGenerator
+        {
+            readonly Type Type;
+            readonly PropertyData Property;
+            readonly Type PropertyType;
+            readonly bool IsBlob;
+            readonly string FullTypeName;
+
+            public AccessorClassGenerator(Type type, PropertyData property)
+            {
+                Type = type;
+                Property = property;
+                PropertyType = property.PropertyInfo.PropertyType;
+                IsBlob = PropertyType.IsA<Blob>();
+                FullTypeName = $"{type.Namespace}.{type.Name}";
+            }
+
+            public string Generate()
+            {
+                return $@"
+                public class {Property.PropertyInfo.Name}Accessor : IPropertyAccessor
+                {{
+                    public object Get(IEntity entity) => (({FullTypeName})entity).{Property.PropertyInfo.Name}{"?.FileName".OnlyWhen(IsBlob)};
+
+                    public void Set(IEntity entity, object value)
+                    {{
+                        {GetSetBody()}
+                    }}
+
+                    public void Set(IEntity entity, IDataReader reader, int index)
+                    {{
+                        {GetSetBodyFromReader()}
+                    }}
+                }}";
+            }
+
+            string GetValuePart()
+            {
+                if (IsBlob) return "new Blob { FileName = value == DBNull.Value ? null : value as string }";
+
+                return $"value == DBNull.Value ? {GetCastingType(PropertyType)}null : ".OnlyWhen(Type.IsNullable()) +
+                    $"{GetCastingType(PropertyType)}value";
+            }
+
+            string GetSetBody()
+            {
+                if (Property.IsOriginalId)
+                    return "throw new InvalidOperationException(\"Cannot set the original Id in this way.\");";
+
+                if (Property.IsDeleted)
+                    return $@"var obj = ({FullTypeName})entity;
+                        if ((Boolean)value)
+                            SoftDeleteAttribute.MarkDeleted(obj);
+                        else
+                            SoftDeleteAttribute.UnMark(obj);";
+
+                return $@"var obj = ({FullTypeName})entity;
+                        obj.{Property.PropertyInfo.Name} = {GetValuePart()};";
+            }
+
+            string GetValuePartFromReader()
+            {
+                if (IsBlob) return "new Blob { FileName = reader.IsDBNull(index) ? null : reader.GetString(index) }";
+
+                return GetGetValueExpression(PropertyType);
+            }
+
+            string GetSetBodyFromReader()
+            {
+                if (Property.IsOriginalId)
+                    return "throw new InvalidOperationException(\"Cannot set the original Id in this way.\");";
+
+                if (Property.IsDeleted)
+                    return $@"var obj = ({FullTypeName})entity;
+                        if (reader.GetBoolean(index))
+                            SoftDeleteAttribute.MarkDeleted(obj);
+                        else
+                            SoftDeleteAttribute.UnMark(obj);";
+
+                return $@"var obj = ({FullTypeName})entity;
+                        obj.{Property.PropertyInfo.Name} = {GetValuePartFromReader()};";
+            }
         }
     }
 }
