@@ -94,7 +94,7 @@ namespace Olive.Entities.Data
                 PropertyInfo = targetProp,
                 NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType,
                 AssociateType = dbProp != null ? info.GetAssociateType() : null,
-                CustomAccessorClassName = CustomPropertyAccessorAttribute.GetClassName(targetProp)
+                CustomDataConverterClassName = CustomDataConverterAttribute.GetClassName(targetProp)
             };
         }
 
