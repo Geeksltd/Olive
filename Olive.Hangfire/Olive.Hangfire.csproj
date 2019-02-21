@@ -5,7 +5,6 @@
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Hangfire.xml</DocumentationFile>
     <PackageId>Olive.Hangfire</PackageId>
-    
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Hangfire (Service)</Title>
@@ -15,7 +14,7 @@
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
-    <PackageVersion>2.1.102</PackageVersion>
+    <PackageVersion>2.1.103</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.0" />

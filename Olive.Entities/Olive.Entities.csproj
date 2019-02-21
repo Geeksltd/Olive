@@ -16,7 +16,7 @@
     <Description>Olive Framework</Description>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.116</PackageVersion>
+    <PackageVersion>2.1.118</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Auditing\**" />
