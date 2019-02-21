@@ -1,6 +1,19 @@
 
 # Olive compatibility change log
 
+## 21 Feb 2019
+Add the following mapping line to your `references.js` as shown below.
+```javascript
+...
+map: {
+       	"*": {
+		....
+           	"jquery-sortable": "jquery-ui/ui/widgets/sortable",
+	}
+}
+...
+```
+
 ## 23 Jan 2019
 Change the following part in the Startup.cs as mentioned.= below.
 
