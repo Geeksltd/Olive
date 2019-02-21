@@ -49,7 +49,7 @@ namespace Olive.Hangfire
 
         string ToMarkup(BackgroundJob job)
         {
-            return $"<tr><td>{job.Name.HtmlEncode()}</td><td><a href='/cmd/scheduled-tasks?run={job.Name.ToPascalCaseId()}'Execute</a></td></tr>";
+            return $"<tr><td>{job.Name.HtmlEncode()}</td><td><a href='/cmd/scheduled-tasks?run={job.Name.ToPascalCaseId()}'>Execute</a></td></tr>";
         }
     }
 }
