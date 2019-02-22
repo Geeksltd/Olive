@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Collections.Concurrent;
 
 namespace Olive.Entities.Data
 {
     static partial class DataProviderMetaDataGenerator
     {
-        static ConcurrentDictionary<Assembly, List<PortableExecutableReference>> Cache = 
+        static ConcurrentDictionary<Assembly, List<PortableExecutableReference>> Cache =
             new ConcurrentDictionary<Assembly, List<PortableExecutableReference>>();
 
         static IPropertyData[] SetAccessors(this IEnumerable<PropertyData> @this, Type type)
@@ -35,9 +35,7 @@ namespace Olive.Entities.Data
             var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
 
             var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location);
-            string assemblyName = Path.GetRandomFileName();
-
-
+            var assemblyName = Path.GetRandomFileName();
 
             var references2 = Cache.GetOrAdd(type.Assembly, assembly =>
             {
@@ -188,7 +186,7 @@ namespace Olive.Entities.Data
                 if (type.IsA<short>()) return "reader.GetInt16(index)";
                 if (type.IsA<int>()) return "reader.GetInt32(index)";
                 if (type.IsA<long>()) return "reader.GetInt64(index)";
-                if (type.IsA<string>()) return "reader.GetString(index)";
+                if (type.IsA<string>()) return "reader.IsDBNull(index) ? null : reader.GetString(index)";
                 if (type.IsA<Guid>()) return "reader.GetGuid(index)";
 
                 return $"{GetCastingType(type)} reader[index]";

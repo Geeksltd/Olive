@@ -198,7 +198,10 @@ namespace Olive.Entities.Data
         void FillData(IDataReader reader, IEntity entity)
         {
             foreach (var property in MetaData.GetPropertiesForFillData())
-                property.Accessor.Set(entity, reader, reader.GetOrdinal(GetSqlCommandColumnAlias(MetaData, property)));
+            {
+                var columnOrder = reader.GetOrdinal(GetSqlCommandColumnAlias(MetaData, property));
+                property.Accessor.Set(entity, reader, columnOrder);
+            }
         }
 
         string GetSqlCommandColumn(IDataProviderMetaData medaData, IPropertyData property) =>
