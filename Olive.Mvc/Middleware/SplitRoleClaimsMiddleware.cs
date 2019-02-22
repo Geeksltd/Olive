@@ -16,6 +16,8 @@ namespace Olive.Mvc
         {
             if (context.User.Identity.IsAuthenticated)
                 SplitRoles(context.User);
+            else if (context.Request.IsLocal() && context.User.Identity is ClaimsIdentity identity)
+                ReplaceClaims(identity, new Claim(ClaimTypes.Role, "Local.Request"));
 
             await Next.Invoke(context);
         }
@@ -26,8 +28,12 @@ namespace Olive.Mvc
                 .Select(x => new Claim(ClaimTypes.Role, x))
                 .ToArray();
 
-            if (!(user.Identity is ClaimsIdentity identity)) return;
+            if (user.Identity is ClaimsIdentity identity)
+                ReplaceClaims(identity, splitRoles);
+        }
 
+        void ReplaceClaims(ClaimsIdentity identity, params Claim[] splitRoles)
+        {
             var old = identity.Claims.Where(x => x.Type == ClaimTypes.Role).ToArray();
             old.Do(x => identity.RemoveClaim(x));
             identity.AddClaims(splitRoles);
