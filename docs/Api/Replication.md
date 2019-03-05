@@ -100,7 +100,7 @@ A utility named **generate-data-endpoint-proxy** (distributed as a nuget global 
 ```batch
 C:\> dotnet tool install -g generate-data-endpoint-proxy
 
-C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /out:"c:\temp\generated-packages\"
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /out:"c:\temp\generated-packages"
 ```
 
 It will generate the following two nuget packages:
@@ -114,7 +114,7 @@ In the `Startup.cs` file to kick start the engine, call:
 public override async Task OnStartUpAsync(IApplicationBuilder app)
 {
     await base.OnStartUpAsync(app);
-    await new CustomerService.OrdersEndpoint(typeof(CustomerService.Order).Subscribe();
+    await new CustomerService.OrdersEndpoint(typeof(CustomerService.Order).Assembly).Subscribe();
 }
 ```
 

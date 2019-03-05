@@ -241,10 +241,10 @@ namespace Olive
             var connection = @this.HttpContext.Connection;
             if (connection.RemoteIpAddress != null)
             {
-                if (connection.LocalIpAddress != null)
-                    return connection.RemoteIpAddress.Equals(connection.LocalIpAddress);
-                else
-                    return IPAddress.IsLoopback(connection.RemoteIpAddress);
+                if (IPAddress.IsLoopback(connection.RemoteIpAddress)) return true;
+
+                if (Dns.GetHostAddresses(Dns.GetHostName()).Contains(connection.RemoteIpAddress))
+                    return true;
             }
 
             // for in memory TestServer or when dealing with default connection info

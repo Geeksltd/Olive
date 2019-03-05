@@ -12,20 +12,16 @@ namespace Olive.Mvc
     {
         readonly IServiceProvider ServiceProvider;
         readonly RequestDelegate Next;
-        ITempDatabase TempDatabase;
 
-        public DevCommandMiddleware(IServiceProvider serviceProvider,
-            ITempDatabase tempDatabase, RequestDelegate next)
+        public DevCommandMiddleware(IServiceProvider serviceProvider, RequestDelegate next)
         {
             ServiceProvider = serviceProvider;
-            TempDatabase = tempDatabase;
             Next = next;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (TempDatabase != null)
-                await TempDatabase.AwaitReadiness();
+            await (ServiceProvider.GetService<ITempDatabase>()?.AwaitReadiness() ?? Task.CompletedTask);
 
             var path = context.Request.Path.Value.TrimStart("/");
             if (!path.StartsWith("cmd/"))
@@ -42,6 +38,8 @@ namespace Olive.Mvc
                 await context.Response.EndWith(response);
                 return;
             }
+
+            if (context.Response.HasStarted) return;
 
             var urlReferrer = context.Request.Headers["Referer"].ToString();
             if (urlReferrer.IsEmpty()) context.Response.Redirect("/");

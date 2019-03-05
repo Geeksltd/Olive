@@ -18,7 +18,10 @@ namespace Olive.Mvc.Microservices
         {
             services.AddCors(x => x.AddPolicy("AllowHubOrigin",
                 f => f.WithOrigins(Microservice.Of("Hub").Url().TrimEnd("/"))
-                .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                ));
 
             base.ConfigureServices(services);
         }
@@ -26,6 +29,10 @@ namespace Olive.Mvc.Microservices
         public override void Configure(IApplicationBuilder app)
         {
             app.UseCors("AllowHubOrigin");
+
+            //fix CORS issue
+            app.UseMiddleware<MaintainCorsHeader>();
+
             base.Configure(app);
             Console.Title = Microservice.Me.Name;
         }

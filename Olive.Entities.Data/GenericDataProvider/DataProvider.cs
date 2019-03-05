@@ -191,16 +191,16 @@ namespace Olive.Entities.Data
 
             if (MetaData.HasAutoNumber)
                 MetaData.AutoNumberProperty.Accessor.Set(record, result);
+
+            Entity.Services.SetOriginalId(record);
         }
 
         void FillData(IDataReader reader, IEntity entity)
         {
             foreach (var property in MetaData.GetPropertiesForFillData())
             {
-                var value = reader[GetSqlCommandColumnAlias(MetaData, property)];
-
-                if (value != DBNull.Value)
-                    property.Accessor.Set(entity, value);
+                var columnOrder = reader.GetOrdinal(GetSqlCommandColumnAlias(MetaData, property));
+                property.Accessor.Set(entity, reader, columnOrder);
             }
         }
 

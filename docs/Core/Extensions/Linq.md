@@ -10,16 +10,16 @@ When you want to add all items from a specified dictionary to `this` dictionary 
 
 #### Example:
 ```csharp
-	var dictionary1 = new Dictionary<string, int>()
+    var dictionary1 = new Dictionary<string, int>()
 {
-	{"mac", 1000},
-	{"windows", 500}
+    {"mac", 1000},
+    {"windows", 500}
 };
 
-	var dictionary2 = new Dictionary<string, int>()
+    var dictionary2 = new Dictionary<string, int>()
 {
-	{"Sony", 1001},
-	{"HTC", 501}
+    {"Sony", 1001},
+    {"HTC", 501}
 };
 
 dictionary1.Add(dictionary2); // all items of dictionary2 added to dictionary1.
@@ -100,12 +100,12 @@ When you want to add the specified items to `this` set in your applications.
 ```csharp
 string[] array1 =
 {
-	"cat",
-	"dog",
-	"cat",
-	"leopard",
-	"tiger",
-	"cat"
+    "cat",
+    "dog",
+    "cat",
+    "leopard",
+    "tiger",
+    "cat"
 };
 var hash = new HashSet<string>(array1); // returns {"cat","dog","leopard","tiger"}
 IEnumerable<string> items = new string[] { "lion","horse","cat" };
@@ -134,7 +134,7 @@ temp[2] = "7";
 templist.AddRange(temp);
 ```
 
-## AllIndicesOf({item})
+## AllIndicesOf({item},{caseSensitive})
 Gets all indices of the specified item in `this` collection.
 #### When to use it?
 When you want to get all indices of the specified item in `this` collection in your applications.
@@ -145,7 +145,10 @@ items33.AllIndicesOf("a"); //returns 0
 items33.AllIndicesOf("c"); //returns 2
 items33.AllIndicesOf("d"); //returns 3
 items33.AllIndicesOf("b"); //returns {1,5,7}
-items33.AllIndicesOf("f"); //returns no result
+items33.AllIndicesOf("g"); //returns no result
+items33.AllIndicesOf("F",false); //returns 6
+items33.AllIndicesOf("f",false); //returns 6
+items33.AllIndicesOf("F",true); //returns no result
 ```
 ## Any({criteria})
 Determines if `this` is `null` or an empty list
@@ -161,20 +164,26 @@ array.Any(item => item == 2); // returns True. See if any elements are 2.
 array.Any(); // returns True. See if any elements are Null.
 ```
 
-## AreItemsUnique()
+## AreItemsUnique({caseSensitive})
 Determines if all items in `this` collection are unique.
 #### When to use it?
 When you want to determine if all items in `this` collection are unique in your applications.
 
 #### Example:
 ```csharp
-IList<string> items = new string[] { "a" ,"b","c"};
+IList<string> items = new string[] { "a","b","c"};
 items.AreItemsUnique(); // returns true
 ```
 ```csharp
-IList<string> items = new string[] { "a" ,"b","c","a"};
+IList<string> items = new string[] { "a","b","c","a"};
 items.AreItemsUnique(); // returns false
 ```
+```csharp
+IList<string> items = new string[] { "a","b","c","A"};
+items.AreItemsUnique(false); // returns false because caseSensitive is false and there are two 'a'
+items.AreItemsUnique(true); // returns true because caseSensitive is true and there are two 'a'
+```
+
 ```csharp
 IList<string> items = new string[] {};
 items.AreItemsUnique(); // returns true
@@ -294,7 +303,7 @@ IList<string> items = new string[] {"a","b","c","d","e","f"};
 items.Contains("c"); //  returns true
 items.Contains("g"); //  returns false
 ```
-## ContainsAll({Items})
+## ContainsAll({Items},{caseSensitive})
 Determines of `this` list contains all items of another given list.
 
 #### When to use it?
@@ -335,6 +344,13 @@ intstr1.ContainsAll(intstr2); //returns false
 int?[] intstr1 = {};
 int?[] intstr2 = {};
 intstr1.ContainsAll(intstr2); //returns true
+```
+
+```csharp
+string[] intstr1 = { "a", "b" };
+string[] intstr2 = {"A"};
+intstr1.ContainsAll(intstr2,false); //returns true because caseSensitive is false, so "A" and "a" are equal
+intstr1.ContainsAll(intstr2,true); //returns false because caseSensitive is true, so "A" and "a" are not equal
 ```
 
 
@@ -418,7 +434,7 @@ myQ.Enqueue("fox");
 var deque=myQ.DequeueAll(); // returns {"The","quick","brown","fox"}
 ```
 
-## Distinct({selector})
+## Distinct({selector},{caseSensitive})
 Returns distinct elements from a sequence by using the default equality comparer to compare values.
 
 #### When to use it?
@@ -429,8 +445,15 @@ When you want to return distinct elements from a sequence in your applications.
 int?[] intstr2 = { 10,20,30,40,50,10,10,20};
 intstr2.Distinct(); // returns {10,20,30,40,50}
 ```
+```csharp
+string[] intstr2 = { "a","b","c","d","A","B","a","B"};
+intstr2.Distinct(false); // returns {"a","b","c","d"}
+intstr2.Distinct(true); // returns {"a","b","c","d"","A","B"}
+```
 
-## Except({item},{criteria})
+
+
+## Except({item},{criteria},{caseSensitive})
 Gets all items of `this` list except those meeting a specified criteria.
 {criteria} is Exclusion criteria.
 #### When to use it?
@@ -449,6 +472,13 @@ var list2 = new List<string>();
 list.Add("item1");
 list.Add("item2");
 items2= items.Except(list); // "item1" and "item2" are removed. item2 has not "item1" and "item2" items.
+
+var list3 = new List<string>();
+var list4 = new List<string>();
+list.Add("ITEM1");
+list.Add("ITEM2");
+items3= items.Except(list,false); // "item1" and "item2" are removed. item2 has not "item1" and "item2" items.
+items4= items.Except(list,true); // "item1" and "item2" are not removed.
 ```
 
 ## Except({item},{criteria},{alsoDistinct})
@@ -582,7 +612,7 @@ counts.Add("key4", 4);
 counts.GetAllValues(); // Returns {0,1,2,3,4}
 ```
 
-## GetElementAfter({item})
+## GetElementAfter({item},{caseSensitive})
 Gets the element after a specified item in `this` list.
 If the specified element does not exist in `this` list, an ArgumentException will be thrown.
 If the specified element is the last in the list, `NULL` will be returned.
@@ -599,9 +629,17 @@ list.GetElementAfter("aa"); // returns "bb"
 list.GetElementAfter("bb"); // returns "cc"
 list.GetElementAfter("cc"); // returns Null
 list.GetElementAfter("dd"); // throws an exception :"The specified item does not exist to this list."
+
+
+list.GetElementAfter("BB",false); // returns "cc", because caseSensitive is false
+list.GetElementAfter("BB",true); // throws an exception :"The specified item does not exist to this list.", because caseSensitive is true
+
+list.GetElementAfter("AA",false); // returns null
+list.GetElementAfter("AA",true); // throws an exception :"The specified item does not exist to this list.", because caseSensitive is true
+
 ```
 
-## GetElementBefore({item})
+## GetElementBefore({item},{caseSensitive})
 Gets the element before a specified item in `this` list.
 If the specified element does not exist in `this` list, an ArgumentException will be thrown.
 If the specified element is the first in the list, `NULL` will be returned.
@@ -618,6 +656,13 @@ list.GetElementBefore("aa"); // returns Null
 list.GetElementBefore("bb"); // returns "aa"
 list.GetElementBefore("cc"); // returns "bb"
 list.GetElementBefore("dd"); // throws an exception :"The specified item does not exist to this list."
+
+list.GetElementBefore("BB",false); // returns "aa", because caseSensitive is false
+list.GetElementBefore("BB",true); // throws an exception :"The specified item does not exist to this list.", because caseSensitive is true
+
+list.GetElementAfter("CC",false); // returns null
+list.GetElementAfter("CC",true); // throws an exception :"The specified item does not exist to this list.", because caseSensitive is true
+
 ```
 
 ## GetKeys()
@@ -638,7 +683,7 @@ counts.Add("key4", 4);
 counts.GetKeys(); // returns {"key0","key1","key2","key3","key4"}
 ```
 
-## IndexOf({keyString},{Criteria Func})
+## IndexOf({keyString},{Criteria Func},{caseSensitive})
 Determines whether `this` value has {keyString} or not. If it has, this method returns its index. Otherwise, it returns -1.
 Another override gets a `Func<>` which determines the criteria of index of items.
 #### When to use it?
@@ -652,19 +697,22 @@ dtr.IndexOf("str2"); //returns 1
 dtr.IndexOf("str3"); //returns 2
 dtr.IndexOf("str4"); //returns 3
 dtr.IndexOf("str5"); //returns -1
+dtr.IndexOf("STR4",false); //returns 3, because caseSensitive is false
+dtr.IndexOf("STR4",true); //returns -1, because caseSensitive is True
+
 
 dtr.IndexOf((tr) => tr=="str"+"3"); //returns 2
 dtr.IndexOf((tr) => tr=="str"+"1"); //returns 0
 dtr.IndexOf((tr) => tr=="str"+"6"); //returns -1
 ```
-## Intersects({otherList})
+
+## Intersects({otherList},{caseSensitive})
 Determines if `this` list intersects with another specified list.
 #### When to use it?
 When you want to determine if `this` list intersects with another specified list in your applications.
 
 #### Example:
 ```csharp
-
 // Assign two arrays.
 int[] array1 = { 1, 2, 3 };
 int[] array2 = { 2, 3, 4 };
@@ -679,7 +727,17 @@ int[] array2 = { };
 array1.Intersects(array2); // returns false
 ```
 
-## IsAnyOf({items})
+```csharp
+string[] array1 = { "a", "b", "c" };
+string[] array2 = { "a", "B", "c" };
+array1.Intersects(array2,false); // returns true
+array1.Intersects(array2,true); // returns false, because caseSensitive is true, so "b" and "B" are different.
+var intersect2 = array1.Intersects(array3); // returns false
+```
+
+
+
+## IsAnyOf({items},{caseSensitive})
 Determines if `this` item is in the specified list.
 #### When to use it?
 When you want to determine if `this` item is in the specified list in your applications.
@@ -688,8 +746,11 @@ When you want to determine if `this` item is in the specified list in your appli
 IList<string> items = new string[] { "b" ,"aa","c","aa","h","aa"};
 "aa".IsAnyOf(items); // returns true
 "aaa".IsAnyOf(items);// returns false 
+
+"AA".IsAnyOf(items,false);// returns True, because caseSensitive is false
+"AA".IsAnyOf(items,true);// returns False, because caseSensitive is true, so "AA" and "aa" are different.
 ```
-## IsEquivalentTo({targetlist})
+## IsEquivalentTo({targetlist},{caseSensitive})
 Determines whether `this` list is equivalent to another specified list. Items in the list should be distinct for accurate result.
 #### When to use it?
 When you want to whether `this` list is equivalent to another specified list in your applications.
@@ -708,6 +769,21 @@ sourceList.IsEquivalentTo(targetList); // returns false
 int?[] sourceList2 = { 1,2,5,6 };
 sourceList2.IsEquivalentTo(targetList); // returns true
 ```
+
+```csharp
+IList<string>  targetList = new List<string>();
+targetList.Add("a");
+targetList.Add("b");
+targetList.Add("c");
+targetList.Add("d");
+
+string[] sourceList = { "A","B","C","D" };
+sourceList.IsEquivalentTo(targetList,false); // returns true
+sourceList.IsEquivalentTo(targetList,true); // returns false
+```
+
+
+
 ## IsSingle()
 Determines whether `this` value has one item or not. If `this` value has one item, it returns true. Otherwise, it returns false.
 
@@ -728,7 +804,8 @@ items.IsSingle();// returns true
 IEnumerable<string> items = new string[] {null,null};
 items.IsSingle();// returns false
 ```
-## IsSubsetOf({targetlist})
+
+## IsSubsetOf({targetlist},{caseSensitive})
 Determines whether a list contains all members of another list.
 #### When to use it?
 When you want to determine whether a list contains all members of another list in your applications.
@@ -743,6 +820,17 @@ targetList.Add(6);
 
 int?[] sourceList = { 1,2 };
 sourceList.IsSubsetOf(targetList); // returns true
+```
+```csharp
+IList<string>  targetList = new List<string>();
+targetList.Add("a");
+targetList.Add("b");
+targetList.Add("c");
+targetList.Add("d");
+
+string[] sourceList = { "A","B" };
+sourceList.IsSubsetOf(targetList, false); // returns true because caseSensitive is false, so "A" and "a" are equal
+sourceList.IsSubsetOf(targetList, true); // returns false because caseSensitive is true, so "A" and "a" are different
 ```
 
 ## Lacks({item})
@@ -770,8 +858,8 @@ When you want to determine whether a dictionary has a key or not in your applica
 ```csharp
 var dictionary = new Dictionary<string, int>()
 {
-	{"mac", 1000},
-	{"windows", 500}
+    {"mac", 1000},
+    {"windows", 500}
 };
 
 dictionary.Lacks("windows"); // returns false
@@ -802,7 +890,7 @@ IList<string> items = new string[] {"a","b","c","d","e","f"};
 items.Lacks("c"); //  returns false
 items.Lacks("g"); //  returns true
 ```
-## LacksAny({item})
+## LacksAny({item},{caseSensitive})
 Determines if `this` list lacks any item in the specified list.
 
 #### When to use it?
@@ -838,7 +926,20 @@ int?[] intstr2 = {1,2,3};
 intstr2.LacksAny(aa); // returns true
 ```
 
-## LacksAll({item})
+```csharp
+IList<string> aa = new List<string>();
+aa.Add("a");
+aa.Add("b");
+aa.Add("c");
+
+string[] intstr2 = {"A","B","C"};
+intstr2.LacksAny(aa,false); // returns false because caseSensitive is false, so "a" and "A" are different
+intstr2.LacksAny(aa,true); // returns true
+```
+
+
+
+## LacksAll({item},{caseSensitive})
 Determines if `this` list lacks all items in the specified list.
 If all members of two lists are completely different, it returns `true`; otherwise, `false`.
 
@@ -885,6 +986,18 @@ aa.Add(30);
 int?[] intstr2 = {1,2,3};
 intstr2.LacksAll(aa); // returns true
 ```
+```csharp
+IList<string> aa = new List<string>();
+aa.Add("a");
+aa.Add("b");
+
+string[] intstr2 = {"A","B"};
+intstr2.LacksAll(aa,true); // returns true because caseSensitive is true, so "A" and "a" are different
+intstr2.LacksAll(aa,false); // returns false 
+```
+
+
+
 
 ## LacksKey({keyString})
 Determines whether a dictionary has {keyString} or not. If it has, this method returns `false`. Otherwise, it returns `true`.
@@ -895,8 +1008,8 @@ When you want to determine whether a `dictionary` has a key or not in your appli
 ```csharp
 var dictionary = new Dictionary<string, int>()
 {
-	{"mac", 1000},
-	{"windows", 500}
+    {"mac", 1000},
+    {"windows", 500}
 };
 
 dictionary.LacksKey("windows"); // returns false
@@ -1083,6 +1196,58 @@ items.OrEmpty(); //returns {null}
 IEnumerable<string> items = new string[] {"1","2"};
 items.OrEmpty(); //returns {"1","2"}
 ```
+
+## PadLeft({size},{padItemValue})
+Add {padItemValue} to the left side of this list if the size parameter is greater than the lenght of the list.
+{size} is the number of items.
+{padItemValue} is the string should be added to the left side of the list.
+#### When to use it?
+When you want to fix the number of items of a list and fill missed items with a specific string in left side in your applications.
+
+#### Example:
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadLeft<string>(10,"abc"); //returns {"abc", "abc", "abc", "1", "2", "3", "4", "5", "6", "7" }  newStr has 10 items.
+```
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadLeft<string>(5,"abc"); //returns {"1", "2", "3", "4", "5", "6", "7" }
+```
+```csharp
+string[] intstr = {};
+var newStr = intstr.PadLeft<string>(5,"abc"); //returns {}
+```
+```csharp
+string[] intstr = {null};
+var newStr = intstr.PadLeft<string>(5,"abc"); //returns {"abc","abc","abc","abc",null}
+```
+
+## PadRight({size},{padItemValue})
+Add {padItemValue} to the right side of this list if the size parameter is greater than the lenght of the list.
+{size} is the number of items.
+{padItemValue} is the string should be added to the right side of the list.
+
+#### When to use it?
+When you want to fix the number of items of a list and fill missed items with a specific string in right side in your applications.
+
+#### Example:
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadRight<string>(10,"abc"); //returns {"1", "2", "3", "4", "5", "6", "7", "abc", "abc", "abc" }  newStr has 10 items.
+```
+```csharp
+string[] intstr = { "1", "2", "3", "4", "5", "6", "7" };
+var newStr = intstr.PadRight<string>(5,"abc"); //returns {"1", "2", "3", "4", "5", "6", "7" }
+```
+```csharp
+string[] intstr = {};
+var newStr = intstr.PadRight<string>(5,"abc"); //returns {}
+```
+```csharp
+string[] intstr = {null};
+var newStr = intstr.PadRight<string>(5,"abc"); //returns {null, "abc","abc","abc","abc"}
+```
+
 ## PickRandom({Number})
 Picks an item from the list. {number} is the number of items which are selected randomly. The default value is 1 and it should be greater than 0.
 
@@ -1124,7 +1289,7 @@ int?[] intstr = { 1,2,1,6 };
 intstr.Randomize(); // returns a random number from the list, for example 2.
 ```
 
-## Remove({itemsToRemove})
+## Remove({itemsToRemove},{caseSensitive})
 Removes a list of items from this list.
 #### When to use it?
 When you want to remove a list of items from this list in your applications.
@@ -1138,6 +1303,17 @@ list.Add("b");
 IList<string> items = new string[] { "b" ,"aa"};
 list.Remove(items); // returns {"c"}
 ```
+
+```csharp
+var list = new List<String>();
+list.Add("aa");
+list.Add("c");
+list.Add("b");
+IList<string> items = new string[] { "b" ,"AA"};
+list.Remove(items, false); // returns {"c"}
+list.Remove(items, true); // returns {"aa","c"} because caseSensitive is true, so "AA" and "aa" are different
+```
+
 ## RemoveNulls()
 Removes the nulls from `this` list.
 #### When to use it?
@@ -1173,16 +1349,17 @@ When you want to remove the specific items from a dictionary in your application
 ```csharp
 var dictionary1 = new Dictionary<string, int>()
 {
-	{"mac", 1000},
-	{"windows", 500}
+    {"mac", 1000},
+    {"windows", 500}
 };
 
 dictionary.RemoveWhereKey((rr) => rr=="mac"); //"mac" item removed.
 dictionary.RemoveWhereKey((rr) => rr=="windows"); //"windows" item removed.
 dictionary.RemoveWhereKey((rr) => rr.Contains("a")); //All items which has "a" character in them removed.
 ```
-## Replace({oldItem},{newItem})
-Replaces the specified item in `this` list with the specified new item.
+
+## Replace({oldItem},{newItem},{caseSensitive})
+Replaces the first specified item in `this` list with the specified new item.
 #### When to use it?
 When you want to replace the specified item in `this` list with the specified new item in your applications.
 #### Example:
@@ -1194,6 +1371,32 @@ alist.Add(30);
 alist.Add(40);
 alist.Add(null);
 alist.Replace(10, 60); // returns {60,20,30,40,null}
+```
+
+```csharp
+IList<string> alist = new List<string>();
+alist.Add("a");
+alist.Add("b");
+alist.Add("c");
+alist.Add("A");
+alist.Replace("A", "e",false); // returns {"e","b","c","A"}
+alist.Replace("A", "e",true); // returns {"a","b","c","A"}
+```
+
+## ReplaceAll({oldItem},{newItem},{caseSensitive})
+Replaces all specified items in `this` list with the specified new item.
+#### When to use it?
+When you want to replace the specified item in `this` list with the specified new item in your applications.
+#### Example:
+
+```csharp
+IList<string> alist = new List<string>();
+alist.Add("a");
+alist.Add("b");
+alist.Add("c");
+alist.Add("A");
+alist.ReplaceAll("A", "e",false); // returns {"e","b","c","e"}
+alist.ReplaceAll("A", "e",true); // returns {"a","b","c","e"}
 ```
 
 ## Sum({selector})
@@ -1355,7 +1558,7 @@ counts.Add("key3", 3);
 counts.Add("key4", 4);
 counts.TryGet("key3"); // returns "key3"
 ```
-## TryRemove({key})
+## TryRemove({key},{caseSensitive})
 Tries to the remove an item with the specified key from `this` dictionary.
 #### When to use it?
 When you want to try to the remove an item with the specified key from `this` dictionary in your applications.
@@ -1371,7 +1574,22 @@ _concurrent.TryAdd("50", 5);
 
 _concurrent.TryRemove("10"); // returns {[50,5],[40,4],[30,3],[20,2],[10,1],[0,0]}
 ```
-## TryRemoveAt({index})
+```csharp
+ConcurrentDictionary<string, int> _concurrent = new ConcurrentDictionary<string, int>();
+_concurrent.TryAdd("A", 0);
+_concurrent.TryAdd("B", 1);
+_concurrent.TryAdd("C", 2);
+_concurrent.TryAdd("D", 3);
+_concurrent.TryAdd("E", 4);
+_concurrent.TryAdd("F", 5);
+
+_concurrent.TryRemove("c",false); // returns {["F",5],["E",4],["D",3],["B",1],["A",0]}
+_concurrent.TryRemove("c",true); // returns {["F",5],["E",4],["D",3],["C",2],["B",1],["A",0]} because caseSensitive is true, so "C" is not removed
+```
+
+
+
+## TryRemoveAt({index},{caseSensitive})
 Tries to the remove an item with the specified key from `this` dictionary.
 #### When to use it?
 When you want to try to the remove an item with the specified key from `this` dictionary in your applications.
@@ -1404,7 +1622,8 @@ _concurrent.TryRemoveAt(6); // returns {[50,5],[40,4],[30,3],[20,2],[10,1],[0,0]
 _concurrent.TryRemoveAt(-1); // returns {[50,5],[40,4],[30,3],[20,2],[10,1],[0,0]}
 ```
 
-## Union({otherLists})
+
+## Union({otherLists},{caseSensitive})
 Returns the union of `this` list with the specified other lists
 > It removes duplicated items automatically and, result items are unique.
 #### When to use it?
@@ -1413,17 +1632,12 @@ When you want to return the union of `this` list with the specified other lists 
 #### Example:
 ```csharp
 IEnumerable<string> items = new string[] { "item1" };
-IList<string> items2 = new string[] { "item1" ,"item2","items3"};
+IList<string> items2 = new string[] { "ITEM1" ,"item2","items3"};
 
-items.Union(items2); // returns { "item1" ,"item2","items3". It is noticed that "item1" is duplicated in both lists, so it is occurred once in result list.
+items.Union(items2,false); // returns { "item1" ,"item2","items3". It is noticed that "item1" is duplicated in both lists and caseSensitive is false, so it is occurred once in result list.
+items.Union(items2,true); // returns { "item1","ITEM1" ,"item2","items3". It is noticed that "item1" is duplicated in both lists and caseSensitive is true, so it is occurred twice in result list.
 ```
 
-```csharp
-IEnumerable<string> items = new string[] { };
-IList<string> items2 = new string[] { };
-
-items.Union(items2); // returns empty list.
-```
 ## WithMax({keySelector})
 Selects the item with maximum of the specified value.
 If this list is `empty`, `NULL` (or default of T) will be returned.
@@ -1466,3 +1680,4 @@ array3.WithMin((tt) => tt% 2 ==0); // returns 0
 int[] array3 = {Null};
 array3.WithMin((tt) => tt% 2 ==0); // returns Null
 ```
+
