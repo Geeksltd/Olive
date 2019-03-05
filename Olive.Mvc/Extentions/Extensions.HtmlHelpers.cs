@@ -209,6 +209,8 @@ namespace Olive.Mvc
 
             var result = startupActions.HasValue() ? @this.Hidden("Startup.Actions", startupActions) : HtmlString.Empty;
 
+            @this.ClearActionsJson();
+
             var request = @this.ViewContext.HttpContext.Request;
 
             if (request.IsAjaxGet())
@@ -233,7 +235,11 @@ namespace Olive.Mvc
             var startupActions = @this.GetActionsJson().ToString().Unless("[]");
 
             if (startupActions.HasValue())
+            {
+                @this.ClearActionsJson();
+
                 return @this.Hidden("Startup.Actions", startupActions);
+            }
 
             return HtmlString.Empty;
         }
@@ -281,6 +287,11 @@ namespace Olive.Mvc
                 return new HtmlString(items.Select(f => $"<script type='text/javascript' src='{f}'></script>").ToLinesString());
 
             return HtmlString.Empty;
+        }
+
+        static void ClearActionsJson(this IHtmlHelper @this)
+        {
+            @this.ViewContext.HttpContext.ClearJavascriptActions();
         }
     }
 }
