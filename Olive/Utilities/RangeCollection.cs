@@ -19,6 +19,19 @@
 
         public RangeCollection() { }
 
+        public override string ToString() => ranges.Select(x => x.Value.ToString("-")).ToString("|");
+
+        public static RangeCollection<T> Parse(string text)
+        {
+            var ranges = text.OrEmpty().Split('|').Trim().Select(r =>
+            {
+                var parts = r.Split('-');
+                return new Range<T>(parts[0].To<T>(), parts[1].To<T>());
+            });
+
+            return new RangeCollection<T>(ranges);
+        }
+
         public RangeCollection(IEnumerable<Range<T>> ranges)
         {
             if (ranges == null) return;

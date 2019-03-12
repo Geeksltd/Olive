@@ -9,7 +9,6 @@
     <RootNamespace>Olive.Security</RootNamespace>
     <AssemblyName>Olive.Mvc.Security</AssemblyName>
     <PackageId>Olive.Mvc.Security</PackageId>
-    
     <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <FileVersion>2.2.0.0</FileVersion>
     <Title>Olive Mvc Security</Title>
@@ -18,7 +17,7 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <PackageVersion>2.2.102</PackageVersion>
+    <PackageVersion>2.2.103</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.0" />

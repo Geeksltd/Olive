@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace Olive.Security
 {
@@ -10,10 +11,8 @@ namespace Olive.Security
         {
             base.OnActionExecuting(context);
 
-            var user = context.HttpContext.User;
-
-            var needsAuthenticating = user == null || user.IsInRole("Anonymous") || user.Claims.None();
-            if (!needsAuthenticating) return;
+            if (!NeedsAuthenticating(context.HttpContext.User))
+                return;
 
             var headerVlaue = context.HttpContext.Request.Headers["Authorization"].ToString();
             if (!headerVlaue.StartsWith("Bearer")) return;
@@ -22,13 +21,26 @@ namespace Olive.Security
 
             try
             {
-                user = OAuth.Instance.DecodeJwt(jwt);
+                var user = OAuth.Instance.DecodeJwt(jwt);
                 if (user != null) Context.Current.Http().User = user;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to decode JWT token: " + ex.Message);
             }
+        }
+
+        bool NeedsAuthenticating(ClaimsPrincipal user)
+        {
+            if (user == null) return true;
+            if (user.IsInRole("Anonymous")) return true;
+
+            if (user.Claims
+                .Except(x => x.Type == ClaimTypes.Role && x.Value == "Local.Request")
+                .None())
+                return true;
+
+            return false;
         }
     }
 }
