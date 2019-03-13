@@ -1356,9 +1356,8 @@ namespace Olive
 
             return tasks.Select(x => x.GetAlreadyCompletedResult());
         }
-
         /// <summary>
-        /// Add padItemValue to the right of this list if the size parameter is greater than the lenght of the list.
+        /// Add padItemValue to the right side of this list if the size parameter is greater than the lenght of the list.
         /// </summary>
         /// <param name="size">The number of items.</param>
         /// <param name="padItemValue">The string should be added to the right side of the list.</param>
@@ -1375,6 +1374,24 @@ namespace Olive
             return result;
         }
 
+        /// <summary>
+        /// Add padItemValue to the left side of this list if the size parameter is greater than the lenght of the list.
+        /// </summary>
+        /// <param name="size">The number of items.</param>
+        /// <param name="padItemValue">The string should be added to the left side of the list.</param>
+       public static T[] PadLeft<T>(this T[] @this, int size, T padItemValue)
+        {
+            if (@this.Length >= size) return @this;
+
+            var result = new T[size];
+            @this.CopyTo(result, size - @this.Length);
+
+            for (var i = 0; i < size - @this.Length; i++)
+                result[i] = padItemValue;
+
+            return result;
+        }
+        
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
