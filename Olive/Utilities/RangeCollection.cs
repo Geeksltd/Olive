@@ -19,6 +19,24 @@
 
         public RangeCollection() { }
 
+        public override string ToString()
+        {
+            return ranges.Select(x => x.Value.From.Equals(x.Value.To) ? x.Value.From.ToString() : x.Value.ToString("-")).ToString("|");
+        }
+
+        public static RangeCollection<T> Parse(string text)
+        {
+            var ranges = text.OrEmpty().Split('|').Trim().Select(r =>
+            {
+                var parts = r.Split('-');
+                var from = parts[0].To<T>();
+                if (parts.IsSingle()) return new Range<T>(from, from);
+                return new Range<T>(from, parts[1].To<T>());
+            });
+
+            return new RangeCollection<T>(ranges);
+        }
+
         public RangeCollection(IEnumerable<Range<T>> ranges)
         {
             if (ranges == null) return;

@@ -37,12 +37,15 @@ namespace Olive.Csv
         public static string ToCsv<T>(this IEnumerable<T> @this)
             where T : class
         {
-            var csvBuilder = new StringBuilder();
             var properties = typeof(T).GetProperties();
+            var header = properties.Select(p => p.Name.ToCsvValue()).ToString(",");
+
+            var csvBuilder = new StringBuilder();
+            csvBuilder.AppendLine(header);
 
             foreach (var item in @this)
             {
-                var line = string.Join(",", properties.Select(p => p.GetValue(item, null).ToCsvValue()).ToArray());
+                var line = properties.Select(p => p.GetValue(item, null).ToCsvValue()).ToString(",");
                 csvBuilder.AppendLine(line);
             }
 
@@ -54,7 +57,7 @@ namespace Olive.Csv
             if (item == null) return "\"\"";
 
             if (item is string)
-                return string.Format("\"{0}\"", item.ToString().Replace("\"", "\\\""));
+                return string.Format("\"{0}\"", item.ToString().Replace("\"", "\"\""));
 
             if (double.TryParse(item.ToString(), out var dummy))
                 return string.Format("{0}", item);

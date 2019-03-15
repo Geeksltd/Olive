@@ -20,7 +20,8 @@ namespace Olive.Mvc
             var viewLocationFormats = new[] {
                 "~/Views/Modules/{0}.cshtml",
                 "~/Views/Pages/{1}.cshtml",
-                "~/Views/Modules/{1}.cshtml" };
+                "~/Views/Modules/{1}.cshtml",
+                "~/Views/Shared/{0}.cshtml" };
 
             return context.IsMainPage ? viewLocationFormats : partialViewLocationFormats;
         }
