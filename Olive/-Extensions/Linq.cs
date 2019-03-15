@@ -748,6 +748,16 @@ namespace Olive
             return @this.Distinct().Count() == @this.Count();
         }
 
+        public static bool AreItemsUnique<T>(this IEnumerable<string> @this, bool caseSensitive)
+        {
+            if (@this.None()) return true;
+
+            if (!caseSensitive)
+                @this = @this.Select(x => x.ToLower());
+
+            return AreItemsUnique(@this);
+        }
+
         /// <summary>
         /// Returns the union of this list with the specified other lists.
         /// </summary>
@@ -919,22 +929,6 @@ namespace Olive
         }
 
         /// <summary>
-        /// Returns the indices of all items which match a specified criteria.
-        /// </summary>
-        /// <param name="criteria">The func() which is used in method.</param>
-        public static IEnumerable<int> AllIndicesOf<T>(IEnumerable<T> list, Func<T, bool> criteria)
-        {
-            var index = 0;
-
-            foreach (var item in list)
-            {
-                if (criteria(item)) yield return index;
-
-                index++;
-            }
-        }
-
-        /// <summary>
         /// Replaces the specified item in this list with the specified new item.
         /// </summary>
         /// <param name="oldItem">Is the value to be replaced.</param>
@@ -1045,7 +1039,7 @@ namespace Olive
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, T item)
         {
             var index = 0;
-            var findAny = false;
+            var foundAny = false;
 
             foreach (var i in @this)
             {
@@ -1053,7 +1047,7 @@ namespace Olive
                 {
                     if (ReferenceEquals(i, null))
                     {
-                        findAny = true;
+                        foundAny = true;
                         yield return index;
                     }
                 }
@@ -1061,7 +1055,7 @@ namespace Olive
                 {
                     if (item.Equals(i))
                     {
-                        findAny = true;
+                        foundAny = true;
                         yield return index;
                     }
                 }
@@ -1069,11 +1063,11 @@ namespace Olive
                 index++;
             }
 
-            if (!findAny)
+            if (!foundAny)
                 yield return -1;
         }
 
-        public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<string> @this, string item, bool caseSensitive = true)
+        public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<string> @this, string item, bool caseSensitive)
         {
             if (!caseSensitive)
             {
@@ -1082,6 +1076,30 @@ namespace Olive
             }
 
             return AllIndicesOf(@this, item);
+        }
+
+        /// <summary>
+        /// Returns the indices of all items which match a specified criteria and returns -1 if nothing found.
+        /// </summary>
+        /// <param name="criteria">The func() which is used in method.</param>
+        public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, Func<T, bool> criteria)
+        {
+            var index = 0;
+            var foundAny = false;
+
+            foreach (var item in @this)
+            {
+                if (criteria(item))
+                {
+                    foundAny = true;
+                    yield return index;
+                }
+
+                index++;
+            }
+
+            if (!foundAny)
+                yield return -1;
         }
 
         /// <summary>
