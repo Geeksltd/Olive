@@ -138,6 +138,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Olive.Expor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Microservices", "Olive.Mvc.Microservice\Olive.Mvc.Microservices.csproj", "{692A994A-178E-474F-989E-C6B1196ABD04}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Mvc.CKEditorFileManager", "Olive.Mvc.CKEditorFileManager\Olive.Mvc.CKEditorFileManager.csproj", "{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -359,6 +361,10 @@ Global
 		{692A994A-178E-474F-989E-C6B1196ABD04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{692A994A-178E-474F-989E-C6B1196ABD04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{692A994A-178E-474F-989E-C6B1196ABD04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
