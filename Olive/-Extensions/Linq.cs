@@ -1076,9 +1076,12 @@ namespace Olive
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<string> @this, string item, bool caseSensitive = true)
         {
             if (!caseSensitive)
+            {
                 @this = @this.Select(x => x.ToLower());
+                item = item.ToLower();
+            }
 
-            return AllIndicesOf(@this, item.ToLower());
+            return AllIndicesOf(@this, item);
         }
 
         /// <summary>

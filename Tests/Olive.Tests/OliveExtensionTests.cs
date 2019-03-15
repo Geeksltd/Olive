@@ -30,6 +30,9 @@ namespace Olive.Tests
             stringResult = stringList.AllIndicesOf<string>("three", caseSensitive: false).ToArray();
             stringResult.FirstOrDefault().ShouldEqual(-1); //nothing found
 
+            stringResult = stringList.AllIndicesOf<string>("oNe", caseSensitive: true).ToArray();
+            stringResult[0].ShouldEqual(-1); //nothing found
+
             //int list test
             var intList = new List<int> { 1, 2, 1, 2, 2 };
 
