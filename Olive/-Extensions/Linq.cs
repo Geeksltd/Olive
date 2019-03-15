@@ -1039,25 +1039,46 @@ namespace Olive
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> @this) => new HashSet<T>(@this);
 
         /// <summary>
-        /// Gets all indices of the specified item in this collection.
+        /// Gets all indices of the specified item in this collection and returns -1 if nothing found.
         /// </summary>
         /// <param name="item">The item which is searched into the list.</param>
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, T item)
         {
             var index = 0;
+            var findAny = false;
+
             foreach (var i in @this)
             {
                 if (ReferenceEquals(item, null))
                 {
-                    if (ReferenceEquals(i, null)) yield return index;
+                    if (ReferenceEquals(i, null))
+                    {
+                        findAny = true;
+                        yield return index;
+                    }
                 }
                 else
                 {
-                    if (item.Equals(i)) yield return index;
+                    if (item.Equals(i))
+                    {
+                        findAny = true;
+                        yield return index;
+                    }
                 }
 
                 index++;
             }
+
+            if (!findAny)
+                yield return -1;
+        }
+
+        public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<string> @this, string item, bool caseSensitive = true)
+        {
+            if (!caseSensitive)
+                @this = @this.Select(x => x.ToLower());
+
+            return AllIndicesOf(@this, item.ToLower());
         }
 
         /// <summary>
@@ -1356,6 +1377,7 @@ namespace Olive
 
             return tasks.Select(x => x.GetAlreadyCompletedResult());
         }
+
         /// <summary>
         /// Add padItemValue to the right side of this list if the size parameter is greater than the lenght of the list.
         /// </summary>
@@ -1379,7 +1401,7 @@ namespace Olive
         /// </summary>
         /// <param name="size">The number of items.</param>
         /// <param name="padItemValue">The string should be added to the left side of the list.</param>
-       public static T[] PadLeft<T>(this T[] @this, int size, T padItemValue)
+        public static T[] PadLeft<T>(this T[] @this, int size, T padItemValue)
         {
             if (@this.Length >= size) return @this;
 
@@ -1391,7 +1413,7 @@ namespace Olive
 
             return result;
         }
-        
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
