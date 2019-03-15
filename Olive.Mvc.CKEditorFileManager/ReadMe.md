@@ -1,5 +1,20 @@
 ﻿# Olive.Mvc.CKEditorFileManager
 
+### #Modal project
+Add an entity to your project implementing `Olive.Mvc.CKEditorFileManager.ICKEditorFile`.
+```c#
+class CKEditorFile : EntityType
+{
+    public CKEditorFile()
+    {
+        Implements("Olive.Mvc.CKEditorFileManager.ICKEditorFile");
+
+        SecureFile("File");
+    }
+}
+```
+
+### Website project
 Add the following line to the `ConfigureMvc` in the `Startup.cs`.
 ```C#
 protected override void ConfigureMvc(IMvcBuilder mvc)
@@ -31,5 +46,9 @@ CKEDITOR.editorConfig = function (config) {
     ...
     config.filebrowserBrowseUrl = '/ckeditorfilebrowser';
     config.filebrowserUploadUrl = '/ckeditorfileupload';
+    
+    // optional: you can set the size for the brower window as following.
+    config.filebrowserWindowWidth = '300';
+    config.filebrowserWindowHeight = '50%';
 }
 ```
