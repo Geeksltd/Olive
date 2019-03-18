@@ -27,7 +27,4 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
-  </Target>
 </Project>

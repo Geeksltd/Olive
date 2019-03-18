@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Olive;
 using System.Linq;
+using System;
 
 namespace Olive.Tests
 {
@@ -70,6 +71,84 @@ namespace Olive.Tests
             stringList.AreItemsUnique<string>(false).ShouldBeFalse();
             stringList.AreItemsUnique<string>(true).ShouldBeTrue();
             stringList.AreItemsUnique<string>(caseSensitive: true).ShouldBeTrue();
+        }
+
+        [Test]
+        public void Check_Distinct()
+        {
+            var stringList = new List<string> { "AAA", "bbb", "aaa", "AAA" };
+
+            stringList.Distinct(x => x).Count().ShouldEqual(3);
+
+            stringList.Distinct(x => x.ToLower()).Count().ShouldEqual(2);
+
+            var intList = new List<int>() { 30, 50, 60, 60, 70 };
+
+            intList.Distinct(x => x).Count().ShouldEqual(4);
+
+            //TODO: Should we consider condition?
+            //intList.Distinct(x => x > 70).Count().ShouldEqual(0);
+        }
+
+        [Test]
+        public void Check_Except()
+        {
+            var stringList = new List<string> { "AAA", "bbb", "aaa", "AAA" };
+
+            stringList.Except(x => x == "AAA").Count().ShouldEqual(2);
+
+            //stringList.Except(caseSensitive: false, items: new string[] { "AAA" }).Count().ShouldEqual(1);
+            //stringList.Except(false, new string[] { "AAA" }).Count().ShouldEqual(1);
+
+            //stringList.Except(true, new string[] { "AAA" }).Count().ShouldEqual(2);
+        }
+
+        [Test]
+        public void Check_GetElementAfter()
+        {
+            var stringList = new List<string> { "Geeks", "Apple", "Computer" };
+
+            stringList.GetElementAfter("Geeks").ShouldEqual("Apple");
+            stringList.GetElementAfter("geeks", false).ShouldEqual("Apple");
+        }
+
+        [Test]
+        public void Check_GetElementBefore()
+        {
+            var stringList = new List<string> { "Geeks", "Apple", "Computer" };
+
+            stringList.GetElementBefore("Apple").ShouldEqual("Geeks");
+            stringList.GetElementBefore("apple", false).ShouldEqual("Geeks");
+        }
+
+        [Test]
+        public void Check_IndexOf()
+        {
+            var stringList = new List<string> { "Geeks", "Apple", "Computer" };
+
+            stringList.IndexOf("Apple").ShouldEqual(1);
+            stringList.IndexOf("Computer").ShouldEqual(2);
+
+            stringList.IndexOf("computer").ShouldEqual(-1);
+            stringList.IndexOf("computer", caseSensitive: false).ShouldEqual(2);
+
+            stringList.IndexOf("apple", false).ShouldEqual(1);
+            stringList.IndexOf("Apple", true).ShouldEqual(1);
+            stringList.IndexOf("apple", true).ShouldEqual(-1);
+        }
+
+        [Test]
+        public void Check_Intersects()
+        {
+            var stringList1 = new List<string> { "Geeks", "Apple", "Computer" };
+            var stringList2 = new List<string> { "One", "Apple", "Two" };
+            var stringList3 = new List<string> { "One", "apple", "Two" };
+
+            stringList1.Intersects(stringList2).ShouldBeTrue();
+            stringList1.Intersects(stringList3).ShouldBeFalse();
+            stringList1.Intersects(stringList3, caseSensitive: false).ShouldBeTrue();
+            stringList1.Intersects(stringList3, false).ShouldBeTrue();
+            stringList1.Intersects(stringList3, true).ShouldBeFalse();
         }
     }
 }

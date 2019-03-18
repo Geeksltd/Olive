@@ -113,12 +113,21 @@ namespace Olive
         /// Gets the index of the first item in this list which matches the specified criteria. Otherwise, it returns -1.
         /// </summary>
         /// <param name="element">The item which is searched.</param>
-        public static int IndexOf<T>(this IEnumerable<T> @this, T element)
+        /// <param name="caseSensitive">Determines whether case sensitive in searching is important or not.</param>
+        public static int IndexOf<T>(this IEnumerable<T> @this, T element, bool caseSensitive = true)
         {
             if (@this == null)
                 throw new NullReferenceException("No collection is given for the extension method IndexOf().");
 
-            if (@this.Contains(element) == false) return -1;
+            var isString = typeof(T) == typeof(string);
+
+            if (isString)
+            {
+                if (!((IEnumerable<string>)@this).Contains(element.ToString(), caseSensitive))
+                    return -1;
+            }
+            else
+                if (!@this.Contains(element)) return -1;
 
             var result = 0;
             foreach (var el in @this)
@@ -129,7 +138,13 @@ namespace Olive
                     else continue;
                 }
 
-                if (el.Equals(element)) return result;
+                if (isString)
+                {
+                    if (el.ToString().Equals(element.ToString(), caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return result;
+                }
+                else
+                    if (el.Equals(element)) return result;
+
                 result++;
             }
 
@@ -617,20 +632,37 @@ namespace Olive
         /// Determines if this list intersects with another specified list.
         /// </summary>
         /// <param name="otherList">Determines the list of items which checked with the main list.</param>
-        public static bool Intersects<T>(this IEnumerable<T> @this, IEnumerable<T> otherList)
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool Intersects<T>(this IEnumerable<T> @this, IEnumerable<T> otherList, bool caseSensitive = true)
         {
             var countList = (@this as ICollection)?.Count;
             var countOther = (otherList as ICollection)?.Count;
 
+            var isString = typeof(T) == typeof(string);
+
             if (countList == null || countOther == null || countOther < countList)
             {
                 foreach (var item in otherList)
-                    if (@this.Contains(item)) return true;
+                {
+                    if (isString)
+                    {
+                        if (((IEnumerable<string>)@this).Contains(item.ToString(), caseSensitive)) return true;
+                    }
+                    else
+                        if (@this.Contains(item)) return true;
+                }
             }
             else
             {
                 foreach (var item in @this)
-                    if (otherList.Contains(item)) return true;
+                {
+                    if (isString)
+                    {
+                        if (((IEnumerable<string>)otherList).Contains(item.ToString(), caseSensitive)) return true;
+                    }
+                    else
+                        if (otherList.Contains(item)) return true;
+                }
             }
 
             return false;
@@ -684,6 +716,36 @@ namespace Olive
         }
 
         /// <summary>
+        /// Gets the element after a specified item in this list.
+        /// If the specified element does not exist in this list, an ArgumentException will be thrown.
+        /// If the specified element is the last in the list, NULL will be returned.
+        /// </summary>        
+        /// <param name="item">The specified item.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static string GetElementAfter(this IEnumerable<string> @this, string item, bool caseSensitive)
+        {
+            if (item.IsEmpty())
+                throw new ArgumentNullException(nameof(item));
+
+            var result = @this;
+
+            if (!caseSensitive)
+            {
+                item = item.ToLower();
+                @this = @this.Select(x => x.ToLower());
+            }
+
+            var index = @this.IndexOf(item);
+
+            if (index == -1)
+                throw new ArgumentException("The specified item does not exist to this list.");
+
+            if (index == @this.Count() - 1) return null;
+
+            return result.ElementAt(index + 1);
+        }
+
+        /// <summary>
         /// Gets the element before a specified item in this list.
         /// If the specified element does not exist in this list, an ArgumentException will be thrown.
         /// If the specified element is the first in the list, NULL will be returned.
@@ -701,6 +763,35 @@ namespace Olive
             if (index == 0) return null;
 
             return @this.ElementAt(index - 1);
+        }
+
+        /// <summary>
+        /// Gets the element before a specified item in this list.
+        /// If the specified element does not exist in this list, an ArgumentException will be thrown.
+        /// If the specified element is the first in the list, NULL will be returned.
+        /// </summary>        
+        /// <param name="item">The specified item.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static string GetElementBefore(this IEnumerable<string> @this, string item, bool caseSensitive)
+        {
+            if (item.IsEmpty())
+                throw new ArgumentNullException(nameof(item));
+
+            var result = @this;
+
+            if (!caseSensitive)
+            {
+                item = item.ToLower();
+                @this = @this.Select(x => x.ToLower());
+            }
+
+            var index = @this.IndexOf(item);
+            if (index == -1)
+                throw new ArgumentException("The specified item does not exist to this list.");
+
+            if (index == 0) return null;
+
+            return result.ElementAt(index - 1);
         }
 
         /// <summary>
