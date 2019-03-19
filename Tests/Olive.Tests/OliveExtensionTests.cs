@@ -130,11 +130,6 @@ namespace Olive.Tests
             stringList.IndexOf("Computer").ShouldEqual(2);
 
             stringList.IndexOf("computer").ShouldEqual(-1);
-            stringList.IndexOf("computer", caseSensitive: false).ShouldEqual(2);
-
-            stringList.IndexOf("apple", false).ShouldEqual(1);
-            stringList.IndexOf("Apple", true).ShouldEqual(1);
-            stringList.IndexOf("apple", true).ShouldEqual(-1);
         }
 
         [Test]
@@ -149,6 +144,29 @@ namespace Olive.Tests
             stringList1.Intersects(stringList3, caseSensitive: false).ShouldBeTrue();
             stringList1.Intersects(stringList3, false).ShouldBeTrue();
             stringList1.Intersects(stringList3, true).ShouldBeFalse();
+        }
+
+        [Test]
+        public void Check_IsEquivalentTo()
+        {
+            var stringList1 = new List<string> { "Geeks", "Apple", "Computer" };
+            var stringList2 = new List<string> { "Geeks", "apple", "Computer" };
+
+            stringList1.IsEquivalentTo(stringList2).ShouldBeFalse();
+            stringList1.IsEquivalentTo(stringList2, true).ShouldBeFalse();
+            stringList1.IsEquivalentTo(stringList2, false).ShouldBeTrue();
+        }
+
+        [Test]
+        public void Check_LacksAll()
+        {
+            var stringList1 = new List<string> { "Geeks", "Apple", "Computer" };
+            var stringList2 = new List<string> { "geeks", "apple" };
+
+            stringList1.LacksAll(stringList2).ShouldBeTrue();
+            stringList1.LacksAll(stringList2, true).ShouldBeTrue();
+
+            stringList1.LacksAll(stringList2, false).ShouldBeFalse();
         }
     }
 }

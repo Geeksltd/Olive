@@ -113,22 +113,11 @@ namespace Olive
         /// Gets the index of the first item in this list which matches the specified criteria. Otherwise, it returns -1.
         /// </summary>
         /// <param name="element">The item which is searched.</param>
-        /// <param name="caseSensitive">Determines whether case sensitive in searching is important or not.</param>
-        public static int IndexOf<T>(this IEnumerable<T> @this, T element, bool caseSensitive = true)
+        public static int IndexOf<T>(this IEnumerable<T> @this, T element)
         {
             if (@this == null)
                 throw new NullReferenceException("No collection is given for the extension method IndexOf().");
-
-            var isString = typeof(T) == typeof(string);
-
-            if (isString)
-            {
-                if (!((IEnumerable<string>)@this).Contains(element.ToString(), caseSensitive))
-                    return -1;
-            }
-            else
-                if (!@this.Contains(element)) return -1;
-
+            if (@this.Contains(element) == false) return -1;
             var result = 0;
             foreach (var el in @this)
             {
@@ -137,17 +126,9 @@ namespace Olive
                     if (element == null) return result;
                     else continue;
                 }
-
-                if (isString)
-                {
-                    if (el.ToString().Equals(element.ToString(), caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) return result;
-                }
-                else
-                    if (el.Equals(element)) return result;
-
+                if (el.Equals(element)) return result;
                 result++;
             }
-
             return -1;
         }
 
@@ -485,7 +466,8 @@ namespace Olive
         /// Determines whether this list is equivalent to another specified list. Items in the list should be distinct for accurate result.
         /// </summary>
         /// <param name="other">Is a list which is checked by the this list.</param>
-        public static bool IsEquivalentTo<T>(this IEnumerable<T> @this, IEnumerable<T> other)
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool IsEquivalentTo<T>(this IEnumerable<T> @this, IEnumerable<T> other, bool caseSensitive = true)
         {
             if (@this == null) @this = new T[0];
             if (other == null) other = new T[0];
@@ -493,7 +475,13 @@ namespace Olive
             if (@this.Count() != other.Count()) return false;
 
             foreach (var item in @this)
-                if (!other.Contains(item)) return false;
+                if (typeof(T) == typeof(string))
+                {
+                    if (!((IEnumerable<string>)other).Contains(item.ToString(), caseSensitive)) return false;
+                }
+                else
+                    if (!other.Contains(item)) return false;
+
             return true;
         }
 
@@ -551,6 +539,19 @@ namespace Olive
         /// </summary>        
         /// <param name="items">The item which is searched in the list.</param>
         public static bool LacksAll<T>(this IEnumerable<T> @this, IEnumerable<T> items) => !@this.ContainsAny(items.ToArray());
+
+        /// <summary>
+        /// Determines if this list lacks all items in the specified list.
+        /// </summary>        
+        /// <param name="items">The item which is searched in the list.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool LacksAll(this IEnumerable<string> @this, IEnumerable<string> items, bool caseSensitive)
+        {
+            if (caseSensitive)
+                return @this.LacksAll(items);
+            else
+                return !@this.Select(a => a.ToLower()).ContainsAny(items.Select(b => b.ToLower()).ToArray());
+        }
 
         /// <summary>
         /// Picks a random item from the list.
