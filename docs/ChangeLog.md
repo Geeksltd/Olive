@@ -1,6 +1,13 @@
 
 # Olive compatibility change log
 
+## 19 March 2019
+If your project is a Microservice, then:
+- add the nuget package `Olive.Mvc.Microservices` to the `Website` project.
+- In `Startup.cs` inherit from `Olive.Mvc.Microservices.Startup` and also remove `ConfigureSecurity(IApplicationBuilder app)`.
+- Your `BaseController` class should inherit from `Olive.Mvc.Microservices.Controller`.
+
+
 ## 21 Feb 2019
 Add the following mapping line to your `references.js` as shown below.
 ```javascript

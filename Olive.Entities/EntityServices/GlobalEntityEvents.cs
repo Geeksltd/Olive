@@ -34,6 +34,6 @@ namespace Olive.Entities
         /// This event is raised for the whole Entity type after "any" object is deleted from the database.
         /// You can handle this to provide global functionality/event handling scenarios.
         /// </summary>
-        public readonly static AsyncEvent<EventArgs> InstanceDeleted = new AsyncEvent<EventArgs>();
+        public readonly static AsyncEvent<GlobalDeleteEventArgs> InstanceDeleted = new AsyncEvent<GlobalDeleteEventArgs>();
     }
 }
