@@ -3,10 +3,11 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Olive.Entities.Replication
 {
-    public abstract class ExposedType<TDomain> : ExposedType where TDomain : class, IEntity
+    public abstract partial class ExposedType<TDomain> : ExposedType where TDomain : class, IEntity
     {
         Type domainType;
         ILogger Logger;
@@ -29,19 +30,76 @@ namespace Olive.Entities.Replication
         internal override void Start()
         {
             Logger = Log.For(this);
+            DependenciesEnitityTypes = Dependencies?.Select(p => p.EntityType)
+                                                    .Union(typeof(TDomain))
+                                                    .Distinct().ToArray();
             GlobalEntityEvents.InstanceSaved.Handle(x => OnInstanceSaved(x.Entity));
+            GlobalEntityEvents.InstanceDeleted.Handle(x => OnInstanceDeleted(x));
         }
 
         async Task OnInstanceSaved(IEntity item)
         {
             Logger.Debug("Instance saved. Initiating publish checks.");
 
-            if (!(item is TDomain entity))
+            if (!DependenciesEnitityTypes.Contains(item.GetType()))
             {
                 Logger.Debug("Publish aborted: " + item.GetType().Name + " is not of type " + DomainType.Name);
                 return;
             }
 
+            if (item is TDomain entity)
+            {
+                await Publish(entity);
+            }
+            else if (item != null)
+            {
+                await
+                    (await FindRelationsOf(item))
+                    .ExceptNull()
+                    .Do(async p => await Publish(p));
+            }
+        }
+
+        async Task OnInstanceDeleted(GlobalDeleteEventArgs eventArg)
+        {
+            Logger.Debug("Instance saved. Initiating publish checks.");
+
+            if (!DependenciesEnitityTypes.Contains(eventArg.EntityType))
+            {
+                Logger.Debug("Publish aborted: " + eventArg.EntityType.Name + " is not of type " + DomainType.Name);
+                return;
+            }
+
+            //TODO: publish delete
+            if (eventArg.EntityType == typeof(TDomain))
+            {
+                //await Publish(entity, true);
+            }
+            else
+            {
+                //await PublishParentsOf(item, true);
+            }
+        }
+
+        async Task<IEnumerable<TDomain>> FindRelationsOf(IEntity item)
+        {
+            var selectedTriggers = Dependencies.Where(t => t.EntityType == item.GetType());
+
+            return await selectedTriggers.SelectManyAsync(async t =>
+            {
+                try
+                {
+                    return (await t.Function.Invoke(item)) ?? new List<TDomain>();
+                }
+                catch
+                {
+                    return new List<TDomain>();
+                }
+            })?.Distinct()?.ToList();
+        }
+
+        async Task Publish(TDomain entity, bool toDelete = false)
+        {
             if (!Filter(entity) || !(await FilterAsync(entity)))
             {
                 Logger.Debug("Skipped publishing the " + entity.GetType().Name + " record of " + entity.GetId() + ". It does not match the filter.");
@@ -49,7 +107,9 @@ namespace Olive.Entities.Replication
             }
 
             Logger.Debug("Publishing the " + entity.GetType().Name + " record of " + entity.GetId());
-            await Queue.Publish(await ToMessage(entity));
+           
+            if(!toDelete)
+                await Queue.Publish(await ToMessage(entity));
         }
 
         public ExposedPropertyInfo Expose<T>(Expression<Func<TDomain, T>> field)
