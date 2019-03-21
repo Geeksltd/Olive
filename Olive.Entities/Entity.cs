@@ -245,7 +245,7 @@ namespace Olive.Entities
         {
             InvalidateCachedReferences();
             await Deleted.Raise();
-            await GlobalEntityEvents.InstanceDeleted.Raise(e);
+            await GlobalEntityEvents.InstanceDeleted.Raise(new GlobalDeleteEventArgs(this));
             InvalidateCachedReferences();
         }
 

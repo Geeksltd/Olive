@@ -57,7 +57,7 @@ namespace Olive.Entities.Replication
             }
 
             Log.Debug($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
-
+            
             IEntity entity;
 
             try { entity = await Deserialize(message.Entity); }
@@ -69,7 +69,10 @@ namespace Olive.Entities.Replication
 
             try
             {
+                var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
                 await Database.Save(entity, SaveBehaviour.BypassAll);
+                await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(entity, mode));
+
                 Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
             }
             catch (Exception ex)
