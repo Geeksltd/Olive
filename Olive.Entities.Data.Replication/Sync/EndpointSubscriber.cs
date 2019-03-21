@@ -56,7 +56,8 @@ namespace Olive.Entities.Replication
                 return;
             }
 
-
+            Log.Debug($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
+            
             IEntity entity;
 
             try { entity = await Deserialize(message.Entity); }
