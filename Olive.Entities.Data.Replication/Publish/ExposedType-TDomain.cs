@@ -72,8 +72,8 @@ namespace Olive.Entities.Replication
 
             if (eventArg.EntityType == typeof(TDomain))
             {
-                //if(IsSoftDeleteEnabled)
-                //    await Publish(eventArg.Entity as TDomain, toDelete: true);
+                if (IsSoftDeleteEnabled)
+                    await Publish(eventArg.Entity as TDomain, toDelete: true);
             }
             else
             {

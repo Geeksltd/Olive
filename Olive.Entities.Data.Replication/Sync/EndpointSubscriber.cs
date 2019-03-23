@@ -66,14 +66,24 @@ namespace Olive.Entities.Replication
                 Log.Error(ex, "Failed to deserialize.");
                 throw;
             }
-
+                
             try
             {
-                var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
-                await Database.Save(entity, SaveBehaviour.BypassAll);
-                await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(entity, mode));
+                if (message.ToDelete)
+                {
+                    await Database.Delete(entity);
+                    await GlobalEntityEvents.InstanceDeleted.Raise(new GlobalDeleteEventArgs(entity));
 
-                Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
+                    Log.Debug("Logically delete the " + entity.GetType().FullName + " " + entity.GetId());
+                }
+                else
+                {
+                    var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
+                    await Database.Save(entity, SaveBehaviour.BypassAll);
+                    await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(entity, mode));
+
+                    Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
+                }
             }
             catch (Exception ex)
             {
