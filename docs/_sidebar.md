@@ -16,9 +16,8 @@
     * [Files and Blobs](Entities/Blob.md)
 
 * Microservices Architecture
-    * [Overview](Microservices/Overview.md)
     * [Understanding Microservices](Microservices/UnderstandingMicroservices.md)
-    * [Docker](Microservices/DockerMicroservices.md)
+    * [Understanding Docker](Microservices/DockerMicroservices.md)
     * [Distributed Data](Microservices/DistributedDataInMicroservices.md)
     * [Microservice Boundaries](Microservices/MicroserviceBoundaries.md)
     * [Intra-service Communication](Microservices/IntraServiceCommunication.md)
@@ -27,6 +26,7 @@
     * [Security in Microservices](Microservices/SecurityInMicroservices.md)
  
 * Microservices in Olive
+    * [Access Hub: Composite UI](Microservices/Overview.md)  
     * [Environment Setup](Microservices/Setup.md)
         * [Private Nuget Server](Microservices/PrivateNuget.md)
     * [Security (Auth)](Microservices/Security.md)
