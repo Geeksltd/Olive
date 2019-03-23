@@ -6,7 +6,6 @@ Olive facilitates microservice implementation for typical business applications 
 
 ## Prerequisites
 To successfully develop microservice solutions using M# and Olive you need to know the following:
-- **Docker and Microservices:** [definitely read this book summary](https://docs.google.com/document/d/1tmvhoywkvPwl6I5jkX3aS71zcjm_1ecOOi-7_z886zU/edit?usp=sharing) first.
 - **.NET:** ASP.NET Core Mvc,  Web Apis, RESTful design, Task parallel library (*async/await*)
 - **Front end:** Bootstrap 4, SASS, Jquery, Typescript, RequireJS
 - **Olive:** Olive Entities and Data Access Api
