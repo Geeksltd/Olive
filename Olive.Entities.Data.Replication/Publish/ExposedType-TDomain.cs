@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+﻿    using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -70,14 +70,17 @@ namespace Olive.Entities.Replication
                 return;
             }
 
-            //TODO: publish delete
             if (eventArg.EntityType == typeof(TDomain))
             {
-                //await Publish(entity, true);
+                //if(IsSoftDeleteEnabled)
+                //    await Publish(eventArg.Entity as TDomain, toDelete: true);
             }
             else
             {
-                //await PublishParentsOf(item, true);
+                await
+                    (await FindRelationsOf(eventArg.Entity))
+                    .ExceptNull()
+                    .Do(async p => await Publish(p));
             }
         }
 
@@ -110,6 +113,8 @@ namespace Olive.Entities.Replication
            
             if(!toDelete)
                 await Queue.Publish(await ToMessage(entity));
+            else
+                await Queue.Publish(ToDeleteMessage(entity));
         }
 
         public ExposedPropertyInfo Expose<T>(Expression<Func<TDomain, T>> field)
