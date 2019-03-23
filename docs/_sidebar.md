@@ -24,13 +24,13 @@
     * [Creating a new microservice](Microservices/Create.New.md)
     * [Docker and Microservices](Microservices/DockerMicroservices.md)
     * [Understanding Microservices](Microservices/UnderstandingMicroservices.md)
-    * [Distributed Data in Microservices](Microservices/DistributedDataInMicroservices.md)
+    * [Distributed Data](Microservices/DistributedDataInMicroservices.md)
     * [Microservice Boundaries](Microservices/MicroserviceBoundaries.md)
     * [Intra-service Communication](Microservices/IntraServiceCommunication.md)
     * [Implementing Resilient Applications](Microservices/ImplementingResilientApplications.md)
-    * [Development Process for Docker-Based Applications](Microservices/DockerBasedApplications.md)
+    * [Development Process for Docker-Based Apps](Microservices/DockerBasedApplications.md)
     * [Security in Microservices](Microservices/SecurityInMicroservices.md)
-
+   
 * DevOps
     * [Docker support](DevOps/Docker.md)
     * [Jenkins](DevOps/Jenkins.md)
@@ -40,22 +40,24 @@
     * [Security](DevOps/Security.md)
     * [Service preparation](DevOps/Service-preparation.md)
         
-* Web Api and Integration
+* Sync integration: WebApi
     * [RESTful WebApi](Api/WebApi.md)
     * [ApiClient](Api/ApiClient.md)
     * [Api Proxy](Api/Proxy.md)
     * [Api Versioning](Api/Versioning.md)
+
+* Async integration: EventBus, Queues
     * [EventBus](Api/EventBus.md)
     * [EventBus Commands](Api/EventBusCommands.md)
     * [Data Replication](Api/Replication.md)
 
-* Olive Javascript Fx (MvcJS)
+* Javascript Fx (MvcJS)
     * [Overview](MvcJS/Overview.md)
     * [Ajax Lifecycle](MvcJS/AjaxLifecycle.md)
     * [Loading custom modules and libraries](MvcJS/Library.md)
     
     
-* Olive Plugins
+* Plugins
     * [Compression](Services/Compression.md)
     * [Email notifications](Services/Email.md)
     * [SMS notifications](Services/SMS.md)
