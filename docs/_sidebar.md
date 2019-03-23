@@ -27,7 +27,7 @@
     * [Distributed Data](Microservices/DistributedDataInMicroservices.md)
     * [Microservice Boundaries](Microservices/MicroserviceBoundaries.md)
     * [Intra-service Communication](Microservices/IntraServiceCommunication.md)
-    * [Implementing Resilient Applications](Microservices/ImplementingResilientApplications.md)
+    * [Implementing Resilient Apps](Microservices/ImplementingResilientApplications.md)
     * [Development Process for Docker-Based Apps](Microservices/DockerBasedApplications.md)
     * [Security in Microservices](Microservices/SecurityInMicroservices.md)
    
@@ -55,7 +55,6 @@
     * [Overview](MvcJS/Overview.md)
     * [Ajax Lifecycle](MvcJS/AjaxLifecycle.md)
     * [Loading custom modules and libraries](MvcJS/Library.md)
-    
     
 * Plugins
     * [Compression](Services/Compression.md)
