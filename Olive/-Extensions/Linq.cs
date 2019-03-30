@@ -466,8 +466,7 @@ namespace Olive
         /// Determines whether this list is equivalent to another specified list. Items in the list should be distinct for accurate result.
         /// </summary>
         /// <param name="other">Is a list which is checked by the this list.</param>
-        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
-        public static bool IsEquivalentTo<T>(this IEnumerable<T> @this, IEnumerable<T> other, bool caseSensitive = true)
+        public static bool IsEquivalentTo<T>(this IEnumerable<T> @this, IEnumerable<T> other)
         {
             if (@this == null) @this = new T[0];
             if (other == null) other = new T[0];
@@ -475,13 +474,7 @@ namespace Olive
             if (@this.Count() != other.Count()) return false;
 
             foreach (var item in @this)
-                if (typeof(T) == typeof(string))
-                {
-                    if (!((IEnumerable<string>)other).Contains(item.ToString(), caseSensitive)) return false;
-                }
-                else
-                    if (!other.Contains(item)) return false;
-
+                if (!other.Contains(item)) return false;
             return true;
         }
 
@@ -633,39 +626,20 @@ namespace Olive
         /// Determines if this list intersects with another specified list.
         /// </summary>
         /// <param name="otherList">Determines the list of items which checked with the main list.</param>
-        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
-        public static bool Intersects<T>(this IEnumerable<T> @this, IEnumerable<T> otherList, bool caseSensitive = true)
+        public static bool Intersects<T>(this IEnumerable<T> @this, IEnumerable<T> otherList)
         {
             var countList = (@this as ICollection)?.Count;
             var countOther = (otherList as ICollection)?.Count;
-
-            var isString = typeof(T) == typeof(string);
-
             if (countList == null || countOther == null || countOther < countList)
             {
                 foreach (var item in otherList)
-                {
-                    if (isString)
-                    {
-                        if (((IEnumerable<string>)@this).Contains(item.ToString(), caseSensitive)) return true;
-                    }
-                    else
-                        if (@this.Contains(item)) return true;
-                }
+                    if (@this.Contains(item)) return true;
             }
             else
             {
                 foreach (var item in @this)
-                {
-                    if (isString)
-                    {
-                        if (((IEnumerable<string>)otherList).Contains(item.ToString(), caseSensitive)) return true;
-                    }
-                    else
-                        if (otherList.Contains(item)) return true;
-                }
+                    if (otherList.Contains(item)) return true;
             }
-
             return false;
         }
 
