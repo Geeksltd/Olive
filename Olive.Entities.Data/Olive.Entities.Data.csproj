@@ -14,7 +14,7 @@
     <Description>Olive Framework</Description>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.127</PackageVersion>
+    <PackageVersion>2.1.128</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.0" />

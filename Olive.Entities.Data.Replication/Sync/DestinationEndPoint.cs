@@ -47,6 +47,11 @@ namespace Olive.Entities.Replication
             PublishQueue.Subscribe<ReplicateDataMessage>(Import);
         }
 
-        Task Import(ReplicateDataMessage message) => Subscribers[message.TypeFullName].Import(message);
+        async Task Import(ReplicateDataMessage message)
+        {
+            if (message == null) return;
+
+            await Subscribers[message.TypeFullName].Import(message);
+        }
     }
 }

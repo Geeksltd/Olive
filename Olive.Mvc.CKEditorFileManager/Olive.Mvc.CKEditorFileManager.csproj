@@ -1,9 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
-	<PackageId>Olive.Mvc.CKEditorFileManager</PackageId>
+    <PackageId>Olive.Mvc.CKEditorFileManager</PackageId>
     <Title>Olive CKEditor FileManager</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -12,13 +12,11 @@
     <Description>CKEditor filermanager for Olive</Description>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.0</PackageVersion>
+    <PackageVersion>2.1.1</PackageVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
@@ -33,7 +31,6 @@
       <HintPath>..\bin\netcoreapp2.1\Olive.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>

@@ -144,6 +144,11 @@ namespace Olive.Mvc
                   (context.Items["JavascriptActions"] = new JavascriptActions()));
         }
 
+        internal static void ClearJavascriptActions(this HttpContext context)
+        {
+            context.Items["JavascriptActions"] = new JavascriptActions();
+        }
+
         internal static string OnLoaded(this IEnumerable<JavascriptDependency> dependencies, string javaScript)
         {
             if (dependencies.Any())
