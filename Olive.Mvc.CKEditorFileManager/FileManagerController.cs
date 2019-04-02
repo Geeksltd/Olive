@@ -51,7 +51,7 @@ namespace Olive.Mvc.CKEditorFileManager
             {
                 Files = files.Select(f => new DownloadableFileDto
                 {
-                    Filename = f.File.FileName,
+                    CKEditorFile = f,
                     Uri = Request.GetAbsoluteUrl($"ckeditorfiledownload/{f.File.FileName.UrlEncode()}")
                 }).ToArray()
             };

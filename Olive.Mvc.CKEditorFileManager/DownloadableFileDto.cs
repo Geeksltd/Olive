@@ -6,7 +6,7 @@ namespace Olive.Mvc.CKEditorFileManager
 {
     public class DownloadableFileDto
     {
-        public string Filename { get; set; }
+        public ICKEditorFile CKEditorFile { get; set; }
         public string Uri { get; set; }
     }
 }
