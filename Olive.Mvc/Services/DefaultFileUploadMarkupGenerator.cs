@@ -33,7 +33,7 @@ namespace Olive.Mvc
             result.AppendHtmlLine("<div class=\"file-upload\">");
             result.AppendHtmlLine($"<span class=\"current-file\" aria-label=\"Preview the file\"{" style=\"display:none\"".OnlyWhen(blob.IsEmpty())}>");
             result.AppendHtmlLine($"<a target=\"_blank\" href=\"{blob.Url().HtmlEncode()}\">{blob.FileName.OrEmpty().HtmlEncode()}</a>");
-            result.AppendLine("</span>");
+            result.AppendHtmlLine("</span>");
 
             result.AppendHtmlLine($"<label for=\"{propertyName}_fileInput\" hidden>HiddenLabel</label>");
             result.AppendHtmlLine($"<input type=\"file\" id=\"{propertyName}_fileInput\" name=\"files\" {OliveMvcExtensions.ToHtmlAttributes(htmlAttributes)}/>");
