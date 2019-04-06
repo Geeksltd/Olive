@@ -1,17 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Olive.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc.CKEditorFileManager
 {
     public class FileManagerController : Controller
     {
-        //[Authorize]
+        // [Authorize]
         [Route("ckeditorfileupload")]
         public async Task<IActionResult> Upload()
         {
@@ -41,7 +38,7 @@ namespace Olive.Mvc.CKEditorFileManager
             }
         }
 
-        //[Authorize]
+        // [Authorize]
         [Route("ckeditorfilebrowser")]
         public async Task<IActionResult> Browser()
         {
@@ -51,7 +48,7 @@ namespace Olive.Mvc.CKEditorFileManager
             {
                 Files = files.Select(f => new DownloadableFileDto
                 {
-                    Filename = f.File.FileName,
+                    CKEditorFile = f,
                     Uri = Request.GetAbsoluteUrl($"ckeditorfiledownload/{f.File.FileName.UrlEncode()}")
                 }).ToArray()
             };

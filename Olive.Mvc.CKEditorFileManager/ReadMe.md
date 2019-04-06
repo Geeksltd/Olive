@@ -34,7 +34,7 @@ Add the `CKEditorFileBrowser.cshtml` view file to your shared view folder contia
     <ul>
         @foreach (var item in Model.Files)
         {
-            <li><a class="ckeditor-file-uri" data-download-uri="@item.Uri">@item.Filename</a></li>
+            <li><a class="ckeditor-file-uri" data-download-uri="@item.Uri">@item.CKEditorFile.File.Filename</a></li>
         }
     </ul>
 </div>

@@ -211,9 +211,7 @@ namespace Olive.Mvc
 
             @this.ClearActionsJson();
 
-            var request = @this.ViewContext.HttpContext.Request;
-
-            if (request.IsAjaxGet())
+            if (@this.Request().IsAjaxGet())
             {
                 var title = Context.Current.Http().Items["Page.Title"].ToStringOrEmpty().Or(@this.ViewData["Title"].ToStringOrEmpty());
                 result = result.Concat(@this.Hidden("page.meta.title", title));
@@ -222,8 +220,7 @@ namespace Olive.Mvc
             return result;
         }
 
-        public static HttpRequest Request(this IHtmlHelper @this) =>
-            @this.ViewContext.HttpContext.Request;
+        public static HttpRequest Request(this IHtmlHelper @this) => @this?.ViewContext?.HttpContext?.Request;
 
         /// <summary>
         /// Creates a hidden field to contain the json data for the start-up actions.
