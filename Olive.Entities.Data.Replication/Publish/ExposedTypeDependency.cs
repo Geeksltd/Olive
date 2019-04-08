@@ -23,7 +23,10 @@ namespace Olive.Entities.Replication
                 async child =>
                 {
                     var deps = await childDependents(child);
-                    foreach (var x in deps) await RaiseSaveEventFor(x);
+                    if(deps == null) return null;
+                    foreach (var x in deps) 
+                        if(x != null) await RaiseSaveEventFor(x);
+
                     return null;
                 });
 
