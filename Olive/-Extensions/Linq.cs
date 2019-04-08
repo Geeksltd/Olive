@@ -117,9 +117,7 @@ namespace Olive
         {
             if (@this == null)
                 throw new NullReferenceException("No collection is given for the extension method IndexOf().");
-
             if (@this.Contains(element) == false) return -1;
-
             var result = 0;
             foreach (var el in @this)
             {
@@ -128,11 +126,9 @@ namespace Olive
                     if (element == null) return result;
                     else continue;
                 }
-
                 if (el.Equals(element)) return result;
                 result++;
             }
-
             return -1;
         }
 
@@ -538,6 +534,19 @@ namespace Olive
         public static bool LacksAll<T>(this IEnumerable<T> @this, IEnumerable<T> items) => !@this.ContainsAny(items.ToArray());
 
         /// <summary>
+        /// Determines if this list lacks all items in the specified list.
+        /// </summary>        
+        /// <param name="items">The item which is searched in the list.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static bool LacksAll(this IEnumerable<string> @this, IEnumerable<string> items, bool caseSensitive)
+        {
+            if (caseSensitive)
+                return @this.LacksAll(items);
+            else
+                return !@this.Select(a => a.ToLower()).ContainsAny(items.Select(b => b.ToLower()).ToArray());
+        }
+
+        /// <summary>
         /// Picks a random item from the list.
         /// </summary>        
         public static IEnumerable<T> Randomize<T>(this IEnumerable<T> @this)
@@ -621,7 +630,6 @@ namespace Olive
         {
             var countList = (@this as ICollection)?.Count;
             var countOther = (otherList as ICollection)?.Count;
-
             if (countList == null || countOther == null || countOther < countList)
             {
                 foreach (var item in otherList)
@@ -632,7 +640,6 @@ namespace Olive
                 foreach (var item in @this)
                     if (otherList.Contains(item)) return true;
             }
-
             return false;
         }
 
@@ -684,6 +691,36 @@ namespace Olive
         }
 
         /// <summary>
+        /// Gets the element after a specified item in this list.
+        /// If the specified element does not exist in this list, an ArgumentException will be thrown.
+        /// If the specified element is the last in the list, NULL will be returned.
+        /// </summary>        
+        /// <param name="item">The specified item.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static string GetElementAfter(this IEnumerable<string> @this, string item, bool caseSensitive)
+        {
+            if (item.IsEmpty())
+                throw new ArgumentNullException(nameof(item));
+
+            var result = @this;
+
+            if (!caseSensitive)
+            {
+                item = item.ToLower();
+                @this = @this.Select(x => x.ToLower());
+            }
+
+            var index = @this.IndexOf(item);
+
+            if (index == -1)
+                throw new ArgumentException("The specified item does not exist to this list.");
+
+            if (index == @this.Count() - 1) return null;
+
+            return result.ElementAt(index + 1);
+        }
+
+        /// <summary>
         /// Gets the element before a specified item in this list.
         /// If the specified element does not exist in this list, an ArgumentException will be thrown.
         /// If the specified element is the first in the list, NULL will be returned.
@@ -701,6 +738,35 @@ namespace Olive
             if (index == 0) return null;
 
             return @this.ElementAt(index - 1);
+        }
+
+        /// <summary>
+        /// Gets the element before a specified item in this list.
+        /// If the specified element does not exist in this list, an ArgumentException will be thrown.
+        /// If the specified element is the first in the list, NULL will be returned.
+        /// </summary>        
+        /// <param name="item">The specified item.</param>
+        /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
+        public static string GetElementBefore(this IEnumerable<string> @this, string item, bool caseSensitive)
+        {
+            if (item.IsEmpty())
+                throw new ArgumentNullException(nameof(item));
+
+            var result = @this;
+
+            if (!caseSensitive)
+            {
+                item = item.ToLower();
+                @this = @this.Select(x => x.ToLower());
+            }
+
+            var index = @this.IndexOf(item);
+            if (index == -1)
+                throw new ArgumentException("The specified item does not exist to this list.");
+
+            if (index == 0) return null;
+
+            return result.ElementAt(index - 1);
         }
 
         /// <summary>
@@ -746,6 +812,16 @@ namespace Olive
             if (@this.None()) return true;
 
             return @this.Distinct().Count() == @this.Count();
+        }
+
+        public static bool AreItemsUnique<T>(this IEnumerable<string> @this, bool caseSensitive)
+        {
+            if (@this.None()) return true;
+
+            if (!caseSensitive)
+                @this = @this.Select(x => x.ToLower());
+
+            return AreItemsUnique(@this);
         }
 
         /// <summary>
@@ -919,22 +995,6 @@ namespace Olive
         }
 
         /// <summary>
-        /// Returns the indices of all items which match a specified criteria.
-        /// </summary>
-        /// <param name="criteria">The func() which is used in method.</param>
-        public static IEnumerable<int> AllIndicesOf<T>(IEnumerable<T> list, Func<T, bool> criteria)
-        {
-            var index = 0;
-
-            foreach (var item in list)
-            {
-                if (criteria(item)) yield return index;
-
-                index++;
-            }
-        }
-
-        /// <summary>
         /// Replaces the specified item in this list with the specified new item.
         /// </summary>
         /// <param name="oldItem">Is the value to be replaced.</param>
@@ -1039,25 +1099,73 @@ namespace Olive
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> @this) => new HashSet<T>(@this);
 
         /// <summary>
-        /// Gets all indices of the specified item in this collection.
+        /// Gets all indices of the specified item in this collection and returns -1 if nothing found.
         /// </summary>
         /// <param name="item">The item which is searched into the list.</param>
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, T item)
         {
             var index = 0;
+            var foundAny = false;
+
             foreach (var i in @this)
             {
                 if (ReferenceEquals(item, null))
                 {
-                    if (ReferenceEquals(i, null)) yield return index;
+                    if (ReferenceEquals(i, null))
+                    {
+                        foundAny = true;
+                        yield return index;
+                    }
                 }
                 else
                 {
-                    if (item.Equals(i)) yield return index;
+                    if (item.Equals(i))
+                    {
+                        foundAny = true;
+                        yield return index;
+                    }
                 }
 
                 index++;
             }
+
+            if (!foundAny)
+                yield return -1;
+        }
+
+        public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<string> @this, string item, bool caseSensitive)
+        {
+            if (!caseSensitive)
+            {
+                @this = @this.Select(x => x.ToLower());
+                item = item.ToLower();
+            }
+
+            return AllIndicesOf(@this, item);
+        }
+
+        /// <summary>
+        /// Returns the indices of all items which match a specified criteria and returns -1 if nothing found.
+        /// </summary>
+        /// <param name="criteria">The func() which is used in method.</param>
+        public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, Func<T, bool> criteria)
+        {
+            var index = 0;
+            var foundAny = false;
+
+            foreach (var item in @this)
+            {
+                if (criteria(item))
+                {
+                    foundAny = true;
+                    yield return index;
+                }
+
+                index++;
+            }
+
+            if (!foundAny)
+                yield return -1;
         }
 
         /// <summary>
@@ -1356,6 +1464,7 @@ namespace Olive
 
             return tasks.Select(x => x.GetAlreadyCompletedResult());
         }
+
         /// <summary>
         /// Add padItemValue to the right side of this list if the size parameter is greater than the lenght of the list.
         /// </summary>
@@ -1379,7 +1488,7 @@ namespace Olive
         /// </summary>
         /// <param name="size">The number of items.</param>
         /// <param name="padItemValue">The string should be added to the left side of the list.</param>
-       public static T[] PadLeft<T>(this T[] @this, int size, T padItemValue)
+        public static T[] PadLeft<T>(this T[] @this, int size, T padItemValue)
         {
             if (@this.Length >= size) return @this;
 
@@ -1391,7 +1500,7 @@ namespace Olive
 
             return result;
         }
-        
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.

@@ -31,13 +31,25 @@ namespace Olive
             watcher.EnableRaisingEvents = true;
         }
 
+        static async Task<string> ReadFile(FileInfo item)
+        {
+            while (true)
+                try
+                {
+                    return await item.ReadAllTextAsync();
+                }
+                catch (System.IO.IOException)
+                {
+                }
+        }
+
         internal static async Task<KeyValuePair<FileInfo, TMessage>> FetchOnce(DirectoryInfo folder)
         {
             var item = folder.GetFiles().OrderBy("CreationTimeUtc").FirstOrDefault();
 
             if (item == null) return new KeyValuePair<FileInfo, TMessage>(null, default(TMessage));
 
-            var content = await item.ReadAllTextAsync();
+            var content = await ReadFile(item);
             try
             {
                 var @event = JsonConvert.DeserializeObject<TMessage>(content);
