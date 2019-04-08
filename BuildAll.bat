@@ -42,8 +42,8 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Entities.Data.SqlServer
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Olive.Entities.Cache.Redis
-if ERRORLEVEL 1 (goto error)
+REM dotnet build Olive.Entities.Cache.Redis
+REM if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Aws
 if ERRORLEVEL 1 (goto error)
