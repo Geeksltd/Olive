@@ -14,6 +14,14 @@ namespace Olive.Entities.Replication
 
         public abstract Type DomainType { get; }
 
+        //If we consider that all ExposedTypes should be SoftDelete enabled
+        public bool IsSoftDeleteEnabled => true;
+
+        //If we consider that some ExposedTypes should be SoftDelete enabled. Those one should be marked as [SoftDelete]
+        //public bool IsSoftDeleteEnabled => SoftDeleteAttribute.IsEnabled(GetType());
+
+        //In my opinion it should be enabled for all ExposedTypes
+
         public async Task<ReplicateDataMessage> ToMessage(IEntity entity)
         {
             var properties = new Dictionary<string, object>();
@@ -45,6 +53,22 @@ namespace Olive.Entities.Replication
                 }
             }
 
+            return ToReplicateDataMessage(properties);
+        }
+
+        public ReplicateDataMessage ToDeleteMessage(IEntity entity)
+        {
+            var properties = new Dictionary<string, object>();
+
+            properties["ID"] = entity.GetId();
+
+            var message = ToReplicateDataMessage(properties);
+            message.ToDelete = true;
+            return message;
+        }
+
+        ReplicateDataMessage ToReplicateDataMessage(Dictionary<string, object> properties)
+        {
             var serialized = JsonConvert.SerializeObject(properties);
 
             return new ReplicateDataMessage
