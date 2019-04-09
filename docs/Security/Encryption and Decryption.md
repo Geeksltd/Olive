@@ -1,7 +1,6 @@
 ﻿# Olive Encryption and Decryption
 
-Some applications required to save data in encrypted form for security reasons.
-Olive also facilitates with the encyrption and decryption of data.
+Some applications required to save data in the encrypted format for security reasons. Olive also facilitates the encryption and decryption of data.
 
 ## Implementation
 
