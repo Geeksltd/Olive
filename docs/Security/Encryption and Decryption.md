@@ -6,39 +6,58 @@ Some applications required to save data in the encrypted format for security rea
 
 There is an attribute `EncryptedProperty` which can be added to the Model Entity class.
      
-## App.Config settings
+### appsettings.config file
 
-There should be a key for encryption and decryption in app.config file under the Database node.
+There should be a key for encryption and decryption in `appsettings.config` file under the Database node.
 
-    "Database": {
-	    .....
-	    "DataEncryption": {
-	      "Key": "abcd1234"
-	    }
+```json
+"Database": {
+    .....
+    "DataEncryption": {
+      "Key": "abcd1234"
     }
+}
+```
 
+### Startup.cs file
+
+Call this `Services.AddPropertyEncryption(typeof(SecureClass).Assembly);` in the `Configure` method. FYI, there is a generic overload which let you to have your encryption/decryption logic.
+
+```c#
+public override void Configure(IApplicationBuilder app)
+{
+    base.Configure(app);
+    Services.AddPropertyEncryption(typeof(User).Assembly);
+}
+```
 ### Example
 We want to save **User's** first name in encrypted form.
 
-    public class User : EnitiyType
+```c#
+public class User : EnitiyType
+{
+    public User()
     {
-	    public User()
-	    {
-		    String("First name").Attributes("[EncryptedProperty]");
-	    }
+	    String("First name").Attributes("[EncryptedProperty]");
     }
+}
+```
     
 ### Generated Code
 
 The generated code for the property.
 
-     [EncryptedProperty]
-     public string FirstName { get; set; }
+```c#
+[EncryptedProperty]
+public string FirstName { get; set; }
+```
 
 ### Saving Data
-
-    Database.Save<Domain.User>(new Domain.User { FirstName = "xyz" }); // this will save data in encrypted form.
-    
+```c#
+Database.Save<Domain.User>(new Domain.User { FirstName = "xyz" }); // this will save data in encrypted form.
+```
 ### Fetching Data
 
-    Database.GetList<Domain.User>(); // data will be in decrypted form.
+```c#
+Database.GetList<Domain.User>(); // data will be in decrypted form.
+```
