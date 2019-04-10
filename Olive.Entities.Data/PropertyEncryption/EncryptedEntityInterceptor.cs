@@ -13,7 +13,7 @@
         internal static string EncryptionKey;
         internal static Dictionary<Type, PropertyInfo[]> EncryptedProperties;
 
-        internal static void Initialize(Assembly domainAssembly)
+        public static void Initialize(Assembly domainAssembly)
         {
             if (EncryptionKey.HasValue())
                 throw new InvalidOperationException("Inizialize");

@@ -106,7 +106,7 @@
         public async Task<IEntity> FirstOrDefault()
         {
             TakeTop = 1;
-            return (await Provider.GetList(this)).FirstOrDefault();
+            return await GetList().FirstOrDefault();
         }
     }
 
