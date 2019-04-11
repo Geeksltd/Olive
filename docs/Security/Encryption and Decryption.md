@@ -21,13 +21,20 @@ There should be a key for encryption and decryption in `appsettings.config` file
 
 ### Startup.cs file
 
-Call this `Services.AddPropertyEncryption(typeof(SecureClass).Assembly);` in the `Configure` method. FYI, there is a generic overload which let you to have your encryption/decryption logic.
+Call this `Services.UsePropertyEncryption([DomainAssembly]);` in the `Configure` method and `services.AddEntityInterceptor();` in the `ConfigureServices` method. FYI, there is a generic overload which let you to have your encryption/decryption logic.
 
 ```c#
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    ...
+    services.AddEntityInterceptor();
+}
+
 public override void Configure(IApplicationBuilder app)
 {
     base.Configure(app);
-    Services.AddPropertyEncryption(typeof(User).Assembly);
+    app.UsePropertyEncryption(typeof(User).Assembly);
 }
 ```
 ### Example
