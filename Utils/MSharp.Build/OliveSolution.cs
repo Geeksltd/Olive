@@ -1,6 +1,8 @@
 ﻿using Olive;
 using System;
 using System.IO;
+using System.Xml.Linq;
+using System.Linq;
 
 namespace MSharp.Build
 {
@@ -76,21 +78,43 @@ namespace MSharp.Build
             if (IsWebForms)
             {
                 RestorePackagesConfig("Website");
-                Console.Write("Skipped");
+                CopyDllsToWebsite();
             }
             else DotnetBuild("Website", "publish -o ..\\publish".OnlyWhen(Publish));
         }
 
+        private void CopyDllsToWebsite()
+        {
+            var bin = "Website/bin".AsDirectory();
+
+            var dllPaths = from file in bin.GetFiles("*.refresh")
+                           let source = Root.GetSubDirectory("Website").GetFile(file.ReadAllText())
+                           let item = new
+                           {
+                               Source = source,
+                               Destination = bin.GetFile(source.Name)
+                           }
+                           where item.Destination.Exists == false
+                           select item;
+
+            dllPaths.Do(p => File.Copy(p.Source.FullName, p.Destination.FullName, true));
+        }
+
+        const string PACKAGES_DIRECTORY = "packages";
         void RestorePackagesConfig(string folder)
         {
             var packages = Folder(folder).AsDirectory().GetFile("packages.config");
             if (packages.Exists())
             {
-                WindowsCommand.FindExe("nuget").Execute("restore " + folder + " -packagesdirectory packages",
+                WindowsCommand.FindExe("nuget").Execute("restore " + folder + " -packagesdirectory " + Root.GetOrCreateSubDirectory(PACKAGES_DIRECTORY).FullName,
               configuration: x => x.StartInfo.WorkingDirectory = Root.FullName);
             }
         }
 
+        FileInfo GetPackages(string folder) => Folder(folder).AsDirectory().GetFile("packages.config");
+
+
+        string GetProjectSolution() => Root.GetFiles("*.sln")[0].FullName;
         void DotnetBuild(string folder, string command = null)
         {
             if (IsDotNetCore) DotnetCoreBuild(folder, command);
@@ -98,13 +122,14 @@ namespace MSharp.Build
             {
                 RestorePackagesConfig(folder);
 
-                var solution = Root.GetFiles("*.sln")[0].FullName;
+                var solution = GetProjectSolution();
                 var projName = folder;
+                var project = folder.AsDirectory().GetFiles("*.csproj")[0].FullName;
                 if (folder.StartsWith("M#\\")) projName = "#" + folder.TrimStart("M#\\");
 
                 var dep = " /p:BuildProjectReferences=false".OnlyWhen(folder.StartsWith("M#"));
 
-                WindowsCommand.FindExe("msbuild").Execute($"\"{solution}\" /t:{projName}{dep} -v:m",
+                WindowsCommand.FindExe("msbuild").Execute($"\"{project}\" -v:m",
                     configuration: x => x.StartInfo.EnvironmentVariables.Add("MSHARP_BUILD", "FULL"));
             }
         }

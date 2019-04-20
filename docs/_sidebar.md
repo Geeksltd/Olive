@@ -77,6 +77,7 @@
     * [Olive Security Overview](Security/Security.md)
     * [Config](Security/Config.md)
     * [Impersonation]()
+    * [Encryption and Decryption](Security/Encryption%20and%20Decryption.md)
     
 * Logging & Audit
     * [Olive Logging Overview](Logging/Logging.md)

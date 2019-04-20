@@ -28,7 +28,7 @@ namespace Olive.Mvc
 
         protected readonly IHostingEnvironment Environment;
         protected readonly IConfiguration Configuration;
-        protected readonly IServiceCollection Services;
+        protected IServiceCollection Services { get; private set; }
 
         protected Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
         {
@@ -39,6 +39,7 @@ namespace Olive.Mvc
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            Services = services;
             Context.Initialize(services);
             services.AddHttpContextAccessor();
 

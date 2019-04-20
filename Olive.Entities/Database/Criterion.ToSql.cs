@@ -1,9 +1,14 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Text;
 
 namespace Olive.Entities
 {
     partial class Criterion
     {
+        static readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, bool>> PropertiesCache = 
+            new ConcurrentDictionary<Type, ConcurrentDictionary<string, bool>>();
+
         protected virtual bool NeedsParameter(SqlConversionContext context) => true;
 
         protected virtual object GetValue(SqlConversionContext context)
@@ -17,6 +22,8 @@ namespace Olive.Entities
 
         protected virtual string GetColumnName(SqlConversionContext context, string propertyName)
         {
+            ValidateProperty(context.Type, propertyName);
+
             var key = propertyName;
 
             if (key.EndsWith("Id") && key.Length > 2)
@@ -29,6 +36,25 @@ namespace Olive.Entities
             }
 
             return context.Query.Column(key, context.Alias);
+        }
+
+        void ValidateProperty(Type type, string propertyName)
+        {
+            var properties = PropertiesCache.GetOrAdd(type, t => new ConcurrentDictionary<string, bool>());
+
+            var @throw = properties.GetOrAdd(propertyName, prop =>
+            {
+                var propertyInfo = type.GetProperty(prop);
+
+                if (propertyInfo.Defines<EncryptedPropertyAttribute>()) return true;
+
+                if (propertyInfo.Defines<CustomDataConverterAttribute>()) return true;
+
+                return false;
+            });
+
+            if (@throw)
+                throw new Exception($"It is not possible to have criteria on '{propertyName}' as it is either encrypted or has custom data converter.");
         }
 
         public virtual string ToSql(SqlConversionContext context)

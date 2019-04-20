@@ -43,13 +43,13 @@ namespace Olive.Mvc.CKEditorFileManager
         public async Task<IActionResult> Browser()
         {
             var files = await Database.GetList<ICKEditorFile>();
-
+            
             var model = new ViewModel
             {
                 Files = files.Select(f => new DownloadableFileDto
                 {
                     CKEditorFile = f,
-                    Uri = Request.GetAbsoluteUrl($"ckeditorfiledownload/{f.File.FileName.UrlEncode()}")
+                    Uri = $"/ckeditorfiledownload/{Uri.EscapeUriString(f.File.FileName)}"
                 }).ToArray()
             };
 

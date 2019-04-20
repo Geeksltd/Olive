@@ -30,20 +30,22 @@ namespace Olive.Mvc
             if (action == "KEEP") blob = GetOldValue(model, propertyName) ?? blob;
 
             var result = new HtmlContentBuilder();
-            result.AppendHtmlLine("<div class=\"file-upload\">");
-            result.AppendHtmlLine($"<span class=\"current-file\" aria-label=\"Preview the file\"{" style=\"display:none\"".OnlyWhen(blob.IsEmpty())}>");
-            result.AppendHtmlLine($"<a target=\"_blank\" href=\"{blob.Url().HtmlEncode()}\">{blob.FileName.OrEmpty().HtmlEncode()}</a>");
-            result.AppendLine("</span>");
-
-            result.AppendHtmlLine($"<label for=\"{propertyName}_fileInput\" hidden>HiddenLabel</label>");
-            result.AppendHtmlLine($"<input type=\"file\" id=\"{propertyName}_fileInput\" name=\"files\" {OliveMvcExtensions.ToHtmlAttributes(htmlAttributes)}/>");
 
             // For validation to work, this works instead of Hidden.
             if (action.ToString().IsEmpty() && blob.HasValue()) action = "KEEP";
-            result.AppendHtml(html.TextBox(propertyName, action.OrEmpty(), string.Empty, HiddenFieldSettings));
-            result.AppendHtmlLine("<div class=\"progress-bar\" role=\"progressbar\"></div>");
-            result.AppendHtmlLine("<span class=\"delete-file fa fa-remove btn\" style=\"display: none\"></span>");
-            result.AppendHtmlLine("</div>");
+
+            result.AppendHtmlLine($@"
+                <div class=""file-upload"">
+                    <span class=""current-file"" aria-label=""Preview the file""{" style=\"display:none\"".OnlyWhen(blob.IsEmpty())}>
+                        <a target=""_blank"" href=""{blob.Url().HtmlEncode()}"">{blob.FileName.OrEmpty().HtmlEncode()}</a>
+                    </span>
+                    <label for=""{propertyName}_fileInput"" hidden>HiddenLabel</label>
+                    <input type=""file"" id=""{propertyName}_fileInput"" name=""files"" {OliveMvcExtensions.ToHtmlAttributes(htmlAttributes)}/>
+                    {html.TextBox(propertyName, action.OrEmpty(), string.Empty, HiddenFieldSettings).GetString()}
+                    <div class=""progress-bar"" role=""progressbar""></div>
+                    <span class=""delete-file fa fa-remove btn"" style=""display: none""></span>
+                </div>
+            ");
 
             return result;
         }
