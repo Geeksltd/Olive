@@ -89,7 +89,7 @@ namespace Olive.Entities
                 Alias = context.ToSafeId(proc.TableAlias),
                 Query = context.Query,
                 ToSafeId = context.ToSafeId,
-                Type = proc.Property.PropertyType
+                Type = proc.Property.DeclaringType
             };
 
             r.Append(subCriterion.ToSqlOn(newContext));
