@@ -143,13 +143,11 @@ The generated M# entity in the generated nuget package is, well, a normal M# ent
 ```csharp
 class User
 {
-    ...
-    
+    ...    
     [ToString]
-    public string SomeProperty {get; set;}
-       
-    ...
+    public string LastName {get; set;}
 }
+```
 
 ### Security
 
