@@ -137,6 +137,18 @@ These class definitions (aka schema) should be recognised in the consumer applic
 Of course it will also generate a proxy class which acts as an agent in the consumer app to connect to your Api. It will have the *same class name and namespace* as the Api controller.
 > **Tip: The generated proxy dll:** Feel free to inspect the generated proxy class's code to learn what is under the hood by looking inside the publisher service's Website\obj\api-proxy folder.
 
+#### ToString property
+The generated M# entity in the generated nuget package is, well, a normal M# entity. And like all other, it will have a default `ToString()` implementation which will be guessed based on the property names. To specify that yourself, you can use the [ToString] attribute on top of the property that you want at the source. For example:
+
+```csharp
+class User
+{
+    ...    
+    [ToString]
+    public string LastName {get; set;}
+}
+```
+
 ### Security
 
 When creating a proxy object, by default it will assume a **service identity**. It will read the *AccessKey* value from *appSettings.json* (*which is issued to it by the Api publisher service*) and send it using HTTP HEADER with the key of **"Microservice.AccessKey"**.

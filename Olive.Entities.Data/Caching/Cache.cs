@@ -62,7 +62,7 @@ namespace Olive.Entities.Data
 
         public virtual IEnumerable GetList(Type type)
         {
-            if (type.IsCacheable()) return null;
+            if (!type.IsCacheable()) return null;
             return CacheProvider.GetList(type);
         }
 

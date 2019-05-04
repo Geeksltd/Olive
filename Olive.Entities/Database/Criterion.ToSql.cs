@@ -6,7 +6,7 @@ namespace Olive.Entities
 {
     partial class Criterion
     {
-        static readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, bool>> PropertiesCache = 
+        static readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, bool>> PropertiesCache =
             new ConcurrentDictionary<Type, ConcurrentDictionary<string, bool>>();
 
         protected virtual bool NeedsParameter(SqlConversionContext context) => true;
@@ -45,6 +45,9 @@ namespace Olive.Entities
             var @throw = properties.GetOrAdd(propertyName, prop =>
             {
                 var propertyInfo = type.GetProperty(prop);
+
+                if (propertyInfo == null)
+                    throw new Exception($"{type.FullName} has no public property named '{prop}'.");
 
                 if (propertyInfo.Defines<EncryptedPropertyAttribute>()) return true;
 
@@ -89,7 +92,7 @@ namespace Olive.Entities
                 Alias = context.ToSafeId(proc.TableAlias),
                 Query = context.Query,
                 ToSafeId = context.ToSafeId,
-                Type = proc.Property.PropertyType
+                Type = proc.Property.DeclaringType
             };
 
             r.Append(subCriterion.ToSqlOn(newContext));
