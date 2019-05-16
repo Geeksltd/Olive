@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
-    public abstract class DestinationEndpoint
+    public abstract partial class DestinationEndpoint
     {
         Assembly DomainAssembly;
         internal IEventBusQueue PublishQueue, RefreshQueue;
@@ -53,5 +53,7 @@ namespace Olive.Entities.Replication
 
             await Subscribers[message.TypeFullName].Import(message);
         }
+
+
     }
 }

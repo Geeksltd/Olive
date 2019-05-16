@@ -57,7 +57,7 @@ namespace Olive.Entities.Replication
             }
 
             Log.Debug($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
-            
+
             IEntity entity;
 
             try { entity = await Deserialize(message.Entity); }
@@ -66,21 +66,26 @@ namespace Olive.Entities.Replication
                 Log.Error(ex, "Failed to deserialize.");
                 throw;
             }
-                
+
             try
             {
                 if (message.ToDelete)
                 {
-                    await Database.Delete(entity);
-                    await GlobalEntityEvents.InstanceDeleted.Raise(new GlobalDeleteEventArgs(entity));
-
-                    Log.Debug("Logically delete the " + entity.GetType().FullName + " " + entity.GetId());
+                    if (await Endpoint.OnDeleting(message, entity))
+                    {
+                        await Database.Delete(entity);
+                        await Endpoint.OnDeleted(message, entity);
+                    }
                 }
                 else
                 {
                     var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
+
+                    if (!await Endpoint.OnSaving(message, entity, mode)) return;
+
                     await Database.Save(entity, SaveBehaviour.BypassAll);
                     await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(entity, mode));
+                    await Endpoint.OnSaved(message, entity, mode);
 
                     Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
                 }
