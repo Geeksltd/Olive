@@ -51,9 +51,14 @@ namespace Olive.Entities.Replication
         {
             if (message == null) return;
 
-            await Subscribers[message.TypeFullName].Import(message);
+            try
+            {
+                await Subscribers[message.TypeFullName].Import(message);
+            }
+            catch (Exception ex)
+            {
+                Log.For(this).Error(ex, "Failed to import ReplicateDataMessage " + message.Entity);
+            }
         }
-
-
     }
 }

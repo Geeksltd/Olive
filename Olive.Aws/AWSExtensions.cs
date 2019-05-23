@@ -15,14 +15,24 @@ namespace Olive
             @this.LoadAwsSecrets();
         }
 
-        public static void LoadAwsDevIdentity(this IConfiguration @this)
+        public static void LoadAwsDevIdentity(this IConfiguration @this, bool loadSecrets = false)
+        {
+            var accessKey = @this["Aws:Credentials:AccessKey"];
+            var secret = @this["Aws:Credentials:Secret"];
+            @this.LoadAwsDevIdentity(accessKey, secret, loadSecrets);
+        }
+
+        /// <summary>
+        /// Use this if you want to temporarily simulate production environment access for debugging.
+        /// The accessKey and secret are usually that of a root admin user.
+        /// </summary>
+        public static void LoadAwsDevIdentity(this IConfiguration @this, string accessKey, string secret, bool loadSecrets)
         {
             AWSConfigs.RegionEndpoint = RegionEndpoint.EUWest1;
             FallbackCredentialsFactory.Reset();
-
-            var accessKey = @this["Aws:Credentials:AccessKey"];
-            var secret = @this["Aws:Credentials:Secret"];
             FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () => new BasicAWSCredentials(accessKey, secret));
+            if (loadSecrets)
+                @this.LoadAwsSecrets();
         }
 
         public static void LoadAwsSecrets(this IConfiguration @this) => new Secrets(@this).Load();

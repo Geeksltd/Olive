@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -81,6 +82,8 @@ namespace Olive.Entities.Replication
                 {
                     var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
 
+                    if (mode == SaveMode.Update && !await IsActuallyChanged(entity)) return;
+
                     if (!await Endpoint.OnSaving(message, entity, mode)) return;
 
                     await Database.Save(entity, SaveBehaviour.BypassAll);
@@ -95,6 +98,13 @@ namespace Olive.Entities.Replication
                 Log.Error(ex, "Failed to import.");
                 throw;
             }
+        }
+
+        async Task<bool> IsActuallyChanged(IEntity entityBeingSaved)
+        {
+            var original = await Database.Get(entityBeingSaved.GetId(), entityBeingSaved.GetType());
+            var provider = Database.GetProvider(entityBeingSaved.GetType());
+            return provider.GetUpdatedValues(original, entityBeingSaved).Any();
         }
 
         async Task<IEntity> Deserialize(string serialized)

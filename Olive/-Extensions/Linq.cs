@@ -88,6 +88,7 @@ namespace Olive
         /// <param name="lastSeparator">It is located between last two members.</param>
         public static string ToString<T>(this IEnumerable<T> @this, string separator, string lastSeparator)
         {
+            if (@this is null) return null;
             var result = new StringBuilder();
 
             var items = @this.Cast<object>().ToArray();
