@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Olive.ApiClient</PackageId>
-    <PackageVersion>2.2.102</PackageVersion>
+    <PackageVersion>2.2.103</PackageVersion>
     <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <FileVersion>2.2.0.0</FileVersion>
     <Title>Olive ClientApi</Title>
@@ -12,7 +12,6 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>An Olive Framework component</Description>
-    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>
