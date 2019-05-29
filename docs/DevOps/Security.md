@@ -93,3 +93,9 @@ To achieve that, follow these steps:
 If your user does not have access to the admin user, alternatively you can do the following:
 1. Find your `user's ARN` and make a note of it.
 1. Under `IAM Roles` locate the `{MyApplication}Runtime` role (the identify of your application at runtime).
+1. Create a trust relationship between that role and your user.
+
+
+#### Beware
+- Never commit or push these changes to GIT. It can cause serious security issues.
+- As soon as your debugging session is completed, remove the access key / secret from the code, and delete it from AWS also.
