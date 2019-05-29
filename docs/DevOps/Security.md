@@ -85,10 +85,11 @@ To achieve that, follow these steps:
 
 1. In `Website1\Properties\launchSettings.json` file, change `Development` to `Production`
 1. Log on to the AWS Console website.
-1. Under `IAM` select `Users` and then locate your developer or root admin user.
-1. Under `Security credentials` generate an access key pair.
+   - Under `IAM` select `Users` and then locate your developer or root admin user.
+   - Under `Security credentials` generate an access key pair.
 1. Open `Startup.cs` file and locate the constructor.
-1. Replace the line `config.LoadAwsIdentity()` with `config.LoadAwsDevIdentity("my-access-key", "my-secret", loadSecrets: true);` using the access key details that you just created.
+   - Replace the line `config.LoadAwsIdentity()` with `config.LoadAwsDevIdentity("my-access-key", "my-secret", loadSecrets: true);` using the access key details that you just created.
+1. In `Startup.cs` locate `ConfigureAuthCookie` and comment out `options.DataProtectionProvider = new KmsDataProtectionProvider();`
 
 If your user does not have access to the admin user, alternatively you can do the following:
 1. Find your `user's ARN` and make a note of it.
