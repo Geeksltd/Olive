@@ -24,7 +24,7 @@ namespace Olive.Mvc
 
             var cd = new System.Net.Mime.ContentDisposition
             {
-                FileName = downloadFileName.Or(file.FileName),
+                FileName = downloadFileName.Or(file.FileName).ToASCII(),
                 Inline = showInline,
             };
 
