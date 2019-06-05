@@ -149,5 +149,8 @@ namespace Olive
             @event(@this).Handle(handler, callerFile, callerLine);
             return @this;
         }
+
+        public static Task<IEnumerable<T>> CloneAll<T>(this IDatabaseQuery<T> @this) where T : IEntity
+            => @this.GetList().Select(x => (T)x.Clone());
     }
 }
