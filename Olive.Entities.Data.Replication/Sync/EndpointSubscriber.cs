@@ -10,6 +10,7 @@ namespace Olive.Entities.Replication
 {
     public class EndpointSubscriber
     {
+        static TimeSpan TimeSyncTolerance = 1.Seconds();
         static FieldInfo IsImmutableField;
         static PropertyInfo IsNewProperty;
         public Type DomainType { get; set; }
@@ -50,10 +51,10 @@ namespace Olive.Entities.Replication
 
         internal async Task Import(ReplicateDataMessage message)
         {
-            if (message.CreationUtc < RefreshRequestUtc)
+            if (message.CreationUtc < RefreshRequestUtc?.Subtract(TimeSyncTolerance))
             {
                 // Ignore this. We will receive a full table after this anyway.
-                Log.Info("Ignoring importing expired ReplicateDataMessage " + message.DeduplicationId);
+                Log.Info("Ignored importing expired ReplicateDataMessage " + message.DeduplicationId + " because it's older the last refresh request.");
                 return;
             }
 
