@@ -5,7 +5,6 @@
     <RootNamespace>Olive.Drawing</RootNamespace>
     <AssemblyName>Olive.Drawing</AssemblyName>
     <PackageId>Olive.Drawing</PackageId>
-    
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Drawing (Service)</Title>
@@ -14,7 +13,7 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <PackageVersion>2.1.102</PackageVersion>
+    <PackageVersion>2.1.103</PackageVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

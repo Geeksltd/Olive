@@ -7,6 +7,6 @@
 
     public abstract class HardDeletableNakedExposedType<TDomain> : NakedExposedType<TDomain> where TDomain : class, IEntity
     {
-        public override bool IsSoftDeleteEnabled => true;
+        public override bool IsSoftDeleteEnabled => false;
     }
 }
