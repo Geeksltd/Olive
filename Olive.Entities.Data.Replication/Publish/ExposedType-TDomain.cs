@@ -9,7 +9,7 @@ namespace Olive.Entities.Replication
 {
     public abstract partial class HardDeletableExposedType<TDomain> : ExposedType<TDomain> where TDomain : class, IEntity
     {
-        public override bool IsSoftDeleteEnabled => true;
+        public override bool IsSoftDeleteEnabled => false;
     }
 
     public abstract partial class ExposedType<TDomain> : ExposedType where TDomain : class, IEntity
