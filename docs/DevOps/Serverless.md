@@ -1,5 +1,4 @@
 # Serverless deployment on AWS Lambda
-...
 
 ## Deploying M# ASP.NET web app as a Serverless Application
 ### Understanding the roles
@@ -31,7 +30,7 @@ Admin should create a policy with the following settings, so it can create the n
     ]
 }
 ```
-### Granting developer access
+#### Granting developer access
 Admin user should create an IAM user for the developer in charge of deploying the Lambda app.
 Then the deployer policy should be assigned to the user.
 For the developer user, create a programmatic access key pair. 
@@ -43,11 +42,11 @@ $ aws configure set aws_secret_access_key ...
 ```
 By doing this, AWS commands can now be executed under the user's security principal.
 The above settings will be stored under "%UserProfile%\.aws".
-###Create AWS Serverless Project
+#### Create AWS Serverless Project
 - Install AWS Toolkit for Visual Studio from [here](https://aws.amazon.com/visualstudio/).
 - Create a new project using AWS Lambda blueprint. (File -> New Project -> AWS Lambda -> AWS Serverless Application (.NET Core)).
 - On the Select Blueprint, choose ASP.NET Core Web App and then click Finish.
-### Configuring the project
+#### Configuring the project
 Open **aws-lambda-tools-default.json** from root of your project and set its values like this:
 ```json
 {
@@ -90,7 +89,7 @@ Update the **serverless.template** file to the following.
    }
 }
 ```
-### Deploying to AWS Lambda
+#### Deploying to AWS Lambda
 You should ensure that you have the lambda dotnet tool installed:
 ```
 dotnet tool install --global Amazon.Lambda.Tools --version 3.2.3
