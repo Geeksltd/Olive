@@ -42,6 +42,7 @@
     * [Cluster setup (Kubernetes & AWS)](DevOps/Cluster-setup.md)
     * [Security](DevOps/Security.md)
     * [Service preparation](DevOps/Service-preparation.md)
+    * [Serverless deployment](DevOps/Serverless.md)
         
 * Sync integration: WebApi
     * [RESTful WebApi](Api/WebApi.md)
