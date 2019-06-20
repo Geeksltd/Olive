@@ -113,4 +113,8 @@ In **New Custom Domain Name**, Select **Http** as your endpoint protocol. In **D
 #### Step 3: Updating DNS Server Record
 Log on to to your DNS Server and then Update the CNAME for your domain with **Target Domain Name** and **Hosted Zone ID**. It usually take few hour to the web routers address resolver table to get uptated. After that you can use your new domain name to address your serverless application.
 ## Creating and deploying Lambda functions
-...
+### Development Tips
+- AWS Lambda does not support **async void** methods for its entry point (AKA function-handler). For making a Lambda function asynchronous you need to use **async Task** signature for your entry point.
+- Using Syncronous calls like Task.Wait() or Task.Factory.RunSync() in a **synchronous lambda function** (the lambda function with sunc function handler) make it to run until it get a timeout exception. Use **async lambda function** instead.
+- You cannot add a **SQS trigger** to a Lambda function when your queue is a FIFO (to find out the type of queue you can check it's name. FIFO queues have a .fifo postfix).
+- Currently, there is no way for **batch insertion into a S3 bucket**. insert items in parallel for better performance.
