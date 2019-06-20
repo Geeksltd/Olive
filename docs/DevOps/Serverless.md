@@ -42,7 +42,7 @@ $ aws configure set aws_secret_access_key ...
 ```
 By doing this, AWS commands can now be executed under the user's security principal.
 The above settings will be stored under "%UserProfile%\.aws".
-#### Create AWS Serverless Project
+### Create AWS Serverless Project
 - Install AWS Toolkit for Visual Studio from [here](https://aws.amazon.com/visualstudio/).
 - Create a new project using AWS Lambda blueprint. (File -> New Project -> AWS Lambda -> AWS Serverless Application (.NET Core)).
 - On the Select Blueprint, choose ASP.NET Core Web App and then click Finish.
