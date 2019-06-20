@@ -55,8 +55,8 @@ Open **aws-lambda-tools-default.json** from root of your project and set its val
     "configuration" : "Release",
     "framework"     : "netcoreapp2.1",
     "template"      : "serverless.template",
-    "s3-bucket"           : "{my-function}-deployment",
-    "stack-name"          : "{my-function}"
+    "s3-bucket"     : "{my-function}-deployment",
+    "stack-name"    : "{my-function}"
 }
 ```
 Update the **serverless.template** file to the following.
