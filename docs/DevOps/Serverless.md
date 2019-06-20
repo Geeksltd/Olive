@@ -31,5 +31,15 @@ Admin should create a policy with the following settings, so it can create the n
     ]
 }
 ```
+### Granting developer access
+Admin user should create an IAM user for the developer in charge of deploying the Lambda app.
+Then the deployer policy should be assigned to the user.
+For the developer user, create a programmatic access key pair. 
+The developer can then open CLI and log in to AWS using the following command:
+```
+$ aws configure set default.region us-west-1
+$ aws configure set aws_access_key_id ...
+$ aws configure set aws_secret_access_key ...
+```
 ## Creating and deploying Lambda functions
 ...
