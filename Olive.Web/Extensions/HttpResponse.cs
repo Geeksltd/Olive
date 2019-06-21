@@ -2,6 +2,7 @@
 using Olive.Entities;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -31,17 +32,16 @@ namespace Olive
             if (fileName.IsEmpty())
                 fileName = responseFile.Name;
 
-            await Dispatch(response, await responseFile.ReadAllBytesAsync(), fileName, contentType);
+            var data = await responseFile.ReadAllBytesAsync();
+
+            await response.Dispatch(data, fileName, contentType);
         }
 
         /// <summary>
         /// Dispatches a file back to the client.
         /// </summary>
-        public static async Task Dispatch(this HttpResponse response, Blob blob,
-            string contentType = "Application/octet-stream")
-        {
+        public static async Task Dispatch(this HttpResponse response, Blob blob, string contentType = "Application/octet-stream") =>
             await Dispatch(response, await blob.GetFileDataAsync(), blob.FileName, contentType);
-        }
 
         /// <summary>
         /// Dispatches a binary data block back to the client.
@@ -57,7 +57,10 @@ namespace Olive
             response.Clear();
             response.ContentType = contentType;
 
-            response.Headers.Add("Content-Disposition", $"attachment; filename=\"{fileName.Remove("\"").Replace(",", "-")}\"");
+            response.Headers.Add("Cache-Control", "no-store");
+            response.Headers.Add("Pragma", "no-cache");
+
+            response.Headers.Add("Content-Disposition", "attachment; filename=\"{0}\"".FormatWith(fileName.Remove("\"", ",")));
 
             await response.Body.WriteAsync(responseData, 0, responseData.Length);
             await response.Body.FlushAsync();
@@ -66,20 +69,15 @@ namespace Olive
         /// <summary>
         /// Dispatches a string back to the client as a file.
         /// </summary>
-        public static void Dispatch(this HttpResponse response, string responseText, string fileName, string contentType = "Application/octet-stream", System.Text.Encoding encoding = null)
+        public static async Task Dispatch(this HttpResponse response, string responseText, string fileName, string contentType = "Application/octet-stream", System.Text.Encoding encoding = null)
         {
             response.Clear();
 
-            response.Headers.Add("Cache-Control", "no-store");
-            response.Headers.Add("Pragma", "no-cache");
+            if (encoding == null) encoding = Encoding.UTF8;
 
-            if (fileName.HasValue())
-                response.Headers.Add("Content-Disposition", $"attachment;filename={fileName.Replace(" ", "_")}");
+            var bytes = encoding == Encoding.UTF8 ? responseText.GetUtf8WithSignatureBytes() : encoding.GetBytes(responseText);
 
-            response.ContentType = contentType;
-
-            if (encoding != null) response.Write(responseText, encoding);
-            else response.Write(responseText);
+            await response.Dispatch(bytes, fileName, contentType);
         }
 
         /// <summary>
