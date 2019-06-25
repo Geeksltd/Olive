@@ -144,7 +144,7 @@ namespace Olive.Entities.Data
 
         static Type[] GetDrivedClasses(Type type)
         {
-            var result = type.Assembly.GetTypes().Where(t => t.IsA(type) && t != type).ToArray();
+            var result = type.Assembly.GetTypes().Where(t => t.IsA(type) && t != type && !TransientEntityAttribute.IsTransient(t)).ToArray();
 
             Array.Sort(result, new TypeComparer(type));
 
