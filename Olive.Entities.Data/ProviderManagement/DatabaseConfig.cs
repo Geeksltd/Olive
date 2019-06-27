@@ -51,7 +51,13 @@ namespace Olive.Entities.Data
                 return Type;
             }
 
-            internal IDataAccess GetDataAccess() => DataAccess.GetDataAccess(SqlClient);
+            internal IDataAccess CreateDataAccess()
+            {
+                if (ConnectionString.IsEmpty() && ConnectionStringKey.HasValue())
+                    ConnectionString = Config.GetConnectionString(ConnectionStringKey);
+
+                return DataAccess.Create(SqlClient, ConnectionString);
+            }
         }
     }
 }

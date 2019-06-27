@@ -32,7 +32,7 @@ namespace Olive.Entities.Data
         public static IDatabase ConfigDataAccess(this IDatabase @this)
         {
             foreach (var pair in DataAccessOptions.Providers)
-                DataAccess.Register(pair.Key, pair.Value, pair.Key.Namespace);
+                DataAccess.Register(pair.Key, pair.Value);
 
             return @this;
         }

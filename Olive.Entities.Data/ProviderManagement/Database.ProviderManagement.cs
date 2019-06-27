@@ -108,7 +108,7 @@ namespace Olive.Entities.Data
 
         public IDataAccess GetAccess<TConnection>(string connectionString = null) where TConnection : DbConnection, new()
         {
-            return DataAccess.GetAccess<TConnection>(connectionString);
+            return DataAccess.Create<TConnection>(connectionString);
         }
 
         public IDataAccess GetAccess(string connectionString = null)
@@ -121,7 +121,7 @@ namespace Olive.Entities.Data
             if (factory != null) return factory.GetAccess();
 
             if (connectionString.ToLowerOrEmpty() == DataAccess.GetCurrentConnectionString().ToLowerOrEmpty())
-                return DataAccess.GetDataAccess();
+                return DataAccess.Create();
 
             throw new Exception("No data provider factory's connection string matched the specified connection string.");
         }

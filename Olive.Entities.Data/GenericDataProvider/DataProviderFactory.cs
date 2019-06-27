@@ -18,7 +18,7 @@ namespace Olive.Entities.Data
 
         public DataProviderFactory(DatabaseConfig.ProviderMapping mapping)
         {
-            DataAccess = mapping.GetDataAccess();
+            DataAccess = mapping.CreateDataAccess();
             ConnectionString = mapping.ConnectionString;
             ConnectionStringKey = mapping.ConnectionStringKey;
             MappedType = mapping.GetMappedType();
