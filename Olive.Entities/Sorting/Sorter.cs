@@ -215,10 +215,10 @@ namespace Olive.Entities
 
         static bool IsAcceptable(MethodInfo getSiblingsMethod)
         {
-            var returnType = getSiblingsMethod.ReturnType;
-
             if (getSiblingsMethod == null) return false;
             if (getSiblingsMethod.GetParameters().Any()) return false;
+
+            var returnType = getSiblingsMethod.ReturnType;
 
             if (returnType.Implements<IEnumerable>()) return true;
 
