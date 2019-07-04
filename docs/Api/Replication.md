@@ -92,7 +92,9 @@ In the publisher service, when the `Publish()` method is called upon application
 - It listens to all database events related to its exposed domain type(s). Each time a record is added or updated, it will serialize the whole record onto the eventbus queue. The message is expected to be subsequently picked up by the consumer service, which will then automatically apply the same change to its local copy of the replicated data.
 - It will also handle to the *REFRESH* eventbus queue, in case the consumer service requests an initial full data dump.
 
-> NOTE: **Delete operations** will not be replicated. When replicating data types, you must not use hard-delete. Instead use a logical softdelete as a boolean property (e.g. IsArchived) in order to turn all delete operations into updates.
+> NOTE: You should consider a few conditions for **delete operations**.
+> - It is safer to not expose the types which are not marked as `SoftDelete[Attribute]`
+> - If you need to hard delete an entity from the `publisher service` you need to be aware that it could be impossible to do so in the `consumer service` due to its relations. So you should take care of those scenarios.
 
 ## Generating a proxy
 A utility named **generate-data-endpoint-proxy** (distributed as a nuget global tool) will be used to generate private nuget packages for the data endpoint, to be used by the `consumer service`. 
@@ -213,6 +215,9 @@ public class Customer : NakedExposedType<Domain.CustomerAddress> { }
 ```
 
 The `NakedExposedType<TDomain>` class will automatically expose all properties of the specified domain type.
+
+### Exposing hard delete entities
+Although it is not recommended to expose the hard delete entities if you need to do so you can use `HardDeletableExposedType` or `HardDeletableNakedExposedType`. Just keep in your mind to **cascade delete** the associations or **set them  to null**.
 
 ### Exposing custom fields / mappings
 You do not have to expose your data fields exactly as they are in the source type definition. For example, let's say you have multiple address fields in your Customer entity. But for a consumer service, you'd rather export the address as a single field.
