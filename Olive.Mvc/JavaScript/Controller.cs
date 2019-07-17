@@ -25,6 +25,16 @@ namespace Olive.Mvc
             return JavaScript(module.GenerateLoad(staticFunctionInvokation));
         }
 
+        /// <summary>
+        /// Loads a Javascript (or Typescript) service module upon page startup.
+        /// </summary>
+        [NonAction]
+        public JsonResult JavaScript(JavascriptService service)
+        {
+            JavascriptActions.Add(service);
+            return JsonActions();
+        }
+
         /// <param name="javascriptCode">The code to run after a set of javascritp dependencies are loaded.</param>
         [NonAction]
         public JsonResult JavaScript(JavascriptDependency[] dependencies, string javascriptCode)
