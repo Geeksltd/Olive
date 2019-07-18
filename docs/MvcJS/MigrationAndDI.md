@@ -27,8 +27,9 @@ export default class CustomModule{
 A dependent module is a module which depends on another service module. As a result, 
 it should be changed to a service, itself. To do so, you should follow these steps:
 1. Create a variable to keep the service keys. 
-	> This step is optional but if you need to load your service in another `.ts` it's 
+> This step is optional but if you need to load your service in another `.ts` it's 
     better to have it.
+
 ```ts
 const MyServices = {
     CustomModule: "custom-module"

@@ -1,6 +1,10 @@
 
 # Olive compatibility change log
 
+## 18 July 2019
+If you are migrating from `Olive.MvcJs < v2` to `Olive.MvcJs > v2` please check 
+[Javascript Fx (MvcJS) > Migration to version 2](https://geeksltd.github.io/Olive/#/MvcJS/MigrationAndDI) for the documentation.
+
 ## 19 March 2019
 If your project is a Microservice, then:
 - add the nuget package `Olive.Mvc.Microservices` to the `Website` project.
