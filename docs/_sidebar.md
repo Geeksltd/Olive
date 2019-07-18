@@ -59,6 +59,7 @@
     * [Overview](MvcJS/Overview.md)
     * [Ajax Lifecycle](MvcJS/AjaxLifecycle.md)
     * [Loading custom modules and libraries](MvcJS/Library.md)
+    * [Migration to version 2](MvcJS/MigrationAndDI.md)
     
 * Plugins
     * [Compression](Services/Compression.md)
