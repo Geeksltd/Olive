@@ -36,6 +36,8 @@ const MyServices = {
 
 export default MyServices;
 ```
+
+
 2. Change the module file:
    * Implement `IService`
    * Change static members to non-static
@@ -182,4 +184,61 @@ Before:
 LoadJavascriptService("custom-module", "doSomething", cs("info.Item.LoadUrl, info.Item.UseIframe"))
 	.Criteria(@"info.Item?.ImplementationUrl.HasValue() == true && 
 			info.Item?.UseIframe == true");
+```
+
+
+## Altering the built in functionalities.
+Sometimes you need to change a built in method or module in your project. For instance, 
+you may need to change how the redirection errors are handled with 
+`AjaxRedirect.onRedirectionFailed`. In this scenario you may had something like the
+followin code some where in you codes.
+
+```ts
+AjaxRedirect.onRedirectionFailed = (url, response) => {
+	// your logic
+};
+```
+
+You would need to extend the `AjaxRedirect` in your project and register it in your
+`appPage.ts` just like the other services.
+> There is an existing variable for the built-in services named Services.
+
+Extended service:
+```ts
+import AjaxRedirect from "olive/mvc/ajaxRedirect";
+import Url from "olive/components/url";
+import ResponseProcessor from "olive/mvc/responseProcessor";
+import Waiting from "olive/components/waiting";
+
+export default class HubAjaxRedirect extends AjaxRedirect {
+	constructor(url: Url, responseProcessor: ResponseProcessor, waiting: Waiting) {
+		super(url, responseProcessor, waiting);
+	}
+
+	protected onRedirected(title: string, url: string) {
+		// your logic
+	}
+
+	protected onRedirectionFailed(url: string, response: JQueryXHR) {
+		// your logic
+		super.onRedirectionFailed(url, response);
+	}
+}
+```
+
+How we registering it:
+```ts
+export default class AppPage extends OlivePage {
+	configureServices(services: ServiceContainer) {
+		services.addSingleton(Services.AjaxRedirect, 
+			(url: Url, responseProcessor: ResponseProcessor, waiting: Waiting) =>
+				new HubAjaxRedirect(url, responseProcessor, waiting)
+		).withDependencies(
+			Services.Url, 
+			Services.ResponseProcessor, 
+			Services.Waiting);
+	}
+
+	//rest of codes
+}
 ```
