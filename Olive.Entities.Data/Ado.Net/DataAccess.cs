@@ -31,17 +31,13 @@ namespace Olive.Entities.Data
     {
         static DbCommand ParameterFactory;
         readonly ISqlCommandGenerator SqlCommandGenerator;
+        string ConnectionString;
 
-        static DataAccess()
-        {
-            ParameterFactory = new TConnection().CreateCommand();
-        }
+        static DataAccess() => ParameterFactory = new TConnection().CreateCommand();
 
         public DataAccess(ISqlCommandGenerator sqlCommandGenerator, string connectionString = null)
         {
-            if (connectionString.IsEmpty())
-                connectionString = GetCurrentConnectionString();
-
+            ConnectionString = connectionString;
             SqlCommandGenerator = sqlCommandGenerator;
         }
 
@@ -58,11 +54,11 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Creates a new DB Connection to database with the given connection string.
         /// </summary>		
-        public async Task<IDbConnection> CreateConnection(string connectionString = null)
+        public async Task<IDbConnection> CreateConnection()
         {
             var result = new TConnection
             {
-                ConnectionString = connectionString.Or(GetCurrentConnectionString())
+                ConnectionString = ConnectionString.Or(GetCurrentConnectionString())
             };
 
             await result.OpenAsync();

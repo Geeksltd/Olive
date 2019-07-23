@@ -19,7 +19,7 @@ namespace Olive
             var result = rootNamespace + "." + fileRelativePath.Trim('/', '\\').Replace("/", "\\").Replace("\\", ".");
 
             using (var resource = @this.GetManifestResourceStream(result))
-                if (result == null)
+                if (resource == null)
                     throw new Exception($"The requested embedded resource '{result}' does not exist in the assembly '{@this.FullName}'");
 
             return result;

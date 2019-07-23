@@ -22,7 +22,11 @@ namespace MSharp.Build
 
         void InstallChocolatey() => WindowsCommand.Chocolaty = Install<Chocolatey>();
 
-        void InstallDotnetCoreSdk() => WindowsCommand.DotNet = Install<DotNet>();
+        void InstallDotnetCoreSdk()
+        {
+            WindowsCommand.DotNet = Install<DotNet215>();
+            WindowsCommand.DotNet = Install<DotNet22>();
+        }
 
         void InstallReplaceInFiles() => Install<ReplaceInFile>();
         void InstallAcceleratePackageRestore() => Install<AcceleratePackageRestore>();

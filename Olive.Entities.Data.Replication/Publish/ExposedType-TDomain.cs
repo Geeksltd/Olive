@@ -1,12 +1,17 @@
-﻿    using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Olive.Entities.Replication
 {
+    public abstract partial class HardDeletableExposedType<TDomain> : ExposedType<TDomain> where TDomain : class, IEntity
+    {
+        public override bool IsSoftDeleteEnabled => false;
+    }
+
     public abstract partial class ExposedType<TDomain> : ExposedType where TDomain : class, IEntity
     {
         Type domainType;
@@ -72,8 +77,7 @@ namespace Olive.Entities.Replication
 
             if (eventArg.EntityType == typeof(TDomain))
             {
-                if (IsSoftDeleteEnabled)
-                    await Publish(eventArg.Entity as TDomain, toDelete: true);
+                await Publish(eventArg.Entity as TDomain, toDelete: true);
             }
             else
             {
@@ -110,8 +114,8 @@ namespace Olive.Entities.Replication
             }
 
             Logger.Debug("Publishing the " + entity.GetType().Name + " record of " + entity.GetId());
-           
-            if(!toDelete)
+
+            if (!toDelete)
                 await Queue.Publish(await ToMessage(entity));
             else
                 await Queue.Publish(ToDeleteMessage(entity));

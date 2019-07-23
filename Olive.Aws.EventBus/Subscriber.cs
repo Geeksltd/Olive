@@ -13,6 +13,7 @@ namespace Olive.Aws
         ReceiveMessageRequest Request;
         DeleteMessageRequest Receipt;
         EventBusQueue Queue;
+        Thread PollingThread;
 
         public Subscriber(EventBusQueue queue, Func<TMessage, Task> handler)
         {
@@ -28,12 +29,9 @@ namespace Olive.Aws
                 WaitTimeSeconds = 10
             };
 
-            Receipt = new DeleteMessageRequest
-            {
-                QueueUrl = Queue.QueueUrl
-            };
+            Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
 
-            new Thread(KeepPolling).Start();
+            (PollingThread = new Thread(KeepPolling)).Start();
         }
 
         async Task<List<KeyValuePair<TMessage, Message>>> FetchEvents()

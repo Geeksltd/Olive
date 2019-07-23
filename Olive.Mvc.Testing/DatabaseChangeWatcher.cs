@@ -56,7 +56,7 @@ namespace Olive.Mvc.Testing
                 var connectionStringKey = xmlDocument.GetElementsByTagName("ConnectionStringKey")[0].FirstChild.Value;
                 var dataProviderType = xmlDocument.GetElementsByTagName("DataProviderType")[0].FirstChild.Value;
                 var changesNodeList = xmlDocument.GetElementsByTagName("Changes")[0];
-                var access = DataAccess.GetDataAccess(dataProviderType);
+                var access = DataAccess.Create(dataProviderType);
 
                 foreach (var xmlElement in changesNodeList.ChildNodes.OfType<XmlElement>())
                 {

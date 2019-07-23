@@ -52,7 +52,8 @@ namespace Olive
         {
             var result = new List<Type>();
 
-            foreach (var assembly in @this.GetAssemblies().Where(a => a.References(interfaceType.Assembly)))
+            foreach (var assembly in @this.GetAssemblies()
+                .Where(a => a == interfaceType.Assembly || a.References(interfaceType.Assembly)))
             {
                 try
                 {

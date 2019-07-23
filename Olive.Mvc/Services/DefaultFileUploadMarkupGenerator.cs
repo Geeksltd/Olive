@@ -17,17 +17,17 @@ namespace Olive.Mvc
             autocomplete = "off"
         };
 
-        public IHtmlContent Generate<TModel, TProperty>(IHtmlHelper html, object model, Expression<Func<TModel, TProperty>> property, object htmlAttributes)
+        public IHtmlContent Generate<TModel, TProperty>(IHtmlHelper html, object viewModel, Expression<Func<TModel, TProperty>> property, object htmlAttributes)
         {
-            if (model == null) throw new ArgumentNullException(nameof(model));
+            if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
             if (property == null) throw new ArgumentNullException(nameof(property));
 
             var propertyInfo = property.GetProperty();
             var propertyName = propertyInfo.Name;
-            var blob = propertyInfo.GetValue(model) as Blob ?? Blob.Empty();
+            var blob = propertyInfo.GetValue(viewModel) as Blob ?? Blob.Empty();
 
             var action = html.Request().HasFormContentType ? html.Request().Form[propertyName] : StringValues.Empty;
-            if (action == "KEEP") blob = GetOldValue(model, propertyName) ?? blob;
+            if (action == "KEEP") blob = GetOldValue(viewModel, propertyName) ?? blob;
 
             var result = new HtmlContentBuilder();
 
@@ -50,18 +50,20 @@ namespace Olive.Mvc
             return result;
         }
 
-        Blob GetOldValue(object model, string property)
+        Blob GetOldValue(object viewModel, string property)
         {
-            var itemProperty = model.GetType().GetProperty("Item");
-            if (itemProperty == null)
-                throw new Exception("Failed to find a property named 'Item' on this " + model.GetType().GetProgrammingName());
+            var itemProperty = viewModel.GetType().GetProperty("Item") ??
+                throw new Exception("Failed to find a property named 'Item' on this " + viewModel.GetType().GetProgrammingName());
 
-            var item = itemProperty.GetValue(model);
+            var item = itemProperty.GetValue(viewModel);
             if (item != null)
             {
                 var originalPropertyInfo = item.GetType().GetProperty(property);
                 if (originalPropertyInfo == null)
-                    throw new Exception($"Failed to find a property named '{property }' on " + item.GetType().GetProgrammingName());
+                {
+                    Console.WriteLine($"Failed to find a property named '{property}' on " + item.GetType().GetProgrammingName());
+                    return null;
+                }
 
                 return originalPropertyInfo.GetValue(item) as Blob ?? Blob.Empty();
 

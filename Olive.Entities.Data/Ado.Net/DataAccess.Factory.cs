@@ -1,52 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Linq;
-
-namespace Olive.Entities.Data
+﻿namespace Olive.Entities.Data
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+
     partial class DataAccess
     {
         /// <summary>
-        /// Keys are data proidver types such as 
+        /// Keys are connection types such as SqlConnection, MySqlConnection, etc.
         /// </summary>
-        static Dictionary<string, IDataAccess> Accessors = new Dictionary<string, IDataAccess>();
+        static Dictionary<Type, ISqlCommandGenerator> CommandGenerators = new Dictionary<Type, ISqlCommandGenerator>();
+        static Dictionary<string, Type> ConnectionTypes = new Dictionary<string, Type>();
 
         // <summary>
         // Registgers a data Data Access instance for a specified provider type.
         // </summary>
-        public static void Register(Type connectionType, ISqlCommandGenerator sqlCommandGenerator, string dataProviderType)
+        public static void Register(Type connectionType, ISqlCommandGenerator sqlCommandGenerator)
         {
-            var dataAccessType = typeof(DataAccess<>).MakeGenericType(connectionType);
-
-            Accessors[dataProviderType] = (IDataAccess)Activator.CreateInstance(dataAccessType, sqlCommandGenerator, null);
-        }
-
-        public static IDataAccess GetAccess<TConnection>(string connectionString = null)
-            where TConnection : DbConnection, new()
-        {
-            var commandGenerator = Accessors.GetOrDefault(typeof(TConnection).Namespace)?.GetSqlCommandGenerator();
-            if (commandGenerator == null)
-                throw new Exception("No data provider is registered for " + typeof(TConnection).Namespace +
-                    Environment.NewLine + "Consider setting it in Startup.cs using services.AddDataAccess(x => x....())");
-
-            return new DataAccess<TConnection>(commandGenerator, connectionString);
+            ConnectionTypes[connectionType.Name] = connectionType;
+            CommandGenerators[connectionType] = sqlCommandGenerator;
         }
 
         /// <summary>
         /// Gets the data accessor for the specified provider type.
         /// </summary>
-        /// <param name="dataProviderType">If null or empty is specified, the first registered data access object will be returned.</param>
-        public static IDataAccess GetDataAccess(string dataProviderType = null)
+        /// <param name="connectionType">For example SqlConnection, MySqlConnection, NpgsqlConnection, SqliteConnection, etc.
+        /// If null or empty is specified, the first registered data access object will be returned.</param>
+        public static IDataAccess Create(Type connectionType, string connectionString = null)
         {
-            if (dataProviderType.IsEmpty())
-                return Accessors.FirstOrDefault().Value ?? throw new Exception("No data access is registered.");
+            var dataAccessType = typeof(DataAccess<>).MakeGenericType(connectionType);
 
-            if (Accessors.TryGetValue(dataProviderType, out var result))
-                return result;
+            if (!CommandGenerators.TryGetValue(connectionType, out var generator))
+                throw new Exception("No data provider is registered in StartUp for " + connectionType.Name);
 
-            throw new Exception("No DataAccess is registered for provider type: " + dataProviderType);
+            return (IDataAccess)Activator.CreateInstance(dataAccessType, generator, connectionString);
+        }
+
+        public static IDataAccess Create<TConnection>(string connectionString = null) where TConnection : IDbConnection
+        {
+            return Create(typeof(TConnection), connectionString);
+        }
+
+        /// <summary>
+        /// Gets the data accessor for the specified provider type.
+        /// </summary>
+        /// <param name="connectionType">For example SqlConnection, MySqlConnection, NpgsqlConnection, SqliteConnection, etc.
+        /// If null or empty is specified, the first registered data access object will be returned.</param>
+        public static IDataAccess Create(string connectionType = null, string connectionString = null)
+        {
+            Type type;
+
+            if (connectionType.IsEmpty())
+            {
+                type = ConnectionTypes.FirstOrDefault().Value ?? throw new Exception("No data provider is registered.");
+            }
+            else if (!ConnectionTypes.TryGetValue(connectionType, out type))
+            {
+                throw new Exception("No data provider is registered in StartUp for " + connectionType);
+            }
+
+            return Create(type, connectionString);
         }
     }
 }

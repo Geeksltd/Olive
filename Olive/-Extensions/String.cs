@@ -1376,6 +1376,8 @@ namespace Olive
         /// <param name="encoding">The Encoding that is base of convert to string.</param>
         public static string ToString(this byte[] @this, Encoding encoding) => encoding.GetString(@this);
 
+        public static string ToASCII(this string @this) => @this.ToBytes(Encoding.ASCII).ToString(Encoding.ASCII);
+
         /// <summary>
         /// Escapes all invalid characters of this string to it's usable as a valid json constant.
         /// </summary>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
-    public abstract class DestinationEndpoint
+    public abstract partial class DestinationEndpoint
     {
         Assembly DomainAssembly;
         internal IEventBusQueue PublishQueue, RefreshQueue;
@@ -51,7 +51,14 @@ namespace Olive.Entities.Replication
         {
             if (message == null) return;
 
-            await Subscribers[message.TypeFullName].Import(message);
+            try
+            {
+                await Subscribers[message.TypeFullName].Import(message);
+            }
+            catch (Exception ex)
+            {
+                Log.For(this).Error(ex, "Failed to import ReplicateDataMessage " + message.Entity);
+            }
         }
     }
 }
