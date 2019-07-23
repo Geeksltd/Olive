@@ -29,7 +29,7 @@ namespace Olive.Mvc
         /// Loads a Javascript (or Typescript) service module upon page startup.
         /// </summary>
         [NonAction]
-        public JsonResult JavaScript(JavascriptService service)
+        public virtual JsonResult JavaScript(JavascriptService service)
         {
             JavascriptActions.Add(service);
             return JsonActions();

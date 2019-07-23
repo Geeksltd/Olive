@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Olive.Mvc.Microservices
 {
@@ -13,5 +14,15 @@ namespace Olive.Mvc.Microservices
 
         protected override string GetDefaultBrowserTitle(ActionExecutingContext context)
             => Microservice.Me.Name + " > " + base.GetDefaultBrowserTitle(context);
+
+        public override JsonResult JavaScript(JavascriptService service)
+        {
+            var locator = Context.Current.GetOptionalService<ServiceConfigurationLocator>();
+
+            if(locator == null || !locator.HasConfiguration)
+                return base.JavaScript(service);
+
+            return base.JavaScript(new MicroserviceJavascriptService(locator.GetUrl(HttpContext), service));
+        }
     }
 }
