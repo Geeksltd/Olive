@@ -239,6 +239,8 @@ export default class AppPage extends OlivePage {
 			Services.Url, 
 			Services.ResponseProcessor, 
 			Services.Waiting);
+
+		super.configureServices(services);
 	}
 
 	//rest of codes
