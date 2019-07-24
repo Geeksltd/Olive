@@ -22,7 +22,7 @@ namespace Olive.Aws
 
         static IConfiguration Config;
         public static AWSCredentials Credentials { get; private set; }
-        public static AmazonSecurityTokenServiceClient TokenServiceClient;
+        static AmazonSecurityTokenServiceClient TokenServiceClient;
 
         static ILogger Log => Olive.Log.For(typeof(RuntimeIdentity));
 
