@@ -188,6 +188,8 @@ LoadJavascriptService("custom-module", "doSomething", cs("info.Item.LoadUrl, inf
 			info.Item?.UseIframe == true");
 ```
 
+For microservice project check [here](../Microservices/LoadTypescriptServiceFromController.md)
+
 
 ## Altering the built in functionalities.
 Sometimes you need to change a built in method or module in your project. For instance, 
