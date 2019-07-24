@@ -24,6 +24,7 @@
     * [Implementing Resilient Apps](Microservices/ImplementingResilientApplications.md)
     * [Development Process for Docker-Based Apps](Microservices/DockerBasedApplications.md)
     * [Security in Microservices](Microservices/SecurityInMicroservices.md)
+    * [Loading a typescript service module](Microservices/LoadTypescriptServiceFromController.md)
  
 * Microservices in Olive
     * [Access Hub: Composite UI](Microservices/Overview.md)  
