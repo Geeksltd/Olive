@@ -1356,10 +1356,9 @@ namespace Olive
             var comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
             var fromIndex = @this.IndexOf(from, comparison);
-            var toIndex = @this.IndexOf(to, fromIndex + from.Length + 1, comparison);
-
             if (fromIndex == -1) return string.Empty;
 
+            var toIndex = @this.IndexOf(to, fromIndex + from.Length + 1, comparison);
             if (toIndex == -1) return string.Empty;
 
             if (toIndex < fromIndex) return string.Empty;
