@@ -46,6 +46,7 @@ namespace Olive.Aws
             {
                 try
                 {
+                    Console.WriteLine($"Loading Credentials for {provider}.");
                     return provider.Invoke();
                 }
                 catch (Exception ex)
