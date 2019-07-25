@@ -21,8 +21,8 @@ to create a typescript file name `configureServices.ts` which would be like:
 
 ```typescript
 //...
-import OlivePage from "olive/olivePage.js";
-import { ServiceDescription } from "olive/di/serviceDescription.js";
+import OlivePage from "olive/olivePage";
+import { ServiceDescription } from "olive/di/serviceDescription";
 
 export default class ConfigureServices {
     public static configure(services: ServiceContainer) {
@@ -40,3 +40,13 @@ ConfigureServices.configure((<OlivePage>window.page).services);
 you need to pass the valid name as the prameter to > Note that if due to any reason
 you needed to have this file with any other name, you need to pass the valid name 
 as the prameter to **AddTSConfiguration**.
+
+* In your modules and service configuration file make sure you have imported with the `.js` extension.
+
+```typescript
+// For the framework's files use
+import OlivePage from "olive/olivePage";
+import { ServiceDescription } from "olive/di/serviceDescription";
+// But for the project's file use
+import CustomModule from './custom/custommodule.js';
+```
