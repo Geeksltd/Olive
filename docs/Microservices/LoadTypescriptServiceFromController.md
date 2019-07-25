@@ -36,9 +36,7 @@ export default class ConfigureServices {
 ConfigureServices.configure((<OlivePage>window.page).services);
 ```
 
-> Note that if due to any reason you needed to have this file with any other name, 
-you need to pass the valid name as the prameter to > Note that if due to any reason
-you needed to have this file with any other name, you need to pass the valid name 
+> Note that if due to any reason you needed to have this file with any other name, you need to pass the valid name 
 as the prameter to **AddTSConfiguration**.
 
 * In your modules and service configuration file make sure you have imported with the `.js` extension.
