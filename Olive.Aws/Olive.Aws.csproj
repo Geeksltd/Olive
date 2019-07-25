@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Olive.Aws</PackageId>
-    <PackageVersion>2.2.104</PackageVersion>
+    <PackageVersion>2.2.107</PackageVersion>
     <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <FileVersion>2.2.0.0</FileVersion>
     <Title>Olive AWS General Provider</Title>

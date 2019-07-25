@@ -22,6 +22,7 @@ namespace Olive.Aws
 
         static IConfiguration Config;
         public static AWSCredentials Credentials { get; private set; }
+        static AmazonSecurityTokenServiceClient TokenServiceClient;
 
         static ILogger Log => Olive.Log.For(typeof(RuntimeIdentity));
 
@@ -30,6 +31,7 @@ namespace Olive.Aws
             Config = config;
             RoleArn = Environment.GetEnvironmentVariable(VARIABLE);
             Environment.SetEnvironmentVariable(VARIABLE, null);
+            TokenServiceClient = new AmazonSecurityTokenServiceClient();
 
             Log.Info("Runtime role ARN > " + RoleArn);
 
@@ -54,7 +56,7 @@ namespace Olive.Aws
                 }
             }
         }
-        
+
         static async Task Renew()
         {
             Log.Info("Requesting AssumeRole: " + RoleArn + "...");
@@ -69,18 +71,15 @@ namespace Olive.Aws
 
             try
             {
-                using (var client = new AmazonSecurityTokenServiceClient())
-                {
-                    var response = await client.AssumeRoleAsync(request);
-                    Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
-                    var credentials = response.Credentials;
+                var response = await TokenServiceClient.AssumeRoleAsync(request);
+                Log.Debug("AssumeRole response code: " + response.HttpStatusCode);
+                var credentials = response.Credentials;
 
-                    FallbackCredentialsFactory.Reset();
-                    FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () => credentials);
+                FallbackCredentialsFactory.Reset();
+                FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () => credentials);
 
-                    Log.Debug("Obtained assume role credentials.");
+                Log.Debug("Obtained assume role credentials.");
 
-                }
             }
             catch (Exception ex)
             {
