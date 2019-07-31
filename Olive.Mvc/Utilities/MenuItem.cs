@@ -14,8 +14,8 @@
 
         public bool MatchesCurrentUrl()
         {
-            var currentUrl = Context.Current.Request().ToPathAndQuery();
-            return currentUrl.StartsWith(Url.OrEmpty().RemoveFrom("?").UrlDecode(), caseSensitive: false);
+            var currentUrl = Context.Current.Request().ToPathAndQuery().UrlDecode();
+            return currentUrl.StartsWith(Url.OrEmpty().RemoveFrom("?"), caseSensitive: false);
         }
     }
 }
