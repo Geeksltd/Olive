@@ -273,7 +273,12 @@ namespace Olive.Entities.Data
 
             foreach (var baseClass in MetaData.BaseClassesInOrder)
                 foreach (var pair in baseClass.GetProvider(Cache, Access, SqlCommandGenerator).SubqueryMapping)
-                    SubqueryMapping.Add(pair.Key, pair.Value);
+                {
+                    if (SubqueryMapping.ContainsKey(pair.Key) && SubqueryMapping[pair.Key] != pair.Value)
+                        throw new Exception("Multiple subqueries needed with the same key.");
+​
+                    SubqueryMapping[pair.Key] = pair.Value;
+                }
         }
     }
 }
