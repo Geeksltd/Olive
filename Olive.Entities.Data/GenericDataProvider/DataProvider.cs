@@ -276,7 +276,7 @@ namespace Olive.Entities.Data
                 {
                     if (SubqueryMapping.ContainsKey(pair.Key) && SubqueryMapping[pair.Key] != pair.Value)
                         throw new Exception("Multiple subqueries needed with the same key.");
-​
+
                     SubqueryMapping[pair.Key] = pair.Value;
                 }
         }
