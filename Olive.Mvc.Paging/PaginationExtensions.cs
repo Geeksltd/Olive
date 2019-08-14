@@ -9,6 +9,7 @@ namespace Olive.Mvc
     public static class PaginationExtensions
     {
         const int DEFAULT_VISIBLE_PAGES = 7;
+        const int DEFATLT_PAGE_SIZE = 100000;
 
         public static IEnumerable<T> TakePage<T>(this IEnumerable<T> list, ListPagination paging)
         {
@@ -27,7 +28,7 @@ namespace Olive.Mvc
         public static T Page<T>(this T query, ListPagination paging)
             where T : IDatabaseQuery
         {
-            query.Page(paging.CurrentPage, paging.PageSize ?? 100000);
+            query.Page((paging.CurrentPage - 1) * paging.PageSize ?? DEFATLT_PAGE_SIZE, paging.PageSize ?? DEFATLT_PAGE_SIZE);
             return query;
         }
 

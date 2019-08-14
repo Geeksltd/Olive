@@ -10,17 +10,25 @@ namespace Olive.Entities.Data
         {
             var query = (DatabaseQuery)iquery;
 
-            if (query.PageSize.HasValue && query.OrderByParts.None())
-                throw new ArgumentException("PageSize cannot be used without OrderBy.");
-
             var r = new StringBuilder("SELECT");
 
             r.AppendLine($" {fields} FROM {tables}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
-            r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
+            r.AppendLine(GeneratePagination(query));
 
             return r.ToString();
+        }
+
+        public override string GeneratePagination(IDatabaseQuery query)
+        {
+            var result = query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT ");
+
+            result += query.PageStartIndex.ToString()
+                .OnlyWhen(query.PageStartIndex > 0)
+                .WithPrefix(" OFFSET ");
+
+            return result;
         }
 
         public override string SafeId(string id) => $"\"{id}\"";

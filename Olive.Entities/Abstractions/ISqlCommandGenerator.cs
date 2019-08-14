@@ -10,6 +10,8 @@
 
         string GenerateSort(IDatabaseQuery query);
 
+        string GeneratePagination(IDatabaseQuery query);
+
         string GenerateWhere(IDatabaseQuery query);
 
         string GenerateUpdateCommand(IDataProviderMetaData metaData);
