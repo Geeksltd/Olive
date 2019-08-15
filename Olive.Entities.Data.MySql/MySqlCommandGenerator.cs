@@ -18,9 +18,16 @@ namespace Olive.Entities.Data
             r.AppendLine($" {fields} FROM {tables}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
-            r.AppendLine(query.TakeTop.ToStringOrEmpty().WithPrefix(" LIMIT "));
+            r.AppendLine(GeneratePagination(query));
 
             return r.ToString();
+        }
+
+        public override string GeneratePagination(IDatabaseQuery query)
+        {
+            return query.TakeTop.ToStringOrEmpty()
+                .WithSuffix($", {query.PageStartIndex}")
+                .WithPrefix(" LIMIT ");
         }
 
         public override string SafeId(string id) => $"`{id}`";
