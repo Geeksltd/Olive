@@ -10,9 +10,6 @@ namespace Olive.Entities.Data
         {
             var query = (DatabaseQuery)iquery;
 
-            if (query.PageSize.HasValue && query.OrderByParts.None())
-                throw new ArgumentException("PageSize cannot be used without OrderBy.");
-
             var r = new StringBuilder("SELECT");
 
             r.AppendLine($" {fields} FROM {tables}");
