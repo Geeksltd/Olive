@@ -13,18 +13,12 @@ namespace Olive.Entities.Data
 
         public static AsyncLock GetSyncLock(string key) => StringKeySyncLocks.GetOrAdd(key, f => new AsyncLock());
 
-        /// <summary>
-        /// Inserts or updates an object in the database.
-        /// </summary>
         public async Task<T> Save<T>(T entity) where T : IEntity
         {
             await Save(entity as IEntity, SaveBehaviour.Default);
             return entity;
         }
-
-        /// <summary>
-        /// Inserts or updates an object in the database.
-        /// </summary>        
+ 
         public async Task Save(IEntity entity, SaveBehaviour behaviour)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -125,60 +119,55 @@ Database.Update(myObject, x=> x.P2 = ...);");
             Cache.Remove(entity);
         }
 
-        /// <summary>
-        /// Saves the specified records in the data repository.
-        /// The operation will run in a Transaction.
-        /// </summary>
         public Task<IEnumerable<T>> Save<T>(List<T> records) where T : IEntity => Save(records as IEnumerable<T>);
 
         /* ===================== Update ========================*/
+        
+        public Task<List<T>> Update<T>(IEnumerable<T> items, Action<T> action) where T : IEntity =>
+            Update(items, action, SaveBehaviour.Default);
 
-        /// <summary>
-        /// Runs an update command on a list of given objects and persists the updated objects in database.
-        /// It returns the updated instances.
-        /// </summary>
-        /// <param name="items">The objects to be updated in database.</param>
-        /// <param name="action">Update action. For example: o=>o.Property = "Value"</param>
-        public async Task<List<T>> Update<T>(IEnumerable<T> items, Action<T> action) where T : IEntity =>
-            await Update<T>(items, action, SaveBehaviour.Default);
+        public Task<List<T>> Update<T>(IEnumerable<T> items, Func<T, Task> action) where T : IEntity =>
+            Update(items, action, SaveBehaviour.Default);
 
-        /// <summary>
-        /// Runs an update command on a list of given objects and persists the updated objects in database.
-        /// It returns the updated instances.
-        /// </summary>
-        /// <param name="items">The objects to be updated in database.</param>
-        /// <param name="action">Update action. For example: o=>o.Property = "Value"</param>
-        public async Task<List<T>> Update<T>(IEnumerable<T> items, Action<T> action, SaveBehaviour behaviour) where T : IEntity
+        public Task<List<T>> Update<T>(IEnumerable<T> items, Action<T> action, SaveBehaviour behaviour) where T : IEntity =>
+            Update(items, action, null, behaviour);
+
+        public Task<List<T>> Update<T>(IEnumerable<T> items, Func<T, Task> action, SaveBehaviour behaviour) where T : IEntity =>
+            Update(items, null, action, behaviour);
+
+        async Task<List<T>> Update<T>(IEnumerable<T> items, Action<T> action, Func<T, Task> asyncAction, SaveBehaviour behaviour) where T : IEntity
         {
             var result = new List<T>();
 
             await EnlistOrCreateTransaction(async () =>
             {
-                foreach (var item in items)
-                    result.Add(await Update(item, action, behaviour));
+                if(action != null)
+                    foreach (var item in items)
+                        result.Add(await Update(item, action, behaviour));
+                else
+                    foreach (var item in items)
+                        result.Add(await Update(item, asyncAction, behaviour));
             });
 
             return result;
         }
 
-        /// <summary>
-        /// Runs an update command on a given object's clone and persists the updated object in database. It returns the updated instance.
-        /// </summary>
-        /// <param name="item">The object to be updated in database.</param>
-        /// <param name="action">Update action. For example: o=>o.Property = "Value"</param>
         public Task<T> Update<T>(T item, Action<T> action) where T : IEntity => Update<T>(item, action, SaveBehaviour.Default);
 
-        /// <summary>
-        /// Runs an update command on a given object's clone and persists the updated object in database. It returns the updated instance.
-        /// </summary>
-        /// <param name="item">The object to be updated in database.</param>
-        /// <param name="action">Update action. For example: o=>o.Property = "Value"</param>
-        public async Task<T> Update<T>(T item, Action<T> action, SaveBehaviour behaviour) where T : IEntity
+        public Task<T> Update<T>(T item, Func<T, Task> action) where T : IEntity => Update<T>(item, action, SaveBehaviour.Default);
+
+        public Task<T> Update<T>(T item, Action<T> action, SaveBehaviour behaviour) where T : IEntity =>
+            Update(item, action, null, behaviour);
+
+        public Task<T> Update<T>(T item, Func<T, Task> action, SaveBehaviour behaviour) where T : IEntity =>
+            Update(item, null, action, behaviour);
+
+        async Task<T> Update<T>(T item, Action<T> action, Func<T, Task> asyncAction, SaveBehaviour behaviour) where T : IEntity
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
-            if (action == null)
+            if (!(action == null ^ asyncAction == null))
                 throw new ArgumentNullException(nameof(action));
 
             if (item.IsNew)
@@ -191,30 +180,35 @@ Database.Update(myObject, x=> x.P2 = ...);");
                 // No need for an error. We can just get the fresh version here.
                 item = await Reload(item);
 
+            async Task doAction(T obj)
+            {
+                if (action == null)
+                    await asyncAction(obj);
+                else
+                    action(obj);
+            }
+
             if (Entity.Services.IsImmutable(item as Entity))
             {
                 var clone = (T)((IEntity)item).Clone();
 
-                action(clone);
+                await doAction(clone);
 
                 await Save(clone as Entity, behaviour);
 
-                if (!AnyOpenTransaction()) action(item);
+                if (!AnyOpenTransaction()) await doAction(item);
 
                 return clone;
             }
             else
             {
-                action(item);
+                await doAction(item);
                 await Save(item, behaviour);
 
                 return item;
             }
         }
 
-        /// <summary>
-        /// Inserts the specified objects in bulk. None of the object events will be triggered.
-        /// </summary>
         public async Task BulkInsert(Entity[] objects, int batchSize = 10, bool bypassValidation = false)
         {
             if (!bypassValidation)
@@ -237,9 +231,6 @@ Database.Update(myObject, x=> x.P2 = ...);");
             }
         }
 
-        /// <summary>
-        /// Updates the specified objects in bulk. None of the object events will be triggered.
-        /// </summary>
         public async Task BulkUpdate(Entity[] objects, int batchSize = 10, bool bypassValidation = false)
         {
             if (!bypassValidation)
