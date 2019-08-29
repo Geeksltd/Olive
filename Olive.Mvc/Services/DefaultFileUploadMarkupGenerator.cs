@@ -26,13 +26,20 @@ namespace Olive.Mvc
             var propertyName = propertyInfo.Name;
             var blob = propertyInfo.GetValue(viewModel) as Blob ?? Blob.Empty();
 
-            var action = html.Request().HasFormContentType ? html.Request().Form[propertyName] : StringValues.Empty;
+            // TODO: Hack to unblock the project. Should be fixed straight away.
+            var prefix = "";
+            if(viewModel.GetType().Name.EndsWith("SubForm"))
+                prefix += $"{viewModel.GetType().Name.TrimEnd("SubForm")}-{GetItem(viewModel)?.GetId()}.";
+
+            var action = html.Request().HasFormContentType ? html.Request().Form[prefix + propertyName] : StringValues.Empty;
             if (action == "KEEP") blob = GetOldValue(viewModel, propertyName) ?? blob;
 
             var result = new HtmlContentBuilder();
 
             // For validation to work, this works instead of Hidden.
             if (action.ToString().IsEmpty() && blob.HasValue()) action = "KEEP";
+
+            if (GetItem(viewModel)?.IsNew == true && blob is BlobEx blobEx) action = blobEx.BindedFrom;
 
             result.AppendHtmlLine($@"
                 <div class=""file-upload"">
@@ -52,10 +59,7 @@ namespace Olive.Mvc
 
         Blob GetOldValue(object viewModel, string property)
         {
-            var itemProperty = viewModel.GetType().GetProperty("Item") ??
-                throw new Exception("Failed to find a property named 'Item' on this " + viewModel.GetType().GetProgrammingName());
-
-            var item = itemProperty.GetValue(viewModel);
+            var item = GetItem(viewModel);
             if (item != null)
             {
                 var originalPropertyInfo = item.GetType().GetProperty(property);
@@ -71,6 +75,14 @@ namespace Olive.Mvc
             }
 
             return null;
+        }
+
+        IEntity GetItem(object viewModel)
+        {
+            var itemProperty = viewModel.GetType().GetProperty("Item") ??
+                            throw new Exception("Failed to find a property named 'Item' on this " + viewModel.GetType().GetProgrammingName());
+
+            return itemProperty.GetValue(viewModel) as IEntity;
         }
     }
 }

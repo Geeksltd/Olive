@@ -35,7 +35,7 @@ namespace Olive.Mvc
 
             var file = folder.GetFiles().Single();
 
-            return new Blob(await file.ReadAllBytesAsync(), file.Name);
+            return new BlobEx(await file.ReadAllBytesAsync(), file.Name, "file:" + fileKey);
         }
 
         public static async Task DeleteTempFiles(TimeSpan olderThan)
