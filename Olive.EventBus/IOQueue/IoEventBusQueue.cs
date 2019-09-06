@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,23 +19,23 @@ namespace Olive
             Folder = Path.Combine(Path.GetTempPath(), $@"Olive\IO.Queue\{folder}").AsDirectory().EnsureExists();
         }
 
-        public async Task<string> Publish(IEventBusMessage message)
+        public async Task<string> Publish(string message)
         {
             FileInfo path;
             using (await SyncLock.Lock())
             {
                 path = Folder.GetFile(DateTime.UtcNow.Ticks.ToString());
             }
-            await path.WriteAllTextAsync(JsonConvert.SerializeObject(message));
+            await path.WriteAllTextAsync(message);
             return path.Name;
         }
 
-        public async Task<QueueMessageHandle<TMessage>> Pull<TMessage>(int timeoutSeconds = 10) where TMessage : IEventBusMessage
+        public async Task<QueueMessageHandle<string>> Pull(int timeoutSeconds = 10)
         {
-            var item = await IOSubscriber<TMessage>.FetchOnce(Folder);
+            var item = await IOSubscriber.FetchOnce(Folder);
             if (item.Key == null) return null;
 
-            return new QueueMessageHandle<TMessage>(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
+            return new QueueMessageHandle<string>(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
         }
 
         public Task Purge()
@@ -45,9 +44,6 @@ namespace Olive
             return Task.CompletedTask;
         }
 
-        public void Subscribe<TMessage>(Func<TMessage, Task> handler) where TMessage : IEventBusMessage
-        {
-            new IOSubscriber<TMessage>(this, handler).Start();
-        }
+        public void Subscribe(Func<string, Task> handler) => new IOSubscriber(this, handler).Start();
     }
 }
