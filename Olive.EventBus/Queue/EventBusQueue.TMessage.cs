@@ -14,7 +14,7 @@ namespace Olive
 
         Task<string> IEventBusQueue.Publish(string message) => Queue.Publish(message);
         void IEventBusQueue.Subscribe(Func<string, Task> @handler) => Queue.Subscribe(handler);
-        Task<QueueMessageHandle<string>> IEventBusQueue.Pull(int timeout) => Queue.Pull(timeout);
+        Task<QueueMessageHandle> IEventBusQueue.Pull(int timeout) => Queue.Pull(timeout);
         Task IEventBusQueue.Purge() => Queue.Purge();
 
         /// <summary>

@@ -47,16 +47,16 @@ namespace Olive
            where TMessage : IEventBusMessage
         {
             var item = await queue.Pull(timeoutSeconds);
-            if (item == null || item.Message.IsEmpty()) return null;
+            if (item == null || item.RawMessage.IsEmpty()) return null;
 
             try
             {
-                var message = JsonConvert.DeserializeObject<TMessage>(item.Message);
-                return new QueueMessageHandle<TMessage>(message, () => item.Complete());
+                var message = JsonConvert.DeserializeObject<TMessage>(item.RawMessage);
+                return new QueueMessageHandle<TMessage>(item.RawMessage, message, () => item.Complete());
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to deserialize event message to " + typeof(TMessage).FullName + ":\r\n" + item.Message, ex);
+                throw new Exception("Failed to deserialize event message to " + typeof(TMessage).FullName + ":\r\n" + item.RawMessage, ex);
             }
         }
     }

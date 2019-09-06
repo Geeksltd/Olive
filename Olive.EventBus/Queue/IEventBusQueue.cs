@@ -20,7 +20,7 @@ namespace Olive
         /// Pulls a single item from the specified queue, or null if nothing was available.
         /// After completing the message processing, you must call Complete().
         /// </summary>
-        Task<QueueMessageHandle<string>> Pull(int timeoutSeconds = 10);
+        Task<QueueMessageHandle> Pull(int timeoutSeconds = 10);
 
         /// <summary>
         /// Deletes all messages on the specified queue.

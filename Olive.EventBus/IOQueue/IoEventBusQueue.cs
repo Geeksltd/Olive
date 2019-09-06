@@ -30,12 +30,12 @@ namespace Olive
             return path.Name;
         }
 
-        public async Task<QueueMessageHandle<string>> Pull(int timeoutSeconds = 10)
+        public async Task<QueueMessageHandle> Pull(int timeoutSeconds = 10)
         {
             var item = await IOSubscriber.FetchOnce(Folder);
             if (item.Key == null) return null;
 
-            return new QueueMessageHandle<string>(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
+            return new QueueMessageHandle(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
         }
 
         public Task Purge()
