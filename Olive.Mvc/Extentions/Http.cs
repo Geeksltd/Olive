@@ -30,61 +30,6 @@ namespace Olive.Mvc
         public static bool IsAjaxPost(this HttpRequest request) => request.IsAjaxCall() && request.IsPost();
 
         /// <summary>
-        /// Dispatches a binary data block back to the client.
-        /// </summary>
-        public static async Task Dispatch(this HttpResponse response, byte[] responseData, string fileName, string contentType = "Application/octet-stream")
-        {
-            if (responseData == null) throw new ArgumentNullException(nameof(responseData));
-
-            if (fileName.IsEmpty()) throw new ArgumentNullException(nameof(fileName));
-
-            response.Clear();
-            response.ContentType = contentType;
-
-            response.Headers.Add("Cache-Control", "no-store");
-            response.Headers.Add("Pragma", "no-cache");
-
-            response.Headers.Add("Content-Disposition", "attachment; filename=\"{0}\"".FormatWith(fileName.Remove("\"", ",")));
-
-            await response.Body.WriteAsync(responseData, 0, responseData.Length);
-        }
-
-        /// <summary>
-        /// Dispatches a file back to the client.
-        /// </summary>
-        public static async Task Dispatch(this HttpResponse response, Blob blob, string contentType = "Application/octet-stream") =>
-            await Dispatch(response, await blob.GetFileDataAsync(), blob.FileName, contentType);
-
-        /// <summary>
-        /// Dispatches a file back to the client.
-        /// </summary>
-        /// <param name="fileName">If set to null, the same file name of the file will be used.</param>
-        public static async Task Dispatch(this HttpResponse response, FileInfo responseFile, string fileName = null, string contentType = "Application/octet-stream")
-        {
-            if (responseFile == null) throw new ArgumentNullException(nameof(responseFile));
-
-            if (fileName.IsEmpty()) fileName = responseFile.Name;
-
-            var data = await responseFile.ReadAllBytesAsync();
-
-            await response.Dispatch(data, fileName, contentType);
-        }
-
-        /// <summary>
-        /// Dispatches a string back to the client as a file.
-        /// </summary>
-        public static async Task Dispatch(this HttpResponse response, string responseText, string fileName, string contentType = "Application/octet-stream", System.Text.Encoding encoding = null)
-        {
-            response.Clear();
-
-            if (encoding == null) encoding = Encoding.UTF8;
-
-            var bytes = encoding == Encoding.UTF8 ? responseText.GetUtf8WithSignatureBytes() : encoding.GetBytes(responseText);
-
-            await response.Dispatch(bytes, fileName, contentType);
-        }
-
-        /// <summary>
         /// Gets a URL helper for the current http context.
         /// </summary>
         public static UrlHelper GetUrlHelper(this HttpContext context)

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Olive
 {
-    class IOSubscriber<TMessage> where TMessage : IEventBusMessage
+    class IOSubscriber
     {
         AsyncLock SyncLock = new AsyncLock();
-        Func<TMessage, Task> Handler;
+        Func<string, Task> Handler;
         DirectoryInfo Folder;
 
-        public IOSubscriber(IOEventBusQueue queue, Func<TMessage, Task> handler)
+        public IOSubscriber(IOEventBusQueue queue, Func<string, Task> handler)
         {
             Folder = queue.Folder;
             Handler = handler;
@@ -43,22 +42,14 @@ namespace Olive
                 }
         }
 
-        internal static async Task<KeyValuePair<FileInfo, TMessage>> FetchOnce(DirectoryInfo folder)
+        internal static async Task<KeyValuePair<FileInfo, string>> FetchOnce(DirectoryInfo folder)
         {
             var item = folder.GetFiles().OrderBy("CreationTimeUtc").FirstOrDefault();
 
-            if (item == null) return new KeyValuePair<FileInfo, TMessage>(null, default(TMessage));
+            if (item == null) return new KeyValuePair<FileInfo, string>(null, null);
 
             var content = await ReadFile(item);
-            try
-            {
-                var @event = JsonConvert.DeserializeObject<TMessage>(content);
-                return new KeyValuePair<FileInfo, TMessage>(item, @event);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to deserialize event message to " + typeof(TMessage).FullName + ":\r\n" + content, ex);
-            }
+            return new KeyValuePair<FileInfo, string>(item, content);
         }
 
         async void OnFoundNewFile(object sender, FileSystemEventArgs e)

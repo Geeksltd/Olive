@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
+    public abstract class HardDeletableExposedType : ExposedType
+    {
+        public override bool IsSoftDeleteEnabled => false;
+    }
+
     public abstract class ExposedType
     {
         internal string QueueUrl { get; set; }
@@ -14,13 +19,10 @@ namespace Olive.Entities.Replication
 
         public abstract Type DomainType { get; }
 
-        //If we consider that all ExposedTypes should be SoftDelete enabled
-        public bool IsSoftDeleteEnabled => true;
-
-        //If we consider that some ExposedTypes should be SoftDelete enabled. Those one should be marked as [SoftDelete]
-        //public bool IsSoftDeleteEnabled => SoftDeleteAttribute.IsEnabled(GetType());
-
-        //In my opinion it should be enabled for all ExposedTypes
+        /// <summary>
+        /// By default it's true. If you want the data to be hard-deleted on the target database, override this and return false.
+        /// </summary>
+        public virtual bool IsSoftDeleteEnabled => true;
 
         public async Task<ReplicateDataMessage> ToMessage(IEntity entity)
         {

@@ -78,3 +78,25 @@ To assign the service IAM role to each pod, we added a new `environment variable
 
 When a pod starts, the application reads the `service IAM role` from the environment variable. It then uses the AWS sdk to *assume* the service role, and then generates a `temporary credentials` for the service role. The lifetime of that credentials is a few hours, and there is a scheduled background process in the application to renew that regularly. The temporary credentials are stored in memory, and not persisted anywhere, which makes them more secure.
 
+## Debugging the live AWS environment locally
+There are times when you need to connect to the production environment while running the app on your development machine. For example, this is useful to identify some integration or data related issues that are hard or impossible to replicate in the dev environment.
+
+To achieve that, follow these steps:
+
+1. In `Website1\Properties\launchSettings.json` file, change `Development` to `Production`
+1. Log on to the AWS Console website.
+   - Under `IAM` select `Users` and then locate your developer or root admin user.
+   - Under `Security credentials` generate an access key pair.
+1. Open `Startup.cs` file and locate the constructor.
+   - Replace the line `config.LoadAwsIdentity()` with `config.LoadAwsDevIdentity("my-access-key", "my-secret", loadSecrets: true);` using the access key details that you just created.
+1. In `Startup.cs` locate `ConfigureAuthCookie` and comment out `options.DataProtectionProvider = new KmsDataProtectionProvider();`
+
+If your user does not have access to the admin user, alternatively you can do the following:
+1. Find your `user's ARN` and make a note of it.
+1. Under `IAM Roles` locate the `{MyApplication}Runtime` role (the identify of your application at runtime).
+1. Create a trust relationship between that role and your user.
+
+
+#### Beware
+- Never commit or push these changes to GIT. It can cause serious security issues.
+- As soon as your debugging session is completed, remove the access key / secret from the code, and delete it from AWS also.

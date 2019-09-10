@@ -261,6 +261,17 @@ namespace Olive.Mvc
             return HtmlString.Empty;
         }
 
+        public static HtmlString RunJavascript(this IHtmlHelper @this, JavascriptService service, PageLifecycleStage stage = PageLifecycleStage.Init)
+        {
+            var actions = @this.ViewContext.HttpContext.JavascriptActions();
+
+            var exists = actions.Any(x => x is JavascriptService j && j == service);
+
+            if (!exists) actions.Add(service);
+
+            return HtmlString.Empty;
+        }
+
         public static HtmlString ReferenceScriptFile(this IHtmlHelper @this, string scriptUrl)
         {
             var context = @this.ViewContext.HttpContext;

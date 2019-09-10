@@ -181,15 +181,9 @@ namespace Olive.Entities
         {
             var getSiblingsMethod = item.GetType().GetMethod("GetSiblings", BindingFlags.Public | BindingFlags.Instance);
 
-            var isAcceptable = true;
-
-            if (getSiblingsMethod == null) isAcceptable = false;
-            else if (getSiblingsMethod.GetParameters().Any()) isAcceptable = false;
-            else if (!getSiblingsMethod.ReturnType.Implements(typeof(IEnumerable))) isAcceptable = false;
-
             IEnumerable<ISortable> result;
 
-            if (!isAcceptable)
+            if (!IsAcceptable(getSiblingsMethod))
             {
                 result = (await Database.Of(item.GetType()).GetList()).Cast<ISortable>();
             }
@@ -199,7 +193,13 @@ namespace Olive.Entities
 
                 try
                 {
-                    foreach (ISortable element in getSiblingsMethod.Invoke(item, null) as IEnumerable)
+                    IEnumerable collection;
+                    if (getSiblingsMethod.ReturnType.IsA<Task>())
+                        collection = await (dynamic)getSiblingsMethod.Invoke(item, null) as IEnumerable<ISortable>;
+                    else
+                        collection = getSiblingsMethod.Invoke(item, null) as IEnumerable;
+
+                    foreach (ISortable element in collection)
                         list.Add(element);
                 }
                 catch (Exception ex)
@@ -211,6 +211,23 @@ namespace Olive.Entities
             }
 
             return result.OrderBy(i => i.Order).ToList();
+        }
+
+        static bool IsAcceptable(MethodInfo getSiblingsMethod)
+        {
+            if (getSiblingsMethod == null) return false;
+            if (getSiblingsMethod.GetParameters().Any()) return false;
+
+            var returnType = getSiblingsMethod.ReturnType;
+
+            if (returnType.Implements<IEnumerable>()) return true;
+
+            if (returnType.IsA<Task>() &&
+                returnType.IsGenericType &&
+                returnType.GetGenericArguments().Single().Implements<IEnumerable>())
+                return true;
+
+            return false;
         }
 
         /// <summary>

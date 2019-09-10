@@ -4,4 +4,9 @@
     {
         public override void Define() => ExposeEverything();
     }
+
+    public abstract class HardDeletableNakedExposedType<TDomain> : NakedExposedType<TDomain> where TDomain : class, IEntity
+    {
+        public override bool IsSoftDeleteEnabled => false;
+    }
 }

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace Olive.Entities.Replication
 {
     public class EndpointSubscriber
     {
+        static TimeSpan TimeSyncTolerance = 1.Seconds();
         static FieldInfo IsImmutableField;
         static PropertyInfo IsNewProperty;
         public Type DomainType { get; set; }
@@ -49,15 +51,15 @@ namespace Olive.Entities.Replication
 
         internal async Task Import(ReplicateDataMessage message)
         {
-            if (message.CreationUtc < RefreshRequestUtc)
+            if (message.CreationUtc < RefreshRequestUtc?.Subtract(TimeSyncTolerance))
             {
                 // Ignore this. We will receive a full table after this anyway.
-                Log.Info("Ignoring importing expired ReplicateDataMessage " + message.DeduplicationId);
+                Log.Info("Ignored importing expired ReplicateDataMessage " + message.DeduplicationId + " because it's older the last refresh request.");
                 return;
             }
 
             Log.Debug($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
-            
+
             IEntity entity;
 
             try { entity = await Deserialize(message.Entity); }
@@ -66,21 +68,28 @@ namespace Olive.Entities.Replication
                 Log.Error(ex, "Failed to deserialize.");
                 throw;
             }
-                
+
             try
             {
                 if (message.ToDelete)
                 {
-                    await Database.Delete(entity);
-                    await GlobalEntityEvents.InstanceDeleted.Raise(new GlobalDeleteEventArgs(entity));
-
-                    Log.Debug("Logically delete the " + entity.GetType().FullName + " " + entity.GetId());
+                    if (await Endpoint.OnDeleting(message, entity))
+                    {
+                        await Database.Delete(entity);
+                        await Endpoint.OnDeleted(message, entity);
+                    }
                 }
                 else
                 {
                     var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
+
+                    if (mode == SaveMode.Update && !await IsActuallyChanged(entity)) return;
+
+                    if (!await Endpoint.OnSaving(message, entity, mode)) return;
+
                     await Database.Save(entity, SaveBehaviour.BypassAll);
                     await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(entity, mode));
+                    await Endpoint.OnSaved(message, entity, mode);
 
                     Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());
                 }
@@ -90,6 +99,13 @@ namespace Olive.Entities.Replication
                 Log.Error(ex, "Failed to import.");
                 throw;
             }
+        }
+
+        async Task<bool> IsActuallyChanged(IEntity entityBeingSaved)
+        {
+            var original = await Database.Get(entityBeingSaved.GetId(), entityBeingSaved.GetType());
+            var provider = Database.GetProvider(entityBeingSaved.GetType());
+            return provider.GetUpdatedValues(original, entityBeingSaved).Any();
         }
 
         async Task<IEntity> Deserialize(string serialized)

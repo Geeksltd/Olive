@@ -1,8 +1,8 @@
 ﻿using Olive;
 using System;
 using System.IO;
-using System.Xml.Linq;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace MSharp.Build
 {
@@ -21,7 +21,10 @@ namespace MSharp.Build
             IsWebForms = root.GetSubDirectory("Website").GetFiles("*.csproj").None();
 
             if (IsDotNetCore)
-                Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.1");
+            {
+                if (Lib.GetSubDirectory("netcoreapp2.2").Exists()) Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.2");
+                else Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.1");
+            }
         }
 
         bool IsProjectDotNetCore()
@@ -50,13 +53,13 @@ namespace MSharp.Build
         {
             var json = @"{  
    ""runtimeOptions"":{  
-      ""tfm"":""netcoreapp2.1"",
+      ""tfm"":""VERSION"",
       ""framework"":{  
          ""name"":""Microsoft.NETCore.App"",
-         ""version"":""2.1.0""
+         ""version"":""2.MINOR-VER.0""
       }
    }
-}";
+}".Replace("VERSION", Lib.Name).Replace("MINOR-VER", Lib.Name.Last().ToString());
             File.WriteAllText(Path.Combine(Lib.FullName, "MSharp.DSL.runtimeconfig.json"), json);
         }
 

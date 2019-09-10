@@ -1347,8 +1347,8 @@ namespace Olive
         /// <summary>
         /// Gets a piece of this string from specific start to specific end place..
         /// </summary>
-        /// <param name="fromIndex"> Is an Integer argument that determines substring is started from which character index. The first character of this string is started from Zero.</param>
-        /// <param name="toText"> Is a string that determines the end of the output string.</param>
+        /// <param name="from"> Is an Integer argument that determines substring is started from which character index. The first character of this string is started from Zero.</param>
+        /// <param name="to"> Is a string that determines the end of the output string.</param>
         /// <param name="inclusive"> Determines whether the output string contains {from} and {to} strings or not. Default value is false.</param>
         /// <param name="caseSensitive"> Determines whether the case sensitive is important or not.</param>
         public static string Substring(this string @this, string from, string to, bool inclusive, bool caseSensitive)
@@ -1356,10 +1356,10 @@ namespace Olive
             var comparison = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
             var fromIndex = @this.IndexOf(from, comparison);
-            var toIndex = @this.IndexOf(to, fromIndex + from.Length + 1, comparison);
-
             if (fromIndex == -1) return string.Empty;
+            if (@this.Length == fromIndex + from.Length) return string.Empty;
 
+            var toIndex = @this.IndexOf(to, fromIndex + from.Length + 1, comparison);
             if (toIndex == -1) return string.Empty;
 
             if (toIndex < fromIndex) return string.Empty;
@@ -1375,6 +1375,8 @@ namespace Olive
         /// </summary>
         /// <param name="encoding">The Encoding that is base of convert to string.</param>
         public static string ToString(this byte[] @this, Encoding encoding) => encoding.GetString(@this);
+
+        public static string ToASCII(this string @this) => @this.ToBytes(Encoding.ASCII).ToString(Encoding.ASCII);
 
         /// <summary>
         /// Escapes all invalid characters of this string to it's usable as a valid json constant.

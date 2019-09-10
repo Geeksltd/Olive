@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -123,7 +124,7 @@ namespace Olive.Entities.Data
                         continue;
                     }
                 }
-                else if (propertyType.IsGenericType)
+                else if (propertyType.IsGenericType && propertyType.Implements<IEnumerable>())
                 {
                     try
                     {
@@ -345,9 +346,6 @@ namespace Olive.Entities.Data
 
         string GenerateAssociationLoadingCriteria(DatabaseQuery masterQuery, PropertyInfo association)
         {
-            if (masterQuery.PageSize.HasValue && masterQuery.OrderByParts.None())
-                throw new ArgumentException("PageSize cannot be used without OrderBy.");
-
             var masterProvider = masterQuery.Provider as DataProvider;
 
             var uniqueItems = masterProvider.GenerateSelectCommand(masterQuery, masterQuery.Column(association.Name));

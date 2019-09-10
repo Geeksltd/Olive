@@ -142,9 +142,9 @@ namespace Olive.Mvc
         }
 
         [NonAction]
-        public ActionResult AjaxRedirect(string url)
+        public ActionResult AjaxRedirect(string url, string target = null)
         {
-            JavascriptActions.Redirect(url, withAjax: true);
+            JavascriptActions.Redirect(url, withAjax: true, target: target);
             return JsonActions();
         }
 

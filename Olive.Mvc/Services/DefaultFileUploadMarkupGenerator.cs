@@ -17,22 +17,29 @@ namespace Olive.Mvc
             autocomplete = "off"
         };
 
-        public IHtmlContent Generate<TModel, TProperty>(IHtmlHelper html, object model, Expression<Func<TModel, TProperty>> property, object htmlAttributes)
+        public IHtmlContent Generate<TModel, TProperty>(IHtmlHelper html, object viewModel, Expression<Func<TModel, TProperty>> property, object htmlAttributes)
         {
-            if (model == null) throw new ArgumentNullException(nameof(model));
+            if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
             if (property == null) throw new ArgumentNullException(nameof(property));
 
             var propertyInfo = property.GetProperty();
             var propertyName = propertyInfo.Name;
-            var blob = propertyInfo.GetValue(model) as Blob ?? Blob.Empty();
+            var blob = propertyInfo.GetValue(viewModel) as Blob ?? Blob.Empty();
 
-            var action = html.Request().HasFormContentType ? html.Request().Form[propertyName] : StringValues.Empty;
-            if (action == "KEEP") blob = GetOldValue(model, propertyName) ?? blob;
+            // TODO: Hack to unblock the project. Should be fixed straight away.
+            var prefix = "";
+            if(viewModel.GetType().Name.EndsWith("SubForm"))
+                prefix += $"{viewModel.GetType().Name.TrimEnd("SubForm")}-{GetItem(viewModel)?.GetId()}.";
+
+            var action = html.Request().HasFormContentType ? html.Request().Form[prefix + propertyName] : StringValues.Empty;
+            if (action == "KEEP") blob = GetOldValue(viewModel, propertyName) ?? blob;
 
             var result = new HtmlContentBuilder();
 
             // For validation to work, this works instead of Hidden.
             if (action.ToString().IsEmpty() && blob.HasValue()) action = "KEEP";
+
+            if (GetItem(viewModel)?.IsNew == true && blob is BlobEx blobEx) action = blobEx.BindedFrom;
 
             result.AppendHtmlLine($@"
                 <div class=""file-upload"">
@@ -50,18 +57,17 @@ namespace Olive.Mvc
             return result;
         }
 
-        Blob GetOldValue(object model, string property)
+        Blob GetOldValue(object viewModel, string property)
         {
-            var itemProperty = model.GetType().GetProperty("Item");
-            if (itemProperty == null)
-                throw new Exception("Failed to find a property named 'Item' on this " + model.GetType().GetProgrammingName());
-
-            var item = itemProperty.GetValue(model);
+            var item = GetItem(viewModel);
             if (item != null)
             {
                 var originalPropertyInfo = item.GetType().GetProperty(property);
                 if (originalPropertyInfo == null)
-                    throw new Exception($"Failed to find a property named '{property }' on " + item.GetType().GetProgrammingName());
+                {
+                    Console.WriteLine($"Failed to find a property named '{property}' on " + item.GetType().GetProgrammingName());
+                    return null;
+                }
 
                 return originalPropertyInfo.GetValue(item) as Blob ?? Blob.Empty();
 
@@ -69,6 +75,14 @@ namespace Olive.Mvc
             }
 
             return null;
+        }
+
+        IEntity GetItem(object viewModel)
+        {
+            var itemProperty = viewModel.GetType().GetProperty("Item") ??
+                            throw new Exception("Failed to find a property named 'Item' on this " + viewModel.GetType().GetProgrammingName());
+
+            return itemProperty.GetValue(viewModel) as IEntity;
         }
     }
 }

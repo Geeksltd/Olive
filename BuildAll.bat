@@ -123,7 +123,7 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Security
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Olive.Mvc.Microservice
+dotnet build Olive.Mvc.Microservices
 if ERRORLEVEL 1 (goto error)
 
 exit /b 0

@@ -9,6 +9,8 @@ namespace Olive.Mvc.Microservices
 {
     public abstract class Startup : Olive.Mvc.Startup
     {
+        const string HubDevUrl = "http://localhost:9011";
+
         protected Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory factory)
             : base(env, config, factory)
         {
@@ -17,11 +19,8 @@ namespace Olive.Mvc.Microservices
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(x => x.AddPolicy("AllowHubOrigin",
-                f => f.WithOrigins(Microservice.Of("Hub").Url().TrimEnd("/"))
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                ));
+                f => f.WithOrigins(Microservice.Of("Hub").Url().TrimEnd("/"), HubDevUrl)
+                .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
             base.ConfigureServices(services);
         }

@@ -24,6 +24,7 @@
     * [Implementing Resilient Apps](Microservices/ImplementingResilientApplications.md)
     * [Development Process for Docker-Based Apps](Microservices/DockerBasedApplications.md)
     * [Security in Microservices](Microservices/SecurityInMicroservices.md)
+    * [Loading a typescript service module](Microservices/LoadTypescriptServiceFromController.md)
  
 * Microservices in Olive
     * [Access Hub: Composite UI](Microservices/Overview.md)  
@@ -42,6 +43,7 @@
     * [Cluster setup (Kubernetes & AWS)](DevOps/Cluster-setup.md)
     * [Security](DevOps/Security.md)
     * [Service preparation](DevOps/Service-preparation.md)
+    * [Serverless deployment](DevOps/Serverless.md)
         
 * Sync integration: WebApi
     * [RESTful WebApi](Api/WebApi.md)
@@ -58,6 +60,7 @@
     * [Overview](MvcJS/Overview.md)
     * [Ajax Lifecycle](MvcJS/AjaxLifecycle.md)
     * [Loading custom modules and libraries](MvcJS/Library.md)
+    * [Migration to version 2](MvcJS/MigrationAndDI.md)
     
 * Plugins
     * [Compression](Services/Compression.md)
