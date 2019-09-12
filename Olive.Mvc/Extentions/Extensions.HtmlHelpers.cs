@@ -73,12 +73,12 @@ namespace Olive.Mvc
             return false;
         }
 
-        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, IEnumerable<Blob>>> property, object htmlAttributes = null)
+        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, IEnumerable<BlobViewModel>>> property, object htmlAttributes = null)
         {
             return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
         }
 
-        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, Blob>> property, object htmlAttributes = null)
+        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, BlobViewModel>> property, object htmlAttributes = null)
         {
             return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
         }

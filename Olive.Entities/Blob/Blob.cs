@@ -17,7 +17,8 @@ namespace Olive.Entities
         /// </summary>
         static bool SuppressPersistence = Config.Get("Blob:WebTest:SuppressPersistence", defaultValue: false);
 
-        const string EMPTY_FILE = "NoFile.Empty";
+        public const string EMPTY_FILE = "NoFile.Empty";
+        public const string UNCHANGED_FILE = "«UNCHANGED»";
         public const string DefaultEncryptionKey = "Default_ENC_Key:_This_Better_Be_Calculated_If_Possible";
 
         static string[] UnsafeExtensions = new[] { "aspx", "ascx", "ashx", "axd", "master", "bat", "bas", "asp", "app", "bin","cla","class", "cmd", "com","sitemap","skin", "asa", "cshtml",
@@ -129,6 +130,11 @@ namespace Olive.Entities
         public static Blob Empty() => new Blob(null, EMPTY_FILE) { IsEmptyBlob = true };
 
         /// <summary>
+        /// Gets an empty blob object.
+        /// </summary>
+        public static Blob Unchanged() => new Blob(new byte[0], UNCHANGED_FILE);
+
+        /// <summary>
         /// Gets the Url of this blob.
         /// </summary>
         public override string ToString() => Url();
@@ -185,6 +191,8 @@ namespace Olive.Entities
 
             return result + (result.Contains("?") ? "&" : "?") + "RANDOM=" + Guid.NewGuid();
         }
+
+        public bool IsUnchanged() => FileName == UNCHANGED_FILE;
 
         /// <summary>
         /// Determines whether this is an empty blob.
