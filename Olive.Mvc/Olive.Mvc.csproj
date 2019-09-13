@@ -17,7 +17,7 @@
     <PackageVersion>2.1.134</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.6.0" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
   </ItemGroup>
