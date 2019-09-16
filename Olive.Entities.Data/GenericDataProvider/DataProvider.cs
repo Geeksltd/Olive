@@ -174,16 +174,16 @@ namespace Olive.Entities.Data
             async Task saveAll()
             {
                 foreach (var parent in MetaData.BaseClassesInOrder)
-                    await parent.GetProvider(Cache, Access, SqlCommandGenerator).InsertSelft(record);
+                    await parent.GetProvider(Cache, Access, SqlCommandGenerator).InsertSelf(record);
 
-                await InsertSelft(record);
+                await InsertSelf(record);
             }
 
             if (Database.AnyOpenTransaction()) await saveAll();
             else using (var scope = Database.CreateTransactionScope()) { await saveAll(); scope.Complete(); }
         }
 
-        async Task InsertSelft(IEntity record)
+        async Task InsertSelf(IEntity record)
         {
             var result = await ExecuteScalar(InsertCommand, CommandType.Text, CreateParameters(record, forInsert: true));
 
