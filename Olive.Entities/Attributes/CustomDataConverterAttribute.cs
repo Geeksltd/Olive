@@ -19,4 +19,14 @@ namespace Olive.Entities
         public static string GetClassName(PropertyInfo property) =>
             property.GetCustomAttribute<CustomDataConverterAttribute>(inherit: false)?.ClassName;
     }
+
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class EnumDataConverterAttribute : CustomDataConverterAttribute
+    {
+        /// <summary>
+        /// Provide a custom converter from database data type the the property data type.
+        /// </summary>
+        /// <param name="enumName">It should be the full name of the type.</param>
+        public EnumDataConverterAttribute(string enumName) : base($"{nameof(EnumValueConverter)}<{enumName}>") { }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Reflection;
 using System.Text;
 
 namespace Olive.Entities
@@ -51,7 +52,8 @@ namespace Olive.Entities
 
                 if (propertyInfo.Defines<EncryptedPropertyAttribute>()) return true;
 
-                if (propertyInfo.Defines<CustomDataConverterAttribute>()) return true;
+                var temp = propertyInfo.GetCustomAttribute<CustomDataConverterAttribute>(inherit: false);
+                if (temp != null && !(temp is EnumDataConverterAttribute)) return true;
 
                 return false;
             });

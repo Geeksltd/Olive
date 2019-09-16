@@ -130,6 +130,9 @@ namespace Olive.Entities
                     if (asEnum.GetType().GetEnumerableItemType().Implements<IEntity>())
                         escape = x => $"'{(x as IEntity).GetId().ToString()}'";
 
+                    if (asEnum.GetType().GetEnumerableItemType().IsEnum)
+                        escape = x => ((int)x).ToString();
+
                     value = $"({asEnum.Cast<object>().Select(escape).ToString(",")})";
                 }
 
