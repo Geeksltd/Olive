@@ -16,7 +16,7 @@ There are different usages of these two types. So make sure you choose them wise
 ### Implementation
 Let me demonstrate it with an example. 
 
-As the use case, we want to implement an ordering scenario in which, each order needs a few steps. Therefore, we create an enum in our application.
+As a use case, we want to implement an ordering scenario in which, each order needs a few steps. Therefore, we create an enum in our application.
 ```c#
 public enum OrderStage
 {
@@ -26,7 +26,7 @@ public enum OrderStage
     Paid = 3,
     SentToProvider = 4,
     ProcessingByProvider = 5,
-    Dispached = 6,
+    Dispatched = 6,
     Delivered = 7
 }
 ```
