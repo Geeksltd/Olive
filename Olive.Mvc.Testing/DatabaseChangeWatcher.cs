@@ -88,7 +88,6 @@ namespace Olive.Mvc.Testing
                                 sqlParameter.Value = (value.IsEmpty() || value == NullObject) ? sqlParameter.Value : XmlConvert.ToDateTimeOffset(sqlParameter.Value.ToString()).DateTime;
                                 break;
                             case DbType.Time:
-                                sqlParameter.DbType = DbType.Time;
                                 sqlParameter.Value = (value.IsEmpty() || value == NullObject) ? sqlParameter.Value : XmlConvert.ToTimeSpan(sqlParameter.Value.ToString());
                                 break;
                             case DbType.Boolean:
