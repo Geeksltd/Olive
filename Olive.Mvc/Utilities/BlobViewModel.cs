@@ -23,7 +23,7 @@ namespace Olive.Mvc
 
         internal string ItemId { get; set; }
 
-        internal static BlobViewModel From(Blob blob)
+        public static BlobViewModel From(Blob blob)
         {
             return new BlobViewModel
             {
@@ -35,7 +35,7 @@ namespace Olive.Mvc
             };
         }
 
-        internal Task<Blob> ToBlob()
+        public Task<Blob> ToBlob()
         {
             if (TempFileId.HasValue())
                 return new FileUploadService().Bind(TempFileId);
