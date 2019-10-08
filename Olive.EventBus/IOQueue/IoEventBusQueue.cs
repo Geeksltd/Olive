@@ -16,7 +16,7 @@ namespace Olive
                  .Select(x => Path.GetInvalidFileNameChars().Contains(x) ? '_' : x)
                  .ToString("").KeepReplacing("__", "_");
 
-            Folder = Path.Combine(Path.GetTempPath(), $@"Olive\IO.Queue\{folder}").AsDirectory().EnsureExists();
+            Folder = Path.GetTempPath().AsDirectory().GetOrCreateSubDirectory($@"Olive\IO.Queue\{folder}");
         }
 
         public async Task<string> Publish(string message)

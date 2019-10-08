@@ -209,6 +209,6 @@ namespace MSharp.Build
             Log(log);
         }
 
-        string Folder(string relative) => Path.Combine(Root.FullName, relative);
+        string Folder(string relative) => Root.GetSubDirectory(relative).FullName;
     }
 }

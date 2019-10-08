@@ -13,15 +13,12 @@
         public static DirectoryInfo Directory(this Environment.SpecialFolder folder,
             string relativeSubDirectory)
         {
-            return Path.Combine(
-                folder.Directory().FullName,
-                relativeSubDirectory.TrimStart("\\"))
-                .AsDirectory();
+            return folder.Directory().GetSubDirectory(relativeSubDirectory);
         }
 
         public static FileInfo GetFile(this Environment.SpecialFolder folder, string relativePath)
         {
-            return Path.Combine(folder.Directory().FullName, relativePath.TrimStart("\\")).AsFile();
+            return folder.Directory().GetFile(relativePath);
         }
     }
 }

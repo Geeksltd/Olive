@@ -43,7 +43,7 @@ namespace Olive.Email
             else if (attachmentInfo.StartsWith("\\\\") || Path.IsPathRooted(attachmentInfo))
                 return new Attachment(attachmentInfo); // absolute path
             else
-                return new Attachment(Path.Combine(AppDomain.CurrentDomain.WebsiteRoot().FullName, attachmentInfo));
+                return new Attachment(AppDomain.CurrentDomain.WebsiteRoot().PathCombine(attachmentInfo));
         }
 
         Attachment ParseJson(string attachmentInfo)
