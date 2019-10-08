@@ -43,7 +43,7 @@ namespace Olive.Mvc
             Context.Initialize(services);
             services.AddHttpContextAccessor();
 
-            services.AddSingleton(typeof(IActionContextAccessor), typeof(ActionContextAccessor));
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddDatabase();
             services.AddHttpClient();
 
