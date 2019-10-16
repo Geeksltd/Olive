@@ -11,6 +11,7 @@ namespace Olive.Aws
     {
         internal string QueueUrl;
         internal AmazonSQSClient Client;
+        internal bool IsFifo => QueueUrl.EndsWith(".fifo");
 
         public EventBusQueue(string queueUrl)
         {
@@ -26,7 +27,7 @@ namespace Olive.Aws
                 MessageBody = message
             };
 
-            if (QueueUrl.EndsWith(".fifo"))
+            if (IsFifo)
             {
                 request.MessageDeduplicationId = JsonConvert.DeserializeObject<JObject>(message)["DeduplicationId"]?.ToString();
                 request.MessageGroupId = "Default";

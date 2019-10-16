@@ -25,7 +25,8 @@ namespace Olive.Aws
             Request = new ReceiveMessageRequest
             {
                 QueueUrl = Queue.QueueUrl,
-                WaitTimeSeconds = 10
+                WaitTimeSeconds = 10,
+                MaxNumberOfMessages = 10,
             };
 
             Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
@@ -62,21 +63,34 @@ namespace Olive.Aws
         {
             while (true)
             {
-                foreach (var item in await FetchEvents())
+                try
                 {
-                    try
+                    foreach (var item in await FetchEvents())
                     {
-                        await Handler(item.Key);
+                        try
+                        {
+                            await Handler(item.Key);
 
-                        Receipt.ReceiptHandle = item.Value.ReceiptHandle;
-                        await Queue.Client.DeleteMessageAsync(Receipt);
+                            Receipt.ReceiptHandle = item.Value.ReceiptHandle;
+                            await Queue.Client.DeleteMessageAsync(Receipt);
+                        }
+                        catch (Exception ex)
+                        {
+                            var exception = new Exception("Failed to run queue event handler " +
+                                Handler.Method.DeclaringType.FullName + "." +
+                                Handler.Method.GetDisplayName(), ex);
+
+                            if (Queue.IsFifo)
+                                throw exception;
+                            else
+                                Log.For<Subscriber>().Error(exception);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("Failed to run queue event handler " +
-                            Handler.Method.DeclaringType.FullName + "." +
-                            Handler.Method.GetDisplayName(), ex);
-                    }
+
+                }
+                catch (Exception exception)
+                {
+                    Log.For<Subscriber>().Error(exception);
                 }
             }
         }
