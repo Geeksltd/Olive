@@ -19,14 +19,14 @@ namespace Olive.Aws
         ///     than this value (however, fewer messages might be returned). Valid values: 1
         ///     to 10. Default: 1.
         /// </summary>
-        public int MaxNumberOfMessages { get; set; } = 10;
+        public int MaxNumberOfMessages { get; set; } = Config.Get("Aws:EventBusQueue:MaxNumberOfMessages", 10);
 
         /// <summary>
         ///     Gets and sets the property VisibilityTimeout.
         ///     The duration (in seconds) that the received messages are hidden from subsequent
         ///     retrieve requests after being retrieved by a ReceiveMessage request.
         /// </summary>
-        public int VisibilityTimeout { get; set; } = 300;
+        public int VisibilityTimeout { get; set; } = Config.Get("Aws:EventBusQueue:VisibilityTimeout", 300);
 
         public EventBusQueue(string queueUrl)
         {
