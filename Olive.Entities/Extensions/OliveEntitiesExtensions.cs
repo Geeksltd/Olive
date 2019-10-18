@@ -1,8 +1,10 @@
 ﻿using Olive.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -52,5 +54,48 @@ namespace Olive
         /// </summary>
         public static DateTime GetSqlSafeValue(this DateTime value) =>
             value < SqlDateTime.MinValue.Value ? SqlDateTime.MinValue.Value : value;
+
+
+        /// <summary>
+        /// Executes the specified command text against the database connection of the context and builds an IDataReader.
+        /// The command type will be `CommandType.Text`.
+        /// Make sure you close the data reader after finishing the work.
+        /// </summary>
+        public static Task<IDataReader> ExecuteReader(this IDataAccess @this, string command, params object[] parameters)
+        {
+            var expectedParams = Regex.Matches(command, "\\@([^=<>\\s\\']+)");
+
+            if (expectedParams.Count != parameters.Length)
+                throw new InvalidOperationException("An incorrect number of parameters passed.");
+
+            var dataParams = new IDataParameter[parameters.Length];
+
+            for (var index = 0; index < parameters.Length; index++)
+                dataParams[index] = @this.CreateParameter(expectedParams[index].Value, parameters[index]);
+
+            return @this.ExecuteReader(command, CommandType.Text, dataParams);
+        }
+
+        /// <summary>
+        /// Maps each record in the reader to an object using the provided mapper fuction.
+        /// </summary>
+        /// <typeparam name="T">Result elemets type</typeparam>
+        /// <param name="mapper">Mapper fuction to create each item. Is should not call the `reader.read()`</param>
+        public static async Task<IEnumerable<T>> Select<T>(this Task<IDataReader> @this, Func<IDataReader, T> mapper)
+        {
+            if (mapper == null)
+                throw new ArgumentNullException(nameof(mapper));
+
+            var reader = await @this;
+
+            var result = new List<T>();
+
+            while (reader.Read())
+                result.Add(mapper(reader));
+
+            if (!reader.IsClosed) reader.Close();
+
+            return result;
+        }
     }
 }

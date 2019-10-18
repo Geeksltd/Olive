@@ -104,5 +104,34 @@ namespace Olive.Email
 
             return @this.VCalendarView = r.ToString();
         }
+
+        /// <summary>
+        /// Sends this error as a notification email to the address in web.config as Error.Notification.Receiver.
+        /// </summary>
+        public static IEmailMessage SendAsNotification(this Exception error)
+        {
+            return SendAsNotification(error, Config.Get("Error.Notification.Receiver"));
+        }
+
+        /// <summary>
+        /// Sends this error as a notification email to the address in web.config as Error.Notification.Receiver.
+        /// </summary>
+        public static IEmailMessage SendAsNotification(this Exception error, string toNotify)
+        {
+            if (toNotify.IsEmpty()) return null;
+
+            var email = InterfaceActivator.CreateInstance<IEmailMessage>();
+
+            email.To = toNotify;
+            email.Subject = "Error In Application";
+            email.Body = $"URL: {Context.Current.Request()?.ToAbsoluteUri()}{Environment.NewLine}" +
+                $"IP: {Context.Current.Http()?.Connection?.RemoteIpAddress}{Environment.NewLine}" +
+                $"User: {Context.Current.User().GetId()}{Environment.NewLine}" +
+                error.ToLogString(error.Message);
+
+            Context.Current.Database().Save(email);
+
+            return email;
+        }
     }
 }

@@ -37,13 +37,13 @@ namespace Olive.Mvc
             return File(await file.GetFileDataAsync(), file.GetMimeType());
         }
 
-        protected JsonResult NonobstructiveFile(byte[] data, string filename)
-          => AddAction(TempFileService.CreateDownloadAction(data, filename));
+        protected async Task<JsonResult> NonobstructiveFile(byte[] data, string filename)
+          => AddAction(await TempFileService.CreateDownloadAction(data, filename));
 
         protected async Task<JsonResult> NonobstructiveFile(Blob file, string downloadFileName = null) =>
-            NonobstructiveFile(await file.GetFileDataAsync(), downloadFileName.Or(file.FileName));
+            await NonobstructiveFile(await file.GetFileDataAsync(), downloadFileName.Or(file.FileName));
 
         protected async Task<JsonResult> NonobstructiveFile(FileInfo file) =>
-            NonobstructiveFile(await file.ReadAllBytesAsync(), file.Name);
+            await NonobstructiveFile(await file.ReadAllBytesAsync(), file.Name);
     }
 }

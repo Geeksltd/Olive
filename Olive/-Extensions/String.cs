@@ -1177,7 +1177,7 @@ namespace Olive
                 var environmentFolders = Environment.GetEnvironmentVariable("PATH").OrEmpty().Split(';').Trim();
                 foreach (var test in environmentFolders)
                 {
-                    result = Path.Combine(test, @this).AsFile();
+                    result = test.AsDirectory().GetFile(@this);
                     if (result.Exists()) return result;
                 }
             }

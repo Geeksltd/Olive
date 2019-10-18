@@ -54,8 +54,8 @@ namespace Olive.Compression
             {
                 try
                 {
-                    var file = Path.Combine(item, "7-Zip\\7z.exe");
-                    if (File.Exists(file)) return file;
+                    var file = item.AsDirectory().GetFile( "7-Zip\\7z.exe");
+                    if ( file.Exists()) return file.FullName;
                 }
                 catch { }
             }

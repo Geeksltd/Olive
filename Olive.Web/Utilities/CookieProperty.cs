@@ -173,6 +173,13 @@
         /// </summary>
         /// <param name="isHttpOnly">Specifies whether the cookie should be accessible via Javascript too, or Server (http) only.</param>
         public static void Set(string key, string value, bool isHttpOnly = true)
+            => Set(key, value, LocalTime.Now.AddYears(10), isHttpOnly);
+
+        /// <summary>
+        /// Sets a specified value in the response cookie as well as request cookie.
+        /// </summary>
+        /// <param name="isHttpOnly">Specifies whether the cookie should be accessible via Javascript too, or Server (http) only.</param>
+        public static void Set(string key, string value, DateTimeOffset expires, bool isHttpOnly = true)
         {
             if (key.IsEmpty())
                 throw new ArgumentNullException(nameof(key));
@@ -187,7 +194,7 @@
                 new CookieOptions
                 {
                     HttpOnly = isHttpOnly,
-                    Expires = DateTime.Now.AddYears(10),
+                    Expires = expires,
                     Secure = Olive.Context.Current.Request().IsHttps
                 }
                 );
