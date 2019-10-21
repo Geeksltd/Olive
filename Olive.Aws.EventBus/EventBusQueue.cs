@@ -3,6 +3,8 @@ using Amazon.SQS.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive.Aws
@@ -50,6 +52,35 @@ namespace Olive.Aws
 
             var response = await Client.SendMessageAsync(request);
             return response.MessageId;
+        }
+
+        public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages)
+        {
+
+            var request = new SendMessageBatchRequest
+            {
+                QueueUrl = QueueUrl,
+            };
+
+            messages.Do(message =>
+                request.Entries.Add(new SendMessageBatchRequestEntry
+                {
+                    MessageBody = message,
+                }));
+
+            if (IsFifo)
+            {
+                request.Entries.ForEach(message =>
+                {
+                    message.MessageDeduplicationId = 
+                        JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
+                    message.MessageGroupId = "Default";
+                });
+            }
+
+            var response = await Client.SendMessageBatchAsync(request);
+
+            return response.Successful.Select(m => m.MessageId);
         }
 
         public void Subscribe(Func<string, Task> handler) => new Subscriber(this, handler).Start();

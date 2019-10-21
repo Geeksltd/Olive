@@ -168,31 +168,63 @@ namespace Olive.Entities.Replication
 
         internal override async Task UploadAll()
         {
-            var toUpload = await Context.Current.Database().GetList<TDomain>().ToArray();
+            var database = Context.Current.Database();
+            var totalCount = await database.Of(typeof(TDomain)).Count();
 
             var log = Log.For(this);
 
-            log.Warning("Uploading " + toUpload.Count() + " records of " + typeof(TDomain).FullName + " to the queue...");
+            log.Warning($"Uploading {totalCount} records of {typeof(TDomain).FullName} to the queue...");
 
-            foreach (var item in toUpload)
+
+            var pageSize = 10000;
+            var allPages = Enumerable.Range(0, (int)Math.Ceiling(totalCount / (decimal)pageSize));
+
+            //using (var scope = database.CreateTransactionScope())
+            //{
+            await allPages.ForEachAsync(10, async (pageIndex) =>
             {
-                IEventBusMessage message;
-                try { message = await ToMessage(item); }
-                catch (Exception ex)
-                {
-                    log.Error(ex, "Failed to create an event bus message for " + item.GetType().FullName + " with ID of " + item.GetId());
-                    continue;
-                }
+                var query = database.Of(typeof(TDomain));
 
-                try { await Queue.Publish(message); }
+                query.OrderBy("ID");
+                query.PageSize = pageSize;
+                query.PageStartIndex = pageIndex * pageSize;
+
+                await UploadPage(await query.GetList());
+            });
+
+            //    scope.Complete();
+            //}
+
+
+            log.Warning($"Finished uploading {totalCount} records of {typeof(TDomain).FullName} to the queue.");
+        }
+
+        async Task UploadPage(IEnumerable<IEntity> toUpload)
+        {
+            var list = await toUpload.SelectAsync(GetMessage)
+                .ExceptNull();
+
+            await list.Chop(10).DoAsync(async (messages, _) =>
+            {
+                try { await Queue.PublishBatch(messages); }
                 catch (Exception ex)
                 {
-                    log.Error(ex, "Failed to publish an event bus message for " + item.GetType().FullName + " with ID of " + item.GetId());
-                    continue;
+                    Log.For(this).Error(ex,
+                        $"Failed to publish the event bus messages for a batch of {typeof(TDomain).FullName}");
                 }
+            });
+        }
+
+        async Task<IEventBusMessage> GetMessage(IEntity item)
+        {
+            IEventBusMessage result = null;
+            try { result = await ToMessage(item); }
+            catch (Exception ex)
+            {
+                Log.For(this).Error(ex, $"Failed to create an event bus message for {item.GetType().FullName} with ID of {item.GetId()}");
             }
 
-            log.Warning("Finished uploading " + toUpload.Count() + " records of " + typeof(TDomain).FullName + " to the queue.");
+            return result;
         }
 
         /// <summary>
