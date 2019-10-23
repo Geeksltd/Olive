@@ -14,6 +14,7 @@ namespace Olive.Aws
         internal string QueueUrl;
         internal AmazonSQSClient Client;
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
+        readonly Limiter Limiter = new Limiter(3000);
 
         /// <summary>
         ///     Gets and sets the property MaxNumberOfMessages.
@@ -38,6 +39,8 @@ namespace Olive.Aws
 
         public async Task<string> Publish(string message)
         {
+            await Limiter.Add(1);
+
             var request = new SendMessageRequest
             {
                 QueueUrl = QueueUrl,
@@ -56,7 +59,6 @@ namespace Olive.Aws
 
         public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages)
         {
-
             var request = new SendMessageBatchRequest
             {
                 QueueUrl = QueueUrl,
@@ -66,17 +68,21 @@ namespace Olive.Aws
                 request.Entries.Add(new SendMessageBatchRequestEntry
                 {
                     MessageBody = message,
+                    Id = JsonConvert.DeserializeObject<JObject>(message)["Id"]?.ToString()
+                        ?? Guid.NewGuid().ToString(),
                 }));
 
             if (IsFifo)
             {
                 request.Entries.ForEach(message =>
                 {
-                    message.MessageDeduplicationId = 
+                    message.MessageDeduplicationId =
                         JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
                     message.MessageGroupId = "Default";
                 });
             }
+
+            await Limiter.Add(request.Entries.Count);
 
             var response = await Client.SendMessageBatchAsync(request);
 
