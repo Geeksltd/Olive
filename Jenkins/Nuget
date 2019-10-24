@@ -145,7 +145,7 @@ pipeline
                         {   
                             for(project in env.projectsToPublish.replaceAll('\\[|]', '').split(','))
                             {
-                               def projectDirectory = new File(project).getParent();                               
+                               def projectDirectory = new File(project).getParent().trim();                               
                                
                                print 'Publishing ' + projectDirectory
                                dir(projectDirectory)
