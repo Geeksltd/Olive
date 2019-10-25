@@ -48,22 +48,22 @@ namespace Olive.Entities.Replication
         void HandleRefreshRequests()
         {
             var url = UrlPattern.TrimEnd(".fifo") + "-REFRESH.fifo";
-
             Log.For(this).Debug("Subscribing to " + url);
-
-            EventBus.Queue(url).Subscribe<RefreshMessage>(message =>
+            EventBus.Queue(url).Subscribe<RefreshMessage>(async message =>
             {
                 if (Agents.TryGetValue(message.TypeName, out var agent))
                 {
                     Log.For(this).Debug("Uploading all data for " + message.TypeName);
-                    agent.UploadAll();
-                    return Task.CompletedTask;
+                    await agent.UploadAll();
+                    Log.For(this).Debug("Finished uploading all data for " + message.TypeName);
                 }
                 else
                 {
-                    throw new Exception("There is no published endpoint for the type: " + message.TypeName +
+                    var exception = new Exception("There is no published endpoint for the type: " + message.TypeName +
                         "\r\n\r\nRegistered types are:\r\n" +
                         Agents.Select(x => x.Key).ToLinesString());
+                    Log.For(this).Error(exception, "Failed to UploadAll");
+                    throw exception;
                 }
             });
         }
