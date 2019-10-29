@@ -211,6 +211,8 @@ namespace Olive.Entities.Replication
                 {
                     Log.For(this).Error(ex,
                         $"Failed to publish the event bus messages for a batch of {typeof(TDomain).FullName}");
+
+                    throw;
                 }
             });
         }

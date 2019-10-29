@@ -11,6 +11,7 @@ namespace Olive.Aws
 {
     public class EventBusQueue : IEventBusQueue
     {
+        const int MAX_RETRY = 4;
         internal string QueueUrl;
         internal AmazonSQSClient Client;
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
@@ -57,7 +58,9 @@ namespace Olive.Aws
             return response.MessageId;
         }
 
-        public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages)
+        public Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages) => PublishBatch(messages, 0);
+
+        public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages, int retry = 0)
         {
             var request = new SendMessageBatchRequest
             {
@@ -86,7 +89,20 @@ namespace Olive.Aws
 
             var response = await Client.SendMessageBatchAsync(request);
 
-            return response.Successful.Select(m => m.MessageId);
+            var successfuls = response.Successful.Select(m => m.MessageId).ToList();
+
+            if (response.Failed.Any())
+            {
+                if (retry > MAX_RETRY)
+                    throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
+
+                Log.For(this).Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+
+                var toSend = response.Failed.Select(f => f.Message);
+                successfuls.AddRange(await PublishBatch(toSend, retry++));
+            }
+            
+            return successfuls;
         }
 
         public void Subscribe(Func<string, Task> handler) => new Subscriber(this, handler).Start();
