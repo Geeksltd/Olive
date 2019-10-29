@@ -38,7 +38,7 @@ Inside it, add a file named `Services.json`
 ```
 it will then go through all sub-folders to determine if it's an Olive microservice. If it is, then it will generate a row on the UI.
 
-![screenshot](Resources/Screenshot.JPG)
+![screenshot](https://github.com/AliBayatGH/Olive.Microservice.Explorer/blob/master/Resources/Screenshot.JPG)
  
 - The Status column is where you see the current state of the service and whether or not it's running locally. 
    - Green means it's Running, and red means it's off.
@@ -61,4 +61,4 @@ In the main menu, you have the `Nuget` item with two options:
 - *Auto update*: It will periodically check for NuGet updates and automatically update the packages.
 ## Create a microservice
 To create a new microservice, choose `File` > `New Microservice`  on the menu bar. It will open a dialog that has options to name your service and set the repository for the new service.
-Then click `Create` to generate a solution in the root folder of your project.
+Click `Create` to generate a solution in the root folder of your project.
