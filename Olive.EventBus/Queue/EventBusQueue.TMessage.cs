@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -13,6 +14,8 @@ namespace Olive
         public EventBusQueue(IEventBusQueue queue) => Queue = queue;
 
         Task<string> IEventBusQueue.Publish(string message) => Queue.Publish(message);
+        Task<IEnumerable<string>> IEventBusQueue.PublishBatch(IEnumerable<string> messages) 
+            => Queue.PublishBatch(messages);
         void IEventBusQueue.Subscribe(Func<string, Task> @handler) => Queue.Subscribe(handler);
         Task<QueueMessageHandle> IEventBusQueue.Pull(int timeout) => Queue.Pull(timeout);
         Task IEventBusQueue.Purge() => Queue.Purge();
@@ -32,6 +35,16 @@ namespace Olive
         public Task<string> Publish(TMessage message)
         {
             return this.Publish((IEventBusMessage)message);
+        }
+
+
+        /// <summary>
+        /// Publishes the specified events to the current event bus provider.
+        /// </summary>
+        /// <returns>The unique id of the queue item.</returns>
+        public Task<IEnumerable<string>> PublishBatch(IEnumerable<TMessage> messages)
+        {
+            return this.PublishBatch((dynamic) messages as IEnumerable<IEventBusMessage>);
         }
 
         /// <summary>

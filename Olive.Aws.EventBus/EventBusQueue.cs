@@ -3,15 +3,19 @@ using Amazon.SQS.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Olive.Aws
 {
     public class EventBusQueue : IEventBusQueue
     {
+        const int MAX_RETRY = 4;
         internal string QueueUrl;
         internal AmazonSQSClient Client;
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
+        readonly Limiter Limiter = new Limiter(3000);
 
         /// <summary>
         ///     Gets and sets the property MaxNumberOfMessages.
@@ -36,6 +40,8 @@ namespace Olive.Aws
 
         public async Task<string> Publish(string message)
         {
+            await Limiter.Add(1);
+
             var request = new SendMessageRequest
             {
                 QueueUrl = QueueUrl,
@@ -50,6 +56,53 @@ namespace Olive.Aws
 
             var response = await Client.SendMessageAsync(request);
             return response.MessageId;
+        }
+
+        public Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages) => PublishBatch(messages, 0);
+
+        public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages, int retry = 0)
+        {
+            var request = new SendMessageBatchRequest
+            {
+                QueueUrl = QueueUrl,
+            };
+
+            messages.Do(message =>
+                request.Entries.Add(new SendMessageBatchRequestEntry
+                {
+                    MessageBody = message,
+                    Id = JsonConvert.DeserializeObject<JObject>(message)["Id"]?.ToString()
+                        ?? Guid.NewGuid().ToString(),
+                }));
+
+            if (IsFifo)
+            {
+                request.Entries.ForEach(message =>
+                {
+                    message.MessageDeduplicationId =
+                        JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
+                    message.MessageGroupId = "Default";
+                });
+            }
+
+            await Limiter.Add(request.Entries.Count);
+
+            var response = await Client.SendMessageBatchAsync(request);
+
+            var successfuls = response.Successful.Select(m => m.MessageId).ToList();
+
+            if (response.Failed.Any())
+            {
+                if (retry > MAX_RETRY)
+                    throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
+
+                Log.For(this).Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+
+                var toSend = response.Failed.Select(f => f.Message);
+                successfuls.AddRange(await PublishBatch(toSend, retry++));
+            }
+            
+            return successfuls;
         }
 
         public void Subscribe(Func<string, Task> handler) => new Subscriber(this, handler).Start();

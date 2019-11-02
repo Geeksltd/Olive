@@ -19,6 +19,19 @@ namespace Olive
         }
 
         /// <summary>
+        /// Publishes the specified events to the current event bus provider.
+        /// </summary>
+        /// <returns>The unique id of the queue item.</returns>
+        public static Task<IEnumerable<string>> PublishBatch(this IEventBusQueue queue, IEnumerable<IEventBusMessage> messages)
+        {
+            var stringMessegas = new List<string>();
+
+            messages.Do(message => stringMessegas.Add(JsonConvert.SerializeObject(message)));
+
+            return queue.PublishBatch(stringMessegas);
+        }
+
+        /// <summary>
         /// Attaches an event handler to the specified queue message type.
         /// </summary>
         public static void Subscribe<TMessage>(this IEventBusQueue queue, Func<TMessage, Task> @handler)

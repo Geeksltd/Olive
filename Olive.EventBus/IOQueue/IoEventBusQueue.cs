@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,15 @@ namespace Olive
             }
             await path.WriteAllTextAsync(message);
             return path.Name;
+        }
+
+        public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages)
+        {
+            var result = new List<string>();
+
+            await messages.DoAsync(async (m, _) => result.Add(await Publish(m)));
+
+            return result;
         }
 
         public async Task<QueueMessageHandle> Pull(int timeoutSeconds = 10)

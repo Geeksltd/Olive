@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -10,6 +11,12 @@ namespace Olive
         /// </summary>
         /// <returns>The unique id of the queue item.</returns>
         Task<string> Publish(string message);
+
+        /// <summary>
+        /// Publishes the specified events to the current event bus provider.
+        /// </summary>
+        /// <returns>The unique id of the queue item.</returns>
+        Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages);
 
         /// <summary>
         /// Attaches an event handler to the specified queue message type.

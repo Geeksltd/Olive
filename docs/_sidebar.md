@@ -38,6 +38,8 @@
  
 
 * DevOps
+    * [Introduction](DevOps/Introduction.md)
+    * [DevOps Automation Service](DevOps/Automation-Service.md)
     * [Docker support](DevOps/Docker.md)
     * [Jenkins](DevOps/Jenkins.md)
     * [Jenkinsfile template](DevOps/MSharp-Jenkinsfile.md)
