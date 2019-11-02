@@ -6,12 +6,10 @@ namespace Olive.Entities.Data
 {
     public class SqlServerSqlCommandGenerator : SqlCommandGenerator
     {
+
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string tables, string fields)
         {
             var query = (DatabaseQuery)iquery;
-
-            if (query.PageSize.HasValue && query.OrderByParts.None())
-                throw new ArgumentException("PageSize cannot be used without OrderBy.");
 
             var r = new StringBuilder("SELECT");
 
@@ -19,8 +17,26 @@ namespace Olive.Entities.Data
             r.AppendLine($" {fields} FROM {tables}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
+            r.AppendLine(GeneratePagination(query));
 
             return r.ToString();
+        }
+
+        public override string GenerateSort(IDatabaseQuery query)
+        {
+            if (query.PageSize.HasValue && query.OrderByParts.None()) return "(SELECT NULL)";
+
+            return base.GenerateSort(query);
+        }
+
+        public override string GeneratePagination(IDatabaseQuery query)
+        {
+            var result = string.Empty;
+
+            if (query.PageSize > 0)
+                result = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
+
+            return result;
         }
 
         public override string SafeId(string id) => "[" + id + "]";

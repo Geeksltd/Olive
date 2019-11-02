@@ -14,6 +14,8 @@
        * [IDatabaseQuery](Entities/IDatabaseQuery.md)
     * [Provider model and DI](Entities/DI.md)
     * [Files and Blobs](Entities/Blob.md)
+    * [Custom data type](Entities/CustomDataType.md)
+    * [Using C# Enums](Entities/CSharpEnumType.md)
 
 * Microservices Architecture
     * [Understanding Microservices](Microservices/UnderstandingMicroservices.md)
@@ -36,6 +38,8 @@
  
 
 * DevOps
+    * [Introduction](DevOps/Introduction.md)
+    * [DevOps Automation Service](DevOps/Automation-Service.md)
     * [Docker support](DevOps/Docker.md)
     * [Jenkins](DevOps/Jenkins.md)
     * [Jenkinsfile template](DevOps/MSharp-Jenkinsfile.md)

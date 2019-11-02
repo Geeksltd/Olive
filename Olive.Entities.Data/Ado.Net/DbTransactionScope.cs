@@ -14,10 +14,13 @@ namespace Olive.Entities.Data
 
     public class DbTransactionScope : ITransactionScope
     {
-        IsolationLevel IsolationLevel;
-        DbTransactionScopeOption ScopeOption;
+        readonly IsolationLevel IsolationLevel;
+        readonly DbTransactionScopeOption ScopeOption;
         bool IsCompleted, IsAborted;
-        List<WeakReference<IDataReader>> PotentiallyUnclosedReaders = new List<WeakReference<IDataReader>>();
+        readonly List<WeakReference<IDataReader>> PotentiallyUnclosedReaders = new List<WeakReference<IDataReader>>();
+
+        // Per unique connection string, one record is added to this.
+        readonly Dictionary<string, (DbConnection Connection, DbTransaction Transaction)> Connections = new Dictionary<string, (DbConnection Connection, DbTransaction Transaction)>();
 
         public DbTransactionScope() : this(GetDefaultIsolationLevel()) { }
 
@@ -29,7 +32,7 @@ namespace Olive.Entities.Data
             ScopeOption = scopeOption;
             Parent = Root;
             Current = this;
-
+            
             if (Root == null) Root = this;
         }
 
@@ -51,9 +54,6 @@ namespace Olive.Entities.Data
             set => CallContext<DbTransactionScope>.SetData(nameof(Parent), value);
         }
 
-        // Per unique connection string, one record is added to this.
-        Dictionary<string, Tuple<DbConnection, DbTransaction>> Connections = new Dictionary<string, Tuple<DbConnection, DbTransaction>>();
-
         public Guid ID { get; } = Guid.NewGuid();
 
         #region TransactionCompletedEvent
@@ -74,14 +74,14 @@ namespace Olive.Entities.Data
         {
             var connectionString = DataAccess.GetCurrentConnectionString();
             await Setup(connectionString);
-            return Connections[connectionString].Item2;
+            return Connections[connectionString].Transaction;
         }
 
         internal async Task<IDbConnection> GetDbConnection()
         {
             var connectionString = DataAccess.GetCurrentConnectionString();
             await Setup(connectionString);
-            return Connections[connectionString].Item1;
+            return Connections[connectionString].Connection;
         }
 
         async Task Setup(string connectionString)
@@ -92,7 +92,7 @@ namespace Olive.Entities.Data
                 var connection = (DbConnection)await access.CreateConnection();
                 var transaction = connection.BeginTransaction(IsolationLevel);
 
-                Connections.Add(connectionString, Tuple.Create(connection, transaction));
+                Connections.Add(connectionString, (connection, transaction));
             }
         }
 
@@ -108,11 +108,11 @@ namespace Olive.Entities.Data
                 {
                     // Root is not completed.
                     IsAborted = true;
-                    Connections.Do(x => x.Value.Item2.Rollback());
-                    Connections.Do(x => x.Value.Item2.Dispose());
+                    Connections.Do(x => x.Value.Transaction.Rollback());
+                    Connections.Do(x => x.Value.Transaction.Dispose());
                 }
 
-                Connections.Do(x => x.Value.Item1.Close());
+                Connections.Do(x => x.Value.Connection.Close());
             }
             else
             {
@@ -150,14 +150,14 @@ namespace Olive.Entities.Data
             foreach (var item in Connections)
             {
                 var retries = 1;
-                while (AsyncCommandInProgress(item.Value.Item1))
+                while (AsyncCommandInProgress(item.Value.Connection))
                 {
                     Thread.Sleep(retries * 10);
                     if (retries++ > 10)
                         throw new Exception("Async command is in progress in this transaction.");
                 }
 
-                item.Value.Item2.Commit();
+                item.Value.Transaction.Commit();
             }
 
             TransactionCompleted?.Invoke(this, EventArgs.Empty);

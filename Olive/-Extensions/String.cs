@@ -1177,7 +1177,7 @@ namespace Olive
                 var environmentFolders = Environment.GetEnvironmentVariable("PATH").OrEmpty().Split(';').Trim();
                 foreach (var test in environmentFolders)
                 {
-                    result = Path.Combine(test, @this).AsFile();
+                    result = test.AsDirectory().GetFile(@this);
                     if (result.Exists()) return result;
                 }
             }
@@ -1347,8 +1347,8 @@ namespace Olive
         /// <summary>
         /// Gets a piece of this string from specific start to specific end place..
         /// </summary>
-        /// <param name="fromIndex"> Is an Integer argument that determines substring is started from which character index. The first character of this string is started from Zero.</param>
-        /// <param name="toText"> Is a string that determines the end of the output string.</param>
+        /// <param name="from"> Is an Integer argument that determines substring is started from which character index. The first character of this string is started from Zero.</param>
+        /// <param name="to"> Is a string that determines the end of the output string.</param>
         /// <param name="inclusive"> Determines whether the output string contains {from} and {to} strings or not. Default value is false.</param>
         /// <param name="caseSensitive"> Determines whether the case sensitive is important or not.</param>
         public static string Substring(this string @this, string from, string to, bool inclusive, bool caseSensitive)
@@ -1357,6 +1357,7 @@ namespace Olive
 
             var fromIndex = @this.IndexOf(from, comparison);
             if (fromIndex == -1) return string.Empty;
+            if (@this.Length == fromIndex + from.Length) return string.Empty;
 
             var toIndex = @this.IndexOf(to, fromIndex + from.Length + 1, comparison);
             if (toIndex == -1) return string.Empty;

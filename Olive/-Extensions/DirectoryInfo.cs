@@ -145,8 +145,7 @@ namespace Olive
         /// <summary>
         /// Gets a file info with the specified name under this folder. That file does not have to exist already.
         /// </summary>
-        public static FileInfo GetFile(this DirectoryInfo folder, string fileName) =>
-            Path.Combine(folder.FullName, fileName).AsFile();
+        public static FileInfo GetFile(this DirectoryInfo folder, string fileName) => folder.PathCombine(fileName).AsFile();
 
         /// <summary>
         /// Gets a subdirectory with the specified name. It does not need to exist necessarily.
@@ -156,7 +155,13 @@ namespace Olive
             if (subdirectoryName.IsEmpty())
                 throw new ArgumentNullException("GetSubDirectory(name) expects a non-empty sub-directory name.");
 
-            return new DirectoryInfo(Path.Combine(parent.FullName, subdirectoryName));
+            return parent.PathCombine(subdirectoryName).AsDirectory();
+        }
+
+        public static string PathCombine(this DirectoryInfo parent, string subdirectoryName)
+        {
+            var parts = new[] { parent.FullName }.Concat(subdirectoryName.OrEmpty().Split('\\', '/')).Trim().ToArray();
+            return Path.Combine(parts);
         }
 
         /// <summary>
@@ -164,11 +169,7 @@ namespace Olive
         /// </summary>
         public static DirectoryInfo GetOrCreateSubDirectory(this DirectoryInfo @this, string subdirectoryName)
         {
-            var result = new DirectoryInfo(Path.Combine(@this.FullName, subdirectoryName));
-
-            result.Create();
-
-            return result;
+            return @this.GetSubDirectory(subdirectoryName).EnsureExists();
         }
 
         /// <summary>

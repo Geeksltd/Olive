@@ -98,6 +98,9 @@ namespace Olive.Entities.Data
                 parameter.ParameterName = param.ParameterName;
                 parameter.Value = param.Value;
 
+                if (parameter.DbType != param.DbType)
+                    parameter.DbType = param.DbType;
+
                 command.Parameters.Add(parameter);
             }
 

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,26 +17,35 @@ namespace Olive
                  .Select(x => Path.GetInvalidFileNameChars().Contains(x) ? '_' : x)
                  .ToString("").KeepReplacing("__", "_");
 
-            Folder = Path.Combine(Path.GetTempPath(), $@"Olive\IO.Queue\{folder}").AsDirectory().EnsureExists();
+            Folder = Path.GetTempPath().AsDirectory().GetOrCreateSubDirectory($@"Olive\IO.Queue\{folder}");
         }
 
-        public async Task<string> Publish(IEventBusMessage message)
+        public async Task<string> Publish(string message)
         {
             FileInfo path;
             using (await SyncLock.Lock())
             {
                 path = Folder.GetFile(DateTime.UtcNow.Ticks.ToString());
             }
-            await path.WriteAllTextAsync(JsonConvert.SerializeObject(message));
+            await path.WriteAllTextAsync(message);
             return path.Name;
         }
 
-        public async Task<QueueMessageHandle<TMessage>> Pull<TMessage>(int timeoutSeconds = 10) where TMessage : IEventBusMessage
+        public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages)
         {
-            var item = await IOSubscriber<TMessage>.FetchOnce(Folder);
+            var result = new List<string>();
+
+            await messages.DoAsync(async (m, _) => result.Add(await Publish(m)));
+
+            return result;
+        }
+
+        public async Task<QueueMessageHandle> Pull(int timeoutSeconds = 10)
+        {
+            var item = await IOSubscriber.FetchOnce(Folder);
             if (item.Key == null) return null;
 
-            return new QueueMessageHandle<TMessage>(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
+            return new QueueMessageHandle(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
         }
 
         public Task Purge()
@@ -45,9 +54,6 @@ namespace Olive
             return Task.CompletedTask;
         }
 
-        public void Subscribe<TMessage>(Func<TMessage, Task> handler) where TMessage : IEventBusMessage
-        {
-            new IOSubscriber<TMessage>(this, handler).Start();
-        }
+        public void Subscribe(Func<string, Task> handler) => new IOSubscriber(this, handler).Start();
     }
 }

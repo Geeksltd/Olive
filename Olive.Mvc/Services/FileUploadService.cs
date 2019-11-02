@@ -19,10 +19,6 @@ namespace Olive.Mvc
 
         internal async Task<Blob> Bind(string fileKey)
         {
-            if (!fileKey.StartsWith("file:")) throw new Exception("Expected file input is in the format of 'file:{GUID}'.");
-
-            fileKey = fileKey.TrimStart("file:");
-
             var folder = GetFolder(fileKey);
             if (!folder.Exists())
                 throw new Exception("The folder for this uploaded file does not exist: " + fileKey);

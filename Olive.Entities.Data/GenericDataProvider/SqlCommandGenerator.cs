@@ -18,12 +18,10 @@ namespace Olive.Entities.Data
 
             parts.AddRange(query.OrderByParts.Select(p => query.Column(p.Property) + " DESC".OnlyWhen(p.Descending)));
 
-            var offset = string.Empty;
-            if (query.PageSize > 0)
-                offset = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
-
-            return parts.ToString(", ") + offset;
+            return parts.ToString(", ");
         }
+
+        public abstract string GeneratePagination(IDatabaseQuery query);
 
         public virtual string GenerateWhere(IDatabaseQuery query)
         {

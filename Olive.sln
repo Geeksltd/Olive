@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive", "Olive\Olive.csproj", "{EF844D85-7C45-4725-B033-DBC6111C5F7F}"
 EndProject
@@ -136,9 +136,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Log.EventBus", "Olive
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Olive.Export\Olive.Export.csproj", "{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Microservices", "Olive.Mvc.Microservice\Olive.Mvc.Microservices.csproj", "{692A994A-178E-474F-989E-C6B1196ABD04}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Mvc.CKEditorFileManager", "Olive.Mvc.CKEditorFileManager\Olive.Mvc.CKEditorFileManager.csproj", "{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.CKEditorFileManager", "Olive.Mvc.CKEditorFileManager\Olive.Mvc.CKEditorFileManager.csproj", "{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -357,10 +355,6 @@ Global
 		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}.Release|Any CPU.Build.0 = Release|Any CPU
-		{692A994A-178E-474F-989E-C6B1196ABD04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{692A994A-178E-474F-989E-C6B1196ABD04}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{692A994A-178E-474F-989E-C6B1196ABD04}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{692A994A-178E-474F-989E-C6B1196ABD04}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Release|Any CPU.ActiveCfg = Release|Any CPU

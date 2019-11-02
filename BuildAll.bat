@@ -120,9 +120,6 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Hangfire
 if ERRORLEVEL 1 (goto error)
 
-dotnet build Olive.Mvc.Security
-if ERRORLEVEL 1 (goto error)
-
 dotnet build Olive.Mvc.Microservices
 if ERRORLEVEL 1 (goto error)
 

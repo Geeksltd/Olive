@@ -73,12 +73,12 @@ namespace Olive.Mvc
             return false;
         }
 
-        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, IEnumerable<Blob>>> property, object htmlAttributes = null)
+        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, IEnumerable<BlobViewModel>>> property, object htmlAttributes = null)
         {
             return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
         }
 
-        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, Blob>> property, object htmlAttributes = null)
+        public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, BlobViewModel>> property, object htmlAttributes = null)
         {
             return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
         }
@@ -257,6 +257,17 @@ namespace Olive.Mvc
 
             if (!exists)
                 actions.Add(new { Script = script, Key = key, Stage = stage.ToString() });
+
+            return HtmlString.Empty;
+        }
+
+        public static HtmlString RunJavascript(this IHtmlHelper @this, JavascriptService service, PageLifecycleStage stage = PageLifecycleStage.Init)
+        {
+            var actions = @this.ViewContext.HttpContext.JavascriptActions();
+
+            var exists = actions.Any(x => x is JavascriptService j && j == service);
+
+            if (!exists) actions.Add(service);
 
             return HtmlString.Empty;
         }

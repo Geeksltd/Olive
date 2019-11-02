@@ -1512,5 +1512,23 @@ namespace Olive
         public static IEnumerable<T> FilterIf<T>(this IEnumerable<T> source,
              bool condition, Func<T, bool> predicate)
             => condition ? source.Where(predicate) : source;
+
+        /// <summary>
+        /// To execute and await several tasks at the same time but not all at the same time. 
+        /// When tasks are resource consuming and executing all at one has side effects.
+        /// </summary>
+        /// <param name="degreeOfParallelism">The maximum degree of parallelism depends on the tasks.</param>
+        /// <param name="func">Actual work to do.</param>
+        public static Task ForEachAsync<T>(this IEnumerable<T> source, int degreeOfParallelism, Func<T, Task> func)
+        {
+            var partitions = System.Collections.Concurrent.Partitioner.Create(source).GetPartitions(degreeOfParallelism);
+
+            return Task.WhenAll(
+               partitions.Select(partition => Task.Run(async () => {
+                    using (partition)
+                        while (partition.MoveNext())
+                            await func(partition.Current);
+            })));
+        }
     }
 }

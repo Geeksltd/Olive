@@ -16,7 +16,7 @@
     <Description>Olive Framework</Description>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.128</PackageVersion>
+    <PackageVersion>2.1.129</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Auditing\**" />
@@ -24,7 +24,7 @@
     <None Remove="Auditing\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.6.0" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />

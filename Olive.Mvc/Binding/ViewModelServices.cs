@@ -116,7 +116,7 @@
                         {
                             (value as Blob).FolderName = (sourceValue as Blob).FolderName;
                         }
-                        else if (from is IViewModel && (value == null || (value as Blob).FileName == "«UNCHANGED»"))
+                        else if (from is IViewModel && (value == null || (value as Blob).IsUnchanged()))
                         {
                             // Null in view model means not changed.
                             continue;
@@ -161,7 +161,7 @@
         [EscapeGCop("It takes time to fix this warning now. I will check it later.")]
         static async Task<object> ConvertNonTask(object source, Type target)
         {
-            if (source is Blob) return (await (source as Blob).CloneAsync(attach: true, @readonly: true));
+            if (source is Blob && target.IsA<Blob>()) return await (source as Blob).CloneAsync(attach: true, @readonly: true);
 
             if (source.GetType().IsA(target)) return source;
 
@@ -201,7 +201,8 @@
             if (source is IEnumerable)
             {
                 if (target.IsA<IEnumerable<Blob>>())
-                    return await new BlobModelBinder().BindDocuments(source.ToStringOrEmpty());
+                    throw new NotSupportedException();
+                    //return await new BlobModelBinder().BindDocuments(source.ToStringOrEmpty());
 
                 var result = await ConvertCollection(source as IEnumerable, target);
                 if (result != null) return result;
@@ -213,8 +214,11 @@
                 else return Convert((source as IEntity).GetId(), target);
             }
 
-            if (target.IsA<Blob>())
-                return await new BlobModelBinder().BindDocuments(source.ToStringOrEmpty());
+            if (target.IsA<BlobViewModel>())
+                return BlobViewModel.From(source as Blob);
+
+            if (target.IsA<Blob>() && source is BlobViewModel viewModel)
+                return await viewModel.ToBlob();
 
             try
             {

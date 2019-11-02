@@ -24,7 +24,7 @@ namespace Olive.Entities.Replication
 
         protected abstract Task<object> GetValue(IEntity entity);
 
-        public async Task<object> GetSerializableValue(IEntity entity)
+        public virtual async Task<object> GetSerializableValue(IEntity entity)
         {
             var result = await GetValue(entity);
 
@@ -63,6 +63,8 @@ namespace Olive.Entities.Replication
 
     public class ExposedPropertyInfo : ExposedField
     {
+        PropertyInfo IdProperty;
+
         public PropertyInfo Property { get; }
         public bool IsInverseAssociation { get; }
 
@@ -90,6 +92,18 @@ namespace Olive.Entities.Replication
 
             return result;
         }
+
+        public override Task<object> GetSerializableValue(IEntity entity)
+        {
+            if(!IsAssociation) return base.GetSerializableValue(entity);
+
+            if (IdProperty == null) IdProperty = GetIdProperty();
+
+            return Task.FromResult(IdProperty.GetValue(entity));
+        }
+
+        PropertyInfo GetIdProperty() =>
+            Property.DeclaringType.GetProperty(name + "Id", BindingFlags.Public | BindingFlags.Instance);
 
         protected internal override bool ShouldSerialize() => !IsInverseAssociation;
     }
