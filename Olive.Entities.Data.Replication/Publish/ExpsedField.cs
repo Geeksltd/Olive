@@ -95,9 +95,12 @@ namespace Olive.Entities.Replication
 
         public override Task<object> GetSerializableValue(IEntity entity)
         {
-            if(!IsAssociation) return base.GetSerializableValue(entity);
+            if (!IsAssociation) return base.GetSerializableValue(entity);
 
             if (IdProperty == null) IdProperty = GetIdProperty();
+
+            if (IdProperty == null) // Calculated field
+                return base.GetSerializableValue(entity);
 
             return Task.FromResult(IdProperty.GetValue(entity));
         }
