@@ -121,10 +121,18 @@ namespace Olive.Entities.Replication
                 if (property.PropertyType.IsA<IEntity>())
                     property = property.DeclaringType.GetProperty(property.Name + "Id");
 
-                property.SetValue(result, field.Value.To(property.PropertyType));
+                property.SetValue(result, Parse(field.Value, property.PropertyType));
             }
 
             return result;
+        }
+
+        object Parse(string value, Type type)
+        {
+            if (type.IsA<DateTime>())
+                return new DateTime(value.To<long>());
+
+            return value.To(type);
         }
     }
 }
