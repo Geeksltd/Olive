@@ -132,6 +132,12 @@ namespace Olive.Entities.Replication
             if (type.IsA<DateTime>())
                 return new DateTime(value.To<long>());
 
+            if (type.IsA<DateTime?>())
+            {
+                if (value.IsEmpty()) return null;
+                return new DateTime(value.To<long>());
+            }
+
             return value.To(type);
         }
     }
