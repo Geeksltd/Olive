@@ -1,6 +1,6 @@
 # Olive DevOps Automation Service
 
-This page describes the concept of a DevOpsS ervice in Olive Framework. It also briefly covers the Microservice Explorer and how to create a new Microservice.
+This page describes the concept of a DevOps Service in Olive Framework. It also briefly covers the Microservice Explorer and how to create a new Microservice.
 
 The Olive DevOps Automation Service is a development environment for Continuous Delivery & Integration, and Health check applications. It includes CIs, Cds, Hub Health check and Microservice Explorer services. It can be used to increase the speed of adoption and release at any rate your service needs, as well as reduce the cost of your DevOps infrastructure.
 
