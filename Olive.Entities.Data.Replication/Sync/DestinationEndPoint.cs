@@ -58,6 +58,7 @@ namespace Olive.Entities.Replication
             catch (Exception ex)
             {
                 Log.For(this).Error(ex, "Failed to import ReplicateDataMessage " + message.Entity);
+                throw;
             }
         }
     }
