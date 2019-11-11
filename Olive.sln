@@ -32,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Testing", "Olive.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc", "Olive.Mvc\Olive.Mvc.csproj", "{08ADF968-0FFF-4E3C-88EC-E04E2FA94D13}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mvc.RemovalCandidates", "Mvc.RemovalCandidates\Mvc.RemovalCandidates.csproj", "{D6CB3117-1CB6-4263-AE89-37483A0379B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mvc.RemovalCandidates", "--RemovalCandidates\Mvc.RemovalCandidates.csproj", "{D6CB3117-1CB6-4263-AE89-37483A0379B9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SqlServer", "Olive.Entities.Data.SqlServer\Olive.Entities.Data.SqlServer.csproj", "{8BE6BB58-FFF0-4057-9027-94CF7B96A0E3}"
 EndProject
@@ -136,7 +136,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Log.EventBus", "Olive
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Export", "Olive.Export\Olive.Export.csproj", "{AD1AE4FD-141B-4F0A-8A8D-6D92E843F817}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.CKEditorFileManager", "Olive.Mvc.CKEditorFileManager\Olive.Mvc.CKEditorFileManager.csproj", "{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Microservices", "Olive.Mvc.Microservices\Olive.Mvc.Microservices.csproj", "{692A994A-178E-474F-989E-C6B1196ABD04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Mvc.CKEditorFileManager", "Olive.Mvc.CKEditorFileManager\Olive.Mvc.CKEditorFileManager.csproj", "{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
