@@ -81,21 +81,12 @@ namespace Olive
         /// </summary>
         /// <typeparam name="T">Result elemets type</typeparam>
         /// <param name="mapper">Mapper fuction to create each item. Is should not call the `reader.read()`</param>
-        public static async Task<IEnumerable<T>> Select<T>(this Task<IDataReader> @this, Func<IDataReader, T> mapper)
+        public static Task<IEnumerable<T>> Select<T>(this Task<IDataReader> @this, Func<IDataReader, T> mapper)
         {
             if (mapper == null)
                 throw new ArgumentNullException(nameof(mapper));
 
-            var reader = await @this;
-
-            var result = new List<T>();
-
-            while (reader.Read())
-                result.Add(mapper(reader));
-
-            if (!reader.IsClosed) reader.Close();
-
-            return result;
+            return Select(@this, mapper, null);
         }
 
         /// <summary>
@@ -103,17 +94,26 @@ namespace Olive
         /// </summary>
         /// <typeparam name="T">Result elemets type</typeparam>
         /// <param name="mapper">Mapper fuction to create each item. Is should not call the `reader.read()`</param>
-        public static async Task<IEnumerable<T>> SelectAsync<T>(this Task<IDataReader> @this, Func<IDataReader, Task<T>> mapper)
+        public static Task<IEnumerable<T>> SelectAsync<T>(this Task<IDataReader> @this, Func<IDataReader, Task<T>> mapper)
         {
             if (mapper == null)
                 throw new ArgumentNullException(nameof(mapper));
 
+            return Select(@this, null, mapper);
+        }
+
+        static async Task<IEnumerable<T>> Select<T>(this Task<IDataReader> @this, Func<IDataReader, T> mapper, Func<IDataReader, Task<T>> asyncMapper)
+        {
             var reader = await @this;
 
             var result = new List<T>();
 
-            while (reader.Read())
-                result.Add(await mapper(reader));
+            if(asyncMapper == null) 
+                while (reader.Read())
+                    result.Add(mapper(reader));
+            else
+                while (reader.Read())
+                    result.Add(await asyncMapper(reader));
 
             if (!reader.IsClosed) reader.Close();
 
