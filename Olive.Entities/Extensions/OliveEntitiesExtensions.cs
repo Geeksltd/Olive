@@ -89,7 +89,7 @@ namespace Olive
 
         static IDataParameter[] CreateParameters(IDataAccess @this, string command, object[] parameters)
         {
-            var expectedParams = Regex.Matches(command, "\\@([a-z|\\d|_]+)");
+            var expectedParams = Regex.Matches(command, "\\@([a-z|A-Z|\\d|_]+)");
 
             if (expectedParams.Count != parameters.Length)
                 throw new InvalidOperationException("An incorrect number of parameters passed.");
