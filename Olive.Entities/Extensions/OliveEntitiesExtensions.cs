@@ -63,7 +63,33 @@ namespace Olive
         /// </summary>
         public static Task<IDataReader> ExecuteReader(this IDataAccess @this, string command, params object[] parameters)
         {
-            var expectedParams = Regex.Matches(command, "\\@([^=<>\\s\\']+)");
+            var dataParams = CreateParameters(@this, command, parameters);
+            return @this.ExecuteReader(command, CommandType.Text, dataParams);
+        }
+
+        /// <summary>
+        /// Executes the specified command text against the database connection of the context and returns the single value.
+        /// The command type will be `CommandType.Text`.
+        /// </summary>
+        public static Task<object> ExecuteScalar(this IDataAccess @this, string command, params object[] parameters)
+        {
+            var dataParams = CreateParameters(@this, command, parameters);
+            return @this.ExecuteScalar(command, CommandType.Text, dataParams);
+        }
+
+        /// <summary>
+        /// Executes the specified command text as nonquery.
+        /// The command type will be `CommandType.Text`.
+        /// </summary>
+        public static Task<int> ExecuteNonQuery(this IDataAccess @this, string command, params object[] parameters)
+        {
+            var dataParams = CreateParameters(@this, command, parameters);
+            return @this.ExecuteNonQuery(command, CommandType.Text, dataParams);
+        }
+
+        static IDataParameter[] CreateParameters(IDataAccess @this, string command, object[] parameters)
+        {
+            var expectedParams = Regex.Matches(command, "\\@([a-z|\\d|_]+)");
 
             if (expectedParams.Count != parameters.Length)
                 throw new InvalidOperationException("An incorrect number of parameters passed.");
@@ -72,8 +98,7 @@ namespace Olive
 
             for (var index = 0; index < parameters.Length; index++)
                 dataParams[index] = @this.CreateParameter(expectedParams[index].Value, parameters[index]);
-
-            return @this.ExecuteReader(command, CommandType.Text, dataParams);
+            return dataParams;
         }
 
         /// <summary>
