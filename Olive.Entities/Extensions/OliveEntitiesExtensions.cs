@@ -97,5 +97,27 @@ namespace Olive
 
             return result;
         }
+
+        /// <summary>
+        /// Maps each record in the reader to an object using the provided mapper fuction.
+        /// </summary>
+        /// <typeparam name="T">Result elemets type</typeparam>
+        /// <param name="mapper">Mapper fuction to create each item. Is should not call the `reader.read()`</param>
+        public static async Task<IEnumerable<T>> SelectAsync<T>(this Task<IDataReader> @this, Func<IDataReader, Task<T>> mapper)
+        {
+            if (mapper == null)
+                throw new ArgumentNullException(nameof(mapper));
+
+            var reader = await @this;
+
+            var result = new List<T>();
+
+            while (reader.Read())
+                result.Add(await mapper(reader));
+
+            if (!reader.IsClosed) reader.Close();
+
+            return result;
+        }
     }
 }
