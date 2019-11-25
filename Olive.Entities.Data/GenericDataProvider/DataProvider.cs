@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -55,7 +55,7 @@ namespace Olive.Entities.Data
         {
             if (ColumnMapping.TryGetValue(propertyName, out string result)) return result;
 
-            return $"{MetaData.TableAlias}.[{propertyName}]";
+            return $"{MetaData.TableAlias}.{SqlCommandGenerator.SafeId(propertyName)}";
         }
 
         protected virtual string SafeId(string objectName)
@@ -208,7 +208,7 @@ namespace Olive.Entities.Data
             GetSqlCommandColumn(medaData, property.Name);
 
         string GetSqlCommandColumn(IDataProviderMetaData medaData, string propertyName) =>
-            $"{medaData.TableAlias}.[{propertyName}]";
+            $"{medaData.TableAlias}.{SqlCommandGenerator.SafeId(propertyName)}";
 
         string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, IPropertyData property) =>
             GetSqlCommandColumnAlias(medaData, property.Name);
@@ -216,7 +216,7 @@ namespace Olive.Entities.Data
         string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, string propertyName) =>
             $"{medaData.TableName}_{propertyName}";
 
-        void PrepareTableTemplate() => TablesTemplate = MetaData.GetTableTemplate();
+        void PrepareTableTemplate() => TablesTemplate = MetaData.GetTableTemplate(SqlCommandGenerator);
 
         void PrepareFields()
         {
@@ -259,12 +259,12 @@ namespace Olive.Entities.Data
             {
                 var associateMetaData = DataProviderMetaDataGenerator.Generate(association.AssociateType);
 
-                var alias = $"[{{0}}.{association.Name}_{associateMetaData.TableName}]";
+                var alias = SqlCommandGenerator.SafeId($"{{0}}.{association.Name}_{associateMetaData.TableName}");
                 var partialAlias = $"{{0}}.{association.Name}_";
 
                 var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
-                    FROM {associateMetaData.GetTableTemplate().FormatWith(partialAlias)}
-                    WHERE {alias}.[{associateMetaData.IdColumnName}] = [{{1}}].[{association.Name}]";
+                    FROM {associateMetaData.GetTableTemplate(SqlCommandGenerator).FormatWith(partialAlias)}
+                    WHERE {alias}.{SqlCommandGenerator.SafeId(associateMetaData.IdColumnName)} = {SqlCommandGenerator.SafeId("{{1}}")}.{SqlCommandGenerator.SafeId(association.Name)}";
 
                 SubqueryMapping.Add(
                     association.Name.WithSuffix(".*"),
