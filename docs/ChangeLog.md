@@ -1,6 +1,10 @@
 
 # Olive compatibility change log
 
+## 26 Nov 2019
+You can remove `PredictableGuidEnabled` from the **appsettings.json**. As it is useless from now.
+Also, Config should be remove from calling the `AddDevCommands`.
+
 ## 18 July 2019
 If you are migrating from `Olive.MvcJs < v2` to `Olive.MvcJs > v2` please check 
 [Javascript Fx (MvcJS) > Migration to version 2](https://geeksltd.github.io/Olive/#/MvcJS/MigrationAndDI) for the documentation.
