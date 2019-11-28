@@ -65,6 +65,7 @@ Hint: All associated {Association.Name} Ids are:
 
             return mainObjects
                 .GroupBy(item => idProperty.GetValue(item))
+                .Except(group => group.Key == null)
                 .ToDictionary(i => i.Key, i => i.ToArray());
         }
 

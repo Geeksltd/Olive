@@ -46,7 +46,7 @@ namespace Olive.Entities.Replication
 
                         if (valueData is IEntity e) valueData = e.GetId();
 
-                        properties[f.GetName()] = valueData.ToStringOrEmpty();
+                        properties[f.GetName()] = Stringify(valueData);
                     }
                 }
                 catch (Exception ex)
@@ -56,6 +56,14 @@ namespace Olive.Entities.Replication
             }
 
             return ToReplicateDataMessage(properties);
+        }
+
+        string Stringify(object value)
+        {
+            if (value is DateTime dateTime) 
+                return dateTime.Ticks.ToString();
+
+            return value.ToStringOrEmpty();
         }
 
         public ReplicateDataMessage ToDeleteMessage(IEntity entity)

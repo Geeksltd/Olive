@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,17 +18,21 @@ namespace Olive.Entities.Data
             return InternalDataProviderFactory.Get(@this, cache, access, sqlCommandGenerator);
         }
 
-        public static string GetTableTemplate(this IDataProviderMetaData @this)
+        public static string GetTableTemplate(this IDataProviderMetaData @this, ISqlCommandGenerator sqlCommandGenerator)
         {
             var result = "";
+
+            string safe(string value) => sqlCommandGenerator.SafeId(value);
 
             void addTable(IDataProviderMetaData medaData)
             {
                 var baseType = medaData.BaseClassesInOrder.LastOrDefault();
 
+                var alias = safe($"{{0}}{medaData.TableAlias}");
+
                 result += " LEFT OUTER JOIN ".OnlyWhen(result.HasValue()) +
-                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS [{{0}}{medaData.TableAlias}] " +
-                    $"ON [{{0}}{medaData.TableAlias}].[{medaData.IdColumnName}] = [{{0}}{baseType?.TableAlias}].[{baseType?.IdColumnName}]".OnlyWhen(baseType != null);
+                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {alias} " +
+                    $"ON {alias}.{safe(medaData.IdColumnName)} = {safe($"{{0}}{baseType?.TableAlias}")}.{safe(baseType?.IdColumnName)}".OnlyWhen(baseType != null);
             }
 
             foreach (var parent in @this.BaseClassesInOrder)
@@ -59,6 +63,6 @@ namespace Olive.Entities.Data
 
             return result;
         }
-            
+
     }
 }
