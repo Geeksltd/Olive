@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -264,7 +264,7 @@ namespace Olive.Entities.Data
 
                 var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
                     FROM {associateMetaData.GetTableTemplate(SqlCommandGenerator).FormatWith(partialAlias)}
-                    WHERE {alias}.{SqlCommandGenerator.SafeId(associateMetaData.IdColumnName)} = {SqlCommandGenerator.SafeId("{{1}}")}.{SqlCommandGenerator.SafeId(association.Name)}";
+                    WHERE {alias}.{SqlCommandGenerator.SafeId(associateMetaData.IdColumnName)} = {SqlCommandGenerator.SafeId("{1}")}.{SqlCommandGenerator.SafeId(association.Name)}";
 
                 SubqueryMapping.Add(
                     association.Name.WithSuffix(".*"),
