@@ -1,13 +1,12 @@
 ﻿using Hangfire;
+using Hangfire.MySql.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Runtime.CompilerServices;
+using System.Data;
 
-[assembly: InternalsVisibleTo("Olive.Hangfire.MySql")]
-
-namespace Olive.Hangfire
+namespace Olive.Hangfire.MySql
 {
     public static class ExtensionMethods
     {
@@ -18,17 +17,17 @@ namespace Olive.Hangfire
         {
             @this.AddHangfire(c =>
             {
-                c.UseSqlServerStorage(Config.GetConnectionString("Default"));
+                c.UseStorage(new MySqlStorage(
+                        Config.GetConnectionString("Default"),
+                        new MySqlStorageOptions { TablePrefix = "Hangfire" })
+                    );
                 config?.Invoke(c);
             });
 
-            @this.AddDevCommand();
+            Hangfire.ExtensionMethods.AddDevCommand(@this);
 
             return @this;
         }
-
-        internal static void AddDevCommand(this IServiceCollection @this) =>
-            @this.AddSingleton<IDevCommand, ShceduledTasksDevCommand>();
 
         /// <summary>
         /// It will register the hangfire server.
@@ -37,21 +36,7 @@ namespace Olive.Hangfire
         public static IApplicationBuilder UseScheduledTasks<TPlan>(this IApplicationBuilder @this)
             where TPlan : BackgroundJobsPlan, new()
         {
-            if (System.Diagnostics.Debugger.IsAttached)
-                @this.UseHangfireDashboard();
-
-            @this.UseHangfireServer();
-
-            var plan = new TPlan();
-            plan.Initialize();
-
-            if (Config.Get<bool>("Automated.Tasks:Enabled"))
-            {
-                foreach (var job in BackgroundJobsPlan.Jobs.Values)
-                    RecurringJob.AddOrUpdate(job.Name, job.Action, job.ScheduleCron, queue: job.SyncGroup);
-            }
-
-            return @this;
+            return Hangfire.ExtensionMethods.UseScheduledTasks<TPlan>(@this);
         }
     }
 }
