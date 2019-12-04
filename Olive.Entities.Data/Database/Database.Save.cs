@@ -87,8 +87,8 @@ Database.Update(myObject, x=> x.P2 = ...);");
             #endregion
 
             if (!IsSet(behaviour, SaveBehaviour.BypassLogging))
-                if (mode == SaveMode.Insert) await Audit.Audit.LogInsert(entity);
-                else await Audit.Audit.LogUpdate(entity);
+                if (mode == SaveMode.Insert) await Audit.LogInsert(entity);
+                else await Audit.LogUpdate(entity);
 
             await dataProvider.Save(entity);
             Cache.UpdateRowVersion(entity);
