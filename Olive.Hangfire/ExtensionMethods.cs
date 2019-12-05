@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Olive.Hangfire.MySql")]
 
 namespace Olive.Hangfire
 {
@@ -19,10 +22,13 @@ namespace Olive.Hangfire
                 config?.Invoke(c);
             });
 
-            @this.AddSingleton<IDevCommand, ShceduledTasksDevCommand>();
+            @this.AddDevCommand();
 
             return @this;
         }
+
+        internal static void AddDevCommand(this IServiceCollection @this) =>
+            @this.AddSingleton<IDevCommand, ShceduledTasksDevCommand>();
 
         /// <summary>
         /// It will register the hangfire server.

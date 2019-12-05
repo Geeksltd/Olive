@@ -15,7 +15,8 @@ namespace Olive.Entities.Data
 
         [Obsolete("Use Context.Current.Database() instead.", error: true)]
         public static IDatabase Instance => Context.Current.Database();
-        IConfiguration Config;
+        readonly IConfiguration Config;
+        readonly Audit.IAudit Audit;
 
         public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
             = new Dictionary<Assembly, IDataProviderFactory>();
@@ -26,10 +27,11 @@ namespace Olive.Entities.Data
 
         public static DatabaseConfig Configuration { get; private set; }
 
-        public Database(IConfiguration config, ICache cache)
+        public Database(IConfiguration config, ICache cache, Audit.IAudit audit)
         {
             Config = config;
             Cache = cache;
+            Audit = audit;
         }
 
         public void Configure()

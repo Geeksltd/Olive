@@ -120,6 +120,9 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Hangfire
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Hangfire.MySql
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Security
 if ERRORLEVEL 1 (goto error)
 

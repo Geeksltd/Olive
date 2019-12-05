@@ -28,6 +28,21 @@ await Audit.Log(@event, data)
 //Also you can pass entity, userId and userip
 ```
 
+### Customize Audit Service
+To do so, you can simply extend the `Olive.Audit.DefaultAudit` or 
+implement the `Olive.Audit.IAudit`.
+Then you can inject the service to service collection in the `Startup.cs`
+like the following code.
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    services.AddSingleton<Olive.Audit.IAudit, Audit>();
+
+    base.ConfigureServices(services);
+}
+```
+> **Important** you should add it before calling the base `ConfigureServices`.
+
 ### Checkout recorded logs
 
 **Olive.Audit.DatabaseLogger** records information in the database. If you want to see the recorded informatin, open your SSMS, go on your database tables and search for a table named **AuditEvents**. Query this table and see the recorded information.

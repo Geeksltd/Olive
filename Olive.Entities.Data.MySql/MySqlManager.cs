@@ -71,12 +71,12 @@ namespace Olive.Entities.Data.MySql
                 using (var cmd = connection.CreateCommand())
                 {
                     cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = $"SELECT TABLE_SCHEMA FROM information_schema.tables WHERE TABLE_SCHEMA = '{database}'";
+                    cmd.CommandText = $"SELECT Count(*) FROM information_schema.tables WHERE TABLE_SCHEMA = '{database}'";
 
                     try
                     {
-                        return cmd.ExecuteScalar().ToStringOrEmpty()
-                            .StartsWith(filePath, caseSensitive: false);
+                        return Convert.ToInt64(cmd.ExecuteScalar()) > 0 &&
+                            System.IO.Directory.Exists(filePath);
                     }
                     catch
                     {
