@@ -24,7 +24,7 @@ namespace Olive.Hangfire.Serverless
 
             using (var server = new BackgroundJobServer())
             {
-                await Task.Delay(TimeSpan.FromSeconds(5), token); // Optional delay to catch some more background jobs
+                await Task.Delay(TimeSpan.FromSeconds(Config.Get<int>("Automated.Tasks:Action.Delay", 5)), token); // Optional delay to catch some more background jobs
                 server.SendStop();
                 await server.WaitForShutdownAsync(token);
             }
