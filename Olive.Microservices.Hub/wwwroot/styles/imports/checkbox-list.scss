@@ -1,0 +1,38 @@
+﻿//Checkbox list style
+.cb {
+    position: absolute;
+    visibility: hidden;
+
+    @at-root #{&}__label {
+        position: relative;
+        margin: 2px 0px;
+        padding: 5px 20px 5px 28px;
+        border: none;
+        border-radius: 100px;
+        color: #000000;
+        white-space: nowrap;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color .2s, box-shadow .2s;
+    }
+
+    @at-root #{&}__label::before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 8px;
+        bottom: 10px;
+        left: 0px;
+        height: 18px;
+        width: 18px;
+        border: 3px solid #D1D1D1;
+        background-color: #D1D1D1;
+        border-radius: 100px;
+        transition: background-color .2s;
+    }
+
+    @at-root #{&}:checked + #{&}__label::before {
+        background-color: #fff;
+        border-color: #03b5ae;
+    }
+}

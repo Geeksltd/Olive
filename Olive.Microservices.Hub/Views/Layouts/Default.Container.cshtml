@@ -1,0 +1,99 @@
+﻿@{ var timeout = Config.Get("Authentication:Timeout", defaultValue: 20).Minutes().TotalSeconds + 10;}
+@using Microsoft.AspNetCore.Hosting;
+@{
+    var leftMenu = ViewData["LeftMenu"].ToStringOrEmpty();
+    var hasFullViewContent = ((await Request.Get<Feature>("feature"))?.HasSecondLevelMenu()).GetValueOrDefault() == false;
+}
+
+<!DOCTYPE html>
+<html class="hub-service">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="@timeout">
+    <title>@ViewData["Title"]</title>
+    <link rel='stylesheet' href="~/styles/theme.css?v=%APP_VERSION%" type='text/css' />
+    <link rel='stylesheet' href="~/styles/hub/hub.css?v=%APP_VERSION%" type='text/css' />
+    <link rel="icon" media="all" type="image/x-icon" href="~/img/favicon.png" />
+    <link rel="shortcut icon" href="~/img/favicon.ico">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#42AAA9">
+    <meta name="apple-mobile-web-app-title" content="Geeks Hub Application">
+
+    <link rel="mask-icon" href="/images/fav/safari-pinned-tab.svg" color="#5bbad5" style="user-select: text;">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="/img/pwa/splash/iphonexsmax_splash.png" style="user-select: text;">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/img/pwa/splash/iphonexr_splash.png" style="user-select: text;">
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/img/pwa/splash/iphonex_splash.png" style="user-select: text;">
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/img/pwa/splash/iphone6_splash.png" style="user-select: text;">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/img/pwa/splash/iphoneplus_splash.png" style="user-select: text;">
+    <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="/img/pwa/splash/iphone5_splash.png" style="user-select: text;">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="~/img/pwa/icon57.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="~/img/pwa/icon76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="~/img/pwa/icon114.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="~/img/pwa/icon167.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="~/img/pwa/icon144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="~/img/pwa/icon152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/img/pwa/icon180.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="~/img/pwa/icon192.png">
+
+    <meta name="msapplication-TileImage" content="~/img/pwa/icon144.png">
+    <meta name="msapplication-TileColor" content="green">
+    <meta name="msapplication-starturl" content="/">
+
+    <!-- Manifest.json-->
+    <link rel="manifest" href="~/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#42AAA9">
+
+    <script type="text/javascript">
+        window["services"] = @Service.ToJson()?.Raw();
+    </script>
+    <script src="~/lib/requirejs/require.js" data-main="/scripts/references.js?v=%APP_VERSION%"></script>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="page row m-0">
+            @if (leftMenu.HasValue())
+            {
+                <div class="side-bar d-none d-lg-flex p-0">
+                    @(await Component.InvokeAsync<ViewComponents.SideBarTopModule>())
+                    @(await Component.InvokeAsync(leftMenu))
+                    @(await Component.InvokeAsync<Footer>())
+                </div>
+            }
+
+            <div class="content">
+                @(await Component.InvokeAsync<FeaturesTopMenuWrapper>())
+                <div class="content-body">
+                    @{ if (User.Identity.IsAuthenticated)
+                        {
+                            <div class="w-100 d-lg-none">
+                                @(await Component.InvokeAsync<GlobalSearch>())
+                            </div>
+                            @(await Component.InvokeAsync<BreadcrumbWrapper>())
+                        }
+                    }
+                    <service of="hub">
+
+                        @RenderBody()
+                        <div class="feature-frame-view view-body" id="iFrameHolder">
+                            <iframe class='view-frame embed-responsive-item w-100 h-100' name='view-frame'></iframe>
+                        </div>
+                    </service>
+                </div>
+            </div>
+
+            @if (leftMenu.HasValue())
+            {
+                <div class="task-bar d-none d-lg-flex p-0">
+                    <button type="button" id="taskBarCollapse" class="navbar-btn d-none d-lg-block"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
+                    <iframe id="taskiFram" style="height: 100%;" src="@Microservice.Of("Tasks").Url()widget-my-priority/@User.GetEmail().Split("@")[0].RemoveFrom(".")" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation"></iframe>
+                </div>
+            }
+        </div>
+    </div>
+    @Html.DevCommandsWidget()
+</body>
+</html>

@@ -1,0 +1,53 @@
+﻿@model ViewModel.FeaturesList
+<!-- «Start| FeaturesList» -->
+<form data-module="FeaturesList" method="get" action="@Url.Current()" data-redirect="ajax">
+   @Html.StartupActionsJson()
+   <h2>Features</h2>
+   <div class="search">
+      <div class="form-group">
+         <div class="group-control">
+            <input type="text" asp-for="InstantSearch" class="form-control" placeholder="Search..." />
+         </div>
+      </div>
+   </div>
+   @if (Model.Items.Any())
+   {
+   <div class="grid-wrapper">
+      <table class="grid">
+         <thead>
+            <tr>
+               <th></th>
+               <th>Feature</th>
+               <th>Service</th>
+               <th>Implementation</th>
+               <th>Use iframe</th>
+               <th>Permissions</th>
+            </tr>
+         </thead>
+         <tbody>
+            @foreach (var listItem in Model.Items)
+            {
+            var item = listItem.Item;
+            <tr>
+               <td>@(1 + Model.Items.IndexOf(listItem))</td>
+               <td>@item.GetFullPath()</td>
+               <td>@item.Service</td>
+               <td>@item.ImplementationUrl</td>
+               <td>@(item.UseIframe.ToString("Yes", "No"))</td>
+               <td>@(item.Permissions.ToString(","))
+                  <br/>
+                  @(item.NotPermissions.ToString(",").WithPrefix("Not: "))</td>
+            </tr>
+            }
+         </tbody>
+      </table>
+   </div>
+   }
+   @if (Model.Items.None())
+   {
+   <div class="empty-list">
+      There are no features to display.
+   </div>
+   }
+</form>
+<!-- «End| FeaturesList» -->

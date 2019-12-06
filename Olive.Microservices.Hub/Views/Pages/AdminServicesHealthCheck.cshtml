@@ -1,0 +1,26 @@
+﻿@model ViewModel.ServicesHealthCheckTiles
+<!-- «Start| ServicesHealthCheckTiles» -->
+<form data-module="ServicesHealthCheckTiles" method="get" action="@Url.Current()" data-redirect="ajax" class="service-tiles">
+   @Html.StartupActionsJson()
+   @if (Model.Items.Any())
+   {
+   <div class='list-items'>
+      @foreach (var listItem in Model.Items)
+      {
+      var item = listItem.Item;
+      <div class='item'>
+         <div class='tile' url='@item.BaseUrl' >
+            @item.Name @(" (UAT)".OnlyWhen(item.BaseUrl.OrEmpty().ToLower().Contains("uat.")))
+         </div>
+      </div>
+      }
+   </div>
+   }
+   @if (Model.Items.None())
+   {
+   <div class="empty-list">
+      There are no services to display.
+   </div>
+   }
+</form>
+<!-- «End| ServicesHealthCheckTiles» -->

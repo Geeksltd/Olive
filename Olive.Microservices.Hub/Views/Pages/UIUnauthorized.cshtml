@@ -1,0 +1,26 @@
+﻿@model ViewModel.UnauthorizedAccess
+@{ Domain.Feature item = Model.Item; }
+<!-- «Start| UnauthorizedAccess» -->
+<form data-module="UnauthorizedAccess" method="post" action="@Url.Current()" class="error unauthorized">
+   @Html.AntiForgeryToken()
+   @Html.StartupActionsJson()
+   <div class="view-body">
+      <div class="form-group row">
+         <div class="group-control">
+            <h2>Access denied!</h2>
+            <p>
+               You do not appear to have access to
+               <b>
+                  @info.Item.Title
+               </b>
+               .
+            </p>
+            <p>
+               In case your session is expired, try
+               <a href='/login'>logging in</a>
+               again.
+            </div>
+         </div>
+      </div>
+   </form>
+<!-- «End| UnauthorizedAccess» -->

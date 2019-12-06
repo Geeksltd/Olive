@@ -1,0 +1,13 @@
+﻿@model ViewModel.GlobalSearch
+@(Layout = null)
+
+<!-- «Start| GlobalSearch» -->
+<div data-module="GlobalSearch" class="no-print">
+   @Html.StartupActionsJson()
+   <input type="text" name="searcher"
+   placeholder="Search..."
+   class="form-control global-search"
+   data-search-source="@Model.GetSearchSources()" />
+</div>
+<!-- «End| GlobalSearch» -->
+

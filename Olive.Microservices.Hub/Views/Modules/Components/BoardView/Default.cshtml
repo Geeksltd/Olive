@@ -1,0 +1,25 @@
+﻿@model ViewModel.BoardView
+@(Layout = null)
+
+@{ Domain.Board item = Model.Item; }
+
+<!-- «Start| BoardView» -->
+<div data-module="BoardView" class="gridster-holder">
+   @Html.StartupActionsJson()
+   <div data-module='BoardView'>
+      @Html.StartupActionsJson()
+      <div class='gridster'>
+         <ul>
+            @foreach (var widget in item.GetWidgets(User))
+            {
+            <li>
+               @widget.Render(info.FeatureId).Raw()
+            </li>
+            }
+         </ul>
+      </div>
+   </div>
+   @item.GetRightWidget(User)?.RenderRightSide(info.FeatureId).Raw()
+</div>
+<!-- «End| BoardView» -->
+

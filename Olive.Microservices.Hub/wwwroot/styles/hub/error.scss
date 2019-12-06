@@ -1,0 +1,16 @@
+﻿div.error {
+    background: url(/img/error-icon.png) no-repeat left center;
+    width: 50% !important;
+    margin: auto;
+    height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    h3 {
+        font-size: 1.2rem;
+        color: burlywood;
+        font-style: italic;
+    }
+}

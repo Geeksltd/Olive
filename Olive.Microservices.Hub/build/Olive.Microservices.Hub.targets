@@ -1,0 +1,19 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <ItemGroup>
+    <SourceWebFiles Include="$(MSBuildThisFileDirectory)..\content\wwwroot\**\*.*" />
+    <SourceViewFiles Include="$(MSBuildThisFileDirectory)..\content\Views\**\*.*" />
+  </ItemGroup>
+  
+  <Target Name="CopyScriptsToProject" BeforeTargets="Build">
+    
+    <Copy SourceFiles="@(SourceWebFiles)"
+          DestinationFolder="$(ProjectDir)wwwroot\%(RecursiveDir)" 
+          SkipUnchangedFiles="true" />
+    
+    <Copy SourceFiles="@(SourceViewFiles)"
+          DestinationFolder="$(ProjectDir)Views\%(RecursiveDir)" 
+          SkipUnchangedFiles="true" />
+    
+  </Target>
+</Project>

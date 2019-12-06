@@ -1,0 +1,13 @@
+﻿@model ViewModel.FeatureView
+
+@{ Domain.Feature item = Model.Item; }
+
+<!-- «Start| FeatureView» -->
+<form data-module="FeatureView" method="post" action="@Url.Current()" class="feature-frame-view">
+   @Html.AntiForgeryToken()
+   @Html.StartupActionsJson()
+   <div class="view-body">
+   </div>
+</form>
+<!-- «End| FeatureView» -->
+

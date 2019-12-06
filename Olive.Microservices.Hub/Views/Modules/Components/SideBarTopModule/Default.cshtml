@@ -1,0 +1,18 @@
+﻿@model ViewModel.SideBarTopModule
+@(Layout = null)
+
+<!-- «Start| SideBarTopModule» -->
+<form data-module="SideBarTopModule" method="post" action="@Url.Current()">
+   @Html.AntiForgeryToken()
+   @Html.StartupActionsJson()
+   <div class="logo-wrapper">
+      <div>
+         <a name="Logo" class="logo" href="~/" default-button="true"><img src="~/img/Logo.png" alt="Logo" /></a>
+      </div>
+   </div>
+   @(await Component.InvokeAsync
+   <GlobalSearch>
+      ())
+   </form>
+<!-- «End| SideBarTopModule» -->
+

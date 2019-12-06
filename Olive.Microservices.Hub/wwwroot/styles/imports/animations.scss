@@ -1,0 +1,28 @@
+﻿
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+@keyframes blink {
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@-webkit-keyframes blink {
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.blink {
+    animation: blink 0.4s step-start 0s infinite;
+    -webkit-animation: blink 0.4s step-start 0s infinite;    
+}

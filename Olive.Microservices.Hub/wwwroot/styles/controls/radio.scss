@@ -1,0 +1,38 @@
+﻿@import "../imports/custom-variables";
+
+$check-box-size: 20px;
+$check-box-size-checked-offset: 2px;
+
+input[type='radio'].handled {
+    opacity: 0;
+
+    &:focus + .radio-helper {
+        box-shadow: 0 0 0 0 #fff, 0 0 0 0.2rem rgba(0,123,255,.25);
+        border: 1px solid $input-border-focus;
+    }
+
+    &:checked + .radio-helper {
+
+        &:before {
+            outline: none;
+            display: inline-block;
+            height: calc(#{$check-box-size} - #{$check-box-size-checked-offset});
+            width: calc(#{$check-box-size} - #{$check-box-size-checked-offset});
+            border-radius: 50%;
+            content: '';
+            /*position: absolute;
+            top: -11px;
+            left: 17px;*/
+            background-color: $primary;
+        }
+    }
+}
+
+.radio-helper {
+    display: inline-block;
+    width: $check-box-size;
+    height: $check-box-size;
+    border: 1px solid $input-border;
+    border-radius: 50%;
+    background-color: $input-bg;
+}

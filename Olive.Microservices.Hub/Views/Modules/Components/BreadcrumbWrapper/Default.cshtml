@@ -1,0 +1,13 @@
+﻿@model ViewModel.BreadcrumbWrapper
+@(Layout = null)
+
+<!-- «Start| BreadcrumbWrapper» -->
+<div data-module="BreadcrumbWrapper" class="no-print">
+   @Html.StartupActionsJson()
+   <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+      </ol>
+   </nav>
+</div>
+<!-- «End| BreadcrumbWrapper» -->
+

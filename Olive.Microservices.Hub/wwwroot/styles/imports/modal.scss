@@ -1,0 +1,23 @@
+﻿/// <reference path="custom-variables.scss"/>
+
+.modal-content {
+    width: 700px;
+
+    .modal-header .close {
+        margin-top: -10px;
+    }
+
+    form {
+        legend, .control-label {
+            @include make-column-lg(4);
+            text-align: left;
+            font-weight: bold;
+        }
+    }
+
+    h2 {
+        margin-top: -64px;
+        margin-bottom: 40px;
+        font-size: 22pt;
+    }
+}

@@ -1,0 +1,10 @@
+﻿@model ViewModel.ServiceView
+@{ Domain.Service item = Model.Item; }
+<!-- «Start| ServiceView» -->
+<form data-module="ServiceView" method="post" action="@Url.Current()">
+   @Html.AntiForgeryToken()
+   @Html.StartupActionsJson()
+   <div class="view-body">
+   </div>
+</form>
+<!-- «End| ServiceView» -->

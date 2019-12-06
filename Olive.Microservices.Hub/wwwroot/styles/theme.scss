@@ -1,0 +1,142 @@
+﻿@import "imports/all-platforms";
+@import "imports/common";
+@import "imports/print";
+@import "controls/controls";
+
+html, body {
+    background-color: #F1F1F1 !important
+}
+
+.no-wrap {
+    white-space: nowrap
+}
+
+.profile-icon {
+    height: 32px;
+    border-radius: 16px;
+}
+
+error.soft-error-icon {
+    display: block;
+    background: url(/img/error.png);
+    width: 32px;
+    height: 32px;
+
+    &:hover {
+        opacity: 0.3;
+    }
+}
+
+.badge-number {
+    position: relative;
+
+    &[data-badge]:after {
+        content: attr(data-badge);
+        position: absolute;
+        top: -2px;
+        right: auto;
+        font-size: 10px;
+        background: #dc3545;
+        color: white;
+        width: 14px;
+        line-height: 15px;
+        text-align: center;
+        border-radius: 50%;
+        box-shadow: 0 0 1px #333;
+        animation: fadein 0.3s;
+    }
+
+    &[data-badge].badge-optional:after {
+        background: #555;
+    }
+}
+
+//.form-check-inline { margin-right: -8px !important; }
+
+/* Bootstrap Toggle v2.2.2 corrections for Bootsrtap 4*/
+.toggle-off {
+    box-shadow: inset 0 0px 5px rgba(0, 0, 0, .125);
+}
+
+.toggle.off {
+    border-color: rgba(0, 0, 0, .25);
+}
+
+.toggle-handle {
+    background-color: white;
+    border: thin rgba(0, 0, 0, .25) solid;
+}
+
+.toggle-handle.btn-default {
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+/* Arrow for menu */
+.arrow-right {
+    width: 2px;
+    height: 2px;
+    display: inline-block;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid white;
+    margin-left: -9px;
+    position: absolute;
+    right: 20px;
+    top: 7px;
+    z-index: 1;
+}
+
+.arrow-down {
+    width: 2px;
+    height: 2px;
+    display: inline-block;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    margin-left: -14px;
+    position: absolute;
+    right: 20px;
+    top: 7px;
+    z-index: 1;
+}
+
+.list-group {
+    font-weight: 500;
+    font-size: 200pt;
+    margin-top: 30pt;
+    padding-top: 10pt;
+}
+
+table.grid {
+    background: #fff;
+
+    tr.alt, tbody tr:nth-of-type(odd) {
+        background-color: #fff
+    }
+
+    th {
+        background: none;
+        font-weight: bold;
+        border-top: none;
+        background: #f1f1f1
+    }
+
+    &.table-sm {
+        font-size: 85%;
+    }
+}
+
+form {
+    .range-input {
+        .group-control {
+            display: flex;
+        }
+    }
+}
+
+
+/*default validation error style*/
+.input-validation-error {
+    border: solid 1px $red;
+}

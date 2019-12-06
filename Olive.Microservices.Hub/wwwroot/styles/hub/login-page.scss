@@ -1,0 +1,29 @@
+﻿@mixin login-box($background-image) { padding: 50px 50px 10px; max-width: 500px; margin: 100px auto auto auto; text-align: center; border-radius: 10px; border: solid #ccc 1px; background: url($background-image) no-repeat 30px 30px; background-size: 70px 70px; }
+
+.login-page { display: flex; flex: 1; flex-direction: column;
+
+    > form { flex: 1; }
+
+    .social-media-login { width: 100%;
+
+        .google-login-wrapper {
+            @include login-box("/img/login.png");
+            padding-bottom: 50px;
+
+            h2 { text-align: center; margin-bottom: 20px; }
+        }
+
+        .btn-social { display: block; margin: auto; }
+
+        .buttons-row { text-align: left; }
+    }
+
+    .manual-login {
+        @include login-box("/img/developer.png");
+
+        .group-control { max-width: 100%; flex: 1; }
+
+        button { margin-top: 20px; }
+    }
+}
+

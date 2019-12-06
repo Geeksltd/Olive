@@ -1,0 +1,10 @@
+﻿@model ViewModel.FeaturesSideMenu
+@(Layout = null)
+
+<!-- «Start| FeaturesSideMenu» -->
+<div data-module="FeaturesSideMenu" class="features-side-menu">
+   @Html.StartupActionsJson()
+   @info.Markup.Raw()
+</div>
+<!-- «End| FeaturesSideMenu» -->
+

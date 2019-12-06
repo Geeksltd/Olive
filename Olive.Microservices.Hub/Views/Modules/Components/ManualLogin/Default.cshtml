@@ -1,0 +1,49 @@
+﻿@model ViewModel.ManualLogin
+@(Layout = null)
+
+<!-- «Start| ManualLogin» -->
+@if (Model.IsVisible)
+{
+<form data-module="ManualLogin" role="form" method="post" action="@Url.Current()" data-validation-style="tooltip" class="manual-login">
+   @Html.AntiForgeryToken()
+   @Html.StartupActionsJson()
+   <h2>Bypass auth
+      <br/>
+      (dev time only)
+      <br/>
+      <br/></h2>
+   <div class="form-body">
+      @if (Model.DisplayName_Visible)
+      {
+      <div class="form-group row">
+         <div class="group-control">
+            <textarea asp-for="DisplayName" class="form-control" rows="5"></textarea>
+         </div>
+      </div>
+      }
+      @if (Model.Email_Visible)
+      {
+      <div class="form-group row">
+         <div class="group-control">
+            <input type="text" asp-for="Email" class="form-control" />
+         </div>
+      </div>
+      }
+      @if (Model.RoleNames_Visible)
+      {
+      <div class="form-group row">
+         <div class="group-control">
+            <textarea asp-for="RoleNames" class="form-control" rows='10'></textarea>
+         </div>
+      </div>
+      }
+   </div>
+   <div class="buttons-row">
+      <div class="buttons">
+         <button type="submit" name="SimulateLogIn" class="btn btn-primary" formaction='@Url.ActionWithQuery("ManualLogin/SimulateLogIn")' default-button="true">Simulate log in</button>
+      </div>
+   </div>
+</form>
+}
+<!-- «End| ManualLogin» -->
+

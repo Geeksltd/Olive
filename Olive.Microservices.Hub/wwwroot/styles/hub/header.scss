@@ -1,0 +1,14 @@
+﻿@import "../imports/custom-variables";
+
+.logo-wrapper, .features-sub-menu { background-color: $geeks-dark-green; height: 70px; margin: 0; }
+
+.features-sub-menu { background: #42AAA9 }
+
+div.logo-wrapper { display: flex; justify-content: center; flex-direction: column; 
+    .application-name { color: #fff; font-size: 13px; margin-left: 4px; }
+
+    .logo { width: 50%; display: block; margin:auto;
+
+        img { width: 100%; }
+    }
+}

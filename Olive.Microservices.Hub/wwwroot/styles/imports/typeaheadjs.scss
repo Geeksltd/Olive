@@ -1,0 +1,11 @@
+@import "../../lib/jquery-typeahead/dist/jquery.typeahead.min.css";
+
+.typehead-chevron-down i {
+    position: absolute;
+    right: 5px;
+    top: 12px;
+}
+.typeahead__cancel-button {
+    right: 10px !important;
+    top: -3px !important;
+}

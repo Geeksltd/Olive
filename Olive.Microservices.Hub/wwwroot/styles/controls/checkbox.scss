@@ -1,0 +1,36 @@
+﻿@import "../imports/custom-variables";
+
+$check-box-size: 20px;
+
+input[type='checkbox'].handled {
+    opacity: 0;
+
+    &:focus + .checkbox-helper {
+        box-shadow: 0 0 0 0 #fff, 0 0 0 0.2rem rgba(0,123,255,.25);
+        border: 1px solid $input-border-focus;
+    }
+
+    &:checked + .checkbox-helper {
+
+        &:before {
+            outline: none;
+            content: '\2714';
+            font-size: 26px;
+            position: absolute;
+            top: -13px;
+            left: 0px;
+            color: $primary;
+            font-family: initial;
+        }
+    }
+}
+
+.checkbox-helper {
+    display: inline-block;
+    width: $check-box-size;
+    height: $check-box-size;
+    border: 1px solid $input-border;
+    border-radius: $input-border-radius;
+    background-color: $input-bg;
+    position: relative;
+}

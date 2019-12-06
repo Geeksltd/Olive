@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Olive.Security
+@model ViewModel.LoginForm
+<div class="login-page">
+   @(await Component.InvokeAsync
+   <ManualLogin>
+      (ViewBag.ManualLogin as ViewModel.ManualLogin))
+      <!-- «Start| LoginForm» -->
+      <form data-module="LoginForm" role="form" method="post" action="@Url.Current()" data-validation-style="tooltip" class="social-media-login">
+         @Html.StartupActionsJson()
+         <div class='google-login-wrapper'>
+            <h2>Geeks Access Hub</h2>
+            <button type="submit" name="LoginByGoogle" class="btn-social btn-google btn btn-primary btn btn-primary" formaction='@Url.ActionWithQuery("LoginForm/LoginByGoogle")' default-button="true" formmethod='post'><i class="fas fa-user-lock"></i>
+               Login by Google</button>
+         </div>
+         <div class="form-body">
+            <div class="form-group row">
+               <div class="group-control">
+                  @Model.ErrorMessage.Raw()
+               </div>
+            </div>
+         </div>
+      </form>
+      <!-- «End| LoginForm» -->
+   </div>

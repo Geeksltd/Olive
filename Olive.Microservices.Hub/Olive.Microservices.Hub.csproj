@@ -1,0 +1,182 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Authors>Geeks Ltd</Authors>
+    <Company></Company>
+    <Product>Olive.Microservices.Hub</Product>
+    <Description>Hub nuget package.</Description>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <DocumentationFile>..\bin\netcoreapp2.1\Olive.Microservices.Hub.xml</DocumentationFile>
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="build\Olive.Microservices.Hub.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="build\Olive.Microservices.Hub.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
+    <PackageReference Include="AppContentService.HubApi" Version="180720.11.4435" />
+    <PackageReference Include="AWSSDK.KeyManagementService" Version="3.3.100.1" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="3.3.100.1" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.100.1" />
+    <PackageReference Include="Hangfire" Version="1.7.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="PeopleService.HubEndPoint" Version="190417.10.2652" />
+    <PackageReference Include="Olive.GlobalSearch.Source" Version="1.0.38" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.ApiClient">
+      <HintPath>..\bin\netstandard2.0\Olive.ApiClient.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Audit">
+      <HintPath>..\bin\netstandard2.0\Olive.Audit.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.BlobAws">
+      <HintPath>..\bin\netstandard2.0\Olive.BlobAws.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Entities.Data">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Entities.Data.SqlServer">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.SqlServer.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Mvc.Security">
+      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.Security.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Encryption">
+      <HintPath>..\bin\netstandard2.0\Olive.Encryption.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Web">
+      <HintPath>..\bin\netcoreapp2.1\Olive.Web.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Aws">
+      <HintPath>..\bin\netstandard2.0\Olive.Aws.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Aws.EventBus">
+      <HintPath>..\bin\netstandard2.0\Olive.Aws.EventBus.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Entities.Data.Replication">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.Replication.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.EventBus">
+      <HintPath>..\bin\netstandard2.0\Olive.EventBus.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Hangfire">
+      <HintPath>..\bin\netcoreapp2.1\Olive.Hangfire.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Microservices">
+      <HintPath>..\bin\netstandard2.0\Olive.Microservices.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Mvc">
+      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.PDF">
+      <HintPath>..\bin\netstandard2.0\Olive.PDF.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Security.Aws">
+      <HintPath>..\bin\netcoreapp2.1\Olive.Security.Aws.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Security.Impersonation">
+      <HintPath>..\bin\netcoreapp2.1\Olive.Security.Impersonation.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+    <Reference Include="Olive.Mvc.Testing">
+      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.Testing.dll</HintPath>
+      <Private>false</Private>
+      <SpecificVersion>false</SpecificVersion>
+    </Reference>
+
+  </ItemGroup>
+
+  <ItemGroup Label="Packaging">
+    <Content Include="build\Olive.Microservices.Hub.targets" PackagePath="build\Olive.Microservices.Hub.targets" />
+
+    <Content Include="wwwroot/img/**/*.*">
+      <Pack>true</Pack>
+    </Content>
+    <Content Include="wwwroot/public/**/*.*">
+      <Pack>true</Pack>
+    </Content>
+    <Content Include="wwwroot/scripts/**/*.js">
+      <Pack>true</Pack>
+    </Content>
+    <Content Include="wwwroot/styles/**/*.css">
+      <Pack>true</Pack>
+    </Content>
+    <Content Include="wwwroot/manifest.json;wwwroot/service-worker.js">
+      <Pack>true</Pack>
+    </Content>
+
+    <Content Include="Views/**/*.*">
+      <Pack>true</Pack>
+    </Content>
+  </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+  </Target>
+
+</Project>

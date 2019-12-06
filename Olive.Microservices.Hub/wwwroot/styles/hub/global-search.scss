@@ -1,0 +1,38 @@
+@import "../imports/custom-variables";
+
+/* Global Search Styles */
+.global-search {
+    &, &:focus { background: transparent; border-radius: 0; border: none; background: #4A4A4A; color: #959595; }
+}
+
+.global-search-result-panel li:hover { background-color: #f7f7f7; }
+
+.global-search-result-panel { position: absolute; box-sizing: border-box; color: rgb(33, 37, 41); line-height: 18px; outline-color: rgb(33, 37, 41); outline-style: none; outline-width: 0px; text-align: left; background-color: white; overflow-y: scroll; min-height: 665px; margin: 2px 0 0 0; box-shadow: rgb(0, 0, 0) 0px 0px 10px -3px; z-index: 4; width: 98vw; left: 0px; }
+
+.global-search-panel { box-sizing: border-box; position: relative; text-align: left; }
+
+.global-search-panel .loading-div { position: absolute; top: 5px; right: 5px; color: #959595; }
+
+.global-search-result-panel {
+    .search-container { display: flex; flex-wrap: wrap; margin-bottom: 10px;
+
+        .search-item { width: 283px; margin: 20px;
+            .search-title { color: $geeks-dark-green; font-weight: bold; margin-bottom: 5px;
+
+                i { margin-right: 5px; color: #137372; }
+            }
+
+            ul { list-style: none; padding: 0;
+                li { border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; min-height: 36px; padding-top: 4px;
+                    a { display: block; width: 100%; padding: 5px 0 5px 0; color: #313234; font-size: 0.9rem; }
+
+                    div.desc { box-sizing: border-box; color: rgb(170, 170, 170); font-family: Lato, Helvetica Neue, Arial, Helvetica, sans-serif; font-feature-settings: normal; font-kerning: auto; font-language-override: normal; font-optical-sizing: auto; font-size: 13px; font-size-adjust: none; font-stretch: 100%; font-style: italic; font-variant: normal; font-variant-alternates: normal; font-variant-caps: normal; font-variant-east-asian: normal; font-variant-ligatures: normal; font-variant-numeric: normal; font-variant-position: normal; font-variation-settings: normal; font-weight: 400; line-height: 16px; list-style-image: none; list-style-position: outside; list-style-type: none; outline-color: rgb(170, 170, 170); outline-style: none; outline-width: 0px; text-align: left; }
+
+                    .icon {
+                        img { max-width: 30px; float: left; margin-right: 3px; }
+                    }
+                }
+            }
+        }
+    }
+}

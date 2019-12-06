@@ -1,0 +1,18 @@
+﻿/// <reference path="common.scss" />
+
+$brand-color: #43aaa9;
+$gray: #888;
+$geeks-dark-green: rgba(11, 131, 130, 0.8);
+$red: #dc3545 !default;
+
+.pane { padding: 20px; background: #fff; margin: 20px 0; box-shadow: #888 0 0 15px -4px; font-size: 95%;
+    h2 { margin-top: 0; }
+
+    .grid tr th{background:transparent; border-bottom:4px solid #eee;}
+}
+
+.page-tip { background: #fefbe1; margin: 30px 10px; padding: 30px; display: block; box-shadow: #111 0px 0px 15px -4px; }
+
+red, .red { color: $red }
+
+@mixin drop-shadow { background: #fff; box-shadow: #444 0 0 15px -3px; }

@@ -1,0 +1,5 @@
+﻿
+.feature-frame-view.view-body { display: flex; flex: 1;
+    .group-control { display: flex; flex: 1; max-width: 100%; }
+    iframe.view-frame { height: 100%; overflow-y: visible; width: 100%; border: none; }
+}

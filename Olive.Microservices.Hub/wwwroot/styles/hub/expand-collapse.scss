@@ -1,0 +1,39 @@
+﻿
+//expand-collpase
+.side-bar { min-height: 100vh; transition: all 0.6s cubic-bezier(0.945, 0.020, 0.270, 0.665); transform-origin: center left; /* Set the transformed position of sidebar to center left side. */ }
+
+@include media-breakpoint-up(lg) {
+    .side-bar.collapsed { margin-left: -16.56667%; }
+}
+
+@include media-breakpoint-up(xl) {
+    .side-bar.collapsed { margin-left: -16.66667%; }
+}
+
+#sidebarCollapse { width: 28px; height: 48px; background: #137372; box-shadow: none; outline: none !important; border: none; position: absolute; left: -40px; top: 13px; color: #ffffff; transition: left linear .5s;
+    &:hover { cursor: pointer; background-color: #42AAA9; }
+    &.collapse { left: 17px; transition: left linear .5s;
+        &:hover { background-color: #137372; }
+    }
+}
+
+// feature button
+.feature-button small { display: block; font-size: 10pt; font-weight: normal; opacity: .65; font-weight: lighter; }
+
+
+//task bar on the right
+.task-bar { background-color: #313234; position: relative; min-height: 100vh;
+
+    &.collapsed { right: 60px;
+        iframe { display: none !important; }
+    }
+
+    #taskBarCollapse { width: 28px; height: 48px; background: #137372; box-shadow: none; outline: none !important; border: none; position: absolute; left: -40px; top: 13px; color: #ffffff;
+        &:hover { cursor: pointer; background-color: #313234; }
+        &.collapse { left: 17px;
+            &:hover { background-color: #137372; }
+        }
+    }
+
+    iframe { height: 100% !important; }
+}

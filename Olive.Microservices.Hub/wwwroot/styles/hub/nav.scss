@@ -1,0 +1,22 @@
+﻿
+.dropped-submenu {
+    @extend .mr-auto;
+    @extend .mt-2;
+    @extend .mt-lg-0;
+}
+
+.navbar-nav > li {
+    @extend .nav-item;
+
+    & > li > a {
+        @extend .nav-link;
+    }
+}
+
+.navbar > .nav.flex-column > li {
+    /*@extend .nav-item;*/
+    @extend .list-group-item;
+    @extend .list-group-item-action;
+}
+
+.navbar li.active > a {color:#fff;}

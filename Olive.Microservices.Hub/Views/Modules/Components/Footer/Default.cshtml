@@ -1,0 +1,17 @@
+﻿@model ViewModel.Footer
+@(Layout = null)
+
+<!-- «Start| Footer» -->
+<form data-module="Footer" method="post" action="@Url.Current()" class="logout-box">
+   @Html.AntiForgeryToken()
+   @Html.StartupActionsJson()
+   <hr/>
+   <div>
+      Hi @User?.Identity.Name
+   </div>
+   <div>
+      <a name="SignOut" href="/logout" default-button="true">Sign out</a>
+   </div>
+</form>
+<!-- «End| Footer» -->
+

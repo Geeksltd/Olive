@@ -1,0 +1,13 @@
+﻿.service-tiles {
+    .list-items {
+        display: grid;
+        grid-gap: 10px;
+        grid-template-columns: 200px 200px 200px 200px 200px;
+
+        .tile {
+            padding: 25px;
+            border: solid #000 2px;
+            border-radius: 5px;
+        }
+    }
+}

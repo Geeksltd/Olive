@@ -142,6 +142,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.CKEditorFileManag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire.MySql", "Olive.Hangfire.MySql\Olive.Hangfire.MySql.csproj", "{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Microservices.Hub", "Olive.Microservices.Hub\Olive.Microservices.Hub.csproj", "{3624CE3D-ECFA-4FFA-AEBF-6B4067B9B756}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -371,6 +373,10 @@ Global
 		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3624CE3D-ECFA-4FFA-AEBF-6B4067B9B756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3624CE3D-ECFA-4FFA-AEBF-6B4067B9B756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3624CE3D-ECFA-4FFA-AEBF-6B4067B9B756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3624CE3D-ECFA-4FFA-AEBF-6B4067B9B756}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

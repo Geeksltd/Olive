@@ -1,0 +1,52 @@
+{
+  "name": "Geeks Hub Application",
+  "short_name": "Hub",
+  "description": "Geeks Hub Application for mobile devices",
+  "background_color": "#FFFFFF",
+  "theme_color": "#42AAA9",
+  "start_url": "/",
+  "scope": ".",
+  "orientation": "portrait-primary",
+  "display": "standalone",
+  "dir": "ltr",
+  "lang": "en-US",
+  "version": "1.0.0.01",
+  "manifest_version": "1.0",
+  "icons": [
+    {
+      "src": "img/pwa/icon48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "img/pwa/icon96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "img/pwa/icon144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "img/pwa/icon192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/pwa/icon256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "img/pwa/icon384.png",
+      "type": "image/png",
+      "sizes": "384x384"
+    },
+    {
+      "src": "img/pwa/icon512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

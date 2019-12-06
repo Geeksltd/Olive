@@ -1,0 +1,14 @@
+﻿@model ViewModel.SubFeatureView
+@(Layout = null)
+
+@{ Domain.Feature item = Model.Item; }
+
+<!-- «Start| SubFeatureView» -->
+<form data-module="SubFeatureView" method="post" action="@Url.Current()" class="feature-frame-view">
+   @Html.AntiForgeryToken()
+   @Html.StartupActionsJson()
+   <div class="view-body">
+   </div>
+</form>
+<!-- «End| SubFeatureView» -->
+

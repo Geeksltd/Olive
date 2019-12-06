@@ -1,0 +1,24 @@
+﻿@model ViewModel.FeaturesTopMenu
+@(Layout = null)
+
+<!-- «Start| FeaturesTopMenu» -->
+<ul class="features-sub-menu">
+   @foreach (var item in Model.Items)
+   {
+   <li class="@("active".OnlyWhen(Model.ActiveItem == (item.ID).ToStringOrEmpty()) + " feature-menu-item" + " feature-box".OnlyWhen(Model.ViewingFeature.ImplementationUrl.IsEmpty() && item.Parent == Model.ViewingFeature) + " active-parent".OnlyWhen(Model.ActiveItem.OrEmpty().StartsWith((item.ID).ToStringOrEmpty() + "/")))">
+      <a href="@item.LoadUrl" data-redirect='ajax' data-badgeurl="@item.BadgeUrl" data-service="@item.Service?.Name" class="@("badge-number".OnlyWhen(item.BadgeUrl.HasValue()))">@item.Title</a>
+   </li>
+   }
+   <li class="@("active".OnlyWhen(Model.ActiveItem == "Parent") + " active-parent".OnlyWhen(Model.ActiveItem.OrEmpty().StartsWith("Parent/")))">
+      <a data-toggle="collapse" data-target="#Parent" @("aria-expanded=true".OnlyWhen(Model.ActiveItem.OrEmpty().StartsWith("Parent/")))>Parent</a>
+      <ul id="Parent" class="collapse @("show".OnlyWhen(Model.ActiveItem.OrEmpty().StartsWith("Parent/")))"
+      >
+         <li class="@("active".OnlyWhen(Model.ActiveItem == "Parent/Child") + " active-parent".OnlyWhen(Model.ActiveItem.OrEmpty().StartsWith("Parent/Child/")))">
+            <a>
+               Child</a>
+         </li>
+      </ul>
+   </li>
+</ul>
+<!-- «End| FeaturesTopMenu» -->
+

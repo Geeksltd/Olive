@@ -1,0 +1,35 @@
+﻿@model ViewModel.ChildFeaturesList
+<!-- «Start| ChildFeaturesList» -->
+<form data-module="ChildFeaturesList" method="get" action="@Url.Current()" data-redirect="ajax" class="feature-children">
+   @Html.StartupActionsJson()
+   <div class="search">
+      <div class="form-group justify-content-center d-none d-lg-flex d-xl-flex">
+         <div class="group-control">
+            <input type="text" asp-for="InstantSearch" class="form-control" placeholder="Search..." />
+         </div>
+      </div>
+   </div>
+   @if (Model.Items.Any())
+   {
+   <div class='list-items'>
+      @foreach (var listItem in Model.Items)
+      {
+      var item = listItem.Item;
+      <div class='item'>
+         <a name="Title" class="feature-button olive-instant-search-item badge-number" href="@item.LoadUrl" id="@item.ID" @("data-redirect='ajax'".OnlyWhen(!item.UseIframe).Raw()) data-badgeurl="@item.GetBadgeUrl()" data-service="@item.Service?.Name"><i class="fa-2x @item.GetIcon()" aria-hidden="true"></i>
+            @item.GetTitle(Model.Parent)
+            <small>
+               @item.GetDescription()
+            </small></a>
+      </div>
+      }
+   </div>
+   }
+   @if (Model.Items.None())
+   {
+   <div class="empty-list">
+      There are no features to display.
+   </div>
+   }
+</form>
+<!-- «End| ChildFeaturesList» -->

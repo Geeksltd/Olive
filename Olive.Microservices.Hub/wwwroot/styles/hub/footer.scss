@@ -1,0 +1,22 @@
+﻿$footer-height: 90px;
+$footer-top-margin: 30px;
+
+footer { position: absolute; bottom: 0; width: 100%; background-color: $gray-darker; color: #eee; height: $footer-height; padding: 15px;
+
+    p {
+        padding: 5px;
+        @extend .text-muted;
+        color: #334432;
+    }
+
+    a, a:hover { color: #ade0f1; }
+
+    img { margin: 0 8px; }
+
+    .pull-right a { color: #fff; text-decoration: underline; }
+
+    .plain-text { text-decoration: none !important; }
+}
+
+
+body { margin-bottom: ($footer-height + $footer-top-margin); overflow-y: scroll; }

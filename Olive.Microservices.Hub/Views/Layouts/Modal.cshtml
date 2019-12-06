@@ -1,0 +1,11 @@
+﻿@{Layout = Request.IsAjaxRequest() ? null : "~/Views/Layouts/Modal.Container.cshtml";}
+<main class="hub-service">
+    <div class="container-fluid">
+        <div class="page">
+            <div class="content"> @RenderBody() </div>
+        </div>
+    </div>
+
+    @RenderSection("scripts", required: false)
+    @Html.RegisterStartupActions()
+</main>

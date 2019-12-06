@@ -1,0 +1,112 @@
+﻿/// <reference path="../imports/common.scss" />
+@import "../../lib/bootstrap/scss/functions";
+@import "../../lib/bootstrap/scss/variables";
+@import "../../lib/bootstrap/scss/mixins";
+@import "../../lib/bootstrap/scss/utilities";
+@import "../../lib/bootstrap/scss/nav";
+@import "../../lib/bootstrap/scss/list-group";
+
+@import "header";
+@import "footer";
+@import "side-bar";
+@import "features-sub-menu";
+@import "feature-frame-view";
+@import "error";
+@import "nav";
+@import "form";
+@import "login-page";
+@import "service-tiles";
+@import "global-search";
+@import "board";
+@import "expand-collapse";
+@import "../imports/checkbox-list";
+
+html, body { display: flex; align-items: stretch; }
+
+service[of] { flex: 1; }
+
+// main layout
+.page {
+    @include make-row();
+
+    .side-bar {
+        @include make-column-lg(2);
+    }
+}
+
+h2 { margin-top: 0; }
+
+body { margin-bottom: 0;
+
+    &, main {
+        &, .container-fluid {
+            &, .page {
+                &, .side-bar, .contant { display: flex; flex-direction: column; flex: 1;
+                    .content-body { display: flex; flex: 1; padding: 20px;
+                        form { width: 100%; }
+                    }
+                }
+                flex-direction: row !important; }
+        }
+    }
+}
+
+@include media-breakpoint-down(md) { /*.container-fluid{
+        padding: 0 !important;
+    }*/ .page { margin: 0px; }
+    .content-body { padding: 5px !important; }
+}
+
+.w3-animate-left { position: relative; animation: animateleft 0.4s }
+
+@keyframes animateleft {
+    from { left: -300px; opacity: 0 }
+
+    to { left: 0; opacity: 1 }
+}
+
+.w3-animate-right { position: relative; animation: animateright 0.4s }
+
+@keyframes animateright {
+    from { right: -300px; }
+
+    to { right: 0; }
+}
+
+.w3-animate-righter { position: relative; animation: animaterighter 0.4s }
+
+@keyframes animaterighter {
+    from { left: 0%; }
+
+    to { left: 100%; }
+}
+
+.w3-animate-lefter { position: relative; animation: animatelefter 0.4s }
+
+@keyframes animatelefter {
+    from { right: 0%; }
+
+    to { right: 100%; }
+}
+
+.content-body { flex-direction: column; }
+
+.container-fluid { align-items: stretch; perspective: 1500px; /* Define how many pixels the sidebar is placed from the view. */ .content { flex: 5; display: flex; padding-left: 0; padding-right: 0; flex-direction: column; position: relative; /*.feature-frame-view { padding-left: 10px; }*/ }
+}
+
+.chosen-container-single {
+    .chosen-single { height: 45px;
+        span { padding-top: 10px; }
+        div b { margin-top: 10px; }
+    }
+}
+
+.profile-photo img { height: 53px; }
+
+.breadcrumb { background: transparent; padding: 0; font-size: 90%; margin: 0.6rem 0; }
+
+.sign-out { background-color: #000000; padding: 2px 5px 0 0;
+    i { color: #ffffff; }
+}
+
+main { height: 100%; }

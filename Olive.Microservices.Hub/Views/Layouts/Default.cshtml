@@ -1,0 +1,14 @@
+﻿@{
+    Layout = Request.IsAjaxCall() ? null : "~/Views/Layouts/Default.Container.cshtml";
+}
+
+<main class="hub-service">
+    <input type="hidden" id="page_meta_title" value="@ViewData["Title"]" />
+    @RenderBody()
+
+    @Html.RegisterDynamicScriptFiles()
+    @RenderSection("scripts", required: false)    
+    @Html.RegisterStartupActions()
+
+</main>
+

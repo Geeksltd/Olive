@@ -1,0 +1,48 @@
+﻿@using AppContentService
+@model ViewModel.ServicesList
+<!-- «Start| ServicesList» -->
+<form data-module="ServicesList" method="get" action="@Url.Current()" data-redirect="ajax">
+   @Html.StartupActionsJson()
+   <h2>Services</h2>
+   @Html.AppContent("Hub.Services.Intro")
+   <div class="search">
+      <div class="form-group">
+         <label for="FullSearch" class="control-label">
+            Find:
+         </label>
+         <div class="group-control">
+            <input type="text" asp-for="FullSearch" class="form-control" />
+         </div>
+      </div>
+   </div>
+   @if (Model.Items.Any())
+   {
+   <div class="grid-wrapper">
+      <table class="grid">
+         <thead>
+            <tr>
+               <th>Name</th>
+               <th>Base url</th>
+            </tr>
+         </thead>
+         <tbody>
+            @foreach (var listItem in Model.Items)
+            {
+            var item = listItem.Item;
+            <tr>
+               <td>@item.Name</td>
+               <td><a name="C_item_BaseUrl" href="@item.BaseUrl" target="_blank">@item.BaseUrl</a></td>
+            </tr>
+            }
+         </tbody>
+      </table>
+   </div>
+   }
+   @if (Model.Items.None())
+   {
+   <div class="empty-list">
+      There are no services to display.
+   </div>
+   }
+</form>
+<!-- «End| ServicesList» -->
