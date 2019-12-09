@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\bin\</OutputPath>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.DistributedBackgroundTasks.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+    <PackageReference Include="Olive" Version="2.1.176" />
+    <PackageReference Include="Olive.Entities" Version="2.1.137" />
+    <PackageReference Include="Olive.Entities.Data" Version="2.1.143" />
+  </ItemGroup>
+
+</Project>

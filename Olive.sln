@@ -142,6 +142,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.CKEditorFileManag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire.MySql", "Olive.Hangfire.MySql\Olive.Hangfire.MySql.csproj", "{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.DistributedBackgroundTasks", "Olive.BackgroundTasks\Olive.DistributedBackgroundTasks.csproj", "{F5475043-F394-4B67-BF3F-AE192179F7A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
