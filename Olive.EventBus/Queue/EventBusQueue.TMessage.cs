@@ -14,9 +14,10 @@ namespace Olive
         public EventBusQueue(IEventBusQueue queue) => Queue = queue;
 
         Task<string> IEventBusQueue.Publish(string message) => Queue.Publish(message);
-        Task<IEnumerable<string>> IEventBusQueue.PublishBatch(IEnumerable<string> messages) 
+        Task<IEnumerable<string>> IEventBusQueue.PublishBatch(IEnumerable<string> messages)
             => Queue.PublishBatch(messages);
         void IEventBusQueue.Subscribe(Func<string, Task> @handler) => Queue.Subscribe(handler);
+        Task IEventBusQueue.PullAll(Func<string, Task> @handler) => Queue.PullAll(handler);
         Task<QueueMessageHandle> IEventBusQueue.Pull(int timeout) => Queue.Pull(timeout);
         Task IEventBusQueue.Purge() => Queue.Purge();
 
@@ -44,7 +45,7 @@ namespace Olive
         /// <returns>The unique id of the queue item.</returns>
         public Task<IEnumerable<string>> PublishBatch(IEnumerable<TMessage> messages)
         {
-            return this.PublishBatch((dynamic) messages as IEnumerable<IEventBusMessage>);
+            return this.PublishBatch((dynamic)messages as IEnumerable<IEventBusMessage>);
         }
 
         /// <summary>
@@ -54,6 +55,8 @@ namespace Olive
         {
             ((IEventBusQueue)this).Subscribe(handler);
         }
+
+        public Task PullAll(Func<TMessage, Task> @handler) => ((IEventBusQueue)this).PullAll(handler);
 
         /// <summary>
         /// Pulls a single item from the specified queue, or null if nothing was available.

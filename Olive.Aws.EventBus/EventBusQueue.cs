@@ -107,6 +107,8 @@ namespace Olive.Aws
 
         public void Subscribe(Func<string, Task> handler) => new Subscriber(this, handler).Start();
 
+        public Task PullAll(Func<string, Task> handler) => new Subscriber(this, handler).PullAll();
+
         public async Task<QueueMessageHandle> Pull(int timeoutSeconds = 10)
         {
             var request = new ReceiveMessageRequest

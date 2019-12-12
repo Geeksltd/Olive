@@ -142,7 +142,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.CKEditorFileManag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire.MySql", "Olive.Hangfire.MySql\Olive.Hangfire.MySql.csproj", "{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.DistributedBackgroundTasks", "Olive.BackgroundTasks\Olive.DistributedBackgroundTasks.csproj", "{F5475043-F394-4B67-BF3F-AE192179F7A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PassiveBackgroundTasks", "Olive.PassiveBackgroundTasks\Olive.PassiveBackgroundTasks.csproj", "{F5475043-F394-4B67-BF3F-AE192179F7A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication.Mvc.Extensions", "Olive.EventBus.Mvc.Extensions\Olive.Entities.Data.Replication.Mvc.Extensions.csproj", "{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -373,6 +375,14 @@ Global
 		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -53,10 +53,6 @@ namespace Olive.Hangfire
 
             return @this;
         }
-        public static IApplicationBuilder UseServerlessTasksRunner(this IApplicationBuilder app, string pathMatch = "/trigger-tasks")
-        {
-            app.Map(pathMatch, x => x.UseMiddleware<Serverless.DistributedBackgroundTasksMiddleware>());
-            return app;
-        }
+
     }
 }

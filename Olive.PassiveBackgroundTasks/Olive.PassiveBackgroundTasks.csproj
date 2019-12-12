@@ -6,10 +6,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netstandard2.0\Olive.DistributedBackgroundTasks.xml</DocumentationFile>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.PassiveBackgroundTasks.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CronExpressionDescriptor" Version="2.13.0" />
+    <PackageReference Include="Cronos" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
     <PackageReference Include="Olive" Version="2.1.176" />

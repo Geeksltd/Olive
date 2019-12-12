@@ -1,7 +1,7 @@
 ﻿using Olive.Entities;
 using System;
 
-namespace Olive.DistributedBackgroundTasks
+namespace Olive.PassiveBackgroundTasks
 {
     public interface IBackgourndTask : IEntity
     {

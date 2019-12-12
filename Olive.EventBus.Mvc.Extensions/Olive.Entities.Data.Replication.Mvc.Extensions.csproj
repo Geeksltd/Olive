@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.Replication.Mvc.Extensions.xml</DocumentationFile>
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup>    
+    <Reference Include="Olive">
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.EventBus">
+      <HintPath>..\bin\netstandard2.0\Olive.EventBus.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities.Data.Replication">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.Replication.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

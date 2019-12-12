@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Olive.DistributedBackgroundTasks
+namespace Olive.PassiveBackgroundTasks
 {
     class TaskExecution : IDisposable
     {

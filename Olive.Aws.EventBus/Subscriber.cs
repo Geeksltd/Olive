@@ -18,22 +18,22 @@ namespace Olive.Aws
         {
             Handler = handler;
             Queue = queue;
-        }
-
-        public void Start()
-        {
             Request = new ReceiveMessageRequest
             {
                 QueueUrl = Queue.QueueUrl,
-                WaitTimeSeconds = 10,
                 MaxNumberOfMessages = Queue.MaxNumberOfMessages,
                 VisibilityTimeout = Queue.VisibilityTimeout,
             };
 
             Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
-
-            (PollingThread = new Thread(KeepPolling)).Start();
         }
+
+        public void Start()
+        {
+            (PollingThread = new Thread(async () => await KeepPolling())).Start();
+        }
+
+        public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty);
 
         async Task<List<KeyValuePair<string, Message>>> FetchEvents()
         {
@@ -60,40 +60,49 @@ namespace Olive.Aws
             }
         }
 
-        async void KeepPolling()
+        async Task<bool> Poll()
         {
-            while (true)
+            var messages = await FetchEvents();
+            foreach (var item in messages)
             {
                 try
                 {
-                    foreach (var item in await FetchEvents())
-                    {
-                        try
-                        {
-                            await Handler(item.Key);
+                    await Handler(item.Key);
 
-                            Receipt.ReceiptHandle = item.Value.ReceiptHandle;
-                            await Queue.Client.DeleteMessageAsync(Receipt);
-                        }
-                        catch (Exception ex)
-                        {
-                            var exception = new Exception("Failed to run queue event handler " +
-                                Handler.Method.DeclaringType.FullName + "." +
-                                Handler.Method.GetDisplayName(), ex);
+                    Receipt.ReceiptHandle = item.Value.ReceiptHandle;
+                    await Queue.Client.DeleteMessageAsync(Receipt);
+                }
+                catch (Exception ex)
+                {
+                    var exception = new Exception("Failed to run queue event handler " +
+                        Handler.Method.DeclaringType.FullName + "." +
+                        Handler.Method.GetDisplayName(), ex);
 
-                            if (Queue.IsFifo)
-                                throw exception;
-                            else
-                                Log.For<Subscriber>().Error(exception);
-                        }
-                    }
+                    if (Queue.IsFifo)
+                        throw exception;
+                    else
+                        Log.For<Subscriber>().Error(exception);
+                }
+            }
 
+            return messages.Count == Queue.MaxNumberOfMessages;
+        }
+
+        async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling)
+        {
+            var queueIsEmpty = false;
+            do
+            {
+                try
+                {
+                    queueIsEmpty = (await Poll() == false);
                 }
                 catch (Exception exception)
                 {
                     Log.For<Subscriber>().Error(exception);
                 }
             }
+            while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
         }
     }
 }

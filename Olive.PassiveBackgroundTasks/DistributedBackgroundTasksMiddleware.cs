@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace @Olive.DistributedBackgroundTasks
+namespace @Olive.PassiveBackgroundTasks
 {
     class DistributedBackgroundTasksMiddleware
     {
