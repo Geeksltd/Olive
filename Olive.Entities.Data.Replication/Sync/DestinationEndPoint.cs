@@ -38,13 +38,24 @@ namespace Olive.Entities.Replication
         /// is empty, it will fetch the full data. </summary>
         public async Task Subscribe()
         {
+            await EnsureRefreshData();
+
+            PublishQueue.Subscribe<ReplicateDataMessage>(Import);
+        }
+
+        public async Task PullAll()
+        {
+            await PublishQueue.PullAll<ReplicateDataMessage>(Import);
+            await EnsureRefreshData();
+        }
+
+        async Task EnsureRefreshData()
+        {
             foreach (var item in Subscribers.Values)
             {
                 if (await Database.Of(item.DomainType).None())
                     await item.RefreshData();
             }
-
-            PublishQueue.Subscribe<ReplicateDataMessage>(Import);
         }
 
         async Task Import(ReplicateDataMessage message)

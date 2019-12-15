@@ -4,8 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
-namespace Olive.DistributedBackgroundTasks
+namespace Olive.PassiveBackgroundTasks
 {
     public class BackgroundProcessManager
     {
@@ -13,7 +14,7 @@ namespace Olive.DistributedBackgroundTasks
         public static BackgroundProcessManager Current { get; } = new BackgroundProcessManager();
         Dictionary<string, Func<Task>> Actions = new Dictionary<string, Func<Task>>();
 
-        public async Task Register(string name, Func<Task> action, int intervalInMinutes, int timeoutInMinutes = 5)
+        public async Task Register(string name, Expression<Func<Task>> action, int intervalInMinutes, int timeoutInMinutes = 5)
         {
             this.Logger().Info("Registering a background task for " + name);
             var context = Context.Current;
@@ -25,7 +26,7 @@ namespace Olive.DistributedBackgroundTasks
             instance.IntervalInMinutes = intervalInMinutes;
             instance.TimeoutInMinutes = timeoutInMinutes;
 
-            Actions[name] = action;
+            Actions[name] = action.Compile();
 
             await context.Database().Save(instance);
 

@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.Replication.Mvc.Extensions.xml</DocumentationFile>
+    <OutputPath>..\bin\</OutputPath>
+    <Title>Olive.Entities.Data.Replication.Mvc.Extensions</Title>
+    <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
+    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Description>Olive Framework</Description>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageVersion>1.0.0</PackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+  </ItemGroup>
+  <ItemGroup>    
+    <Reference Include="Olive">
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.EventBus">
+      <HintPath>..\bin\netstandard2.0\Olive.EventBus.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities.Data.Replication">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.Replication.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

@@ -9,21 +9,35 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Olive.DistributedBackgroundTasks
+namespace Olive.PassiveBackgroundTasks
 {
     public static class Extensions
     {
         static IDatabase Database => Context.Current.Database();
-        public static IServiceCollection AddDistributedBackgroundTasks<T>(this IServiceCollection services) where T : class, IBackgourndTask
+        public static IServiceCollection AddScheduledTasks<T>(this IServiceCollection services) where T : class, IBackgourndTask
         {
             services.AddSingleton<IBackgourndTask, T>();
             return services;
         }
 
-        public static IApplicationBuilder UseDistributedBackgroundTasks(this IApplicationBuilder app, Action<BackgroundProcessManager> manager, string pathMatch = "/trigger")
+        public static async Task<IApplicationBuilder> UseScheduledTasks<TPlan>(this IApplicationBuilder app, string pathMatch = "/olive-trigger-tasks")
+            where TPlan : BackgroundJobsPlan, new()
         {
-            manager(BackgroundProcessManager.Current);
-            app.Map(pathMatch, x => x.UseMiddleware<DistributedBackgroundTasksMiddleware>());
+            if (Config.Get<bool>("Automated.Tasks:Enabled"))
+            {
+                var plan = new TPlan();
+                plan.Initialize();
+
+                foreach (var job in BackgroundJobsPlan.Jobs.Values)
+                {
+                    app.Logger().Info("Registering " + job.Name);
+                    await BackgroundProcessManager.Current.Register(job.Name, job.Action, CronParser.Minutes(job.ScheduleCron), job.TimeoutInMinutes);
+                    app.Logger().Info("Registered " + job.Name);
+                }
+
+                app.Map(pathMatch, x => x.UseMiddleware<DistributedBackgroundTasksMiddleware>());
+            }
+
             return app;
         }
 

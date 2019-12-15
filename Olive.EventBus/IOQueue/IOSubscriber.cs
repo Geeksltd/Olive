@@ -21,6 +21,8 @@ namespace Olive
 
         public void Start() => new Thread(KeepPolling).Start();
 
+        public Task PullAll() => RunHandler(PullStrategy.UntilEmpty);
+
         void KeepPolling()
         {
             RunHandler();
@@ -78,15 +80,20 @@ namespace Olive
             return true;
         }
 
-        async void RunHandler()
+        async Task RunHandler(PullStrategy strategy = PullStrategy.KeepPulling)
         {
-            while (true)
+            do
             {
+
                 using (await SyncLock.Lock())
                     if (await HandleNext()) continue;
 
-                Thread.Sleep(5000);
+                if (strategy == PullStrategy.KeepPulling)
+                    Thread.Sleep(5000);
+                else
+                    break;
             }
+            while (true);
         }
     }
 }
