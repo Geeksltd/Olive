@@ -214,6 +214,10 @@ namespace Olive.Entities
                 hasValue = true;
                 return false;
             }
+            else if (OwnerEntity is null)
+            {
+                throw new InvalidOperationException("This blob is not attached to an entity.");
+            }
             else if (Task.Factory.RunSync(() => GetStorageProvider().FileExistsAsync(this)))
             {
                 hasValue = true;

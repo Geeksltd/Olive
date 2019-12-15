@@ -47,8 +47,6 @@ namespace Olive
 
         public static async Task LogOn(this ILoginInfo @this, bool remember = false)
         {
-            await Context.Current.Http().SignOutAsync();
-
             var prop = new AuthenticationProperties
             {
                 IsPersistent = remember,

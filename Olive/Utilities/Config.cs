@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq;
 
 namespace Olive
 {
@@ -70,6 +71,23 @@ namespace Olive
                 Enumerable.Empty<KeyValuePair<string, string>>();
 
             return settings.ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        /// <summary>
+        /// In all config values, replaces %SOMETHING% with the current environment variable with the same name.
+        /// If no environment variable with that name exists, it does not replace it.
+        /// </summary>
+        public static IConfiguration MergeEnvironmentVariables(this IConfiguration config)
+        {
+            var keys = Environment.GetEnvironmentVariables().Keys.Cast<string>().ToArray();
+            foreach (var variable in keys)
+            {
+                var key = $"%{variable}%";
+                foreach (var item in config.AsEnumerable().Where(v => v.Value.OrEmpty().Contains(key)))
+                    config[item.Key] = Environment.GetEnvironmentVariable(variable);
+            }
+
+            return config;
         }
     }
 }
