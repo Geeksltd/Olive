@@ -14,9 +14,10 @@ namespace Olive.Entities.Replication
             {
                 if (!context.Request.Path.Value.ToLower().EndsWithAny(".png", ".jpg", ".xml", ".css", ".js"))
                 {
+                    var start = LocalTime.Now;
                     Log.For<T>().Info("Pulling all");
                     await ((T)Activator.CreateInstance(typeof(T), domainAssembly)).PullAll();
-                    Log.For<T>().Info("Pulled all");
+                    Log.For<T>().Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
                 }
                 await next();
             });
