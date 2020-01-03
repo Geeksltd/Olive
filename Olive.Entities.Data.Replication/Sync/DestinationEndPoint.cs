@@ -48,9 +48,6 @@ namespace Olive.Entities.Replication
             var start = LocalTime.Now;
             await PublishQueue.PullAll<ReplicateDataMessage>(Import);
             Log.For(this).Info("Pulled from queue in " + LocalTime.Now.Subtract(start).ToNaturalTime());
-            start = LocalTime.Now;
-            await EnsureRefreshData();
-            Log.For(this).Info("EnsureRefreshData in " + LocalTime.Now.Subtract(start).ToNaturalTime());
         }
 
         async Task EnsureRefreshData()
