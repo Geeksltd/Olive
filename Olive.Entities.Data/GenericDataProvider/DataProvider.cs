@@ -152,7 +152,7 @@ namespace Olive.Entities.Data
 
         async Task UpdateSelfImpl(IEntity record)
         {
-            if ((await ExecuteScalar(UpdateCommand, CommandType.Text, CreateParameters(record, forInsert: false))).ToStringOrEmpty().IsEmpty())
+            if ((await ExecuteNonQuery(UpdateCommand, CommandType.Text, CreateParameters(record, forInsert: false))) == 0)
             {
                 Cache.Remove(record);
                 throw new ConcurrencyException($"Failed to update the '{MetaData.TableName}' table. There is no row with the ID of {record.GetId()}.");

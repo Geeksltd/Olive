@@ -45,9 +45,8 @@ namespace Olive.Entities.Data
 
             if (properties.None()) return "";
 
-            return $@"UPDATE {GetFullTablaName(metaData)} SET
+            return $@"UPDATE {GetFullTableName(metaData)} SET
                 {properties.Select(x => $"{SafeId(x.Name)} = @{x.ParameterName}").ToString(", ")}
-                OUTPUT INSERTED.{metaData.IdColumnName}
                 WHERE {metaData.IdColumnName} = @OriginalId";
         }
 
@@ -55,19 +54,26 @@ namespace Olive.Entities.Data
         {
             var properties = metaData.GetPropertiesForInsert();
 
+            return GetInsertCommandTemplate(metaData).FormatWith(
+                GetFullTableName(metaData),
+                properties.Select(x => SafeId(x.Name)).ToString(", "),
+                properties.Select(x => $"@{x.ParameterName}").ToString(", ")
+            );
+        }
+
+        protected virtual string GetInsertCommandTemplate(IDataProviderMetaData metaData)
+        {
             var autoNumber = metaData.AutoNumberProperty;
 
-            return $@"INSERT INTO {GetFullTablaName(metaData)}
-                ({properties.Select(x => SafeId(x.Name)).ToString(", ")})
+            return $@"INSERT INTO {{0}} ({{1}})
                 {$"OUTPUT [INSERTED].{autoNumber?.Name}".OnlyWhen(autoNumber != null)}
-                VALUES
-                ({properties.Select(x => $"@{x.ParameterName}").ToString(", ")})";
+                VALUES ({{2}})";
         }
 
         public virtual string GenerateDeleteCommand(IDataProviderMetaData metaData) =>
-            $"DELETE FROM {GetFullTablaName(metaData)} WHERE {metaData.IdColumnName} = @Id";
+            $"DELETE FROM {GetFullTableName(metaData)} WHERE {metaData.IdColumnName} = @Id";
 
-        string GetFullTablaName(IDataProviderMetaData metaData) =>
+        protected string GetFullTableName(IDataProviderMetaData metaData) =>
             metaData.Schema.WithSuffix(".") + metaData.TableName;
 
         string Generate(IDatabaseQuery query, ICriterion criterion)

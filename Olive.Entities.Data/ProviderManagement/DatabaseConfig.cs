@@ -54,7 +54,8 @@ namespace Olive.Entities.Data
             internal IDataAccess CreateDataAccess()
             {
                 if (ConnectionString.IsEmpty() && ConnectionStringKey.HasValue())
-                    ConnectionString = Config.GetConnectionString(ConnectionStringKey);
+                    ConnectionString = Context.Current.GetService<IConnectionStringProvider>()
+                        .GetConnectionString(ConnectionStringKey);
 
                 return DataAccess.Create(SqlClient, ConnectionString);
             }
