@@ -13,7 +13,7 @@ namespace Olive.Mvc
     {
         public static IApplicationBuilder UseMicroserviceAccessKeyAuthentication(this IApplicationBuilder app)
         {
-            app.Use(async (context, next) =>
+            app.Use((context, next) =>
             {
                 var clientId = context.Request.Headers["Microservice.AccessKey"].ToString("|");
                 if (clientId.HasValue())
@@ -24,7 +24,7 @@ namespace Olive.Mvc
                     context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Service"));
                 }
 
-                await next();
+                return next();
             });
 
             return app;
