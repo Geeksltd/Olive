@@ -42,9 +42,11 @@ namespace Olive.Aws
         [EscapeGCop("This is a background process")]
         static async void KeepRenewing()
         {
+            var interval = Config.GetValue("Aws:Identity:RenewalInterval", 300).Minutes();
+
             while (true)
             {
-                await Task.Delay(5.Hours());
+                await Task.Delay(interval);
                 try
                 {
                     await Renew();
