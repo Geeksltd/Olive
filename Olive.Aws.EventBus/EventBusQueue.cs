@@ -13,7 +13,7 @@ namespace Olive.Aws
     {
         const int MAX_RETRY = 4;
         internal string QueueUrl;
-        internal AmazonSQSClient Client;
+        internal AmazonSQSClient Client => new AmazonSQSClient();
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
 
@@ -35,7 +35,6 @@ namespace Olive.Aws
         public EventBusQueue(string queueUrl)
         {
             QueueUrl = queueUrl;
-            Client = new AmazonSQSClient();
         }
 
         public async Task<string> Publish(string message)
@@ -101,7 +100,7 @@ namespace Olive.Aws
                 var toSend = response.Failed.Select(f => f.Message);
                 successfuls.AddRange(await PublishBatch(toSend, retry++));
             }
-            
+
             return successfuls;
         }
 
