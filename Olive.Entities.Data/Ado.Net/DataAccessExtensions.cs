@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -25,6 +26,8 @@ namespace Olive.Entities.Data
     {
         public static IServiceCollection AddDataAccess(this IServiceCollection @this, Action<DataAccessOptions> options)
         {
+            @this.TryAddTransient<IConnectionStringProvider, ConnectionStringProvider>();
+
             options(new DataAccessOptions());
             return @this;
         }

@@ -15,11 +15,11 @@ namespace Olive
 
         static IConfiguration Configuration => Context.Current.GetService<IConfiguration>();
 
-        /// <summary>
-        /// Gets the connection string with the specified key.
-        /// <para>The connection strings should store directly under the ConnectionStrings section.</para>
-        /// </summary>
-        public static string GetConnectionString(string key) => GetOrThrow($"ConnectionStrings:{key}");
+        ///// <summary>
+        ///// Gets the connection string with the specified key.
+        ///// <para>The connection strings should store directly under the ConnectionStrings section.</para>
+        ///// </summary>
+        //public static string GetConnectionString(string key) => GetOrThrow($"ConnectionStrings:{key}");
 
         /// <summary>
         /// Attempts to bind the given object instance to configuration values by matching

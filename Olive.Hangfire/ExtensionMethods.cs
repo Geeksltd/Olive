@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Olive.Entities.Data;
 using System;
 using System.Runtime.CompilerServices;
 
@@ -18,7 +19,8 @@ namespace Olive.Hangfire
         {
             @this.AddHangfire(c =>
             {
-                c.UseSqlServerStorage(Config.GetConnectionString("Default"));
+                c.UseSqlServerStorage(Context.Current.GetService<IConnectionStringProvider>()
+                    .GetConnectionString("Default"));
                 config?.Invoke(c);
             });
 

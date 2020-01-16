@@ -3,6 +3,7 @@ using Hangfire.MySql.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Olive.Entities.Data;
 using System;
 using System.Data;
 
@@ -18,7 +19,7 @@ namespace Olive.Hangfire.MySql
             @this.AddHangfire(c =>
             {
                 c.UseStorage(new MySqlStorage(
-                        Config.GetConnectionString("Default"),
+                        Context.Current.GetService<IConnectionStringProvider>().GetConnectionString(),
                         new MySqlStorageOptions { TablePrefix = "Hangfire" })
                     );
                 config?.Invoke(c);

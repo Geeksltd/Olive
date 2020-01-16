@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Http;
+using Olive.Entities.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,7 +26,7 @@ namespace Olive.Hangfire.Serverless
             var start = LocalTime.Now;
             Console.WriteLine("Invoking DistributedBackgroundTasksMiddleware at " + start);
 
-            JobStorage.Current = new SqlServerStorage(Config.GetConnectionString("Default"));
+            JobStorage.Current = new SqlServerStorage(Context.Current.GetService<IConnectionStringProvider>().GetConnectionString());
 
             var cancellationResource = new CancellationTokenSource();
             var token = cancellationResource.Token;
