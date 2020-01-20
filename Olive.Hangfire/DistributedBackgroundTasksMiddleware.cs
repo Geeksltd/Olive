@@ -1,5 +1,7 @@
 ﻿using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Http;
+using Olive.Entities.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,11 +16,18 @@ namespace Olive.Hangfire.Serverless
 
         public DistributedBackgroundTasksMiddleware(RequestDelegate _next)
         {
+            Console.WriteLine("Initializing DistributedBackgroundTasksMiddleware");
             Next = _next;
+            Console.WriteLine("Initialized DistributedBackgroundTasksMiddleware");
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
+            var start = LocalTime.Now;
+            Console.WriteLine("Invoking DistributedBackgroundTasksMiddleware at " + start);
+
+            JobStorage.Current = new SqlServerStorage(Context.Current.GetService<IConnectionStringProvider>().GetConnectionString());
+
             var cancellationResource = new CancellationTokenSource();
             var token = cancellationResource.Token;
 
@@ -28,6 +37,11 @@ namespace Olive.Hangfire.Serverless
                 server.SendStop();
                 await server.WaitForShutdownAsync(token);
             }
+
+            httpContext.Response.ContentType = "text/plain";
+            httpContext.Response.Clear();
+            httpContext.Response.Write("Done");
+            Console.WriteLine("Invoked DistributedBackgroundTasksMiddleware after " + LocalTime.Now.Subtract(start).ToNaturalTime());
         }
     }
 }

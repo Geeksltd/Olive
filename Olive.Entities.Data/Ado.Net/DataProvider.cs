@@ -245,7 +245,8 @@ namespace Olive.Entities.Data
             }
         }
 
-        void LoadConnectionString(string key) => connectionString = Config.GetConnectionString(key);
+        void LoadConnectionString(string key) => 
+            connectionString = Context.Current.GetService<IConnectionStringProvider>().GetConnectionString(key);
 
         /// <summary>
         /// Gets or sets the connection string key used for this data provider.

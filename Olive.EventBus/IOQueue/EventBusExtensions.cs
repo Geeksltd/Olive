@@ -52,6 +52,25 @@ namespace Olive
             });
         }
 
+
+        public static Task PullAll<TMessage>(this IEventBusQueue queue, Func<TMessage, Task> @handler)
+        where TMessage : IEventBusMessage
+        {
+            return queue.PullAll(message =>
+            {
+                if (message.IsEmpty()) return Task.CompletedTask;
+                try
+                {
+                    var @event = JsonConvert.DeserializeObject<TMessage>(message);
+                    return handler(@event);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Failed to deserialize event message to " + typeof(TMessage).FullName + ":\r\n" + message, ex);
+                }
+            });
+        }
+
         /// <summary>
         /// Pulls a single item from the specified queue, or null if nothing was available.
         /// After completing the message processing, you must call Complete().

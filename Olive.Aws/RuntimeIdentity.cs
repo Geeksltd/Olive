@@ -42,9 +42,11 @@ namespace Olive.Aws
         [EscapeGCop("This is a background process")]
         static async void KeepRenewing()
         {
+            var interval = Config.GetValue("Aws:Identity:RenewalInterval", 300).Minutes();
+
             while (true)
             {
-                await Task.Delay(5.Hours());
+                await Task.Delay(interval);
                 try
                 {
                     await Renew();
@@ -76,9 +78,14 @@ namespace Olive.Aws
                 var credentials = response.Credentials;
 
                 FallbackCredentialsFactory.Reset();
-                FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () => credentials);
+                FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () =>
+                {
+                    Log.Debug("Generating credentials => " + credentials.AccessKeyId.Substring(20) + " of total : " + FallbackCredentialsFactory.CredentialsGenerators.Count);
+                    return credentials;
+                }
+                );
 
-                Log.Debug("Obtained assume role credentials.");
+                Log.Debug("Obtained assume role credentials." + credentials.AccessKeyId.Substring(20));
 
             }
             catch (Exception ex)

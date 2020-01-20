@@ -14,7 +14,7 @@ namespace Olive.Entities.Data
             string result;
 
             if (DatabaseContext.Current != null) result = DatabaseContext.Current.ConnectionString;
-            else result = Config.GetConnectionString("Default");
+            else result = Context.Current.GetService<IConnectionStringProvider>().GetConnectionString();
 
             if (result.IsEmpty())
                 throw new Exception("No 'AppDatabase' connection string is specified in the application config file.");

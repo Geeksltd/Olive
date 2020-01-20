@@ -99,7 +99,8 @@ namespace Olive.Mvc.Testing
                         dataParameters.Add(sqlParameter);
                     }
 
-                    using (new DatabaseContext(Config.GetConnectionString(connectionStringKey)))
+                    using (new DatabaseContext(Context.Current.GetService<IConnectionStringProvider>()
+                        .GetConnectionString(connectionStringKey)))
                         await access.ExecuteNonQuery(command, commandType, dataParameters.ToArray());
                 }
 

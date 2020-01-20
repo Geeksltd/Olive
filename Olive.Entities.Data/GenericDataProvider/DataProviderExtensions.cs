@@ -46,7 +46,7 @@ namespace Olive.Entities.Data
             return result;
         }
 
-        internal static IEnumerable<IPropertyData> GetPropertiesForFillData(this IDataProviderMetaData @this)
+        public static IEnumerable<IPropertyData> GetPropertiesForFillData(this IDataProviderMetaData @this)
         {
             if (@this.BaseClassesInOrder.HasAny())
                 return @this.UserDefienedProperties;
@@ -54,7 +54,7 @@ namespace Olive.Entities.Data
             return @this.UserDefienedAndIdProperties;
         }
 
-        internal static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this)
+        public static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this)
         {
             var result = @this.UserDefienedAndIdProperties.Except(p => p.IsAutoNumber);
 

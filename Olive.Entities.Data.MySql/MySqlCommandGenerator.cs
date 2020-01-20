@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Olive.Entities.Data
 {
@@ -23,8 +24,16 @@ namespace Olive.Entities.Data
         public override string GeneratePagination(IDatabaseQuery query)
         {
             return query.TakeTop.ToStringOrEmpty()
-                .WithSuffix($", {query.PageStartIndex}")
-                .WithPrefix(" LIMIT ");
+                .WithPrefix($" LIMIT {query.PageStartIndex}, ");
+        }
+
+        protected override string GetInsertCommandTemplate(IDataProviderMetaData metaData)
+        {
+            var autoNumber = metaData.AutoNumberProperty;
+
+            return $@"INSERT INTO {{0}} ({{1}})
+                VALUES ({{2}});
+                {"SELECT CAST(LAST_INSERT_ID() as SIGNED);".OnlyWhen(autoNumber != null)}";
         }
 
         public override string SafeId(string id) => $"`{id}`";
