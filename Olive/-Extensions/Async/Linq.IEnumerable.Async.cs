@@ -245,6 +245,19 @@ namespace Olive
             return tasks.Sum(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
+        public static async Task<int> Sum<T>(this IEnumerable<T> @this, Func<T, Task<int>> func)
+        {
+            var tasks = @this.Select(x => new
+            {
+                Predicate = func(x),
+                Value = x
+            }).ToArray();
+
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+
+            return tasks.Sum(x => x.Predicate.GetAlreadyCompletedResult());
+        }
+
         public static async Task<TResult> Max<TSource, TResult>(this IEnumerable<TSource> @this, Func<TSource, Task<TResult>> func)
         {
             var tasks = @this.Select(x => new
