@@ -206,19 +206,6 @@ namespace Olive
         public static async Task<bool> None<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
             => !await @this.Any(func).ConfigureAwait(false);
 
-        public static async Task<decimal> Average<T>(this IEnumerable<T> @this, Func<T, Task<decimal>> func)
-        {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
-
-            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.Average(x => x.Predicate.GetAlreadyCompletedResult());
-        }
-
         public static async Task<int> Count<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
             var tasks = @this.Select(x => new
@@ -230,32 +217,6 @@ namespace Olive
             await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
 
             return tasks.Count(x => x.Predicate.GetAlreadyCompletedResult());
-        }
-
-        public static async Task<decimal> Sum<T>(this IEnumerable<T> @this, Func<T, Task<decimal>> func)
-        {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
-
-            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.Sum(x => x.Predicate.GetAlreadyCompletedResult());
-        }
-
-        public static async Task<int> Sum<T>(this IEnumerable<T> @this, Func<T, Task<int>> func)
-        {
-            var tasks = @this.Select(x => new
-            {
-                Predicate = func(x),
-                Value = x
-            }).ToArray();
-
-            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
-
-            return tasks.Sum(x => x.Predicate.GetAlreadyCompletedResult());
         }
 
         public static async Task<TResult> Max<TSource, TResult>(this IEnumerable<TSource> @this, Func<TSource, Task<TResult>> func)
