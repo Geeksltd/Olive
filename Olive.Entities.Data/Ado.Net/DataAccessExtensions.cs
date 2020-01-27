@@ -8,15 +8,14 @@ namespace Olive.Entities.Data
 {
     public class DataAccessOptions
     {
-        internal static List<KeyValuePair<Type, ISqlCommandGenerator>> Providers = new List<KeyValuePair<Type, ISqlCommandGenerator>>();
+        internal static List<(Type ConnectionType, ISqlCommandGenerator SqlCommandGenerator, IParameterFactory ParameterFactory)> 
+            Providers = new List<(Type, ISqlCommandGenerator, IParameterFactory)>();
 
-        public DataAccessOptions Add<TConnection, TSqlCommandGenerator>()
+        public DataAccessOptions Add<TConnection, TSqlCommandGenerator>(IParameterFactory parameterFactory = null)
            where TConnection : DbConnection
            where TSqlCommandGenerator : ISqlCommandGenerator, new()
         {
-            var pair = new KeyValuePair<Type, ISqlCommandGenerator>(typeof(TConnection), new TSqlCommandGenerator());
-
-            Providers.Add(pair);
+            Providers.Add((typeof(TConnection), new TSqlCommandGenerator(), parameterFactory));
 
             return this;
         }
@@ -34,8 +33,11 @@ namespace Olive.Entities.Data
 
         public static IDatabase ConfigDataAccess(this IDatabase @this)
         {
-            foreach (var pair in DataAccessOptions.Providers)
-                DataAccess.Register(pair.Key, pair.Value);
+            foreach (var item in DataAccessOptions.Providers)
+                DataAccess.Register(
+                    item.ConnectionType, 
+                    item.SqlCommandGenerator, 
+                    item.ParameterFactory);
 
             return @this;
         }
