@@ -42,7 +42,7 @@ namespace Olive.Mvc
             return JavaScript(dependencies.OnLoaded(javascriptCode));
         }
 
-        [Obsolete("Instead, use JavaScript(new JavaScriptModule(...)).", error: true)]
+        [NonAction, Obsolete("Instead, use JavaScript(new JavaScriptModule(...)).", error: true)]
         public virtual void LoadJavascriptModule(string relativePath, string staticFunctionInvokation = "run()")
         {
             JavaScript(JavascriptModule.Relative(relativePath), staticFunctionInvokation);
