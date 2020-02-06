@@ -12,14 +12,19 @@
         /// </summary>
         static Dictionary<Type, ISqlCommandGenerator> CommandGenerators = new Dictionary<Type, ISqlCommandGenerator>();
         static Dictionary<string, Type> ConnectionTypes = new Dictionary<string, Type>();
+        static Dictionary<Type, IParameterFactory> ParameterFactories = new Dictionary<Type, IParameterFactory>();
 
         // <summary>
         // Registgers a data Data Access instance for a specified provider type.
         // </summary>
-        public static void Register(Type connectionType, ISqlCommandGenerator sqlCommandGenerator)
+        public static void Register(
+            Type connectionType, 
+            ISqlCommandGenerator sqlCommandGenerator, 
+            IParameterFactory parameterFactory)
         {
             ConnectionTypes[connectionType.Name] = connectionType;
             CommandGenerators[connectionType] = sqlCommandGenerator;
+            ParameterFactories[connectionType] = parameterFactory;
         }
 
         /// <summary>
@@ -34,7 +39,9 @@
             if (!CommandGenerators.TryGetValue(connectionType, out var generator))
                 throw new Exception("No data provider is registered in StartUp for " + connectionType.Name);
 
-            return (IDataAccess)Activator.CreateInstance(dataAccessType, generator, connectionString);
+            ParameterFactories.TryGetValue(connectionType, out var parameterFactory);
+
+            return (IDataAccess)Activator.CreateInstance(dataAccessType, generator, connectionString, parameterFactory);
         }
 
         public static IDataAccess Create<TConnection>(string connectionString = null) where TConnection : IDbConnection

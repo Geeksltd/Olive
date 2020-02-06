@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
@@ -24,6 +25,12 @@ namespace Olive.Mvc
         {
             if (Descending) return items.OrderByDescending(expression);
             else return items.OrderBy(expression);
+        }
+
+        public async Task<IEnumerable<TSource>> Apply<TSource, TSort>(IEnumerable<TSource> items, Func<TSource, Task<TSort>> expression)
+        {
+            if (Descending) return await items.OrderByDescending(expression);
+            else return await items.OrderBy(expression);
         }
 
         public IEnumerable<T> Apply<T>(IEnumerable<T> items)
