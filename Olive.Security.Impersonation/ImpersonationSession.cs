@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Olive.Entities;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Olive.Security
@@ -35,7 +37,24 @@ namespace Olive.Security
                 Roles = user.GetRoles().Concat(IMPERSONATOR_ROLE).ToArray()
             };
 
-            await user.LogOn();
+            await user.LogOn(Context.User.ToImpersonatorClaims());
+        }
+
+        public static async Task EndImpersonation()
+        {
+            if (!await IsImpersonated()) throw new InvalidOperationException();
+
+
+            var principal = Context.User.FromImpersonatorClaims();
+
+            var prop = new AuthenticationProperties
+            {
+                IsPersistent = Context.User.IsPersistent(),
+                ExpiresUtc = Context.User.GetExpiration(),
+            };
+
+            await Context.SignOutAsync();
+            await Context.SignInAsync(principal, prop);
         }
 
         public static async Task<string> GetWidget()

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Olive
 {
@@ -15,7 +16,10 @@ namespace Olive
 
         public static ClaimsIdentity ToClaimsIdentity(this ILoginInfo @this)
         {
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, @this.DisplayName.OrEmpty()) };
+            var claims = new List<Claim> {
+                new Claim(ClaimTypes.Name, @this.DisplayName.OrEmpty()),
+                new Claim(ClaimTypes.Expiration, DateTimeOffset.UtcNow.Add(@this.Timeout ?? DistantFuture).ToString()),
+            };
 
             if (@this.ID.HasValue()) claims.Add(new Claim(ClaimTypes.NameIdentifier, @this.ID));
             if (@this.Email.HasValue()) claims.Add(new Claim(ClaimTypes.Email, @this.Email));
@@ -45,7 +49,7 @@ namespace Olive
             return tokenHandler.WriteToken(token);
         }
 
-        public static async Task LogOn(this ILoginInfo @this, bool remember = false)
+        public static async Task LogOn(this ILoginInfo @this, IEnumerable<Claim> additionalClaims = null, bool remember = false)
         {
             var prop = new AuthenticationProperties
             {
@@ -53,7 +57,24 @@ namespace Olive
                 ExpiresUtc = DateTimeOffset.UtcNow.Add(@this.Timeout ?? DistantFuture)
             };
 
-            await Context.Current.Http().SignInAsync(new ClaimsPrincipal(@this.ToClaimsIdentity()), prop);
+            var identity = @this.ToClaimsIdentity();
+            identity.AddClaims(additionalClaims.OrEmpty());
+            identity.AddClaim(new Claim(ClaimTypes.IsPersistent, remember.ToString()));
+
+            await Context.Current.Http().SignInAsync(new ClaimsPrincipal(identity), prop);
+        }
+
+        public static bool IsPersistent(this ClaimsPrincipal @this)
+            => @this?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.IsPersistent)?.Value?.To<bool>() ?? false;
+
+        public static DateTimeOffset GetExpiration(this ClaimsPrincipal @this)
+        {
+            var temp = @this?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Expiration)?.Value;
+
+            if (DateTimeOffset.TryParse(temp, out var result))
+                return result;
+            else
+                return DateTimeOffset.MaxValue;
         }
 
         /// <summary>
