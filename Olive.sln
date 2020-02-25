@@ -146,6 +146,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PassiveBackgroundTask
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication.Mvc.Extensions", "Olive.EventBus.Mvc.Extensions\Olive.Entities.Data.Replication.Mvc.Extensions.csproj", "{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Console", "Olive.Console\Olive.Console.csproj", "{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -383,6 +385,10 @@ Global
 		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
