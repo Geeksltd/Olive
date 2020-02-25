@@ -7,7 +7,7 @@ This includes EventBus and various other specific Olive services.
 
 ## Console Apps
 
-To activate the Olive context in a console app, in `Program.cs` file, add the following:
+To activate the Olive context in a console app add a nuget reference to `Olive`, `Olive.Console` and any other required Olive services. Then replace your Program startup file with the following:
 
 ```csharp
 class Program
