@@ -17,7 +17,7 @@ class Program
 
 class Startup : Olive.Console.Startup
 {
-    public Startup(IConfiguration config, IServiceProvider provider) : base(config, provider)
+    public Startup(IConfiguration config) : base(config)
     {
         // config.LoadAwsDevIdentity("", "");
     }
