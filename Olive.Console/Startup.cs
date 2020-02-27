@@ -16,23 +16,22 @@ namespace Olive.Console
         public static IHostingEnvironment Environment { get; private set; }
         public static IConfiguration Configuration { get; private set; }
 
-        public Startup(IConfiguration config, IServiceProvider provider)
+        public Startup(IConfiguration config)
         {
             Configuration = config;
-            Context.Current.Set(provider);
-            Environment = Context.Current.GetService<IHostingEnvironment>();
+            var context = Context.Current;
+            ConfigureServices(context.Services);
+            Context.Current.Set(context.Services.BuildServiceProvider());
+            Environment = context.GetService<IHostingEnvironment>();
 
-            var logger = Context.Current.GetService<ILoggerFactory>();
-            Log.Init(logger);
+            Log.Init(context.GetService<ILoggerFactory>());
         }
 
         public virtual void ConfigureServices(IServiceCollection services) { }
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
-            ConfigureServices(Context.Current.Services);
             await Run();
-
             Process.GetCurrentProcess().Kill();
         }
 
