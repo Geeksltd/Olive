@@ -9,7 +9,7 @@
     {
         bool IsCacheable()
         {
-            if (PageSize.HasValue) return false;
+            if (TakeTop.HasValue || PageSize.HasValue) return false;
 
             if (Criteria.Except(typeof(DirectDatabaseCriterion)).Any(c => c.PropertyName.Contains(".")))
                 return false; // This doesn't work with cache expiration rules.

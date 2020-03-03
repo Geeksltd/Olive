@@ -20,9 +20,18 @@
     <PackageReference Include="Cronos" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
-    <PackageReference Include="Olive" Version="2.1.176" />
-    <PackageReference Include="Olive.Entities" Version="2.1.137" />
-    <PackageReference Include="Olive.Entities.Data" Version="2.1.143" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Olive">
+      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities.Data">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
