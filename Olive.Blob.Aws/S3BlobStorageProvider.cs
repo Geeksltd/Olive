@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Olive.Entities;
 using System;
@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Olive.BlobAws
 {
@@ -17,6 +18,7 @@ namespace Olive.BlobAws
         const string FILE_NOT_FOUND = "NotFound";
 
         AmazonS3Client CreateClient => new AmazonS3Client();
+        static ILogger Log => Olive.Log.For(typeof(S3BlobStorageProvider));
 
         public bool CostsToCheckExistence() => true;
 
@@ -27,14 +29,26 @@ namespace Olive.BlobAws
         {
             using (var client = CreateClient)
             {
-                var request = await CreateUploadRequest(document);
-                var response = await client.PutObjectAsync(request);
-
-                switch (response.HttpStatusCode)
+                try
                 {
-                    case System.Net.HttpStatusCode.OK:
-                    case System.Net.HttpStatusCode.Accepted: return;
-                    default: throw new Exception($"AWS Upload for key {request.Key} returned: " + response.HttpStatusCode);
+
+                    Log.Debug("Blob create upload request");
+                    var request = await CreateUploadRequest(document);
+                    Log.Debug("Blob create upload object");
+                    var response = await client.PutObjectAsync(request);
+                    Log.Debug("Blob response code: " + response.HttpStatusCode);
+
+                    switch (response.HttpStatusCode)
+                    {
+                        case System.Net.HttpStatusCode.OK:
+                        case System.Net.HttpStatusCode.Accepted: return;
+                        default: throw new Exception($"AWS Upload for key {request.Key} returned: " + response.HttpStatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Debug("Create request ex: " + ex.Message);
+                    throw ex;
                 }
             }
         }
