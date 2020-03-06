@@ -87,6 +87,12 @@ namespace Olive.Entities
                 valueExpression = expression.Arguments[1];
                 filter = FilterFunction.In;
             }
+            else if (expression.Method.Name == "IsNoneOf")
+            {
+                propertyExpression = expression.Arguments.First() as MemberExpression;
+                valueExpression = expression.Arguments[1];
+                filter = FilterFunction.NotIn;
+            }
             else
             {
                 if (!throwOnError) return null;

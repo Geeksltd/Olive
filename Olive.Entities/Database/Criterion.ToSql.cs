@@ -136,6 +136,12 @@ namespace Olive.Entities
                 else return column + " " + function.GetDatabaseOperator() + " " + value;
             }
 
+            if (function == FilterFunction.NotIn)
+            {
+                if ((value as string) == "()") return "1 = 1 /*" + column + " Not IN ([empty])*/";
+                else return column + " " + function.GetDatabaseOperator() + " " + value;
+            }
+
             if (!NeedsParameter(context))
                 return $"{column} {function.GetDatabaseOperator()} {value}";
 
