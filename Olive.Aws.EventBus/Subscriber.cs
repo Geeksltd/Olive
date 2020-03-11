@@ -23,6 +23,7 @@ namespace Olive.Aws
                 QueueUrl = Queue.QueueUrl,
                 MaxNumberOfMessages = Queue.MaxNumberOfMessages,
                 VisibilityTimeout = Queue.VisibilityTimeout,
+                WaitTimeSeconds = 10
             };
 
             Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
