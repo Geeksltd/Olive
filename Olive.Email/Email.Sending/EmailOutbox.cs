@@ -97,7 +97,7 @@ namespace Olive.Email
                 try
                 {
                     await Sending.Raise(new EmailSendingEventArgs(message, mail));
-                    await Dispatcher.Dispatch(mail);
+                    await Dispatcher.Dispatch(mail, message);
 
                     if (!message.IsNew) await Database.Delete(message);
                     await Sent.Raise(new EmailSendingEventArgs(message, mail));

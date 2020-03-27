@@ -11,7 +11,7 @@ namespace Olive.Email
         /// Provides a message which can dispatch an email message.
         /// Returns whether the message was sent successfully.
         /// </summary>
-        Task Dispatch(MailMessage mail);
+        Task Dispatch(MailMessage mail, IEmailMessage message);
     }
 
     public class EmailDispatcher : IEmailDispatcher
@@ -27,7 +27,7 @@ namespace Olive.Email
         /// Provides a message which can dispatch an email message.
         /// Returns whether the message was sent successfully.
         /// </summary>
-        public async Task Dispatch(MailMessage mail)
+        public async Task Dispatch(MailMessage mail, IEmailMessage _)
         {
             using (var smtpClient = new SmtpClient())
             {
