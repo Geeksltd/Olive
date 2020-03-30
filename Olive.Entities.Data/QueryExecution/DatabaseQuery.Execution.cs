@@ -58,6 +58,9 @@
             else
                 result = await Provider.GetList(this).ToList();
 
+            foreach (var item in result)
+                await Entity.Services.RaiseOnLoaded(item);
+
             if (OrderByParts.None())
             {
                 // TODO: If the entity is sortable by a single DB column, then automatically add that to the DB call.
@@ -88,7 +91,6 @@
                 if (inCache != null) result.Add(inCache);
                 else
                 {
-                    await Entity.Services.RaiseOnLoaded(item);
                     (Context.Current.Database() as Database)?.TryCache(item, timestamp);
                     result.Add(item);
                 }

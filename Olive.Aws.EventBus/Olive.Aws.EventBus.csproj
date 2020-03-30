@@ -14,7 +14,7 @@
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.EventBus.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
-    <PackageVersion>2.1.123</PackageVersion>
+    <PackageVersion>2.1.124</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SQS" Version="3.3.3.38" />

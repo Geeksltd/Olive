@@ -55,6 +55,10 @@ namespace Olive.Aws
             {
                 return await Queue.Client.ReceiveMessageAsync(Request);
             }
+            catch (TaskCanceledException)
+            {
+                return new ReceiveMessageResponse { Messages = new List<Message>() };
+            }
             catch (Exception ex)
             {
                 throw new Exception("Failed to fetch from Queue " + Queue.QueueUrl, ex);
