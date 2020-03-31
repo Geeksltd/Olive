@@ -1,6 +1,51 @@
 
 # Olive compatibility change log
 
+##31 Mar 2020
+The `Entity` and `GlobalEntityEvents` classes have a number of lifecycle events such as `Saving`, `Saved`, etc.
+Previously these were of the type `AsyncEvent`. That type is removed from Olive altogether due to the performance and memory management issues that it caused. Instead, those events are changed into normal .NET events. This means that where ever you handled such events, you should now:
+- Use the `+=` operator rather than `.Handle()` method to attach handlers.
+- The event handler method should return `void` rather than `Task`
+- Your event handler argument should take `AwaitableEvent` or `AwaitableEvent<TArg>`
+- If your event handling logic is sync, you simply write the code in the event handler method.
+
+**Important:** If your event handler uses `await` you **should not** change the event handler to `async void`. Instead you should wrap your logic inside a call to the `Do(...)` method provided by the event handler method argument. For example:
+
+```csharp
+...
+// Attach handler
+GlobalEntityEvents.InstanceSaved.Handle(HandleInstanceSaved);
+...
+
+async Task HandleInstanceSaved(GlobalSaveEventArgs arg)
+{
+    ...
+    await Somethind();
+    ...
+}
+```
+
+should be now written as:
+
+```csharp
+...
+// Attach handler
+GlobalEntityEvents.InstanceSaved += HandleInstanceSaved;
+...
+void HandleInstanceSaved(AwaitableEvent<GlobalSaveEventArgs> ev)
+{
+    ev.Do(async args => 
+    {
+       ...
+       await Somethind();
+       ...
+    });
+}
+```
+
+
+
+
 ## 26 Nov 2019
 You can remove `PredictableGuidEnabled` from the **appsettings.json**. As it is useless from now.
 Also, Config should be remove from calling the `AddDevCommands`.
