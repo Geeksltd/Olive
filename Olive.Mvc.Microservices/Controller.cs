@@ -5,9 +5,9 @@ namespace Olive.Mvc.Microservices
 {
     public abstract class Controller : Olive.Mvc.Controller
     {
-        public Controller()
+        protected Controller()
         {
-            ApiClient.FallBack.Handle(arg => Notify(arg.FriendlyMessage, false));
+            ApiClient.FallBack += ev => Notify(ev.Args.FriendlyMessage, false);
         }
 
         protected override bool IsMicrofrontEnd => true;
@@ -19,7 +19,7 @@ namespace Olive.Mvc.Microservices
         {
             var locator = Context.Current.GetOptionalService<ServiceConfigurationLocator>();
 
-            if(locator == null || !locator.HasConfiguration)
+            if (locator == null || !locator.HasConfiguration)
                 return base.JavaScript(service);
 
             return base.JavaScript(new MicroserviceJavascriptService(locator.GetUrl(HttpContext), service));

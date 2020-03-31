@@ -14,13 +14,6 @@ namespace Olive.Entities
     [Serializable]
     public abstract class Entity : IEntity
     {
-        [NonSerialized]
-        AsyncEvent validating, loaded, deleted;
-        [NonSerialized]
-        AsyncEvent<CancelEventArgs> deleting, saving;
-        [NonSerialized]
-        AsyncEvent<SaveEventArgs> saved;
-
         static Dictionary<Type, PropertyInfo[]> PrimitiveProperties = new Dictionary<Type, PropertyInfo[]>();
         static object PrimitivePropertiesSyncLock = new object();
 
@@ -196,15 +189,13 @@ namespace Olive.Entities
         /// <summary>
         /// This even is raised just after this instance is loaded from the database.
         /// </summary>        
-        [XmlIgnore, JsonIgnore]
-        public AsyncEvent Loaded => loaded ?? (loaded = new AsyncEvent());
+        public event AwaitableEventHandler Loaded;
         protected internal virtual Task OnLoaded() => Loaded.Raise();
 
         /// <summary>
         /// This event is raised just before this instance is saved in the data repository.
         /// </summary>
-        [XmlIgnore, JsonIgnore]
-        public AsyncEvent<CancelEventArgs> Saving => saving ?? (saving = new AsyncEvent<CancelEventArgs>());
+        public event AwaitableEventHandler<CancelEventArgs> Saving;
         protected internal virtual Task OnSaving(CancelEventArgs e) => Saving.Raise(e);
 
         /// <summary>
@@ -212,40 +203,36 @@ namespace Olive.Entities
         /// It will automatically be called in Database.Save() method before calling the Validate() method.
         /// Use this to do any last-minute object modifications, such as initializing complex values.
         /// </summary>
-        [XmlIgnore, JsonIgnore]
-        public AsyncEvent Validating => validating ?? (validating = new AsyncEvent());
+        public event AwaitableEventHandler Validating;
         protected internal virtual Task OnValidating(EventArgs e) => Validating.Raise();
 
         /// <summary>
         /// This event is raised after this instance is saved in the database.
         /// </summary>
-        [XmlIgnore, JsonIgnore]
-        public AsyncEvent<SaveEventArgs> Saved => saved ?? (saved = new AsyncEvent<SaveEventArgs>());
+        public event AwaitableEventHandler<SaveEventArgs> Saved;
         protected internal virtual async Task OnSaved(SaveEventArgs e)
         {
             InvalidateCachedReferences();
             await Saved.Raise(e);
-            await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(this, e.Mode));
+            await GlobalEntityEvents.OnInstanceSaved(new GlobalSaveEventArgs(this, e.Mode));
             InvalidateCachedReferences();
         }
 
         /// <summary>
         /// This event is raised just before this instance is deleted from the database.
         /// </summary>
-        [XmlIgnore, JsonIgnore]
-        public AsyncEvent<CancelEventArgs> Deleting => deleting ?? (deleting = new AsyncEvent<CancelEventArgs>());
+        public event AwaitableEventHandler<CancelEventArgs> Deleting;
         protected internal virtual Task OnDeleting(CancelEventArgs e) => Deleting.Raise(e);
 
         /// <summary>
         /// This event is raised just after this instance is deleted from the database.
-        /// </summary>
-        [XmlIgnore, JsonIgnore]
-        public AsyncEvent Deleted => deleted ?? (deleted = new AsyncEvent());
+        /// </summary> 
+        public event AwaitableEventHandler Deleted;
         protected internal virtual async Task OnDeleted(EventArgs e)
         {
             InvalidateCachedReferences();
             await Deleted.Raise();
-            await GlobalEntityEvents.InstanceDeleted.Raise(new GlobalDeleteEventArgs(this));
+            await GlobalEntityEvents.OnInstanceDeleted(new GlobalDeleteEventArgs(this));
             InvalidateCachedReferences();
         }
 

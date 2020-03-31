@@ -39,10 +39,9 @@ namespace Olive
 
         public static void LoadAwsSecrets(this IConfiguration @this) => new Secrets(@this).Load();
 
-        public static void LoadAwsIdentity(this IConfiguration @this,
-            Action<IDictionary<string, string>> onLoaded)
+        public static void LoadAwsIdentity(this IConfiguration @this, Action<IDictionary<string, string>> onLoaded)
         {
-            Secrets.Loaded.Handle(onLoaded);
+            Secrets.Loaded += x => onLoaded(x.Args);
             @this.LoadAwsIdentity();
         }
     }

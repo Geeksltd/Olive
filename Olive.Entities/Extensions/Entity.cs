@@ -100,54 +100,5 @@ namespace Olive
         {
             return entities.Select(entity => entity.ID);
         }
-
-        public static T On<T>(this T @this, Func<T, AsyncEvent> @event, Func<Task> handler,
-           [CallerFilePath] string callerFile = null,
-           [CallerLineNumber] int callerLine = 0)
-           where T : Entity
-        {
-            @event(@this).Handle(handler, callerFile, callerLine);
-            return @this;
-        }
-
-        public static T On<T>(this T @this, Func<T, AsyncEvent> @event, Action handler,
-             [CallerFilePath] string callerFile = null, [CallerLineNumber] int callerLine = 0)
-          where T : Entity
-        {
-            @event(@this).Handle(handler, callerFile, callerLine);
-            return @this;
-        }
-
-        public static T On<T, TArg>(this T @this, Func<T, AsyncEvent<TArg>> @event, Func<Task> handler,
-             [CallerFilePath] string callerFile = null, [CallerLineNumber] int callerLine = 0)
-            where T : Entity
-        {
-            @event(@this).Handle(handler, callerFile, callerLine);
-            return @this;
-        }
-
-        public static T On<T, TArg>(this T @this, Func<T, AsyncEvent<TArg>> @event, Func<TArg, Task> handler,
-            [CallerFilePath] string callerFile = null, [CallerLineNumber] int callerLine = 0)
-           where T : Entity
-        {
-            @event(@this).Handle(handler, callerFile, callerLine);
-            return @this;
-        }
-
-        public static T On<T, TArg>(this T @this, Func<T, AsyncEvent<TArg>> @event, Action handler,
-            [CallerFilePath] string callerFile = null, [CallerLineNumber] int callerLine = 0)
-           where T : Entity
-        {
-            @event(@this).Handle(handler, callerFile, callerLine);
-            return @this;
-        }
-
-        public static T On<T, TArg>(this T @this, Func<T, AsyncEvent<TArg>> @event, Action<TArg> handler,
-             [CallerFilePath] string callerFile = null, [CallerLineNumber] int callerLine = 0)
-          where T : Entity
-        {
-            @event(@this).Handle(handler, callerFile, callerLine);
-            return @this;
-        }
     }
 }

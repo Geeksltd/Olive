@@ -16,7 +16,7 @@ namespace Olive.Security
 
         public readonly static OAuth Instance = new OAuth();
 
-        public readonly AsyncEvent<ExternalLoginInfo> ExternalLoginAuthenticated = new AsyncEvent<ExternalLoginInfo>();
+        public event AwaitableEventHandler<ExternalLoginInfo> ExternalLoginAuthenticated;
 
         public async Task LogOff()
         {
@@ -42,7 +42,7 @@ namespace Olive.Security
 
         public async Task NotifyExternalLoginAuthenticated(ExternalLoginInfo info)
         {
-            if (!ExternalLoginAuthenticated.IsHandled())
+            if (ExternalLoginAuthenticated is null)
                 throw new InvalidOperationException("ExternalLogin requested but no handler found for ExternalLoginAuthenticated event");
 
             await ExternalLoginAuthenticated.Raise(info);

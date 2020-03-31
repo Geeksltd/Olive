@@ -8,14 +8,14 @@ namespace Olive.Entities.Data
     {
         public static async Task RaiseOnDeleting(this EntityServices @this, IEntity record, CancelEventArgs args)
         {
-            await GlobalEntityEvents.InstanceDeleting.Raise(args);
+            await GlobalEntityEvents.OnInstanceDeleting(args);
             if (args.Cancel) return;
             await ((Entity)record).OnDeleting(args);
         }
 
         public static async Task RaiseOnValidating(this EntityServices @this, IEntity record, EventArgs args)
         {
-            await GlobalEntityEvents.InstanceValidating.Raise(args);
+            await GlobalEntityEvents.OnInstanceValidating(args);
             await ((Entity)record).OnValidating(args);
         }
 
@@ -38,7 +38,7 @@ namespace Olive.Entities.Data
         {
             if (record == null) throw new ArgumentNullException(nameof(record));
 
-            await GlobalEntityEvents.InstanceSaving.Raise(e);
+            await GlobalEntityEvents.OnInstanceSaving(e);
             if (e.Cancel) return;
 
             await (record as Entity).OnSaving(e);

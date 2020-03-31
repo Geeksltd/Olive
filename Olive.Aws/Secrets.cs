@@ -9,7 +9,7 @@ namespace Olive.Aws
 {
     public class Secrets : Dictionary<string, string>
     {
-        public readonly static AsyncEvent<Secrets> Loaded = new AsyncEvent<Secrets>();
+        public static event AwaitableEventHandler<Secrets> Loaded;
         IConfiguration Config;
         string SecretId => Config["Aws:Secrets:Id"];
         string SecretString;

@@ -88,7 +88,7 @@ namespace Olive.Entities.Replication
                     if (!await Endpoint.OnSaving(message, entity, mode)) return;
 
                     await Database.Save(entity, SaveBehaviour.BypassAll);
-                    await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(entity, mode));
+                    await GlobalEntityEvents.OnInstanceSaved(new GlobalSaveEventArgs(entity, mode));
                     await Endpoint.OnSaved(message, entity, mode);
 
                     Log.Debug("Saved the " + entity.GetType().FullName + " " + entity.GetId());

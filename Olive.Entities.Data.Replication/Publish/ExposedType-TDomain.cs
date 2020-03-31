@@ -38,12 +38,13 @@ namespace Olive.Entities.Replication
             DependenciesEnitityTypes = Dependencies?.Select(p => p.EntityType)
                                                     .Union(typeof(TDomain))
                                                     .Distinct().ToArray();
-            GlobalEntityEvents.InstanceSaved.Handle(x => OnInstanceSaved(x.Entity));
-            GlobalEntityEvents.InstanceDeleted.Handle(x => OnInstanceDeleted(x));
+            GlobalEntityEvents.InstanceSaved += OnInstanceSaved;
+            GlobalEntityEvents.InstanceDeleted += OnInstanceDeleted;
         }
 
-        async Task OnInstanceSaved(IEntity item)
+        void OnInstanceSaved(AwaitableEvent<GlobalSaveEventArgs> ev)
         {
+            var item = ev.Args.Entity;
             Logger.Debug("Instance saved. Initiating publish checks.");
 
             if (!DependenciesEnitityTypes.Contains(item.GetType()))
@@ -52,40 +53,46 @@ namespace Olive.Entities.Replication
                 return;
             }
 
-            if (item is TDomain entity)
+            ev.Do(async () =>
             {
-                await Publish(entity);
-            }
-            else if (item != null)
-            {
-                await
-                    (await FindRelationsOf(item))
-                    .ExceptNull()
-                    .Do(async p => await Publish(p));
-            }
+                if (item is TDomain entity) await Publish(entity);
+                else if (item != null)
+                {
+                    await
+                        (await FindRelationsOf(item))
+                        .ExceptNull()
+                        .Do(async p => await Publish(p));
+                }
+            });
         }
 
-        async Task OnInstanceDeleted(GlobalDeleteEventArgs eventArg)
+        void OnInstanceDeleted(AwaitableEvent<GlobalDeleteEventArgs> ev)
         {
             Logger.Debug("Instance saved. Initiating publish checks.");
 
-            if (!DependenciesEnitityTypes.Contains(eventArg.EntityType))
+            var type = ev.Args.EntityType;
+            var instance = ev.Args.Entity;
+
+            if (!DependenciesEnitityTypes.Contains(type))
             {
-                Logger.Debug("Publish aborted: " + eventArg.EntityType.Name + " is not of type " + DomainType.Name);
+                Logger.Debug("Publish aborted: " + type.Name + " is not of type " + DomainType.Name);
                 return;
             }
 
-            if (eventArg.EntityType == typeof(TDomain))
+            ev.Do(async () =>
             {
-                await Publish(eventArg.Entity as TDomain, toDelete: true);
-            }
-            else
-            {
-                await
-                    (await FindRelationsOf(eventArg.Entity))
-                    .ExceptNull()
-                    .Do(async p => await Publish(p));
-            }
+                if (type == typeof(TDomain))
+                {
+                    await Publish(instance as TDomain, toDelete: true);
+                }
+                else
+                {
+                    await
+                        (await FindRelationsOf(instance))
+                        .ExceptNull()
+                        .Do(async p => await Publish(p));
+                }
+            });
         }
 
         async Task<IEnumerable<TDomain>> FindRelationsOf(IEntity item)

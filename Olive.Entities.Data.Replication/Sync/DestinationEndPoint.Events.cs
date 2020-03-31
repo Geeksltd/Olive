@@ -46,15 +46,14 @@ namespace Olive.Entities.Replication
 
     partial class DestinationEndpoint
     {
-        public readonly AsyncEvent<ReplicationSaveMessageReceivedEventArgs> Saving = new AsyncEvent<ReplicationSaveMessageReceivedEventArgs>();
-        public readonly AsyncEvent<ReplicationSaveMessageProcessedEventArgs> Saved = new AsyncEvent<ReplicationSaveMessageProcessedEventArgs>();
-        public readonly AsyncEvent<ReplicationDeleteMessageReceivedEventArgs> Deleting = new AsyncEvent<ReplicationDeleteMessageReceivedEventArgs>();
-        public readonly AsyncEvent<ReplicationDeleteMessageProcessedEventArgs> Deleted = new AsyncEvent<ReplicationDeleteMessageProcessedEventArgs>();
-
+        public event AwaitableEventHandler<ReplicationSaveMessageReceivedEventArgs> Saving;
+        public event AwaitableEventHandler<ReplicationSaveMessageProcessedEventArgs> Saved;
+        public event AwaitableEventHandler<ReplicationDeleteMessageReceivedEventArgs> Deleting;
+        public event AwaitableEventHandler<ReplicationDeleteMessageProcessedEventArgs> Deleted;
 
         internal async Task<bool> OnDeleting(ReplicateDataMessage message, IEntity entity)
         {
-            if (!Deleting.IsHandled()) return true;
+            if (Deleting is null) return true;
             var args = new ReplicationDeleteMessageReceivedEventArgs(message, entity);
             await Deleting.Raise(args);
             return !args.Cancel;
@@ -62,13 +61,13 @@ namespace Olive.Entities.Replication
 
         internal async Task OnDeleted(ReplicateDataMessage message, IEntity entity)
         {
-            if (Deleted.IsHandled())
+            if (Deleted != null)
                 await Deleted.Raise(new ReplicationDeleteMessageProcessedEventArgs(message, entity));
         }
 
         internal async Task<bool> OnSaving(ReplicateDataMessage message, IEntity entity, SaveMode mode)
         {
-            if (!Saving.IsHandled()) return true;
+            if (Saving is null) return true;
             var args = new ReplicationSaveMessageReceivedEventArgs(message, entity, mode);
             await Saving.Raise(args);
             return !args.Cancel;
@@ -76,7 +75,7 @@ namespace Olive.Entities.Replication
 
         internal async Task OnSaved(ReplicateDataMessage message, IEntity entity, SaveMode mode)
         {
-            if (Saved.IsHandled())
+            if (Saved != null)
                 await Saved.Raise(new ReplicationSaveMessageProcessedEventArgs(message, entity, mode));
         }
     }

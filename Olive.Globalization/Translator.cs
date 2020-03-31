@@ -23,8 +23,7 @@ namespace Olive.Globalization
         /// <summary>
         /// Occurs when a word's translation is downloaded off the Internet.
         /// </summary>
-        public static readonly AsyncEvent<TranslationDownloadedEventArgs> TranslationDownloaded =
-            new AsyncEvent<TranslationDownloadedEventArgs>();
+        public static event AwaitableEventHandler<TranslationDownloadedEventArgs> TranslationDownloaded;
 
         public static async Task<string> Translate(string phraseInDefaultLanguage)
             => await Translate(phraseInDefaultLanguage, await Context.Current.Language());

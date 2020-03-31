@@ -42,17 +42,7 @@ namespace Olive.Entities.Data
             foreach (var factoryInfo in Configuration.Providers.OrEmpty())
                 RegisterDataProviderFactory(factoryInfo);
         }
-
-        #region Updated event
-        /// <summary>
-        /// It's raised when any record is saved or deleted in the system.
-        /// </summary>
-        public AsyncEvent<IEntity> Updated { get; } = new AsyncEvent<IEntity>();
-
-        Task OnUpdated(IEntity entity) => Updated.Raise(entity);
-
-        #endregion
-
+        
         public void RegisterDataProviderFactory(DatabaseConfig.ProviderMapping factoryInfo)
         {
             if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));

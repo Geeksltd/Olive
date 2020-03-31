@@ -278,10 +278,10 @@ namespace Olive.Entities
         {
             OwnerEntity = owner;
             OwnerProperty = propertyName;
-            if (owner is GuidEntity) owner.Saving.Handle(Owner_Saving);
-            else owner.Saved.Handle(Owner_Saved);
+            if (owner is GuidEntity) owner.Saving += Owner_Saving;
+            else owner.Saved += Owner_Saved;
 
-            owner.Deleting.Handle(Delete);
+            owner.Deleting += Delete;
             return this;
         }
 
@@ -292,42 +292,36 @@ namespace Olive.Entities
         {
             if (OwnerEntity == null) return;
 
-            OwnerEntity.Saving.RemoveHandler(Owner_Saving);
-            OwnerEntity.Saved.RemoveHandler(Owner_Saved);
-            OwnerEntity.Deleting.RemoveHandler(Delete);
+            OwnerEntity.Saving -= Owner_Saving;
+            OwnerEntity.Saved -= Owner_Saved;
+            OwnerEntity.Deleting -= Delete;
         }
 
         // TODO: Deleting should be async and so on.
 
         /// <summary>Deletes this blob from the storage provider.</summary>
-        Task Delete(CancelEventArgs e)
+        void Delete(AwaitableEvent<CancelEventArgs> ev)
         {
-            if (SuppressPersistence) return Task.CompletedTask;
-
-            if (OwnerEntity.GetType().Defines<SoftDeleteAttribute>()) return Task.CompletedTask;
-
-            Delete();
-
-            return Task.CompletedTask;
+            if (SuppressPersistence) return;
+            if (OwnerEntity.GetType().Defines<SoftDeleteAttribute>()) return;
+            ev.Do(DeleteAsync);
         }
 
-        void Delete()
+        async Task DeleteAsync()
         {
             if (OwnerEntity == null) throw new InvalidOperationException();
-
-            GetStorageProvider().DeleteAsync(this);
-
+            await GetStorageProvider().DeleteAsync(this);
             CachedFileData = NewFileData = null;
         }
 
-        async Task Owner_Saving(System.ComponentModel.CancelEventArgs e)
+        void Owner_Saving(AwaitableEvent<CancelEventArgs> ev)
         {
-            if (!SuppressPersistence) await Save();
+            if (!SuppressPersistence) ev.Do(Save);
         }
 
-        async Task Owner_Saved(SaveEventArgs e)
+        void Owner_Saved(AwaitableEvent<SaveEventArgs> ev)
         {
-            if (!SuppressPersistence) await Save();
+            if (!SuppressPersistence) ev.Do(Save);
         }
 
         /// <summary>Saves this file to the storage provider.</summary>
@@ -335,8 +329,7 @@ namespace Olive.Entities
         {
             if (NewFileData.HasAny())
                 await GetStorageProvider().SaveAsync(this);
-
-            else if (IsEmptyBlob) Delete();
+            else if (IsEmptyBlob) await DeleteAsync();
         }
 
         /// <summary>

@@ -17,9 +17,9 @@ namespace Olive.Email
         EmailConfiguration Config;
         ILogger<EmailOutbox> Log;
 
-        public AsyncEvent<EmailSendingEventArgs> Sending { get; }
-        public AsyncEvent<EmailSendingEventArgs> Sent { get; }
-        public AsyncEvent<EmailSendingEventArgs> SendError { get; }
+        public event AwaitableEventHandler<EmailSendingEventArgs> Sending;
+        public event AwaitableEventHandler<EmailSendingEventArgs> Sent;
+        public event AwaitableEventHandler<EmailSendingEventArgs> SendError;
         public IEmailDispatcher Dispatcher { get; }
         public IMailMessageCreator MessageCreator { get; }
 
@@ -32,9 +32,6 @@ namespace Olive.Email
             Database = database;
             Config = config.GetSection("Email").Get<EmailConfiguration>();
             Log = log;
-            Sending = new AsyncEvent<EmailSendingEventArgs>();
-            Sent = new AsyncEvent<EmailSendingEventArgs>();
-            SendError = new AsyncEvent<EmailSendingEventArgs>();
         }
 
         async Task<IEmailMessage[]> GetUnsentEmails()

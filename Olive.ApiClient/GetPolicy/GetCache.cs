@@ -23,7 +23,7 @@ namespace Olive
 
             if (!Silent && FallBackEventPolicy == ApiFallBackEventPolicy.Raise)
             {
-                await FallBackEvent.Raise(new FallBackEvent
+                await OnFallBackEvent(new FallBackEvent
                 {
                     Url = url,
                     CacheAge = cache.Age,

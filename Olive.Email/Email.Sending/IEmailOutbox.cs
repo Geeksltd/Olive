@@ -17,19 +17,19 @@ namespace Olive.Email
         /// <summary>
         /// Occurs when the smtp mail message for this email is about to be sent.
         /// </summary>
-        AsyncEvent<EmailSendingEventArgs> Sending { get; }
+        event AwaitableEventHandler<EmailSendingEventArgs> Sending;
 
         /// <summary>
         /// Occurs when the smtp mail message for this email is sent.
         /// Sender is the IEmailMessage instance that was sent.
         /// </summary>
-        AsyncEvent<EmailSendingEventArgs> Sent { get; }
+        event AwaitableEventHandler<EmailSendingEventArgs> Sent;
 
         /// <summary>
         /// Occurs when an exception happens when sending an email.
         /// Sender parameter will be the IEmailMessage instance that couldn't be sent.
         /// </summary>
-        AsyncEvent<EmailSendingEventArgs> SendError { get; }
+        event AwaitableEventHandler<EmailSendingEventArgs> SendError;
 
         /// <summary>
         /// Gets the email items which have been sent (marked as soft deleted).

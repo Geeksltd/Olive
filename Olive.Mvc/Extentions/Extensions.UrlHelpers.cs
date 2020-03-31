@@ -121,7 +121,6 @@ namespace Olive.Mvc
             {
                 if (!p.CanRead) continue;
                 if (!p.CanWrite) continue;
-                if (p.PropertyType.IsA<AsyncEvent>()) continue;
 
                 if (type.IsA<IEntity>())
                     if (p.Name.IsAnyOf(nameof(Entity.IsNew), nameof(Entity.IsMarkedSoftDeleted))) continue;
