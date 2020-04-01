@@ -1,7 +1,7 @@
 
 # Olive compatibility change log
 
-##31 Mar 2020
+## 31 Mar 2020
 The `Entity` and `GlobalEntityEvents` classes have a number of lifecycle events such as `Saving`, `Saved`, etc.
 Previously these were of the type `AsyncEvent`. That type is removed from Olive altogether due to the performance and memory management issues that it caused. Instead, those events are changed into normal .NET events. This means that where ever you handled such events, you should now:
 - Use the `+=` operator rather than `.Handle()` method to attach handlers.
