@@ -61,10 +61,12 @@
             foreach (var item in result)
                 await Entity.Services.RaiseOnLoaded(item);
 
-            if (OrderByParts.None())
+            if (OrderByParts.None() && !StopAutoSortAttribute.HasAttribute(EntityType))
             {
-                // TODO: If the entity is sortable by a single DB column, then automatically add that to the DB call.
-                result.Sort();
+                if (EntityType.Implements<ISortable>())
+                    result.Cast<ISortable>().OrderBy(x => x.Order);
+                else
+                    result.Sort();
             }
 
             await LoadIncludedAssociations(result);
