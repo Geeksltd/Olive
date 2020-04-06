@@ -61,7 +61,7 @@
             foreach (var item in result)
                 await Entity.Services.RaiseOnLoaded(item);
 
-            if (OrderByParts.None() && !StopAutoSortAttribute.HasAttribute(EntityType))
+            if (OrderByParts.None() && !SkipAutoSortAttribute.HasAttribute(EntityType))
             {
                 if (EntityType.Implements<ISortable>())
                     result.Cast<ISortable>().OrderBy(x => x.Order);

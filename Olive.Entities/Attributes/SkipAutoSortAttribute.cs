@@ -6,7 +6,7 @@ using System.Reflection;
 namespace Olive.Entities
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class StopAutoSortAttribute : Attribute
+    public class SkipAutoSortAttribute : Attribute
     {
         static readonly ConcurrentDictionary<Type, bool> Cache = 
             new ConcurrentDictionary<Type, bool>();
@@ -15,7 +15,7 @@ namespace Olive.Entities
         {
             return Cache.GetOrAdd(
                 type, 
-                t => t.GetCustomAttributes<StopAutoSortAttribute>(true).Any());
+                t => t.GetCustomAttributes<SkipAutoSortAttribute>(true).Any());
         }
     }
 }
