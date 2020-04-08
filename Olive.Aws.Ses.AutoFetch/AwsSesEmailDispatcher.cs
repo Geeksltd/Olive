@@ -1,49 +1,41 @@
-﻿using Amazon.SimpleEmail;
-using Amazon.SimpleEmail.Model;
-using Olive.Email;
+﻿using Olive.Email;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace Olive.Aws.Ses
+namespace Olive.Aws.Ses.AutoFetch
 {
-    public class AwsSesEmailDispatcher : IEmailDispatcher
+    public class Mailbox
     {
-        public async Task Dispatch(MailMessage mail, IEmailMessage _)
+        static List<EmailAccount> Accounts = new List<EmailAccount>();
+        public static void Watch(string emailS3Bucket)
         {
-            var request = CreateEmailRequest(mail);
-
-            using (var client = new AmazonSimpleEmailServiceClient())
-            {
-                var response = await client.SendEmailAsync(request);
-                if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
-                    throw new Exception("Failed to send an email: " + response.HttpStatusCode);
-            }
+            DatabaseTableService.EnsureDatabaseTable<MailMessage>();
+            Watch<MailMessage>(emailS3Bucket);
         }
 
-        SendEmailRequest CreateEmailRequest(MailMessage mail)
+        public static void Watch<TMailMessage>(string emailS3Bucket) where TMailMessage : IMailMessage, new()
         {
-            return new SendEmailRequest
+            Accounts.Add(new EmailAccount<TMailMessage>(emailS3Bucket));
+        }
+
+        public static async Task FetchAll()
+        {
+            foreach (var account in Accounts)
             {
-                Source = mail.From.Address,
-                Destination = new Destination
+                try
                 {
-                    ToAddresses = mail.To.Select(t => t.Address).ToList()
-                },
-                Message = new Message
-                {
-                    Subject = new Content(mail.Subject),
-                    Body = new Body
-                    {
-                        Html = new Content
-                        {
-                            Charset = "UTF-8",
-                            Data = mail.Body
-                        }
-                    }
+                    Log.For(typeof(Mailbox)).Info("Fetching emails for " + account.S3Bucket);
+                    await FetchClient.Fetch(account);
+                    Log.For(typeof(Mailbox)).Info("Fetched emails for " + account.S3Bucket);
                 }
-            };
+                catch (Exception ex)
+                {
+                    Log.For(typeof(Mailbox)).Error(ex);
+                }
+            }
         }
     }
 }
