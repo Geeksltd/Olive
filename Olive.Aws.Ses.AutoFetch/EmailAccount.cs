@@ -29,7 +29,7 @@ namespace Olive.Aws.Ses.AutoFetch
             result.To = message.To.Select(f => f.Name).ToString(",");
             result.HtmlBody = message.HtmlBody;
             result.Date = message.Date.DateTime;
-            result.Sender = message.Sender.Name;
+            result.Sender = message.Sender?.Name;
             result.Subject = message.Subject;
 
 

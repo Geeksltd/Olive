@@ -20,9 +20,6 @@ CREATE TABLE [dbo].[MailMessages](
 	[Sender] [nvarchar](300) NULL,
 	[Body] [nvarchar](max) NULL,
 ) ON [PRIMARY]
-
-GO
-
 ";
         internal static Task EnsureDatabaseTable<T>() => Entities.Data.DataAccess.Create().ExecuteNonQuery(CREATE_TABLE_COMMAND);
     }

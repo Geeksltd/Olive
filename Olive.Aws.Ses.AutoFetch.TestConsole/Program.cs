@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Olive;
+using Olive.Audit;
 using Olive.Entities;
 using Olive.Entities.Data;
 using System;
+using System.Threading.Tasks;
 
 namespace Olive.Aws.Ses.AutoFetch.TestConsole
 {
@@ -13,12 +16,12 @@ namespace Olive.Aws.Ses.AutoFetch.TestConsole
         {
             Init();
 
-            Mailbox.Watch("arn:aws:s3:::crm-app-geeks-ltd");
+            Task.Factory.RunSync(() => Mailbox.Watch("crm-app-geeks-ltd"));
 
 
             while (Console.ReadKey().Key != ConsoleKey.Q)
             {
-                Mailbox.FetchAll().GetAwaiter().GetResult();
+                Task.Factory.RunSync(() => Mailbox.FetchAll());
             }
         }
 
@@ -28,6 +31,7 @@ namespace Olive.Aws.Ses.AutoFetch.TestConsole
           .AddJsonFile("appsettings.json", true, true)
           .Build();
             var services = new ServiceCollection()
+                .AddLogging(c => c.AddConsole())
                 .AddSingleton<IConfiguration>(configuration);
 
             services.AddDataAccess(x => x.SqlServer());
@@ -35,6 +39,7 @@ namespace Olive.Aws.Ses.AutoFetch.TestConsole
             //services.AddDevCommands(configuration, x => x.AddTempDatabase<SqlServerManager, ReferenceData>().AddClearApiCache());
             services.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
             services.AddSingleton<ICache, Cache>();
+            services.AddSingleton<IAudit, Olive.Audit.DefaultAudit>();
             services.AddSingleton<IDatabase, Database>();
             Olive.Context.Initialize(services);
             Olive.Context.Current.Set(services.BuildServiceProvider());

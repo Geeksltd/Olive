@@ -10,9 +10,9 @@ namespace Olive.Aws.Ses.AutoFetch
     public class Mailbox
     {
         static List<EmailAccount> Accounts = new List<EmailAccount>();
-        public static void Watch(string emailS3Bucket)
+        public static async Task Watch(string emailS3Bucket)
         {
-            DatabaseTableService.EnsureDatabaseTable<MailMessage>();
+            await DatabaseTableService.EnsureDatabaseTable<MailMessage>();
             Watch<MailMessage>(emailS3Bucket);
         }
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using MimeKit;
 using System.IO;
+using Olive.Entities;
 
 namespace Olive.Aws.Ses.AutoFetch
 {
@@ -14,7 +15,7 @@ namespace Olive.Aws.Ses.AutoFetch
     {
         EmailAccount Account;
         Amazon.S3.AmazonS3Client S3Client;
-        Database Database => Olive.Context.Current.Database();
+        IDatabase Database => Olive.Context.Current.Database();
         FetchClient()
         {
             S3Client = new Amazon.S3.AmazonS3Client();
