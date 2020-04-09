@@ -6,10 +6,10 @@ public override void Configure(IApplicationBuilder app)
 {
     ....
     // Option 1: Use the built-in default type of AutoFetch.MailMessage.
-    new Mailbox().Watch("my-email@company.com");
+   await Mailbox.Watch("s3 bucket name where SES is pointing to");
 
     // Option 2: Use your own type, which should implement AutoFetch.IMailMessage.
-    new Mailbox().Watch<MyOwnMessageType>("my-email@company.com");
+    await Mailbox.Watch<MyOwnMessageType>("s3 bucket name where SES is pointing to");
 }
 
 

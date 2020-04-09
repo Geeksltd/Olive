@@ -12,7 +12,7 @@ namespace Olive.Aws.Ses.AutoFetch
         string Bcc { get; set; }
         string Cc { get; set; }
         string Subject { get; set; }
-        string HtmlBody { get; set; }
+        string Body { get; set; }
         string Sender { get; set; }
         DateTime Date { get; set; }
     }

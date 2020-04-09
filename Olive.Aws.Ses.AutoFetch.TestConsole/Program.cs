@@ -19,8 +19,10 @@ namespace Olive.Aws.Ses.AutoFetch.TestConsole
             Task.Factory.RunSync(() => Mailbox.Watch("crm-app-geeks-ltd"));
 
 
-            while (Console.ReadKey().Key != ConsoleKey.Q)
+            while (true)
             {
+                System.Threading.Thread.Sleep(1000);
+                Console.WriteLine("Downloading ...");
                 Task.Factory.RunSync(() => Mailbox.FetchAll());
             }
         }

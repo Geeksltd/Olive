@@ -50,7 +50,10 @@ namespace Olive.Aws.Ses.AutoFetch
                 isEmpty = response.NextContinuationToken.IsEmpty();
 
                 if (isEmpty)
+                {
                     Log.For("Downloaded all the objects from " + Account.S3Bucket);
+                    break;
+                }
             }
         }
 
@@ -67,6 +70,8 @@ namespace Olive.Aws.Ses.AutoFetch
                 LogInfo("Deleting object " + item.Key);
                 await Delete(item);
                 LogInfo("Deleted object " + item.Key);
+
+                scope.Complete();
             }
 
         }

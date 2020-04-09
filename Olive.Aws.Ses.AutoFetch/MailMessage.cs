@@ -1,4 +1,6 @@
-﻿using Olive.Entities;
+﻿using Olive.Aws.Ses.AutoFetch;
+using Olive.Entities;
+using Olive;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,7 +15,7 @@ namespace Olive.Aws.Ses.AutoFetch
         public string Bcc { get; set; }
         public string Cc { get; set; }
         public string Subject { get; set; }
-        public string HtmlBody { get; set; }
+        public string Body { get; set; }
         public string Sender { get; set; }
         public DateTime Date { get; set; }
 
@@ -24,11 +26,6 @@ namespace Olive.Aws.Ses.AutoFetch
             if (From.IsEmpty())
                 throw new ValidationException($"Please provide a value for {nameof(From)}");
 
-            if (To.IsEmpty())
-                throw new ValidationException($"Please provide a value for {nameof(To)}");
-
-            if (Subject.IsEmpty())
-                throw new ValidationException($"Please provide a value for {nameof(Subject)}");
         }
     }
 }

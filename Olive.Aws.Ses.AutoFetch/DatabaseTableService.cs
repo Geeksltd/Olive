@@ -11,9 +11,10 @@ namespace Olive.Aws.Ses.AutoFetch
 if not exists (select * from sysobjects where name='MailMessages' and xtype='U')
 /****** Object:  Table [dbo].[MailMessages]    ******/
 CREATE TABLE [dbo].[MailMessages](
+	[ID] [uniqueidentifier] NOT NULL,
 	[From] [nvarchar](1000) NOT NULL,
-	[Subject] [nvarchar](1000) NOT NULL,
-	[To] [nvarchar](1000) NOT NULL,
+	[Subject] [nvarchar](1000) NULL,
+	[To] [nvarchar](1000) NULL,
 	[Bcc] [nvarchar](1000) NULL,
 	[Cc] [nvarchar](1000) NULL,
 	[Date] [datetime] NOT NULL,

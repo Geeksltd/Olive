@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Olive.Aws.Ses.AutoFetch
 {
-    class EmailAccount
+    abstract class EmailAccount
     {
         public string S3Bucket { get; private set; }
         EmailAccount()
@@ -19,17 +19,17 @@ namespace Olive.Aws.Ses.AutoFetch
             S3Bucket = s3Bucket;
         }
 
-        protected virtual IMailMessage CreateMailMessageInstance() => new MailMessage();
+        protected abstract IMailMessage CreateMailMessageInstance();
 
         internal IMailMessage CreateMailMessage(MimeMessage message)
         {
             var result = CreateMailMessageInstance();
 
-            result.From = message.From.Select(f => f.Name).ToString(",");
-            result.To = message.To.Select(f => f.Name).ToString(",");
-            result.HtmlBody = message.HtmlBody;
+            result.From = message.From.Select(f => f.ToString()).ToString(",");
+            result.To = message.To.Select(f => f.ToString()).ToString(",");
+            result.Body = message.HtmlBody;
             result.Date = message.Date.DateTime;
-            result.Sender = message.Sender?.Name;
+            result.Sender = message.Sender?.ToString();
             result.Subject = message.Subject;
 
 
