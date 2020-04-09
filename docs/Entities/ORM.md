@@ -59,8 +59,62 @@ Just like `Get()`, the `FirstOrDefault()` method also support polymorphic querie
 
 ### IDataProvider
 
+Normally you will use the simplified data access API provided by Olive in the `Database.Xyz` API to complete your day-to-day CRUD operations. Under the hood, `IDatabase` operations will delegate your calls to the underlying data providers which are responsible for lower level data source connections and executing commands against actual data source implementations, such as `Sql Server`, `MySql`, `PostgreSql` or your own custom data providers. 
 
-The Olive ORM framework provides the following essential components.
+All low level data provider implementations, including any custom ones you may want to create, should implement the `IDataProvider` interface which at the time of writing this article has the following methods:
+```csharp
+public interface IDataProvider
+{
+    // Source definition
+    Type EntityType { get; }    
+    string ConnectionString { get; set; }
+    string ConnectionStringKey { get; set; }
+ 
+    // Implementation
+    IDataAccess Access { get; }    
+    string GenerateSelectCommand(IDatabaseQuery iquery, string fields); 
+    Task<IEntity> Get(object objectID);
+    Task Save(IEntity record);
+    Task Delete(IEntity record);
+    Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query);
+    DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association);   
+    Task<int> Count(IDatabaseQuery query);
+    Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName);    
+    string MapColumn(string propertyName);
+    string MapSubquery(string path, string parent);
+    Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property);
+    IDictionary<string, Tuple<string, string>> GetUpdatedValues(IEntity original, IEntity updated);
+    Task<int> ExecuteNonQuery(string command);
+    Task<object> ExecuteScalar(string command);
+    bool SupportValidationBypassing();
+    Task BulkInsert(IEntity[] entities, int batchSize);
+    Task BulkUpdate(IEntity[] entities, int batchSize);
+}
+```
+
+Each data provider instance created at runtime is responsible for **one entity type** and **one data source**. For example if your application has 10 entities, all hosted in an instance of `Sql Server` then you will have 10 instances created and cached. Each one is created on the first data operation for its own entity, and all subsequent data commands for the same entity.
+
+You can register a data provider instance using the following:
+```csharp
+var myProvider = ...;
+Context.Current.Database().RegisterDataProvider(myProvider);
+```
+
+## IDataProviderFactory
+
+For most applications, one data source is used for the whole application, which means one `connection string` for one `database engine`. To avoid having to create a data provider instance for each type in the application (or assembly) Olive supports a factory model. The `IDataProviderFactory` interface comes with the following:
+
+```csharp
+public interface IDataProviderFactory
+{
+    IDataProvider GetProvider(Type type);
+    bool SupportsPolymorphism();
+    string ConnectionString { get; }
+    IDataAccess GetAccess();
+}
+```
+
+The default implementation in Olive is the `Olive.Entities.Data.DataProviderFactory` class.
 
 
 ### IDatabase
