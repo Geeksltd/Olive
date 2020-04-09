@@ -119,7 +119,8 @@ The default implementation in Olive is the `Olive.Entities.Data.DataProviderFact
 ```csharp
 public class ProviderMapping
 {
-    public string ProviderFactoryType { get; set; } = "Olive.Entities.Data.DataProviderFactory, Olive.Entities.Data";   
+    // Default is "Olive.Entities.Data.DataProviderFactory, Olive.Entities.Data"
+    public string ProviderFactoryType { get; set; }    
     public string SqlClient { get; set; }
     
     // Either set the full connection string directly,
