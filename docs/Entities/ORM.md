@@ -104,6 +104,19 @@ Context.Current.Database().RegisterDataProvider(myProvider);
 
 For most applications, one data source is used for the whole application, which means one `connection string` for one `database engine`. To avoid having to create a data provider instance for each type in the application (or assembly) Olive supports a factory model. The `IDataProviderFactory` interface comes with the following:
 
+```csharp
+public interface IDataProviderFactory
+{
+    IDataProvider GetProvider(Type type);
+    bool SupportsPolymorphism();
+    string ConnectionString { get; }
+    IDataAccess GetAccess();
+}
+```
+
+The default implementation in Olive is the `Olive.Entities.Data.DataProviderFactory` class.
+
+
 ### IDatabase
 
 ### IDatabaseQuery<T>
