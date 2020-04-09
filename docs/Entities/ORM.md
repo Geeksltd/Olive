@@ -65,15 +65,21 @@ All low level data provider implementations, including any custom ones you may w
 ```csharp
 public interface IDataProvider
 {
+    // Source definition
+    Type EntityType { get; }    
+    string ConnectionString { get; set; }
+    string ConnectionStringKey { get; set; }
+ 
+    // Implementation
+    IDataAccess Access { get; }    
+    string GenerateSelectCommand(IDatabaseQuery iquery, string fields); 
     Task<IEntity> Get(object objectID);
     Task Save(IEntity record);
     Task Delete(IEntity record);
     Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query);
-    DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association);
-    IDataAccess Access { get; }
+    DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association);   
     Task<int> Count(IDatabaseQuery query);
-    Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName);
-    Type EntityType { get; }
+    Task<object> Aggregate(IDatabaseQuery query, AggregateFunction function, string propertyName);    
     string MapColumn(string propertyName);
     string MapSubquery(string path, string parent);
     Task<IEnumerable<string>> ReadManyToManyRelation(IEntity instance, string property);
@@ -83,13 +89,20 @@ public interface IDataProvider
     bool SupportValidationBypassing();
     Task BulkInsert(IEntity[] entities, int batchSize);
     Task BulkUpdate(IEntity[] entities, int batchSize);
-    string ConnectionString { get; set; }
-    string ConnectionStringKey { get; set; }
-    string GenerateSelectCommand(IDatabaseQuery iquery, string fields);
 }
 ```
 
 Each data provider instance created at runtime is responsible for **one entity type** and **one data source**. For example if your application has 10 entities, all hosted in an instance of `Sql Server` then you will have 10 instances created and cached. Each one is created on the first data operation for its own entity, and all subsequent data commands for the same entity.
+
+You can register a data provider instance using the following:
+```csharp
+var myProvider = ...;
+Context.Current.Database().RegisterDataProvider(myProvider);
+```
+
+## IDataProviderFactory
+
+For most applications, one data source is used for the whole application, which means one `connection string` for one `database engine`. To avoid having to create a data provider instance for each type in the application (or assembly) Olive supports a factory model. The `IDataProviderFactory` interface comes with the following:
 
 ### IDatabase
 
