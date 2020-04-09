@@ -10,6 +10,8 @@ namespace Olive.Aws.Ses.AutoFetch
         public static async Task Watch(string emailS3Bucket)
         {
             await DatabaseTableService.EnsureDatabaseTable<MailMessage>();
+            Olive.Context.Current.Database().RegisterDataProvider(typeof(MailMessage),
+            new Olive.Entities.Data.DataProviderFactory(typeof(MailMessage)).GetProvider(typeof(MailMessage)));
             Watch<MailMessage>(emailS3Bucket);
         }
 
