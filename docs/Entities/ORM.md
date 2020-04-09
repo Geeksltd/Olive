@@ -138,7 +138,7 @@ public class ProviderMapping
     public string TypeName { get; set; }
 }
 ```
-
+You can register a data provider for a given type using `Context.Current.Database().RegisterDataProviderFactory(new DatabaseConfig.ProviderMapping { Type = myEntityType }`. 
 
 ### IDatabase
 
