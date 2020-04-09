@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
     <PackageReference Include="MimeKit" Version="2.6.0" />
+    <PackageReference Include="Olive.Entities" Version="2.1.140" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.txt" pack="true" PackagePath="." />

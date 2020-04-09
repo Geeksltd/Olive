@@ -10,6 +10,6 @@ namespace Olive.Aws.Ses.AutoFetch
         {
         }
 
-        internal override IMailMessage CreateMailMessageInstance() => new TMailMessage();
+        protected override IMailMessage CreateMailMessageInstance() => new TMailMessage();
     }
 }
