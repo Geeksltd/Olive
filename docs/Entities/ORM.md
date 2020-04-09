@@ -114,7 +114,30 @@ public interface IDataProviderFactory
 }
 ```
 
-The default implementation in Olive is the `Olive.Entities.Data.DataProviderFactory` class.
+The default implementation in Olive is the `Olive.Entities.Data.DataProviderFactory` class. To create a new instance, you should provide the configuration data for your data source as an instance of `DatabaseConfig.ProviderMapping` which supports the following settings:
+
+```csharp
+public class ProviderMapping
+{
+    // Default is "Olive.Entities.Data.DataProviderFactory, Olive.Entities.Data"
+    public string ProviderFactoryType { get; set; }    
+    public string SqlClient { get; set; }
+    
+    // Either set the full connection string directly,
+    // or set the key (in appSettings.json) under which the connection string is defined.
+    public string ConnectionStringKey { get; set; }
+    public string ConnectionString { get; set; }
+    
+    // Is this provider used for multiple entity types in an assembly?
+    // Then set either of the following:
+    public string AssemblyName { get; set; }
+    public Assembly Assembly { get; set; }     
+    
+    // Alternatively set the 'Type' of the entity where this mapping is for a single type.
+    public Type Type { get; set; } 
+    public string TypeName { get; set; }
+}
+```
 
 
 ### IDatabase
