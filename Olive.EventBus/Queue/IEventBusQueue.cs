@@ -23,6 +23,8 @@ namespace Olive
         /// </summary>
         void Subscribe(Func<string, Task> @handler);
 
+        Task PullAll(Func<string, Task> @handler);
+
         /// <summary>
         /// Pulls a single item from the specified queue, or null if nothing was available.
         /// After completing the message processing, you must call Complete().

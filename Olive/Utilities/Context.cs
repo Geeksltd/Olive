@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -15,7 +17,10 @@ namespace Olive
         /// <summary>
         /// Occurs when the StartUp.OnInitializedAsync is completed.
         /// </summary>
-        public static readonly AsyncEvent StartedUp = new AsyncEvent();
+        public static event AwaitableEventHandler StartedUp;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static Task OnStartedUp() => StartedUp.Raise();
 
         public static Context Current => current
             ?? throw new InvalidOperationException("Olive.Context is not initialized!");

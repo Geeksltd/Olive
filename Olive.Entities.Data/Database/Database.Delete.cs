@@ -62,9 +62,9 @@ namespace Olive.Entities.Data
             DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Remove(entity));
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassLogging))
-                await Audit.Audit.LogDelete(entity);
+                await Audit.LogDelete(entity);
 
-            await OnUpdated(entity);
+            await Updated.Raise(entity);
 
             if (!IsSet(behaviour, DeleteBehaviour.BypassDeleted))
                 await Entity.Services.RaiseOnDeleted(entity);

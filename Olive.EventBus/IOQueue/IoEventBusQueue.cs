@@ -55,5 +55,6 @@ namespace Olive
         }
 
         public void Subscribe(Func<string, Task> handler) => new IOSubscriber(this, handler).Start();
+        public Task PullAll(Func<string, Task> handler) => new IOSubscriber(this, handler).PullAll();
     }
 }

@@ -10,7 +10,7 @@ namespace Olive.Aws.Ses
 {
     public class AwsSesEmailDispatcher : IEmailDispatcher
     {
-        public async Task Dispatch(MailMessage mail)
+        public async Task Dispatch(MailMessage mail, IEmailMessage _)
         {
             var request = CreateEmailRequest(mail);
 

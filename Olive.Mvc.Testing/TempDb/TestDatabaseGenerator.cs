@@ -44,7 +44,9 @@ namespace Olive.Mvc.Testing
 
         public TestDatabaseGenerator(IDatabaseServer databaseManager)
         {
-            ConnectionString = Config.GetConnectionString("Default");
+            ConnectionString = Context.Current
+                .GetService<IConnectionStringProvider>()
+                .GetConnectionString("Default");
             DatabaseManager = databaseManager;
         }
 

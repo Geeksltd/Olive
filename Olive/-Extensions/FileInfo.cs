@@ -217,5 +217,16 @@ namespace Olive
 
             return directory;
         }
+
+        /// <summary>
+        /// Creates the file if it doesn't already exist.
+        /// </summary>
+        public static FileInfo EnsureExists(this FileInfo @this)
+        {
+            if (!@this.Exists())
+                File.Create(@this.FullName).Dispose();
+
+            return @this;
+        }
     }
 }

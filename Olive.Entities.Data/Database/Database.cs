@@ -22,7 +22,12 @@ namespace Olive.Entities.Data
 
         bool NeedsTypeResolution(Type type) => type.IsInterface || type == typeof(Entity);
 
-        public AsyncEvent CacheRefreshed { get; } = new AsyncEvent();
+        public event AwaitableEventHandler CacheRefreshed;
+
+        /// <summary>
+        /// It's raised when any record is saved or deleted in the system.
+        /// </summary>
+        public event AwaitableEventHandler<IEntity> Updated;
 
         /// <summary>
         /// Clears the cache of all items.

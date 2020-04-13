@@ -22,7 +22,7 @@ namespace Olive.Mvc
             {
                 IsStarted = true;
                 await Startup();
-                await Context.StartedUp.Raise();
+                await Context.OnStartedUp();
             }
 
             await Next.Invoke(context);

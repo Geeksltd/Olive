@@ -12,7 +12,7 @@ namespace Olive
 
             if (FallBackEventPolicy == ApiFallBackEventPolicy.Raise)
             {
-                await FallBackEvent.Raise(new FallBackEvent
+                await OnFallBackEvent(new FallBackEvent
                 {
                     Url = url,
                     FriendlyMessage = $"Failed to get results from {url.AsUri().Host}."

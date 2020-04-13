@@ -15,7 +15,7 @@ namespace Olive.SMS
         /// <summary>
         /// Occurs when an exception happens when sending an sms. Sender parameter will be the ISmsMessage instance that couldn't be sent.
         /// </summary>
-        public readonly AsyncEvent<SmsSendingEventArgs> SendError = new AsyncEvent<SmsSendingEventArgs>();
+        public event AwaitableEventHandler<SmsSendingEventArgs> SendError;
 
         public SmsService(IDatabase database, ISmsDispatcher dispatcher, ILogger<SmsService> log)
         {

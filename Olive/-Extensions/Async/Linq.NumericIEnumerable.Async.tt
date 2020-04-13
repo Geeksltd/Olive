@@ -1,0 +1,44 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+<#
+    string GenerateFor(string type, string resultType, string method)
+    {
+        return $"public static async Task<{resultType}> {method}<T>(this IEnumerable<T> @this, Func<T, Task<{type}>> func)" + @"
+        {
+            var tasks = @this.Select(x => new
+            {
+                Predicate = func(x),
+                Value = x
+            }).ToArray();
+            
+            await tasks.AwaitSequential(x => x.Predicate).ConfigureAwait(continueOnCapturedContext: false);
+            
+            return tasks." + method + @"(x => x.Predicate.GetAlreadyCompletedResult());
+        }";
+    }
+#>
+<# var types = new [] {"int", "long", "decimal", "double", "float"}; #>
+<# var methods = new [] {"Sum", "Average", "Max", "Min"}; #>
+
+namespace Olive
+{
+    partial class OliveExtensions
+    {
+<# foreach (var type in types) { #>
+<# foreach (var method in methods) { #>
+<# var resultType = method == "Average" && (type == "int" || type == "long") ? "double" : type; #>
+        <#= GenerateFor(type, resultType, method) #>
+        <#= GenerateFor(type + "?", resultType + "?", method) #>
+<# } #>
+<# } #>
+    }
+}

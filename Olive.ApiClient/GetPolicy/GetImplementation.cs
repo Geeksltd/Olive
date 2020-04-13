@@ -9,7 +9,7 @@ namespace Olive
         public TResponse Result { get; set; }
 
         protected ApiFallBackEventPolicy FallBackEventPolicy => ApiClient.FallBackEventPolicy;
-        protected AsyncEvent<FallBackEvent> FallBackEvent => ApiClient.FallBack;
+        protected event AwaitableEventHandler<FallBackEvent> FallBackEvent;
         protected TimeSpan? CacheAge => ApiClient.CacheExpiry;
 
         internal Exception Error;
@@ -18,6 +18,8 @@ namespace Olive
         {
             ApiClient = apiClient;
         }
+
+        internal Task OnFallBackEvent(FallBackEvent args) => FallBackEvent.Raise(args);
 
         public abstract Task<bool> Attempt(string url);
     }

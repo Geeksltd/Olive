@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>Olive.Security</RootNamespace>
     <PackageId>Olive.Security.Aws</PackageId>
-    <PackageVersion>2.2.102</PackageVersion>
+    <PackageVersion>2.2.103</PackageVersion>
     <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <FileVersion>2.2.0.0</FileVersion>
     <Title>Olive Security Aws</Title>

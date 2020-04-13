@@ -68,7 +68,7 @@ namespace Olive.Entities.Replication
         static async Task RaiseSaveEventFor(IEntity entity)
         {
             var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
-            await GlobalEntityEvents.InstanceSaved.Raise(new GlobalSaveEventArgs(entity, mode));
+            await GlobalEntityEvents.OnInstanceSaved(new GlobalSaveEventArgs(entity, mode));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Olive.Entities.Data
             string result;
 
             if (DatabaseContext.Current != null) result = DatabaseContext.Current.ConnectionString;
-            else result = Config.GetConnectionString("Default");
+            else result = Context.Current.GetService<IConnectionStringProvider>().GetConnectionString();
 
             if (result.IsEmpty())
                 throw new Exception("No 'AppDatabase' connection string is specified in the application config file.");
@@ -29,16 +29,18 @@ namespace Olive.Entities.Data
     public class DataAccess<TConnection> : DataAccess, IDataAccess
         where TConnection : DbConnection, new()
     {
-        static DbCommand ParameterFactory;
+        readonly IParameterFactory ParameterFactory;
         readonly ISqlCommandGenerator SqlCommandGenerator;
-        string ConnectionString;
+        readonly string ConnectionString;
 
-        static DataAccess() => ParameterFactory = new TConnection().CreateCommand();
-
-        public DataAccess(ISqlCommandGenerator sqlCommandGenerator, string connectionString = null)
+        public DataAccess(
+            ISqlCommandGenerator sqlCommandGenerator,
+            string connectionString = null,
+            IParameterFactory parameterFactory = null)
         {
             ConnectionString = connectionString;
             SqlCommandGenerator = sqlCommandGenerator;
+            ParameterFactory = parameterFactory ?? new DefaultParameterFactory<TConnection>();
         }
 
         /// <summary>
@@ -109,7 +111,8 @@ namespace Olive.Entities.Data
 
         DataAccessProfiler.Watch StartWatch(string command)
         {
-            if (Database.Configuration.Profile) return DataAccessProfiler.Start(command);
+            if (Database.Configuration?.Profile == true)
+                return DataAccessProfiler.Start(command);
             else return null;
         }
 
@@ -118,6 +121,9 @@ namespace Olive.Entities.Data
         /// </summary>
         public async Task<int> ExecuteNonQuery(string command, CommandType commandType = CommandType.Text, params IDataParameter[] @params)
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
+
             var dbCommand = await CreateCommand(commandType, command, @params);
 
             var watch = StartWatch(command);
@@ -283,17 +289,10 @@ namespace Olive.Entities.Data
 
         public IDataParameter CreateParameter(string name, object value, DbType? dbType)
         {
-            var result = ParameterFactory.CreateParameter();
-
             if (value == null) value = DBNull.Value;
             else if (value is Blob blob) value = blob.FileName;
 
-            result.ParameterName = name;
-            result.Value = value;
-
-            if (dbType.HasValue) result.DbType = dbType.Value;
-
-            return result;
+            return ParameterFactory.CreateParameter(name, value, dbType);
         }
 
         public ISqlCommandGenerator GetSqlCommandGenerator() => SqlCommandGenerator;

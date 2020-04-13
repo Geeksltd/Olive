@@ -7,7 +7,7 @@ namespace Olive
         /// <summary>
         /// Raised when a less desirable cache policy option is used. For example if for FreshOrCacheOrFail, there is no fresh data available, but data from cache is successfully returned, this event will be fired.
         /// </summary>
-        public static readonly AsyncEvent<FallBackEvent> FallBack = new AsyncEvent<FallBackEvent>();
+        public static event AwaitableEventHandler<FallBackEvent> FallBack;
         public readonly IHttpClientFactory Factory;
 
         public string Url { get; private set; }

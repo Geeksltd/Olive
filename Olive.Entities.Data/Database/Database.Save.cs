@@ -18,7 +18,7 @@ namespace Olive.Entities.Data
             await Save(entity as IEntity, SaveBehaviour.Default);
             return entity;
         }
- 
+
         public async Task Save(IEntity entity, SaveBehaviour behaviour)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -87,8 +87,8 @@ Database.Update(myObject, x=> x.P2 = ...);");
             #endregion
 
             if (!IsSet(behaviour, SaveBehaviour.BypassLogging))
-                if (mode == SaveMode.Insert) await Audit.Audit.LogInsert(entity);
-                else await Audit.Audit.LogUpdate(entity);
+                if (mode == SaveMode.Insert) await Audit.LogInsert(entity);
+                else await Audit.LogUpdate(entity);
 
             await dataProvider.Save(entity);
             Cache.UpdateRowVersion(entity);
@@ -109,7 +109,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Remove(entity));
 
-            await OnUpdated(entity);
+            await Updated.Raise(entity);
 
             if (!IsSet(behaviour, SaveBehaviour.BypassSaved))
                 await Entity.Services.RaiseOnSaved(entity, new SaveEventArgs(mode));
@@ -122,7 +122,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
         public Task<IEnumerable<T>> Save<T>(List<T> records) where T : IEntity => Save(records as IEnumerable<T>);
 
         /* ===================== Update ========================*/
-        
+
         public Task<List<T>> Update<T>(IEnumerable<T> items, Action<T> action) where T : IEntity =>
             Update(items, action, SaveBehaviour.Default);
 
@@ -141,7 +141,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             await EnlistOrCreateTransaction(async () =>
             {
-                if(action != null)
+                if (action != null)
                     foreach (var item in items)
                         result.Add(await Update(item, action, behaviour));
                 else

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Globalization</RootNamespace>
     <PackageId>Olive.Globalization</PackageId>
-    <PackageVersion>2.1.105</PackageVersion>
+    <PackageVersion>2.1.106</PackageVersion>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Globalization (Service)</Title>

@@ -140,6 +140,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Microservices", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.CKEditorFileManager", "Olive.Mvc.CKEditorFileManager\Olive.Mvc.CKEditorFileManager.csproj", "{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire.MySql", "Olive.Hangfire.MySql\Olive.Hangfire.MySql.csproj", "{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PassiveBackgroundTasks", "Olive.PassiveBackgroundTasks\Olive.PassiveBackgroundTasks.csproj", "{F5475043-F394-4B67-BF3F-AE192179F7A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication.Mvc.Extensions", "Olive.EventBus.Mvc.Extensions\Olive.Entities.Data.Replication.Mvc.Extensions.csproj", "{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Console", "Olive.Console\Olive.Console.csproj", "{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Ses.AutoFetch", "Olive.Aws.Ses.AutoFetch\Olive.Aws.Ses.AutoFetch.csproj", "{E235C02C-0BAA-4E69-BAD2-3C7D7AE5BA2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Aws.Ses.AutoFetch.TestConsole", "Olive.Aws.Ses.AutoFetch.TestConsole\Olive.Aws.Ses.AutoFetch.TestConsole.csproj", "{A03434B4-E606-4928-B798-A9EB34DC3ADC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -365,6 +377,30 @@ Global
 		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C366BDD1-CEA8-4D62-8473-8F04B8AF0F86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C25FC8-80AE-4292-BC28-2E91B7F3DBBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5475043-F394-4B67-BF3F-AE192179F7A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E235C02C-0BAA-4E69-BAD2-3C7D7AE5BA2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E235C02C-0BAA-4E69-BAD2-3C7D7AE5BA2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E235C02C-0BAA-4E69-BAD2-3C7D7AE5BA2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E235C02C-0BAA-4E69-BAD2-3C7D7AE5BA2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A03434B4-E606-4928-B798-A9EB34DC3ADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A03434B4-E606-4928-B798-A9EB34DC3ADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A03434B4-E606-4928-B798-A9EB34DC3ADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A03434B4-E606-4928-B798-A9EB34DC3ADC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -381,6 +417,7 @@ Global
 		{A0B60121-F4AB-4D29-8863-C3DE2DCABEE1} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{641E5318-DADD-48AE-9DBD-0BF74883D577} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 		{126292EE-733D-4C27-8343-E38A310B72F1} = {E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}
+		{A03434B4-E606-4928-B798-A9EB34DC3ADC} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

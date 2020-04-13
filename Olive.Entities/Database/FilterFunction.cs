@@ -58,6 +58,8 @@ namespace Olive.Entities
                     return "Is NULL";
                 case FilterFunction.In:
                     return "IN";
+                case FilterFunction.NotIn:
+                    return "NOT IN";
                 case FilterFunction.NotNull:
                     return "Is NOT NULL";
                 case FilterFunction.NotContains:

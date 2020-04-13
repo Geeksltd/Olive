@@ -9,7 +9,7 @@
     {
         bool IsCacheable()
         {
-            if (PageSize.HasValue) return false;
+            if (TakeTop.HasValue || PageSize.HasValue) return false;
 
             if (Criteria.Except(typeof(DirectDatabaseCriterion)).Any(c => c.PropertyName.Contains(".")))
                 return false; // This doesn't work with cache expiration rules.
@@ -58,10 +58,15 @@
             else
                 result = await Provider.GetList(this).ToList();
 
-            if (OrderByParts.None())
+            foreach (var item in result)
+                await Entity.Services.RaiseOnLoaded(item);
+
+            if (OrderByParts.None() && !SkipAutoSortAttribute.HasAttribute(EntityType))
             {
-                // TODO: If the entity is sortable by a single DB column, then automatically add that to the DB call.
-                result.Sort();
+                if (EntityType.Implements<ISortable>())
+                    result.Cast<ISortable>().OrderBy(x => x.Order);
+                else
+                    result.Sort();
             }
 
             await LoadIncludedAssociations(result);
@@ -88,7 +93,6 @@
                 if (inCache != null) result.Add(inCache);
                 else
                 {
-                    await Entity.Services.RaiseOnLoaded(item);
                     (Context.Current.Database() as Database)?.TryCache(item, timestamp);
                     result.Add(item);
                 }

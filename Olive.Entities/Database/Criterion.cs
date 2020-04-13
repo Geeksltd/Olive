@@ -41,10 +41,10 @@ namespace Olive.Entities
         /// Initializes a new instance of the <see cref="Criterion"/> class.
         /// </summary>
         public Criterion(string propertyName, FilterFunction function, IEnumerable<Guid> ids)
-            : this(propertyName, function, "(" + ids.Select(x => "'" + x.ToString() + "'").ToString(", ") + ")")
+            : this(propertyName, function, "(" + ids.Select(x => $"'{x}'").ToString(", ") + ")")
         {
-            if (function != FilterFunction.In)
-                throw new ArgumentException("List of IDs is only supported with 'FilterFunction.In'.");
+            if (function != FilterFunction.In && function != FilterFunction.NotIn)
+                throw new ArgumentException("List of IDs is only supported with 'FilterFunction.In or FilterFunction.NotIn'.");
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace Olive.Entities
         public Criterion(string propertyName, FilterFunction function, IEnumerable<string> ids)
             : this(propertyName, function, "(" + ids.Select(x => "'" + x.ToStringOrEmpty().Replace("'", "''") + "'").ToString(", ") + ")")
         {
-            if (function != FilterFunction.In)
-                throw new ArgumentException("List of IDs is only supported with 'FilterFunction.In'.");
+            if (function != FilterFunction.In && function != FilterFunction.NotIn)
+                throw new ArgumentException("List of IDs is only supported with 'FilterFunction.In or FilterFunction.NotIn'.");
         }
 
         /// <summary>
@@ -63,8 +63,8 @@ namespace Olive.Entities
         public Criterion(string propertyName, FilterFunction function, IEnumerable<int> ids)
             : this(propertyName, function, "(" + ids.ToString(", ") + ")")
         {
-            if (function != FilterFunction.In)
-                throw new ArgumentException("List of IDs is only supported with 'FilterFunction.In'.");
+            if (function != FilterFunction.In && function != FilterFunction.NotIn)
+                throw new ArgumentException("List of IDs is only supported with 'FilterFunction.In or FilterFunction.NotIn'.");
         }
 
         /// <summary>

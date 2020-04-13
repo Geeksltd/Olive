@@ -11,10 +11,19 @@ namespace Olive.Security.Aws
     class DataKeyService
     {
         readonly static ConcurrentDictionary<string, byte[]> EncryptionKeys = new ConcurrentDictionary<string, byte[]>();
+        static string masterKeyArn;
 
-        static readonly string MasterKeyArn = Context.Current.Config.GetValue("Aws:Kms:MasterKeyArn",
-            defaultValue: Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN"))
-            .OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified.");
+        static string MasterKeyArn
+        {
+            get
+            {
+                if (masterKeyArn.HasValue()) return masterKeyArn;
+
+                var fromEnvironment = Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN");
+                return masterKeyArn = Context.Current.Config.GetValue("Aws:Kms:MasterKeyArn", defaultValue: fromEnvironment).OrNullIfEmpty()
+                       ?? throw new Exception("Aws Master Key Arn is not specified.");
+            }
+        }
 
         static AmazonKeyManagementServiceClient CreateClient()
             => new AmazonKeyManagementServiceClient();

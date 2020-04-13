@@ -9,12 +9,12 @@ namespace Olive.Entities
     {
         void Configure();
 
-        AsyncEvent CacheRefreshed { get; }
+        event AwaitableEventHandler CacheRefreshed;
 
         /// <summary>
         /// It's raised when any record is saved or deleted in the system.
         /// </summary>
-        AsyncEvent<IEntity> Updated { get; }
+        event AwaitableEventHandler<IEntity> Updated;
 
         Task Refresh();
 

@@ -18,5 +18,13 @@
             var url = Config.GetOrThrow($"EventBus:Queues:{typeof(TMessage).FullName}:Url");
             return new EventBusQueue<TMessage>(Queue(url));
         }
+
+        /// <summary>
+        /// Returns a queue for a specified queue url.
+        /// </summary>
+        public static EventBusQueue<TMessage> Queue<TMessage>(string url) where TMessage : IEventBusMessage
+        {
+            return new EventBusQueue<TMessage>(Queue(url));
+        }
     }
 }

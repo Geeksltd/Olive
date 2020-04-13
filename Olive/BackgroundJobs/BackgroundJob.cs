@@ -25,6 +25,7 @@ namespace Olive
         /// These fields, separated by white space, can contain any of the allowed values with various combinations of the allowed characters for that field.
         /// </summary>
         public string ScheduleCron { get; set; }
+        public int TimeoutInMinutes { get; set; } = 5;
 
         /// <summary>
         /// The action to run in the schedule.
