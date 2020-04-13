@@ -38,6 +38,6 @@ namespace Olive.Mvc
         }
 
         string GetValue(ModelBindingContext context, string propName) =>
-            context.ValueProvider.GetValue($"{context.ModelName}_{propName}").FirstValue;
+            context.ValueProvider.GetValue($"{context.ModelName}_{propName}").FirstValue?.Split('|').Trim().FirstOrDefault();
     }
 }
