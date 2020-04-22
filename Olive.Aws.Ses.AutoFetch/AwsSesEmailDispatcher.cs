@@ -32,7 +32,7 @@ namespace Olive.Aws.Ses.AutoFetch
                 }
                 catch (Exception ex)
                 {
-                    Log.For(typeof(Mailbox)).Error(ex);
+                    Log.For(typeof(Mailbox)).Error(ex, "Failed to fetch emails because " + ex.ToFullMessage());
                 }
             }
         }

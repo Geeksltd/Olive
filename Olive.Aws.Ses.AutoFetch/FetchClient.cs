@@ -18,7 +18,9 @@ namespace Olive.Aws.Ses.AutoFetch
         IDatabase Database => Olive.Context.Current.Database();
         FetchClient()
         {
+            Log.For(this).Info("Creating the aws client ...");
             S3Client = new Amazon.S3.AmazonS3Client();
+            Log.For(this).Info("Aws client created");
         }
 
         internal static async Task Fetch(EmailAccount account)
