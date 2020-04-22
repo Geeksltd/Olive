@@ -12,6 +12,7 @@ namespace Olive.Audit
         string ItemId { get; set; }
         string ItemType { get; set; }
         string ItemData { get; set; }
+        string ItemGroup { get; set; }
 
         string UserId { get; set; }
         string UserIp { get; set; }
