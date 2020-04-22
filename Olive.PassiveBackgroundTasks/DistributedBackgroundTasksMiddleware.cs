@@ -15,6 +15,18 @@ namespace @Olive.PassiveBackgroundTasks
             Next = _next;
         }
 
-        public Task Invoke(HttpContext httpContext) => BackgroundProcessManager.Run();
+        public async Task Invoke(HttpContext httpContext)
+        {
+            try
+            {
+                Log.For(this).Info("Running background tasks ...");
+                await BackgroundProcessManager.Run();
+                Log.For(this).Info("Finished running background tasks ...");
+            }
+            catch (Exception ex)
+            {
+                Log.For(this).Error(ex, "Failed to run the background tasks because : " + ex.ToFullMessage());
+            }
+        }
     }
 }
