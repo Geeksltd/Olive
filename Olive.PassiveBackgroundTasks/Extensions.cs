@@ -30,7 +30,7 @@ namespace Olive.PassiveBackgroundTasks
 
                 foreach (var job in BackgroundJobsPlan.Jobs.Values)
                 {
-                    app.Logger().Info("Registering " + job.Name);
+                    app.Logger().Info("Registering " + job.Name + " cron : " + job.ScheduleCron + " -> " + CronParser.Minutes(job.ScheduleCron) + " minutes");
                     await BackgroundProcessManager.Current.Register(job.Name, job.Action, CronParser.Minutes(job.ScheduleCron), job.TimeoutInMinutes);
                     app.Logger().Info("Registered " + job.Name);
                 }
@@ -57,7 +57,7 @@ namespace Olive.PassiveBackgroundTasks
 
         internal static Task<IBackgourndTask> SendHeartbeat(this IBackgourndTask task)
         {
-            task.Logger().Info("Recording heartbeat for " + task.Name);
+            task.Logger().Info("Recording heartbeat for " + task.Name + " from instance : " + ExecutionEngine.Id);
 
             return Update(task, t =>
              {
@@ -79,9 +79,11 @@ namespace Olive.PassiveBackgroundTasks
 
         internal static async Task<bool> TryPick(this IBackgourndTask task)
         {
-            Console.WriteLine($"Checking to see if {task.Name} has to run");
+            var result = false;
+            Log.For<IBackgourndTask>().Info($"Checking to see if {task.Name} has to run.");
             using (var scope = Database.CreateTransactionScope())
             {
+                Log.For<IBackgourndTask>().Info($"Causing a distributed lock for {task.Name}.");
                 // cause a distributed lock
                 await DataAccess.Create().ExecuteNonQuery($"update {task.GetType().Name.ToPlural()} set Heartbeat = Heartbeat");
 
@@ -93,25 +95,30 @@ namespace Olive.PassiveBackgroundTasks
                 if (nextExecution.IsInTheFuture())
                 {
                     task.Logger().Info($"Should still wait for running [{task.Name}]. Next execution is at {nextExecution}.");
-                    return false;
-                }
-
-                var lastHeartbeat = task.Heartbeat.GetValueOrDefault();
-                var stillAlive = lastHeartbeat.AddMinutes(task.TimeoutInMinutes).IsInTheFuture();
-
-                if (stillAlive)
-                {
-                    task.Logger().Info($"[{task.Name}] is already running on [{task.ExecutingInstance}] instance.");
+                    result = false;
                 }
                 else
                 {
-                    task.Logger().Info($"[{task.Name}] is not running. Last heartbeat : " + lastHeartbeat);
-                    await task.SendHeartbeat();
+                    Log.For<IBackgourndTask>().Info($"{task.Name} should run.");
+                    var lastHeartbeat = task.Heartbeat.GetValueOrDefault();
+                    var stillAlive = lastHeartbeat.AddMinutes(task.TimeoutInMinutes).IsInTheFuture();
+
+                    if (stillAlive)
+                    {
+                        task.Logger().Info($"[{task.Name}] is already running on [{task.ExecutingInstance}] instance.");
+                    }
+                    else
+                    {
+                        task.Logger().Info($"[{task.Name}] is not running. Last heartbeat : " + lastHeartbeat);
+                        await task.SendHeartbeat();
+                    }
+
+                    result = !stillAlive;
                 }
 
                 scope.Complete();
 
-                return !stillAlive;
+                return result;
             }
         }
 
