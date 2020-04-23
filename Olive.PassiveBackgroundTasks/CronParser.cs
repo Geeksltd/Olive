@@ -12,11 +12,11 @@ namespace Olive.PassiveBackgroundTasks
         {
             var expression = CronExpression.Parse(cronExpression);
             var now = DateTime.UtcNow;
-            var firstTwo = expression.GetOccurrences(now, now.AddYears(100), fromInclusive: true, toInclusive: false).Take(2);
+            var firstTwo = expression.GetOccurrences(now, now.AddYears(100), fromInclusive: true, toInclusive: false).Skip(1).Take(2);
             var first = firstTwo.First();
             var second = firstTwo.Last();
 
-            return second.Subtract(first).Minutes;
+            return (int)second.Subtract(first).TotalMinutes;
         }
     }
 }
