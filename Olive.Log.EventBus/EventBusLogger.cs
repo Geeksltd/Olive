@@ -12,12 +12,15 @@ namespace Olive.Logging
         {
             if (!IsEnabled(logLevel)) return;
 
+            Console.WriteLine("EventBusLogger: Log");
+
             var r = new StringBuilder();
 
             r.AppendLine(formatter(state, exception));
 
             if (exception != null) r.AppendLine(exception.ToString());
 
+            Console.WriteLine("EventBusLogger: sending log to provider");
             Provider.AddMessage(timestamp, r.ToString(), (int)logLevel);
         }
     }
