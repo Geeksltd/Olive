@@ -1,6 +1,17 @@
 
 # Olive compatibility change log
 
+## 23 Apr 2020
+You can now specify the location where the temp uploaded files are stored. You need only one of the following settings.
+```json
+...
+  "Blob": {
+    "TempFileAbsolutePath": "",
+    "TempFilePath": "",
+  },
+...
+```
+
 ## 16 Apr 2020
 A new property named `ItemGroup` is added to `IAuditEvent` so you need add the same to its implementer entity in your project.
 

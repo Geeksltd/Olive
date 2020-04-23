@@ -13,6 +13,15 @@ namespace Olive.Mvc
     {
         public static DirectoryInfo GetFolder(string key = null)
         {
+            var configuredPath = Config.Get("Blob:TempFileAbsolutePath");
+
+            if(configuredPath.IsEmpty())
+                configuredPath = Config.Get("Blob:TempFilePath")
+                    .WithPrefix(AppDomain.CurrentDomain.WebsiteRoot().FullName);
+
+            if (configuredPath.HasValue())
+                return configuredPath.AsDirectory().GetOrCreateSubDirectory(key).EnsureExists();
+
             return AppDomain.CurrentDomain.WebsiteRoot()
                 .GetOrCreateSubDirectory("@Temp.File.Uploads" + key.WithPrefix("\\"));
         }
