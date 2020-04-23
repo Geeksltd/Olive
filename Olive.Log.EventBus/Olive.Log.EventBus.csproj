@@ -4,8 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>Olive Logger EventBus</Title>
     <PackageId>Olive.Log.EventBus</PackageId>
-    <AssemblyVersion>2.1.0.107</AssemblyVersion>
-    <FileVersion>2.1.0.107</FileVersion>
+    <AssemblyVersion>2.1.0.108</AssemblyVersion>
+    <FileVersion>2.1.0.108</FileVersion>
     <Authors>Geeks Ltd</Authors>
     <Company>Geeks Ltd</Company>
     <Description>A plugin for Olive Framework</Description>
@@ -17,7 +17,7 @@
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Log.EventBus.xml</DocumentationFile>
     <NoWarn>1701;1702;1591</NoWarn>
-    <PackageVersion>2.1.107</PackageVersion>
+    <PackageVersion>2.1.108</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
