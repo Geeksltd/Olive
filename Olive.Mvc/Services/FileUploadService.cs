@@ -20,7 +20,7 @@ namespace Olive.Mvc
                     .WithPrefix(AppDomain.CurrentDomain.WebsiteRoot().FullName);
 
             if (configuredPath.HasValue())
-                return configuredPath.AsDirectory().EnsureExists();
+                return configuredPath.AsDirectory().GetOrCreateSubDirectory(key).EnsureExists();
 
             return AppDomain.CurrentDomain.WebsiteRoot()
                 .GetOrCreateSubDirectory("@Temp.File.Uploads" + key.WithPrefix("\\"));
