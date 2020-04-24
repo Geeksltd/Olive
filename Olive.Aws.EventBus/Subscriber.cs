@@ -9,8 +9,8 @@ namespace Olive.Aws
     class Subscriber
     {
         public Func<string, Task> Handler { get; }
-        ReceiveMessageRequest Request;
-        DeleteMessageRequest Receipt;
+        //ReceiveMessageRequest Request;
+        //DeleteMessageRequest Receipt;
         EventBusQueue Queue;
         Thread PollingThread;
 
@@ -18,15 +18,8 @@ namespace Olive.Aws
         {
             Handler = handler;
             Queue = queue;
-            Request = new ReceiveMessageRequest
-            {
-                QueueUrl = Queue.QueueUrl,
-                MaxNumberOfMessages = Queue.MaxNumberOfMessages,
-                VisibilityTimeout = Queue.VisibilityTimeout,
-                WaitTimeSeconds = 10
-            };
 
-            Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
+            // Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
         }
 
         public void Start()
@@ -53,7 +46,15 @@ namespace Olive.Aws
         {
             try
             {
-                return await Queue.Client.ReceiveMessageAsync(Request);
+                var request = new ReceiveMessageRequest
+                {
+                    QueueUrl = Queue.QueueUrl,
+                    MaxNumberOfMessages = Queue.MaxNumberOfMessages,
+                    VisibilityTimeout = Queue.VisibilityTimeout,
+                    WaitTimeSeconds = 10
+                };
+
+                return await Queue.Client.ReceiveMessageAsync(request);
             }
             catch (TaskCanceledException)
             {
@@ -72,10 +73,11 @@ namespace Olive.Aws
             {
                 try
                 {
+                    var receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
                     await Handler(item.Key);
 
-                    Receipt.ReceiptHandle = item.Value.ReceiptHandle;
-                    await Queue.Client.DeleteMessageAsync(Receipt);
+                    receipt.ReceiptHandle = item.Value.ReceiptHandle;
+                    await Queue.Client.DeleteMessageAsync(receipt);
                 }
                 catch (Exception ex)
                 {
