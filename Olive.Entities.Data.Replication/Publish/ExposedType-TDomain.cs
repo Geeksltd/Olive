@@ -128,6 +128,8 @@ namespace Olive.Entities.Replication
                 await Queue.Publish(ToDeleteMessage(entity));
         }
 
+        protected override Task SingalClear() => Queue.Publish(ToClearMessage());
+
         public ExposedPropertyInfo Expose<T>(Expression<Func<TDomain, T>> field)
         {
             var result = new ExposedPropertyInfo(field.GetProperty());
@@ -173,7 +175,7 @@ namespace Olive.Entities.Replication
             }
         }
 
-        internal override async Task UploadAll()
+        protected override async Task DoUploadAll()
         {
             var database = Context.Current.Database();
             var totalCount = await database.Of(typeof(TDomain)).Count();

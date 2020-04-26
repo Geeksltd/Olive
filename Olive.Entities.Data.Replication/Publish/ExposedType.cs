@@ -60,7 +60,7 @@ namespace Olive.Entities.Replication
 
         string Stringify(object value)
         {
-            if (value is DateTime dateTime) 
+            if (value is DateTime dateTime)
                 return dateTime.Ticks.ToString();
 
             return value.ToStringOrEmpty();
@@ -76,22 +76,38 @@ namespace Olive.Entities.Replication
             message.ToDelete = true;
             return message;
         }
-
+        string GetTypeFullName() => GetType().Namespace + "." + GetType().Name;
         ReplicateDataMessage ToReplicateDataMessage(Dictionary<string, object> properties)
         {
             var serialized = JsonConvert.SerializeObject(properties);
 
             return new ReplicateDataMessage
             {
-                TypeFullName = GetType().Namespace + "." + GetType().Name,
+                TypeFullName = GetTypeFullName(),
                 Entity = serialized,
                 CreationUtc = DateTime.UtcNow
             };
         }
 
+        protected ReplicateDataMessage ToClearMessage() => new ReplicateDataMessage
+        {
+            TypeFullName = GetTypeFullName(),
+            CreationUtc = DateTime.UtcNow,
+            IsClearSignal = true
+        };
+
         internal abstract void Start();
 
-        internal abstract Task UploadAll();
+        internal async Task UploadAll()
+        {
+            await SingalClear();
+
+            await DoUploadAll();
+        }
+
+        protected abstract Task DoUploadAll();
+
+        protected abstract Task SingalClear();
 
         public abstract void Define();
     }

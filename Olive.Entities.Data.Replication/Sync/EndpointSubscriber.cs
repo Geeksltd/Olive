@@ -58,6 +58,17 @@ namespace Olive.Entities.Replication
                 return;
             }
 
+            if (message.IsClearSignal)
+            {
+                Log.Debug($"Received Clear Signal for {message.TypeFullName}");
+                var existingRecords = await Database.Of(DomainType).GetList();
+                Log.Debug($"Deleting all {message.TypeFullName} ({existingRecords.Count()} records)");
+
+                await Database.Delete(existingRecords);
+
+                return;
+            }
+
             Log.Debug($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
 
             IEntity entity;

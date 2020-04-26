@@ -150,7 +150,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Console", "Olive.Cons
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Ses.AutoFetch", "Olive.Aws.Ses.AutoFetch\Olive.Aws.Ses.AutoFetch.csproj", "{E235C02C-0BAA-4E69-BAD2-3C7D7AE5BA2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Aws.Ses.AutoFetch.TestConsole", "Olive.Aws.Ses.AutoFetch.TestConsole\Olive.Aws.Ses.AutoFetch.TestConsole.csproj", "{A03434B4-E606-4928-B798-A9EB34DC3ADC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Ses.AutoFetch.TestConsole", "Olive.Aws.Ses.AutoFetch.TestConsole\Olive.Aws.Ses.AutoFetch.TestConsole.csproj", "{A03434B4-E606-4928-B798-A9EB34DC3ADC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

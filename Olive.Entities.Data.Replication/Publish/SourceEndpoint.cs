@@ -8,7 +8,9 @@ namespace Olive.Entities.Replication
 {
     public abstract partial class SourceEndpoint
     {
+        string RefreshQueueUrl => UrlPattern.TrimEnd(".fifo") + "-REFRESH.fifo";
         Dictionary<string, ExposedType> Agents = new Dictionary<string, ExposedType>();
+        public IEnumerable<string> ExposedTypes => Agents.Keys;
 
         string UrlPattern => Config.GetOrThrow("DataReplication:" + GetType().FullName + ":Url");
 
@@ -25,7 +27,7 @@ namespace Olive.Entities.Replication
         /// Starts publishing an end point for the specified data types. 
         /// It handles all save events on such objects, and publishes them on the event bus.
         /// </summary>
-        public void Publish()
+        public void Publish(bool handleRefreshRequests = true)
         {
             var types = GetTypes();
 
@@ -42,30 +44,35 @@ namespace Olive.Entities.Replication
                 agent.Start();
             }
 
-            HandleRefreshRequests();
+            if (handleRefreshRequests)
+                HandleRefreshRequests();
         }
+
+        async Task HandleRefreshMessage(string typeName)
+        {
+            if (Agents.TryGetValue(typeName, out var agent))
+            {
+                Log.For(this).Debug("Uploading all data for " + typeName);
+                await agent.UploadAll();
+                Log.For(this).Debug("Finished uploading all data for " + typeName);
+            }
+            else
+            {
+                var exception = new Exception("There is no published endpoint for the type: " + typeName +
+                    "\r\n\r\nRegistered types are:\r\n" +
+                    Agents.Select(x => x.Key).ToLinesString());
+                Log.For(this).Error(exception, "Failed to UploadAll");
+                throw exception;
+            }
+        }
+
+        public Task UploadAll(string typeName) => HandleRefreshMessage(typeName);
+        public Task UploadAll() => Agents.Do(i => HandleRefreshMessage(i.Key));
 
         void HandleRefreshRequests()
         {
-            var url = UrlPattern.TrimEnd(".fifo") + "-REFRESH.fifo";
-            Log.For(this).Debug("Subscribing to " + url);
-            EventBus.Queue(url).Subscribe<RefreshMessage>(async message =>
-            {
-                if (Agents.TryGetValue(message.TypeName, out var agent))
-                {
-                    Log.For(this).Debug("Uploading all data for " + message.TypeName);
-                    await agent.UploadAll();
-                    Log.For(this).Debug("Finished uploading all data for " + message.TypeName);
-                }
-                else
-                {
-                    var exception = new Exception("There is no published endpoint for the type: " + message.TypeName +
-                        "\r\n\r\nRegistered types are:\r\n" +
-                        Agents.Select(x => x.Key).ToLinesString());
-                    Log.For(this).Error(exception, "Failed to UploadAll");
-                    throw exception;
-                }
-            });
+            Log.For(this).Debug("Subscribing to " + RefreshQueueUrl);
+            EventBus.Queue(RefreshQueueUrl).Subscribe<RefreshMessage>(async message => await HandleRefreshMessage(message.TypeName));
         }
     }
 }

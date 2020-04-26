@@ -44,9 +44,12 @@ namespace Olive.Email
 
         public async Task SendAll(TimeSpan? delayPerSend = null)
         {
+            Log.Info("Sending all ...");
             using (await AsyncLock.Lock())
             {
                 var toSend = await GetUnsentEmails();
+
+                Log.Info($"Loaded {toSend.Count()} emails to send ...");
 
                 foreach (var mail in toSend)
                 {
@@ -61,10 +64,15 @@ namespace Olive.Email
                         }
                     }
 
-                    try { await Send(mail); }
+                    try
+                    {
+                        Log.Info($"Sending {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
+                        await Send(mail);
+                        Log.Info($"Sent {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
+                    }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "Could not send a queued email message " + mail.GetId());
+                        Log.Error(ex, "Could not send a queued email message " + mail.GetId() + " because " + ex.ToFullMessage());
                     }
                 }
             }

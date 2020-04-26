@@ -2,6 +2,7 @@
 using System;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Olive.Entities.Replication
 {
@@ -25,5 +26,40 @@ namespace Olive.Entities.Replication
             return app;
         }
 
+        public static IApplicationBuilder RegisterPublisher<TSourceEndpoint>(this IApplicationBuilder app)
+        where TSourceEndpoint : SourceEndpoint, new()
+        {
+            var endpoint = new TSourceEndpoint();
+
+            endpoint.Publish(false);
+
+            void Register(string key, Func<Task> handler)
+            {
+                var action = "/olive/entities/replication/dump/" + endpoint.GetType().FullName.Replace(".", "-") + "/" + key.Replace(".", "-");
+
+                app.Map(action, x => x.Use(async (context, next) =>
+                {
+                    var start = LocalTime.Now;
+                    Log.For<TSourceEndpoint>().Info("Pulling refresh messages ...");
+                    await handler();
+                    Log.For<TSourceEndpoint>().Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
+
+                    await next();
+                }));
+            }
+
+            Log.For<TSourceEndpoint>().Info("Registering refresh messages for All ...");
+            Register("All", endpoint.UploadAll);
+            Log.For<TSourceEndpoint>().Info("Registered refresh messages for All ...");
+
+            endpoint.ExposedTypes.Do(t =>
+            {
+                Log.For<TSourceEndpoint>().Info($"Registering refresh messages for {t} ...");
+                Register(t, () => endpoint.UploadAll(t));
+                Log.For<TSourceEndpoint>().Info($"Registered refresh messages for {t} ...");
+            });
+
+            return app;
+        }
     }
 }
