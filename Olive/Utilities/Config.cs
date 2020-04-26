@@ -84,7 +84,7 @@ namespace Olive
             {
                 var key = $"%{variable}%";
                 foreach (var item in config.AsEnumerable().Where(v => v.Value.OrEmpty().Contains(key)))
-                    config[item.Key] = Environment.GetEnvironmentVariable(variable);
+                    config[item.Key] = item.Value.Replace(key, Environment.GetEnvironmentVariable(variable));
             }
 
             return config;
