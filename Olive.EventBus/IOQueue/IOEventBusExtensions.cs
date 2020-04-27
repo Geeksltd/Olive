@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Olive
 {
@@ -16,6 +16,11 @@ namespace Olive
             where TCommandMessage : EventBusCommandMessage, new()
         {
             @this.Subscribe(x => x.Process());
+        }
+        public static void PullAll<TCommandMessage>(this EventBusQueue<TCommandMessage> @this)
+          where TCommandMessage : EventBusCommandMessage, new()
+        {
+            @this.PullAll(x => x.Process());
         }
     }
 }
