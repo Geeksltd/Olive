@@ -39,6 +39,7 @@ namespace Olive.Mvc
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            Configuration.MergeEnvironmentVariables();
             Services = services;
             Context.Initialize(services);
             services.AddHttpContextAccessor();
