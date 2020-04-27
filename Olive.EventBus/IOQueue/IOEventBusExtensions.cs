@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -17,10 +18,10 @@ namespace Olive
         {
             @this.Subscribe(x => x.Process());
         }
-        public static void PullAll<TCommandMessage>(this EventBusQueue<TCommandMessage> @this)
+        public static async Task PullAll<TCommandMessage>(this EventBusQueue<TCommandMessage> @this)
           where TCommandMessage : EventBusCommandMessage, new()
         {
-            @this.PullAll(x => x.Process());
+            await @this.PullAll(x => x.Process());
         }
     }
 }
