@@ -87,6 +87,8 @@ namespace Olive.Mvc
 
         public virtual void Configure(IApplicationBuilder app)
         {
+            app.UseMiddleware<PerformanceMonitoringMiddleware>();
+
             Context.Current.Set(app.ApplicationServices).Set(Environment);
 
             app.ApplicationServices.GetService<IDatabase>()

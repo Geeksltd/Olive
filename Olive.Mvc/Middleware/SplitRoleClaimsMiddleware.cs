@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
-    class SplitRoleClaimsMiddleware
+    class SplitRoleClaimsMiddleware : BaseMiddleware
     {
-        readonly RequestDelegate Next;
+        public SplitRoleClaimsMiddleware(RequestDelegate next) : base(next) { }
 
-        public SplitRoleClaimsMiddleware(RequestDelegate next) => Next = next;
-
-        public async Task Invoke(HttpContext context)
+        public override async Task Invoke(HttpContext context)
         {
             if (context.User.Identity.IsAuthenticated)
                 SplitRoles(context.User);
