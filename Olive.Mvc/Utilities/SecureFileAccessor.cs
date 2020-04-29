@@ -105,7 +105,7 @@ namespace Olive.Mvc
 
             if (!method.GetParameters().IsSingle() ||
                 !method.GetParameters().Single().ParameterType.Implements<IPrincipal>())
-                return $"{Type.FullName}.{method.Name}() doesn't accept a single argument that implements IUser";
+                return $"{Type.FullName}.{method.Name}() doesn't accept a single argument that implements IPrincipal";
 
             if (!(bool)method.Invoke(Instance, new object[] { CurrentUser }))
                 return "You are not authorised to view the requested file.";

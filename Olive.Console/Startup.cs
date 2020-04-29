@@ -27,7 +27,10 @@ namespace Olive.Console
             Log.Init(context.GetService<ILoggerFactory>());
         }
 
-        public virtual void ConfigureServices(IServiceCollection services) { }
+        public virtual void ConfigureServices(IServiceCollection services)
+        {
+            Configuration.MergeEnvironmentVariables();
+        }
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {

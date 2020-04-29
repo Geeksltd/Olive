@@ -12,12 +12,11 @@ namespace Olive.Mvc.Microservices
         const string HubDevUrl = "http://localhost:9011";
 
         protected Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory factory)
-            : base(env, config, factory)
-        {
-        }
+            : base(env, config, factory) { }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            Configuration.MergeEnvironmentVariables();
             services.AddCors(x => x.AddPolicy("AllowHubOrigin",
                 f => f.WithOrigins(Microservice.Of("Hub").Url().TrimEnd("/"), HubDevUrl)
                 .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
@@ -30,7 +29,7 @@ namespace Olive.Mvc.Microservices
             //add menu route
             app.Map("/api/menu", x => x.Run(async context => { await MenuApiMiddleWare.Menu(context); }));
 
-            app.UseCors("AllowHubOrigin");          
+            app.UseCors("AllowHubOrigin");
 
             //fix CORS issue            
             app.UseMiddleware<MaintainCorsHeader>();
