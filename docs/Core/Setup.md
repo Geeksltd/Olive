@@ -19,25 +19,31 @@ class Startup : Olive.Console.Startup
 {
     public Startup(IConfiguration config) : base(config)
     {
-        // config.LoadAwsDevIdentity("", "");
+        // Using AWS services?
+        // config.LoadAwsDevIdentity("...", "...", Amazon.RegionEndpoint.EUWest1, loadSecrets: false);
     }
 
     public override void ConfigureServices(IServiceCollection services)
     {
         // ... any specific configurations will go here.
+        
+        services.AddDefaultAudit();        
 
-        // Using AWS services?
-        // config.LoadAwsDevIdentity("...", "...", Amazon.RegionEndpoint.EUWest1, loadSecrets: false);
-
-        // Using SQS?
-        // services.AddAwsEventBus();
+        // Using AWS stuff??
+        services.AddAwsEventBus();
+        services.AddAWSService<Amazon.S3.IAmazonS3>();
 
         // Using database?
-        // services.AddDataAccess(x => x.SqlServer());
+        services.AddDatabase();
+        services.AddDataAccess(x => x.SqlServer());
     }
+    
+    static IDatabase Database => Context.Current.Database();
 
     protected override Task Run()
     {
+        Database.ConfigDataAccess().Configure();
+        
         Console.WriteLine("Hello!");
         return Task.CompletedTask;
     }
