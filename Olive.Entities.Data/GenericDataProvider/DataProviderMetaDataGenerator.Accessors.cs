@@ -67,7 +67,13 @@ namespace Olive.Entities.Data
                 var emitResult = compilation.Emit(stream);
 
                 if (!emitResult.Success)
-                    throw new Exception("Failed to create property accessors type.");
+                {
+                    var error = new Exception("DataProviderMetaDataGenerator failed." +
+                       emitResult.Diagnostics.Where(x => x.Severity == DiagnosticSeverity.Error)
+                       .Select(v => v.GetMessage()).Distinct().ToLinesString().WithPrefix(Environment.NewLine));
+                    Console.WriteLine(error.Message);
+                    throw error;
+                }
 
                 stream.Seek(0, SeekOrigin.Begin);
                 var assembly = Assembly.Load(stream.ToArray());

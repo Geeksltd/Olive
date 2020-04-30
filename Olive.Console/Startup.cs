@@ -19,12 +19,9 @@ namespace Olive.Console
         public Startup(IConfiguration config)
         {
             Configuration = config;
-            var context = Context.Current;
-            ConfigureServices(context.Services);
-            Context.Current.Set(context.Services.BuildServiceProvider());
-            Environment = context.GetService<IHostingEnvironment>();
-
-            Log.Init(context.GetService<ILoggerFactory>());
+            Environment = Context.Current.GetService<IHostingEnvironment>();
+            ConfigureServices(Context.Current.Services);
+            Log.Init(Context.Current.GetService<ILoggerFactory>());
         }
 
         public virtual void ConfigureServices(IServiceCollection services)
@@ -34,6 +31,7 @@ namespace Olive.Console
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
+            Context.Current.RefreshServiceProvider();
             await Run();
             Process.GetCurrentProcess().Kill();
         }

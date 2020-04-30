@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Olive.Console
 {
@@ -16,14 +18,30 @@ namespace Olive.Console
             Startup.Args = args;
 
             var host = new HostBuilder();
+            host.ConfigureAppConfiguration((hostingContext, config) =>
+             {
+                 config.AddJsonFile("appsettings.json", optional: true);
+                 config.AddEnvironmentVariables();
+                 if (args != null) config.AddCommandLine(args);
+             });
+
             configure?.Invoke(host);
 
-            return host.ConfigureServices((hostContext, services) =>
-             {
-                 Context.Initialize(services);
-                 services.AddHostedService<TStartup>();
-             })
-                .RunConsoleAsync();
+            host.ConfigureServices((hostContext, services) =>
+            {
+                services.AddOptions();
+
+                Context.Initialize(services);
+                services.AddHostedService<TStartup>();
+            });
+
+            host.ConfigureLogging((hostingContext, logging) =>
+            {
+                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                logging.AddConsole();
+            });
+
+            return host.RunConsoleAsync();
         }
     }
 }
