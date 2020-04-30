@@ -1,7 +1,8 @@
 <img src="https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png"/>
+
 * Olive Core
     * [What is Olive?](README.md)
-    * [Getting Started](Core/Setup.md)
+    * [Getting Started (Console app)](Core/Setup.md)
     * [.NET Extensions](Core/Extensions.md)
     * [Utility classes](Core/Utilities.md)
     * [change log](ChangeLog.md)
