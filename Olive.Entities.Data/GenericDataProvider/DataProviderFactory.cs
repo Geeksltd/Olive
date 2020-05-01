@@ -12,9 +12,7 @@ namespace Olive.Entities.Data
 
         public string ConnectionString { get; }
 
-        public DataProviderFactory(Type type) : this(new DatabaseConfig.ProviderMapping { Type = type })
-        {
-        }
+        public DataProviderFactory(Type type) : this(new DatabaseConfig.ProviderMapping { Type = type }) { }
 
         public DataProviderFactory(DatabaseConfig.ProviderMapping mapping)
         {

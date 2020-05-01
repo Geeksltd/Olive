@@ -25,13 +25,6 @@ namespace Olive
         public static HttpResponse Response(this Context context) => context.Http()?.Response;
 
         public static IHostingEnvironment Environment(this Context context)
-            => environment
-            ?? throw new Exception("Environment is not set via Context.Configure()");
-
-        public static Context Set(this Context context, IHostingEnvironment env)
-        {
-            environment = env;
-            return context;
-        }
+            => environment ?? (environment = context.GetService<IHostingEnvironment>());
     }
 }
