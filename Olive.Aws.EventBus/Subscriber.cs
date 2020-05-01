@@ -27,11 +27,11 @@ namespace Olive.Aws
             (PollingThread = new Thread(async () => await KeepPolling())).Start();
         }
 
-        public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty);
+        public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 0);
 
-        async Task<List<KeyValuePair<string, Message>>> FetchEvents()
+        async Task<List<KeyValuePair<string, Message>>> FetchEvents(int waitTimeSeconds)
         {
-            var response = await Fetch();
+            var response = await Fetch(waitTimeSeconds);
             var result = new List<KeyValuePair<string, Message>>();
 
             foreach (var item in response.Messages)
@@ -42,7 +42,7 @@ namespace Olive.Aws
             return result;
         }
 
-        async Task<ReceiveMessageResponse> Fetch()
+        async Task<ReceiveMessageResponse> Fetch(int waitTimeSeconds)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Olive.Aws
                     QueueUrl = Queue.QueueUrl,
                     MaxNumberOfMessages = Queue.MaxNumberOfMessages,
                     VisibilityTimeout = Queue.VisibilityTimeout,
-                    WaitTimeSeconds = 10
+                    WaitTimeSeconds = waitTimeSeconds //10
                 };
 
                 return await Queue.Client.ReceiveMessageAsync(request);
@@ -66,9 +66,9 @@ namespace Olive.Aws
             }
         }
 
-        async Task<bool> Poll()
+        async Task<bool> Poll(int waitTimeSeconds)
         {
-            var messages = await FetchEvents();
+            var messages = await FetchEvents(waitTimeSeconds);
             foreach (var item in messages)
             {
                 try
@@ -95,14 +95,14 @@ namespace Olive.Aws
             return messages.Count == Queue.MaxNumberOfMessages;
         }
 
-        async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling)
+        async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
         {
             var queueIsEmpty = false;
             do
             {
                 try
                 {
-                    queueIsEmpty = (await Poll() == false);
+                    queueIsEmpty = (await Poll(waitTimeSeconds) == false);
                 }
                 catch (Exception exception)
                 {
