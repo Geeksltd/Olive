@@ -59,6 +59,8 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(o =>
             o.ViewLocationExpanders.Add(new ViewLocationExpander()));
 
+            services.AddTransient<IFileRequestService, DiskFileRequestService>();
+
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
         }
 
