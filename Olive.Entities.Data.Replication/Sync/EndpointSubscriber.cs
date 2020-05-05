@@ -76,7 +76,7 @@ namespace Olive.Entities.Replication
             try { entity = await Deserialize(message.Entity); }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to deserialize.");
+                Log.Error(ex, "Failed to deserialize a message of :> " + message.TypeFullName + " message : " + message.Entity);
                 throw;
             }
 
