@@ -20,7 +20,7 @@ namespace Olive.PassiveBackgroundTasks
             var context = Context.Current;
             var database = context.Database();
 
-            var instance = (IBackgourndTask)(await database.GetList<IBackgourndTask>(b => b.Name == name)).SingleOrDefault()?.Clone() ?? context.GetService<IBackgourndTask>();
+            var instance = (IBackgourndTask)((await database.GetList<IBackgourndTask>(b => b.Name == name)).SingleOrDefault() ?? context.GetService<IBackgourndTask>()).Clone();
 
             instance.Name = name;
             instance.IntervalInMinutes = intervalInMinutes;
