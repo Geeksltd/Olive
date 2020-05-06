@@ -32,7 +32,7 @@ namespace Olive.Logging
             r.Append(": ");
             r.AppendLine(formatter(state, exception));
 
-            if (exception != null) r.AppendLine(exception.ToString());
+            if (exception != null) r.AppendLine(exception.ToFullMessage());
 
             Provider.AddMessage(timestamp, r.ToString(), (int)logLevel);
         }

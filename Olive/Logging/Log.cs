@@ -16,7 +16,7 @@ namespace Olive
         }
 
         public static void Error(this ILogger @this, Exception ex, string message = null)
-            => @this.LogError(ex, message);
+            => @this.LogError(ex, message.Or(ex.ToFullMessage()));
 
         public static void Warning(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
         {
