@@ -1,6 +1,6 @@
 ﻿# Use AWS S3 as the temp folder to upload files
 
-If you need to use S3 to be the temp storage when you are uploading a file you need to follow the following steps. But if you need to store the files in the S3 permanently, read [this](../Entities/Blob.md). Also, you may use both if you are hosting your service as a lambda function.
+If you need to use S3 to be the temp storage when you are uploading a file you need to follow the following steps. But if you need to store the files in the S3 permanently, read [this](/Entities/Blob.md). Also, you may use both if you are hosting your service as a lambda function.
 
 First things first, create a bucket which should have the following settings.
 - It should be open for public to upload to or download from it.
