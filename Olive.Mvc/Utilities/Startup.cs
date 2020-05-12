@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Olive.Entities;
@@ -59,7 +60,7 @@ namespace Olive.Mvc
             services.Configure<RazorViewEngineOptions>(o =>
             o.ViewLocationExpanders.Add(new ViewLocationExpander()));
 
-            services.AddTransient<IFileRequestService, DiskFileRequestService>();
+            services.TryAddTransient<IFileRequestService, DiskFileRequestService>();
 
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
         }
