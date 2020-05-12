@@ -38,7 +38,7 @@ namespace Olive.Mvc
         public Task<Blob> ToBlob()
         {
             if (TempFileId.HasValue())
-                return new FileUploadService().Bind(TempFileId);
+                return Context.Current.GetService<IFileRequestService>().Bind(TempFileId);
 
             Blob result;
 
