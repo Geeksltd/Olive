@@ -33,6 +33,11 @@ And change `UploadTempFileToServer` to:
         return Json(await FileRequestService.TempSaveUploadedFile(files[0]));
     }
 ```
+Also change `DownloadTempFile` to:
+```csharp
+    [Route("temp-file/{key}")]
+    public Task<ActionResult> DownloadTempFile(string key) => FileRequestService.Download(key);
+```
 
 ## 23 Apr 2020
 You can now specify the location where the temp uploaded files are stored. You need only one of the following settings.
