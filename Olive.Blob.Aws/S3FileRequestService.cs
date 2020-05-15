@@ -15,17 +15,13 @@ namespace Olive.BlobAws
 {
     class S3FileRequestService : IFileRequestService
     {
-        private readonly string AccessKey;
-        private readonly string Secret;
         private readonly string TempBucket;
         private readonly string Region;
 
-        public S3FileRequestService(IConfiguration configuration)
+        public S3FileRequestService(FileUploadSettings settings)
         {
-            AccessKey = configuration.GetValue<string>("Aws:Credentials:AccessKey");
-            Secret = configuration.GetValue<string>("Aws:Credentials:Secret");
-            TempBucket = configuration.GetValue<string>("Aws:TempBucket");
-            Region = configuration.GetValue<string>("Aws:Region");
+            TempBucket = settings.BucketName;
+            Region = settings.Region;
         }
 
         [EscapeGCop("It could be costfull to use those extensions.")]
@@ -82,18 +78,12 @@ namespace Olive.BlobAws
 
                 return new
                 {
-                    Download = $"https://{TempBucket}.{Region}.amazonaws.com/{key}"
+                    Download = S3DocumentUrlBuilder.GetUrl(Region, TempBucket, key)
                 };
             }
         }
 
-        private AmazonS3Client GetClient()
-        {
-            return new AmazonS3Client(
-                AccessKey,
-                Secret,
-                RegionEndpoint.GetBySystemName(Region));
-        }
+        private AmazonS3Client GetClient() => new AmazonS3Client();
 
         public Task DeleteTempFiles(TimeSpan _)
         {

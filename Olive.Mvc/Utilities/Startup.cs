@@ -61,6 +61,7 @@ namespace Olive.Mvc
             o.ViewLocationExpanders.Add(new ViewLocationExpander()));
 
             services.TryAddTransient<IFileRequestService, DiskFileRequestService>();
+            services.TryAddTransient<IFileUploadMarkupGenerator, DefaultFileUploadMarkupGenerator>();
 
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
         }

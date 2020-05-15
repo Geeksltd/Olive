@@ -14,7 +14,9 @@ namespace Olive
 
         public static IServiceCollection AddS3FileRequestService(this IServiceCollection @this)
         {
-            return @this.AddTransient<IFileRequestService, S3FileRequestService>();
+            return @this.AddTransient<FileUploadSettings>()
+                .AddTransient<IFileUploadMarkupGenerator, S3FileUploadMarkupGenerator>()
+                .AddTransient<IFileRequestService, S3FileRequestService>();
         }
     }
 }
