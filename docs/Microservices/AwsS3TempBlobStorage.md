@@ -12,31 +12,18 @@ Next, add the following settings to the `appsettings.json`.
 ```json
 ...
   "Aws": {
-    "Credentials": {
-      "AccessKey": "ACCESS_KEY",
-      "Secret": "SECRET"
-    },
     "Region": "REGION",
     "TempBucket": "BUCKET_NAME",
   }
 ...
 ```
-Then, in your `Startup.cs` call `AddS3BlobStorageProvider` in `ConfigureServices` before calling the base method.
+Then, in your `Startup.cs` call `AddS3FileRequestService` in `ConfigureServices` before calling the base method.
 ```csharp
 public override void ConfigureServices(IServiceCollection services)
         {
     ...
-    services.AddS3BlobStorageProvider();
+    services.AddS3FileRequestService();
 
     base.ConfigureServices(services);
     ...
 ```
-
-Finally, call `useS3FileUpload` in the `appPage.ts` like:
-```ts
-protected configureServices(services: ServiceContainer): void {
-    this.useS3FileUpload(services, "URL_TO_THE_THEMP_BUCKET");
-    super.configureServices(services);
-}
-```
-Although, you can hardcode the url here but it's better to somehow get it from appsettigs. For instance you can have a hidden tag in your layout and read the value from there.
