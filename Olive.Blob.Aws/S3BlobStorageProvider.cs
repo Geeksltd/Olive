@@ -76,7 +76,7 @@ namespace Olive.BlobAws
 
             try
             {
-                await Load(GetKey(document));
+                return await Load(GetKey(document));
             }
             catch (Exception ex)
             {
