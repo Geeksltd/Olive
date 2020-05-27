@@ -214,3 +214,17 @@ public override void ConfigureServices(IServiceCollection services)
 }
 ```
 > **Notice** Always register your custom implementation after calling `services.AddEmail();` otherwise, It will be overrided with olive's default `EmailDispatcher`
+
+## Recieve emails and check the email sending failures
+
+To read the new emails you need to add `Olive.Email.Imap` NuGet Package. Then in you `Startup` add the IMAP service to your service collection like the following example. And you will have access to `IImapService` in your project.
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    services.AddImapService();
+}
+```
+
+And if you need to check for the failure of the emails you sent inherit the `BaseEmailFailureService` and instead of `AddImapService` use `AddEmailFailureService` to add the services.

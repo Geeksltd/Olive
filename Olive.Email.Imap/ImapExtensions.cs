@@ -14,5 +14,11 @@ namespace Olive.Email
 
             return @this;
         }
+
+        public static IServiceCollection AddImapService(this IServiceCollection @this)
+        {
+            @this.TryAddTransient<IImapService, ImapService>();
+            return @this;
+        }
     }
 }
