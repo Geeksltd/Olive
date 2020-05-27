@@ -4,12 +4,14 @@ using Microsoft.Extensions.Primitives;
 using Olive.Entities;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Olive.Mvc
 {
-    class DefaultFileUploadMarkupGenerator
+    public class DefaultFileUploadMarkupGenerator : IFileUploadMarkupGenerator
     {
-        static object HiddenFieldSettings = new
+        readonly object LockObject = new object();
+        readonly object HiddenFieldSettings = new
         {
             tabindex = "-1",
             style = "width:1px; height:0; border:0; padding:0; margin:0;",
@@ -17,35 +19,33 @@ namespace Olive.Mvc
             autocomplete = "off"
         };
 
+        PropertyInfo PropertyInfo;
+        BlobViewModel Blob;
+
         public IHtmlContent Generate<TModel, TProperty>(IHtmlHelper html, object viewModel, Expression<Func<TModel, TProperty>> property, object htmlAttributes)
+        {
+            lock(LockObject)
+                return DoGenerate(html, viewModel, property, htmlAttributes);
+        }
+
+        protected virtual IHtmlContent DoGenerate<TModel, TProperty>(IHtmlHelper html, object viewModel, Expression<Func<TModel, TProperty>> property, object htmlAttributes)
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
             if (property == null) throw new ArgumentNullException(nameof(property));
 
-            var propertyInfo = property.GetProperty();
-            var propertyName = propertyInfo.Name;
-            var blob = propertyInfo.GetValue(viewModel) as BlobViewModel ?? new BlobViewModel();
+            PropertyInfo = property.GetProperty();
+            Blob = PropertyInfo.GetValue(viewModel) as BlobViewModel ?? new BlobViewModel();
 
             var result = new HtmlContentBuilder();
 
-            string getId(string prop) => $"\"{propertyName}_{prop}\"";
-
-            string GetHiddenInput(Expression<Func<BlobViewModel, object>> expression)
-            {
-                var propName = expression.GetProperty().Name;
-                var id = getId(propName);
-                var func = expression.Compile();
-                return $@"<input type=""hidden"" id={id} name={id} class=""{propName}"" value=""{func(blob)}"" />";
-            }
-
             result.AppendHtmlLine($@"
                 <div class=""file-upload"">
-                    <span class=""current-file"" aria-label=""Preview the file""{" style=\"display:none\"".OnlyWhen(blob.IsEmpty)}>
-                        <a target=""_blank"" href=""{blob.Url?.HtmlEncode()}"">{blob.Filename.OrEmpty().HtmlEncode()}</a>
+                    <span class=""current-file"" aria-label=""Preview the file""{" style=\"display:none\"".OnlyWhen(Blob.IsEmpty)}>
+                        <a target=""_blank"" href=""{Blob.Url?.HtmlEncode()}"">{Blob.Filename.OrEmpty().HtmlEncode()}</a>
                     </span>
-                    <label for={getId("fileInput")} hidden>HiddenLabel</label>
-                    {html.TextBox(propertyName, "value".OnlyWhen(blob.HasValue), string.Empty, HiddenFieldSettings).GetString()}
-                    <input type=""file"" id={getId("fileInput")} name=""files"" {OliveMvcExtensions.ToHtmlAttributes(htmlAttributes)}/>
+                    <label for={GetId("fileInput")} hidden>HiddenLabel</label>
+                    {html.TextBox(PropertyInfo.Name, "value".OnlyWhen(Blob.HasValue), string.Empty, HiddenFieldSettings).GetString()}
+                    <input type=""file"" id={GetId("fileInput")} name=""files"" {GetHtmlAttributes(htmlAttributes)}/>
                     {GetHiddenInput(x => x.Action)}
                     {GetHiddenInput(x => x.TempFileId)}
                     {GetHiddenInput(x => x.Filename)}
@@ -58,6 +58,19 @@ namespace Olive.Mvc
             ");
 
             return result;
+        }
+
+        protected virtual string GetHtmlAttributes(object htmlAttributes) =>
+            OliveMvcExtensions.ToHtmlAttributes(htmlAttributes);
+
+        string GetId(string prop) => $"\"{PropertyInfo.Name}_{prop}\"";
+
+        string GetHiddenInput(Expression<Func<BlobViewModel, object>> expression)
+        {
+            var propName = expression.GetProperty().Name;
+            var id = GetId(propName);
+            var func = expression.Compile();
+            return $@"<input type=""hidden"" id={id} name={id} class=""{propName}"" value=""{func(Blob)}"" />";
         }
     }
 }

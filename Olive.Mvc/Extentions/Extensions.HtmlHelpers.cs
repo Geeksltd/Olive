@@ -75,12 +75,14 @@ namespace Olive.Mvc
 
         public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, IEnumerable<BlobViewModel>>> property, object htmlAttributes = null)
         {
-            return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
+            return Context.Current.GetService<IFileUploadMarkupGenerator>()
+                .Generate(@this, @this.ViewData.Model, property, htmlAttributes);
         }
 
         public static IHtmlContent FileUploadFor<TModel>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, BlobViewModel>> property, object htmlAttributes = null)
         {
-            return new DefaultFileUploadMarkupGenerator().Generate(@this, @this.ViewData.Model, property, htmlAttributes);
+            return Context.Current.GetService<IFileUploadMarkupGenerator>()
+                .Generate(@this, @this.ViewData.Model, property, htmlAttributes);
         }
 
         public static HtmlString CheckBoxesFor<TModel, TProperty>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, TProperty>> property, IEnumerable<SelectListItem> selectList, object htmlAttributes = null) =>

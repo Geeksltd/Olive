@@ -30,6 +30,7 @@
     * [Development Process for Docker-Based Apps](Microservices/DockerBasedApplications.md)
     * [Security in Microservices](Microservices/SecurityInMicroservices.md)
     * [Loading a typescript service module](Microservices/LoadTypescriptServiceFromController.md)
+    * [Use AWS S3 as the temp folder to upload files](Microservices/AwsS3TempBlobStorage.md)
  
 * Microservices in Olive
     * [Access Hub: Composite UI](Microservices/Overview.md)  

@@ -1,6 +1,44 @@
 
 # Olive compatibility change log
 
+## 12 May 2020
+In the `Model` project => `Project.cs` change the following part.
+
+From:
+```csharp
+AutoTask("Clean old temp uploads").Every(10, TimeUnit.Minute)
+    .Run("await Olive.Mvc.FileUploadService.DeleteTempFiles(olderThan: 1.Hours());");
+```
+
+To:
+```csharp
+AutoTask("Clean old temp uploads").Every(10, TimeUnit.Minute)
+    .Run(@"await Olive.Context.Current.GetService<Olive.Mvc.IFileRequestService>()
+    .DeleteTempFiles(olderThan: 1.Hours());");
+```
+Also, in the `SharedActionsController.cs` add a constructor like:
+```csharp
+    readonly IFileRequestService FileRequestService;
+
+    public SharedActionsController(IFileRequestService fileRequestService)
+    {
+        FileRequestService = fileRequestService;
+    }
+```
+And change `UploadTempFileToServer` to:
+```csharp
+    [HttpPost, Authorize, Route("upload")]
+    public async Task<IActionResult> UploadTempFileToServer(IFormFile[] files)
+    {
+        return Json(await FileRequestService.TempSaveUploadedFile(files[0]));
+    }
+```
+Also change `DownloadTempFile` to:
+```csharp
+    [Route("temp-file/{key}")]
+    public Task<ActionResult> DownloadTempFile(string key) => FileRequestService.Download(key);
+```
+
 ## 23 Apr 2020
 You can now specify the location where the temp uploaded files are stored. You need only one of the following settings.
 ```json

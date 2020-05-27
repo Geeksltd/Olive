@@ -33,6 +33,9 @@ namespace Olive.Email
                 From = CreateFrom(message)
             };
 
+            result.Headers
+                .Add(Constants.EMAIL_MESSAGE_ID_HEADER_KEY, message.GetId().ToString());
+
             GetEffectiveRecipients(message.To).Do(x => result.To.Add(x));
             GetEffectiveRecipients(message.Cc + Config.AutoAddCc.WithPrefix(",")).Do(x => result.CC.Add(x));
             GetEffectiveRecipients(message.Bcc + Config.AutoAddBcc.WithPrefix(",")).Do(x => result.Bcc.Add(x));

@@ -38,7 +38,11 @@ namespace Olive.Mvc
         }
 
         protected async Task<JsonResult> NonobstructiveFile(byte[] data, string filename)
-          => AddAction(await TempFileService.CreateDownloadAction(data, filename));
+        {
+            return AddAction(await Context.Current
+                .GetService<IFileRequestService>()
+                .CreateDownloadAction(data, filename));
+        }
 
         protected async Task<JsonResult> NonobstructiveFile(Blob file, string downloadFileName = null) =>
             await NonobstructiveFile(await file.GetFileDataAsync(), downloadFileName.Or(file.FileName));
