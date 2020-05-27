@@ -9,12 +9,12 @@ namespace Olive.Email
 {
     public abstract class BaseEmailFailureService : IEmailFailureService
     {
-        protected readonly ImapService ImapService;
+        protected readonly IImapService ImapService;
         protected readonly IDatabase Database;
         protected readonly ILogger Logger;
 
         public BaseEmailFailureService(
-            ImapService imapService,
+            IImapService imapService,
             IDatabase database,
             ILogger<BaseEmailFailureService> logger
             )
