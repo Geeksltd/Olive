@@ -70,7 +70,20 @@ namespace Olive.BlobAws
             }
         }
 
-        public Task<byte[]> LoadAsync(Blob document) => Load(GetKey(document));
+        public async Task<byte[]> LoadAsync(Blob document)
+        {
+            var key = GetKey(document);
+
+            try
+            {
+                return await Load(GetKey(document));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to load s3 document with {key} key");
+                throw;
+            }
+        }
 
         /// <summary>
         /// Deletes a document with the specified key name on the Amazon S3 server.
