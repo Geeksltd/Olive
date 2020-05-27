@@ -102,6 +102,9 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Email
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Email.Imap
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Blob.Aws
 if ERRORLEVEL 1 (goto error)
 
