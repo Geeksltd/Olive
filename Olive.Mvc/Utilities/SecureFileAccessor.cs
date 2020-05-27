@@ -45,9 +45,11 @@ namespace Olive.Mvc
 
             result.FindRequestedProperty();
 
-            await result.FindRequestedObject();
-
-            result.SecurityErrors = result.GetSecurityErrors();
+            if (result.NeedsSecureAccess())
+            {
+                await result.FindRequestedObject();
+                result.SecurityErrors = result.GetSecurityErrors();
+            }
 
             return result;
         }
@@ -82,7 +84,7 @@ namespace Olive.Mvc
             foreach (var key in new[] { ".", "/" })
                 if (idData.Contains(key)) idData = idData.Substring(0, idData.IndexOf(key));
 
-            Instance = await Database.GetOrDefault(idData, Type);
+                Instance = await Database.GetOrDefault(idData, Type);
 
             if (Instance == null) throw new Exception($"Invalid {Type.FullName} ID specified: '{idData}'");
 
@@ -96,8 +98,6 @@ namespace Olive.Mvc
 
         string GetSecurityErrors()
         {
-            if (!NeedsSecureAccess()) return null;
-
             var method = Type.GetMethod($"Is{Property}VisibleTo", BindingFlags.Public | BindingFlags.Instance);
 
             if (method == null)
