@@ -1,6 +1,29 @@
 
 # Olive compatibility change log
 
+## 28 May 2020
+In the `SharedActionsController.cs` add IFileAccessorFactory the constructor like:
+```csharp
+    readonly IFileRequestService FileRequestService;
+    readonly IFileAccessorFactory FileAccessorFactory;
+
+    public SharedActionsController(
+        IFileRequestService fileRequestService,
+        IFileAccessorFactory fileAccessorFactory
+    )
+    {
+        FileRequestService = fileRequestService;
+	FileAccessorFactory = fileAccessorFactory;
+    }
+```
+Also, apply the following change:
+```csharp
+	// Remove
+	var accessor = await FileAccessor.Create(path, User);
+	// Add
+	var accessor = await FileAccessorFactory.Create(path, User);
+```
+
 ## 12 May 2020
 In the `Model` project => `Project.cs` change the following part.
 
