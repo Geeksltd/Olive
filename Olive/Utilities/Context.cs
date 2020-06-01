@@ -11,26 +11,21 @@ namespace Olive
     public partial class Context
     {
         static Context current;
-        IServiceProvider serviceProvider;
-        public readonly IServiceCollection Services;
+
+        public IServiceProvider ServiceProvider { get; private set; }
 
         /// <summary>
         /// Occurs when the StartUp.OnInitializedAsync is completed.
         /// </summary>
         public static event AwaitableEventHandler StartedUp;
 
-        Context(IServiceCollection services) => Services = services;
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static Task OnStartedUp() => StartedUp.Raise();
 
         public static Context Current => current ?? throw new InvalidOperationException("Olive.Context is not initialized!");
 
-        public static void Initialize(IServiceCollection services) => current = new Context(services);
-
-        public IServiceProvider ServiceProvider => serviceProvider ?? (serviceProvider = Services.BuildServiceProvider());
-
-        public void RefreshServiceProvider() => serviceProvider = null;
+        public static Context Initialize(IServiceProvider provider) =>
+            current = new Context { ServiceProvider = provider };
 
         /// <summary>
         /// Gets a required service of the specified contract type.
@@ -48,11 +43,5 @@ namespace Olive
         }
 
         public IEnumerable<TService> GetServices<TService>() => ServiceProvider.GetServices<TService>();
-
-        public void AddService(Type serviceType, object serviceInstance)
-        {
-            Services.AddSingleton(serviceType, serviceInstance);
-            RefreshServiceProvider();
-        }
     }
 }

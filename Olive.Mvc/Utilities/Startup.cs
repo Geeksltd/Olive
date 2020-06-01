@@ -42,7 +42,6 @@ namespace Olive.Mvc
         {
             Configuration.MergeEnvironmentVariables();
             Services = services;
-            Context.Initialize(services);
             services.AddHttpContextAccessor();
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -93,9 +92,9 @@ namespace Olive.Mvc
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            Context.Current.RefreshServiceProvider();
             app.UseMiddleware<PerformanceMonitoringMiddleware>();
 
+            Context.Initialize(app.ApplicationServices);
             Context.Current.Database().ConfigDataAccess().Configure();
 
             if (Environment.IsDevelopment())
