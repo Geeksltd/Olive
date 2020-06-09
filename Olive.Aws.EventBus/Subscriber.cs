@@ -92,7 +92,7 @@ namespace Olive.Aws
                 }
             }
 
-            return messages.Count == Queue.MaxNumberOfMessages;
+            return messages.Count > 0;
         }
 
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
@@ -100,14 +100,8 @@ namespace Olive.Aws
             var queueIsEmpty = false;
             do
             {
-                try
-                {
-                    queueIsEmpty = (await Poll(waitTimeSeconds) == false);
-                }
-                catch (Exception exception)
-                {
-                    Log.For<Subscriber>().Error(exception);
-                }
+                try { queueIsEmpty = !await Poll(waitTimeSeconds); }
+                catch (Exception exception) { Log.For<Subscriber>().Error(exception); }
             }
             while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
         }
