@@ -1,3 +1,6 @@
+1. Set up the bucket
+https://aws.amazon.com/premiumsupport/knowledge-center/ses-receive-inbound-emails/
+
 In Startup.cs, kick start the fetching engine.
 
 using Olive.Aws.Ses.AutoFetch;
