@@ -108,13 +108,14 @@ namespace Olive.Aws
 
         public Task PullAll(Func<string, Task> handler) => new Subscriber(this, handler).PullAll();
 
-        public async Task<QueueMessageHandle> Pull(int timeoutSeconds = 10)
+        public async Task<IEnumerable<QueueMessageHandle>> Pull(int timeoutSeconds = 10, int? maxNumerOfMessages = null)
         {
+            var result = new List<QueueMessageHandle>();
             var request = new ReceiveMessageRequest
             {
                 QueueUrl = QueueUrl,
                 WaitTimeSeconds = timeoutSeconds,
-                MaxNumberOfMessages = MaxNumberOfMessages,
+                MaxNumberOfMessages = maxNumerOfMessages ?? MaxNumberOfMessages,
                 VisibilityTimeout = VisibilityTimeout,
             };
 
@@ -122,11 +123,13 @@ namespace Olive.Aws
             foreach (var item in response.Messages)
             {
                 var receipt = new DeleteMessageRequest { QueueUrl = QueueUrl, ReceiptHandle = item.ReceiptHandle };
-                return new QueueMessageHandle(item.Body, () => Client.DeleteMessageAsync(receipt));
+                result.Add(new QueueMessageHandle(item.Body, () => Client.DeleteMessageAsync(receipt)));
             }
 
-            return null;
+            return result;
         }
+
+        public Task<QueueMessageHandle> Pull(int timeoutSeconds = 10) => Pull(timeoutSeconds, 1).FirstOrDefault();
 
         public Task Purge()
         {
