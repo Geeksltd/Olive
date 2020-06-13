@@ -45,7 +45,7 @@ namespace Olive
             var item = await IOSubscriber.FetchOnce(Folder);
             if (item.Key == null) return null;
 
-            return new QueueMessageHandle(item.Value, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
+            return new QueueMessageHandle(item.Value, item.Key.Name, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
         }
 
         public Task Purge()

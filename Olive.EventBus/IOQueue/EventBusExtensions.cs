@@ -84,7 +84,7 @@ namespace Olive
             try
             {
                 var message = JsonConvert.DeserializeObject<TMessage>(item.RawMessage);
-                return new QueueMessageHandle<TMessage>(item.RawMessage, message, () => item.Complete());
+                return new QueueMessageHandle<TMessage>(item.RawMessage, item.MessageId, message, () => item.Complete());
             }
             catch (Exception ex)
             {
