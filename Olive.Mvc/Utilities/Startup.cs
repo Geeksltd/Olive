@@ -46,7 +46,7 @@ namespace Olive.Mvc
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.TryAddTransient<IFileAccessorFactory, FileAccessorFactory>();
-            services.AddDatabase();
+            services.AddDatabase(Configuration);
             services.AddHttpClient();
 
             ConfigureMvc(services.AddMvc());

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace Olive.Entities.Data
@@ -8,10 +9,13 @@ namespace Olive.Entities.Data
         public static bool IsCacheable(this Type type)
             => CacheObjectsAttribute.IsEnabled(type) ?? Database.Configuration.Cache.Enabled;
 
-        public static IServiceCollection AddDatabase(this IServiceCollection @this)
+        public static IServiceCollection AddDatabase(this IServiceCollection @this, IConfiguration config)
         {
             @this.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
-            @this.AddSingleton<ICache, Cache>();
+
+            if (config["Database:Cache:PerRequest"] == "True") @this.AddScoped<ICache, Cache>();
+            else @this.AddSingleton<ICache, Cache>();
+
             @this.AddSingleton<IDatabase, Database>();
 
             return @this;

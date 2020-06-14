@@ -27,10 +27,9 @@ namespace Olive.Entities.Data
 
         public static DatabaseConfig Configuration { get; private set; }
 
-        public Database(IConfiguration config, ICache cache, Audit.IAudit audit)
+        public Database(IConfiguration config, Audit.IAudit audit)
         {
             Config = config;
-            Cache = cache;
             Audit = audit;
         }
 
@@ -42,7 +41,7 @@ namespace Olive.Entities.Data
             foreach (var factoryInfo in Configuration.Providers.OrEmpty())
                 RegisterDataProviderFactory(factoryInfo);
         }
-        
+
         public void RegisterDataProviderFactory(DatabaseConfig.ProviderMapping factoryInfo)
         {
             if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));

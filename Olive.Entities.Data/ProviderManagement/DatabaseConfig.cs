@@ -15,6 +15,7 @@ namespace Olive.Entities.Data
         {
             public bool ConcurrencyAware { get; set; }
             public bool Enabled { get; set; }
+            public bool PerRequest { get; set; }
         }
 
         public class TransactionConfig
