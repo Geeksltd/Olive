@@ -95,7 +95,7 @@ namespace Olive.Mvc
         {
             app.UseMiddleware<PerformanceMonitoringMiddleware>();
 
-            Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<HttpContextAccessor>()?.HttpContext?.RequestServices);
+            Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices);
             Context.Current.GetService<IDatabaseProviderConfig>().Configure();
 
             if (Environment.IsDevelopment())
