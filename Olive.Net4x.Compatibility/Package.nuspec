@@ -7,7 +7,7 @@
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</iconUrl>
-    <copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</copyright>
+    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</copyright>
     <description>Prepares a legacy .NET 4.x application to use Olive.</description>
   </metadata>
   <files>

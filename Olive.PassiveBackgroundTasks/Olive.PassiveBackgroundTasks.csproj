@@ -8,7 +8,7 @@
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
-    <Copyright>Copyright ©2018 Geeks Ltd - All rights reserved.</Copyright>
+    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
     <AssemblyVersion>1.0.0.9</AssemblyVersion>
     <FileVersion>1.0.0.9</FileVersion>
