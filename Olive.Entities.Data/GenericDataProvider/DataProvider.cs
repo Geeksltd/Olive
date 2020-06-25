@@ -68,9 +68,9 @@ namespace Olive.Entities.Data
         /// </summary>
         public virtual Task Delete(IEntity record)
         {
-            if (MetaData.BaseClassesInOrder.Any())
-                return MetaData.BaseClassesInOrder.First().GetProvider(Cache, Access, SqlCommandGenerator).Delete(record);
+            var myBase = MetaData.BaseClassesInOrder.FirstOrDefault();
 
+            if (myBase != null) return For(myBase).Delete(record);
             return ExecuteNonQuery(DeleteCommand, CommandType.Text, Access.CreateParameter("Id", record.GetId()));
         }
 
@@ -102,7 +102,7 @@ namespace Olive.Entities.Data
                 var current = MetaData.DrivedClasses[index];
 
                 if (reader[GetSqlCommandColumnAlias(current, current.IdColumnName)] != DBNull.Value)
-                    return current.GetProvider(Cache, Access, SqlCommandGenerator).Parse(reader);
+                    return For(current).Parse(reader);
             }
 
             if (MetaData.Type.IsAbstract)
@@ -115,7 +115,7 @@ namespace Olive.Entities.Data
             FillData(reader, result);
 
             foreach (var parent in MetaData.BaseClassesInOrder)
-                parent.GetProvider(Cache, Access, SqlCommandGenerator).FillData(reader, result);
+                For(parent).FillData(reader, result);
 
             Entity.Services.SetOriginalId(result);
 
@@ -141,7 +141,7 @@ namespace Olive.Entities.Data
             async Task saveAll()
             {
                 foreach (var parent in MetaData.BaseClassesInOrder)
-                    await parent.GetProvider(Cache, Access, SqlCommandGenerator).Update(record);
+                    await For(parent).Update(record);
 
                 await UpdateSelf(record);
             }
@@ -174,7 +174,7 @@ namespace Olive.Entities.Data
             async Task saveAll()
             {
                 foreach (var parent in MetaData.BaseClassesInOrder)
-                    await parent.GetProvider(Cache, Access, SqlCommandGenerator).InsertSelf(record);
+                    await For(parent).InsertSelf(record);
 
                 await InsertSelf(record);
             }
@@ -272,7 +272,7 @@ namespace Olive.Entities.Data
             }
 
             foreach (var baseClass in MetaData.BaseClassesInOrder)
-                foreach (var pair in baseClass.GetProvider(Cache, Access, SqlCommandGenerator).SubqueryMapping)
+                foreach (var pair in For(baseClass).SubqueryMapping)
                 {
                     if (SubqueryMapping.ContainsKey(pair.Key) && SubqueryMapping[pair.Key] != pair.Value)
                         throw new Exception("Multiple subqueries needed with the same key.");
@@ -280,5 +280,7 @@ namespace Olive.Entities.Data
                     SubqueryMapping[pair.Key] = pair.Value;
                 }
         }
+
+        DataProvider For(IDataProviderMetaData meta) => DataProviderFactory.GetOrCreate(meta.Type, Cache, Access, SqlCommandGenerator);
     }
 }

@@ -21,19 +21,13 @@ namespace Olive.Entities.Data
 
         public bool IsUpdatedSince(IEntity instance, DateTime since)
         {
-            var type = instance.GetType();
-            if (!type.IsCacheable()) return false;
-
-            var cache = RowVersionCache.GetOrDefault(type);
+            var cache = RowVersionCache.GetOrDefault(instance.GetType());
             return cache?.GetOrDefault(instance.GetId().ToString()) > since.Ticks;
         }
 
         public void UpdateRowVersion(IEntity entity)
         {
-            var type = entity.GetType();
-            if (!type.IsCacheable()) return;
-
-            var cache = RowVersionCache.GetOrAdd(type, t => new ConcurrentDictionary<string, long>());
+            var cache = RowVersionCache.GetOrAdd(entity.GetType(), t => new ConcurrentDictionary<string, long>());
             cache[entity.GetId().ToString()] = DateTime.UtcNow.Ticks;
         }
     }

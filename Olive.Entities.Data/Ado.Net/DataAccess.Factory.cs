@@ -18,8 +18,8 @@
         // Registgers a data Data Access instance for a specified provider type.
         // </summary>
         public static void Register(
-            Type connectionType, 
-            ISqlCommandGenerator sqlCommandGenerator, 
+            Type connectionType,
+            ISqlCommandGenerator sqlCommandGenerator,
             IParameterFactory parameterFactory)
         {
             ConnectionTypes[connectionType.Name] = connectionType;
@@ -40,8 +40,9 @@
                 throw new Exception("No data provider is registered in StartUp for " + connectionType.Name);
 
             ParameterFactories.TryGetValue(connectionType, out var parameterFactory);
+            var config = Context.Current.GetService<IDatabaseProviderConfig>();
 
-            return (IDataAccess)Activator.CreateInstance(dataAccessType, generator, connectionString, parameterFactory);
+            return (IDataAccess)Activator.CreateInstance(dataAccessType, config, generator, connectionString, parameterFactory);
         }
 
         public static IDataAccess Create<TConnection>(string connectionString = null) where TConnection : IDbConnection

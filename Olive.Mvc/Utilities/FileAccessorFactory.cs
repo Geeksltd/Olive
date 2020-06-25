@@ -1,31 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Olive.Entities;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
-using System.Linq;
 using System.Threading.Tasks;
+using Olive.Entities;
+using Olive.Entities.Data;
 
 namespace Olive.Mvc
 {
     public class FileAccessorFactory : IFileAccessorFactory
     {
-        private readonly IDatabase Database;
+        IDatabaseProviderConfig ProviderConfig;
+        readonly IDatabase Database;
 
-        public FileAccessorFactory(IDatabase database) => Database = database;
+        public FileAccessorFactory(IDatabaseProviderConfig providerConfig, IDatabase database)
+        {
+            ProviderConfig = providerConfig;
+            Database = database;
+        }
 
         public async Task<FileAccessor> Create(string path, IPrincipal currentUser)
         {
             var temp = GetTypeAndProperty(path);
 
-            var result = new FileAccessor(
-                temp.Type,
-                temp.PropertyInfo,
-                temp.Id,
-                currentUser,
-                Database
-                );
+            var result = new FileAccessor(temp.Type, temp.PropertyInfo, temp.Id, currentUser, Database);
 
             await result.LoadBlob();
 
@@ -41,7 +39,7 @@ namespace Olive.Mvc
 
             var typeName = pathParts[0].Split('.')[0];
 
-            var type = Database.GetRegisteredAssemblies()
+            var type = ProviderConfig.GetRegisteredAssemblies()
                 .Select(a => a.GetExportedTypes().SingleOrDefault(t => t.Name == typeName))
                 .ExceptNull().FirstOrDefault();
 

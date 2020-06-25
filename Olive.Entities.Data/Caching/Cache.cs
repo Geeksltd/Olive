@@ -6,17 +6,25 @@ namespace Olive.Entities.Data
     public class Cache : ICache
     {
         readonly ICacheProvider CacheProvider;
-        public Cache(ICacheProvider provider) => CacheProvider = provider;
+        readonly IDatabaseProviderConfig ProviderConfig;
+
+        public Cache(ICacheProvider provider, IDatabaseProviderConfig providerConfig)
+        {
+            CacheProvider = provider;
+            ProviderConfig = providerConfig;
+        }
 
         public DateTime? GetQueryTimestamp()
-           => Database.Configuration.Cache.ConcurrencyAware ? DateTime.UtcNow : default(DateTime?);
+        {
+            return ProviderConfig.Configuration.Cache.ConcurrencyAware ? DateTime.UtcNow : default(DateTime?);
+        }
 
         /// <summary>
         /// Adds a given entity to the cache.
         /// </summary>
         public void Add(IEntity entity)
         {
-            if (entity.GetType().IsCacheable())
+            if (IsCacheable(entity.GetType()))
             {
                 CacheProvider.Add(entity);
                 RemoveList(entity.GetType());
@@ -30,7 +38,7 @@ namespace Olive.Entities.Data
         {
             entity.InvalidateCachedReferences();
 
-            if (entity.GetType().IsCacheable())
+            if (IsCacheable(entity.GetType()))
             {
                 RemoveList(entity.GetType());
                 CacheProvider.Remove(entity);
@@ -42,7 +50,7 @@ namespace Olive.Entities.Data
         /// </summary>
         public virtual void Remove(Type type, bool invalidateCachedReferences = false)
         {
-            if (!type.IsCacheable()) return;
+            if (!IsCacheable(type)) return;
 
             RemoveList(type);
 
@@ -54,7 +62,7 @@ namespace Olive.Entities.Data
 
         public virtual void RemoveList(Type type)
         {
-            if (!type.IsCacheable()) return;
+            if (!IsCacheable(type)) return;
 
             for (var parentType = type; parentType != typeof(Entity); parentType = parentType.BaseType)
                 CacheProvider.RemoveList(type);
@@ -62,7 +70,7 @@ namespace Olive.Entities.Data
 
         public virtual IEnumerable GetList(Type type)
         {
-            if (!type.IsCacheable()) return null;
+            if (!IsCacheable(type)) return null;
             return CacheProvider.GetList(type);
         }
 
@@ -70,12 +78,19 @@ namespace Olive.Entities.Data
 
         public void AddList(Type type, IEnumerable list)
         {
-            if (type.IsCacheable()) CacheProvider.AddList(type, list);
+            if (IsCacheable(type)) CacheProvider.AddList(type, list);
         }
 
-        public bool IsUpdatedSince(IEntity instance, DateTime since) => CacheProvider.IsUpdatedSince(instance, since);
+        public bool IsUpdatedSince(IEntity instance, DateTime since)
+        {
+            return IsCacheable(instance.GetType()) && CacheProvider.IsUpdatedSince(instance, since);
+        }
 
-        public void UpdateRowVersion(IEntity entity) => CacheProvider.UpdateRowVersion(entity);
+        public void UpdateRowVersion(IEntity entity)
+        {
+            if (IsCacheable(entity.GetType()))
+                CacheProvider.UpdateRowVersion(entity);
+        }
 
         public virtual TEntity Get<TEntity>(object id) where TEntity : IEntity
             => (TEntity)Get(typeof(TEntity), id.ToStringOrEmpty());
@@ -85,7 +100,7 @@ namespace Olive.Entities.Data
         /// </summary>
         public IEntity Get(Type type, string id)
         {
-            if (!type.IsCacheable()) return null;
+            if (!IsCacheable(type)) return null;
             var result = CacheProvider.Get(type, id);
             if (!(result is null)) return result;
 
@@ -97,5 +112,7 @@ namespace Olive.Entities.Data
 
             return null;
         }
+
+        bool IsCacheable(Type type) => CacheObjectsAttribute.IsEnabled(type) ?? ProviderConfig.Configuration.Cache.Enabled;
     }
 }

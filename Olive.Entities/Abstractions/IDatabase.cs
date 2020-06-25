@@ -7,8 +7,6 @@ namespace Olive.Entities
 {
     public interface IDatabase
     {
-        void Configure();
-
         event AwaitableEventHandler CacheRefreshed;
 
         /// <summary>
@@ -37,6 +35,8 @@ namespace Olive.Entities
         Task<bool> None<T>(Expression<Func<T, bool>> criteria) where T : IEntity;
 
         Task<int> Count<T>(Expression<Func<T, bool>> criteria) where T : IEntity;
+
+        ICache Cache { get; }
 
         #region Delete
 
@@ -93,17 +93,11 @@ namespace Olive.Entities
 
         #region ProviderManagement
 
-        Dictionary<System.Reflection.Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
-
-        IEnumerable<System.Reflection.Assembly> GetRegisteredAssemblies();
-
         IDataProvider GetProvider<T>() where T : IEntity;
 
         IDataProvider GetProvider(IEntity item);
 
         IDataProvider GetProvider(Type type);
-
-        IDataProvider GetProviderOrNull(Type type);
 
         IDataAccess GetAccess(Type type);
 
@@ -216,7 +210,5 @@ namespace Olive.Entities
         IDatabaseQuery<TEntity> Of<TEntity>() where TEntity : IEntity;
 
         IDatabaseQuery Of(Type type);
-
-        void RegisterDataProvider(Type entityType, IDataProvider dataProvider);
     }
 }

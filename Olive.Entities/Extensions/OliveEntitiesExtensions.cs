@@ -44,8 +44,6 @@ namespace Olive
 
         public static IDatabase Database(this Context @this) => @this.GetService<IDatabase>();
 
-        public static ICache Cache(this Context @this) => @this.GetService<ICache>();
-
         public static int? GetResultsToFetch(this IEnumerable<QueryOption> options) =>
           options.OfType<TakeTopQueryOption>().FirstOrDefault()?.Number;
 
@@ -54,7 +52,6 @@ namespace Olive
         /// </summary>
         public static DateTime GetSqlSafeValue(this DateTime value) =>
             value < SqlDateTime.MinValue.Value ? SqlDateTime.MinValue.Value : value;
-
 
         /// <summary>
         /// Executes the specified command text against the database connection of the context and builds an IDataReader.
@@ -133,7 +130,7 @@ namespace Olive
 
             var result = new List<T>();
 
-            if(asyncMapper == null) 
+            if (asyncMapper == null)
                 while (reader.Read())
                     result.Add(mapper(reader));
             else

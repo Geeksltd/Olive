@@ -95,7 +95,8 @@ namespace Olive.Mvc
             app.UseMiddleware<PerformanceMonitoringMiddleware>();
 
             Context.Initialize(app.ApplicationServices);
-            Context.Current.Database().ConfigDataAccess().Configure();
+
+            Context.Current.GetService<IDatabaseProviderConfig>().Configure();
 
             if (Environment.IsDevelopment())
                 app.UseMiddleware<DevCommandMiddleware>();

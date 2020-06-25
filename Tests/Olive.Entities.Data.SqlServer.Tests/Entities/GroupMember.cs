@@ -69,7 +69,7 @@
             base.InvalidateCachedReferences();
             
             new [] { GroupId, previousGroupId }.ExceptNull().Distinct()
-                .Select(id => Database.Cache().Get<Group>(id)).ExceptNull().Do(x => x.cachedGroupMembers = null);
+                .Select(id => Database.Cache.Get<Group>(id)).ExceptNull().Do(x => x.cachedGroupMembers = null);
         }
     }
 }

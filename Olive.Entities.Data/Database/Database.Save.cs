@@ -31,7 +31,7 @@ namespace Olive.Entities.Data
                 else using (await GetSyncLock(entity.GetType().FullName + entity.GetId()).Lock()) await save();
             };
 
-            if (Configuration.Transaction.EnforceForSave) await EnlistOrCreateTransaction(doSave);
+            if (ProviderConfig.Configuration.Transaction.EnforceForSave) await EnlistOrCreateTransaction(doSave);
             else await doSave();
         }
 

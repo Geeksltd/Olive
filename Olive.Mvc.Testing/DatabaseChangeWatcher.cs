@@ -104,7 +104,7 @@ namespace Olive.Mvc.Testing
                         await access.ExecuteNonQuery(command, commandType, dataParameters.ToArray());
                 }
 
-                Context.Current.GetService<ICache>().ClearAll();
+                Context.Current.Database().Cache.ClearAll();
             }
             catch (Exception ex)
             {

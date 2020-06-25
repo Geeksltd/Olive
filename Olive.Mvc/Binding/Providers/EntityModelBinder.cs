@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Olive.Entities;
+using Olive.Entities.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,11 +14,13 @@ namespace Olive.Mvc
     public partial class EntityModelBinder : IModelBinder
     {
         Type EntityType;
+        IDatabaseProviderConfig ProviderConfig;
 
         public EntityModelBinder(Type type)
         {
             EntityType = type;
             CustomBinder = FindCustomParser(EntityType);
+            ProviderConfig = Context.Current.GetService<IDatabaseProviderConfig>();
         }
 
         bool IsTransient => TransientEntityAttribute.IsTransient(EntityType);
@@ -82,7 +85,7 @@ namespace Olive.Mvc
 
         bool ShouldInitializeFromRequestValues()
         {
-            return IsTransient && CustomBinder == null && Database.GetProviderOrNull(EntityType) == null;
+            return IsTransient && CustomBinder == null && ProviderConfig.TryGetProvider(EntityType) == null;
         }
 
         public async Task BindModelAsync(ModelBindingContext bindingContext)

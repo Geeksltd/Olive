@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Olive.Entities.Data
 {
     public class DataProviderFactory : IDataProviderFactory
     {
+        static Dictionary<Type, DataProvider> ProviderCache = new Dictionary<Type, DataProvider>();
         readonly string ConnectionStringKey;
         readonly Type MappedType;
         readonly Assembly MappedAssembly;
@@ -46,7 +48,7 @@ namespace Olive.Entities.Data
 
         IDataProvider CreateProvider(Type type)
         {
-            return InternalDataProviderFactory.Get(type, Context.Current.Cache(), DataAccess, DataAccess.GetSqlCommandGenerator());
+            return GetOrCreate(type, Context.Current.Database().Cache, DataAccess, DataAccess.GetSqlCommandGenerator());
         }
 
         protected virtual bool IsRelevant(Type type)
@@ -59,5 +61,20 @@ namespace Olive.Entities.Data
         }
 
         public virtual bool SupportsPolymorphism() => true;
+
+        public static DataProvider GetOrCreate(Type type, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
+        {
+            lock (ProviderCache)
+            {
+                if (!ProviderCache.TryGetValue(type, out var result))
+                {
+                    result = new DataProvider(type, cache, access, sqlCommandGenerator);
+                    result.Prepare();
+                    ProviderCache.Add(type, result);
+                }
+
+                return result;
+            }
+        }
     }
 }
