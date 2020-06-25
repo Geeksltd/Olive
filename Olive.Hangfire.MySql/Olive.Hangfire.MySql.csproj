@@ -15,7 +15,15 @@
     <Description>Olive Framework</Description>
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
     <PackageVersion>2.1.100</PackageVersion>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.7.3" />
