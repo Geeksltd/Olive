@@ -12,7 +12,6 @@ namespace Olive.Console
     public abstract class Startup : IHostedService
     {
         public static string[] Args;
-
         public static IHostingEnvironment Environment { get; private set; }
         public static IConfiguration Configuration { get; private set; }
 
@@ -20,7 +19,11 @@ namespace Olive.Console
         {
             Configuration = config;
             Environment = Context.Current.GetService<IHostingEnvironment>();
-            ConfigureServices(Context.Current.Services);
+
+            ConfigureServices(Application.ServiceCollection);
+
+            Context.Initialize(Application.ServiceCollection.BuildServiceProvider(), null);
+
             Log.Init(Context.Current.GetService<ILoggerFactory>());
         }
 
@@ -31,7 +34,6 @@ namespace Olive.Console
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
-            Context.Current.RefreshServiceProvider();
             await Run();
             Process.GetCurrentProcess().Kill();
         }
