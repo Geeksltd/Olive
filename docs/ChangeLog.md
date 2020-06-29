@@ -1,6 +1,8 @@
 
 # Olive compatibility change log
 
+## 29 June 2020
+- Replace `modifiedObjectType.IsCacheable()` with `Database.Cache().IsCacheable(modifiedObjectType)`
 
 ## 26 June 2020
 We now support 3 database caching modes:
