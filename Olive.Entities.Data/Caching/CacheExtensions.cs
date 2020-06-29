@@ -11,7 +11,7 @@ namespace Olive.Entities.Data
             @this.AddTransient<ICacheProvider, InMemoryCacheProvider>();
             @this.AddTransient<ICache, Cache>();
 
-            if (config["Database:Cache:PerRequest"] == "True") @this.AddScoped<IDatabase, Database>();
+            if (config["Database:Cache:Mode"] == "multi-server") @this.AddScoped<IDatabase, Database>();
             else @this.AddSingleton<IDatabase, Database>();
 
             return @this;
