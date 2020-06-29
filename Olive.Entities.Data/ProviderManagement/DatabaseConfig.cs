@@ -16,6 +16,26 @@ namespace Olive.Entities.Data
             public bool ConcurrencyAware { get; set; }
             public bool Enabled { get; set; }
             public bool PerRequest { get; set; }
+
+            public string Mode
+            {
+                get
+                {
+                    if (!Enabled) return "off";
+                    if (PerRequest) return "multi-server";
+                    return "single-server";
+                }
+                set
+                {
+                    switch (value.ToLowerOrEmpty())
+                    {
+                        case "off": Enabled = false; break;
+                        case "single-server": Enabled = true; PerRequest = false; break;
+                        case "multi-server": Enabled = true; PerRequest = true; break;
+                        default: throw new NotSupportedException(value + " is not a supported value for Cache mode.");
+                    }
+                }
+            }
         }
 
         public class TransactionConfig
