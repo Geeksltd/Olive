@@ -37,7 +37,7 @@ namespace Olive.Entities.Data
         {
             if (@this.BaseClassesInOrder.HasAny())
                 return @this.UserDefienedProperties
-                    .Concat(@this.Properties.First(p => p.IsDeleted));
+                    .Concat(@this.Properties.Where(p => p.IsDeleted));
 
             return @this.UserDefienedAndIdAndDeletedProperties;
         }
