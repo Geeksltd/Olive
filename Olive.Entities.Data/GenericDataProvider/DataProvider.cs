@@ -214,7 +214,7 @@ namespace Olive.Entities.Data
             GetSqlCommandColumnAlias(medaData, property.Name);
 
         string GetSqlCommandColumnAlias(IDataProviderMetaData medaData, string propertyName) =>
-            $"{medaData.TableName}_{propertyName}";
+            $"{medaData.TableName}_{propertyName.Remove(".")}";
 
         void PrepareTableTemplate() => TablesTemplate = MetaData.GetTableTemplate(SqlCommandGenerator);
 
@@ -223,14 +223,14 @@ namespace Olive.Entities.Data
             Fields = "";
 
             foreach (var parent in MetaData.BaseClassesInOrder)
-                foreach (var prop in parent.UserDefienedAndIdProperties)
+                foreach (var prop in parent.UserDefienedAndIdAndDeletedProperties)
                     Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}, ";
 
-            foreach (var prop in MetaData.UserDefienedAndIdProperties)
+            foreach (var prop in MetaData.UserDefienedAndIdAndDeletedProperties)
                 Fields += $"{GetSqlCommandColumn(MetaData, prop)} as {GetSqlCommandColumnAlias(MetaData, prop)}, ";
 
             foreach (var parent in MetaData.DrivedClasses)
-                foreach (var prop in parent.UserDefienedAndIdProperties)
+                foreach (var prop in parent.UserDefienedAndIdAndDeletedProperties)
                     Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}, ";
 
             Fields = Fields.TrimEnd(2);

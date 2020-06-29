@@ -36,17 +36,15 @@ namespace Olive.Entities.Data
         public static IEnumerable<IPropertyData> GetPropertiesForFillData(this IDataProviderMetaData @this)
         {
             if (@this.BaseClassesInOrder.HasAny())
-                return @this.UserDefienedProperties;
+                return @this.UserDefienedProperties
+                    .Concat(@this.Properties.First(p => p.IsDeleted));
 
-            return @this.UserDefienedAndIdProperties;
+            return @this.UserDefienedAndIdAndDeletedProperties;
         }
 
         public static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this)
         {
-            var result = @this.UserDefienedAndIdProperties.Except(p => p.IsAutoNumber);
-
-            if (@this.IsSoftDeleteEnabled)
-                return result.Concat(@this.Properties.First(p => p.IsDeleted));
+            var result = @this.UserDefienedAndIdAndDeletedProperties.Except(p => p.IsAutoNumber);
 
             return result;
         }

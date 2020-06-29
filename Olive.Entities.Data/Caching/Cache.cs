@@ -113,6 +113,6 @@ namespace Olive.Entities.Data
             return null;
         }
 
-        bool IsCacheable(Type type) => CacheObjectsAttribute.IsEnabled(type) ?? ProviderConfig.Configuration.Cache.Enabled;
+        public bool IsCacheable(Type type) => CacheObjectsAttribute.IsEnabled(type) ?? ProviderConfig.Configuration.Cache.Enabled;
     }
 }
