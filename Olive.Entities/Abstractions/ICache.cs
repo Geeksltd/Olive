@@ -17,5 +17,6 @@ namespace Olive.Entities
         TEntity Get<TEntity>(object id) where TEntity : IEntity;
         IEntity Get(Type type, string id);
         DateTime? GetQueryTimestamp();
+        bool IsCacheable(Type type);
     }
 }

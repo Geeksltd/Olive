@@ -11,7 +11,8 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class Database : IDatabase
     {
-        readonly ICache Cache;
+       public ICache Cache { get; private set; }
+
         /// <summary>
         /// Initialize instance of Database by injecting ICache dependency
         /// </summary>

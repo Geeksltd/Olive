@@ -1,6 +1,37 @@
 
 # Olive compatibility change log
 
+## 29 June 2020
+- Replace `modifiedObjectType.IsCacheable()` with `Database.Cache().IsCacheable(modifiedObjectType)`
+
+## 26 June 2020
+We now support 3 database caching modes:
+- `off` means disabled
+- `single-server` is equivalent to the traditional enabled cache where everything is cached in memory statically, ideal for *vertical scaling*.
+- `multi-server` is a new mode where data is cached in the scope of *each http request*. 
+
+**Use the new mode instead of a disabled cache, for a significant performance boost in horizontally scaled applications.**
+
+In `appSettings.json` change the cache setting from:
+```json
+  "Database": {
+        ...
+        "Cache": {
+            "Enabled": true,
+            ...
+        },
+```
+to the following:
+```json
+  "Database": {
+        ...
+        "Cache": {
+            "Mode": "single-server",
+            ...
+        },
+```
+
+
 ## 28 May 2020
 In the `SharedActionsController.cs` add IFileAccessorFactory the constructor like:
 ```csharp

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -46,7 +47,7 @@ namespace Olive.Mvc
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.TryAddTransient<IFileAccessorFactory, FileAccessorFactory>();
-            services.AddDatabase();
+            services.AddDatabase(Configuration);
             services.AddHttpClient();
 
             ConfigureMvc(services.AddMvc());
@@ -94,8 +95,8 @@ namespace Olive.Mvc
         {
             app.UseMiddleware<PerformanceMonitoringMiddleware>();
 
-            Context.Initialize(app.ApplicationServices);
-            Context.Current.Database().ConfigDataAccess().Configure();
+            Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices);
+            Context.Current.GetService<IDatabaseProviderConfig>().Configure();
 
             if (Environment.IsDevelopment())
                 app.UseMiddleware<DevCommandMiddleware>();

@@ -7,7 +7,7 @@ namespace Olive.Entities
     {
         IPropertyData[] Properties { get; }
         IEnumerable<IPropertyData> UserDefienedProperties { get; }
-        IEnumerable<IPropertyData> UserDefienedAndIdProperties { get; }
+        IEnumerable<IPropertyData> UserDefienedAndIdAndDeletedProperties { get; }
         IEnumerable<IPropertyData> UserDefienedAndDeletedProperties { get; }
         bool IsSoftDeleteEnabled { get; }
         string IdColumnName { get; }

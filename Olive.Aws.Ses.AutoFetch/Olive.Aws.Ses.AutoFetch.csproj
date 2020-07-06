@@ -23,9 +23,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
     <PackageReference Include="MimeKit" Version="2.6.0" />
-    <PackageReference Include="Olive.Audit" Version="2.1.103" />
-    <PackageReference Include="Olive.Entities" Version="2.1.140" />
-    <PackageReference Include="Olive.Entities.Data" Version="2.1.151" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.txt" pack="true" PackagePath="." />
@@ -33,6 +30,9 @@
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Audit">
+      <HintPath>..\bin\netstandard2.0\Olive.Audit.dll</HintPath>
     </Reference>
     <Reference Include="Olive.Entities">
       <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
@@ -42,6 +42,9 @@
     </Reference>
     <Reference Include="Olive.Email">
       <HintPath>..\bin\netcoreapp2.1\Olive.Email.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Entities.Data">
+      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

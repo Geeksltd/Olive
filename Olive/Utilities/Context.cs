@@ -10,9 +10,12 @@ namespace Olive
 {
     public partial class Context
     {
-        static Context current;
+        static Context current = new Context();
+        internal static Func<Context> ContextProvider = () => new Context();
 
-        public IServiceProvider ServiceProvider { get; private set; }
+        IServiceProvider ApplicationServices;
+        Func<IServiceProvider> ScopeServiceProvider;
+        public IServiceProvider ServiceProvider => ScopeServiceProvider?.Invoke() ?? ApplicationServices;
 
         /// <summary>
         /// Occurs when the StartUp.OnInitializedAsync is completed.
@@ -24,8 +27,14 @@ namespace Olive
 
         public static Context Current => current ?? throw new InvalidOperationException("Olive.Context is not initialized!");
 
-        public static Context Initialize(IServiceProvider provider) =>
-            current = new Context { ServiceProvider = provider };
+        public static Context Initialize(IServiceProvider applicationServices, Func<IServiceProvider> scopeServiceProvider)
+        {
+            return current = new Context
+            {
+                ApplicationServices = applicationServices,
+                ScopeServiceProvider = scopeServiceProvider
+            };
+        }
 
         /// <summary>
         /// Gets a required service of the specified contract type.

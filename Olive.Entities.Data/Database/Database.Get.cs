@@ -154,7 +154,7 @@ namespace Olive.Entities.Data
 
             if (NeedsTypeResolution(objectType))
             {
-                foreach (var provider in ResolveDataProviders(objectType))
+                foreach (var provider in ProviderConfig.ResolveDataProviders(objectType))
                 {
                     try
                     {

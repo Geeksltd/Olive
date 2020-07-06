@@ -8,7 +8,6 @@
     partial class Database
     {
         public IDatabaseQuery Of(Type type) => new DatabaseQuery(type);
-
         public IDatabaseQuery<TEntity> Of<TEntity>() where TEntity : IEntity => new DatabaseQuery<TEntity>();
     }
 
@@ -35,7 +34,7 @@
 
             EntityType = entityType;
             Provider = Context.Current.Database().GetProvider(entityType);
-            Cache = Context.Current.GetService<ICache>();
+            Cache = Context.Current.Database().Cache;
         }
 
         public string Column(string propertyName, string alias = null)

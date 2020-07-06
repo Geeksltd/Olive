@@ -13,6 +13,8 @@ namespace Olive.Console
     /// </summary>
     public static class Application
     {
+        internal static IServiceCollection ServiceCollection;
+
         public static Task Start<TStartup>(string[] args, Action<HostBuilder> configure = null) where TStartup : Startup
         {
             Startup.Args = args;
@@ -29,9 +31,8 @@ namespace Olive.Console
 
             host.ConfigureServices((hostContext, services) =>
             {
+                ServiceCollection = services;
                 services.AddOptions();
-
-                Context.Initialize(services);
                 services.AddHostedService<TStartup>();
             });
 

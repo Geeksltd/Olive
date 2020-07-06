@@ -8,7 +8,7 @@ namespace Olive.Entities.Data
 {
     public class DataAccessOptions
     {
-        internal static List<(Type ConnectionType, ISqlCommandGenerator SqlCommandGenerator, IParameterFactory ParameterFactory)> 
+        internal static List<(Type ConnectionType, ISqlCommandGenerator SqlCommandGenerator, IParameterFactory ParameterFactory)>
             Providers = new List<(Type, ISqlCommandGenerator, IParameterFactory)>();
 
         public DataAccessOptions Add<TConnection, TSqlCommandGenerator>(IParameterFactory parameterFactory = null)
@@ -16,7 +16,6 @@ namespace Olive.Entities.Data
            where TSqlCommandGenerator : ISqlCommandGenerator, new()
         {
             Providers.Add((typeof(TConnection), new TSqlCommandGenerator(), parameterFactory));
-
             return this;
         }
     }
@@ -31,15 +30,6 @@ namespace Olive.Entities.Data
             return @this;
         }
 
-        public static IDatabase ConfigDataAccess(this IDatabase @this)
-        {
-            foreach (var item in DataAccessOptions.Providers)
-                DataAccess.Register(
-                    item.ConnectionType, 
-                    item.SqlCommandGenerator, 
-                    item.ParameterFactory);
-
-            return @this;
-        }
+        public static ICache Cache(this IDatabase database) => database.Cache;
     }
 }

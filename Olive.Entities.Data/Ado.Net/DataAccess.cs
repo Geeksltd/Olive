@@ -30,10 +30,12 @@ namespace Olive.Entities.Data
         where TConnection : DbConnection, new()
     {
         readonly IParameterFactory ParameterFactory;
+        readonly IDatabaseProviderConfig ProviderConfig;
         readonly ISqlCommandGenerator SqlCommandGenerator;
         readonly string ConnectionString;
 
         public DataAccess(
+            IDatabaseProviderConfig providerConfig,
             ISqlCommandGenerator sqlCommandGenerator,
             string connectionString = null,
             IParameterFactory parameterFactory = null)
@@ -41,6 +43,7 @@ namespace Olive.Entities.Data
             ConnectionString = connectionString;
             SqlCommandGenerator = sqlCommandGenerator;
             ParameterFactory = parameterFactory ?? new DefaultParameterFactory<TConnection>();
+            ProviderConfig = providerConfig;
         }
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace Olive.Entities.Data
 
         DataAccessProfiler.Watch StartWatch(string command)
         {
-            if (Database.Configuration?.Profile == true)
+            if (ProviderConfig.Configuration?.Profile == true)
                 return DataAccessProfiler.Start(command);
             else return null;
         }

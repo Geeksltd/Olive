@@ -24,12 +24,7 @@ namespace Olive.Mvc
         /// <summary>
         /// Use create method to instantiate the class.
         /// </summary>
-        public FileAccessor(
-            Type type, 
-            PropertyInfo propertyInfo,
-            string id, 
-            IPrincipal user, 
-            IDatabase database)
+        public FileAccessor(Type type, PropertyInfo propertyInfo, string id, IPrincipal user, IDatabase database)
         {
             Type = type;
             PropertyInfo = propertyInfo;
@@ -53,7 +48,7 @@ namespace Olive.Mvc
             foreach (var key in new[] { ".", "/" })
                 if (Id.Contains(key)) Id = Id.Substring(0, Id.IndexOf(key));
 
-                Instance = await Database.GetOrDefault(Id, Type);
+            Instance = await Database.GetOrDefault(Id, Type);
 
             if (Instance == null) throw new Exception($"Invalid {Type.FullName} ID specified: '{Id}'");
 

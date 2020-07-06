@@ -38,13 +38,12 @@ namespace Olive.Aws.Ses.AutoFetch.TestConsole
 
             services.AddDataAccess(x => x.SqlServer());
             services.AddDatabase();
-            //services.AddDevCommands(configuration, x => x.AddTempDatabase<SqlServerManager, ReferenceData>().AddClearApiCache());
             services.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
             services.AddSingleton<ICache, Cache>();
             services.AddSingleton<IAudit, Olive.Audit.DefaultAudit>();
             services.AddSingleton<IDatabase, Database>();
-            Olive.Context.Initialize(services);
-            Olive.Context.Current.Set(services.BuildServiceProvider());
+            Context.Initialize(services);
+            Context.Current.Set(services.BuildServiceProvider());
             var database = Context.Current.GetService<IDatabase>();
             database.ConfigDataAccess();
             database.Configure();

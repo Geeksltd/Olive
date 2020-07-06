@@ -1,96 +1,27 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Common;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Transactions;
 
 namespace Olive.Entities.Data
 {
     partial class Database
     {
-        object DataProviderSyncLock = new object();
-
         [Obsolete("Use Context.Current.Database() instead.", error: true)]
         public static IDatabase Instance => Context.Current.Database();
-        readonly IConfiguration Config;
+
         readonly Audit.IAudit Audit;
+        readonly IDatabaseProviderConfig ProviderConfig;
 
-        public Dictionary<Assembly, IDataProviderFactory> AssemblyProviderFactories { get; }
-            = new Dictionary<Assembly, IDataProviderFactory>();
-
-        public Dictionary<Type, IDataProvider> TypeProviders { get; } = new Dictionary<Type, IDataProvider>();
-
-        Dictionary<Type, IDataProviderFactory> TypeProviderFactories = new Dictionary<Type, IDataProviderFactory>();
-
-        public static DatabaseConfig Configuration { get; private set; }
-
-        public Database(IConfiguration config, ICache cache, Audit.IAudit audit)
+        public Database(Audit.IAudit audit, IDatabaseProviderConfig providerConfig, ICache cache)
         {
-            Config = config;
-            Cache = cache;
             Audit = audit;
+            ProviderConfig = providerConfig;
+            Cache = cache;
         }
 
-        public void Configure()
-        {
-            if (Configuration == null)
-                Config.Bind("Database", Configuration = new DatabaseConfig());
+        public IDataProvider GetProvider(Type type) => ProviderConfig.GetProvider(type);
 
-            foreach (var factoryInfo in Configuration.Providers.OrEmpty())
-                RegisterDataProviderFactory(factoryInfo);
-        }
-        
-        public void RegisterDataProviderFactory(DatabaseConfig.ProviderMapping factoryInfo)
-        {
-            if (factoryInfo == null) throw new ArgumentNullException(nameof(factoryInfo));
-
-            lock (DataProviderSyncLock)
-            {
-                var type = factoryInfo.GetMappedType();
-                var assembly = factoryInfo.GetAssembly();
-
-                // var providerFactoryType = Type.GetType(factoryInfo.ProviderFactoryType); HAS A PROIBLEM WITH VERSIONING
-                var providerFactoryType = assembly.GetTypes().FirstOrDefault(t => t.AssemblyQualifiedName == factoryInfo.ProviderFactoryType);
-                if (providerFactoryType == null) providerFactoryType = assembly.GetType(factoryInfo.ProviderFactoryType);
-                if (providerFactoryType == null) providerFactoryType = Type.GetType(factoryInfo.ProviderFactoryType);
-
-                if (providerFactoryType == null)
-                    throw new Exception("Could not find the type " + factoryInfo.ProviderFactoryType + " as specified in configuration.");
-
-                var providerFactory = (IDataProviderFactory)Activator.CreateInstance(providerFactoryType, factoryInfo);
-
-                if (type != null)
-                {
-                    TypeProviderFactories[type] = providerFactory;
-                }
-                else if (assembly != null && providerFactory != null)
-                {
-                    AssemblyProviderFactories[assembly] = providerFactory;
-                }
-
-                EntityFinder.ResetCache();
-            }
-        }
-
-        public void RegisterDataProvider(Type entityType, IDataProvider dataProvider)
-        {
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
-            if (dataProvider == null) throw new ArgumentNullException(nameof(dataProvider));
-
-            lock (TypeProviders)
-                TypeProviders[entityType] = dataProvider;
-        }
-
-        /// <summary>
-        /// Gets the assemblies for which a data provider factory has been registered in the current domain.
-        /// </summary>
-        public IEnumerable<Assembly> GetRegisteredAssemblies()
-        {
-            return TypeProviderFactories.Keys.Select(t => t.GetTypeInfo().Assembly).Concat(AssemblyProviderFactories.Keys).Distinct().ToArray();
-        }
+        public IDataProvider GetProvider(IEntity item) => GetProvider(item.GetType());
 
         public IDataProvider GetProvider<T>() where T : IEntity => GetProvider(typeof(T));
 
@@ -103,64 +34,8 @@ namespace Olive.Entities.Data
             return DataAccess.Create<TConnection>(connectionString);
         }
 
-        public IDataAccess GetAccess(string connectionString = null)
-        {
-            if (connectionString.IsEmpty()) connectionString = DataAccess.GetCurrentConnectionString();
+        public IDataAccess GetAccess(string connectionString = null) => ProviderConfig.GetAccess(connectionString);
 
-            var factory = TypeProviderFactories.Values.Concat(AssemblyProviderFactories.Values)
-                .FirstOrDefault(x => x.ConnectionString == connectionString);
-
-            if (factory != null) return factory.GetAccess();
-
-            if (connectionString.ToLowerOrEmpty() == DataAccess.GetCurrentConnectionString().ToLowerOrEmpty())
-                return DataAccess.Create();
-
-            throw new Exception("No data provider factory's connection string matched the specified connection string.");
-        }
-
-        public IDataProvider GetProvider(IEntity item) => GetProvider(item.GetType());
-
-        IDataProviderFactory GetProviderFactory(Type type)
-        {
-            if (TypeProviderFactories.TryGetValue(type, out var factory)) return factory;
-
-            if (AssemblyProviderFactories.TryGetValue(type.Assembly, out var result)) return result;
-
-            if (!type.IsInterface)
-                return new DataProviderFactory(type);
-
-            return null;
-        }
-
-        public IDataProvider GetProvider(Type type)
-        {
-            return GetProviderOrNull(type)
-                ?? throw new InvalidOperationException("There is no registered 'data provider' for the assembly: " +
-                    type.GetTypeInfo().Assembly.FullName);
-        }
-
-        public IDataProvider GetProviderOrNull(Type type)
-        {
-            if (TypeProviders.TryGetValue(type, out var result))
-                return result;
-
-            var factory = GetProviderFactory(type);
-            if (factory != null)
-                lock (TypeProviders)
-                {
-                    try
-                    {
-                        return TypeProviders[type] = factory.GetProvider(type);
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
-
-            if (type.IsInterface) return new InterfaceDataProvider(type);
-            else return null;
-        }
 
         /// <summary>
         /// Creates a transaction scope.
@@ -169,7 +44,7 @@ namespace Olive.Entities.Data
         {
             var isolationLevel = DbTransactionScope.GetDefaultIsolationLevel();
 
-            var typeName = Configuration.Transaction.Type;
+            var typeName = ProviderConfig.Configuration.Transaction.Type;
 
             if (typeName.HasValue())
             {
@@ -188,21 +63,6 @@ namespace Olive.Entities.Data
             // Fall back to TransactionScope:
             var oldOption = option.ToString().To<TransactionScopeOption>();
             return new TransactionScopeWrapper(isolationLevel.ToString().To<IsolationLevel>().CreateScope(oldOption));
-        }
-
-        List<IDataProvider> ResolveDataProviders(Type baseType)
-        {
-            var factories = AssemblyProviderFactories.Where(f => f.Value.SupportsPolymorphism() && f.Key.References(baseType.GetTypeInfo().Assembly)).ToList();
-
-            var result = new List<IDataProvider>();
-
-            foreach (var f in factories)
-                result.Add(f.Value.GetProvider(baseType));
-
-            foreach (var type in EntityFinder.FindPossibleTypes(baseType, mustFind: factories.None()))
-                result.Add(GetProvider(type));
-
-            return result;
         }
     }
 }

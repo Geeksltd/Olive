@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,18 +5,6 @@ namespace Olive.Entities.Data
 {
     public static class DataProviderExtensions
     {
-        public static DataProvider GetProvider(
-                this IDataProviderMetaData @this, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
-        {
-            return GetProvider(@this.Type, cache, access, sqlCommandGenerator);
-        }
-
-        public static DataProvider GetProvider(
-                this Type @this, ICache cache, IDataAccess access, ISqlCommandGenerator sqlCommandGenerator)
-        {
-            return InternalDataProviderFactory.Get(@this, cache, access, sqlCommandGenerator);
-        }
-
         public static string GetTableTemplate(this IDataProviderMetaData @this, ISqlCommandGenerator sqlCommandGenerator)
         {
             var result = "";
@@ -49,20 +36,17 @@ namespace Olive.Entities.Data
         public static IEnumerable<IPropertyData> GetPropertiesForFillData(this IDataProviderMetaData @this)
         {
             if (@this.BaseClassesInOrder.HasAny())
-                return @this.UserDefienedProperties;
+                return @this.UserDefienedProperties
+                    .Concat(@this.Properties.Where(p => p.IsDeleted));
 
-            return @this.UserDefienedAndIdProperties;
+            return @this.UserDefienedAndIdAndDeletedProperties;
         }
 
         public static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this)
         {
-            var result = @this.UserDefienedAndIdProperties.Except(p => p.IsAutoNumber);
-
-            if (@this.IsSoftDeleteEnabled)
-                return result.Concat(@this.Properties.First(p => p.IsDeleted));
+            var result = @this.UserDefienedAndIdAndDeletedProperties.Except(p => p.IsAutoNumber);
 
             return result;
         }
-
     }
 }
