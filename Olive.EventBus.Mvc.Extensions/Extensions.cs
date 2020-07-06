@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using System;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -33,7 +35,7 @@ namespace Olive.Entities.Replication
 
             endpoint.Publish(false);
 
-            void Register(string key, Func<Task> handler)
+            void Register(string key, Func<HttpContext, Task> handler)
             {
                 var action = "/olive/entities/replication/dump/" + endpoint.GetType().FullName.Replace(".", "-") + "/" + key.Replace(".", "-");
 
@@ -41,25 +43,37 @@ namespace Olive.Entities.Replication
                 {
                     var start = LocalTime.Now;
                     Log.For<TSourceEndpoint>().Info("Pulling refresh messages ...");
-                    await handler();
+                    await handler(context);
                     Log.For<TSourceEndpoint>().Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
-
-                    await next();
                 }));
             }
 
             Log.For<TSourceEndpoint>().Info("Registering refresh messages for All ...");
-            Register("All", endpoint.UploadAll);
+            Register("All", async context =>
+            {
+                await endpoint.UploadAll();
+                context.WriteLine("All done!");
+            });
             Log.For<TSourceEndpoint>().Info("Registered refresh messages for All ...");
 
             endpoint.ExposedTypes.Do(t =>
             {
                 Log.For<TSourceEndpoint>().Info($"Registering refresh messages for {t} ...");
-                Register(t, () => endpoint.UploadAll(t));
+                Register(t, async context =>
+                 {
+                     await endpoint.UploadAll(t);
+                     context.WriteLine("All done!");
+                 });
                 Log.For<TSourceEndpoint>().Info($"Registered refresh messages for {t} ...");
             });
 
             return app;
+        }
+
+        static void WriteLine(this HttpContext context, string text)
+        {
+            using (var writer = new StreamWriter(context.Response.Body))
+                writer.Write(text);
         }
     }
 }
