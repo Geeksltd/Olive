@@ -232,7 +232,7 @@ namespace Olive.Entities.Replication
             try { result = await ToMessage(item); }
             catch (Exception ex)
             {
-                Log.For(this).Error(ex, $"Failed to create an event bus message for {item.GetType().FullName} with ID of {item.GetId()}");
+                Log.For(this).Error(ex, $"Failed to create an event bus message for {item.GetType().FullName} with ID of {item.GetId()} becauase : " + ex.ToFullMessage());
             }
 
             return result;

@@ -6,9 +6,9 @@
     <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.Replication.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Entities.Data.Replication</PackageId>
-    <PackageVersion>2.1.146</PackageVersion>
-    <AssemblyVersion>2.1.146</AssemblyVersion>
-    <FileVersion>2.1.146</FileVersion>
+    <PackageVersion>2.1.147</PackageVersion>
+    <AssemblyVersion>2.1.147</AssemblyVersion>
+    <FileVersion>2.1.147</FileVersion>
     <Title>Olive Entities Data Replication</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
