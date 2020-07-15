@@ -31,6 +31,12 @@ namespace Olive.Entities.Replication
         static List<string> ExposedEndpoints = new List<string>();
         static bool RegisteredExposedEndpionts;
         const string EXPOSED_ENDPOINTS_ACTION_PREFIX = "/olive/entities/replication/dump/";
+        /// <summary>
+        /// Registers an endpoint. To view all registered endpoints you can call /olive/entities/replication/dump/all
+        /// </summary>
+        /// <typeparam name="TSourceEndpoint"></typeparam>
+        /// <param name="app"></param>
+        /// <returns></returns>
         public static IApplicationBuilder RegisterPublisher<TSourceEndpoint>(this IApplicationBuilder app)
         where TSourceEndpoint : SourceEndpoint, new()
         {

@@ -10,9 +10,9 @@
     <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <AssemblyVersion>1.0.8</AssemblyVersion>
-    <FileVersion>1.0.8</FileVersion>
-    <PackageVersion>1.0.8</PackageVersion>
+    <AssemblyVersion>1.0.9</AssemblyVersion>
+    <FileVersion>1.0.9</FileVersion>
+    <PackageVersion>1.0.9</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
