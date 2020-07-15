@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -27,7 +28,9 @@ namespace Olive.Entities.Replication
 
             return app;
         }
-
+        static List<string> ExposedEndpoints = new List<string>();
+        static bool RegisteredExposedEndpionts;
+        const string EXPOSED_ENDPOINTS_ACTION_PREFIX = "/olive/entities/replication/dump/";
         public static IApplicationBuilder RegisterPublisher<TSourceEndpoint>(this IApplicationBuilder app)
         where TSourceEndpoint : SourceEndpoint, new()
         {
@@ -37,8 +40,8 @@ namespace Olive.Entities.Replication
 
             void Register(string key, Func<HttpContext, Task> handler)
             {
-                var action = "/olive/entities/replication/dump/" + endpoint.GetType().FullName.Replace(".", "-") + "/" + key.Replace(".", "-");
-
+                var action = EXPOSED_ENDPOINTS_ACTION_PREFIX + endpoint.GetType().FullName.Replace(".", "-") + "/" + key.Replace(".", "-");
+                ExposedEndpoints.Add(action);
                 app.Map(action, x => x.Use(async (context, next) =>
                 {
                     var start = LocalTime.Now;
@@ -46,6 +49,18 @@ namespace Olive.Entities.Replication
                     await handler(context);
                     Log.For<TSourceEndpoint>().Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
                 }));
+            }
+
+            if (!RegisteredExposedEndpionts)
+            {
+                RegisteredExposedEndpionts = true;
+                Log.For<TSourceEndpoint>().Info("Registering the /all action");
+                app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
+                    {
+                        var start = LocalTime.Now;
+                        context.WriteLine(ExposedEndpoints.ToLinesString());
+                    }));
+                Log.For<TSourceEndpoint>().Info("Registered the /all action");
             }
 
             Log.For<TSourceEndpoint>().Info("Registering refresh messages for All ...");
@@ -56,16 +71,16 @@ namespace Olive.Entities.Replication
             });
             Log.For<TSourceEndpoint>().Info("Registered refresh messages for All ...");
 
-            endpoint.ExposedTypes.Do(t =>
-            {
-                Log.For<TSourceEndpoint>().Info($"Registering refresh messages for {t} ...");
-                Register(t, async context =>
-                 {
-                     await endpoint.UploadAll(t);
-                     context.WriteLine("All done!");
-                 });
-                Log.For<TSourceEndpoint>().Info($"Registered refresh messages for {t} ...");
-            });
+            //endpoint.ExposedTypes.Do(t =>
+            //{
+            //    Log.For<TSourceEndpoint>().Info($"Registering refresh messages for {t} ...");
+            //    Register(t, async context =>
+            //     {
+            //         await endpoint.UploadAll(t);
+            //         context.WriteLine("All done!");
+            //     });
+            //    Log.For<TSourceEndpoint>().Info($"Registered refresh messages for {t} ...");
+            //});
 
             return app;
         }
