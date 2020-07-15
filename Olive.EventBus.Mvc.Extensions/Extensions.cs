@@ -63,7 +63,7 @@ namespace Olive.Entities.Replication
                 Log.For<TSourceEndpoint>().Info("Registering the /all action");
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
                     {
-                        var start = LocalTime.Now;
+                        context.Response.ContentType = "text/html";
                         await context.Response.WriteAsync(ExposedEndpoints.ToLinesString());
                     }));
                 Log.For<TSourceEndpoint>().Info("Registered the /all action");
