@@ -58,7 +58,7 @@ namespace Olive.Entities.Replication
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
                     {
                         var start = LocalTime.Now;
-                        context.WriteLine(ExposedEndpoints.ToLinesString());
+                        await context.Response.WriteAsync(ExposedEndpoints.ToLinesString());
                     }));
                 Log.For<TSourceEndpoint>().Info("Registered the /all action");
             }
@@ -67,7 +67,7 @@ namespace Olive.Entities.Replication
             Register("All", async context =>
             {
                 await endpoint.UploadAll();
-                context.WriteLine("All done!");
+                await context.Response.WriteAsync("All done!");
             });
             Log.For<TSourceEndpoint>().Info("Registered refresh messages for All ...");
 
@@ -85,10 +85,5 @@ namespace Olive.Entities.Replication
             return app;
         }
 
-        static void WriteLine(this HttpContext context, string text)
-        {
-            using (var writer = new StreamWriter(context.Response.Body))
-                writer.Write(text);
-        }
     }
 }
