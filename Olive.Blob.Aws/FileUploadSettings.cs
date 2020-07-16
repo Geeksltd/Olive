@@ -11,7 +11,7 @@ namespace Olive.BlobAws
 
         public FileUploadSettings(IConfiguration configuration) => Configuration = configuration;
 
-        public string BucketName => Configuration.GetValue<string>("Aws:TempBucket");
-        public string Region => Configuration.GetValue<string>("Aws:Region");
+        public string BucketName => Configuration.GetValue<string>("Blob:S3:TempBucket");
+        public string Region => Configuration.GetValue<string>("Blob:S3:Region");
     }
 }

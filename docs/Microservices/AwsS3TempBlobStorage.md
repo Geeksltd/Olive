@@ -11,10 +11,12 @@ First things first, create a bucket which should have the following settings.
 Next, add the following settings to the `appsettings.json`.
 ```json
 ...
-  "Aws": {
-    "Region": "REGION",
-    "TempBucket": "BUCKET_NAME",
-  }
+"Blob": {
+    "S3": {
+        "Region": "REGION",
+        "TempBucket": "BUCKET_NAME",
+    }
+}
 ...
 ```
 Then, in your `Startup.cs` call `AddS3FileRequestService` in `ConfigureServices` before calling the base method.
