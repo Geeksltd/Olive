@@ -125,7 +125,7 @@ namespace Olive.Aws
                 var receipt = new DeleteMessageRequest { QueueUrl = QueueUrl, ReceiptHandle = item.ReceiptHandle };
                 result.Add(new QueueMessageHandle(item.Body, item.MessageId, () => Client.DeleteMessageAsync(receipt)));
             }
-
+            
             return result;
         }
 

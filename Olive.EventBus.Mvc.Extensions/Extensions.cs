@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ namespace Olive.Entities.Replication
                 Log.For<TSourceEndpoint>().Info("Registering the /all action");
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
                     {
-                        await context.Response.WriteHtmlAsync(ExposedEndpoints.ToHtmlLines());
+                        await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => $"<a href='{e}'>{e}</a>").ToHtmlLines());
                     }));
                 Log.For<TSourceEndpoint>().Info("Registered the /all action");
             }
@@ -75,17 +76,6 @@ namespace Olive.Entities.Replication
                 await context.Response.WriteHtmlAsync("All done!");
             });
             Log.For<TSourceEndpoint>().Info("Registered refresh messages for All ...");
-
-            //endpoint.ExposedTypes.Do(t =>
-            //{
-            //    Log.For<TSourceEndpoint>().Info($"Registering refresh messages for {t} ...");
-            //    Register(t, async context =>
-            //     {
-            //         await endpoint.UploadAll(t);
-            //         context.WriteLine("All done!");
-            //     });
-            //    Log.For<TSourceEndpoint>().Info($"Registered refresh messages for {t} ...");
-            //});
 
             return app;
         }

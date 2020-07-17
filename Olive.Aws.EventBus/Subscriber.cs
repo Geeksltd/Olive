@@ -74,6 +74,7 @@ namespace Olive.Aws
                 try
                 {
                     var receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
+                    Log.For(this).Info("Fetched message : " + item.Value.Body);
                     await Handler(item.Key);
 
                     receipt.ReceiptHandle = item.Value.ReceiptHandle;
@@ -83,7 +84,8 @@ namespace Olive.Aws
                 {
                     var exception = new Exception("Failed to run queue event handler " +
                         Handler.Method.DeclaringType.FullName + "." +
-                        Handler.Method.GetDisplayName(), ex);
+                        Handler.Method.GetDisplayName() +
+                        "message: " + item.Key?.ToJsonText(), ex);
 
                     if (Queue.IsFifo)
                         throw exception;
