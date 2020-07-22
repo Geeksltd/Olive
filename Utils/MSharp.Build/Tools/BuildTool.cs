@@ -1,8 +1,11 @@
 ﻿using Olive;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace MSharp.Build.Tools
 {
@@ -71,6 +74,81 @@ namespace MSharp.Build.Tools
                 Path = null;
                 return false;
             }
+        }
+
+        internal FileInfo GetActualPath()
+        {
+            if (IsInstalled()) return Path;
+            throw new Exception(Name + " does not seem to be installed");
+        }
+
+        private FileInfo FindPath()
+        {
+            var output = ExecuteShell("where " + Name);
+            throw new NotImplementedException();
+        }
+
+        public static string ExecuteShell(string command)
+        {
+            var output = new StringBuilder();
+
+            var process = new Process
+            {
+                EnableRaisingEvents = true,
+
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = GetShellFileName(),
+                    CreateNoWindow = true,
+                    Arguments = ToShellCommand(command),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8
+                }
+            };
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (e.Data.HasValue()) lock (output) output.AppendLine(e.Data);
+            };
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (e.Data != null) lock (output) output.AppendLine(e.Data);
+            };
+
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+
+            process.WaitForExit();
+
+            if (process.ExitCode != 0)
+                throw new Exception($"Error running '{command}':{output}");
+            else process.Dispose();
+
+
+            return output.ToString();
+        }
+
+        static bool IsRunningOnLinux() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+        private static string GetShellFileName()
+        {
+            if (IsRunningOnLinux())
+                return "/bin/bash";
+
+            return "cmd";
+        }
+
+        private static string ToShellCommand(string command)
+        {
+            if (IsRunningOnLinux())
+                return "-c " + command;
+
+            return command;
         }
 
         void AddToPath()

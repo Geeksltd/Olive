@@ -48,10 +48,9 @@ namespace MSharp.Build
             var builder = new T();
             try
             {
-                return InstallAll ? builder.Install() : builder.ExpectedPath;
+                return InstallAll ? builder.Install() : builder.GetActualPath();
             }
             finally { Log(string.Join(Environment.NewLine, builder.Logs), step); }
         }
-
     }
 }
