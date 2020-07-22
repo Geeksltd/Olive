@@ -6,9 +6,16 @@ using System.Runtime.CompilerServices;
 
 namespace MSharp.Build
 {
+
     abstract class Builder
     {
         static DateTime Start = DateTime.Now;
+        protected bool InstallAll;
+
+        public Builder(bool installAll = true)
+        {
+            InstallAll = installAll;
+        }
 
         Dictionary<string, Action> Steps = new Dictionary<string, Action>();
         List<KeyValuePair<string, string>> LogMessages = new List<KeyValuePair<string, string>>();

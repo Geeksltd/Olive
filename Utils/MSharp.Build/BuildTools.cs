@@ -7,6 +7,8 @@ namespace MSharp.Build
 {
     class BuildTools : Builder
     {
+        public BuildTools(bool installAll = true) : base(installAll) { }
+
         protected override void AddTasks()
         {
             Add(() => InstallChocolatey());
@@ -20,32 +22,36 @@ namespace MSharp.Build
             Add(() => InstallBower());
         }
 
-        void InstallChocolatey() => WindowsCommand.Chocolaty = Install<Chocolatey>();
+        void InstallChocolatey() => WindowsCommand.Chocolaty = InstallOrLoad<Chocolatey>();
 
         void InstallDotnetCoreSdk()
         {
-            WindowsCommand.DotNet = Install<DotNet215>();
-            WindowsCommand.DotNet = Install<DotNet22>();
+            WindowsCommand.DotNet = InstallOrLoad<DotNet215>();
+            WindowsCommand.DotNet = InstallOrLoad<DotNet22>();
         }
 
-        void InstallReplaceInFiles() => Install<ReplaceInFile>();
-        void InstallAcceleratePackageRestore() => Install<AcceleratePackageRestore>();
+        void InstallReplaceInFiles() => InstallOrLoad<ReplaceInFile>();
+        void InstallAcceleratePackageRestore() => InstallOrLoad<AcceleratePackageRestore>();
 
-        void InstallNodeJs() => WindowsCommand.NodeJs = Install<NodeJs>();
+        void InstallNodeJs() => WindowsCommand.NodeJs = InstallOrLoad<NodeJs>();
 
-        void InstallYarn() => WindowsCommand.Yarn = Install<Yarn>();
+        void InstallYarn() => WindowsCommand.Yarn = InstallOrLoad<Yarn>();
 
-        void InstallTypescript() => WindowsCommand.TypeScript = Install<Typescript>();
+        void InstallTypescript() => WindowsCommand.TypeScript = InstallOrLoad<Typescript>();
 
-        void InstallWebPack() => WindowsCommand.WebPack = Install<WebPack>();
+        void InstallWebPack() => WindowsCommand.WebPack = InstallOrLoad<WebPack>();
 
-        void InstallBower() => WindowsCommand.Bower = Install<Bower>();
+        void InstallBower() => WindowsCommand.Bower = InstallOrLoad<Bower>();
 
-        FileInfo Install<T>([CallerMemberName] string step = "") where T : BuildTool, new()
+        FileInfo InstallOrLoad<T>([CallerMemberName] string step = "") where T : BuildTool, new()
         {
             var builder = new T();
-            try { return builder.Install(); }
+            try
+            {
+                return InstallAll ? builder.Install() : builder.ExpectedPath;
+            }
             finally { Log(string.Join(Environment.NewLine, builder.Logs), step); }
         }
+
     }
 }
