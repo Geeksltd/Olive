@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>msharp-build</ToolCommandName>
     <Version>1.2.136</Version>
@@ -18,7 +18,7 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <FileVersion>1.2.136</FileVersion>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <PackageVersion>1.1.146</PackageVersion>
+    <PackageVersion>1.1.147</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="CICD\" />
