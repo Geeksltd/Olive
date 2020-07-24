@@ -13,9 +13,12 @@ Next, add the following settings to the `appsettings.json`.
 ...
 "Blob": {
     "S3": {
-        "Region": "REGION",
         "TempBucket": "BUCKET_NAME",
     }
+},
+"Aws": {    
+        "Region": "REGION",
+        ...
 }
 ...
 ```
