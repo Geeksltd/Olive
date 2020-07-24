@@ -16,7 +16,7 @@ namespace Olive.BlobAws
         {
             get
             {
-                var regionName = Config.Get<string>("Blob:S3:Region");
+                var regionName = Config.Get<string>("Blob:S3:Region").Or(Config.Get<string>("Aws:Region"));
 
                 if (regionName.HasValue())
                     return RegionEndpoint.GetBySystemName(regionName);
