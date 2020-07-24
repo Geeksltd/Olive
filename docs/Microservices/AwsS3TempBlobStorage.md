@@ -16,6 +16,10 @@ Next, add the following settings to the `appsettings.json`.
         "Region": "REGION",
         "TempBucket": "BUCKET_NAME",
     }
+},
+"Aws": {    
+        "Region": "REGION",
+        ...
 }
 ...
 ```
