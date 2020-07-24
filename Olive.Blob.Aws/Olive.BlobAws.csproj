@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <PackageId>Olive.BlobAws</PackageId>
-    <PackageVersion>2.1.112</PackageVersion>
-    <AssemblyVersion>2.1.112.0</AssemblyVersion>
-    <FileVersion>2.1.112.0</FileVersion>
+    <PackageVersion>2.1.114</PackageVersion>
+    <AssemblyVersion>2.1.114.0</AssemblyVersion>
+    <FileVersion>2.1.114.0</FileVersion>
     <Title>Olive Blob AWS (S3) Storage Provider</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
