@@ -65,6 +65,8 @@ namespace Olive.Mvc
             services.TryAddTransient<IFileUploadMarkupGenerator, DefaultFileUploadMarkupGenerator>();
 
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
+
+            services.ConfigureNonBreakingSameSiteCookies();
         }
 
         protected virtual void ConfigureAuthentication(AuthenticationBuilder auth)
@@ -114,6 +116,7 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureSecurity(IApplicationBuilder app)
         {
+            app.UseCookiePolicy();
             app.UseMicroserviceAccessKeyAuthentication();
             app.UseAuthentication();
             app.UseMiddleware<SplitRoleClaimsMiddleware>();
