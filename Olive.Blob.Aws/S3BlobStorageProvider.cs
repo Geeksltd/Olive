@@ -59,7 +59,7 @@ namespace Olive.BlobAws
             {
                 using (var client = CreateClient)
                 {
-                    return await client.GetObjectMetadataAsync(AWSInfo.S3BucketName, GetKey(document)) != null;
+                    return await client.GetObjectMetadataAsync(AWSInfo.S3BucketName, document.GetKey()) != null;
                 }
             }
             catch (AmazonS3Exception ex)
@@ -72,11 +72,11 @@ namespace Olive.BlobAws
 
         public async Task<byte[]> LoadAsync(Blob document)
         {
-            var key = GetKey(document);
+            var key = document.GetKey();
 
             try
             {
-                return await Load(GetKey(document));
+                return await Load(document.GetKey());
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace Olive.BlobAws
         /// </summary>
         public async Task DeleteAsync(Blob document)
         {
-            var key = GetKey(document);
+            var key = document.GetKey();
             using (var client = CreateClient)
             {
                 var response = await client.DeleteObjectAsync(AWSInfo.S3BucketName, key);
@@ -154,11 +154,6 @@ namespace Olive.BlobAws
         async Task<IEnumerable<KeyVersion>> GetOldVersionKeys(Blob document)
           => await GetOldKeys(document).Select(s => new KeyVersion { Key = s });
 
-        string GetKey(Blob document)
-        {
-            return (document.FolderName + "/" + document.OwnerId()).KeepReplacing("//", "/").TrimStart("/");
-        }
-
         DeleteObjectsRequest CreateDeleteOldsRequest(IEnumerable<KeyVersion> oldKeys)
         {
             return new DeleteObjectsRequest
@@ -170,7 +165,7 @@ namespace Olive.BlobAws
 
         async Task<IEnumerable<string>> GetOldKeys(Blob document)
         {
-            var key = GetKey(document);
+            var key = document.GetKey();
 
             using (var client = CreateClient)
             {
@@ -182,7 +177,7 @@ namespace Olive.BlobAws
 
         ListObjectsRequest CreateGetObjectsRequest(Blob document)
         {
-            var key = GetKey(document);
+            var key = document.GetKey();
             var prefix = key.TrimEnd(document.FileExtension);
 
             return new ListObjectsRequest
@@ -200,7 +195,7 @@ namespace Olive.BlobAws
             return new PutObjectRequest
             {
                 BucketName = AWSInfo.S3BucketName,
-                Key = GetKey(document),
+                Key = document.GetKey(),
                 InputStream = new MemoryStream(await document.GetFileDataAsync())
             };
         }
