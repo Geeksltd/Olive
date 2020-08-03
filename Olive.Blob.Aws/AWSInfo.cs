@@ -1,6 +1,7 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Olive.BlobAws
 {
@@ -24,5 +25,7 @@ namespace Olive.BlobAws
                     return RegionEndpoint.EUWest1;
             }
         }
+
+        internal static DateTime PreSignedUrlLifespan => LocalTime.UtcNow.AddSeconds(Config.Get("Blob:S3:Bucket:PreSignedUrl.Lifespan", 30));
     }
 }

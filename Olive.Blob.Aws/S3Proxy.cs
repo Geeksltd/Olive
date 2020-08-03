@@ -18,6 +18,21 @@ namespace Olive.BlobAws
 
         static AmazonS3Client CreateClient() => new AmazonS3Client();
 
+        internal static string GetPresignedUrl(Blob document)
+        {
+            using (var client = CreateClient())
+            {
+                var request = new GetPreSignedUrlRequest
+                {
+                    BucketName = AWSInfo.S3BucketName,
+                    Key = document.GetKey(),
+                    Expires = AWSInfo.PreSignedUrlLifespan
+                };
+
+                return client.GetPreSignedURL(request);
+            }
+        }
+
         /// <summary>
         /// Uploads a document to the Amazon S3 Client.
         /// </summary>
@@ -43,7 +58,7 @@ namespace Olive.BlobAws
             {
                 using (var client = CreateClient())
                 {
-                    return await client.GetObjectMetadataAsync(AWSInfo.S3BucketName, GetKey(document)) != null;
+                    return await client.GetObjectMetadataAsync(AWSInfo.S3BucketName, document.GetKey()) != null;
                 }
             }
             catch (AmazonS3Exception ex)
@@ -54,7 +69,7 @@ namespace Olive.BlobAws
             }
         }
 
-        internal static Task<byte[]> Load(Blob document) => Load(GetKey(document));
+        internal static Task<byte[]> Load(Blob document) => Load(document.GetKey());
 
         internal static async Task<byte[]> Load(string documentKey)
         {
@@ -110,7 +125,7 @@ namespace Olive.BlobAws
         /// </summary>
         internal static async Task Delete(Blob document)
         {
-            var key = GetKey(document);
+            var key = document.GetKey();
             using (var client = CreateClient())
             {
                 var response = await client.DeleteObjectAsync(AWSInfo.S3BucketName, key);
@@ -125,11 +140,6 @@ namespace Olive.BlobAws
             }
         }
 
-        static string GetKey(Blob document)
-        {
-            return (document.FolderName + "/" + document.OwnerId()).KeepReplacing("//", "/").TrimStart("/");
-        }
-
         static DeleteObjectsRequest CreateDeleteOldsRequest(IEnumerable<KeyVersion> oldKeys)
         {
             return new DeleteObjectsRequest
@@ -141,7 +151,7 @@ namespace Olive.BlobAws
 
         static async Task<IEnumerable<string>> GetOldKeys(Blob document)
         {
-            var key = GetKey(document);
+            var key = document.GetKey();
 
             using (var client = CreateClient())
             {
@@ -153,7 +163,7 @@ namespace Olive.BlobAws
 
         static ListObjectsRequest CreateGetObjectsRequest(Blob document)
         {
-            var key = GetKey(document);
+            var key = document.GetKey();
             var prefix = key.TrimEnd(document.FileExtension);
 
             return new ListObjectsRequest
@@ -171,7 +181,7 @@ namespace Olive.BlobAws
             return new PutObjectRequest
             {
                 BucketName = AWSInfo.S3BucketName,
-                Key = GetKey(document),
+                Key = document.GetKey(),
                 InputStream = new MemoryStream(await document.GetFileDataAsync())
             };
         }
