@@ -189,34 +189,68 @@ namespace Olive.Entities
             if (expression.NodeType == ExpressionType.OrElse || expression.NodeType == ExpressionType.AndAlso)
                 return BinaryCriterion.From(expression);
 
-            Criterion create(string property)
+            Criterion create(string property, Expression value, bool flipped = false)
             {
                 if (property.IsEmpty()) return null;
-                return new Criterion(property, expression.NodeType.ToFilterFunction(), expression.Right.GetValue());
+
+                return new Criterion(
+                    property,
+                    expression.NodeType.ToFilterFunction(flipped),
+                    value.GetValue());
             }
 
-            var left = expression.Left;
+            var left = Analyse(expression.Left);
+            var right = Analyse(expression.Right);
 
-            if (left is ParameterExpression) return create("ID");
+            if (left.WasParameter) return create("ID", expression.Right);
+            if (right.WasParameter) return create("ID", expression.Left, flipped: true);
 
-            if (left is MemberExpression memberEx)
-            {
-                if (expression.Right is MemberExpression rightEx && memberEx.Expression == rightEx.Expression)
-                {
-                    var rightProp = rightEx.GetDatabaseColumnPath();
-                    var leftProp = memberEx.GetDatabaseColumnPath();
+            if (left.FromParameter && right.FromParameter && left.Member.Expression == right.Member.Expression)
+                return new DynamicValueCriterion(
+                    left.Member.GetDatabaseColumnPath(),
+                    expression.NodeType.ToFilterFunction(),
+                    right.Member.GetDatabaseColumnPath());
 
-                    if (rightProp.HasValue() && leftProp.HasValue())
-                        return new DynamicValueCriterion(leftProp, expression.NodeType.ToFilterFunction(), rightProp);
-                }
+            if (left.FromParameter) return create(left.Member.GetDatabaseColumnPath(), expression.Right);
 
-                return create(memberEx.GetDatabaseColumnPath());
-            }
-
-            if (left is UnaryExpression unary && unary.Operand is MemberExpression member)
-                return create(member.GetDatabaseColumnPath());
+            if (right.FromParameter) return create(right.Member.GetDatabaseColumnPath(), expression.Left, flipped: true);
 
             return null;
+        }
+
+        static AnalyseResult Analyse(Expression expression)
+        {
+            var result = new AnalyseResult
+            {
+                WasParameter = expression is ParameterExpression
+            };
+
+            if (result.WasParameter) return result;
+
+            if (expression is MemberExpression member)
+                result.Member = member;
+
+            if (expression is UnaryExpression unary && unary.Operand is MemberExpression member2)
+                result.Member = member2;
+
+            // TODO: Fix the issues with following idea to support x.AnotherEntity.Prop == x.MainEntityProp
+            bool isFromParam(Expression exp)
+            {
+                if (exp == null) return false;
+                if (exp is ParameterExpression) return true;
+                return isFromParam((exp as MemberExpression)?.Expression);
+            }
+
+            result.FromParameter = isFromParam(result.Member);
+
+            return result;
+        }
+
+        class AnalyseResult
+        {
+            public MemberExpression Member { get; set; }
+            public bool FromParameter { get; set; }
+            public bool WasParameter { get; set; }
         }
     }
 }
