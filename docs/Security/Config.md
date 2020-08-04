@@ -1,62 +1,38 @@
 # Owin configurations
 
-## Login with Google
+### Create a site
 
-1. Go to https://console.developers.google.com/
-2. Create a project. Then click on that project.
-3. Under *Dashboard* enable **Google+ API** and **Google+ Domains API** 
-4. Under *Credentials* create a **OAuth Client ID**
-   5.1. Click *Configure consent screen* and complete the page.
-   5.2. Select **Web application** and give it a name
-   5.3. Set *Authorised redirect URIs* to *http://YOURDOMAIN/signin-google*.
-   5.4. Click **Create** and make a note of the generated *Client ID* and *Client secret*
+1. Go to https://www.google.com/recaptcha/admin/create
+2. Select `reCAPTCHA v2` and then `"I'm not a robot" tickbox`.
+3. Set domain and for development add **localhost** as domain but you need to set it after creating it.
+4. Save it and copy Site and Secret keys.
 5. Open *appsettings.json* in your website folder and set the following:
 
-```javascript
-"Authentication": {
-   ...
-    "Google": {
-      "ClientId": "...",
-      "ClientSecret": "...."
-    }
- }
+```json
+"Recaptcha": {
+    "SiteKey": "****",
+    "SecretKey": "*****"
+  }
  ```
-6. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableGoogle()**
+5. Go back to the setting of the newly created site and uncheck `Verify the origin of reCAPTCHA solutions`.
 
-## Login with Facebook
+### Changes on project
 
-1. Go to https://developers.facebook.com/ and create a new app.
-2. Inside your app, go to **Settings** and set **App Domains** and **Site URL** to the root of your website e.g. http://myproject.uat.co
-3. From **Apps Dashboard**, copy *App ID* and *App Secret*
-4. Open *appsettings.json* in your website folder and set the following:
-
-```javascript
-"Authentication": {
-   ...
-   "Facebook": {
-      "AppID": "",
-      "AppSecret": ""
-    }
- }
- ```
-
- 5. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableFacebook()**
-
-## Login with Microsoft
-
-1. Go to https://apps.dev.microsoft.com, and create a new app.
-2. Add a web platform and set *Redirect URLs* as *http://YOURDOMAIN/signin-microsoft*.
-3. Generate a password and use in the next step.
-4. Open *appsettings.json* in your website folder and set the following:
-
-```javascript
-"Authentication": {
-   ...
-   "Microsoft": {
-      "ApplicationId": "",
-      "Password": ""
-    }
- }
- ```
-
-5. Open *Website\app_start\Startup.Auth.cs* and uncomment **EnableMicrosoft()**
+1. Install `Olive.Mvc.Recaptcha`.
+2. Add required services by calling `services.AddRecaptcha();` in you **Startup.cs**.
+3. Add `<recaptcha-script />` to your layout.
+```html
+@if (!Request.IsAjaxRequest())
+{
+    <script src="/lib/requirejs/require.js" data-main="/scripts/references.js?v=1"></script>
+    <recaptcha-script />
+}
+```
+4. Add `<recaptcha />` to your markup just before buttons.
+```csharp
+CustomField().ControlMarkup("<recaptcha />");
+```
+5. Import tag helpers from `Olive.Mvc.Recaptcha` in `_ViewImport.cshtml`.
+```
+@addTagHelper *, Olive.Mvc.Recaptcha
+```

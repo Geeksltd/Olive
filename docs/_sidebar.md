@@ -83,9 +83,11 @@
     * [Image optimization]()
     * [Website IP Filter]()
     * [AWS integration](Services/Aws.md)
+    * [Captcha](Security/Captcha.md)
 
 * Security
     * [Olive Security Overview](Security/Security.md)
+    * [Captcha](Security/Captcha.md)
     * [Config](Security/Config.md)
     * [Impersonation]()
     * [Encryption and Decryption](Security/Encryption%20and%20Decryption.md)

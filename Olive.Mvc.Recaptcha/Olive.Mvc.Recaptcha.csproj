@@ -9,6 +9,7 @@
 		<AssemblyVersion>2.1.0.0</AssemblyVersion>
 		<FileVersion>2.1.0.0</FileVersion>
 		<Version>2.1.0</Version>
+		<PackageId>Olive.Mvc.Recaptcha</PackageId>
 	</PropertyGroup>
 
 	<ItemGroup>
