@@ -14,6 +14,6 @@ namespace Olive.Mvc
         public int Order { get; set; }
 
         public IFilterMetadata CreateInstance(IServiceProvider serviceProvider) =>
-            serviceProvider.GetRequiredService<ValidateRecaptchaFilter>();
+            serviceProvider.GetRequiredService<IValidateRecaptchaFilter>() as ValidateRecaptchaFilter;
     }
 }
