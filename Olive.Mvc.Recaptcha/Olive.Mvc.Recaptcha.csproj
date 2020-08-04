@@ -2,6 +2,13 @@
 
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.1</TargetFramework>
+		<Authors>Geeks Ltd</Authors>
+		<Description>Google reCaptcha for Olive</Description>
+		<Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
+		<PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+		<AssemblyVersion>2.1.0.0</AssemblyVersion>
+		<FileVersion>2.1.0.0</FileVersion>
+		<Version>2.1.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
