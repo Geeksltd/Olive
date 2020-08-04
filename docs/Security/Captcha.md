@@ -23,3 +23,8 @@ After creating a new site in the Google's reCaptcha console apply the following 
 }
 ```
 - Add captcha to your module with somethig like `CustomField().ControlMarkup("<recaptcha />");`.
+- Validate you action with an attribute:
+```csharp
+Button("Register").IsDefault()
+    .ExtraActionMethodAttributes("[ValidateRecaptcha]");
+```
