@@ -64,7 +64,7 @@
             if (OrderByParts.None() && !SkipAutoSortAttribute.HasAttribute(EntityType))
             {
                 if (EntityType.Implements<ISortable>())
-                    result.Cast<ISortable>().OrderBy(x => x.Order);
+                    result = result.OrderBy(x => (x as ISortable).Order).ToList();
                 else
                     result.Sort();
             }
