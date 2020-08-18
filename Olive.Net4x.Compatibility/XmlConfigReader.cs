@@ -38,7 +38,34 @@ namespace Olive
 
         public IEnumerable<IConfigurationSection> GetChildren() => throw new NotSupportedException();
 
-        public IConfigurationSection GetSection(string key) => throw new NotSupportedException();
+        public IConfigurationSection GetSection(string key) => new ConfigSection(this, key);
+
+        public class ConfigSection : IConfigurationSection
+        {
+            XmlConfigReader Root;
+
+            public ConfigSection(XmlConfigReader root, string path)
+            {
+                Root = root;
+                Path = path;
+            }
+
+            public string this[string key]
+            {
+                get => Root[Path + key.WithPrefix(":")];
+                set => throw new NotImplementedException();
+            }
+
+            public string Key => Path;
+
+            public string Path { get; set; }
+
+            public string Value { get => this[""]; set => throw new NotImplementedException(); }
+
+            public IEnumerable<IConfigurationSection> GetChildren() => throw new NotImplementedException();
+            public IChangeToken GetReloadToken() => new ReloadToken();
+            public IConfigurationSection GetSection(string key) => throw new NotImplementedException();
+        }
 
         class ReloadToken : IChangeToken, IDisposable
         {

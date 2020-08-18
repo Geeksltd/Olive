@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
 namespace Olive.Mvc
 {
@@ -30,15 +29,19 @@ namespace Olive.Mvc
             var user = context.User?.GetId();
             if (length > PERFROMANCE_THRESHOLD_SECONDS) // slow
                 if (!Whitelist.Contains(url))
-                    Log.For(this).Error(new UnacceptablePerformanceException(), $"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : "));
+                    Log.For(this).Error(new UnacceptablePerformanceException($"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : ")));
                 else
                     Log.For(this).Warning($"UnacceptablePerformance ({length}) seconds for whitelisted url : " + url + user.WithPrefix(" for user : "));
         }
 
         internal static void IgnorePerformance(string url) => Whitelist.Add(url.ToLower());
 
-        class UnacceptablePerformanceException : Exception { }
-
+        class UnacceptablePerformanceException : Exception
+        {
+            public UnacceptablePerformanceException(string description) : base(description)
+            {
+            }
+        }
     }
 
     public static class PerformanceMonitoringMiddlewareExtensions
