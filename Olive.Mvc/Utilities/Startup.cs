@@ -66,7 +66,8 @@ namespace Olive.Mvc
 
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
 
-            services.ConfigureNonBreakingSameSiteCookies();
+            // Caused "Urecognized SameSiteMode value -1
+            //services.ConfigureNonBreakingSameSiteCookies();
         }
 
         protected virtual void ConfigureAuthentication(AuthenticationBuilder auth)
