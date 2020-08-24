@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Olive.Net4x.Compatibility</id>
-    <version>1.0.126</version>
+    <version>1.0.127</version>
     <title>Olive.Net4x.Compatibility</title>
     <authors>Geeks Ltd</authors>
     <projectUrl>https://github.com/Geeksltd/Olive</projectUrl>
