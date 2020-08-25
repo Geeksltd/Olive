@@ -1,6 +1,16 @@
 
 # Olive compatibility change log
 
+## 25 August 2020
+We have moved `RegisterDataProvider()` method from `IDatabase` interface to `IDatabaseProviderConfig`. So if you have used something like this `Context.Current.Database().RegisterDataProvider(typeof(Service), new DataProvider());` please change it to this one:
+
+```c#
+var config = Context.Current.GetService<IDatabaseProviderConfig>();
+
+config.RegisterDataProvider(typeof(Service), new DataProvider());
+```
+
+
 ## 29 June 2020
 - Replace `modifiedObjectType.IsCacheable()` with `Database.Cache().IsCacheable(modifiedObjectType)`
 
