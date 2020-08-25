@@ -35,7 +35,7 @@ namespace Olive
         public class HttpClientFactory : IHttpClientFactory
         {
             Dictionary<string, HttpClient> All = new Dictionary<string, HttpClient>();
-            public HttpClient CreateClient(string name) => All[name] ?? (All[name] = new HttpClient());
+            public HttpClient CreateClient(string name) => All.TryGet(name) ?? (All[name] = new HttpClient());
         }
 
         /// <summary>
