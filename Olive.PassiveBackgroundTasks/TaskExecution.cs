@@ -70,7 +70,7 @@ namespace Olive.PassiveBackgroundTasks
                     }
                     catch (Exception ex)
                     {
-                        Log.For(this).Error(ex, "Failed to log heartbeat.");
+                        Log.For(this).Error(ex, "Failed to log heartbeat because : " + ex.ToFullMessage());
                     }
 
                     await Task.Delay(HEARTBEAT_DELAY);
