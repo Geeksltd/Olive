@@ -55,11 +55,11 @@ namespace Olive.PassiveBackgroundTasks
             });
         }
 
-        internal static Task<IBackgourndTask> SendHeartbeat(this IBackgourndTask task)
+        internal static async Task<IBackgourndTask> SendHeartbeat(this IBackgourndTask task)
         {
             task.Logger().Info("Recording heartbeat for " + task.Name + " from instance : " + ExecutionEngine.Id);
 
-            return Update(task, t =>
+            return await Update(task, t =>
              {
                  t.Heartbeat = LocalTime.Now;
                  t.ExecutingInstance = ExecutionEngine.Id;
