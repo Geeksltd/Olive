@@ -66,7 +66,7 @@ namespace Olive.PassiveBackgroundTasks
                         return;
                     try
                     {
-                        BackgroundTask = await BackgroundTask.SendHeartbeat();
+                        BackgroundTask = await BackgroundTask?.SendHeartbeat();
                     }
                     catch (Exception ex)
                     {
