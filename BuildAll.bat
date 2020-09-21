@@ -108,6 +108,9 @@ if ERRORLEVEL 1 (goto error)
 dotnet build Olive.Blob.Aws
 if ERRORLEVEL 1 (goto error)
 
+dotnet build Olive.Blob.Azure
+if ERRORLEVEL 1 (goto error)
+
 dotnet build Olive.Aws.Ses
 if ERRORLEVEL 1 (goto error)
 
@@ -131,6 +134,8 @@ if ERRORLEVEL 1 (goto error)
 
 dotnet build Olive.Mvc.Microservices
 if ERRORLEVEL 1 (goto error)
+
+
 
 exit /b 0
 

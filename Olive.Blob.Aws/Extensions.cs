@@ -7,9 +7,6 @@ namespace Olive.BlobAws
 {
     public static class Extensions
     {
-        public static string GetKey(this Blob document) =>
-            (document.FolderName + "/" + document.OwnerId()).KeepReplacing("//", "/").TrimStart("/");
-
         public static string GetS3PresignedUrl(this Blob document) => S3Proxy.GetPresignedUrl(document);
     }
 }
