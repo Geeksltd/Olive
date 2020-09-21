@@ -228,7 +228,9 @@ namespace Olive.Entities
             if (result.WasParameter) return result;
 
             if (expression is MemberExpression member)
-                result.Member = member;
+                result.Member = member.Expression is UnaryExpression innerUnary && innerUnary.NodeType == ExpressionType.Convert
+                    ? Expression.Property(innerUnary.Operand, member.Member.Name)
+                    : member;
 
             if (expression is UnaryExpression unary && unary.Operand is MemberExpression member2)
                 result.Member = member2;
