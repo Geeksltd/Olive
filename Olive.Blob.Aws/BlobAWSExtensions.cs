@@ -33,8 +33,5 @@ namespace Olive
                 .AddTransient<IFileUploadMarkupGenerator, S3FileUploadMarkupGenerator>()
                 .AddTransient<IFileRequestService, S3FileRequestService>();
         }
-
-        public static string GetS3Key(this Blob @this) =>
-            (@this.FolderName + "/" + @this.OwnerId()).KeepReplacing("//", "/").TrimStart("/");
     }
 }
