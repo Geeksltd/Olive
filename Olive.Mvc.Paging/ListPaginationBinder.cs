@@ -9,15 +9,15 @@ namespace Olive.Mvc
         {
             var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
-            var prefix = bindingContext.ModelName.OrEmpty().Unless("p");
-            if (prefix.EndsWith(".p")) prefix = prefix.Split('.').ExceptLast().ToString(".");
-
             var old = bindingContext.Model as ListPagination;
 
             var result = old;
             if (value.FirstValue.HasValue())
             {
-                result = new ListPagination(old?.Container, value.FirstValue);
+                result = new ListPagination(old?.Container, value.FirstValue)
+                {
+                    Prefix = old.Prefix,
+                };
                 if (old != null)
                 {
                     result.UseAjaxPost = old.UseAjaxPost;
