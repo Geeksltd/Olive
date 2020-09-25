@@ -57,15 +57,6 @@ namespace Olive
         }
 
         /// <summary>
-        /// Determines whether this blob is an image.
-        /// </summary>
-        public static bool IsImage(this Blob doc)
-        {
-            return doc.FileExtension.ToLower().TrimStart(".")
-                .IsAnyOf("jpg", "jpeg", "png", "bmp", "gif", "webp", "tiff", "svg");
-        }
-
-        /// <summary>
         /// Gets the id of this entity.
         /// </summary>
         public static string GetFullIdentifierString(this IEntity entity)
