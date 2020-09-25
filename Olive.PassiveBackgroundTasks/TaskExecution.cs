@@ -12,6 +12,7 @@ namespace Olive.PassiveBackgroundTasks
         CancellationTokenSource CancellationTokenSource;
         CancellationToken CancellationToken;
         Task HeartbeatTask;
+        bool Cancelled;
         TaskExecution()
         {
 
@@ -59,11 +60,8 @@ namespace Olive.PassiveBackgroundTasks
         {
             return Task.Run(async () =>
             {
-                while (true)
+                while (!CancellationToken.IsCancellationRequested)
                 {
-
-                    if (CancellationToken.IsCancellationRequested)
-                        return;
                     try
                     {
                         BackgroundTask = await BackgroundTask.SendHeartbeat();
@@ -80,8 +78,11 @@ namespace Olive.PassiveBackgroundTasks
 
         public void Dispose()
         {
-            
-            CancellationTokenSource?.Cancel();
+            CancellationTokenSource.Cancel();
+            HeartbeatTask.Wait();
+
+            CancellationTokenSource.Dispose();
+            HeartbeatTask.Dispose();
         }
     }
 }
