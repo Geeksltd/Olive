@@ -7,7 +7,23 @@ namespace MSharp.Build
 {
     class WindowsCommand
     {
-        public static FileInfo Yarn, Chocolaty, NodeJs, TypeScript, WebPack, Bower, DotNet;
+        static FileInfo _Chocolaty;
+        public static FileInfo Chocolaty
+        {
+            get
+            {
+                if (!Runtime.IsWindows())
+                    throw new Exception("Choco is only supported on Windows. It is not available for " + Runtime.OS);
+                return _Chocolaty;
+            }
+            set
+            {
+                if (!Runtime.IsWindows())
+                    throw new Exception("Choco is only supported on Windows. It is not available for " + Runtime.OS);
+                _Chocolaty = value;
+            }
+        }
+        public static FileInfo Yarn, NodeJs, TypeScript, WebPack, Bower, DotNet;
 
         public static FileInfo Where => System32("WHERE.exe").ExistsOrThrow();
 

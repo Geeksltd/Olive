@@ -11,7 +11,8 @@ namespace MSharp.Build
 
         protected override void AddTasks()
         {
-            Add(() => InstallChocolatey());
+            if (Runtime.IsWindows())
+                Add(() => InstallChocolatey());
             Add(() => InstallDotnetCoreSdk());
             Add(() => InstallReplaceInFiles());
             Add(() => InstallAcceleratePackageRestore());
