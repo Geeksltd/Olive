@@ -8,7 +8,7 @@
     <OutputPath>..\bin</OutputPath>
     <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.Data.SqlServer.xml</DocumentationFile>
     <PackageId>Olive.Entities.Data.SqlServer</PackageId>
-    <PackageVersion>2.1.109</PackageVersion>
+    <PackageVersion>2.1.111</PackageVersion>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Entities Data SqlServer</Title>
@@ -20,8 +20,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">

@@ -1,12 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netstandard2.0\Olive.Hangfire.xml</DocumentationFile>
+    <DocumentationFile>..\bin\netcoreapp3.1\Olive.Hangfire.xml</DocumentationFile>
     <PackageId>Olive.Hangfire</PackageId>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Hangfire (Service)</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -14,13 +12,18 @@
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
-    <PackageVersion>2.1.109</PackageVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <Version>3.1.100</Version>
+    <PackageVersion>3.1.102</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="HangFire" Version="1.7.3" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <PackageReference Include="HangFire" Version="1.7.14" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Web\Olive.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
@@ -29,13 +32,6 @@
     </Reference>
     <Reference Include="Olive.Entities.Data">
       <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Mvc">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Web">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Web.dll</HintPath>
-      <Private>false</Private>
     </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

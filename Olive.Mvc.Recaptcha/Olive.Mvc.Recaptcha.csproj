@@ -1,31 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<TargetFramework>netcoreapp2.1</TargetFramework>
-		<Authors>Geeks Ltd</Authors>
-		<Description>Google reCaptcha for Olive</Description>
-		<Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
-		<PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
-		<AssemblyVersion>2.1.0.0</AssemblyVersion>
-		<FileVersion>2.1.0.0</FileVersion>
-		<Version>2.1.0</Version>
-		<PackageId>Olive.Mvc.Recaptcha</PackageId>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="Olive">
-			<HintPath>..\bin\netcoreapp2.1\Olive.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
-	</Target>
-
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Geeks Ltd</Authors>
+    <Description>Google reCaptcha for Olive</Description>
+    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <Version>3.1.100</Version>
+    <PackageId>Olive.Mvc.Recaptcha</PackageId>
+    <PackageVersion>3.1.102</PackageVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive\Olive.csproj" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
+  </Target>
 </Project>

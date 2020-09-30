@@ -1,28 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Olive.Security.Impersonation</RootNamespace>
     <PackageId>Olive.Security.Impersonation</PackageId>
-    
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <Version>3.1.100</Version>
     <Title>Olive Security Impersonation</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <PackageVersion>2.1.102</PackageVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netcoreapp2.1\Olive.Security.Impersonation.xml</DocumentationFile>
+    <DocumentationFile>..\bin\netcoreapp3.1\Olive.Security.Impersonation.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <PackageVersion>3.1.102</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Security\Olive.Mvc.Security.csproj" />
+    <ProjectReference Include="..\Olive.Web\Olive.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
@@ -35,14 +37,6 @@
     </Reference>
     <Reference Include="Olive.Entities.Data">
       <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Olive.Mvc.Security">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.Security.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Olive.Web">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Web.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

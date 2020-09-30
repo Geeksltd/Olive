@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Tokens;
 using Olive.Security;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Olive
 {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Olive.Mvc
     {
         readonly IDictionary<ModelMetadata, IModelBinder> PropertyBinders;
 
-        public OliveModelBinder(IDictionary<ModelMetadata, IModelBinder> propertyBinders) : base(propertyBinders) =>
+        public OliveModelBinder(IDictionary<ModelMetadata, IModelBinder> propertyBinders, ILoggerFactory loggerFactory) : base(propertyBinders, loggerFactory) =>
             PropertyBinders = propertyBinders;
 
         protected override Task BindProperty(ModelBindingContext bindingContext)

@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,20 +11,15 @@ using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Serialization;
 using Olive.Entities;
 using Olive.Entities.Data;
 using Olive.Security;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
@@ -28,11 +27,11 @@ namespace Olive.Mvc
     {
         const int DEFAULT_SESSION_TIMEOUT = 20;
 
-        protected readonly IHostingEnvironment Environment;
+        protected readonly IWebHostEnvironment Environment;
         protected readonly IConfiguration Configuration;
         protected IServiceCollection Services { get; private set; }
 
-        protected Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
+        protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
         {
             Environment = env;
             Configuration = config;
@@ -79,13 +78,13 @@ namespace Olive.Mvc
         {
             mvc.AddMvcOptions(x => x.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
 
-            mvc.AddJsonOptions(o => o.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            // mvc.AddJsonOptions(o => o.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
-            mvc.ConfigureApplicationPartManager(manager =>
-            {
-                manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
-                manager.FeatureProviders.Add(new ReferencesMetadataReferenceFeatureProvider());
-            });
+            //mvc.ConfigureApplicationPartManager(manager =>
+            //{
+            //    manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
+            //    manager.FeatureProviders.Add(new ReferencesMetadataReferenceFeatureProvider());
+            //});
 
             mvc.AddMvcOptions(options =>
             {

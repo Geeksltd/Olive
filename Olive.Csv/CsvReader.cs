@@ -32,7 +32,7 @@ namespace Olive.Csv
             var output = new DataTable();
 
             using (var textReaderContent = new StringReader(csvContent))
-            using (var csvResult = new CsvHelper.CsvReader(textReaderContent))
+            using (var csvResult = new CsvHelper.CsvReader(textReaderContent, System.Globalization.CultureInfo.CurrentCulture))
             {
                 csvResult.Read();
                 csvResult.ReadHeader();
@@ -84,7 +84,7 @@ namespace Olive.Csv
         public static string[] GetColumns(string csvContent)
         {
             using (var textReaderContent = new StringReader(csvContent))
-            using (var csvResult = new CsvHelper.CsvReader(textReaderContent))
+            using (var csvResult = new CsvHelper.CsvReader(textReaderContent, System.Globalization.CultureInfo.CurrentCulture))
             {
                 csvResult.Read();
                 csvResult.ReadHeader();

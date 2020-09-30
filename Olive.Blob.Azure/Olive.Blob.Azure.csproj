@@ -1,22 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Authors>Geeks Ltd</Authors>
     <Description>A plugin for Olive Framework</Description>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageId>Olive.Blob.Azure</PackageId>
+    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <Version>3.1.100</Version>
+    <PackageVersion>3.1.101</PackageVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.6.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
-
 </Project>

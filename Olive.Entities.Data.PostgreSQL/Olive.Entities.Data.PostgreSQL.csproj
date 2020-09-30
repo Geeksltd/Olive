@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Olive.Entities.Data.PostgreSQL</PackageId>
-    <PackageVersion>2.1.104</PackageVersion>
+    <PackageVersion>2.1.108</PackageVersion>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Entities Data PostgreSQL</Title>
@@ -20,8 +20,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
-    <PackageReference Include="Npgsql" Version="4.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
+    <PackageReference Include="Npgsql" Version="4.1.5" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">

@@ -9,8 +9,8 @@ namespace Olive
 {
     partial class ApiClient
     {
-        static readonly Dictionary<string, CircuitBreakerPolicy> CircuitBreakerPolicies
-            = new Dictionary<string, CircuitBreakerPolicy>();
+        static readonly Dictionary<string, AsyncCircuitBreakerPolicy> CircuitBreakerPolicies
+            = new Dictionary<string, AsyncCircuitBreakerPolicy>();
 
         int retries, ExceptionsBeforeBreakingCircuit;
         TimeSpan CircuitBreakDuration, RetryPauseDuration;
@@ -53,7 +53,7 @@ namespace Olive
             return CreateExecutionPolicy(request).ExecuteAsync(() => client.SendAsync(request));
         }
 
-        Policy CreateExecutionPolicy(HttpRequestMessage request)
+        AsyncPolicy CreateExecutionPolicy(HttpRequestMessage request)
         {
             var retryPolicy = Policy.Handle<HttpRequestException>()
                              .WaitAndRetryAsync(retries, attempt => RetryPauseDuration);
@@ -65,7 +65,7 @@ namespace Olive
             return retryPolicy.WrapAsync(GetOrCreateCircuitBreakerPolicy(policyKey));
         }
 
-        CircuitBreakerPolicy GetOrCreateCircuitBreakerPolicy(string policyKey)
+        AsyncCircuitBreakerPolicy GetOrCreateCircuitBreakerPolicy(string policyKey)
         {
             if (CircuitBreakerPolicies.TryGetValue(policyKey, out var policy))
                 return policy;

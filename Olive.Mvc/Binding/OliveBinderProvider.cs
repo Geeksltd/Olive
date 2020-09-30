@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.Extensions.Logging;
 using Olive.Entities;
 using System;
 using System.Collections.Concurrent;
@@ -26,7 +27,7 @@ namespace Olive.Mvc
                 var propertyBinders = GetProperties(context.Metadata)
                     .ToDictionary(property => property, context.CreateBinder);
 
-                return new OliveModelBinder(propertyBinders);
+                return new OliveModelBinder(propertyBinders, Context.Current.GetService<ILoggerFactory>());
             }
 
             if (modelType.IsA<ListSortExpression>()) return new ListSortExpressionBinder();

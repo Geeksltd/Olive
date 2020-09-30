@@ -1,17 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>Olive.BlobAws</PackageId>
-    <PackageVersion>2.1.120</PackageVersion>
-    <AssemblyVersion>2.1.120.0</AssemblyVersion>
-    <FileVersion>2.1.120.0</FileVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <Version>3.1.100</Version>
     <Title>Olive Blob AWS (S3) Storage Provider</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>A plugin for Olive Framework</Description>
+    <PackageVersion>3.1.101</PackageVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
@@ -19,13 +20,15 @@
     <DocumentationFile>..\bin\netstandard2.0\Olive.BlobAws.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.23.2" />
+    <PackageReference Include="AWSSDK.S3" Version="3.5.1.10" />
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="2.1.1" />    
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
@@ -39,10 +42,7 @@
     </Reference>
     <Reference Include="Olive.Entities.Data">
       <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Mvc">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.dll</HintPath>
-    </Reference>
+    </Reference>    
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />

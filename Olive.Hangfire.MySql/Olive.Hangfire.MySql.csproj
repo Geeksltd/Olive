@@ -1,12 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\Olive.Hangfire.MySql.xml</DocumentationFile>
     <PackageId>Olive.Hangfire.MySql</PackageId>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Hangfire (Service) With MySQL</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
@@ -14,16 +12,19 @@
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
-    <PackageVersion>2.1.100</PackageVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <Version>3.1.100</Version>
+    <PackageVersion>3.1.102</PackageVersion>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Hangfire" Version="1.7.3" />
+    <PackageReference Include="Hangfire" Version="1.7.14" />
     <PackageReference Include="Hangfire.MySql.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Hangfire\Olive.Hangfire.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
@@ -31,12 +32,8 @@
     <Reference Include="Olive.Entities.Data">
       <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Olive.Hangfire">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Hangfire.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
   </Target>
-
 </Project>

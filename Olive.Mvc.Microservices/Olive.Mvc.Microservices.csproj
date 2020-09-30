@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netcoreapp2.1\Olive.Mvc.Microservices.xml</DocumentationFile>
+    <DocumentationFile>..\bin\netcoreapp3.1\Olive.Mvc.Microservices.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
     <PackageId>Olive.Mvc.Microservices</PackageId>
     <Title>Olive MVC Microservices</Title>
@@ -12,14 +12,13 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Mvc Utilities for Olive</Description>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.106</PackageVersion>
+    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.1.0.1</AssemblyVersion>
+    <Version>3.1.100</Version>
+    <PackageVersion>3.1.102</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.6.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
@@ -42,20 +41,6 @@
     </Reference>
     <Reference Include="Olive.Microservices">
       <HintPath>..\bin\netstandard2.0\Olive.Microservices.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Mvc.Security">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.Security.dll</HintPath>
-      <SpecificVersion>false</SpecificVersion>
-    </Reference>
-    <Reference Include="Olive.Web">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Web.dll</HintPath>
-      <Private>false</Private>
-      <SpecificVersion>false</SpecificVersion>
-    </Reference>
-    <Reference Include="Olive.Web">
-      <HintPath>..\bin\netcoreapp2.1\Olive.Mvc.dll</HintPath>
-      <Private>false</Private>
-      <SpecificVersion>false</SpecificVersion>
     </Reference>
     <Reference Include="Olive.Encryption">
       <HintPath>..\bin\netstandard2.0\Olive.Encryption.dll</HintPath>

@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputPath>..\bin\</OutputPath>
@@ -12,16 +12,17 @@
     <Description>Olive Framework</Description>
     <AssemblyVersion>1.0.0.13</AssemblyVersion>
     <FileVersion>1.0.0.13</FileVersion>
-    <PackageVersion>1.0.13</PackageVersion>
+    <PackageVersion>1.0.14</PackageVersion>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="CronExpressionDescriptor" Version="2.13.0" />
+    <PackageReference Include="CronExpressionDescriptor" Version="2.15.0" />
     <PackageReference Include="Cronos" Version="0.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\Olive\Olive.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
@@ -33,5 +34,4 @@
       <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

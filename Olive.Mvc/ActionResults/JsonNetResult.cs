@@ -18,7 +18,7 @@ namespace Olive.Mvc
             };
         }
 
-        public JsonNetResult(object value, JsonSerializerSettings serializerSettings) : base(value, serializerSettings)
+        public JsonNetResult(object value, object serializerSettings) : base(value, serializerSettings)
         {
             Settings = new JsonSerializerSettings
             {
@@ -34,7 +34,7 @@ namespace Olive.Mvc
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             var response = context.HttpContext.Response;
-            response.ContentType = string.IsNullOrEmpty(ContentType) ? "application/json" : ContentType;
+            response.ContentType = ContentType.Or("application/json");
 
             if (Value == null) return;
 

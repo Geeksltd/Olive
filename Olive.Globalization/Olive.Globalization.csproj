@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Olive.Globalization</RootNamespace>
     <PackageId>Olive.Globalization</PackageId>
-    <PackageVersion>2.1.106</PackageVersion>
+    <PackageVersion>2.1.108</PackageVersion>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>
     <FileVersion>2.1.0.0</FileVersion>
     <Title>Olive Globalization (Service)</Title>
@@ -14,13 +14,13 @@
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
     <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netcoreapp2.1\Olive.Globalization.xml</DocumentationFile>
+    <DocumentationFile>..\bin\netstandard2.0\Olive.Globalization.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.8.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Olive">

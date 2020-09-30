@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
-    partial class Controller : Microsoft.AspNetCore.Mvc.Controller
+    partial class Controller
     {
         /// <summary>
         /// Gets a FilePathResult based on the file's path. It sets the mime type based on the file's extension.
