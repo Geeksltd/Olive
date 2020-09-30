@@ -4,16 +4,16 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Olive.Security</RootNamespace>
     <PackageId>Olive.Security.Aws</PackageId>
-    <FileVersion>3.1.103</FileVersion>
-    <AssemblyVersion>3.1.103</AssemblyVersion>
-    <Version>3.1.103</Version>
+    <FileVersion>3.1.104</FileVersion>
+    <AssemblyVersion>3.1.104</AssemblyVersion>
+    <Version>3.1.104</Version>
     <Title>Olive Security Aws</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <PackageVersion>3.1.103</PackageVersion>
+    <PackageVersion>3.1.104</PackageVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>
