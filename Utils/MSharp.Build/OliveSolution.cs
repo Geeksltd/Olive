@@ -66,7 +66,7 @@ namespace MSharp.Build
         void RestoreNuget()
         {
             if (!IsDotNetCore)
-                WindowsCommand.FindExe("nuget").Execute("restore",
+                Commands.FindExe("nuget").Execute("restore",
                 configuration: x => x.StartInfo.WorkingDirectory = Root.FullName);
         }
 
@@ -109,7 +109,7 @@ namespace MSharp.Build
             var packages = Folder(folder).AsDirectory().GetFile("packages.config");
             if (packages.Exists())
             {
-                WindowsCommand.FindExe("nuget").Execute("restore " + folder + " -packagesdirectory " + Root.GetOrCreateSubDirectory(PACKAGES_DIRECTORY).FullName,
+                Commands.FindExe("nuget").Execute("restore " + folder + " -packagesdirectory " + Root.GetOrCreateSubDirectory(PACKAGES_DIRECTORY).FullName,
               configuration: x => x.StartInfo.WorkingDirectory = Root.FullName);
             }
         }
@@ -132,7 +132,7 @@ namespace MSharp.Build
 
                 var dep = " /p:BuildProjectReferences=false".OnlyWhen(folder.StartsWith("M#"));
 
-                WindowsCommand.FindExe("msbuild").Execute($"\"{project}\" -v:m",
+                Commands.FindExe("msbuild").Execute($"\"{project}\" -v:m",
                     configuration: x => x.StartInfo.EnvironmentVariables.Add("MSHARP_BUILD", "FULL"));
             }
         }
@@ -141,7 +141,7 @@ namespace MSharp.Build
         {
             if (command.IsEmpty()) command = "build -v q";
 
-            var log = WindowsCommand.DotNet.Execute(command,
+            var log = Commands.DotNet.Execute(command,
                 configuration: x =>
                 {
                     x.StartInfo.WorkingDirectory = Folder(folder);
@@ -160,7 +160,7 @@ namespace MSharp.Build
             string log;
             if (IsDotNetCore)
             {
-                log = WindowsCommand.DotNet.Execute($"msharp.dsl.dll " + command,
+                log = Commands.DotNet.Execute($"msharp.dsl.dll " + command,
                    configuration: x => x.StartInfo.WorkingDirectory = Lib.FullName);
             }
             else
@@ -173,7 +173,7 @@ namespace MSharp.Build
 
         void YarnInstall()
         {
-            var log = WindowsCommand.Yarn.Execute("install",
+            var log = Commands.Yarn.Execute("install",
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
             Log(log);
         }
@@ -186,14 +186,14 @@ namespace MSharp.Build
                 return;
             }
 
-            var log = WindowsCommand.Bower.Execute("install",
+            var log = Commands.Bower.Execute("install",
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
             Log(log);
         }
 
         void TypescriptCompile()
         {
-            var log = WindowsCommand.TypeScript.Execute("",
+            var log = Commands.TypeScript.Execute("",
                 configuration: x => x.StartInfo.WorkingDirectory = Folder("Website"));
             Log(log);
         }

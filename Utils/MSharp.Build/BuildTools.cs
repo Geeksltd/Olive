@@ -7,8 +7,6 @@ namespace MSharp.Build
 {
     class BuildTools : Builder
     {
-        public BuildTools(bool installAll = true) : base(installAll) { }
-
         protected override void AddTasks()
         {
             if (Runtime.IsWindows())
@@ -23,33 +21,32 @@ namespace MSharp.Build
             Add(() => InstallBower());
         }
 
-        void InstallChocolatey() => WindowsCommand.Chocolaty = InstallOrLoad<Chocolatey>();
+        void InstallChocolatey() => Install<Chocolatey>();
 
         void InstallDotnetCoreSdk()
         {
-            WindowsCommand.DotNet = InstallOrLoad<DotNet215>();
-            WindowsCommand.DotNet = InstallOrLoad<DotNet22>();
+            Install<DotNet31>();
         }
 
-        void InstallReplaceInFiles() => InstallOrLoad<ReplaceInFile>();
-        void InstallAcceleratePackageRestore() => InstallOrLoad<AcceleratePackageRestore>();
+        void InstallReplaceInFiles() => Install<ReplaceInFile>();
+        void InstallAcceleratePackageRestore() => Install<AcceleratePackageRestore>();
 
-        void InstallNodeJs() => WindowsCommand.NodeJs = InstallOrLoad<NodeJs>();
+        void InstallNodeJs() => Install<NodeJs>();
 
-        void InstallYarn() => WindowsCommand.Yarn = InstallOrLoad<Yarn>();
+        void InstallYarn() => Install<Yarn>();
 
-        void InstallTypescript() => WindowsCommand.TypeScript = InstallOrLoad<Typescript>();
+        void InstallTypescript() => Install<Typescript>();
 
-        void InstallWebPack() => WindowsCommand.WebPack = InstallOrLoad<WebPack>();
+        void InstallWebPack() => Install<WebPack>();
 
-        void InstallBower() => WindowsCommand.Bower = InstallOrLoad<Bower>();
+        void InstallBower() => Install<Bower>();
 
-        FileInfo InstallOrLoad<T>([CallerMemberName] string step = "") where T : BuildTool, new()
+        void Install<T>([CallerMemberName] string step = "") where T : BuildTool, new()
         {
             var builder = new T();
             try
             {
-                return InstallAll ? builder.Install() : builder.GetActualPath();
+                builder.Install();
             }
             finally { Log(string.Join(Environment.NewLine, builder.Logs), step); }
         }

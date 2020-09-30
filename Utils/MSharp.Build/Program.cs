@@ -16,10 +16,12 @@ namespace MSharp.Build
             var result = 0;
 
 
-            var buildTools = new BuildTools(args.Lacks("-notools"));
-            result = Run(() => buildTools.Build(), buildTools.PrintLog);
-            if (result != 0) return result;
-
+            if (args.Lacks("-notools"))
+            {
+                var buildTools = new BuildTools();
+                result = Run(() => buildTools.Build(), buildTools.PrintLog);
+                if (result != 0) return result;
+            }
 
             if (args.Lacks("-tools"))
             {

@@ -1,4 +1,5 @@
-﻿using Olive;
+﻿using MSharp.Build.Installers;
+using Olive;
 using System;
 using System.IO;
 
@@ -8,14 +9,11 @@ namespace MSharp.Build.Tools
     {
         protected override string Name => "dotnet";
 
-        protected override FileInfo Installer => WindowsCommand.Chocolaty;
+        protected override Installer LinuxInstaller => new Installers.Linux.APTGet(Name, "sudo apt-get update; sudo apt-get install -y apt-transport-https && sudo apt-get update && sudo apt-get install -y dotnet-sdk-" + Version);
+
+        protected override Installer WindowsInstaller => new Installers.Windows.Chocolaty(Name, "install dotnetcore-sdk --version " + Version);
 
         protected override bool AlwaysInstall => true;
-
-        protected override string InstallCommand => "install dotnetcore-sdk --version " + Version;
-
-        public override FileInfo ExpectedPath
-            => Environment.SpecialFolder.ProgramFiles.GetFile("dotnet\\dotnet.exe");
 
         protected abstract string Version { get; }
     }
@@ -28,5 +26,10 @@ namespace MSharp.Build.Tools
     class DotNet22 : DotNet
     {
         protected override string Version => "2.2";
+    }
+
+    class DotNet31 : DotNet
+    {
+        protected override string Version => "3.1";
     }
 }
