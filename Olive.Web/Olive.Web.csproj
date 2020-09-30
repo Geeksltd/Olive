@@ -7,21 +7,23 @@
     <OutputPath>..\bin\</OutputPath>
     <DocumentationFile>..\bin\netcoreapp3.1\Olive.Web.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
-    <PackageId>Olive.Web</PackageId>
-    <FileVersion>3.1.0.0</FileVersion>
-    <AssemblyVersion>3.1.0.1</AssemblyVersion>
-    <Version>3.1.100</Version>
+    <PackageId>Olive.Web</PackageId>    
     <Title>Olive Web</Title>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <PackageVersion>3.1.101</PackageVersion>
+    <FileVersion>3.1.0.103</FileVersion>
+    <AssemblyVersion>3.1.0.103</AssemblyVersion>
+    <Version>3.1.103</Version>
+    <PackageVersion>3.1.103</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive\Olive.csproj" />
