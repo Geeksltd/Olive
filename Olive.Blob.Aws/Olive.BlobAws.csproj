@@ -9,10 +9,10 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>A plugin for Olive Framework</Description>
-    <FileVersion>3.1.103</FileVersion>
-    <AssemblyVersion>3.1.103</AssemblyVersion>
-    <Version>3.1.103</Version>
-    <PackageVersion>3.1.103</PackageVersion>
+    <FileVersion>3.1.104</FileVersion>
+    <AssemblyVersion>3.1.104</AssemblyVersion>
+    <Version>3.1.104</Version>
+    <PackageVersion>3.1.104</PackageVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
@@ -20,7 +20,7 @@
     <DocumentationFile>..\bin\netstandard2.0\Olive.BlobAws.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.5.1.11" />
+    <PackageReference Include="AWSSDK.S3" Version="3.5.2" />
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />
