@@ -47,7 +47,7 @@ In Olive, a service called `RuntimeIdentity` will facilitate this for you. It is
 
 You will often use a mix of the above two options and switch in between them depending on the runtime config in your `Startup.cs` file:
 ```csharp
-public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory factory)
+public Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory factory)
   : base(env, config, factory)
 {
       if (env.IsProduction()) config.LoadAwsIdentity();

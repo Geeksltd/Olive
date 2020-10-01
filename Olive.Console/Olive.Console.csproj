@@ -14,7 +14,7 @@
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
     <Version>2.1.104</Version>
-    <PackageVersion>2.1.109</PackageVersion>
+    <PackageVersion>2.1.110</PackageVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\</OutputPath>

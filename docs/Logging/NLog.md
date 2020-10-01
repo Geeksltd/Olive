@@ -13,7 +13,7 @@ NLog can process diagnostic messages emitted from any .NET language, augment the
 3. In Configure() method add the following line:
 
 ```csharp
-public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
+public override void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     // ...
     app.UseNLog(env);

@@ -326,7 +326,7 @@ if (Config.Get<bool>("Automated.Tasks:Enabled"))
 ## 4 Dec 2018
 In `Startup.cs` add an instance of `ILoggerFactory` to the constructor, and just pass it to the base constructor.
 ```csharp
-public Startup(IHostingEnvironment env, IConfiguration config, ILoggerFactory loggerFactory) 
+public Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory) 
        : base(env, config, loggerFactory)`
 {
     ...
@@ -587,7 +587,7 @@ Make sure that with every release of your application, you increment this number
 ## 16 Sep 2018
 If you're using AWS server identity (microservices with containers) please remove `services.AddAwsIdentity();` from `ConfigureServices(IServiceCollection services)` and add the following method:
 ```csharp
-public Startup(IHostingEnvironment env, IConfiguration config) : base(env, config)
+public Startup(IWebHostEnvironment env, IConfiguration config) : base(env, config)
 {
     if (env.IsProduction()) config.LoadAwsIdentity();    
 }
@@ -619,7 +619,7 @@ As it has been mentioned on the `21 August 2018` changes, we don't have a confli
    * In case you're using other parameters, you can include those too.
    * But as a minimum you should provide the following two arguments to the base constructor.   
 ```
-public Startup(IHostingEnvironment env, IConfiguration config) : base(env, config) { }
+public Startup(IWebHostEnvironment env, IConfiguration config) : base(env, config) { }
 ```
 * Remove the `env` parameter from all the other methods in that class. Use the inherited `Environment` field instead.
 
@@ -705,7 +705,7 @@ M#/lib/*
 ## 02 May 2018
 - In `StartUp.cs` add the following method:
 ```csharp
-public override async Task OnStartUpAsync(IApplicationBuilder app, IHostingEnvironment env)
+public override async Task OnStartUpAsync(IApplicationBuilder app, IWebHostEnvironment env)
 {
     if (env.IsDevelopment())
         await app.InitializeTempDatabase<SqlServerManager>(() => ReferenceData.Create());
@@ -715,7 +715,7 @@ public override async Task OnStartUpAsync(IApplicationBuilder app, IHostingEnvir
 ```
 - In `StartUp.cs` update the `Configure(...)` method to the following:
 ```csharp
-public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
+public override void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     base.Configure(app, env);
     if (env.IsDevelopment()) app.UseWebTest(config => config.AddTasks());
@@ -834,7 +834,7 @@ public override void ConfigureServices(IServiceCollection services)
     services.AddScheduledTasks();
 }
 
-public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
+public override void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
     app.UseWebTest(ReferenceData.Create, config => config.AddTasks().AddEmail());
     base.Configure(app, env);

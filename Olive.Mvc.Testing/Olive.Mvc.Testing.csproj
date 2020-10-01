@@ -18,6 +18,11 @@
     <PackageVersion>3.1.102</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Contracts\**" />
+    <EmbeddedResource Remove="Contracts\**" />
+    <None Remove="Contracts\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Olive">
       <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
       <Private>false</Private>
@@ -36,9 +41,6 @@
     <Reference Include="Olive.Export">
       <HintPath>..\bin\netstandard2.0\Olive.Export.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Contracts\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />

@@ -12,13 +12,13 @@ namespace Olive.Console
     public abstract class Startup : IHostedService
     {
         public static string[] Args;
-        public static IHostingEnvironment Environment { get; private set; }
+        public static IHostEnvironment Environment { get; private set; }
         public static IConfiguration Configuration { get; private set; }
 
         public Startup(IConfiguration config)
         {
             Configuration = config;
-            Environment = Context.Current.GetService<IHostingEnvironment>();
+            Environment = Context.Current.GetService<IHostEnvironment>();
 
             ConfigureServices(Application.ServiceCollection);
 

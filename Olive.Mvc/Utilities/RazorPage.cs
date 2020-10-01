@@ -29,6 +29,6 @@ namespace Olive.Mvc
             return path.AsFile();
         }
 
-        public virtual IHostingEnvironment Environment => Olive.Context.Current.GetService<IHostingEnvironment>();
+        public virtual IWebHostEnvironment Environment => Olive.Context.Current.GetService<IWebHostEnvironment>();
     }
 }
