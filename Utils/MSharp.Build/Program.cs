@@ -15,7 +15,6 @@ namespace MSharp.Build
 
             var result = 0;
 
-
             if (args.Lacks("-notools"))
             {
                 var buildTools = new BuildTools();
