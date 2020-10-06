@@ -65,6 +65,7 @@ namespace Olive.Mvc
 
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
 
+            services.AddControllersWithViews().AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null);
             // Caused "Urecognized SameSiteMode value -1
             //services.ConfigureNonBreakingSameSiteCookies();
         }
@@ -90,6 +91,8 @@ namespace Olive.Mvc
             {
                 options.ModelMetadataDetailsProviders.Add(
                     new SuppressChildValidationMetadataProvider(typeof(IEntity)));
+
+                options.EnableEndpointRouting = false;
             });
         }
 
