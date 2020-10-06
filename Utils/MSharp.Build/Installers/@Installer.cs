@@ -10,7 +10,6 @@ namespace MSharp.Build.Installers
     {
         Installer()
         {
-
         }
 
         public Installer(string name, string installCommand)

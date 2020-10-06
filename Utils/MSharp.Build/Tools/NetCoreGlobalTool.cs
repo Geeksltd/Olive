@@ -9,6 +9,5 @@ namespace MSharp.Build.Tools
     {
         protected override Installer LinuxInstaller => WindowsInstaller;
         protected override Installer WindowsInstaller => new Installers.DotNet(Name);
-
     }
 }

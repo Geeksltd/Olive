@@ -22,8 +22,9 @@ namespace MSharp.Build
 
             if (IsDotNetCore)
             {
-                if (Lib.GetSubDirectory("netcoreapp2.2").Exists()) Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.2");
-                else Lib = Lib.GetOrCreateSubDirectory("netcoreapp2.1");
+                Lib = new[] { "3.1", "2.2", "2.1" }.Select(x => Lib.GetSubDirectory("netcoreapp" + x))
+                    .FirstOrDefault(x => x.Exists())
+                    ?? throw new Exception("netcoreapp3.1 folder is not found in " + Lib.FullName);
             }
         }
 
