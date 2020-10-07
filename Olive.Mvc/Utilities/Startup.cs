@@ -78,8 +78,7 @@ namespace Olive.Mvc
         protected virtual void ConfigureMvc(IMvcBuilder mvc)
         {
             mvc.AddMvcOptions(x => x.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
-
-            // mvc.AddJsonOptions(o => o.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            mvc.AddJsonOptions(o => o.JsonSerializerOptions.PropertyNamingPolicy = null);
 
             //mvc.ConfigureApplicationPartManager(manager =>
             //{

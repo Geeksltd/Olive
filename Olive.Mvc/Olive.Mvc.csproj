@@ -16,7 +16,7 @@
     <FileVersion>3.1.0.105</FileVersion>
     <OutputType>Library</OutputType>
     <Version>3.1.105</Version>
-    <PackageVersion>3.1.105</PackageVersion>
+    <PackageVersion>3.1.106</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Security\Olive.Mvc.Security.csproj" />
