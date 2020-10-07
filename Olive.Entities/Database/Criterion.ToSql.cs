@@ -76,6 +76,9 @@ namespace Olive.Entities
 
         string ToNestedSubQuerySql(SqlConversionContext context, string[] parts)
         {
+            if (context.Query.AliasPrefix.HasValue())
+                throw new NotSupportedException("Conditions on associations is not supported when query is a sub query.");
+
             var proc = new NestedCriteriaProcessor(context.Type, parts);
 
             var subCriterion = new Criterion(proc.Property.Name, FilterFunction, Value);
