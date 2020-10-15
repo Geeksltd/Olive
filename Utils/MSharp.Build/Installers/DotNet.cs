@@ -12,5 +12,19 @@ namespace MSharp.Build.Installers
         }
 
         protected override FileInfo Executable => Commands.DotNet;
+
+        internal override string Install()
+        {
+            try
+            {
+                return base.Install();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("already installed"))
+                    return string.Empty;
+                throw;
+            }
+        }
     }
 }

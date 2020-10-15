@@ -4,21 +4,21 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>msharp-build</ToolCommandName>
-    <Version>1.2.136</Version>
+    <ToolCommandName>msharp-build</ToolCommandName>    
     <Company>Geeks Ltd</Company>
     <Authors>Geeks Ltd</Authors>
     <Description>Provides build functionality for M# projects</Description>
     <AssemblyName>msharp-build</AssemblyName>
-    <PackageIconUrl>https://github.com/Geeksltd/MSharp.Docs/raw/master/_media/MSharp.png</PackageIconUrl>
-    <AssemblyVersion>1.2.136</AssemblyVersion>
+    <PackageIconUrl>https://github.com/Geeksltd/MSharp.Docs/raw/master/_media/MSharp.png</PackageIconUrl>    
     <Product>msharp-build</Product>
     <PackageId>msharp-build</PackageId>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
-    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
-    <FileVersion>1.2.136</FileVersion>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>    
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <PackageVersion>1.1.150</PackageVersion>
+    <Version>3.1.101</Version>
+    <AssemblyVersion>3.1.101</AssemblyVersion>
+    <FileVersion>3.1.101</FileVersion>
+    <PackageVersion>3.1.101</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="CICD\" />
