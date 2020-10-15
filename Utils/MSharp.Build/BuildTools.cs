@@ -9,9 +9,8 @@ namespace MSharp.Build
     {
         protected override void AddTasks()
         {
-            if (Runtime.IsWindows())
-                Add(() => InstallChocolatey());
-            Add(() => InstallDotnetCoreSdk());
+            Console.WriteLine("Help: http://learn.msharp.co.uk/#/Install/README");
+
             Add(() => InstallReplaceInFiles());
             Add(() => InstallAcceleratePackageRestore());
             Add(() => InstallNodeJs());
@@ -19,13 +18,6 @@ namespace MSharp.Build
             Add(() => InstallTypescript());
             Add(() => InstallWebPack());
             Add(() => InstallBower());
-        }
-
-        void InstallChocolatey() => Install<Chocolatey>();
-
-        void InstallDotnetCoreSdk()
-        {
-            Install<DotNet31>();
         }
 
         void InstallReplaceInFiles() => Install<ReplaceInFile>();

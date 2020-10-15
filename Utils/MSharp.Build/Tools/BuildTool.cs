@@ -18,12 +18,13 @@ namespace MSharp.Build.Tools
         {
             get
             {
-                return new[]
-                {
-                    new { OS = OSPlatform.Windows , Installer = WindowsInstaller},
-                    new { OS = OSPlatform.Linux , Installer = LinuxInstaller},
-                }
-                .FirstOrDefault(i => i.OS == Runtime.OS)?.Installer ?? throw new NotSupportedException(Runtime.OS.ToString());
+                if (Runtime.OS == OSPlatform.Windows)
+                    return WindowsInstaller;
+
+                if (Runtime.OS == OSPlatform.Linux)
+                    return LinuxInstaller;
+
+                throw new NotSupportedException(Runtime.OS.ToString());
             }
         }
         protected abstract string Name { get; }
