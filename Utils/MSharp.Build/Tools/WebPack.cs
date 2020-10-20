@@ -10,6 +10,6 @@ namespace MSharp.Build.Tools
         protected override string Name => "webpack";
 
         protected override Installer LinuxInstaller => WindowsInstaller;
-        protected override Installer WindowsInstaller => new Installers.Yarn(Name, "global add webpack");
+        protected override Installer WindowsInstaller => new Installers.NodeJs(Name);
     }
 }

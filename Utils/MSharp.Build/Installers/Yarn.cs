@@ -7,7 +7,7 @@ namespace MSharp.Build.Installers
 {
     class Yarn : Installer
     {
-        public Yarn(string name, string installCommand) : base(name, installCommand)
+        public Yarn(string name, string installCommand = null) : base(name, installCommand ?? "global add " + name)
         {
         }
 

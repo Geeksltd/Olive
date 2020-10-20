@@ -15,10 +15,10 @@
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>    
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <Version>3.1.101</Version>
-    <AssemblyVersion>3.1.101</AssemblyVersion>
-    <FileVersion>3.1.101</FileVersion>
-    <PackageVersion>3.1.101</PackageVersion>
+    <Version>3.1.103</Version>
+    <AssemblyVersion>3.1.103</AssemblyVersion>
+    <FileVersion>3.1.103</FileVersion>
+    <PackageVersion>3.1.103</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="CICD\" />
