@@ -37,7 +37,7 @@ namespace Olive.PassiveBackgroundTasks
 
         async Task DoRun()
         {
-            this.Logger().Info("Checking background tasks ...");
+            this.Logger().Info("Checking background tasks ... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
 
             var toRun = (await Scheduler.GetTasksToRun()).ToArray();
             var taskNames = toRun.Select(c => c.Name).ToString(",");

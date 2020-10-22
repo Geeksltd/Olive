@@ -76,16 +76,18 @@ namespace Olive.PassiveBackgroundTasks
 
             return await Database.Reload(clone);
         }
+        static void LogInfo(string message) => Log.For<IBackgourndTask>().Info(LocalTime.UtcNow.ToString("HH:mm:ss") + " : " + message);
 
         internal static async Task<bool> TryPick(this IBackgourndTask task)
         {
             var result = false;
-            Log.For<IBackgourndTask>().Info($"Checking to see if {task.Name} has to run.");
+
+            LogInfo($"Checking to see if {task.Name} has to run.");
             using (var scope = Database.CreateTransactionScope())
             {
-                Log.For<IBackgourndTask>().Info($"Causing a distributed lock for {task.Name}.");
+                LogInfo($"Causing a distributed lock for {task.Name}.");
                 // cause a distributed lock
-                await DataAccess.Create().ExecuteNonQuery($"update {task.GetType().Name.ToPlural()} set Heartbeat = Heartbeat");
+                await DataAccess.Create().ExecuteNonQuery($"update {task.GetType().Name.ToPlural()} set Heartbeat = Heartbeat where Name = '{task.Name}'");
 
                 task = await Database.Reload(task);
 
@@ -94,22 +96,22 @@ namespace Olive.PassiveBackgroundTasks
 
                 if (nextExecution.IsInTheFuture())
                 {
-                    task.Logger().Info($"Should still wait for running [{task.Name}]. Next execution is at {nextExecution}.");
+                    LogInfo($"Should still wait for running [{task.Name}]. Next execution is at {nextExecution}.");
                     result = false;
                 }
                 else
                 {
-                    Log.For<IBackgourndTask>().Info($"{task.Name} should run.");
+                    LogInfo($"{task.Name} should run.");
                     var lastHeartbeat = task.Heartbeat.GetValueOrDefault();
                     var stillAlive = lastHeartbeat.AddMinutes(task.TimeoutInMinutes).IsInTheFuture();
 
                     if (stillAlive)
                     {
-                        task.Logger().Info($"[{task.Name}] is already running on [{task.ExecutingInstance}] instance.");
+                        LogInfo($"[{task.Name}] is already running on [{task.ExecutingInstance}] instance.");
                     }
                     else
                     {
-                        task.Logger().Info($"[{task.Name}] is not running. Last heartbeat : " + lastHeartbeat);
+                        LogInfo($"[{task.Name}] is not running. Last heartbeat : " + lastHeartbeat);
                         await task.SendHeartbeat();
                     }
 
