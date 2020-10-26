@@ -12,6 +12,11 @@ Upgrade MSharp nuget to the latest version. Then change the following at the end
 
 Do the same in #UI.csproj but change `/model` to `/ui`.
 
+Previously, the code generation, and the design-time diagnostics (warnings, extension related files, etc) hapenned at the same time. This slowed down the build process. The above change will fix it so that:
+
+- The `build` part (code generation) happens as part of the build, so that any issues still correctly break the build process.
+- The diagnostics command is then executed in another process without slowing down your dev/build actions.
+
 ## 25 August 2020
 We have moved `RegisterDataProvider()` method from `IDatabase` interface to `IDatabaseProviderConfig`. So if you have used something like this `Context.Current.Database().RegisterDataProvider(typeof(Service), new DataProvider());` please change it to this one:
 
