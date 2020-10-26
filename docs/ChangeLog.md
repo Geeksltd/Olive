@@ -1,6 +1,17 @@
 
 # Olive compatibility change log
 
+## 26 Oct 2020
+Upgrade MSharp nuget to the latest version. Then change the following at the end of your `#Model.csproj`:
+```xml
+<Target Name="Generate code" AfterTargets="AfterBuild">
+   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /model" />
+   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="start &quot;&quot; msharp /diagnose" />
+</Target>
+```
+
+Do the same in #UI.csproj but change `/model` to `/ui`.
+
 ## 25 August 2020
 We have moved `RegisterDataProvider()` method from `IDatabase` interface to `IDatabaseProviderConfig`. So if you have used something like this `Context.Current.Database().RegisterDataProvider(typeof(Service), new DataProvider());` please change it to this one:
 
