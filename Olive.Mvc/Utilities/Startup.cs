@@ -57,8 +57,7 @@ namespace Olive.Mvc
             services.AddResponseCaching();
             services.AddDefaultAudit();
 
-            services.Configure<RazorViewEngineOptions>(o =>
-            o.ViewLocationExpanders.Add(new ViewLocationExpander()));
+            services.Configure<RazorViewEngineOptions>(o => o.ViewLocationExpanders.Add(new ViewLocationExpander()));
 
             services.TryAddTransient<IFileRequestService, DiskFileRequestService>();
             services.TryAddTransient<IFileUploadMarkupGenerator, DefaultFileUploadMarkupGenerator>();
