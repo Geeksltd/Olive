@@ -84,7 +84,7 @@ namespace Olive
             => @this.Get(x => x.OrEmpty().FirstOrDefault(func));
 
         public static Task<TSource> First<TSource>(this Task<IEnumerable<TSource>> @this)
-            => @this.Get(x => x.OrEmpty().First());
+    => @this.Get(x => x.OrEmpty().First());
 
         public static Task<TSource> FirstOrDefault<TSource>(this Task<IEnumerable<TSource>> @this)
             => @this.Get(x => x.OrEmpty().FirstOrDefault());

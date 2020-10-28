@@ -112,6 +112,8 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<List<TSource>> @this, int count) => @this.ForLinq().Take(count);
 
+        public static Task<TSource[]> ToArray<TSource>(this Task<List<TSource>> @this) => @this.ForLinq().ToArray();
+
         public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<List<TSource>> @this, int lower, int count) => @this.ForLinq().Take(lower, count);
 

@@ -182,6 +182,9 @@ namespace Olive
         public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<Array> @this)
             => @this.Get(x => x.OfType<TResult>());
 
+        public static Task<List<TSource>> ToList<TSource>(this Task<TSource[]> @this)
+            => @this.ForLinq().ToList();
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.

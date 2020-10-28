@@ -176,6 +176,10 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
+        public static Task<List<TSource>> ToList<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
+            => @this.ForLinq().ToList();
 
+        public static Task<TSource[]> ToArray<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
+            => @this.ForLinq().ToArray();
     }
 }
