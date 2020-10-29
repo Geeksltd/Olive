@@ -65,7 +65,7 @@ namespace Olive.Entities.Data
             if (!IsCacheable(type)) return;
 
             for (var parentType = type; parentType != typeof(Entity); parentType = parentType.BaseType)
-                CacheProvider.RemoveList(type);
+                CacheProvider.RemoveList(parentType);
         }
 
         public virtual IEnumerable GetList(Type type)
