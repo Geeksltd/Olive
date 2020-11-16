@@ -41,8 +41,10 @@ namespace Olive.Mvc
         public virtual void ConfigureServices(IServiceCollection services)
         {
             Configuration.MergeEnvironmentVariables();
+
             Services = services;
             services.AddHttpContextAccessor();
+            services.AddCors(opt => opt.FromConfig(Configuration));
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.TryAddTransient<IFileAccessorFactory, FileAccessorFactory>();
@@ -98,6 +100,8 @@ namespace Olive.Mvc
         {
             Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices);
             Context.Current.GetService<IDatabaseProviderConfig>().Configure();
+
+            app.UseCorsFromConfig();
 
             ConfigureRequestHandlers(app);
         }
