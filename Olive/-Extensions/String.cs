@@ -113,9 +113,9 @@ namespace Olive
         {
             if (!caseSensitive)
             {
-                @this = @this.ToLowerOrEmpty();
+                @this = @this.ToUpperOrEmpty();
 
-                for (var i = 0; i < keywords.Length; i++) keywords[i] = keywords[i].ToLower();
+                for (var i = 0; i < keywords.Length; i++) keywords[i] = keywords[i].ToUpper();
             }
 
             foreach (var key in keywords)

@@ -80,7 +80,7 @@ namespace Olive.Tests
 
             stringList.Distinct(x => x).Count().ShouldEqual(3);
 
-            stringList.Distinct(x => x.ToLower()).Count().ShouldEqual(2);
+            stringList.Distinct(x => x.ToUpper()).Count().ShouldEqual(2);
 
             var intList = new List<int>() { 30, 50, 60, 60, 70 };
 

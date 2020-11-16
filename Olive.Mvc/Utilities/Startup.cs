@@ -96,20 +96,9 @@ namespace Olive.Mvc
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<PerformanceMonitoringMiddleware>();
-
             Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices);
             Context.Current.GetService<IDatabaseProviderConfig>().Configure();
 
-            if (Environment.IsDevelopment())
-                app.UseMiddleware<DevCommandMiddleware>();
-
-            app.UseResponseCompression();
-
-            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));
-
-            ConfigureExceptionPage(app);
-            ConfigureSecurity(app);
             ConfigureRequestHandlers(app);
         }
 
@@ -125,7 +114,17 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureRequestHandlers(IApplicationBuilder app)
         {
+            app.UseResponseCompression();
             UseStaticFiles(app);
+            ConfigureExceptionPage(app);
+            ConfigureSecurity(app);
+            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));
+
+            if (Environment.IsDevelopment())
+                app.UseMiddleware<DevCommandMiddleware>();
+
+            app.UseMiddleware<PerformanceMonitoringMiddleware>();
+
             app.UseRequestLocalization(RequestLocalizationOptions);
             app.UseMvc();
         }

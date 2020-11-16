@@ -38,7 +38,7 @@ namespace Olive
         {
             foreach (var p in Parameters)
             {
-                var routeKey = routeData.Keys.FirstOrDefault(x => x.ToLower() == p.Key.ToLower());
+                var routeKey = routeData.Keys.FirstOrDefault(x => x.ToUpper() == p.Key.ToUpper());
                 if (routeKey != null)
                 {
                     if (!p.MatchesType(routeData[routeKey]))
@@ -58,7 +58,7 @@ namespace Olive
         {
             foreach (var p in Parameters)
             {
-                var routeKey = routeData.Keys.FirstOrDefault(x => x.ToLower() == p.Key.ToLower());
+                var routeKey = routeData.Keys.FirstOrDefault(x => x.ToUpper() == p.Key.ToUpper());
                 if (routeKey == null) continue;
                 if (!p.MatchesType(routeData[routeKey])) continue;
                 yield return p;
@@ -86,7 +86,7 @@ namespace Olive
             var result = Template;
             foreach (var p in Parameters)
             {
-                var routeKey = routeData.Keys.FirstOrDefault(x => x.ToLower() == p.Key.ToLower());
+                var routeKey = routeData.Keys.FirstOrDefault(x => x.ToUpper() == p.Key.ToUpper());
                 if (routeKey != null)
                 {
                     // TODO: Type check
