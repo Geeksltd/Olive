@@ -1,6 +1,18 @@
 
 # Olive compatibility change log
 
+## 16 Nov 2020
+To allow CORS access to other applications/domains you can use the appSettings.json config now:
+```json
+{
+   ...
+   "cors": {
+      "allow": "domain1.com, sub.domain2.com, *.domain3.com"
+   }
+}
+```
+In the base StartUp class, a Cors policy named "AllowedByConfig" will be defined for that.
+
 ## 26 Oct 2020
 Upgrade MSharp nuget to the latest version. Then change the following at the end of your `#Model.csproj`:
 ```xml
