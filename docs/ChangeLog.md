@@ -11,6 +11,7 @@ To upgrade your project to .NET 3.1, you need the following:
 5. Open a CMD in the above folder and run `git add MSharp.DSL.runtimeconfig.json -f`
 6. From all `bin` and `lib` folders, delete the `netcoreapp2.1` folders. 
 7. Update your `Build.bat` file and set its content to just `call msharp-build -notools` and then run it once.
+8. If the application is hosted on `AWS Lambda` then on the AWS Console, change the Lambda `Runtime` configuration to .NET 3.1.
 
 ## 16 Nov 2020
 To allow CORS access to other applications/domains you can use the appSettings.json config now:
