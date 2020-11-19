@@ -1,6 +1,31 @@
 
 # Olive compatibility change log
 
+## 19 Nov 2020 (.NET Core 3.1 upgrade)
+To upgrade your project to .NET 3.1, you need the following:
+
+1. Edit all your `csproj` files and change the .NET version:
+```xml
+...
+<TargetFramework>netcoreapp3.1</TargetFramework>
+...
+```
+
+2. Update all your `Olive` and `msharp` nuget packages. Visual Studio might get into a dependency lock. To get past it, edit the `csproj` files and manually update the versions to the latest one.
+
+3. Create the folder `M#\lib\netcoreapp3.1` and inside it, create a text file named `MSharp.DSL.runtimeconfig.json` with the following content:
+```json
+{ "runtimeOptions": {
+    "tfm": "netcoreapp3.1",
+    "framework": { "name": "Microsoft.NETCore.App","version": "3.1.0" }
+  }
+}
+```
+
+4. From all `bin` and `lib` folders, delete the `netcoreapp2.1` folders. 
+
+5. Update your `Build.bat` file and set its content to just `call msharp-build -notools` and then run it once.
+
 ## 16 Nov 2020
 To allow CORS access to other applications/domains you can use the appSettings.json config now:
 ```json
