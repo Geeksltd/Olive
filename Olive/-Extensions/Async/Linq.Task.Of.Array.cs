@@ -156,6 +156,8 @@ namespace Olive
         public static Task<decimal> Average<TSource>(this Task<TSource[]> @this, Func<TSource, decimal> func)
             => @this.ForLinq().Average(func);
 
+        public static Task<int> Count<TSource>(this Task<TSource[]> @this) => @this.ForLinq().Count();
+
         public static Task<int> Count<TSource>(
         this Task<TSource[]> @this, Func<TSource, bool> func) => @this.ForLinq().Count(func);
 
@@ -179,6 +181,9 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<Array> @this)
             => @this.Get(x => x.OfType<TResult>());
+
+        public static Task<List<TSource>> ToList<TSource>(this Task<TSource[]> @this)
+            => @this.ForLinq().ToList();
 
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.

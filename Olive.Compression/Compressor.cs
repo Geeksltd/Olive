@@ -22,7 +22,7 @@ namespace Olive
             CompressionFormat format = CompressionFormat.Zip)
         {
             if (@this.None()) return new byte[0];
-            foreach (var sameName in @this.GroupBy(x => x.Name.ToLower()))
+            foreach (var sameName in @this.GroupBy(x => x.Name.ToUpper()))
                 if (sameName.HasMany())
                     throw new Exception("Failed to compress files. Duplicate file names: " + sameName.Key);
 

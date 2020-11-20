@@ -544,7 +544,7 @@ namespace Olive
             if (caseSensitive)
                 return @this.LacksAll(items);
             else
-                return !@this.Select(a => a.ToLower()).ContainsAny(items.Select(b => b.ToLower()).ToArray());
+                return !@this.Select(a => a.ToUpper()).ContainsAny(items.Select(b => b.ToUpper()).ToArray());
         }
 
         /// <summary>
@@ -707,8 +707,8 @@ namespace Olive
 
             if (!caseSensitive)
             {
-                item = item.ToLower();
-                @this = @this.Select(x => x.ToLower());
+                item = item.ToUpper();
+                @this = @this.Select(x => x.ToUpper());
             }
 
             var index = @this.IndexOf(item);
@@ -757,8 +757,8 @@ namespace Olive
 
             if (!caseSensitive)
             {
-                item = item.ToLower();
-                @this = @this.Select(x => x.ToLower());
+                item = item.ToUpper();
+                @this = @this.Select(x => x.ToUpper());
             }
 
             var index = @this.IndexOf(item);
@@ -820,7 +820,7 @@ namespace Olive
             if (@this.None()) return true;
 
             if (!caseSensitive)
-                @this = @this.Select(x => x.ToLower());
+                @this = @this.Select(x => x.ToUpper());
 
             return AreItemsUnique(@this);
         }
@@ -1138,8 +1138,8 @@ namespace Olive
         {
             if (!caseSensitive)
             {
-                @this = @this.Select(x => x.ToLower());
-                item = item.ToLower();
+                @this = @this.Select(x => x.ToUpper());
+                item = item.ToUpper();
             }
 
             return AllIndicesOf(@this, item);
@@ -1524,11 +1524,12 @@ namespace Olive
             var partitions = System.Collections.Concurrent.Partitioner.Create(source).GetPartitions(degreeOfParallelism);
 
             return Task.WhenAll(
-               partitions.Select(partition => Task.Run(async () => {
-                    using (partition)
-                        while (partition.MoveNext())
-                            await func(partition.Current);
-            })));
+               partitions.Select(partition => Task.Run(async () =>
+               {
+                   using (partition)
+                       while (partition.MoveNext())
+                           await func(partition.Current);
+               })));
         }
     }
 }

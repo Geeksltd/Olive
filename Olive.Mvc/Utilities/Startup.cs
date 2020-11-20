@@ -41,8 +41,10 @@ namespace Olive.Mvc
         public virtual void ConfigureServices(IServiceCollection services)
         {
             Configuration.MergeEnvironmentVariables();
+
             Services = services;
             services.AddHttpContextAccessor();
+            services.AddCors(opt => opt.FromConfig(Configuration));
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.TryAddTransient<IFileAccessorFactory, FileAccessorFactory>();
@@ -57,8 +59,7 @@ namespace Olive.Mvc
             services.AddResponseCaching();
             services.AddDefaultAudit();
 
-            services.Configure<RazorViewEngineOptions>(o =>
-            o.ViewLocationExpanders.Add(new ViewLocationExpander()));
+            services.Configure<RazorViewEngineOptions>(o => o.ViewLocationExpanders.Add(new ViewLocationExpander()));
 
             services.TryAddTransient<IFileRequestService, DiskFileRequestService>();
             services.TryAddTransient<IFileUploadMarkupGenerator, DefaultFileUploadMarkupGenerator>();
@@ -97,20 +98,11 @@ namespace Olive.Mvc
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<PerformanceMonitoringMiddleware>();
-
             Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices);
             Context.Current.GetService<IDatabaseProviderConfig>().Configure();
 
-            if (Environment.IsDevelopment())
-                app.UseMiddleware<DevCommandMiddleware>();
+            app.UseCorsFromConfig();
 
-            app.UseResponseCompression();
-
-            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));
-
-            ConfigureExceptionPage(app);
-            ConfigureSecurity(app);
             ConfigureRequestHandlers(app);
         }
 
@@ -126,7 +118,17 @@ namespace Olive.Mvc
 
         protected virtual void ConfigureRequestHandlers(IApplicationBuilder app)
         {
+            app.UseResponseCompression();
             UseStaticFiles(app);
+            ConfigureExceptionPage(app);
+            ConfigureSecurity(app);
+            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));
+
+            if (Environment.IsDevelopment())
+                app.UseMiddleware<DevCommandMiddleware>();
+
+            app.UseMiddleware<PerformanceMonitoringMiddleware>();
+
             app.UseRequestLocalization(RequestLocalizationOptions);
             app.UseMvc();
         }

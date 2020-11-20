@@ -69,13 +69,32 @@ namespace Olive
             return tasks.Distinct(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
-        public static async Task<T> First<T>(
-          this IEnumerable<T> @this, Func<T, Task<bool>> func)
+        public static async Task<T> First<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
             foreach (var item in @this)
                 if (await func(item)) return item;
 
             throw new InvalidOperationException("No item in the source sequence matches the provided predicte.");
+        }
+
+        public static async Task<IEnumerable<T>> Except<T>(this IEnumerable<T> @this, Task<IEnumerable<T>> exclude)
+        {
+            return @this.Except(await exclude);
+        }
+
+        public static Task<IEnumerable<T>> Except<T>(this IEnumerable<T> @this, Task<T[]> exclude)
+        {
+            return @this.Except(exclude.ForLinq());
+        }
+
+        public static Task<IEnumerable<T>> Except<T>(this IEnumerable<T> @this, Task<IOrderedEnumerable<T>> exclude)
+        {
+            return @this.Except(exclude.ForLinq());
+        }
+
+        public static Task<IEnumerable<T>> Except<T>(this IEnumerable<T> @this, Task<List<T>> exclude)
+        {
+            return @this.Except(exclude.ForLinq());
         }
 
         public static async Task<T> FirstOrDefault<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)

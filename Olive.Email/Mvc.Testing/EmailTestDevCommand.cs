@@ -54,6 +54,8 @@ namespace Olive.Email
         {
             if (Request.Has("attachmentInfo"))
                 AttachmentFile = AttachmentSerializer.Parse(Request.Param("attachmentInfo"));
+            else
+                AttachmentFile = null;
 
             return Task.CompletedTask;
         }

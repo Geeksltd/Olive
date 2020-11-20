@@ -1,6 +1,47 @@
 
 # Olive compatibility change log
 
+## 19 Nov 2020 (.NET Core 3.1 upgrade)
+To upgrade your project to .NET 3.1, you need the following:
+
+1. Edit all your `csproj` files and change the .NET version: ```<TargetFramework>netcoreapp3.1</TargetFramework>```
+2. Update your `msharp-build` tool to the latest version by running `dotnet tool update --global msharp-build`
+3. Run `msharp-build /update-nuget`.
+4. Create the folder `M#\lib\netcoreapp3.1` and inside it, create a text file named `MSharp.DSL.runtimeconfig.json` with the following content ```{ "runtimeOptions": { "tfm": "netcoreapp3.1", "framework": { "name": "Microsoft.NETCore.App","version": "3.1.0" } } }```
+5. Open a CMD in the above folder and run `git add MSharp.DSL.runtimeconfig.json -f`
+6. From all `bin` and `lib` folders, delete the `netcoreapp2.1` folders. 
+7. From `Website.csproj` remove `<PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />`
+8. Update your `Build.bat` file and set its content to just `call msharp-build -notools` and then run it once.
+9. If the application is hosted on `AWS Lambda` then on the AWS Console, change the Lambda `Runtime` configuration to .NET 3.1.
+
+## 16 Nov 2020
+To allow CORS access to other applications/domains you can use the appSettings.json config now:
+```json
+{
+   ...
+   "cors": {
+      "allow": "domain1.com, sub.domain2.com, *.domain3.com"
+   }
+}
+```
+In the base StartUp class, a Cors policy named "AllowedByConfig" will be defined for that.
+
+## 26 Oct 2020
+Upgrade MSharp nuget to the latest version. Then change the following at the end of your `#Model.csproj`:
+```xml
+<Target Name="Generate code" AfterTargets="AfterBuild">
+   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /model" />
+   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="start &quot;&quot; msharp /diagnose" />
+</Target>
+```
+
+Do the same in #UI.csproj but change `/model` to `/ui`.
+
+Previously, the code generation, and the design-time diagnostics (warnings, extension related files, etc) happened at the same time. This slowed down the build process. The above change will fix it so that:
+
+- The `build` part (code generation) happens as part of the build, so that any issues still correctly break the build process.
+- The diagnostics command is then executed in another process without slowing down your dev/build actions.
+
 ## 25 August 2020
 We have moved `RegisterDataProvider()` method from `IDatabase` interface to `IDatabaseProviderConfig`. So if you have used something like this `Context.Current.Database().RegisterDataProvider(typeof(Service), new DataProvider());` please change it to this one:
 
