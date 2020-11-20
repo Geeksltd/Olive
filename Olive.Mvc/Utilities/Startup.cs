@@ -122,10 +122,11 @@ namespace Olive.Mvc
             UseStaticFiles(app);
             ConfigureExceptionPage(app);
             ConfigureSecurity(app);
-            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));
 
             if (Environment.IsDevelopment())
                 app.UseMiddleware<DevCommandMiddleware>();
+
+            app.UseMiddleware<AsyncStartupMiddleware>((Func<Task>)(() => OnStartUpAsync(app)));
 
             app.UseMiddleware<PerformanceMonitoringMiddleware>();
 
