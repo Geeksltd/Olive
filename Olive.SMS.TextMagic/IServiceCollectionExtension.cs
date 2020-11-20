@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Olive.SMS;
 
-namespace Olive.Aws.Ses
+namespace Olive.SMS.TextMagic
 {
     public static class IServiceCollectionExtension
     {
-        public static IServiceCollection AddAwsSesProvider(this IServiceCollection @this)
+        public static IServiceCollection AddTextMagic(this IServiceCollection @this)
         {
-            return @this.AddTransient<ISmsDispatcher, Olive.SMS.TextMagic.SmsDispatcher>();
+            return @this.AddTransient<ISmsDispatcher, SmsDispatcher>();
         }
     }
 }
