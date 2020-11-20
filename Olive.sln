@@ -170,6 +170,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Distributed", "Distributed"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{BC185AF9-EC42-4926-B45D-2261E63FF0F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.SMS.TextMagic", "Olive.SMS.TextMagic\Olive.SMS.TextMagic.csproj", "{CF9CAD17-3BA6-47B7-8815-084A84A5D1F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
