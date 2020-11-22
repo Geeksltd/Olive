@@ -8,114 +8,132 @@ using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
-    public static class BindAttributeRunner
+    public partial class BindAttributeRunner
     {
-        static ConcurrentDictionary<string, MethodInfo[]> PreBindingCache = new ConcurrentDictionary<string, MethodInfo[]>();
-        static ConcurrentDictionary<string, MethodInfo[]> PreBoundCache = new ConcurrentDictionary<string, MethodInfo[]>();
-        static ConcurrentDictionary<string, MethodInfo[]> BoundCache = new ConcurrentDictionary<string, MethodInfo[]>();
+
+
+        readonly Controller RootController;
+        readonly Dictionary<IViewModel, ViewModelBinding> ViewModels = new Dictionary<IViewModel, ViewModelBinding>();
+
+
+        public BindAttributeRunner(Controller rootController, IViewModel[] models)
+        {
+            RootController = rootController;
+            foreach (var item in models)
+                Add(item);
+        }
+
+        bool Add(IViewModel viewModel)
+        {
+            if (ViewModels.ContainsKey(viewModel)) return false;
+            ViewModels.Add(viewModel, new ViewModelBinding { Model = viewModel, Controllers = GetControllers(viewModel).ToArray() });
+            Expand(viewModel);
+            return true;
+        }
 
         public static Task Run(ActionExecutingContext context)
         {
             var args = context.ActionArguments.Select(x => x.Value).OfType<IViewModel>().ToArray();
+            return new BindAttributeRunner((Controller)context.Controller, args).Execute();
+        }
 
-            var items = args.Select(x => KeyValuePair.Create(x,
-                GetControllers(x, (Controller)context.Controller).ToArray())).ToArray();
+        List<IViewModel> ExpandAll() => ViewModels.ToArray().SelectMany(x => Expand(x.Key)).ToList();
 
-            return BindOn(items);
+        List<IViewModel> Expand(IViewModel model)
+        {
+            var added = new List<IViewModel>();
+            var properties = model.GetType().GetPropertiesAndFields(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var p in properties.Where(v => v.GetPropertyOrFieldType().IsA<IViewModel>()))
+            {
+                var obj = p.GetValue(model) as IViewModel;
+                if (obj != null)
+                    if (Add(obj)) added.Add(obj);
+            }
+
+            foreach (var p in properties.Where(v => v.GetPropertyOrFieldType().IsIEnumerableOf(typeof(IViewModel))))
+            {
+                var objs = p.GetValue(model) as IEnumerable<IViewModel>;
+                foreach (var obj in objs.OrEmpty().ExceptNull())
+                    if (Add(obj)) added.Add(obj);
+            }
+
+            return added;
         }
 
         public static Task Bind(IViewModel item, Controller controller)
         {
             if (item is null) return Task.CompletedTask;
-            return BindOn(KeyValuePair.Create(item, GetControllers(item, controller).ToArray()));
+            return new BindAttributeRunner(controller, new[] { item }).Execute();
         }
 
-        static IEnumerable<Controller> GetControllers(IViewModel item, Controller controller)
+        IEnumerable<Controller> GetControllers(IViewModel item)
         {
-            yield return controller;
+            yield return RootController;
 
             var type = item?.GetType().GetCustomAttribute<BindingControllerAttribute>()?.Type;
             if (type != null)
             {
                 var result = type.CreateInstanceWithDI() as Controller;
-                result.ControllerContext = controller.ControllerContext;
+                result.ControllerContext = RootController.ControllerContext;
                 yield return result;
             }
         }
 
-        static async Task BindOn(params KeyValuePair<IViewModel, Controller[]>[] items)
+        async Task Execute()
         {
-            foreach (var item in items)
-                await Run<OnPreBindingAttribute>(item.Key, item.Value);
-
-            foreach (var item in items)
-                await Run<OnPreBoundAttribute>(item.Key, item.Value);
-
-            foreach (var item in items)
-                await Run<OnBoundAttribute>(item.Key, item.Value);
+            await ExecutePreBinding();
+            await ExecutePreBound();
+            await ExecuteBound();
         }
 
-        static async Task Run<TAttribute>(IViewModel viewModel, Controller[] controllers)
-       where TAttribute : Attribute
+        async Task ExecutePreBinding()
         {
-            foreach (var controller in controllers)
+            foreach (var item in ViewModels.Values.Except(x => x.RanPreBinding).ToArray())
             {
-                var methods = FindMethods<TAttribute>(viewModel, controller);
-                await InvokeMethods(methods, controller, viewModel);
+                item.RanPreBinding = true;
+                await item.Run<OnPreBindingAttribute>();
+            }
+
+            if (ExpandAll().Any())
+                await ExecutePreBinding();
+        }
+
+        async Task ExecutePreBound()
+        {
+            foreach (var item in ViewModels.Values.Except(x => x.RanPreBound).ToArray())
+            {
+                item.RanPreBound = true;
+                await item.Run<OnPreBoundAttribute>();
+            }
+
+            var remaining = ExpandAll();
+            if (remaining.Any())
+            {
+                await ExecutePreBinding();
+                await ExecutePreBound();
             }
         }
 
-        static MethodInfo[] FindMethods<TAtt>(IViewModel viewModel, Controller controller)
-            where TAtt : Attribute
+        async Task ExecuteBound()
         {
-            var key = GetKey(controller, viewModel);
-            return GetCache<TAtt>().GetOrAdd(key,
-                  t =>
-                  {
-                      var methods = controller.GetType().GetMethods().Where(m => m.Defines<TAtt>()).ToArray();
-
-                      methods = methods.Where(m => m.GetParameters().IsSingle()
-                      && m.GetParameters().First().ParameterType == viewModel.GetType()).ToArray();
-
-                      return methods;
-                  });
-        }
-
-        static Task InvokeMethods(MethodInfo[] methods, Controller controller, object viewModel)
-        {
-            foreach (var info in viewModel.GetType().GetProperties())
+            foreach (var item in ViewModels.Values.Except(x => x.RanBound).ToArray())
             {
-                if (!info.CanWrite) continue;
-                if (info.PropertyType.IsA<IViewModel>())
-                {
-                    var nestedValue = info.GetValue(viewModel);
-                    if (nestedValue != null)
-                        InvokeMethods(methods, controller, nestedValue);
-                }
+                item.RanBound = true;
+                await item.Run<OnBoundAttribute>();
             }
 
-            var tasks = new List<Task>();
-
-            foreach (var method in methods)
+            var remaining = ExpandAll();
+            if (remaining.Any())
             {
-                var result = method.Invoke(controller, new[] { viewModel });
-                if (result is Task task) tasks.Add(task);
+                await ExecutePreBinding();
+                await ExecutePreBound();
+                await ExecuteBound();
             }
-
-            return Task.WhenAll(tasks);
         }
 
-        static ConcurrentDictionary<string, MethodInfo[]> GetCache<TAttribute>()
-        {
-            if (typeof(TAttribute) == typeof(OnPreBindingAttribute)) return PreBindingCache;
-            else if (typeof(TAttribute) == typeof(OnPreBoundAttribute)) return PreBoundCache;
-            else if (typeof(TAttribute) == typeof(OnBoundAttribute)) return BoundCache;
-            else throw new NotSupportedException(typeof(TAttribute) + " is not supported!!");
-        }
 
-        static string GetKey(Controller controller, IViewModel viewModel)
-        {
-            return controller.GetType().FullName + "|" + viewModel.GetType().FullName;
-        }
+
+
     }
 }

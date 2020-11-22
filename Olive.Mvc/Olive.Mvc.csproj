@@ -13,10 +13,10 @@
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Mvc Utilities for Olive</Description>
     <OutputType>Library</OutputType>
-    <AssemblyVersion>3.1.0.108</AssemblyVersion>
-    <FileVersion>3.1.0.108</FileVersion>
-    <Version>3.1.108</Version>
-    <PackageVersion>3.1.111</PackageVersion>
+    <AssemblyVersion>3.1.0.112</AssemblyVersion>
+    <FileVersion>3.1.0.112</FileVersion>
+    <Version>3.1.112</Version>
+    <PackageVersion>3.1.112</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Security\Olive.Mvc.Security.csproj" />
