@@ -27,29 +27,30 @@ namespace Olive.Mvc
             {
                 foreach (var controller in Controllers)
                 {
-                    var methods = FindMethods<TAttribute>(controller);
-                    await InvokeMethods(methods, controller, Model);
+                    var methods = FindMethods<TAttribute>(controller, Model);
+                    await InvokeMethods<TAttribute>(methods, controller, Model);
                 }
             }
 
-            MethodInfo[] FindMethods<TAtt>(Controller controller) where TAtt : Attribute
+            static MethodInfo[] FindMethods<TAtt>(Controller controller, object model) where TAtt : Attribute
             {
-                var key = Key(controller);
+                var key = controller.GetType().FullName + "|" + model.GetType().FullName;
                 return GetCache<TAtt>().GetOrAdd(key,
                       t =>
                       {
                           return controller.GetType().GetMethods()
                            .Where(m => m.Defines<TAtt>())
                            .Where(m => m.GetParameters().IsSingle())
-                           .Where(m => m.GetParameters().First().ParameterType == Model.GetType())
+                           .Where(m => m.GetParameters().First().ParameterType == model.GetType())
                            .ToArray();
                       });
             }
 
-            string Key(Controller controller) => controller.GetType().FullName + "|" + Model.GetType().FullName;
-
-            Task InvokeMethods(MethodInfo[] methods, Controller controller, object viewModel)
+            Task InvokeMethods<TAttribute>(MethodInfo[] methods, Controller controller, object viewModel)
+                 where TAttribute : Attribute
             {
+                var tasks = new List<Task>();
+
                 foreach (var info in viewModel.GetType().GetProperties())
                 {
                     if (!info.CanWrite) continue;
@@ -57,11 +58,13 @@ namespace Olive.Mvc
                     {
                         var nestedValue = info.GetValue(viewModel);
                         if (nestedValue != null)
-                            InvokeMethods(methods, controller, nestedValue);
+                        {
+                            var binders = FindMethods<TAttribute>(controller, nestedValue);
+                            if (binders.Any())
+                                tasks.Add(InvokeMethods<TAttribute>(binders, controller, nestedValue));
+                        }
                     }
                 }
-
-                var tasks = new List<Task>();
 
                 foreach (var method in methods)
                 {

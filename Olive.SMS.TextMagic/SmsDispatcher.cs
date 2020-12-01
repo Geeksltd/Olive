@@ -10,7 +10,7 @@ namespace Olive.SMS.TextMagic
 
         public Task Dispatch(ISmsMessage sms)
         {
-            var client = new Client(Config.Get("Sms:TextMagic:Username"), Config.Get("Sms:TextMagic:Key"));
+            var client = new Client(Config.GetOrThrow("Sms:TextMagic:Username"), Config.GetOrThrow("Sms:TextMagic:Key"));
             var result = client.SendMessage(sms.Text, sms.To);
 
             if (result.Success)
