@@ -13,7 +13,7 @@ namespace Olive.SMS.TextMagic
             var client = new Client(Config.GetOrThrow("Sms:TextMagic:Username"), Config.GetOrThrow("Sms:TextMagic:Key"));
             var result = client.SendMessage(sms.Text, sms.To);
 
-            if (result.Success)
+            if (!result.Success)
                 throw new Exception("Failed to send message because : " + result.ClientException.Message);
 
             return Task.CompletedTask;
