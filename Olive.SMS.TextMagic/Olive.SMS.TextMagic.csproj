@@ -10,7 +10,6 @@
     <PackageReference Include="Olive" Version="2.1.199" />
     <PackageReference Include="Olive.Entities" Version="2.1.148" />
     <PackageReference Include="Olive.SMS" Version="2.1.106" />
-    <PackageReference Include="TextMagicClient" Version="2.0.1534" />
     <PackageReference Include="TextmagicRest" Version="1.0.0.5" />
   </ItemGroup>
 
