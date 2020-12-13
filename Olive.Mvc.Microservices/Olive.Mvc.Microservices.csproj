@@ -12,10 +12,10 @@
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Mvc Utilities for Olive</Description>
-    <FileVersion>3.1.0.102</FileVersion>
-    <AssemblyVersion>3.1.0.102</AssemblyVersion>
-    <Version>3.1.102</Version>
-    <PackageVersion>3.1.102</PackageVersion>
+    <FileVersion>3.1.0.103</FileVersion>
+    <AssemblyVersion>3.1.0.103</AssemblyVersion>
+    <Version>3.1.103</Version>
+    <PackageVersion>3.1.103</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />

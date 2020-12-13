@@ -19,6 +19,7 @@ namespace Olive.Mvc.Microservices
             Configuration.MergeEnvironmentVariables();
             services.AddCors(x => x.AddPolicy("AllowHubOrigin",
                 f => f.WithOrigins(Microservice.Of("Hub").Url().TrimEnd("/"), HubDevUrl)
+                .SetIsOriginAllowed(x => true)
                 .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
             base.ConfigureServices(services);
