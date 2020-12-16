@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Olive.SMS;
 
-namespace Olive.SMS.TextMagic
+namespace Olive.SMS
 {
     public static class IServiceCollectionExtension
     {
