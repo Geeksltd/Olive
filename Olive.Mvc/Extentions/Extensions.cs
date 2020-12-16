@@ -57,6 +57,28 @@ namespace Olive.Mvc
         /// </summary>
         public static bool IsInvisible(this IViewModel @this, string propertyName)
         {
+            if (@this == null) return false;
+            if (propertyName.Contains("."))
+            {
+                var member = propertyName.Split('.').First();
+                propertyName = propertyName.Substring(member.Length + 1);
+
+                if (member.Contains("["))
+                {
+                    var middleProperty = member.Split('[').First();
+                    var index = member.Split('[').Last().Trim(']').To<int>();
+                    @this = (@this.GetType().GetProperty(middleProperty)?.GetValue(@this) as IEnumerable<IViewModel>)?.ElementAt(index);
+                    return IsInvisible(@this, propertyName);
+                }
+                else
+                {
+                    @this = @this.GetType().GetProperty(member)?.GetValue(@this) as IViewModel;
+                    return IsInvisible(@this, propertyName);
+                }
+            }
+
+            if (@this.GetType().GetProperty(propertyName) == null) return true;
+
             var visibleProperty = @this.GetType().GetProperty(propertyName + "_Visible");
 
             if (visibleProperty == null) return false;
@@ -66,7 +88,9 @@ namespace Olive.Mvc
 
         public static bool IsValid(this ModelStateDictionary @this, IViewModel viewModel)
         {
-            foreach (var item in @this)
+            var invalids = @this.Where(v => v.Value.ValidationState == ModelValidationState.Invalid).ToArray();
+
+            foreach (var item in invalids)
                 if (viewModel.IsInvisible(item.Key))
                 {
                     item.Value.Errors.Clear();
