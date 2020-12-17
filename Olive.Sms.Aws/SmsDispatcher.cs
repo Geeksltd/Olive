@@ -31,13 +31,13 @@ namespace Olive.SMS
                 },
             };
 
-            if (string.IsNullOrWhiteSpace(senderId))
+            if (!string.IsNullOrWhiteSpace(senderId))
                 messageAttributes.Add(
                     "AWS.SNS.SMS.SenderID",
                     new MessageAttributeValue { DataType = "String", StringValue = senderId }
                     );
 
-            if (string.IsNullOrWhiteSpace(senderId))
+            if (!string.IsNullOrWhiteSpace(originationNumber))
                 messageAttributes.Add(
                     "AWS.MM.SMS.OriginationNumber",
                     new MessageAttributeValue { DataType = "String", StringValue = originationNumber }
