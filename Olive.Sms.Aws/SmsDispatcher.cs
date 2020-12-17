@@ -29,17 +29,19 @@ namespace Olive.SMS
                     "AWS.SNS.SMS.SMSType",
                     new MessageAttributeValue { DataType = "String", StringValue = "Transactional" }
                 },
+            };
 
-                {
+            if (string.IsNullOrWhiteSpace(senderId))
+                messageAttributes.Add(
                     "AWS.SNS.SMS.SenderID",
                     new MessageAttributeValue { DataType = "String", StringValue = senderId }
-                },
+                    );
 
-                {
+            if (string.IsNullOrWhiteSpace(senderId))
+                messageAttributes.Add(
                     "AWS.MM.SMS.OriginationNumber",
-                    new MessageAttributeValue { DataType = "String", StringValue = originationNumber ?? senderId }
-                },
-            };
+                    new MessageAttributeValue { DataType = "String", StringValue = originationNumber }
+                    );
 
             var pubRequest = new PublishRequest
             {
