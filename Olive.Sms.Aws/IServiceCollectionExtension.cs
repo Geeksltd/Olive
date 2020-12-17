@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Olive.SMS;
 
 namespace Olive.SMS
 {

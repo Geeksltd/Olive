@@ -21,18 +21,24 @@ namespace Olive.SMS
         public async Task Dispatch(ISmsMessage sms)
         {
             var senderId = sms.SenderName ?? Configuration.GetValue<string>("Aws:Sns:SenderId");
+            var originationNumber = Configuration.GetValue<string>("Aws:Sns:OriginationNumber");
 
             var messageAttributes = new Dictionary<string, MessageAttributeValue>
             {
                 {
-                    "AWS.SNS.SMS.SenderID",
-                    new MessageAttributeValue { StringValue = senderId, DataType = "String" }
+                    "AWS.SNS.SMS.SMSType",
+                    new MessageAttributeValue { DataType = "String", StringValue = "Transactional" }
                 },
 
                 {
-                    "AWS.SNS.SMS.SMSType",
-                    new MessageAttributeValue { DataType = "String", StringValue = "Transactional" }
-                }
+                    "AWS.SNS.SMS.SenderID",
+                    new MessageAttributeValue { DataType = "String", StringValue = senderId }
+                },
+
+                {
+                    "AWS.MM.SMS.OriginationNumber",
+                    new MessageAttributeValue { DataType = "String", StringValue = originationNumber ?? senderId }
+                },
             };
 
             var pubRequest = new PublishRequest
