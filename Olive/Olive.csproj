@@ -1,53 +1,61 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netstandard2.0\Olive.xml</DocumentationFile>
-    <NoWarn>1587;1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <AssemblyName>Olive</AssemblyName>
+    <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
-    <Title>Olive</Title>
-    <Authors>Geeks Ltd</Authors>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>2.1.199</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <!-- <PackageLicenseUrl>https://raw.githubusercontent.com/Geeksltd/Zebble/master/Zebble-LicenseAgreement.txt</PackageLicenseUrl> -->
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
-    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
+    <RepositoryUrl>https://geeksltd.github.io/Olive/</RepositoryUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/icon.png</PackageIconUrl>
+    <PackageTags>olive</PackageTags>
+    <Title>Olive</Title>
     <Description>Olive Framework</Description>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.199</PackageVersion>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2020, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="icon.png" />
+    <None Remove="Zebble-LicenseAgreement.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 </Project>

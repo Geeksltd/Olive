@@ -1,0 +1,131 @@
+IMPORTANT, PLEASE READ CAREFULLY. THIS IS A LICENSE AGREEMENT.
+
+Zebble is protected by copyright laws and international
+copyright treaties, as well as other intellectual property laws and treaties. 
+Zebble is licensed, not sold.
+
+End User License Agreement
+-----------------------------
+This End User License Agreement (“EULA”) is a legal agreement between you
+(either an individual or a single entity) and Mobile App Technologies Ltd with regard to the copyrighted
+software, Zebble, herein referred to as “SOFTWARE PRODUCT” or “SOFTWARE”
+provided with this EULA. 
+
+The SOFTWARE PRODUCT includes, without limitation,
+computer software, the associated media, any printed materials, and any “online” or
+electronic documentation. Downloading, installing, copying or otherwise using any
+SOFTWARE and related documentation provided to you by Mobile App Technologies Ltd in whatever
+form or media, will confirm you have read and understood and agreed to be bound by
+these terms, unless separate terms are provided by Mobile App Technologies Ltd, in which case certain
+additional or different terms may apply. 
+
+If you do not agree to be bound by the terms of this EULA, do not download, install,
+copy or use the SOFTWARE. If you do not agree to be bound by the terms of this EULA,
+Mobile App Technologies Ltd is unwilling to license the SOFTWARE PRODUCT to you.
+
+1. Eligible Licensees. The SOFTWARE is available to license solely to SOFTWARE
+users, with no right of duplication or further distribution, licensing or sub-licensing.
+IF YOU DO NOT OWN OR HAVE A LICENCE TO USE THE SOFTWARE, THEN DO NOT DOWNLOAD, INSTALL, COPY OR USE THE SOFTWARE.
+
+2. License Grant. Subject to the terms of this EULA, Mobile App Technologies Ltd grants you a
+personal, non-transferable and non-exclusive right to use the copy of the
+SOFTWARE. You agree you will not copy the SOFTWARE except as necessary to
+install and use it on a single computer. This license of SOFTWARE may not be
+shared or used concurrently on separate computers. You agree that you may not copy
+the written materials accompanying the SOFTWARE. Modifying, translating, renting,
+copying, transferring or assigning all or part of the SOFTWARE, or any rights or
+license granted hereunder, to any other persons and removing any proprietary notices,
+labels or marks from the SOFTWARE is strictly prohibited. Furthermore, you hereby
+agree not to create derivative works based on the SOFTWARE. You may not transfer
+the SOFTWARE.
+
+3. Copyright. The SOFTWARE is licensed, not sold. You acknowledge that no title to
+the intellectual property in the SOFTWARE is transferred to you. You further
+acknowledge that title and full ownership rights to the SOFTWARE will remain the
+exclusive property of Mobile App Technologies Ltd and/or its suppliers, and you will not acquire any
+rights to the SOFTWARE, except as expressly provided under the license and in this
+EULA. All copies of the SOFTWARE will contain the same proprietary notices as
+contained in or on the SOFTWARE. All title and copyright in and to the SOFTWARE
+PRODUCT (including but not limited to any logos, images, photographs, animations,
+video, audio, music, text and “applets,” incorporated into the SOFTWARE
+PRODUCT), the accompanying printed materials, and any copies of the SOFTWARE 
+PRODUCT, 
+are owned by Mobile App Technologies Ltd or its suppliers. The SOFTWARE PRODUCT
+is protected by copyright laws and international treaty provisions. You may not copy
+the printed materials accompanying the SOFTWARE PRODUCT.
+
+4. Reverse Engineering. You agree that you will not attempt, and if you are a
+corporation, you will use your best efforts to prevent your employees and contractors
+from attempting to reverse compile, modify, translate, separate or disassemble the
+SOFTWARE in whole or in part.
+
+5. Disclaimer of Warranty. The SOFTWARE is provided “AS IS” without warranty
+of any kind. Mobile App Technologies Ltd, its officers, employees and its suppliers disclaim and make
+no express or implied warranties and specifically disclaim the warranties of accuracy,
+merchantability, fitness for a particular purpose and non-infringement of third-party
+rights. The entire risk as to the quality and performance of the SOFTWARE is with
+you. Neither Mobile App Technologies Ltd nor its officers, employees or suppliers warrant that the
+functions contained in the SOFTWARE will meet your requirements or that the
+operation of the SOFTWARE will be uninterrupted or error-free. Mobile App Technologies Ltd is not
+obligated to provide any updates or fixes to the SOFTWARE.
+
+6. Fees. Mobile App Technologies Ltd may charge fees for the grant of the license and use of the
+SOFTWARE as it determines in its sole discretion. You agree to pay any fees owing
+under this EULA as notified to you by Mobile App Technologies Ltd from time to time.
+
+7. Rental. You may not loan, rent, or lease the SOFTWARE.
+
+8. Upgrades. If the SOFTWARE is an upgrade from an earlier release or previously
+released version, you may use that upgraded product only in accordance with this
+EULA. If the SOFTWARE PRODUCT is an upgrade of a software program which
+you licensed as a single product, the SOFTWARE PRODUCT may be used only as
+part of that single product package and may not be separated for use on more than one
+computer.
+
+9. Product Support. Product support for the SOFTWARE PRODUCT is provided by
+Mobile App Technologies Ltd. For product support, please contact Mobile App Technologies Ltd. Should you have any
+questions concerning this, please contact us at the address provided in the
+documentation or http://www.Mobile App Technologies.ltd.uk.
+
+10. Audit. Mobile App Technologies Ltd may, at any time, conduct an audit of your use of the
+SOFTWARE to assess compliance with the license and this EULA. You agree to
+grant Mobile App Technologies Ltd all access necessary and provide Mobile App Technologies Ltd with all information
+requested by Mobile App Technologies Ltd for the purposes of conducting an audit.
+
+11. No Liability for Consequential Damages. In no event shall Mobile App Technologies Ltd, its
+officers, employees or suppliers be liable for any loss or damages whatsoever
+(including, without limitation, incidental, direct, indirect, special and consequential
+damages, damages for loss of business profits, business interruption, loss of business
+information, or other pecuniary loss) arising out of the use or inability to use the
+SOFTWARE, even if Mobile App Technologies Ltd has been advised of the possibility of such loss or
+damages. 
+
+
+12. Indemnification By You. If you use, copy or distribute the SOFTWARE in
+violation of this Agreement, you agree to indemnify, hold harmless and defend
+Mobile App Technologies Ltd, its officers, employees and suppliers from and against any claims or
+lawsuits, including attorney's fees that arise or result from the use, copying or
+distribution of the SOFTWARE in violation of this Agreement.
+
+13. Term. The license will automatically terminate if you fail to comply with any of
+the terms and conditions contained in this EULA. In such event, you must destroy all
+copies of the SOFTWARE and all of its component parts.
+
+14. Governing law. The license and this EULA shall be deemed to have been made in,
+and you shall submit to the jurisdiction of the laws of, New Zealand.
+
+15. Miscellaneous. If any provision of this EULA is held invalid, unenforceable or
+illegal for any reason, this EULA shall remain otherwise in full force apart from such
+provision which shall be deemed deleted. No right under this EULA shall be deemed
+to be waived except in writing signed by an authorised officer of Mobile App Technologies Ltd. 
+
+This EULA and license is the final, complete and exclusive agreement between you and
+Mobile App Technologies Ltd, and supersedes all prior or contemporaneous understandings and
+agreements relating to such subject matter, whether oral or written. This EULA may
+only be modified in writing signed by an authorised officer of Mobile App Technologies Ltd.
+
+Mobile App Technologies Ltd
+66a London Road
+Morden
+SM4 5BE
+United Kingdom
