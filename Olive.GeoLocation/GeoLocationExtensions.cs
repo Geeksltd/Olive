@@ -8,6 +8,7 @@ namespace Olive.GeoLocation
     public static class GeoLocationExtensions
     {
         const int EARTH_RADIUS = 3963;
+        const double CIRCLE = 360;
 
         /// <summary>
         /// Gets the geo distance in miles between this and another specified location.
@@ -52,5 +53,19 @@ namespace Olive.GeoLocation
         {
             return @this.AddSingleton<IGeoLocationService, GeoLocationService>();
         }
+        
+        public static double GetCompassAngle(this IGeoLocation from, IGeoLocation to)
+        {
+            var longitudeDifference = (to.Longitude - from.Longitude).ToRadians();
+            var dPhi = Math.Log(Math.Tan(to.Latitude.ToRadians() / 2 + Math.PI / 4)
+                                / Math.Tan(from.Latitude.ToRadians() / 2 + Math.PI / 4));
+
+            if (Math.Abs(longitudeDifference) > Math.PI)
+                longitudeDifference = longitudeDifference > 0 ? -(2 * Math.PI - longitudeDifference) : (2 * Math.PI + longitudeDifference);
+
+            return (Math.Atan2(longitudeDifference, dPhi).ToDegreeFromRadians() + CIRCLE) % CIRCLE;
+        }
+
+        public static double ToDegreeFromRadians(this double radians) => radians * (180.0 / Math.PI);
     }
 }

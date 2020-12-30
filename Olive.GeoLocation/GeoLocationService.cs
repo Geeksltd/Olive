@@ -61,6 +61,34 @@ namespace Olive.GeoLocation
             });
         }
 
+        public async Task<GeoLocation> DownloadPostcodeLocation(string address)
+        {
+            var clientParameter = "key".OnlyWhen(GoogleSignatureKey.IsEmpty()).Or("client");
+
+            var url = "https://maps.googleapis.com/maps/api/geocode/xml?address=" + address + "&sensor=false" +
+                      GoogleClientKey.UrlEncode().WithPrefix("&" + clientParameter + "=") +
+                      GoogleSignatureKey.UrlEncode().WithPrefix("&signature=");
+
+            XElement response;
+            using (var client = new HttpClient())
+                response = (await client.GetStringAsync(url)).To<XElement>();
+
+            var status = response.GetValue<string>("status");
+
+            if (status == "ZERO_RESULTS") return null;
+            if (status != "OK") throw new Exception("Google API Error: " + status + "\r\n\r\n" + response);
+
+            var location = response.Element("result")?.Element("geometry")?.Element("location");
+
+            if (location is null) throw new Exception("Unexpected result from Google API: \r\n\r\n" + response);
+
+            return new GeoLocation
+            {
+                Latitude = location.GetValue<string>("lat").To<double>(),
+                Longitude = location.GetValue<string>("lng").To<double>()
+            };
+        }
+
         /// <summary>
         /// Gets the distance between 2 locations in miles.
         /// </summary>
