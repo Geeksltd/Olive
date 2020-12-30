@@ -10,8 +10,12 @@ namespace Olive
         /// Rounds this value.
         /// </summary>
         /// <param name="digits">The particular number of fractional digits</param>
-        public static double Round(this double @this, int digits) =>
-            (double)Math.Round((decimal)@this, digits, MidpointRounding.AwayFromZero);
+        public static double Round(this double @this, int digits)
+        {
+            if (double.IsNaN(@this)) return double.NaN;
+
+            return (double)((decimal)@this).Round(digits);
+        }
 
         /// <summary>
         /// Rounds this value.
@@ -19,6 +23,17 @@ namespace Olive
         /// <param name="digits">The particular number of fractional digits</param>
         public static decimal Round(this decimal @this, int digits) =>
             Math.Round(@this, digits, MidpointRounding.AwayFromZero);
+
+        /// <summary>
+        /// Rounds this value.
+        /// </summary>
+        /// <param name="digits">The particular number of fractional digits</param>
+        public static float Round(this float @this, int digits)
+        {
+            if (float.IsNaN(@this)) return float.NaN;
+
+            return (float)((decimal)@this).Round(digits);
+        }
 
         /// <summary>
         /// In mathematics and computer science, truncation is the term for limiting the number of digits right of the decimal point, by discarding the least significant ones.
@@ -95,6 +110,19 @@ namespace Olive
         /// Converts degree into radians.
         /// </summary>
         public static double ToRadians(this double @this) => Math.PI * @this / HALF_CIRCLE_DEGREES;
+
+        /// <summary>
+        /// Converts degree into radians.
+        /// </summary>
+        public static float ToRadians(this float degrees) => (float)((double)degrees).ToRadians();
+
+        public static double ToDegreeFromRadians(this double radians) => radians * (180.0 / Math.PI);
+
+        public static float ToDegreeFromRadians(this float radians) => (float)((double)radians).ToDegreeFromRadians();
+
+        public static double ToThePowerOf(this double value, double power) => Math.Pow(value, power);
+
+        public static float ToThePowerOf(this float value, float power) => (float)((double)value).ToThePowerOf(power);
 
         /// <summary>
         /// Return this value as a percentages the of the given total.

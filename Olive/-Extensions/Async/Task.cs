@@ -168,5 +168,17 @@ namespace Olive
                 return default(TResult);
             }
         }
+        
+        public static TResult AwaitResultWithoutContext<TResult>(this Task<TResult> task)
+        {
+            return task.ConfigureAwait(continueOnCapturedContext: false).GetAwaiter().GetResult();
+        }
+        
+        public static Task OrCompleted(this Task task) => task ?? Task.CompletedTask;
+
+        public static Task<TResult> OrCompleted<TResult>(this Task<TResult> task, TResult result = default(TResult))
+        {
+            return task ?? Task.FromResult(result);
+        }
     }
 }

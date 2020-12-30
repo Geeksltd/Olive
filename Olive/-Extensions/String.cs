@@ -1747,6 +1747,11 @@ namespace Olive
             return System.Net.WebUtility.UrlDecode(@this);
         }
 
+        public static bool IsUrl(this string @this)
+        {
+            return new[] { "http://", "https://", "//" }.Any(x => @this.OrEmpty().StartsWith(x, StringComparison.OrdinalIgnoreCase));
+        }
+
         /// <summary>
         /// Removes unused characters from the content of a CSV file.
         /// </summary>
@@ -1763,6 +1768,14 @@ namespace Olive
                 return "'" + @this;
 
             return @this;
+        }
+
+        public static bool Equals(this string text, string another, bool caseSensitive)
+        {
+            if (text == null && another is null) return true;
+            if (text == null || another is null) return false;
+            if (caseSensitive) return text.Equals(another);
+            return text.Equals(another, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -179,6 +179,14 @@ namespace Olive
         public static void Add<T, K>(this IDictionary<Type, Type> @this)
             => @this.Add(typeof(T), typeof(K));
 
+        public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dic, TKey key, Func<TValue> valueProvider)
+        {
+            if (dic.TryGetValue(key, out var result)) return result;
+            result = valueProvider();
+            lock (dic) dic[key] = result;
+            return result;
+        }
+
         /// <summary>
         /// Converts this key value pair list into a Json object.
         /// </summary>

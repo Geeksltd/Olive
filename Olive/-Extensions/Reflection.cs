@@ -491,6 +491,15 @@ namespace Olive
             throw new Exception("GetValue() is not implemented for " + @this?.GetType().Name);
         }
 
+        public static void SetValue(this MemberInfo @this, object obj, object value)
+        {
+            if (@this is PropertyInfo asProp) { asProp.SetValue(obj, value); return; }
+
+            if (@this is FieldInfo asField) { asField.SetValue(obj, value); return; }
+
+            throw new Exception("SetValue() is not implemented for " + @this?.GetType().Name);
+        }
+
         public static bool IsIEnumerableOf(this Type @this, Type typeofT)
         {
             return @this.IsA(typeof(IEnumerable<>).MakeGenericType(typeofT));

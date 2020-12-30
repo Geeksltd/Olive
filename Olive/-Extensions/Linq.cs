@@ -1531,5 +1531,15 @@ namespace Olive
                            await func(partition.Current);
                })));
         }
+
+        /// <summary>
+        /// Gets the element before a specified item in this list.
+        /// If the specified element does not exist in this list, the whole list will be returned.
+        /// If the specified element is the first in the list, an empty list will be returned.
+        /// </summary>        
+        public static IEnumerable<T> GetElementsBefore<T>(this IEnumerable<T> list, T item) where T : class
+        {
+            return list.TakeWhile(x => x != item);
+        }
     }
 }
