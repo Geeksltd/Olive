@@ -15,7 +15,7 @@ namespace Olive
         }
 
         /// <summary>
-        /// Copies this file onto the specified desination path.
+        /// Copies this file onto the specified destination path.
         /// </summary>
         public static async Task CopyToAsync(this FileInfo file, FileInfo destinationPath, bool overwrite = true)
         {
