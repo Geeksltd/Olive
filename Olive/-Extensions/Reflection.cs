@@ -477,7 +477,7 @@ namespace Olive
             return null;
         }
 
-        internal static WeakReference<T> GetWeakReference<T>(this T item) where T : class
+        public static WeakReference<T> GetWeakReference<T>(this T item) where T : class
             => new WeakReference<T>(item);
 
         public static object GetValue(this MemberInfo @this, object obj)
