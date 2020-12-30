@@ -50,7 +50,4 @@
       <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
     </Compile>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
-  </Target>
 </Project>
