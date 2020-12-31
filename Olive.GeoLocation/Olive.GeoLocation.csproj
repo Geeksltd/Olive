@@ -12,7 +12,7 @@
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <LangVersion>latest</LangVersion>
     <DebugType>portable</DebugType>
-    <!-- <PackageLicenseUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Zebble-LicenseAgreement.txt</PackageLicenseUrl> -->
+    <!-- <PackageLicenseUrl>https://raw.githubusercontent.com/Geeksltd/Olive.GeoLocation/master/Zebble-LicenseAgreement.txt</PackageLicenseUrl> -->
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <RepositoryUrl>https://geeksltd.github.io/Olive/</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive.GeoLocation/icon.png</PackageIconUrl>

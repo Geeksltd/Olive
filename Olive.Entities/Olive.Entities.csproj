@@ -1,22 +1,39 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Olive.Entities</RootNamespace>
     <AssemblyName>Olive.Entities</AssemblyName>
-    <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netstandard2.0\Olive.Entities.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <RootNamespace>Olive.Entities</RootNamespace>
     <PackageId>Olive.Entities</PackageId>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>2.1.148</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <!-- <PackageLicenseUrl>https://raw.githubusercontent.com/Geeksltd/Olive.Entities/master/Zebble-LicenseAgreement.txt</PackageLicenseUrl> -->
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://geeksltd.github.io/Olive/</RepositoryUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive.Entities/icon.png</PackageIconUrl>
+    <PackageTags>olive</PackageTags>
     <Title>Olive Entities</Title>
+    <Description>Olive Framework</Description>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
     <Authors>Geeks Ltd</Authors>
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
-    <Description>Olive Framework</Description>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
-    <PackageVersion>2.1.148</PackageVersion>
+    <Copyright>Geeks Ltd 2020, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Auditing\**" />
@@ -24,16 +41,11 @@
     <None Remove="Auditing\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="icon.png" />
+    <None Remove="Zebble-LicenseAgreement.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Olive" Version="2.1.203" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive\Olive.csproj" />
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
-  </Target>
 </Project>
