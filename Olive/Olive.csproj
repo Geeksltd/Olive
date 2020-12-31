@@ -12,7 +12,7 @@
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <LangVersion>latest</LangVersion>
     <DebugType>portable</DebugType>
-    <!-- <PackageLicenseUrl>https://raw.githubusercontent.com/Geeksltd/Zebble/master/Zebble-LicenseAgreement.txt</PackageLicenseUrl> -->
+    <!-- <PackageLicenseUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Zebble-LicenseAgreement.txt</PackageLicenseUrl> -->
     <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
     <RepositoryUrl>https://geeksltd.github.io/Olive/</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/icon.png</PackageIconUrl>
@@ -22,9 +22,10 @@
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>
     <Authors>Geeks Ltd</Authors>
+    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <Copyright>Geeks Ltd 2020, All rights reserved.</Copyright>
     <DisableExtraReferences>true</DisableExtraReferences>
-    <OutputType>Library</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
     <DebugSymbols>true</DebugSymbols>
