@@ -81,7 +81,7 @@ namespace Zebble
             return binding;
         }
 
-        internal IBinding<TValue> AddBinding<TProperty>(object target, string propertyName, Func<TValue, TProperty> expression)
+        public IBinding<TValue> AddBinding<TProperty>(object target, string propertyName, Func<TValue, TProperty> expression)
         {
             var property = FindProperty(target, propertyName, typeof(TProperty));
 
