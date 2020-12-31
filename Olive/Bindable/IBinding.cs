@@ -5,7 +5,7 @@
         void Remove();
     }
 
-    interface IBinding<TValue> : IBinding
+    public interface IBinding<TValue> : IBinding
     {
         void Apply(TValue value);
     }
