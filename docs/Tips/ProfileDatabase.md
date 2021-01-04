@@ -42,6 +42,8 @@ The file will have the following columns generated for each unique sql command:
 - Average ms
 - Median ms (this is often more reliable than average)
 
+---
+
 ### Profiling a specific action
 Every time that you generate a dump, it will clear the in-memory log and start over.
 This allows you to find out exactly what sql command are executed as a result of an action on the app UI. 
