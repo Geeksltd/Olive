@@ -1,6 +1,9 @@
 # Profiling database access
 
-In appSettings.js set `Profile=true`
+There are cases where you need to see exactly what SQL commands are submitted to the database and how long they take. This is helpful when optimizing your application, finding out what DB Indexes to create, and to debug connection problems and deadlocks.
+
+The Olive data access framework has a simple but powerful built in mechanism to allow you to do this. You won't need to use any third party tools or libraries and you can do this easily on the local or live application.
+
 
 ### Step 1: Enable profiling
 
