@@ -5,26 +5,23 @@
     <RootNamespace>Olive.Entities</RootNamespace>
     <PackageId>Olive.Entities</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.149.0</Version>
+    <Version>2.1.150.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <LangVersion>latest</LangVersion>
     <DebugType>portable</DebugType>
-    <!-- <PackageLicenseUrl>https://raw.githubusercontent.com/Geeksltd/Olive.Entities/master/Zebble-LicenseAgreement.txt</PackageLicenseUrl> -->
-    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
-    <RepositoryUrl>https://geeksltd.github.io/Olive/</RepositoryUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive.Entities/icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive Entities</Title>
+    <Title>Olive.Entities</Title>
     <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>
     <Authors>Geeks Ltd</Authors>
-    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
-    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <Copyright>Geeks Ltd 2020, All rights reserved.</Copyright>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
     <DisableExtraReferences>true</DisableExtraReferences>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
@@ -39,10 +36,6 @@
     <Compile Remove="Auditing\**" />
     <EmbeddedResource Remove="Auditing\**" />
     <None Remove="Auditing\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="icon.png" />
-    <None Remove="Zebble-LicenseAgreement.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
