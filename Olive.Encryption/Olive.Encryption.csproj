@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Encryption</RootNamespace>
     <PackageId>Olive.Encryption</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.2.104</Version>
+    <Version>2.2.105.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
