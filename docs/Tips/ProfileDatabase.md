@@ -10,7 +10,7 @@ The Olive data access framework has a simple but powerful built in mechanism to 
 ```json
 "Database": {
     ...
-    "Profile": false,
+    "Profile": true,
     ...
 }
 ```
