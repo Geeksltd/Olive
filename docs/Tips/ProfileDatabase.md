@@ -41,3 +41,12 @@ The file will have the following columns generated for each unique sql command:
 - Longest ms
 - Average ms
 - Median ms (this is often more reliable than average)
+
+### Profiling a specific action
+Every time that you generate a dump, it will clear the in-memory log and start over.
+This allows you to find out exactly what sql command are executed as a result of an action on the app UI. 
+To do this:
+1. Browser A: Run the app and navigate to the specific page or action that you wish to profile.
+2. Browser B: Request `/perf/dump` to remove the logs related to any database action so far. You will ignore the generated CSV file.
+3. Browser A: Invoke the action you wish to measure.
+4. Browser B: Request `/perf/dump` again. The newly generated CSV file is what you want.
