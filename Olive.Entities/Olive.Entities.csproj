@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Entities</RootNamespace>
     <PackageId>Olive.Entities</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.150.0</Version>
+    <Version>2.1.151.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
