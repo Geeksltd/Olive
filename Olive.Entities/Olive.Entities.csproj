@@ -33,11 +33,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Auditing\**" />
-    <EmbeddedResource Remove="Auditing\**" />
-    <None Remove="Auditing\**" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Olive" Version="2.1.204" />
   </ItemGroup>
