@@ -1,28 +1,43 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.2</Version>
+    <AssemblyName>Olive.Sms.Aws</AssemblyName>
+    <RootNamespace>Olive.Sms.Aws</RootNamespace>
+    <PackageId>Olive.Sms.Aws</PackageId>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>1.0.3.0</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <PackageTags>olive</PackageTags>
+    <Title>Olive.Sms.Aws</Title>
+    <Description>Olive Framework</Description>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <OutputPath>..\bin\</OutputPath>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.5.1.20" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.10" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.10" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.5.1.28" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Olive.Entities" Version="2.1.151" />
+    <PackageReference Include="Olive.SMS" Version="2.1.108" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Olive.Entities">
-      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.SMS">
-      <HintPath>..\bin\netstandard2.0\Olive.SMS.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
