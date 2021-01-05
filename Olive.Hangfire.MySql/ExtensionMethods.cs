@@ -1,5 +1,5 @@
 ﻿using Hangfire;
-using Hangfire.MySql.Core;
+using Hangfire.MySql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ namespace Olive.Hangfire.MySql
             {
                 c.UseStorage(new MySqlStorage(
                         Context.Current.GetService<IConnectionStringProvider>().GetConnectionString(),
-                        new MySqlStorageOptions { TablePrefix = "Hangfire" })
+                        new MySqlStorageOptions { TablesPrefix = "Hangfire" })
                     );
                 config?.Invoke(c);
             });
