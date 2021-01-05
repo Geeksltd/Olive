@@ -1,46 +1,42 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Olive.Mvc</RootNamespace>
-    <PackageId>Olive.IpFilter</PackageId>
-    <Title>Olive Ip Filter (Service)</Title>
-    <Authors>Geeks Ltd</Authors>
-    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <AssemblyName>Olive.Mvc.IpFilter</AssemblyName>
+    <RootNamespace>Olive.Mvc.IpFilter</RootNamespace>
+    <PackageId>Olive.Mvc.IpFilter</PackageId>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>3.1.103.0</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
+    <PackageTags>olive</PackageTags>
+    <Title>Olive.Mvc.IpFilter</Title>
     <Description>Olive Framework</Description>
-    <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netcoreapp3.1\Olive.Mvc.IpFilter.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
-    <FileVersion>3.1.0.0</FileVersion>
-    <AssemblyVersion>3.1.0.1</AssemblyVersion>
-    <Version>3.1.100</Version>
-    <PackageVersion>3.1.102</PackageVersion>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+    <PackageReference Include="Olive.Csv" Version="2.1.106" />
+    <PackageReference Include="Olive.Web" Version="3.1.105" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive.Web\Olive.Web.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Olive">
-      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Olive.Csv">
-      <HintPath>..\bin\netstandard2.0\Olive.Csv.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Olive.Entities">
-      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
-  </Target>
 </Project>
