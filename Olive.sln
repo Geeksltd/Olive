@@ -42,7 +42,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Postgre
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{E51A8EF6-624C-45C9-AC5C-6DE92BF1825D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.BlobAws", "Olive.Blob.Aws\Olive.BlobAws.csproj", "{52AF0D90-E65E-450C-877B-95B831B35694}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Blob.Aws", "Olive.Blob.Aws\Olive.Blob.Aws.csproj", "{52AF0D90-E65E-450C-877B-95B831B35694}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SQLite", "Olive.Entities.Data.SQLite\Olive.Entities.Data.SQLite.csproj", "{EE70F844-B284-42D1-8565-45B153727A1B}"
 EndProject
@@ -172,7 +172,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{BC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.SMS.TextMagic", "Olive.SMS.TextMagic\Olive.SMS.TextMagic.csproj", "{CF9CAD17-3BA6-47B7-8815-084A84A5D1F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Sms.Aws", "Olive.Sms.Aws\Olive.Sms.Aws.csproj", "{59BC7334-BFF7-46F0-B84D-E2829613F1D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Sms.Aws", "Olive.Sms.Aws\Olive.Sms.Aws.csproj", "{59BC7334-BFF7-46F0-B84D-E2829613F1D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
