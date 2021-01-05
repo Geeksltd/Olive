@@ -144,7 +144,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire.MySql", "Oli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PassiveBackgroundTasks", "Olive.PassiveBackgroundTasks\Olive.PassiveBackgroundTasks.csproj", "{F5475043-F394-4B67-BF3F-AE192179F7A9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication.Mvc.Extensions", "Olive.EventBus.Mvc.Extensions\Olive.Entities.Data.Replication.Mvc.Extensions.csproj", "{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication.Mvc.Extensions", "Olive.Entities.Data.Replication.Mvc.Extensions\Olive.Entities.Data.Replication.Mvc.Extensions.csproj", "{0AD86AF8-5F92-43FB-91DF-84E9C1DB7F38}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Console", "Olive.Console\Olive.Console.csproj", "{D9DCB1FC-5367-40EB-BD0C-0CE0AF14972F}"
 EndProject
