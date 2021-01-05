@@ -50,7 +50,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PushNotification", "O
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Security", "Olive.Mvc.Security\Olive.Mvc.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Olive.Mvc.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Olive.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.ApiClient", "Olive.ApiClient\Olive.ApiClient.csproj", "{3CFA0862-652F-493B-B06F-6873A0B52271}"
 EndProject
