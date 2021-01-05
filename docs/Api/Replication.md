@@ -49,7 +49,7 @@ namespace CustomerService
 {    
     public class OrdersEndpoint : SourceEndpoint 
     {
-        class Customer : ExpseedType<Domain.Customer>
+        class Customer : ExposedType<Domain.Customer>
         {
             protected override void Define()
             {
