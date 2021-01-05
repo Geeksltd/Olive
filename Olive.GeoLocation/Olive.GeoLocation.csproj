@@ -5,7 +5,7 @@
     <RootNamespace>Olive.GeoLocation</RootNamespace>
     <PackageId>Olive.GeoLocation</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.105.0</Version>
+    <Version>2.1.106.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -14,7 +14,7 @@
     <DebugType>portable</DebugType>
     <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
-	<PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive, geo</PackageTags>
     <Title>Olive.GeoLocation</Title>
     <Description>Olive Framework</Description>
