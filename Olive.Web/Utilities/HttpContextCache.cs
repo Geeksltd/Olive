@@ -19,19 +19,12 @@
             var bag = Olive.Context.Current.Http().Items;
             if (bag == null) return valueProducer();
 
-
             if (!bag.TryGetValue(key, out object value))
             {
                 value = valueProducer();
 
-                try
-                {
-                    bag.Add(key, value);
-                }
-                catch (ArgumentException)
-                {
-                    return GetOrAdd(key, valueProducer);
-                }
+                try { bag.Add(key, value); }
+                catch (ArgumentException) { return GetOrAdd(key, valueProducer); }
             }
 
             return (TValue)value;
