@@ -1,26 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Authors>Geeks Ltd</Authors>
-    <Description>Google reCaptcha for Olive</Description>
-    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
-    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
-    <FileVersion>3.1.0.0</FileVersion>
-    <AssemblyVersion>3.1.0.1</AssemblyVersion>
-    <Version>3.1.100</Version>
+    <AssemblyName>Olive.Mvc.Recaptcha</AssemblyName>
+    <RootNamespace>Olive.Mvc.Recaptcha</RootNamespace>
     <PackageId>Olive.Mvc.Recaptcha</PackageId>
-    <PackageVersion>3.1.102</PackageVersion>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>3.1.103.0</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <PackageTags>olive</PackageTags>
+    <Title>Olive.Mvc.Recaptcha</Title>
+    <Description>Olive Framework</Description>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Olive" Version="2.1.204" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive\Olive.csproj" />
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
-  </Target>
 </Project>
