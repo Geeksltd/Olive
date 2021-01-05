@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.SQLite"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.PushNotification", "Olive.PushNotification\Olive.PushNotification.csproj", "{7FF67EEC-A5F7-46C3-BE96-0CF1A76706B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Security", "Olive.Security\Olive.Mvc.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Security", "Olive.Mvc.Security\Olive.Mvc.Security.csproj", "{2A273AE2-5D6A-491A-809B-71764F35281E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Auth0", "Olive.Mvc.Security.Auth0\Olive.Security.Auth0.csproj", "{0019E42E-F830-439C-9911-DF36142BACB0}"
 EndProject
