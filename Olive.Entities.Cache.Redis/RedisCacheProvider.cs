@@ -24,12 +24,12 @@ namespace Olive.Entities.Data
 
         public void Add(IEntity entity) => Set(GetKey(entity), entity);
 
-        static string ListPrefix(Type type) => type.FullName + ">List>";
+        static string ListPrefix(Type type) => type.FullName + ">List";
 
-        public void AddList(Type type, string key, IEnumerable list)
+        public void AddList(Type type, IEnumerable list)
         {
             var data = list.Cast<IEntity>().ToArray();
-            Set(ListPrefix(type) + key, data);
+            Set(ListPrefix(type), data);
         }
 
         public void ClearAll() => Server.FlushDatabase();
@@ -45,8 +45,8 @@ namespace Olive.Entities.Data
         public IEntity Get(Type entityType, string id)
             => (IEntity)Get(entityType.FullName + "|" + id);
 
-        public IEnumerable GetList(Type type, string key)
-            => (IEnumerable)Get(ListPrefix(type) + key);
+        public IEnumerable GetList(Type type)
+            => (IEnumerable)Get(ListPrefix(type));
 
         public void Remove(IEntity entity) => Db.KeyDelete(GetKey(entity));
 
