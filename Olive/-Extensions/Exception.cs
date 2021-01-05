@@ -146,5 +146,36 @@ namespace Olive
                 return @this.InnerException.GetUsefulStack();
             return @this.StackTrace;
         }
+
+        public static bool IsNetworkRelated(this Exception ex)
+        {
+            if (ex.Message.StartsWith("The request was aborted")) return true;
+            if (ex.Message.StartsWith("The network connection was lost")) return true;
+            if (ex.Message.StartsWith("A task was canceled.")) return true;
+            if (ex.Message.StartsWith("A server with the specified hostname could not be found.")) return true;
+            if (ex.Message.StartsWith("An SSL error has occurred and a secure connection to the server cannot be made.")) return true;
+
+            if (ex.Message.Contains("attempts to download a URL all failed")) return true;
+
+            var fullMessage = ex.ToFullMessage();
+            if (fullMessage.Contains("Unable to read data from the transport connection")) return true;
+            if (fullMessage.Contains("ConnectFailure (The requested address is not valid in this context)")) return true;
+            if (fullMessage.Contains("ConnectFailure (Connection timed out)")) return true;
+            if (fullMessage.Contains("ConnectFailure (Network is unreachable)")) return true;
+            if (fullMessage.Contains("ConnectFailure (Connection refused)")) return true;
+            if (fullMessage.Contains("ConnectFailure (No route to host)")) return true;
+            if (fullMessage.Contains("ConnectFailure (Network subsystem is down)")) return true;
+            if (fullMessage.Contains("NameResolutionFailure")) return true;
+            if (fullMessage.Contains("SecureChannelFailure")) return true;
+            if (fullMessage.Contains("Error getting response stream (ReadDoneAsync2): ReceiveFailure")) return true;
+
+            if (fullMessage.ContainsAny(new[] { "Zebble.Device.Network+<Download>", "System.Net.Sockets.NetworkStream" }))
+            {
+                if (fullMessage.Contains("The operation has timed out")) return true;
+                if (fullMessage.Contains("The operation was canceled.")) return true;
+            }
+
+            return false;
+        }
     }
 }

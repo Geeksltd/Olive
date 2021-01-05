@@ -1752,6 +1752,11 @@ namespace Olive
             return new[] { "http://", "https://", "//" }.Any(x => @this.OrEmpty().StartsWith(x, StringComparison.OrdinalIgnoreCase));
         }
 
+        public static bool IsEmailAddress(this string @this)
+        {
+            return new Regex(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$").IsMatch(@this);
+        }
+
         /// <summary>
         /// Removes unused characters from the content of a CSV file.
         /// </summary>
