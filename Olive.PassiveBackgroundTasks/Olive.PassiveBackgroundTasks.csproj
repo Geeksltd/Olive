@@ -1,38 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netstandard2.0\Olive.PassiveBackgroundTasks.xml</DocumentationFile>
+    <AssemblyName>Olive.PassiveBackgroundTasks</AssemblyName>
+    <RootNamespace>Olive.PassiveBackgroundTasks</RootNamespace>
+    <PackageId>Olive.PassiveBackgroundTasks</PackageId>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>1.0.18.0</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <PackageTags>olive</PackageTags>
     <Title>Olive.PassiveBackgroundTasks</Title>
-    <Authors>Geeks Ltd</Authors>
-    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/Geeksltd/Olive/master/Olive/Nuget.png</PackageIconUrl>
-    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
     <Description>Olive Framework</Description>
-    <AssemblyVersion>1.0.0.17</AssemblyVersion>
-    <FileVersion>1.0.0.17</FileVersion>
-    <PackageVersion>1.0.17</PackageVersion>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CronExpressionDescriptor" Version="2.15.0" />
+    <PackageReference Include="CronExpressionDescriptor" Version="2.16.0" />
     <PackageReference Include="Cronos" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Olive.Entities.Data" Version="2.1.165" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Olive">
-      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Entities">
-      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
-    </Reference>
-    <Reference Include="Olive.Entities.Data">
-      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
