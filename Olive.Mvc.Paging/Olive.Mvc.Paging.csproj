@@ -1,38 +1,38 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <OutputPath>..\bin\</OutputPath>
-    <DocumentationFile>..\bin\netcoreapp3.1\Olive.Mvc.Paging.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591;1573;NU1701</NoWarn>
+    <AssemblyName>Olive.Mvc.Paging</AssemblyName>
+    <RootNamespace>Olive.Mvc.Paging</RootNamespace>
     <PackageId>Olive.Mvc.Paging</PackageId>
-    <FileVersion>3.1.0.0</FileVersion>
-    <AssemblyVersion>3.1.0.1</AssemblyVersion>
-    <Version>3.1.100</Version>
-    <Title>Olive MVC Paging</Title>
-    <Authors>Geeks Ltd</Authors>
-    <PackageProjectUrl>https://github.com/Geeksltd/Olive</PackageProjectUrl>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>3.1.103.0</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <Copyright>Copyright ©2020 Geeks Ltd - All rights reserved.</Copyright>
-    <Description>Pagination Utilities for Olive</Description>
-    <PackageVersion>3.1.102</PackageVersion>
+    <PackageTags>olive</PackageTags>
+    <Title>Olive.Mvc.Paging</Title>
+    <Description>Olive Framework</Description>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Olive">
-      <HintPath>..\bin\netstandard2.0\Olive.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Olive.Entities">
-      <HintPath>..\bin\netstandard2.0\Olive.Entities.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Olive.Entities.Data">
-      <HintPath>..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />
+    <PackageReference Include="Olive.Mvc" Version="3.1.114" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache $(ProjectPath) $(TargetPath) $(TargetName)" />
-  </Target>
 </Project>
