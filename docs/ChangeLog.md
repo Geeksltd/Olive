@@ -1,6 +1,12 @@
 
 # Olive compatibility change log
 
+## 5 Jan 2021
+- Replace any nuget reference to `Olive.Testing` with `Olive.Mvc.Testing`
+- Replace any nuget reference to `Olive.BlobAws` with `Olive.Blob.Aws`
+- Replace any nuget reference to `Olive.IpFilter` with `Olive.Mvc.IpFilters`
+
+
 ## 19 Nov 2020 (.NET Core 3.1 upgrade)
 To upgrade your project to .NET 3.1, you need the following:
 
