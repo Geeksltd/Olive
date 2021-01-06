@@ -210,7 +210,7 @@ namespace Olive.Entities.Replication
 
         async Task UploadPage(IEnumerable<IEntity> toUpload)
         {
-            var list = await toUpload.SelectAsync(GetMessage)
+            var list = await toUpload.SequentialSelect(GetMessage)
                 .ExceptNull();
 
             await list.Chop(10).DoAsync(async (messages, _) =>
