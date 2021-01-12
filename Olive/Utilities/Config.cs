@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq;
 
 namespace Olive
 {
@@ -13,7 +12,7 @@ namespace Olive
     {
         const string CONNECTION_STRINGS_CONFIG_ROOT = "ConnectionStrings";
 
-        static IConfiguration Configuration => Context.Current.GetService<IConfiguration>();
+        static IConfiguration Configuration => Context.Current.Config;
 
         ///// <summary>
         ///// Gets the connection string with the specified key.
