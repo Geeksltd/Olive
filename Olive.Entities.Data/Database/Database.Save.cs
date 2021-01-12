@@ -182,10 +182,8 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
             async Task doAction(T obj)
             {
-                if (action == null)
-                    await asyncAction(obj);
-                else
-                    action(obj);
+                if (action == null) await asyncAction(obj);
+                else action(obj);
             }
 
             if (Entity.Services.IsImmutable(item as Entity))

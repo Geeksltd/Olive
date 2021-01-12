@@ -18,7 +18,7 @@ namespace Olive.Entities
         static bool SuppressPersistence = Config.Get("Blob:WebTest:SuppressPersistence", defaultValue: false);
 
         public const string EMPTY_FILE = "NoFile.Empty";
-        public const string UNCHANGED_FILE = "«UNCHANGED»";
+        public const string UNCHANGED_FILE = "Â«UNCHANGEDÂ»";
         public const string DefaultEncryptionKey = "Default_ENC_Key:_This_Better_Be_Calculated_If_Possible";
 
         static string[] UnsafeExtensions = new[] { "aspx", "ascx", "ashx", "axd", "master", "bat", "bas", "asp", "app", "bin","cla","class", "cmd", "com","sitemap","skin", "asa", "cshtml",

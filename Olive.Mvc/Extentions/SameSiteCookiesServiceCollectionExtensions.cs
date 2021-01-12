@@ -15,7 +15,7 @@ namespace Olive.Mvc
         /// <seealso cref="SameSiteMode" /> enum will have a definition for
         /// Unspecified.
         /// </summary>
-        private const SameSiteMode Unspecified = (SameSiteMode)(-1);
+        const SameSiteMode Unspecified = (SameSiteMode)(-1);
 
         /// <summary>
         /// Configures a cookie policy to properly set the SameSite attribute
@@ -59,7 +59,7 @@ namespace Olive.Mvc
             return services;
         }
 
-        private static void CheckSameSite(HttpContext httpContext, CookieOptions options)
+        static void CheckSameSite(HttpContext httpContext, CookieOptions options)
         {
             if (options.SameSite == SameSiteMode.None)
             {
@@ -83,7 +83,7 @@ namespace Olive.Mvc
         /// </remarks>
         /// <param name="userAgent">The user agent string to check.</param>
         /// <returns>Whether the specified user agent (browser) accepts SameSite=None or not.</returns>
-        private static bool DisallowsSameSiteNone(string userAgent)
+        static bool DisallowsSameSiteNone(string userAgent)
         {
             // Cover all iOS based browsers here. This includes:
             //   - Safari on iOS 12 for iPhone, iPod Touch, iPad

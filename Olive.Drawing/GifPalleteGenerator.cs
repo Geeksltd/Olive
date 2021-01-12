@@ -58,10 +58,8 @@
                 {
                     var pixel = image.GetPixel(x, y);
 
-                    if (colors.ContainsKey(pixel))
-                        colors[pixel]++;
-                    else
-                        colors.Add(pixel, 1);
+                    if (colors.ContainsKey(pixel)) colors[pixel]++;
+                    else colors.Add(pixel, 1);
                 }
 
             var result = from item in colors
