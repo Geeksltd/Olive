@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Olive;
 
-namespace Zebble
+namespace Olive
 {
     public class BindableString : Bindable<string>
     {

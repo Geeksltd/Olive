@@ -33,8 +33,7 @@ namespace Olive
             AWSConfigs.RegionEndpoint = endpoint;
             FallbackCredentialsFactory.Reset();
             FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () => new BasicAWSCredentials(accessKey, secret));
-            if (loadSecrets)
-                @this.LoadAwsSecrets();
+            if (loadSecrets) @this.LoadAwsSecrets();
         }
 
         public static void LoadAwsSecrets(this IConfiguration @this, SecretProviderType provider = SecretProviderType.SecretsManager) => new Secrets(@this, provider).Load();

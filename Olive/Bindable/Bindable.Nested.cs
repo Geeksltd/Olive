@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
-namespace Zebble
+namespace Olive
 {
     partial class Bindable<TValue>
     {

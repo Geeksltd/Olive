@@ -541,8 +541,7 @@ namespace Olive
         /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
         public static bool LacksAll(this IEnumerable<string> @this, IEnumerable<string> items, bool caseSensitive)
         {
-            if (caseSensitive)
-                return @this.LacksAll(items);
+            if (caseSensitive) return @this.LacksAll(items);
             else
                 return !@this.Select(a => a.ToUpper()).ContainsAny(items.Select(b => b.ToUpper()).ToArray());
         }
@@ -1130,8 +1129,7 @@ namespace Olive
                 index++;
             }
 
-            if (!foundAny)
-                yield return -1;
+            if (!foundAny) yield return -1;
         }
 
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<string> @this, string item, bool caseSensitive)
@@ -1165,8 +1163,7 @@ namespace Olive
                 index++;
             }
 
-            if (!foundAny)
-                yield return -1;
+            if (!foundAny) yield return -1;
         }
 
         /// <summary>

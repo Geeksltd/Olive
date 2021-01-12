@@ -28,7 +28,7 @@ namespace Olive.Security
             return new ClaimsPrincipal(new ClaimsIdentity(claims, "Olive"));
         }
 
-        private static bool IsRequiredToEndImpersonation(Claim claim)
+        static bool IsRequiredToEndImpersonation(Claim claim)
         {
             return claim.Type.IsAnyOf(
                 ClaimTypes.NameIdentifier.WithPrefix(IMPERSONATOR_CLAIMS_PREFIX),

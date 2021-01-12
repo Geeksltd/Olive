@@ -1,10 +1,7 @@
-namespace Zebble
+namespace Olive
 {
     using System;
-    using System.Collections.Concurrent;
     using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using Olive;
 
     public abstract partial class Bindable : IBindable
     {
@@ -17,6 +14,11 @@ namespace Zebble
         protected abstract void SetValue(object value, bool byUserInput = false);
 
         protected abstract object GetValue();
+
+        /// <summary>
+        /// Rebinds it to the same value. Particularly useful for expression based bindings to get updated.
+        /// </summary>
+        public void Refresh() => SetValue(GetValue());
     }
 
     /// <summary>
@@ -115,10 +117,5 @@ namespace Zebble
 
             return property;
         }
-
-        /// <summary>
-        /// Rebinds it to the same value. Particularly useful for expression based bindings to get updated.
-        /// </summary>
-        public void Refresh() => Value = value;
     }
 }

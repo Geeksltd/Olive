@@ -13,8 +13,7 @@ namespace Olive.Mvc.Microservices
         {
             var files = AppDomain.CurrentDomain.WebsiteRoot().GetFiles("Features*.xml");
 
-            if (files.None())
-                return;
+            if (files.None()) return;
 
             var data = files.Select(x => ReadXml(x.Name)).SelectMany(x => x).Select(x => x.ToString()).Aggregate((current, next) => $"{current} {next}");
 

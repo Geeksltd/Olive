@@ -1,4 +1,4 @@
-﻿namespace Zebble
+﻿namespace Olive
 {
     public interface IBinding
     {
