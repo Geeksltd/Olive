@@ -97,14 +97,14 @@ namespace Olive.Mvc
             return new { Download = url };
         }
 
-        private FileContentResult CreateError(string errorText)
+        FileContentResult CreateError(string errorText)
         {
             var bytes = Encoding.ASCII.GetBytes(errorText);
 
             return new FileContentResult(bytes, "application/octet-stream") { FileDownloadName = "Error.txt" };
         }
 
-        private DirectoryInfo GetFolder(string key = null)
+        DirectoryInfo GetFolder(string key = null)
         {
             var configuredPath = Config.Get("Blob:TempFileAbsolutePath");
 

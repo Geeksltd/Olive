@@ -22,7 +22,7 @@ namespace Olive.BlobAzure
 
         public bool CostsToCheckExistence() => true;
 
-        private async Task<BlobContainerClient> GetBlobContainer()
+        async Task<BlobContainerClient> GetBlobContainer()
         {
             if (BlobContainerClient == null)
                 return BlobContainerClient = BlobServiceClient.GetBlobContainerClient(AzureBlobInfo.StorageContainer);
@@ -86,8 +86,7 @@ namespace Olive.BlobAzure
 
         public async Task DeleteAsync(Blob document)
         {
-            if (document.IsEmpty())
-                return;
+            if (document.IsEmpty()) return;
 
             var blobContainer = await GetBlobContainer();
             var key = document.GetKey();

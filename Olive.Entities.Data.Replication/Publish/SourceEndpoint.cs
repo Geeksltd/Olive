@@ -72,7 +72,8 @@ namespace Olive.Entities.Replication
         void HandleRefreshRequests()
         {
             Log.For(this).Debug("Subscribing to " + RefreshQueueUrl);
-            EventBus.Queue(RefreshQueueUrl).Subscribe<RefreshMessage>(async message => await HandleRefreshMessage(message.TypeName));
+            EventBus.Queue(RefreshQueueUrl)
+            	.Subscribe<RefreshMessage>(async message => await HandleRefreshMessage(message.TypeName));
         }
     }
 }

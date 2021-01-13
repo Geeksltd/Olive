@@ -95,8 +95,7 @@ namespace Olive.Mvc
                 await item.Run<OnPreBindingAttribute>();
             }
 
-            if (ExpandAll().Any())
-                await ExecutePreBinding();
+            if (ExpandAll().Any()) await ExecutePreBinding();
         }
 
         async Task ExecutePreBound()

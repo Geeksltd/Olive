@@ -76,7 +76,8 @@ namespace Olive.Aws
 
             if (IsFifo)
             {
-                request.Entries.ForEach(message =>
+                request.Entries
+                	.ForEach(message =>
                 {
                     message.MessageDeduplicationId =
                         JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
@@ -95,7 +96,8 @@ namespace Olive.Aws
                 if (retry > MAX_RETRY)
                     throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
 
-                Log.For(this).Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+                Log.For(this)
+                	.Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
 
                 var toSend = response.Failed.Select(f => f.Message);
                 successfuls.AddRange(await PublishBatch(toSend, retry++));

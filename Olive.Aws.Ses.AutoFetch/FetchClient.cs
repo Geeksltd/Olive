@@ -31,7 +31,7 @@ namespace Olive.Aws.Ses.AutoFetch
 
         void LogInfo(string log) => Log.For(this).Info(log);
 
-        private async Task Fetch()
+        async Task Fetch()
         {
             var isEmpty = false;
             while (!isEmpty)

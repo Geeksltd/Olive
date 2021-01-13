@@ -12,7 +12,7 @@ namespace Olive.Hangfire.Serverless
 {
     class DistributedBackgroundTasksMiddleware
     {
-        private readonly RequestDelegate Next;
+        readonly RequestDelegate Next;
 
         public DistributedBackgroundTasksMiddleware(RequestDelegate _next)
         {
