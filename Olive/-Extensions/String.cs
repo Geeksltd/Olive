@@ -687,7 +687,17 @@ namespace Olive
         /// Gets all indices of a specified string inside this text.
         /// </summary>
         /// <param name="pattern">Finds {pattern} into this string and returns Inumerable value.</param>
+        [Obsolete("Please use AllIndices<T> instead.")]
         public static IEnumerable<int> AllIndicesOf(this string @this, string pattern)
+        {
+            return @this.AllIndices(pattern);
+        }
+
+        /// <summary>
+        /// Gets all indices of a specified string inside this text.
+        /// </summary>
+        /// <param name="pattern">Finds {pattern} into this string and returns Inumerable value.</param>
+        public static IEnumerable<int> AllIndices(this string @this, string pattern)
         {
             if (pattern.IsEmpty())
                 throw new ArgumentNullException(nameof(pattern));
