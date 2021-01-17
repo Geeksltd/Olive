@@ -34,7 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="Olive.SMS" Version="2.1.108" />
     <PackageReference Include="TextmagicRest" Version="1.0.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.SMS\Olive.SMS.csproj" />
   </ItemGroup>
 </Project>
