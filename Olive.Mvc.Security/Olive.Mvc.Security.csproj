@@ -35,9 +35,11 @@
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.8.0" />
-    <PackageReference Include="Olive.Encryption" Version="2.2.105" />
-    <PackageReference Include="Olive.Entities" Version="2.1.151" />
-    <PackageReference Include="Olive.Web" Version="3.1.105" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Encryption\Olive.Encryption.csproj" />
+    <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
+    <ProjectReference Include="..\Olive.Web\Olive.Web.csproj" />
   </ItemGroup>
 </Project>

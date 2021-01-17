@@ -33,9 +33,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Olive.Csv" Version="2.1.106" />
-    <PackageReference Include="Olive.Entities.Data" Version="2.1.165" />
-    <PackageReference Include="Olive.Export" Version="2.1.106" />
-    <PackageReference Include="Olive.Mvc" Version="3.1.114" />
+    <ProjectReference Include="..\Olive.CSV\Olive.Csv.csproj" />
+    <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
+    <ProjectReference Include="..\Olive.Export\Olive.Export.csproj" />
+    <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />
   </ItemGroup>
 </Project>

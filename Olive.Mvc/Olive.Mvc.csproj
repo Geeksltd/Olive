@@ -34,8 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Olive.Audit" Version="2.1.106" />
-    <PackageReference Include="Olive.Entities.Data" Version="2.1.165" />
-    <PackageReference Include="Olive.Mvc.Security" Version="3.1.103" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
+    <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
+    <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
   </ItemGroup>
 </Project>
