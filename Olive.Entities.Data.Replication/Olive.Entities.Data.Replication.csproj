@@ -38,7 +38,9 @@
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Olive.Entities" Version="2.1.151" />
-    <PackageReference Include="Olive.EventBus" Version="2.1.122" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
+    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
   </ItemGroup>
 </Project>

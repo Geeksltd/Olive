@@ -39,7 +39,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Olive.Aws" Version="2.2.120" />
-    <PackageReference Include="Olive.EventBus" Version="2.1.122" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Aws\Olive.Aws.csproj" />
+    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
   </ItemGroup>
 </Project>

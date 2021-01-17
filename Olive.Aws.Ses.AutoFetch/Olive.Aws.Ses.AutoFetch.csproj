@@ -40,11 +40,13 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
     <PackageReference Include="MimeKit" Version="2.10.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Olive.Audit" Version="2.1.106" />
-    <PackageReference Include="Olive.Aws" Version="2.2.120" />
-    <PackageReference Include="Olive.Entities.Data" Version="2.1.165" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.txt" pack="true" PackagePath="." />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
+    <ProjectReference Include="..\Olive.Aws\Olive.Aws.csproj" />
+    <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
   </ItemGroup>
 </Project>
