@@ -36,7 +36,7 @@
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="Olive" Version="2.1.204" />
+    <PackageReference Include="Olive" Version="2.1.208" />
     <PackageReference Include="Olive.Entities" Version="2.1.151" />
   </ItemGroup>
 </Project>

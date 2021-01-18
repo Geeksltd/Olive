@@ -34,7 +34,7 @@ namespace Olive.Mvc
         protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
         {
             Environment = env;
-            Configuration = config;
+            Config.SetConfiguration(Configuration = config);
             Log.Init(loggerFactory);
         }
 

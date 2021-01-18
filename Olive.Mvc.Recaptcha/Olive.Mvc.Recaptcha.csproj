@@ -36,6 +36,6 @@
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Olive" Version="2.1.204" />
+    <PackageReference Include="Olive" Version="2.1.208" />
   </ItemGroup>
 </Project>
