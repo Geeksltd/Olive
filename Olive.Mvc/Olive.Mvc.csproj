@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Mvc</RootNamespace>
     <PackageId>Olive.Mvc</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.114.0</Version>
+    <Version>3.1.115.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -39,5 +39,8 @@
     <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
     <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
     <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
 </Project>

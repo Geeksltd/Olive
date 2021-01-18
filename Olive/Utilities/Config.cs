@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 
 namespace Olive
 {
@@ -11,8 +12,12 @@ namespace Olive
     public static class Config
     {
         const string CONNECTION_STRINGS_CONFIG_ROOT = "ConnectionStrings";
+        static IConfiguration configuration;
 
-        static IConfiguration Configuration => Context.Current.Config;
+        static IConfiguration Configuration => configuration ??= Context.Current.Config;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void SetConfiguration(IConfiguration config) => configuration = config;
 
         ///// <summary>
         ///// Gets the connection string with the specified key.
