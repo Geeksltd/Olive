@@ -39,8 +39,10 @@ namespace Olive
         {
             if (MaxRetainedFiles <= 0) return;
 
-            Path.GetFiles(FilePrefix + "*").OrderByDescending(f => f.Name)
-                .Skip(MaxRetainedFiles.Value).Do(x => x.Delete());
+            Path.GetFiles(FilePrefix + "*")
+            	.OrderByDescending(f => f.Name)
+            	.Skip(MaxRetainedFiles.Value)
+            	.Do(x => x.Delete());
         }
     }
 }

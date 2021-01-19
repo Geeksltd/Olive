@@ -39,6 +39,8 @@
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Olive" Version="2.1.204" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
 </Project>

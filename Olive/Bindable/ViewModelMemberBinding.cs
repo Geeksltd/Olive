@@ -1,4 +1,4 @@
-﻿namespace Zebble
+﻿namespace Olive
 {
     using System;
     using System.Linq.Expressions;
@@ -11,7 +11,7 @@
         public class ViewModelMemberBinding<TMember>
         {
             MemberInfo Member;
-            Bindable<TValue> ViewModel;
+            readonly Bindable<TValue> ViewModel;
             public ViewModelMemberBinding(Bindable<TValue> viewModel, Expression<Func<TValue, TMember>> viewModelMember)
             {
                 ViewModel = viewModel ?? throw new ArgumentNullException(nameof(ViewModel));

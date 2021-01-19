@@ -8,10 +8,10 @@ namespace Olive.Mvc
 {
     public class RecaptchaScriptTagHelper : TagHelper
     {
-        private readonly IRecaptchaConfigurationService Service;
-        private readonly IHttpContextAccessor ContextAccessor;
+        readonly IRecaptchaConfigurationService Service;
+        readonly IHttpContextAccessor ContextAccessor;
 
-        private const string ScriptSnippet = @"
+        const string ScriptSnippet = @"
 function recaptchaInitialScript() {{
     $.validator.setDefaults({{submitHandler:function(){{var e=this,r=''!==grecaptcha.getResponse(),a='{1}',t=$('#{0}', e.currentForm);if(t.length===0)return !0;return a&&(r?t.length&&t.hide():(e.errorList.push({{message:a}}),$(e.currentForm).triggerHandler('invalid-form',[e]),t.length&&(t.html(a),t.show()))),r}}}});
     $(page).off('initialized').on('initialized', function () {{
@@ -29,8 +29,8 @@ function recaptchaInitialScript() {{
 window.addEventListener('load', recaptchaInitialScript, false );
 ";
 
-        private const string JqueryValidationAttributeName = "jquery-validation";
-        private const string ValidationMessageElementIdAttributeName = "validation-message-element-id";
+        const string JqueryValidationAttributeName = "jquery-validation";
+        const string ValidationMessageElementIdAttributeName = "validation-message-element-id";
 
         public RecaptchaScriptTagHelper(IRecaptchaConfigurationService service, IHttpContextAccessor contextAccessor)
         {
@@ -73,7 +73,8 @@ window.addEventListener('load', recaptchaInitialScript, false );
                 TagRenderMode = TagRenderMode.Normal
             };
 
-            script.InnerHtml.AppendHtml(
+            script.InnerHtml
+            	.AppendHtml(
                 ScriptSnippet.FormatWith(
                     ValidationMessageElementId, 
                     Service.ValidationMessage

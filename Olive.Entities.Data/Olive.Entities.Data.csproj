@@ -36,8 +36,10 @@
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Olive.Audit" Version="2.1.106" />
-    <PackageReference Include="Olive.Encryption" Version="2.2.105" />
-    <PackageReference Include="Olive.Entities" Version="2.1.151" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
+    <ProjectReference Include="..\Olive.Encryption\Olive.Encryption.csproj" />
+    <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
   </ItemGroup>
 </Project>

@@ -15,8 +15,8 @@ namespace Olive.BlobAws
 {
     class S3FileRequestService : IFileRequestService
     {
-        private readonly string TempBucket;
-        private readonly string Region;
+        readonly string TempBucket;
+        readonly string Region;
 
         public S3FileRequestService(FileUploadSettings settings)
         {
@@ -83,7 +83,7 @@ namespace Olive.BlobAws
             }
         }
 
-        private AmazonS3Client GetClient() => new AmazonS3Client();
+        AmazonS3Client GetClient() => new AmazonS3Client();
 
         public Task DeleteTempFiles(TimeSpan _)
         {

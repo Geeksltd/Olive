@@ -36,7 +36,9 @@
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-    <PackageReference Include="Olive.ApiClient" Version="2.2.106" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.ApiClient\Olive.ApiClient.csproj" />
   </ItemGroup>
 </Project>

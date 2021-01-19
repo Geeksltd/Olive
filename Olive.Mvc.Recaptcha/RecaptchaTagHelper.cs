@@ -5,12 +5,12 @@ namespace Olive.Mvc
 {
     public class RecaptchaTagHelper : TagHelper
     {
-        private readonly IRecaptchaConfigurationService Service;
+        readonly IRecaptchaConfigurationService Service;
 
-        private const string ThemeAttributeName = "theme";
-        private const string TypeAttributeName = "type";
-        private const string SizeAttributeName = "size";
-        private const string TabindexAttributeName = "tabindex";
+        const string ThemeAttributeName = "theme";
+        const string TypeAttributeName = "type";
+        const string SizeAttributeName = "size";
+        const string TabindexAttributeName = "tabindex";
 
         [HtmlAttributeName(ThemeAttributeName)]
         public RecaptchaTheme? Theme { get; set; }

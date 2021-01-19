@@ -5,7 +5,7 @@ namespace Olive.Mvc
 {
     public static class RecaptchaLoggerExtensions
     {
-        private static readonly Action<ILogger, string, Exception> _validationException;
+        static readonly Action<ILogger, string, Exception> _validationException;
 
         static RecaptchaLoggerExtensions()
         {

@@ -8,7 +8,7 @@ namespace @Olive.PassiveBackgroundTasks
 {
     class DistributedBackgroundTasksMiddleware
     {
-        private readonly RequestDelegate Next;
+        readonly RequestDelegate Next;
 
         public DistributedBackgroundTasksMiddleware(RequestDelegate _next)
         {

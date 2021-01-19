@@ -33,6 +33,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Olive.Mvc.Testing" Version="3.1.104" />
+    <ProjectReference Include="..\Olive.Mvc.Testing\Olive.Mvc.Testing.csproj" />
   </ItemGroup>
 </Project>

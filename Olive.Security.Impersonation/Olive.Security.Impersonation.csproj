@@ -35,7 +35,9 @@
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Olive.Mvc.Security" Version="3.1.103" />
-    <PackageReference Include="Olive.Web" Version="3.1.105" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
+    <ProjectReference Include="..\Olive.Web\Olive.Web.csproj" />
   </ItemGroup>
 </Project>

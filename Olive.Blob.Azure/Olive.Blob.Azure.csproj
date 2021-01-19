@@ -35,6 +35,8 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.8.0-beta.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Olive.Entities" Version="2.1.151" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
   </ItemGroup>
 </Project>

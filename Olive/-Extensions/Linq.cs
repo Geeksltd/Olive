@@ -541,8 +541,7 @@ namespace Olive
         /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
         public static bool LacksAll(this IEnumerable<string> @this, IEnumerable<string> items, bool caseSensitive)
         {
-            if (caseSensitive)
-                return @this.LacksAll(items);
+            if (caseSensitive) return @this.LacksAll(items);
             else
                 return !@this.Select(a => a.ToUpper()).ContainsAny(items.Select(b => b.ToUpper()).ToArray());
         }
@@ -1103,6 +1102,7 @@ namespace Olive
         /// Gets all indices of the specified item in this collection and returns -1 if nothing found.
         /// </summary>
         /// <param name="item">The item which is searched into the list.</param>
+        [Obsolete("Please use AllIndices<T> instead. This method will return [-1] for non-existing items. This is causing unexpected behaviors and will be removed in the next major version.")]
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, T item)
         {
             var index = 0;
@@ -1118,22 +1118,41 @@ namespace Olive
                         yield return index;
                     }
                 }
-                else
+                else if (item.Equals(i))
                 {
-                    if (item.Equals(i))
-                    {
-                        foundAny = true;
-                        yield return index;
-                    }
+                    foundAny = true;
+                    yield return index;
                 }
 
                 index++;
             }
 
-            if (!foundAny)
-                yield return -1;
+            if (!foundAny) yield return -1;
         }
 
+        /// <summary>
+        /// Gets all indices of the specified item in this collection and returns -1 if nothing found.
+        /// </summary>
+        /// <param name="item">The item which is searched into the list.</param>
+        public static IEnumerable<int> AllIndices<T>(this IEnumerable<T> @this, T item)
+        {
+            var index = 0;
+
+            foreach (var i in @this)
+            {
+                if (item is null)
+                {
+                    if (i is null)
+                        yield return index;
+                }
+                else if (item.Equals(i))
+                    yield return index;
+
+                index++;
+            }
+        }
+
+        [Obsolete("Please use AllIndices<T> instead. This method will return [-1] for non-existing items. This is causing unexpected behaviors and will be removed in the next major version.")]
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<string> @this, string item, bool caseSensitive)
         {
             if (!caseSensitive)
@@ -1145,10 +1164,22 @@ namespace Olive
             return AllIndicesOf(@this, item);
         }
 
+        public static IEnumerable<int> AllIndices<T>(this IEnumerable<string> @this, string item, bool caseSensitive)
+        {
+            if (!caseSensitive)
+            {
+                @this = @this.Select(x => x.ToUpper());
+                item = item.ToUpper();
+            }
+
+            return AllIndices(@this, item);
+        }
+
         /// <summary>
         /// Returns the indices of all items which match a specified criteria and returns -1 if nothing found.
         /// </summary>
         /// <param name="criteria">The func() which is used in method.</param>
+        [Obsolete("Please use AllIndices<T> instead. This method will return [-1] for non-existing items. This is causing unexpected behaviors and will be removed in the next major version.")]
         public static IEnumerable<int> AllIndicesOf<T>(this IEnumerable<T> @this, Func<T, bool> criteria)
         {
             var index = 0;
@@ -1165,8 +1196,22 @@ namespace Olive
                 index++;
             }
 
-            if (!foundAny)
-                yield return -1;
+            if (!foundAny) yield return -1;
+        }
+
+        /// <summary>
+        /// Returns the indices of all items which match a specified criteria and returns -1 if nothing found.
+        /// </summary>
+        /// <param name="criteria">The func() which is used in method.</param>
+        public static IEnumerable<int> AllIndices<T>(this IEnumerable<T> @this, Func<T, bool> criteria)
+        {
+            var index = 0;
+
+            foreach (var item in @this)
+            {
+                if (criteria(item))
+                    yield return index++;
+            }
         }
 
         /// <summary>

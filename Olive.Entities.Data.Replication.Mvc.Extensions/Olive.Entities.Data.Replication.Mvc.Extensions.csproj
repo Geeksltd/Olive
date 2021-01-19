@@ -35,7 +35,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Olive.Entities.Data.Replication" Version="2.1.150" />
-    <PackageReference Include="Olive.EventBus" Version="2.1.122" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Entities.Data.Replication\Olive.Entities.Data.Replication.csproj" />
+    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
   </ItemGroup>
 </Project>

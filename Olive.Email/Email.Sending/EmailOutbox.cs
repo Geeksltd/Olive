@@ -85,8 +85,7 @@ namespace Olive.Email
             if (message.SendableDate > LocalTime.Now)
             {
                 Log.Info($"Skipping Send() command for IEmailMessage ({message.GetId()}). SendableDate is in the future.");
-                if (message.IsNew)
-                    await Database.Save(message);
+                if (message.IsNew) await Database.Save(message);
 
                 return false;
             }

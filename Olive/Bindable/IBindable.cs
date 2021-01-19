@@ -1,4 +1,4 @@
-namespace Zebble
+namespace Olive
 {
     /// <summary>
     /// Provides a wrapper around a property value which can be used in data binding.
@@ -6,7 +6,7 @@ namespace Zebble
     public interface IBindable
     {
         IBinding AddBinding(object target, string propertyName);
-
         object Value { get; set; }
+        void Refresh();
     }
 }

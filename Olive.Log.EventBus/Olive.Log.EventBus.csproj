@@ -37,6 +37,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-    <PackageReference Include="Olive.EventBus" Version="2.1.122" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
   </ItemGroup>
 </Project>

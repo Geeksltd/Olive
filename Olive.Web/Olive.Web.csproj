@@ -34,8 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
-    <PackageReference Include="Olive.ApiClient" Version="2.2.106" />
-    <PackageReference Include="Olive.Entities" Version="2.1.151" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.ApiClient\Olive.ApiClient.csproj" />
+    <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
   </ItemGroup>
 </Project>

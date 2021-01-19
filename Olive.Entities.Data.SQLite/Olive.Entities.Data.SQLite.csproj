@@ -36,6 +36,8 @@
     <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-    <PackageReference Include="Olive.Entities.Data" Version="2.1.165" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
   </ItemGroup>
 </Project>

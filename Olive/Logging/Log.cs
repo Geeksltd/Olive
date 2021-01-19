@@ -15,6 +15,9 @@ namespace Olive
             return @this;
         }
 
+        public static void Error(this ILogger @this, string message)
+            => @this.LogError(message);
+
         public static void Error(this ILogger @this, Exception ex, string message = null)
             => @this.LogError(ex, message.Or(ex.ToFullMessage()));
 

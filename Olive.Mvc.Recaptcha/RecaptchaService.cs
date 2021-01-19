@@ -10,8 +10,8 @@ namespace Olive.Mvc
 {
     public class RecaptchaService : IRecaptchaService
     {
-        private readonly RecaptchaOptions Options;
-        private readonly HttpClient BackChannel;
+        readonly RecaptchaOptions Options;
+        readonly HttpClient BackChannel;
 
         public RecaptchaService(IOptions<RecaptchaOptions> options, IConfiguration configuration)
         {
@@ -66,7 +66,7 @@ namespace Olive.Mvc
             }
         }
 
-        private string GetErrrorMessage(RecaptchaValidationResponse validationResponse, out bool invalidResponse)
+        string GetErrrorMessage(RecaptchaValidationResponse validationResponse, out bool invalidResponse)
         {
             var errorList = new List<string>();
             invalidResponse = false;

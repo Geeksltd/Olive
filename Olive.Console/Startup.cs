@@ -16,13 +16,10 @@ namespace Olive.Console
 
         public Startup(IConfiguration config)
         {
+            Context.Initialize(Application.ServiceCollection.BuildServiceProvider(), null);
             Configuration = config;
             Environment = Context.Current.GetService<IHostEnvironment>();
-
             ConfigureServices(Application.ServiceCollection);
-
-            Context.Initialize(Application.ServiceCollection.BuildServiceProvider(), null);
-
             Log.Init(Context.Current.GetService<ILoggerFactory>());
         }
 

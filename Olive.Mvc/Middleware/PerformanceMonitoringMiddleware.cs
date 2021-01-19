@@ -29,9 +29,11 @@ namespace Olive.Mvc
             var user = context.User?.GetId();
             if (length > PERFROMANCE_THRESHOLD_SECONDS) // slow
                 if (!Whitelist.Contains(url))
-                    Log.For(this).Error(new UnacceptablePerformanceException($"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : ")));
+                    Log.For(this)
+                    	.Error(new UnacceptablePerformanceException($"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : ")));
                 else
-                    Log.For(this).Warning($"UnacceptablePerformance ({length}) seconds for whitelisted url : " + url + user.WithPrefix(" for user : "));
+                    Log.For(this)
+                    	.Warning($"UnacceptablePerformance ({length}) seconds for whitelisted url : " + url + user.WithPrefix(" for user : "));
         }
 
         internal static void IgnorePerformance(string url) => Whitelist.Add(url.ToLower());

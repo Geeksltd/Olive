@@ -11,8 +11,7 @@ namespace Olive.Security
         {
             base.OnActionExecuting(context);
 
-            if (!NeedsAuthenticating(context.HttpContext.User))
-                return;
+            if (!NeedsAuthenticating(context.HttpContext.User)) return;
 
             var headerVlaue = context.HttpContext.Request.Headers["Authorization"].ToString();
             if (!headerVlaue.StartsWith("Bearer")) return;

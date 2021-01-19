@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive</AssemblyName>
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.205.0</Version>
+    <Version>2.1.210.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -23,6 +24,7 @@
     <Authors>Geeks Ltd</Authors>
     <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
     <DisableExtraReferences>true</DisableExtraReferences>
+    <PackageVersion>2.1.210.0</PackageVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,7 +46,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />

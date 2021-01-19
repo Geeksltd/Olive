@@ -36,6 +36,8 @@
     <PackageReference Include="Hangfire" Version="1.7.18" />
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Olive.Hangfire" Version="3.1.103" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Hangfire\Olive.Hangfire.csproj" />
   </ItemGroup>
 </Project>

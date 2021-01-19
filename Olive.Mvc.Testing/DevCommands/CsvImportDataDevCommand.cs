@@ -1,15 +1,13 @@
-﻿using Olive;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Olive;
 using Olive.Csv;
 using Olive.Entities;
-using Olive.Entities.Data;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Data;
-using System.Reflection;
 
 namespace Olive.Mvc.Testing
 {
@@ -44,16 +42,18 @@ namespace Olive.Mvc.Testing
 
             var properties = GetProperties(dataTable, type).ToArray();
 
-            if (properties.None() || properties.Any(p => p == null))
+            if (properties.None() || properties.Any(p => p is null))
                 throw new ArgumentException($"Failed to extract properties out of the columns' name.\r\nExtracted properties are {properties.ExceptNull().Select(p => p.Name).ToString(", ", " and ")}.");
 
             foreach (var row in dataTable.GetRows())
             {
-                var instance = (IEntity) Activator.CreateInstance(type);
+                var instance = (IEntity)Activator.CreateInstance(type);
 
-                for (int index = 0; index < properties.Length; index++)
-                    properties[index].SetValue(instance, 
-                        row[index].ToString().To(properties[index].PropertyType));
+                for (var index = 0; index < properties.Length; index++)
+                {
+                    var prop = properties[index];
+                    prop.SetValue(instance, row[index].ToString().To(prop.PropertyType));
+                }
 
                 await Database.Save(instance, SaveBehaviour.BypassAll);
             }
@@ -67,7 +67,7 @@ namespace Olive.Mvc.Testing
 
         Type LoadType(string typeName)
         {
-            return typeof(IEntity).FindImplementerClasses().FirstOrDefault(t => t.Name == typeName) ?? 
+            return typeof(IEntity).FindImplementerClasses().FirstOrDefault(t => t.Name == typeName) ??
                 throw new ArgumentException($"Could not load the type with the filename ({typeName}).");
         }
     }

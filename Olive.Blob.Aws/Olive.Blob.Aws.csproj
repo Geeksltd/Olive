@@ -39,7 +39,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Olive.Aws" Version="2.2.120" />
-    <PackageReference Include="Olive.Mvc" Version="3.1.114" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Aws\Olive.Aws.csproj" />
+    <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />
   </ItemGroup>
 </Project>
