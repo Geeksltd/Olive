@@ -1507,6 +1507,9 @@ namespace Olive
             else return char.ToLower(result[0]) + result.Substring(1);
         }
 
+        /// <summary>
+        /// Returns a snake_case converted string.
+        /// </summary>
         public static string ToSnakeCase(this string @this)
         {
             if (@this.IsEmpty()) return @this;
