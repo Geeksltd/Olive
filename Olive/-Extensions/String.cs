@@ -1514,7 +1514,7 @@ namespace Olive
         {
             if (@this.IsEmpty()) return @this;
 
-            return string.Concat(@this.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" : "" + x)).ToLower();
+            return string.Concat(@this.Select((x, i) => (i > 0 && char.IsUpper(x) ? "_" : "") + x)).ToLower();
         }
 
         /// <summary>
