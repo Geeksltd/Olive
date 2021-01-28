@@ -1507,6 +1507,13 @@ namespace Olive
             else return char.ToLower(result[0]) + result.Substring(1);
         }
 
+        public static string ToSnakeCase(this string @this)
+        {
+            if (@this.IsEmpty()) return @this;
+
+            return string.Concat(@this.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" : "" + x)).ToLower();
+        }
+
         /// <summary>
         /// Converts [hello world] to [Hello World].
         /// </summary>
