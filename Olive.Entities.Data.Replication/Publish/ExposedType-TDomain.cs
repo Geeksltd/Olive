@@ -190,7 +190,8 @@ namespace Olive.Entities.Replication
 
             //using (var scope = database.CreateTransactionScope())
             //{
-            await allPages.ForEachAsync(10, async (pageIndex) =>
+
+            foreach (var pageIndex in allPages)
             {
                 var query = database.Of(typeof(TDomain));
 
@@ -199,7 +200,8 @@ namespace Olive.Entities.Replication
                 query.PageStartIndex = pageIndex * pageSize;
 
                 await UploadPage(await query.GetList());
-            });
+            }
+
 
             //    scope.Complete();
             //}
@@ -233,7 +235,7 @@ namespace Olive.Entities.Replication
             catch (Exception ex)
             {
                 Log.For(this)
-                	.Error(ex, $"Failed to create an event bus message for {item.GetType().FullName} with ID of {item.GetId()} becauase : " + ex.ToFullMessage());
+                    .Error(ex, $"Failed to create an event bus message for {item.GetType().FullName} with ID of {item.GetId()} becauase : " + ex.ToFullMessage());
             }
 
             return result;
