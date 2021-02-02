@@ -1508,6 +1508,16 @@ namespace Olive
         }
 
         /// <summary>
+        /// Returns a snake_case converted string.
+        /// </summary>
+        public static string ToSnakeCase(this string @this)
+        {
+            if (@this.IsEmpty()) return @this;
+
+            return string.Concat(@this.Select((x, i) => (i > 0 && char.IsUpper(x) ? "_" : "") + x)).ToLower();
+        }
+
+        /// <summary>
         /// Converts [hello world] to [Hello World].
         /// </summary>
         public static string CapitaliseFirstLetters(this string @this)
