@@ -14,7 +14,7 @@ namespace Olive.Console
         public static IHostEnvironment Environment { get; private set; }
         public static IConfiguration Configuration { get; private set; }
 
-        public Startup(IConfiguration config)
+        protected Startup(IConfiguration config)
         {
             Context.Initialize(Application.ServiceCollection.BuildServiceProvider(), null);
             Configuration = config;

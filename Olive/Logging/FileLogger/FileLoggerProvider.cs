@@ -12,7 +12,7 @@ namespace Olive
     [ProviderAlias("File")]
     class FileLoggerProvider : BatchingLoggerProvider
     {
-        DirectoryInfo Path;
+        readonly DirectoryInfo Path;
         readonly string FilePrefix;
         readonly int? MaxFileSize, MaxRetainedFiles;
 

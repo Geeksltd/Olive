@@ -12,7 +12,7 @@
     [Serializable]
     public class IntRangeCollection : IEnumerable<int>
     {
-        SortedList<int, Range<int>> ranges = new SortedList<int, Range<int>>();
+        readonly SortedList<int, Range<int>> ranges = new SortedList<int, Range<int>>();
 
         public IntRangeCollection() { }
 

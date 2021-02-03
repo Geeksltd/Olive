@@ -15,7 +15,7 @@ namespace Olive
 
         #region EasterMondays
 
-        static DateTime[] EasterMondays = new[]{
+        static readonly DateTime[] EasterMondays = new[]{
 new DateTime(1950,04,10),
 new DateTime(1951,03,26),
 new DateTime(1952,04,14),
@@ -173,7 +173,7 @@ new DateTime(2099,04,13)};
         /// Dictionary that contains exceptional dates for Early May Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static Dictionary<int, DateTime> EarlyMayExceptions = new Dictionary<int, DateTime>
+        static readonly Dictionary<int, DateTime> EarlyMayExceptions = new Dictionary<int, DateTime>
         {
             {2020,new DateTime(2020,05,08)}
         };
@@ -184,7 +184,7 @@ new DateTime(2099,04,13)};
         /// Dictionary that contains exceptional dates for Spring Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static Dictionary<int, DateTime> SpringBankHolidayExceptions = new Dictionary<int, DateTime>
+        static readonly Dictionary<int, DateTime> SpringBankHolidayExceptions = new Dictionary<int, DateTime>
         {
             {2012,new DateTime(2012,06,04)}
         };
@@ -197,7 +197,7 @@ new DateTime(2099,04,13)};
         /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static Dictionary<int, DateTime> LateSummerBankHolidayExceptions = new Dictionary<int, DateTime>();
+        static readonly Dictionary<int, DateTime> LateSummerBankHolidayExceptions = new Dictionary<int, DateTime>();
 
         #endregion LateSummerBankHolidayExceptions
 
@@ -207,7 +207,7 @@ new DateTime(2099,04,13)};
         /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static Dictionary<int, DateTime[]> AdditionalBankHolidays = new Dictionary<int, DateTime[]>
+        static readonly Dictionary<int, DateTime[]> AdditionalBankHolidays = new Dictionary<int, DateTime[]>
         {
             {2012,new[]{new DateTime(2012,6,5)}}
         };
@@ -752,7 +752,7 @@ new DateTime(2099,04,13)};
             }
             else
             {
-                workingTimesInday.Add(new KeyValuePair<TimeSpan, TimeSpan>(workingEndTime, TimeSpan.FromDays(1)));
+                workingTimesInday.Add(new KeyValuePair<TimeSpan, TimeSpan>(workingEndTime, 1.Days()));
                 workingTimesInday.Add(new KeyValuePair<TimeSpan, TimeSpan>(TimeSpan.Zero, workingStartTime));
             }
 
@@ -976,7 +976,7 @@ new DateTime(2099,04,13)};
         /// Gets the total number of seconds elapsed since 1st Jan 1970.
         /// </summary>
         public static long ToUnixTime(this DateTime @this)
-            => (int)(@this.ToUniversalTime().Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            => (int)@this.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
     }
 
     public enum CalendarMonth

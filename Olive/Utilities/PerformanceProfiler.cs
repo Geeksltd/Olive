@@ -6,17 +6,14 @@ namespace Olive
 {
     public class PerformanceProfiler : IDisposable
     {
-        static ConcurrentDictionary<string, ConcurrentList<TimeSpan>> Watchers =
+        static readonly ConcurrentDictionary<string, ConcurrentList<TimeSpan>> Watchers =
             new ConcurrentDictionary<string, ConcurrentList<TimeSpan>>();
+        readonly ConcurrentList<TimeSpan> Watcher;
+        readonly DateTime Start;
+        readonly string Action;
 
-        ConcurrentList<TimeSpan> Watcher;
-        DateTime Start;
-        int MillisecondAccuracy;
-
-        string Action;
         public PerformanceProfiler(string action, int millisecondAccuracy = 2)
         {
-            MillisecondAccuracy = millisecondAccuracy;
             Action = action;
             Watcher = Watchers.GetOrAdd(action, x => new ConcurrentList<TimeSpan>());
             Start = DateTime.UtcNow;

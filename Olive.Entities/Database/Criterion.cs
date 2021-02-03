@@ -151,17 +151,16 @@ namespace Olive.Entities
         /// </summary>
         static FilterFunction GetFilterFunction(ExpressionType nodeType)
         {
-            switch (nodeType)
+            return nodeType switch
             {
-                case ExpressionType.Equal: return FilterFunction.Is;
-                case ExpressionType.NotEqual: return FilterFunction.IsNot;
-                case ExpressionType.GreaterThan: return FilterFunction.MoreThan;
-                case ExpressionType.GreaterThanOrEqual: return FilterFunction.MoreThanOrEqual;
-                case ExpressionType.LessThan: return FilterFunction.LessThan;
-                case ExpressionType.LessThanOrEqual: return FilterFunction.LessThanOrEqual;
-                default:
-                    throw new NotSupportedException("GetFilterFunction() does not support expression of type " + nodeType);
-            }
+                ExpressionType.Equal => FilterFunction.Is,
+                ExpressionType.NotEqual => FilterFunction.IsNot,
+                ExpressionType.GreaterThan => FilterFunction.MoreThan,
+                ExpressionType.GreaterThanOrEqual => FilterFunction.MoreThanOrEqual,
+                ExpressionType.LessThan => FilterFunction.LessThan,
+                ExpressionType.LessThanOrEqual => FilterFunction.LessThanOrEqual,
+                _ => throw new NotSupportedException("GetFilterFunction() does not support expression of type " + nodeType),
+            };
         }
     }
 }

@@ -15,5 +15,10 @@
             dependency.Changed += @this.Refresh;
             return @this;
         }
+
+        /// <summary>
+        /// If it's true, makes it false. If false, makes it true.
+        /// </summary>
+        public static void Toggle(this Bindable<bool> @this) => @this.Value = !@this.Value;
     }
 }

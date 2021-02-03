@@ -10,7 +10,7 @@ namespace Olive
 {
     public class JsonConfigurationSource : IConfigurationSource
     {
-        string Json;
+        readonly string Json;
         public JsonConfigurationSource(string json) => Json = json;
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
@@ -19,7 +19,8 @@ namespace Olive
 
     public class JsonConfigurationProvider : ConfigurationProvider
     {
-        string Json, CurrentPath;
+        private readonly string Json;
+        private string CurrentPath;
         readonly Stack<string> Context = new Stack<string>();
 
         public JsonConfigurationProvider(string json) => Json = json;
@@ -28,9 +29,9 @@ namespace Olive
         {
             Data = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            using (var sr = new StringReader(Json))
-            using (var re = new JsonTextReader(sr) { DateParseHandling = DateParseHandling.None })
-                VisitJObject(JObject.Load(re));
+            using var sr = new StringReader(Json);
+            using var re = new JsonTextReader(sr) { DateParseHandling = DateParseHandling.None };
+            VisitJObject(JObject.Load(re));
         }
 
         public IDictionary<string, string> GetData() => Data;

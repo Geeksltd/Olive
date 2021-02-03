@@ -112,7 +112,7 @@ namespace Olive
         {
             if (@this.TryRemove(key, out var result))
                 return result;
-            else return default(K);
+            else return default;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Olive
             catch
             {
                 // No logging is needed
-                return default(K);
+                return default;
             }
         }
 
@@ -147,14 +147,14 @@ namespace Olive
 
         public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key)
         {
-            if (@this is null) return default(TValue);
+            if (@this is null) return default;
 
             var keyType = typeof(TKey);
 
             if (keyType.IsValueType || keyType == typeof(string) || keyType == typeof(Type))
             {
                 if (@this.TryGetValue(key, out var result)) return result;
-                return default(TValue);
+                return default;
             }
             else
             {
@@ -167,10 +167,10 @@ namespace Olive
         /// </summary>
         public static TValue TryGet<TKey, TValue>(this IDictionary<TKey, TValue> @this, TKey key)
         {
-            if (@this is null) return default(TValue);
+            if (@this is null) return default;
             if (@this.TryGetValue(key, out var result)) return result;
 
-            return default(TValue);
+            return default;
         }
 
         /// <summary>

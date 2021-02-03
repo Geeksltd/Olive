@@ -36,37 +36,22 @@ namespace Olive.Entities
         /// </summary>
         public static string GetDatabaseOperator(this FilterFunction option)
         {
-            switch (option)
+            return option switch
             {
-                case FilterFunction.Contains:
-                case FilterFunction.BeginsWith:
-                case FilterFunction.EndsWith:
-                    return "LIKE";
-                case FilterFunction.Is:
-                    return "=";
-                case FilterFunction.IsNot:
-                    return "<>";
-                case FilterFunction.LessThan:
-                    return "<";
-                case FilterFunction.LessThanOrEqual:
-                    return "<=";
-                case FilterFunction.MoreThan:
-                    return ">";
-                case FilterFunction.MoreThanOrEqual:
-                    return ">=";
-                case FilterFunction.Null:
-                    return "Is NULL";
-                case FilterFunction.In:
-                    return "IN";
-                case FilterFunction.NotIn:
-                    return "NOT IN";
-                case FilterFunction.NotNull:
-                    return "Is NOT NULL";
-                case FilterFunction.NotContains:
-                    return "NOT LIKE";
-                default:
-                    throw new NotSupportedException(option + " is not supported in GetDatabaseOperator().");
-            }
+                FilterFunction.Contains or FilterFunction.BeginsWith or FilterFunction.EndsWith => "LIKE",
+                FilterFunction.Is => "=",
+                FilterFunction.IsNot => "<>",
+                FilterFunction.LessThan => "<",
+                FilterFunction.LessThanOrEqual => "<=",
+                FilterFunction.MoreThan => ">",
+                FilterFunction.MoreThanOrEqual => ">=",
+                FilterFunction.Null => "Is NULL",
+                FilterFunction.In => "IN",
+                FilterFunction.NotIn => "NOT IN",
+                FilterFunction.NotNull => "Is NOT NULL",
+                FilterFunction.NotContains => "NOT LIKE",
+                _ => throw new NotSupportedException(option + " is not supported in GetDatabaseOperator()."),
+            };
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Olive
     partial class OliveExtensions
 #pragma warning restore GCop112 // This class is too large. Break its responsibilities down into more classes.
     {
-        static Random RandomProvider = new Random(LocalTime.Now.TimeOfDay.Milliseconds);
+        static readonly Random RandomProvider = new Random(LocalTime.Now.TimeOfDay.Milliseconds);
 
         /// <summary>
         /// Concatenates all members of this object and inserts {separator} among them.  
@@ -405,7 +405,7 @@ namespace Olive
         /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R MinOrDefault<T, R>(this IEnumerable<T> @this, Func<T, R> expression)
         {
-            if (@this.None()) return default(R);
+            if (@this.None()) return default;
             return @this.Min(expression);
         }
 
@@ -415,7 +415,7 @@ namespace Olive
         /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R MaxOrDefault<T, R>(this IEnumerable<T> @this, Func<T, R> expression)
         {
-            if (@this.None()) return default(R);
+            if (@this.None()) return default;
             return @this.Max(expression);
         }
 
@@ -426,7 +426,7 @@ namespace Olive
         /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R? MaxOrNull<T, R>(this IEnumerable<T> @this, Func<T, R?> expression) where R : struct
         {
-            if (@this.None()) return default(R?);
+            if (@this.None()) return default;
             return @this.Max(expression);
         }
 
@@ -445,7 +445,7 @@ namespace Olive
         /// <param name="expression">Is a Func() which determines the condition.</param>
         public static R? MinOrNull<T, R>(this IEnumerable<T> @this, Func<T, R?> expression) where R : struct
         {
-            if (@this.None()) return default(R?);
+            if (@this.None()) return default;
             return @this.Min(expression);
         }
 
@@ -495,7 +495,7 @@ namespace Olive
                 var index = RandomProvider.Next(@this.Count());
                 return @this.ElementAt(index);
             }
-            else return default(T);
+            else return default;
         }
 
         /// <summary>
@@ -656,7 +656,7 @@ namespace Olive
         /// <param name="keySelector">The func() which determines how the maximum value calculated.</param>
         public static T WithMax<T, TKey>(this IEnumerable<T> @this, Func<T, TKey> keySelector)
         {
-            if (@this.None()) return default(T);
+            if (@this.None()) return default;
             return @this.Aggregate((a, b) => Comparer.Default.Compare(keySelector(a), keySelector(b)) > 0 ? a : b);
         }
 
@@ -666,7 +666,7 @@ namespace Olive
         /// <param name="keySelector">The func() which determines how the minimum value calculated.</param>
         public static T WithMin<T, TKey>(this IEnumerable<T> @this, Func<T, TKey> keySelector)
         {
-            if (@this.None()) return default(T);
+            if (@this.None()) return default;
             return @this.Aggregate((a, b) => Comparer.Default.Compare(keySelector(a), keySelector(b)) < 0 ? a : b);
         }
 
@@ -974,7 +974,7 @@ namespace Olive
 
             yield return @this.Take(chopSize);
 
-            if (@this.Count() > chopSize)
+            if (@this.Skip(chopSize).Any())
             {
                 var rest = @this.Skip(chopSize);
 
@@ -1110,9 +1110,9 @@ namespace Olive
 
             foreach (var i in @this)
             {
-                if (ReferenceEquals(item, null))
+                if (item == null)
                 {
-                    if (ReferenceEquals(i, null))
+                    if (i == null)
                     {
                         foundAny = true;
                         yield return index;
@@ -1457,7 +1457,7 @@ namespace Olive
             foreach (var item in @this)
                 if (selector(item)) return item;
 
-            return default(T);
+            return default;
         }
 
         /// <summary>

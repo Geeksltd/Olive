@@ -23,7 +23,7 @@ namespace Olive
         [EscapeGCop("It is ok for trying methods to have out param.")]
         public static T? TryParseAs<T>(this string text) where T : struct
         {
-            if (text.IsEmpty()) return default(T?);
+            if (text.IsEmpty()) return default;
 
             // Check common types first, for performance:
             if (TryParseToCommonTypes<T>(text, out var result))

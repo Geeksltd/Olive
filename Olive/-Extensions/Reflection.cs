@@ -10,16 +10,16 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        static ConcurrentDictionary<Tuple<Type, Type>, bool> TypeImplementsCache = new ConcurrentDictionary<Tuple<Type, Type>, bool>();
+        static readonly ConcurrentDictionary<Tuple<Type, Type>, bool> TypeImplementsCache = new ConcurrentDictionary<Tuple<Type, Type>, bool>();
 
-        static SortedDictionary<string, object> CacheData = new SortedDictionary<string, object>();
+        static readonly SortedDictionary<string, object> CacheData = new SortedDictionary<string, object>();
 
-        static ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> SubTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
-        static ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> DescendantsTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
+        static readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> SubTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
+        static readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> DescendantsTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
 
-        static ConcurrentDictionary<Type, string> ProgrammingNameCache = new ConcurrentDictionary<Type, string>();
+        static readonly ConcurrentDictionary<Type, string> ProgrammingNameCache = new ConcurrentDictionary<Type, string>();
 
-        static ConcurrentDictionary<Type, string> AssemblyQualifiedNameCache = new ConcurrentDictionary<Type, string>();
+        static readonly ConcurrentDictionary<Type, string> AssemblyQualifiedNameCache = new ConcurrentDictionary<Type, string>();
 
         static readonly Dictionary<Type, string> CSharpTypeAliases =
             new Dictionary<Type, string>

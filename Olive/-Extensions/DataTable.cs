@@ -55,7 +55,7 @@ namespace Olive
 
             var result = new Dictionary<T, DataRow>();
 
-            foreach (DataRow record in @this.Rows)
+            foreach (var record in @this.GetRows())
             {
                 var item = ParseObject<T>(record, mappings, convertors);
                 result.Add(item, record);
@@ -168,7 +168,7 @@ namespace Olive
                 result.Append(i == @this.Columns.Count - 1 ? "\n" : ",");
             }
 
-            foreach (DataRow row in @this.Rows)
+            foreach (var row in @this.GetRows())
             {
                 for (var i = 0; i < @this.Columns.Count; i++)
                 {

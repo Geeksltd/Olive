@@ -8,7 +8,7 @@ namespace Olive
     /// </summary>
     public class ProcessContext<T> : IDisposable
     {
-        string Key;
+        readonly string Key;
 
         /// <summary>Gets or sets the Data of this ProcessContext.</summary>
         public T Data { get; }
@@ -45,7 +45,7 @@ namespace Olive
         /// </summary>
         public void Dispose()
         {
-            try { CallContext<T>.SetData(GetKey(Key), default(T)); }
+            try { CallContext<T>.SetData(GetKey(Key), default); }
             catch
             {
                 // No logging is needed

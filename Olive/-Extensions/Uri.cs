@@ -29,11 +29,9 @@ namespace Olive
                 request.CookieContainer.SetCookies(@this, cookieValue.OrEmpty());
             }
 
-            using (var response = await request.GetResponseAsync())
-            {
-                using (var stream = response.GetResponseStream())
-                    return await stream.ReadAllText();
-            }
+            using var response = await request.GetResponseAsync();
+            using var stream = response.GetResponseStream();
+            return await stream.ReadAllText();
         }
 
         /// <summary>
@@ -51,11 +49,9 @@ namespace Olive
                 request.CookieContainer.SetCookies(@this, cookieValue.OrEmpty());
             }
 
-            using (var response = await request.GetResponseAsync())
-            {
-                using (var stream = response.GetResponseStream())
-                    return await stream.ReadAllBytesAsync();
-            }
+            using var response = await request.GetResponseAsync();
+            using var stream = response.GetResponseStream();
+            return await stream.ReadAllBytesAsync();
         }
 
         /// <summary>
@@ -80,12 +76,10 @@ namespace Olive
         /// </summary>
         public static async Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
         {
-            using (var client = new HttpClient())
-            {
-                customiseClient?.Invoke(client);
+            using var client = new HttpClient();
+            customiseClient?.Invoke(client);
 
-                return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
-            }
+            return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
         }
 
         /// <summary>
@@ -94,11 +88,9 @@ namespace Olive
         /// </summary>
         public static async Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
         {
-            using (var client = new HttpClient())
-            {
-                customiseClient?.Invoke(client);
-                return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
-            }
+            using var client = new HttpClient();
+            customiseClient?.Invoke(client);
+            return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
         }
 
         /// <summary>

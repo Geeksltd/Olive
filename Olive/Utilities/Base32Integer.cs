@@ -6,7 +6,7 @@
     public sealed class Base32Integer
     {
         // the valid chars for the encoding
-        static string ValidChars = "1AZ2WSX3" + "EDC4RFV5" + "TGB6YHN7" + "UJM8K9LP";
+        static readonly string ValidChars = "1AZ2WSX3" + "EDC4RFV5" + "TGB6YHN7" + "UJM8K9LP";
 
         public int Value { get; }
 

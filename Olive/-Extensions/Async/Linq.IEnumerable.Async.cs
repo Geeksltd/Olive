@@ -102,7 +102,7 @@ namespace Olive
             foreach (var item in @this)
                 if (await func(item)) return item;
 
-            return default(T);
+            return default;
         }
 
         public static async Task<IEnumerable<T>> Intersect<T>(

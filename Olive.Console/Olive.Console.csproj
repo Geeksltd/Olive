@@ -43,8 +43,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+    <PackageReference Include="Olive" Version="2.1.212" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive\Olive.csproj" />
-  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
+  </Target>
 </Project>

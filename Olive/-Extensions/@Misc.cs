@@ -99,7 +99,7 @@ namespace Olive
         /// <summary>
         /// Returns a nullable value wrapper object if this value is the default for its type.
         /// </summary>
-        public static T? NullIfDefault<T>(this T @value, T defaultValue = default(T)) where T : struct
+        public static T? NullIfDefault<T>(this T @value, T defaultValue = default) where T : struct
         {
             if (value.Equals(defaultValue)) return null;
             return @value;

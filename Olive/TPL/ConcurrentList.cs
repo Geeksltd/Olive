@@ -97,7 +97,7 @@ namespace Olive
             {
                 if (IsVirgin) return;
                 List.Clear();
-                FirstItem = default(T);
+                FirstItem = default;
             }
         }
 
@@ -195,7 +195,7 @@ namespace Olive
         {
             lock (Lock)
             {
-                if (IsVirgin) return default(T);
+                if (IsVirgin) return default;
                 if (FirstItem is T && criteria(FirstItem)) return FirstItem;
                 return List.FirstOrDefault(criteria);
             }
@@ -205,7 +205,7 @@ namespace Olive
         {
             lock (Lock)
             {
-                if (IsVirgin) return default(TType);
+                if (IsVirgin) return default;
                 if (FirstItem is TType t) return t;
                 return List.OfType<TType>().FirstOrDefault();
             }
@@ -215,7 +215,7 @@ namespace Olive
         {
             lock (Lock)
             {
-                if (IsVirgin) return default(TType);
+                if (IsVirgin) return default;
                 if (FirstItem is TType t && criteria(t)) return t;
                 return List.OfType<TType>().FirstOrDefault(criteria);
             }
@@ -225,9 +225,9 @@ namespace Olive
         {
             lock (Lock)
             {
-                if (IsVirgin) return default(T);
+                if (IsVirgin) return default;
                 var index = List.Count - 1;
-                if (index == -1) return default(T);
+                if (index == -1) return default;
                 return List[index];
             }
         }
@@ -236,7 +236,7 @@ namespace Olive
         {
             lock (Lock)
             {
-                if (IsVirgin) return default(T);
+                if (IsVirgin) return default;
 
                 for (var i = List.Count - 1; i >= 0; i--)
                 {
@@ -244,7 +244,7 @@ namespace Olive
                     if (criteria(item)) return item;
                 }
 
-                return default(T);
+                return default;
             }
         }
 

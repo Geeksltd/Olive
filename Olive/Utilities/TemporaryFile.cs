@@ -12,7 +12,7 @@ namespace Olive
     /// </summary>
     public class TemporaryFile : IDisposable
     {
-        static string TemporaryFileFolder = Path.GetTempPath();
+        static readonly string TemporaryFileFolder = Path.GetTempPath();
 
         Guid ID;
 

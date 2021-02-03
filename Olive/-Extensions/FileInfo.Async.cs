@@ -8,7 +8,7 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        static ConcurrentDictionary<string, AsyncLock> FileSyncLocks = new ConcurrentDictionary<string, AsyncLock>();
+        static readonly ConcurrentDictionary<string, AsyncLock> FileSyncLocks = new ConcurrentDictionary<string, AsyncLock>();
         public static AsyncLock GetSyncLock(this FileInfo file)
         {
             return FileSyncLocks.GetOrAdd(file.FullName.ToLower(), f => new AsyncLock());
@@ -43,12 +43,10 @@ namespace Olive
         {
             if (!File.Exists(file.FullName)) return new byte[0];
             byte[] result;
-            using (var stream = File.Open(file.FullName, FileMode.Open))
-            {
-                result = new byte[stream.Length];
-                await stream.ReadAsync(result, 0, (int)stream.Length);
-                return result;
-            }
+            using var stream = File.Open(file.FullName, FileMode.Open);
+            result = new byte[stream.Length];
+            await stream.ReadAsync(result, 0, (int)stream.Length);
+            return result;
         }
 
         /// <summary>
@@ -124,10 +122,10 @@ namespace Olive
         {
             file.Directory.EnsureExists();
 
-            using (var stream = new FileStream(file.FullName,
+            using var stream = new FileStream(file.FullName,
                 FileMode.Create, FileAccess.Write, FileShare.None,
-                0x4096, useAsync: true))
-                await stream.WriteAsync(content, 0, content.Length);
+                0x4096, useAsync: true);
+            await stream.WriteAsync(content, 0, content.Length);
         }
 
         /// <summary>

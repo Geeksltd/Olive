@@ -12,14 +12,12 @@ namespace Olive
         /// </summary>
         public static byte[] ReadAllBytes(this Stream stream)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                try { if (stream.CanSeek) stream.Position = 0; }
-                catch (NotSupportedException) { /*Not needed*/ }
-                try { stream.CopyTo(memoryStream); }
-                catch (System.IO.InvalidDataException) { /*Not needed*/ }
-                return memoryStream.ToArray();
-            }
+            using var memoryStream = new MemoryStream();
+            try { if (stream.CanSeek) stream.Position = 0; }
+            catch (NotSupportedException) { /*Not needed*/ }
+            try { stream.CopyTo(memoryStream); }
+            catch (System.IO.InvalidDataException) { /*Not needed*/ }
+            return memoryStream.ToArray();
         }
 
         /// <summary>
@@ -27,12 +25,10 @@ namespace Olive
         /// </summary>
         public static async Task<byte[]> ReadAllBytesAsync(this Stream stream)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                if (stream.CanSeek) stream.Position = 0;
-                await stream.CopyToAsync(memoryStream);
-                return memoryStream.ToArray();
-            }
+            using var memoryStream = new MemoryStream();
+            if (stream.CanSeek) stream.Position = 0;
+            await stream.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
         }
 
         /// <summary>
@@ -44,36 +40,32 @@ namespace Olive
             encoding = encoding ?? Encoding.UTF8;
 
             // Pipes the stream to a higher level stream reader with the required encoding format.
-            using (var readStream = new StreamReader(@this, encoding))
+            using var readStream = new StreamReader(@this, encoding);
+            var result = "";
+
+            var read = new char[256];
+            // Reads 256 characters at a time.
+            var count = await readStream.ReadAsync(read, 0, read.Length);
+
+            while (count > 0)
             {
-                var result = "";
-
-                var read = new char[256];
-                // Reads 256 characters at a time.
-                var count = await readStream.ReadAsync(read, 0, read.Length);
-
-                while (count > 0)
-                {
-                    // Dumps the 256 characters on a string and displays the string to the console.
-                    result += new string(read, 0, count);
-                    count = await readStream.ReadAsync(read, 0, read.Length);
-                }
-
-                return result;
+                // Dumps the 256 characters on a string and displays the string to the console.
+                result += new string(read, 0, count);
+                count = await readStream.ReadAsync(read, 0, read.Length);
             }
+
+            return result;
         }
 
         public static byte[] ReadAllBytes(this BinaryReader reader)
         {
             const int BUFFER_SIZE = 4096;
-            using (var ms = new MemoryStream())
-            {
-                var buffer = new byte[BUFFER_SIZE];
-                int count;
-                while ((count = reader.Read(buffer, 0, buffer.Length)) != 0)
-                    ms.Write(buffer, 0, count);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            var buffer = new byte[BUFFER_SIZE];
+            int count;
+            while ((count = reader.Read(buffer, 0, buffer.Length)) != 0)
+                ms.Write(buffer, 0, count);
+            return ms.ToArray();
         }
 
         public static MemoryStream AsStream(this byte[] data) => new MemoryStream(data);

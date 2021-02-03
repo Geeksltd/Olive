@@ -12,7 +12,7 @@
     [Serializable]
     public class RangeCollection<T> : IEnumerable<T> where T : IComparable, IComparable<T>
     {
-        SortedList<T, Range<T>> ranges = new SortedList<T, Range<T>>();
+        readonly SortedList<T, Range<T>> ranges = new SortedList<T, Range<T>>();
 
         [NonSerialized]
         Func<T, T> getNextItem, getPreviousItem;

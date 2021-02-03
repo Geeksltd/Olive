@@ -55,7 +55,7 @@ namespace Olive
           => @this.Get(x => x.OrEmpty().Except(exclusion));
 
         public static Task<IEnumerable<TSource>> ExceptNull<TSource>(
-         this Task<IEnumerable<TSource>> @this) => @this.Where(x => !ReferenceEquals(x, null));
+         this Task<IEnumerable<TSource>> @this) => @this.Where(x => x is not null);
 
         public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IEnumerable<TSource>> @this)
             => @this.Get(x => x.OrEmpty().Cast<TResult>());

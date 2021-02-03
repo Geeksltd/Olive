@@ -13,7 +13,7 @@ namespace Olive.Logging
     {
         readonly List<LogMessage> CurrentBatch = new List<LogMessage>();
         readonly TimeSpan Interval;
-        int? QueueSize, BatchSize;
+        readonly int? QueueSize, BatchSize;
 
         BlockingCollection<LogMessage> MessageQueue;
         Task OutputTask;

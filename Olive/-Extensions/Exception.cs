@@ -78,10 +78,10 @@ namespace Olive
 
         public static async Task<string> GetResponseBody(this WebException @this)
         {
-            if (@this.Response == null) return default(string);
+            if (@this.Response == null) return default;
 
-            using (var reader = new StreamReader(@this.Response.GetResponseStream()))
-                return await reader.ReadToEndAsync();
+            using var reader = new StreamReader(@this.Response.GetResponseStream());
+            return await reader.ReadToEndAsync();
         }
 
         /// <summary>

@@ -34,14 +34,12 @@ namespace Olive
         /// </summary>
         public static string ReadAllText(this FileInfo @this, Encoding encoding)
         {
-            Func<string> readFile = () =>
+            string readFile()
             {
-                using (var stream = new FileStream(@this.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    using (var reader = new StreamReader(stream, encoding))
-                        return reader.ReadToEnd();
-                }
-            };
+                using var stream = new FileStream(@this.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var reader = new StreamReader(stream, encoding);
+                return reader.ReadToEnd();
+            }
 
             return TryHard(@this, readFile, "The system cannot read the file: {0}");
         }
@@ -116,8 +114,8 @@ namespace Olive
             using (await @this.GetSyncLock().Lock())
             {
                 @this.Directory.EnsureExists();
-                using (var streamWriter = File.AppendText(@this.FullName))
-                    await streamWriter.WriteAsync(content);
+                using var streamWriter = File.AppendText(@this.FullName);
+                await streamWriter.WriteAsync(content);
             }
         }
 
@@ -144,14 +142,12 @@ namespace Olive
         /// </summary>
         public static byte[] GZip(this byte[] data)
         {
-            using (var outFile = new MemoryStream())
-            {
-                using (var inFile = new MemoryStream(data))
-                using (var compress = new GZipStream(outFile, CompressionMode.Compress))
-                    inFile.CopyTo(compress);
+            using var outFile = new MemoryStream();
+            using (var inFile = new MemoryStream(data))
+            using (var compress = new GZipStream(outFile, CompressionMode.Compress))
+                inFile.CopyTo(compress);
 
-                return outFile.ToArray();
-            }
+            return outFile.ToArray();
         }
 
         /// <summary>
@@ -162,9 +158,9 @@ namespace Olive
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
 
-            using (var zippedStream = @this.AsStream())
-            using (var decompress = new GZipStream(zippedStream, CompressionMode.Decompress))
-                return decompress.ReadAllBytes();
+            using var zippedStream = @this.AsStream();
+            using var decompress = new GZipStream(zippedStream, CompressionMode.Decompress);
+            return decompress.ReadAllBytes();
         }
 
         /// <summary>

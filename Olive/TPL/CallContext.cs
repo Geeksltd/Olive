@@ -5,7 +5,7 @@
 
     public static class CallContext<T>
     {
-        static ConcurrentDictionary<string, AsyncLocal<T>> State
+        static readonly ConcurrentDictionary<string, AsyncLocal<T>> State
             = new ConcurrentDictionary<string, AsyncLocal<T>>();
 
         /// <summary> 
@@ -23,6 +23,6 @@
         /// <returns>The object in the call context associated with the specified name,
         /// or a default value for <typeparamref name="T"/> if none is found.</returns>
         public static T GetData(string name) =>
-            State.TryGetValue(name, out var data) ? data.Value : default(T);
+            State.TryGetValue(name, out var data) ? data.Value : default;
     }
 }

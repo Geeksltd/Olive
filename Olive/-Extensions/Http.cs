@@ -14,8 +14,8 @@ namespace Olive
         /// </summary>
         public static async Task<string> GetResponseString(this HttpWebRequest request)
         {
-            using (var response = request.GetResponse())
-                return await response.GetString();
+            using var response = request.GetResponse();
+            return await response.GetString();
         }
 
         /// <summary>
@@ -43,9 +43,9 @@ namespace Olive
         /// </summary>
         public static async Task<string> GetString(this WebResponse response)
         {
-            using (var stream = response.GetResponseStream())
-            using (var reader = new StreamReader(stream))
-                return await reader.ReadToEndAsync();
+            using var stream = response.GetResponseStream();
+            using var reader = new StreamReader(stream);
+            return await reader.ReadToEndAsync();
         }
 
         /// <summary>

@@ -75,7 +75,7 @@ namespace Olive
             else if (node != null)
                 throw new Exception("The provided path (" + path + ") points to an invalid Xml node (" + node.GetType() + ").");
 
-            if (value.IsEmpty()) return default(T);
+            if (value.IsEmpty()) return default;
 
             if (typeof(T) == typeof(string)) return (T)(object)value;
 
@@ -114,17 +114,15 @@ namespace Olive
 
         public static string Serialize(this XmlSerializer serializer, object item)
         {
-            using (var textWriter = new StringWriter())
-            {
-                serializer.Serialize(textWriter, item);
-                return textWriter.ToString();
-            }
+            using var textWriter = new StringWriter();
+            serializer.Serialize(textWriter, item);
+            return textWriter.ToString();
         }
 
         public static T Deserialize<T>(this XmlSerializer serializer, string xml)
         {
-            using (var reader = new StringReader(xml))
-                return (T)serializer.Deserialize(reader);
+            using var reader = new StringReader(xml);
+            return (T)serializer.Deserialize(reader);
         }
 
         // public static XmlElement ToXmlElement(this XElement element)

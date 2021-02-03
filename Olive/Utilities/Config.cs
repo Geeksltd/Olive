@@ -65,7 +65,7 @@ namespace Olive
         public static string Get(string key, string defaultValue)
             => Configuration.GetValue(key, defaultValue);
 
-        public static T Get<T>(string key) => Get<T>(key, default(T));
+        public static T Get<T>(string key) => Get<T>(key, default);
 
         public static T Get<T>(string key, T defaultValue) => Configuration.GetValue(key, defaultValue);
 

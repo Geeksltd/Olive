@@ -15,27 +15,27 @@ namespace Olive
         public static FilterFunction ToFilterFunction(this ExpressionType type, bool flipped = false)
         {
             if (flipped)
-                switch (type)
+                return type switch
                 {
-                    case ExpressionType.Equal: return FilterFunction.Is;
-                    case ExpressionType.NotEqual: return FilterFunction.IsNot;
-                    case ExpressionType.GreaterThan: return FilterFunction.LessThan;
-                    case ExpressionType.GreaterThanOrEqual: return FilterFunction.LessThanOrEqual;
-                    case ExpressionType.LessThan: return FilterFunction.MoreThan;
-                    case ExpressionType.LessThanOrEqual: return FilterFunction.MoreThanOrEqual;
-                    default: throw new NotSupportedException(type + " is still not supported as a FilterFunction.");
-                }
+                    ExpressionType.Equal => FilterFunction.Is,
+                    ExpressionType.NotEqual => FilterFunction.IsNot,
+                    ExpressionType.GreaterThan => FilterFunction.LessThan,
+                    ExpressionType.GreaterThanOrEqual => FilterFunction.LessThanOrEqual,
+                    ExpressionType.LessThan => FilterFunction.MoreThan,
+                    ExpressionType.LessThanOrEqual => FilterFunction.MoreThanOrEqual,
+                    _ => throw new NotSupportedException(type + " is still not supported as a FilterFunction."),
+                };
             else
-                switch (type)
+                return type switch
                 {
-                    case ExpressionType.Equal: return FilterFunction.Is;
-                    case ExpressionType.NotEqual: return FilterFunction.IsNot;
-                    case ExpressionType.GreaterThan: return FilterFunction.MoreThan;
-                    case ExpressionType.GreaterThanOrEqual: return FilterFunction.MoreThanOrEqual;
-                    case ExpressionType.LessThan: return FilterFunction.LessThan;
-                    case ExpressionType.LessThanOrEqual: return FilterFunction.LessThanOrEqual;
-                    default: throw new NotSupportedException(type + " is still not supported as a FilterFunction.");
-                }
+                    ExpressionType.Equal => FilterFunction.Is,
+                    ExpressionType.NotEqual => FilterFunction.IsNot,
+                    ExpressionType.GreaterThan => FilterFunction.MoreThan,
+                    ExpressionType.GreaterThanOrEqual => FilterFunction.MoreThanOrEqual,
+                    ExpressionType.LessThan => FilterFunction.LessThan,
+                    ExpressionType.LessThanOrEqual => FilterFunction.LessThanOrEqual,
+                    _ => throw new NotSupportedException(type + " is still not supported as a FilterFunction."),
+                };
         }
 
         public static object GetValue(this Expression @this)

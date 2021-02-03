@@ -6,7 +6,7 @@ namespace Olive
 {
     internal class PropertyComparer : IComparer
     {
-        PropertyInfo Property;
+        readonly PropertyInfo Property;
 
         public PropertyComparer(PropertyInfo property) => Property = property;
 
@@ -18,7 +18,7 @@ namespace Olive
 
     internal class PropertyComparer<T> : IComparer<T>
     {
-        PropertyInfo Property;
+        readonly PropertyInfo Property;
 
         public PropertyComparer(PropertyInfo property) => Property = property;
 

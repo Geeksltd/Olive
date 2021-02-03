@@ -14,11 +14,11 @@ namespace Olive
     partial class OliveExtensions
 #pragma warning restore GCop112 // This class is too large. Break its responsibilities down into more classes.
     {
-        static byte UTF8SignatureFirstByte = 0xEF;
-        static byte UTF8SignatureSecondByte = 0xBB;
-        static byte UTF8SignatureThirdByte = 0xBF;
+        static readonly byte UTF8SignatureFirstByte = 0xEF;
+        static readonly byte UTF8SignatureSecondByte = 0xBB;
+        static readonly byte UTF8SignatureThirdByte = 0xBF;
 
-        static string[][] XMLEscapingChars = new string[][]
+        static readonly string[][] XMLEscapingChars = new string[][]
         {
             new string[]{ "&",  "&amp;" },
             new string[]{ "<",  "&lt;" },
@@ -32,7 +32,7 @@ namespace Olive
         /// </summary>
         static readonly char[] JsUnsafeCharacters = new[] { '\'', '\"' };
 
-        static ConcurrentDictionary<string, string> LiteralFromPascalCaseCache = new ConcurrentDictionary<string, string>();
+        static readonly ConcurrentDictionary<string, string> LiteralFromPascalCaseCache = new ConcurrentDictionary<string, string>();
 
         /// <summary>
         /// Removes the specified text from the start of this string instance.
@@ -377,111 +377,110 @@ namespace Olive
         {
             singular = singular.ToLower();
 
-            switch (singular)
+            return singular switch
             {
-                case "addendum": return "addenda";
-                case "alga": return "algae";
-                case "alumna": return "alumnae";
-                case "alumnus": return "alumni";
-                case "analysis": return "analyses";
-                case "apparatus": return "apparatuses";
-                case "appendix": return "appendices";
-                case "axis": return "axes";
-                case "bacillus": return "bacilli";
-                case "bacterium": return "bacteria";
-                case "basis": return "bases";
-                case "beau": return "beaux";
-                case "bison": return "bison";
-                case "buffalo": return "buffaloes";
-                case "bureau": return "bureaus";
-                case "calf": return "calves";
-                case "child": return "children";
-                case "corps": return "corps";
-                case "crisis": return "crises";
-                case "criterion": return "criteria";
-                case "curriculum": return "curricula";
-                case "datum": return "data";
-                case "deer": return "deer";
-                case "die": return "dice";
-                case "dwarf": return "dwarfs";
-                case "diagnosis": return "diagnoses";
-                case "echo": return "echoes";
-                case "elf": return "elves";
-                case "ellipsis": return "ellipses";
-                case "embargo": return "embargoes";
-                case "emphasis": return "emphases";
-                case "erratum": return "errata";
-                case "fireman": return "firemen";
-                case "fish": return "fish";
-                case "focus": return "focus";
-                case "foot": return "feet";
-                case "formula": return "formulas";
-                case "fungus": return "fungi";
-                case "genus": return "genera";
-                case "goose": return "geese";
-                case "half": return "halves";
-                case "hero": return "heroes";
-                case "hippopotamus": return "hippopotami";
-                case "hoof": return "hoofs";
-                case "hypothesis": return "hypotheses";
-                case "index": return "indices";
-                case "knife": return "knives";
-                case "leaf": return "leaves";
-                case "life": return "lives";
-                case "loaf": return "loaves";
-                case "louse": return "lice";
-                case "man": return "men";
-                case "matrix": return "matrices";
-                case "means": return "means";
-                case "medium": return "media";
-                case "memorandum": return "memoranda";
-                case "millennium": return "milennia";
-                case "moose": return "moose";
-                case "mosquito": return "mosquitoes";
-                case "mouse": return "mice";
-                case "nebula": return "nebulas";
-                case "neurosis": return "neuroses";
-                case "nucleus": return "nuclei";
-                case "oasis": return "oases";
-                case "octopus": return "octopi";
-                case "ovum": return "ova";
-                case "ox": return "oxen";
-                case "paralysis": return "paralyses";
-                case "parenthesis": return "parentheses";
-                case "person": return "people";
-                case "phenomenon": return "phenomena";
-                case "potato": return "potatoes";
-                case "scarf": return "scarfs";
-                case "self": return "selves";
-                case "series": return "series";
-                case "sheep": return "sheep";
-                case "shelf": return "shelves";
-                case "scissors": return "scissors";
-                case "species": return "species";
-                case "stimulus": return "stimuli";
-                case "stratum": return "strata";
-                case "synthesis": return "syntheses";
-                case "synopsis": return "synopses";
-                case "tableau": return "tableaux";
-                case "that": return "those";
-                case "thesis": return "theses";
-                case "thief": return "thieves";
-                case "this": return "these";
-                case "tomato": return "tomatoes";
-                case "tooth": return "teeth";
-                case "torpedo": return "torpedoes";
-                case "vertebra": return "vertebrae";
-                case "veto": return "vetoes";
-                case "vita": return "vitae";
-                case "watch": return "watches";
-                case "wife": return "wives";
-                case "wolf": return "wolves";
-                case "woman": return "women";
-                case "cactus": return "cacti";
-                case "syllabus": return "syllabi";
-
-                default: return "";
-            }
+                "addendum" => "addenda",
+                "alga" => "algae",
+                "alumna" => "alumnae",
+                "alumnus" => "alumni",
+                "analysis" => "analyses",
+                "apparatus" => "apparatuses",
+                "appendix" => "appendices",
+                "axis" => "axes",
+                "bacillus" => "bacilli",
+                "bacterium" => "bacteria",
+                "basis" => "bases",
+                "beau" => "beaux",
+                "bison" => "bison",
+                "buffalo" => "buffaloes",
+                "bureau" => "bureaus",
+                "calf" => "calves",
+                "child" => "children",
+                "corps" => "corps",
+                "crisis" => "crises",
+                "criterion" => "criteria",
+                "curriculum" => "curricula",
+                "datum" => "data",
+                "deer" => "deer",
+                "die" => "dice",
+                "dwarf" => "dwarfs",
+                "diagnosis" => "diagnoses",
+                "echo" => "echoes",
+                "elf" => "elves",
+                "ellipsis" => "ellipses",
+                "embargo" => "embargoes",
+                "emphasis" => "emphases",
+                "erratum" => "errata",
+                "fireman" => "firemen",
+                "fish" => "fish",
+                "focus" => "focus",
+                "foot" => "feet",
+                "formula" => "formulas",
+                "fungus" => "fungi",
+                "genus" => "genera",
+                "goose" => "geese",
+                "half" => "halves",
+                "hero" => "heroes",
+                "hippopotamus" => "hippopotami",
+                "hoof" => "hoofs",
+                "hypothesis" => "hypotheses",
+                "index" => "indices",
+                "knife" => "knives",
+                "leaf" => "leaves",
+                "life" => "lives",
+                "loaf" => "loaves",
+                "louse" => "lice",
+                "man" => "men",
+                "matrix" => "matrices",
+                "means" => "means",
+                "medium" => "media",
+                "memorandum" => "memoranda",
+                "millennium" => "milennia",
+                "moose" => "moose",
+                "mosquito" => "mosquitoes",
+                "mouse" => "mice",
+                "nebula" => "nebulas",
+                "neurosis" => "neuroses",
+                "nucleus" => "nuclei",
+                "oasis" => "oases",
+                "octopus" => "octopi",
+                "ovum" => "ova",
+                "ox" => "oxen",
+                "paralysis" => "paralyses",
+                "parenthesis" => "parentheses",
+                "person" => "people",
+                "phenomenon" => "phenomena",
+                "potato" => "potatoes",
+                "scarf" => "scarfs",
+                "self" => "selves",
+                "series" => "series",
+                "sheep" => "sheep",
+                "shelf" => "shelves",
+                "scissors" => "scissors",
+                "species" => "species",
+                "stimulus" => "stimuli",
+                "stratum" => "strata",
+                "synthesis" => "syntheses",
+                "synopsis" => "synopses",
+                "tableau" => "tableaux",
+                "that" => "those",
+                "thesis" => "theses",
+                "thief" => "thieves",
+                "this" => "these",
+                "tomato" => "tomatoes",
+                "tooth" => "teeth",
+                "torpedo" => "torpedoes",
+                "vertebra" => "vertebrae",
+                "veto" => "vetoes",
+                "vita" => "vitae",
+                "watch" => "watches",
+                "wife" => "wives",
+                "wolf" => "wolves",
+                "woman" => "women",
+                "cactus" => "cacti",
+                "syllabus" => "syllabi",
+                _ => "",
+            };
         }
 
         #endregion
@@ -901,13 +900,10 @@ namespace Olive
         public static string KeepReplacing(this string @this, string original, string substitute, bool caseSensitive)
         {
             if (@this.IsEmpty()) return @this;
-
             if (original == substitute) return @this; // prevent loop
 
             var comparison = caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
-            @this = Regex.Replace(@this, original, substitute, comparison);
-
-            return @this;
+            return Regex.Replace(@this, original, substitute, comparison);
         }
 
         /// <summary>
@@ -1284,14 +1280,12 @@ namespace Olive
         /// </summary>
         public static string CreateSHA256Hash(this string @this)
         {
-            using (var hash = SHA256Managed.Create())
-            {
-                return string.Concat(
-                    hash
-                    .ComputeHash(Encoding.UTF8.GetBytes(@this))
-                    .Select(item => item.ToString("x2").ToLower())
-                );
-            }
+            using var hash = SHA256Managed.Create();
+            return string.Concat(
+                hash
+                .ComputeHash(Encoding.UTF8.GetBytes(@this))
+                .Select(item => item.ToString("x2").ToLower())
+            );
         }
 
         /// <summary>
@@ -1299,14 +1293,12 @@ namespace Olive
         /// </summary>
         public static string CreateSHA512Hash(this string @this)
         {
-            using (var hash = SHA512Managed.Create())
-            {
-                return string.Concat(
-                    hash
-                    .ComputeHash(Encoding.UTF8.GetBytes(@this))
-                    .Select(item => item.ToString("x2").ToLower())
-                );
-            }
+            using var hash = SHA512Managed.Create();
+            return string.Concat(
+                hash
+                .ComputeHash(Encoding.UTF8.GetBytes(@this))
+                .Select(item => item.ToString("x2").ToLower())
+            );
         }
 
         /// <summary>
@@ -1437,8 +1429,8 @@ namespace Olive
         /// </summary>
         public static bool HasMany<T>(this IEnumerable<T> @this)
         {
-            using (var en = @this.GetEnumerator())
-                return en.MoveNext() && en.MoveNext();
+            using var en = @this.GetEnumerator();
+            return en.MoveNext() && en.MoveNext();
         }
 
         /// <summary>
@@ -1479,9 +1471,7 @@ namespace Olive
                 @this = @this.Replace(replace, encoded);
             }
 
-            @this = @this.Replace(Environment.NewLine, "\\n");
-
-            return @this;
+            return @this.Replace(Environment.NewLine, "\\n");
         }
 
         /// <summary>
@@ -1797,9 +1787,9 @@ namespace Olive
 
         public static bool Equals(this string text, string another, bool caseSensitive)
         {
-            if (text == null && another is null) return true;
-            if (text == null || another is null) return false;
-            if (caseSensitive) return text.Equals(another);
+            if (text is null && another is null) return true;
+            if (text is null || another is null) return false;
+            if (caseSensitive) return text == another;
             return text.Equals(another, StringComparison.OrdinalIgnoreCase);
         }
     }

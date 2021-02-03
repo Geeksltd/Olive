@@ -195,17 +195,13 @@ namespace Olive
                     break;
             }
 
-            switch (@this % 10)
+            return (@this % 10) switch
             {
-                case 1:
-                    return @this + "st";
-                case 2:
-                    return @this + "nd";
-                case 3:
-                    return @this + "rd";
-                default:
-                    return @this + "th";
-            }
+                1 => @this + "st",
+                2 => @this + "nd",
+                3 => @this + "rd",
+                _ => @this + "th",
+            };
         }
 
         /// <summary>

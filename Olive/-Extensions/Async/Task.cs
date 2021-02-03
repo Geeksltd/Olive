@@ -25,7 +25,7 @@ namespace Olive
         [EscapeGCop("I AM the solution to the GCop warning itself!")]
         public static TResult GetAlreadyCompletedResult<TResult>(this Task<TResult> @this)
         {
-            if (@this == null) return default(TResult);
+            if (@this == null) return default;
 
             if (!@this.IsCompleted)
                 throw new InvalidOperationException("This task is not completed yet. Do you need to await it?");
@@ -55,12 +55,8 @@ namespace Olive
         public static async Task WithTimeout(this Task @this, TimeSpan timeout, Action success = null, Action timeoutAction = null)
         {
             if (await Task.WhenAny(@this, Task.Delay(timeout)) == @this) success?.Invoke();
-
-            else
-            {
-                if (timeoutAction == null) throw new TimeoutException("The task didn't complete within " + timeout + "ms");
-                else timeoutAction();
-            }
+            else if (timeoutAction is null) throw new TimeoutException("The task didn't complete within " + timeout + "ms");
+            else timeoutAction();
         }
 
         public static async Task<T> WithTimeout<T>(this Task<T> @this, TimeSpan timeout, Action success = null, Func<T> timeoutAction = null)
@@ -130,7 +126,7 @@ namespace Olive
         public static async Task<TResult> Get<TSource, TResult>(this Task<TSource> @this,
             Func<TSource, TResult> expression)
         {
-            if (@this == null) return expression(default(TSource));
+            if (@this == null) return expression(default);
             return expression(await @this.ConfigureAwait(continueOnCapturedContext: false));
         }
 
@@ -165,18 +161,18 @@ namespace Olive
             catch
             {
                 // No logging is needed
-                return default(TResult);
+                return default;
             }
         }
-        
+
         public static TResult AwaitResultWithoutContext<TResult>(this Task<TResult> task)
         {
             return task.ConfigureAwait(continueOnCapturedContext: false).GetAwaiter().GetResult();
         }
-        
+
         public static Task OrCompleted(this Task task) => task ?? Task.CompletedTask;
 
-        public static Task<TResult> OrCompleted<TResult>(this Task<TResult> task, TResult result = default(TResult))
+        public static Task<TResult> OrCompleted<TResult>(this Task<TResult> task, TResult result = default)
         {
             return task ?? Task.FromResult(result);
         }

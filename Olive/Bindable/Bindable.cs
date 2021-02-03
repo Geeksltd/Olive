@@ -27,7 +27,7 @@ namespace Olive
     public partial class Bindable<TValue> : Bindable
     {
         TValue value;
-        ConcurrentList<IBinding<TValue>> Bindings = new ConcurrentList<IBinding<TValue>>();
+        readonly ConcurrentList<IBinding<TValue>> Bindings = new ConcurrentList<IBinding<TValue>>();
 
         public event Action Changed;
 
@@ -71,7 +71,7 @@ namespace Olive
         /// <param name="propertyName">The property of the target object that should have my value.</param>
         public override IBinding AddBinding(object target, string propertyName)
         {
-            var property = FindProperty(target, propertyName, typeof(TValue));
+            var property = FindProperty(target, propertyName);
 
             var binding = new PropertyBinding<TValue> { Target = target.GetWeakReference(), Property = property };
             Bindings.Add(binding);
@@ -85,7 +85,7 @@ namespace Olive
 
         public IBinding<TValue> AddBinding<TProperty>(object target, string propertyName, Func<TValue, TProperty> expression)
         {
-            var property = FindProperty(target, propertyName, typeof(TProperty));
+            var property = FindProperty(target, propertyName);
 
             var binding = new PropertyBinding<TValue>
             {
@@ -100,7 +100,7 @@ namespace Olive
             return binding;
         }
 
-        static PropertyInfo FindProperty(object target, string propertyName, Type type)
+        static PropertyInfo FindProperty(object target, string propertyName)
         {
             if (target is null) throw new ArgumentNullException(nameof(target));
             if (propertyName.IsEmpty()) throw new ArgumentNullException(nameof(propertyName));
@@ -111,9 +111,6 @@ namespace Olive
 
             if (!property.CanWrite)
                 throw new Exception($"The {propertyName} property of {target.GetType().FullName} is read-only.");
-
-            //if (!property.PropertyType.IsAssignableFrom(type))
-            //    throw new Exception($"Type mismatch: The {propertyName} property of {target.GetType().FullName} cannot be bound to Bindable<{typeof(TValue).Name}.");
 
             return property;
         }
