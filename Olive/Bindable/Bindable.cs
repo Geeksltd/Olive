@@ -27,7 +27,7 @@ namespace Olive
     public partial class Bindable<TValue> : Bindable
     {
         TValue value;
-        readonly ConcurrentList<IBinding<TValue>> Bindings = new ConcurrentList<IBinding<TValue>>();
+        readonly ConcurrentList<IBinding<TValue>> Bindings = new();
 
         public event Action Changed;
 

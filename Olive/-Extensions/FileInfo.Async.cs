@@ -8,7 +8,7 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        static readonly ConcurrentDictionary<string, AsyncLock> FileSyncLocks = new ConcurrentDictionary<string, AsyncLock>();
+        static readonly ConcurrentDictionary<string, AsyncLock> FileSyncLocks = new();
         public static AsyncLock GetSyncLock(this FileInfo file)
         {
             return FileSyncLocks.GetOrAdd(file.FullName.ToLower(), f => new AsyncLock());

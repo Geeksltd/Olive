@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive.Entities.Data.PostgreSQL</AssemblyName>
     <RootNamespace>Olive.Entities.Data.PostgreSQL</RootNamespace>
     <PackageId>Olive.Entities.Data.PostgreSQL</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.109.0</Version>
+    <Version>2.1.110</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -33,7 +34,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Npgsql" Version="5.0.1.1" />
   </ItemGroup>

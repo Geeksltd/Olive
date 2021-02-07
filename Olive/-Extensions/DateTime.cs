@@ -173,46 +173,25 @@ new DateTime(2099,04,13)};
         /// Dictionary that contains exceptional dates for Early May Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static readonly Dictionary<int, DateTime> EarlyMayExceptions = new Dictionary<int, DateTime>
-        {
-            {2020,new DateTime(2020,05,08)}
-        };
-
-        #region SpringBankHolidayExceptions
+        static readonly Dictionary<int, DateTime> EarlyMayExceptions = new() { { 2020, new DateTime(2020, 05, 08) } };
 
         /// <summary>
         /// Dictionary that contains exceptional dates for Spring Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static readonly Dictionary<int, DateTime> SpringBankHolidayExceptions = new Dictionary<int, DateTime>
-        {
-            {2012,new DateTime(2012,06,04)}
-        };
-
-        #endregion SpringBankHolidayExceptions
-
-        #region LateSummerBankHolidayExceptions
+        static readonly Dictionary<int, DateTime> SpringBankHolidayExceptions = new() { { 2012, new DateTime(2012, 06, 04) } };
 
         /// <summary>
         /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static readonly Dictionary<int, DateTime> LateSummerBankHolidayExceptions = new Dictionary<int, DateTime>();
-
-        #endregion LateSummerBankHolidayExceptions
-
-        #region AdditionalBankHolidays
+        static readonly Dictionary<int, DateTime> LateSummerBankHolidayExceptions = new();
 
         /// <summary>
         /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static readonly Dictionary<int, DateTime[]> AdditionalBankHolidays = new Dictionary<int, DateTime[]>
-        {
-            {2012,new[]{new DateTime(2012,6,5)}}
-        };
-
-        #endregion AdditionalBankHolidays
+        static readonly Dictionary<int, DateTime[]> AdditionalBankHolidays = new() { { 2012, new[] { new DateTime(2012, 6, 5) } } };
 
         /// <summary>
         /// Determines if a specified date is an English national holiday or weekend.
@@ -385,6 +364,7 @@ new DateTime(2099,04,13)};
         static DateTime GetActualHolidayDate(DateTime originalDay)
         {
             var result = originalDay;
+
             while (result.IsWeekend())
                 result = result.AddDays(1);
 
@@ -685,6 +665,7 @@ new DateTime(2099,04,13)};
         public static string ToFriendlyDateString(this DateTime @this)
         {
             string formattedDate;
+
             if (@this.Date == LocalTime.Today)
                 formattedDate = "Today";
 
@@ -746,6 +727,7 @@ new DateTime(2099,04,13)};
             // var inclusiveTimeSpan = toTime - fromTime;
 
             var workingTimesInday = new List<KeyValuePair<TimeSpan, TimeSpan>>();
+
             if (workingEndTime > workingStartTime)
             {
                 workingTimesInday.Add(new KeyValuePair<TimeSpan, TimeSpan>(workingStartTime, workingEndTime));
@@ -794,6 +776,7 @@ new DateTime(2099,04,13)};
             for (var i = startMonths.Length - 1; i >= 0; i--)
             {
                 var beginningOfQuarter = new DateTime(@this.Year, startMonths[i], 1);
+
                 if (@this >= beginningOfQuarter)
                     return beginningOfQuarter;
             }

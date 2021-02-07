@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive.Aws</AssemblyName>
     <RootNamespace>Olive.Aws</RootNamespace>
     <PackageId>Olive.Aws</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.2.120.0</Version>
+    <Version>2.2.121</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -36,7 +37,6 @@
     <PackageReference Include="AWSSDK.SecretsManager" Version="3.5.0.57" />
     <PackageReference Include="AWSSDK.SecurityToken" Version="3.5.1.37" />
     <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.5.8.2" />
-    <PackageReference Include="GCop.All.Geeks" Version="2.7.0-rc.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />

@@ -32,7 +32,7 @@ namespace Olive
         /// </summary>
         static readonly char[] JsUnsafeCharacters = new[] { '\'', '\"' };
 
-        static readonly ConcurrentDictionary<string, string> LiteralFromPascalCaseCache = new ConcurrentDictionary<string, string>();
+        static readonly ConcurrentDictionary<string, string> LiteralFromPascalCaseCache = new();
 
         /// <summary>
         /// Removes the specified text from the start of this string instance.

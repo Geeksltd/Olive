@@ -10,19 +10,15 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        static readonly ConcurrentDictionary<Tuple<Type, Type>, bool> TypeImplementsCache = new ConcurrentDictionary<Tuple<Type, Type>, bool>();
-
-        static readonly SortedDictionary<string, object> CacheData = new SortedDictionary<string, object>();
-
-        static readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> SubTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
-        static readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> DescendantsTypesCache = new ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>>();
-
-        static readonly ConcurrentDictionary<Type, string> ProgrammingNameCache = new ConcurrentDictionary<Type, string>();
-
-        static readonly ConcurrentDictionary<Type, string> AssemblyQualifiedNameCache = new ConcurrentDictionary<Type, string>();
+        static readonly ConcurrentDictionary<Tuple<Type, Type>, bool> TypeImplementsCache = new();
+        static readonly SortedDictionary<string, object> CacheData = new();
+        static readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> SubTypesCache = new();
+        static readonly ConcurrentDictionary<Assembly, ConcurrentDictionary<Type, IEnumerable<Type>>> DescendantsTypesCache = new();
+        static readonly ConcurrentDictionary<Type, string> ProgrammingNameCache = new();
+        static readonly ConcurrentDictionary<Type, string> AssemblyQualifiedNameCache = new();
 
         static readonly Dictionary<Type, string> CSharpTypeAliases =
-            new Dictionary<Type, string>
+            new()
             {
                 { typeof(int), "int" },
                 { typeof(short), "short" },

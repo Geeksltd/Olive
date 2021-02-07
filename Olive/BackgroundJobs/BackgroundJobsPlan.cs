@@ -4,7 +4,7 @@ namespace Olive
 {
     public abstract class BackgroundJobsPlan
     {
-        public static Dictionary<string, BackgroundJob> Jobs { get; } = new Dictionary<string, BackgroundJob>();
+        public static Dictionary<string, BackgroundJob> Jobs { get; } = new();
 
         public abstract void Initialize();
 
