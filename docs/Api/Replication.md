@@ -47,6 +47,7 @@ To implement this, in the customer microserice project, we will create the follo
 ```csharp
 namespace CustomerService
 {    
+    [EventBus(Environments.Production, "https://sqs...amazonaws.com/.../CustomerService-OrdersEndpoint.fifo")]    
     public class OrdersEndpoint : SourceEndpoint 
     {
         class Customer : ExposedType<Domain.Customer>
@@ -61,6 +62,8 @@ namespace CustomerService
 }
 ```
 The `Customer` class here provides a definition for a data table to expose. It inherits from `ExposedType<...>` which is a special class in Olive. The above code is saying *"expose the data from my local `Domain.Customer` type as a type, also called `Customer`. But only expose the `Email` and `Name` fields."*.
+
+The framework will match the queue url with the appropriate EventBus implementation automatically. For example if your queue is on Azure, with the url pattern of "https://....queue.core.windows.net/... it will use the Azure event bus implementation.
 
 ---
 
@@ -164,6 +167,7 @@ In the same endpoint, you can expose multiple data types. For each data type you
 ```csharp
 namespace CustomerService
 {    
+    [EventBus(Environments.Production, "https://sqs...amazonaws.com/.../CustomerService-OrdersEndpoint.fifo")]
     public class OrdersEndpoint : SourceEndpoint 
     {
         class Customer : ExposedType<Domain.Customer>
