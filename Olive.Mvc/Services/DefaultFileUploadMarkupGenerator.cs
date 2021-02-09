@@ -53,7 +53,7 @@ namespace Olive.Mvc
                     {GetHiddenInput(x => x.Url)}
                     {GetHiddenInput(x => x.IsEmpty)}
                     <div class=""progress-bar"" role=""progressbar""></div>
-                    <span class=""delete-file fa fa-remove btn"" style=""display: none""></span>
+                    <span class=""delete-file fas fa-times btn"" style=""display: none""></span>
                 </div>
             ");
 
