@@ -1,14 +1,13 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
-    <AssemblyName>Olive.Net4x.Compatibility</AssemblyName>
-    <RootNamespace>Olive.Net4x.Compatibility</RootNamespace>
-    <PackageId>Olive.Net4x.Compatibility</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Olive.Csv</AssemblyName>
+    <RootNamespace>Olive.Csv</RootNamespace>
+    <PackageId>Olive.Csv</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.130.0</Version>
+    <Version>2.1.108.0</Version>
     <PackOnBuild>true</PackOnBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
+    <NeutralLanguage>en</NeutralLanguage>    
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <LangVersion>latest</LangVersion>
     <DebugType>portable</DebugType>
@@ -16,8 +15,8 @@
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive.Net4x.Compatibility</Title>
-    <Description>Prepares a legacy .NET 4.x application to use Olive.</Description>
+    <Title>Olive.Csv</Title>
+    <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>
     <Authors>Geeks Ltd</Authors>
@@ -33,18 +32,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive\Olive.csproj" />
+    <PackageReference Include="CsvHelper" Version="19.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />  
+    <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
   </ItemGroup>
 </Project>

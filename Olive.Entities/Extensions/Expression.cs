@@ -65,7 +65,10 @@ namespace Olive
 
             // Fix for overriden properties:
             try { property = @this.Expression.Type.GetProperty(property.Name) ?? property; }
-            catch { }
+            catch
+            {
+                // No logging is needed
+            }
 
             if (CalculatedAttribute.IsCalculated(property)) return empty;
 

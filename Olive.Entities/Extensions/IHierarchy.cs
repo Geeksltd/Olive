@@ -35,8 +35,14 @@ namespace Olive
         /// <summary>
         /// Gets all children hierarchy of this node.
         /// </summary>
-        public static IEnumerable<IHierarchy> GetAllChildren(this IHierarchy parent) =>
-            parent.GetChildren().Except(parent).SelectMany(c => c.WithAllChildren()).OrderBy(i => i.GetFullPath()).ToArray();
+        public static IEnumerable<IHierarchy> GetAllChildren(this IHierarchy @this)
+        {
+            return @this.GetChildren()
+                .Except(@this)
+                .SelectMany(c => c.WithAllChildren())
+                .OrderBy(i => i.GetFullPath())
+                .ToArray();
+        }
 
         /// <summary>
         /// Gets this node as well as all its parents hierarchy.

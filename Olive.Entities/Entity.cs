@@ -90,6 +90,7 @@ namespace Olive.Entities
         /// Determines whether this object is already cloned and updated in the database without this instance being updated.
         /// </summary>
         [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [EscapeGCop("Defined as a field on purpose.")]
         public bool IsStale;
 
         /// <summary>

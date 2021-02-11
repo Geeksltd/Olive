@@ -35,11 +35,9 @@
         {
             if (ReferenceEquals(this, other)) return true;
 
-            var typed = other as Entity<T>;
+            if (other is not Entity<T> typed) return false;
 
-            if (typed is null) return false;
-
-            if (GetType() != typed.GetType()) return false;
+            if (GetType() != other.GetType()) return false;
 
             return ID.Equals(typed.ID);
         }

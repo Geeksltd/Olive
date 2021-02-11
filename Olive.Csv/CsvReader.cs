@@ -49,7 +49,7 @@ namespace Olive.Csv
                 if (!isFirstRowHeaders)
                 {
                     var headerRow = output.NewRow();
-                    foreach (DataColumn column in output.Columns)
+                    foreach (var column in output.Columns.OfType<DataColumn>())
                         headerRow[column.ColumnName] = csvResult.Context.HeaderRecord[column.Ordinal];
                     output.Rows.Add(headerRow);
                 }
@@ -57,7 +57,7 @@ namespace Olive.Csv
                 while (csvResult.Read())
                 {
                     var row = output.NewRow();
-                    foreach (DataColumn column in output.Columns)
+                    foreach (var column in output.Columns.OfType<DataColumn>())
                         row[column.ColumnName] = csvResult.GetField(column.DataType, column.Ordinal);
                     output.Rows.Add(row);
                 }

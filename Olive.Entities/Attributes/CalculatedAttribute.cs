@@ -31,7 +31,11 @@ namespace Olive.Entities
                 var result = property.IsDefined(typeof(CalculatedAttribute), inherit: true);
 
                 try { return Cache[property] = result; }
-                catch { return result; }
+                catch
+                {
+                    // No logging is needed
+                    return result;
+                }
             }
         }
     }

@@ -104,8 +104,8 @@ namespace Olive.Entities
             {
                 if (!throwOnError) return null;
 
-                throw new ArgumentException("Invalid database criteria. The provided filter expression cannot be evaluated and converted into a SQL condition." + expression.ToString() +
-                    Environment.NewLine + Environment.NewLine + "Consider using application level filter using the \".Where(...)\" clause.");
+                throw new ArgumentException("Invalid database criteria. The provided filter expression cannot be evaluated and converted into a SQL condition." +
+                    expression + Environment.NewLine + Environment.NewLine + "Consider using application level filter using the \".Where(...)\" clause.");
             }
 
             var property = propertyExpression.Member.Name;
@@ -113,7 +113,7 @@ namespace Olive.Entities
             // Middle properties?
             while (propertyExpression.Expression is MemberExpression)
             {
-                propertyExpression = (propertyExpression.Expression as MemberExpression);
+                propertyExpression = propertyExpression.Expression as MemberExpression;
                 property = propertyExpression.Member.Name + "." + property;
             }
 

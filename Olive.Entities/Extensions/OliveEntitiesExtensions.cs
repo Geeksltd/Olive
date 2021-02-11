@@ -11,6 +11,8 @@ namespace Olive
 {
     public static partial class OliveEntitiesExtensions
     {
+        const int MINUTE = 60;
+
         /// <summary>
         /// Gets the root entity type of this type.
         /// If this type inherits directly from Entity&lt;T&gt; then it will be returned, otherwise its parent...
@@ -32,7 +34,7 @@ namespace Olive
         /// <summary>
         /// Downloads the data in this URL.
         /// </summary>
-        public static async Task<Blob> DownloadBlob(this Uri url, string cookieValue = null, int timeOutSeconds = 60)
+        public static async Task<Blob> DownloadBlob(this Uri url, string cookieValue = null, int timeOutSeconds = MINUTE)
         {
             var fileName = "File.Unknown";
 

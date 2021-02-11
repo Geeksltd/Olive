@@ -149,10 +149,8 @@ namespace Olive.Entities
             try
             {
                 using (var mem = new MemoryStream(await GetFileDataAsync()))
-                {
-                    using (var reader = new StreamReader(mem))
-                        return await reader.ReadToEndAsync();
-                }
+                using (var reader = new StreamReader(mem))
+                    return await reader.ReadToEndAsync();
             }
             catch (Exception ex)
             {
@@ -262,11 +260,8 @@ namespace Olive.Entities
                     }
                 }
             }
-            else
-            {
-                if (NewFileData.None()) result = new Blob(FileName);
-                else result = new Blob(NewFileData, FileName);
-            }
+            else if (NewFileData.None()) result = new Blob(FileName);
+            else result = new Blob(NewFileData, FileName);
 
             return result;
         }
