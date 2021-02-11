@@ -56,8 +56,10 @@ namespace Olive
         public static ShortGuid Parse(string text)
         {
             if (text.IsEmpty()) return Empty;
+
             if (text.Length >= Thirty)
                 return new ShortGuid(new Guid(text));
+
             return new ShortGuid(text);
         }
 
@@ -96,9 +98,12 @@ namespace Olive
         {
             if (obj is ShortGuid)
                 return _guid.Equals(((ShortGuid)obj)._guid);
+
             if (obj is Guid) return _guid.Equals((Guid)obj);
+
             if (obj is string)
                 return _guid.Equals(((ShortGuid)obj)._guid);
+
             return false;
         }
 
@@ -131,9 +136,11 @@ namespace Olive
         public static string Encode(Guid guid)
         {
             var encoded = Convert.ToBase64String(guid.ToByteArray());
+
             encoded = encoded
                 .Replace("/", "_")
                 .Replace("+", "-");
+
             return encoded.Substring(0, TwentyTwo);
         }
 
@@ -147,6 +154,7 @@ namespace Olive
             value = value
                 .Replace("_", "/")
                 .Replace("-", "+");
+
             var buffer = Convert.FromBase64String(value + "==");
             return new Guid(buffer);
         }

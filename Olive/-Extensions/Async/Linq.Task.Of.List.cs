@@ -177,7 +177,5 @@ namespace Olive
 
         public static Task<TResult> Min<TSource, TResult>(
         this Task<List<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
-
-
     }
 }

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Olive
 {
@@ -134,6 +134,7 @@ namespace Olive
             while (namePos <= query.Length)
             {
                 int valuePos = -1, valueEnd = -1;
+
                 for (var q = namePos; q < query.Length; q++)
                 {
                     if (valuePos == -1 && query[q] == '=') valuePos = q + 1;
@@ -145,6 +146,7 @@ namespace Olive
                 }
 
                 string name;
+
                 if (valuePos == -1)
                 {
                     name = null;

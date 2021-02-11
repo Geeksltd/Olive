@@ -118,8 +118,10 @@ namespace Olive
         {
             if (@this == null)
                 throw new NullReferenceException("No collection is given for the extension method IndexOf().");
+
             if (@this.Contains(element) == false) return -1;
             var result = 0;
+
             foreach (var el in @this)
             {
                 if (el == null)
@@ -127,9 +129,11 @@ namespace Olive
                     if (element == null) return result;
                     else continue;
                 }
+
                 if (el.Equals(element)) return result;
                 result++;
             }
+
             return -1;
         }
 
@@ -476,6 +480,7 @@ namespace Olive
 
             foreach (var item in @this)
                 if (!other.Contains(item)) return false;
+
             return true;
         }
 
@@ -630,6 +635,7 @@ namespace Olive
         {
             var countList = (@this as ICollection)?.Count;
             var countOther = (otherList as ICollection)?.Count;
+
             if (countList == null || countOther == null || countOther < countList)
             {
                 foreach (var item in otherList)
@@ -640,6 +646,7 @@ namespace Olive
                 foreach (var item in @this)
                     if (otherList.Contains(item)) return true;
             }
+
             return false;
         }
 
@@ -682,6 +689,7 @@ namespace Olive
                 throw new ArgumentNullException(nameof(item));
 
             var index = @this.IndexOf(item);
+
             if (index == -1)
                 throw new ArgumentException("The specified item does not exist to this list.");
 
@@ -732,6 +740,7 @@ namespace Olive
                 throw new ArgumentNullException(nameof(item));
 
             var index = @this.IndexOf(item);
+
             if (index == -1)
                 throw new ArgumentException("The specified item does not exist to this list.");
 
@@ -761,6 +770,7 @@ namespace Olive
             }
 
             var index = @this.IndexOf(item);
+
             if (index == -1)
                 throw new ArgumentException("The specified item does not exist to this list.");
 
@@ -1142,11 +1152,9 @@ namespace Olive
             {
                 if (item is null)
                 {
-                    if (i is null)
-                        yield return index;
+                    if (i is null) yield return index;
                 }
-                else if (item.Equals(i))
-                    yield return index;
+                else if (item.Equals(i)) yield return index;
 
                 index++;
             }
@@ -1208,10 +1216,8 @@ namespace Olive
             var index = 0;
 
             foreach (var item in @this)
-            {
-                if (criteria(item))
-                    yield return index++;
-            }
+                if (criteria(item)) yield return index++;
+
         }
 
         /// <summary>
@@ -1370,6 +1376,7 @@ namespace Olive
                 throw new ArgumentNullException(nameof(propertyName));
 
             var property = typeof(TSource).GetProperty(propertyName);
+
             if (property == null)
                 throw new ArgumentException("{0} is not a readable property of {1} type.".FormatWith(propertyName, typeof(TSource).FullName));
 
@@ -1389,6 +1396,7 @@ namespace Olive
                 return OrderByDescending(@this, propertyName.TrimEnd(" DESC".Length));
 
             Type itemType = null;
+
             foreach (var item in @this)
             {
                 itemType = item.GetType();
@@ -1423,6 +1431,7 @@ namespace Olive
             if (property.IsEmpty()) throw new ArgumentNullException(nameof(property));
 
             var result = new ArrayList();
+
             foreach (var item in @this.OrderBy(property))
                 result.Insert(0, item);
 
@@ -1486,6 +1495,7 @@ namespace Olive
             var tasks = new List<Task>();
 
             if (@this == null) return;
+
             foreach (var item in @this)
             {
                 var awaitable = task(item);

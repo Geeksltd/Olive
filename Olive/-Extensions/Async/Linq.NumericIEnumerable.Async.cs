@@ -2086,6 +2086,5 @@ namespace Olive
 
             return tasks.Min(x => x.Predicate.GetAlreadyCompletedResult());
         }
-
     }
 }

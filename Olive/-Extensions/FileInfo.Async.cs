@@ -56,6 +56,7 @@ namespace Olive
         public static async Task<bool> ExistsAsync(this FileInfo @this)
         {
             if (@this == null) return false;
+
             using (await @this.GetSyncLock().Lock())
                 return File.Exists(@this.FullName);
         }
@@ -87,6 +88,7 @@ namespace Olive
             using (await @this.GetSyncLock().Lock())
             {
                 var retry = 0;
+
                 while (true)
                 {
                     try
@@ -125,6 +127,7 @@ namespace Olive
             using var stream = new FileStream(file.FullName,
                 FileMode.Create, FileAccess.Write, FileShare.None,
                 0x4096, useAsync: true);
+
             await stream.WriteAsync(content, 0, content.Length);
         }
 

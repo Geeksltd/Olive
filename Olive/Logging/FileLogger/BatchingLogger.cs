@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Olive.Logging
 {

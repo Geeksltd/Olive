@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Olive
 {
@@ -19,8 +19,8 @@ namespace Olive
 
     public class JsonConfigurationProvider : ConfigurationProvider
     {
-        private readonly string Json;
-        private string CurrentPath;
+        readonly string Json;
+        string CurrentPath;
         readonly Stack<string> Context = new Stack<string>();
 
         public JsonConfigurationProvider(string json) => Json = json;

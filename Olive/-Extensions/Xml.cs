@@ -36,11 +36,13 @@ namespace Olive
                 {
                     // Attribute:
                     var element = node as XElement;
+
                     if (element == null) return null;
                     else
                     {
                         var attributeName = part.Substring(1);
                         var withXName = element.Attribute(attributeName);
+
                         if (withXName != null) return withXName;
                         else
                             return element.Attributes().FirstOrDefault(a => a.Name != null && a.Name.LocalName == attributeName);
@@ -49,6 +51,7 @@ namespace Olive
                 else
                 {
                     var withXName = node.Element(part);
+
                     if (withXName != null) node = withXName;
                     else
                     {

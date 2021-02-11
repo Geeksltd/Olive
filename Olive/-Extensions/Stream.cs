@@ -13,10 +13,13 @@ namespace Olive
         public static byte[] ReadAllBytes(this Stream stream)
         {
             using var memoryStream = new MemoryStream();
+
             try { if (stream.CanSeek) stream.Position = 0; }
             catch (NotSupportedException) { /*Not needed*/ }
+
             try { stream.CopyTo(memoryStream); }
             catch (System.IO.InvalidDataException) { /*Not needed*/ }
+
             return memoryStream.ToArray();
         }
 
@@ -63,8 +66,10 @@ namespace Olive
             using var ms = new MemoryStream();
             var buffer = new byte[BUFFER_SIZE];
             int count;
+
             while ((count = reader.Read(buffer, 0, buffer.Length)) != 0)
                 ms.Write(buffer, 0, count);
+
             return ms.ToArray();
         }
 

@@ -21,15 +21,18 @@ namespace Olive
                 return await client.GetByteArrayAsync(address);
 
             var result = await client.GetByteArrayAsync(address);
+
             if (result != null && result.Length > 3 && result[0] == GZipStarter[0] && result[1] == GZipStarter[1] && result[2] == GZipStarter[2])
             {
                 // GZIP:
                 using var stream = new System.IO.Compression.GZipStream(new MemoryStream(result), System.IO.Compression.CompressionMode.Decompress);
                 var buffer = new byte[4096];
                 using var memory = new MemoryStream();
+
                 while (true)
                 {
                     var count = await stream.ReadAsync(buffer, 0, buffer.Length);
+
                     if (count > 0) await memory.WriteAsync(buffer, 0, count);
                     else break;
                 }

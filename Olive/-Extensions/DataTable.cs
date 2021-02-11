@@ -49,6 +49,7 @@ namespace Olive
             var mappings = FindPropertyMappings(typeof(T), @this.Columns, propertyMappings);
 
             var convertors = new Dictionary<string, Func<string, object>>();
+
             if (propertyMappings != null)
                 convertors = propertyMappings.GetType().GetProperties().Where(p => p.PropertyType == typeof(Func<string, object>))
                 .ToDictionary(p => p.Name.Substring(4), p => (Func<string, object>)p.GetValue(propertyMappings));
@@ -76,11 +77,13 @@ namespace Olive
                     {
                         if (!result.ContainsKey(property.Name.TrimStart("set_")))
                             result.Add(property.Name.TrimStart("set_"), null);
+
                         continue;
                     }
 
                     // Validate property name:
                     var propertyInTarget = targetType.GetProperty(property.Name);
+
                     if (propertyInTarget == null)
                         throw new Exception(targetType.FullName + " does not have a property named " + property.Name);
 
@@ -103,6 +106,7 @@ namespace Olive
 
                 // Otherwise, if a column with that name is available, then that's it:
                 var potential = columnNames.Where(c => c.Remove(" ").ToUpper() == property.Name.ToUpper());
+
                 if (potential.IsSingle())
                 {
                     result[property.Name] = potential.Single();
@@ -162,6 +166,7 @@ namespace Olive
         public static string ToCSV(this DataTable @this)
         {
             var result = new StringBuilder();
+
             for (var i = 0; i < @this.Columns.Count; i++)
             {
                 result.Append(@this.Columns[i].ColumnName);

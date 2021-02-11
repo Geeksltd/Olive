@@ -78,6 +78,7 @@ namespace Olive
         public static bool HasExeContent(this FileInfo @this)
         {
             var twoBytes = new byte[2];
+
             using (var fileStream = File.Open(@this.FullName, FileMode.Open))
             {
                 try

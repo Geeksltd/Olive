@@ -107,8 +107,10 @@ namespace Olive
                 if (includeData && err.Data != null && err.Data.Count > 0)
                 {
                     resultBuilder.AppendLine("\r\nException Data:\r\n{");
+
                     foreach (var i in err.Data)
                         resultBuilder.AppendLine(ToLogText(i).WithPrefix("    "));
+
                     resultBuilder.AppendLine("}");
                 }
 
@@ -119,16 +121,20 @@ namespace Olive
                 }
 
                 err = err.InnerException;
+
                 if (err != null)
                 {
                     resultBuilder.AppendLine();
+
                     if (includeStackTrace)
                         resultBuilder.AppendLine("###############################################");
+
                     resultBuilder.Append("Base issue: ");
                 }
             }
 
             var stack = @this.GetUsefulStack().TrimOrEmpty();
+
             if (includeStackTrace && stack.HasValue())
             {
                 var stackLines = stack.ToLines();
@@ -142,8 +148,10 @@ namespace Olive
         public static string GetUsefulStack(this Exception @this)
         {
             if (@this.InnerException == null) return @this.StackTrace;
+
             if (@this is TargetInvocationException || @this is AggregateException)
                 return @this.InnerException.GetUsefulStack();
+
             return @this.StackTrace;
         }
 

@@ -42,6 +42,7 @@ namespace Olive
         public static void WaitAndThrow(this Task @this)
         {
             if (@this == null) return;
+
             try { @this.Wait(); }
             catch (AggregateException ex) { throw ex.InnerException; }
 

@@ -107,6 +107,7 @@ namespace Olive
                 else
                 {
                     words += NumberWordsTens[@this / 10];
+
                     if ((@this % 10) > 0)
                         words += "-" + NumberWordsUnits[@this % 10];
                 }

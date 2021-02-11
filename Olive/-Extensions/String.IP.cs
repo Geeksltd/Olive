@@ -25,6 +25,7 @@ namespace Olive
             if (address.IsEmpty()) return false;
 
             var bytes = IPAddress.Parse(address).GetAddressBytes();
+
             if (BitConverter.IsLittleEndian)
                 bytes = bytes.Reverse().ToArray();
 

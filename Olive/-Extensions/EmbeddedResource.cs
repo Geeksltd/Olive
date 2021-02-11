@@ -38,6 +38,7 @@ namespace Olive
             try
             {
                 using var stream = @this.GetManifestResourceStream(resourceName);
+
                 if (stream == null)
                     throw new Exception("There is no embedded resource named '" + resourceName +
                    "' in the assembly: " + @this.FullName);
@@ -84,6 +85,7 @@ namespace Olive
             try
             {
                 using var stream = @this.GetManifestResourceStream(resourceName);
+
                 if (stream == null)
                     throw new Exception("There is no embedded resource named '" + resourceName +
                    "' in the assembly: " + @this.FullName);

@@ -20,6 +20,7 @@ namespace Olive
         public IEnumerator<T> GetEnumerator()
         {
             var count = Count;
+
             for (var i = 0; i != count; ++i)
                 yield return Buffer[(i + Offset) % Capacity];
         }

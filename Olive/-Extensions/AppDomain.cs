@@ -14,6 +14,7 @@ namespace Olive
         public static DirectoryInfo WebsiteRoot(this AppDomain @this)
         {
             var root = @this.BaseDirectory.AsDirectory();
+
             if (root.Name.StartsWith("netcoreapp")) return root.Parent.Parent.Parent;
             else return root;
         }
@@ -35,6 +36,7 @@ namespace Olive
             var fileName = assemblyName.EnsureEndsWith(".dll", caseSensitive: false);
 
             var file = @this.GetBaseDirectory().GetFile(fileName);
+
             if (file.Exists())
                 return Assembly.Load(AssemblyName.GetAssemblyName(file.FullName));
 

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Reflection;
-    using Olive;
 
     internal struct PropertyBinding<TValue> : IBinding<TValue>
     {
@@ -50,5 +49,4 @@
             return rawValue;
         }
     }
-
 }

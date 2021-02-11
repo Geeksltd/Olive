@@ -15,6 +15,7 @@ namespace Olive
         {
             Template = pattern;
             var remaining = pattern;
+
             while (remaining.Contains("{"))
             {
                 var parameter = remaining.Substring("{", "}", inclusive: true);
@@ -22,6 +23,7 @@ namespace Olive
                 var mandatory = !key.EndsWith("?");
                 key = key.TrimEnd("?");
                 var type = typeof(string);
+
                 if (key.Contains(":"))
                 {
                     // TODO: Type doesn't matter in this use case.
@@ -39,6 +41,7 @@ namespace Olive
             foreach (var p in Parameters)
             {
                 var routeKey = routeData.Keys.FirstOrDefault(x => x.ToUpper() == p.Key.ToUpper());
+
                 if (routeKey is not null)
                 {
                     if (!p.MatchesType(routeData[routeKey]))
@@ -83,10 +86,13 @@ namespace Olive
         {
             if (routeData == null)
                 throw new ArgumentNullException(nameof(routeData));
+
             var result = Template;
+
             foreach (var p in Parameters)
             {
                 var routeKey = routeData.Keys.FirstOrDefault(x => x.ToUpper() == p.Key.ToUpper());
+
                 if (routeKey is not null)
                 {
                     // TODO: Type check

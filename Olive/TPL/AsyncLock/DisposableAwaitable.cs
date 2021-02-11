@@ -8,7 +8,7 @@ namespace Olive
     {
         public readonly Task<T> Task;
 
-        internal DisposableAwaitable(Task<T> task) { Task = task; }
+        internal DisposableAwaitable(Task<T> task) => Task = task;
 
         public TaskAwaiter<T> GetAwaiter() => Task.GetAwaiter();
     }

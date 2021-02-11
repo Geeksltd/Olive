@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Olive
 {
@@ -46,8 +46,10 @@ namespace Olive
         public TService GetOptionalService<TService>() where TService : class
         {
             var result = ServiceProvider.GetService<TService>();
+
             if (result == null)
                 Debug.WriteLine(typeof(TService).FullName + " service is not configured.");
+
             return result;
         }
 

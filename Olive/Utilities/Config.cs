@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel;
+using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace Olive
 {
@@ -19,11 +19,11 @@ namespace Olive
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void SetConfiguration(IConfiguration config) => configuration = config;
 
-        ///// <summary>
-        ///// Gets the connection string with the specified key.
-        ///// <para>The connection strings should store directly under the ConnectionStrings section.</para>
-        ///// </summary>
-        //public static string GetConnectionString(string key) => GetOrThrow($"ConnectionStrings:{key}");
+        // /// <summary>
+        // /// Gets the connection string with the specified key.
+        // /// <para>The connection strings should store directly under the ConnectionStrings section.</para>
+        // /// </summary>
+        // public static string GetConnectionString(string key) => GetOrThrow($"ConnectionStrings:{key}");
 
         /// <summary>
         /// Attempts to bind the given object instance to configuration values by matching
@@ -84,14 +84,17 @@ namespace Olive
         public static IConfiguration MergeEnvironmentVariables(this IConfiguration config)
         {
             var keys = Environment.GetEnvironmentVariables().Keys.Cast<string>().ToArray();
+
             foreach (var variable in keys)
             {
                 var key = $"%{variable}%";
                 var configNodes = config.AsEnumerable().Where(v => v.Value.OrEmpty().Contains(key)).ToArray();
+
                 foreach (var item in configNodes)
                 {
                     var value = Environment.GetEnvironmentVariable(variable);
                     var finalValue = item.Value.Replace(key, value);
+
                     try
                     {
                         config[item.Key] = finalValue;

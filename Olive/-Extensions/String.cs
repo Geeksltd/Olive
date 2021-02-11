@@ -284,6 +284,7 @@ namespace Olive
         public static string ToCountString(this string @this, int count, string zeroQualifier)
         {
             @this = @this.Or("").Trim();
+
             if (@this.IsEmpty())
                 throw new Exception("'name' cannot be empty for ToCountString().");
 
@@ -301,10 +302,12 @@ namespace Olive
         public static string SeparateAtUpperCases(this string @this)
         {
             var sb = new StringBuilder();
+
             for (var i = 0; i < @this.Length; i++)
             {
                 if (char.IsUpper(@this[i]) && i > 0)
                     sb.Append(" ");
+
                 sb.Append(@this[i]);
             }
 
@@ -321,6 +324,7 @@ namespace Olive
             // Only change the last word:
             var phrase = @this;
             var prefix = "";
+
             if (phrase.Split(' ').Length > 1)
             {
                 // Multi word, set prefix to anything but the last word:
@@ -1177,6 +1181,7 @@ namespace Olive
             if (Path.GetDirectoryName(@this).IsEmpty())
             {
                 var environmentFolders = Environment.GetEnvironmentVariable("PATH").OrEmpty().Split(';').Trim();
+
                 foreach (var test in environmentFolders)
                 {
                     result = test.AsDirectory().GetFile(@this);
@@ -1277,6 +1282,7 @@ namespace Olive
         public static string CreateSHA256Hash(this string @this)
         {
             using var hash = SHA256Managed.Create();
+
             return string.Concat(
                 hash
                 .ComputeHash(Encoding.UTF8.GetBytes(@this))
@@ -1290,6 +1296,7 @@ namespace Olive
         public static string CreateSHA512Hash(this string @this)
         {
             using var hash = SHA512Managed.Create();
+
             return string.Concat(
                 hash
                 .ComputeHash(Encoding.UTF8.GetBytes(@this))
@@ -1308,6 +1315,7 @@ namespace Olive
                 if (@this.Length > chunkSize)
                 {
                     yield return @this.Substring(0, chunkSize);
+
                     foreach (var part in @this.Substring(chunkSize).Split(chunkSize))
                         yield return part;
                 }
@@ -1417,6 +1425,7 @@ namespace Olive
             var matches = @this.Matches(text).Cast<Match>()
                 .Except(m => !m.Success || string.IsNullOrWhiteSpace(m.Value))
                 .ToList();
+
             return matches.IsSingle() ? matches[0].Value : null;
         }
 
@@ -1642,6 +1651,7 @@ namespace Olive
         public static string ReplaceWholeWord(this string @this, string word, string replacement, bool caseSensitive = true)
         {
             var pattern = "\\b" + Regex.Escape(word) + "\\b";
+
             if (caseSensitive) return Regex.Replace(@this, pattern, replacement);
             else return Regex.Replace(@this, pattern, replacement, RegexOptions.IgnoreCase);
         }

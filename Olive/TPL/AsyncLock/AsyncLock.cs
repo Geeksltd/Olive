@@ -11,10 +11,7 @@ namespace Olive
         readonly Task<IDisposable> WaitTask;
         readonly object Mutex = new object();
 
-        public AsyncLock()
-        {
-            WaitTask = Task.FromResult<IDisposable>(new Key(this));
-        }
+        public AsyncLock() => WaitTask = Task.FromResult<IDisposable>(new Key(this));
 
         public DisposableAwaitable<IDisposable> Lock()
         {
@@ -47,7 +44,7 @@ namespace Olive
         {
             readonly AsyncLock Lock;
 
-            public Key(AsyncLock asyncLock) { Lock = asyncLock; }
+            public Key(AsyncLock asyncLock) => Lock = asyncLock;
 
             public void Dispose() => Lock.Release();
         }

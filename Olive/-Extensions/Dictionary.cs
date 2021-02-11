@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace Olive
 {
@@ -193,8 +193,10 @@ namespace Olive
         public static JObject ToJson(this IEnumerable<KeyValuePair<string, string>> @this)
         {
             var result = new JObject();
+
             foreach (var item in @this)
                 result.Add(item.Key, item.Value);
+
             return result;
         }
     }

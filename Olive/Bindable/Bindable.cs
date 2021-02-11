@@ -106,6 +106,7 @@ namespace Olive
             if (propertyName.IsEmpty()) throw new ArgumentNullException(nameof(propertyName));
 
             var property = target.GetType().GetProperty(propertyName);
+
             if (property is null)
                 throw new Exception($"{target.GetType().FullName} does not have a public instance property named {propertyName}.");
 

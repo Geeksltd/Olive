@@ -143,6 +143,7 @@ namespace Olive
         public static byte[] GZip(this byte[] data)
         {
             using var outFile = new MemoryStream();
+
             using (var inFile = new MemoryStream(data))
             using (var compress = new GZipStream(outFile, CompressionMode.Compress))
                 inFile.CopyTo(compress);

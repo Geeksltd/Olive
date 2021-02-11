@@ -215,6 +215,7 @@ namespace Olive
         public static T Cache<T>(this MethodBase @this, object instance, object[] arguments, Method<T> methodBody) where T : class
         {
             var key = @this.DeclaringType.GUID + ":" + @this.Name;
+
             if (instance != null)
                 key += instance.GetHashCode() + ":";
 

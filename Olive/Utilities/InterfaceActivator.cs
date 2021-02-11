@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Olive
 {
@@ -10,7 +10,7 @@ namespace Olive
 
         public static object CreateInstance(Type interfaceType, params object[] args)
         {
-            if (Mapping.TryGetValue(interfaceType, out var classType)) 
+            if (Mapping.TryGetValue(interfaceType, out var classType))
                 return CreateInstanceImpl(classType, args);
 
             var implmenters = interfaceType.FindImplementerClasses();
@@ -28,7 +28,7 @@ namespace Olive
             return CreateInstanceImpl(type, args);
         }
 
-        public static T CreateInstance<T>(params object[] args) where T : class => 
+        public static T CreateInstance<T>(params object[] args) where T : class =>
             CreateInstance(typeof(T), args) as T;
 
         static object CreateInstanceImpl(Type type, params object[] args)

@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Olive.Logging
 {
@@ -24,6 +24,7 @@ namespace Olive.Logging
             // NOTE: Only IsEnabled is monitored
 
             var loggerOptions = options.Value;
+
             if (loggerOptions.BatchSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(loggerOptions.BatchSize));
 

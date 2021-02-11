@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Olive
 {
@@ -52,6 +52,7 @@ namespace Olive
             {
                 r.Append("  Description: ");
                 var firstLine = true;
+
                 foreach (var line in description.ToLines().Trim())
                 {
                     if (!firstLine) r.Append("  Description: ".Length);

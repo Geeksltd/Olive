@@ -32,7 +32,7 @@ namespace Olive
             if (@this == null) return false;
             return File.Exists(@this.FullName);
         }
-        
+
         /// <summary>
         /// Gets the total size of all files in this directory.
         /// </summary>
@@ -102,6 +102,7 @@ namespace Olive
             {
                 if (e.Data.HasValue()) lock (output) output.AppendLine(e.Data);
             };
+
             process.OutputDataReceived += (sender, e) =>
             {
                 if (e.Data != null) lock (output) output.AppendLine(e.Data);

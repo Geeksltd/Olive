@@ -10,6 +10,7 @@ namespace Olive
             this IEnumerable<TSource> @this, Func<TSource, Task<TResult>> selector)
         {
             var result = new List<TResult>();
+
             foreach (var item in @this)
             {
                 var sel = selector(item);
@@ -24,6 +25,7 @@ namespace Olive
            this IEnumerable<TSource> @this, Func<TSource, Task<IEnumerable<TResult>>> selector)
         {
             var result = new List<TResult>();
+
             foreach (var item in @this)
             {
                 var sel = selector(item);

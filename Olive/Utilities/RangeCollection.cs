@@ -225,6 +225,7 @@
         RangeIndexSearchResult DetectRange(T item)
         {
             var index = ranges.Keys.ToList().BinarySearch(item);
+
             if (index >= 0) return new RangeIndexSearchResult { ExistingRangeStartingWith = index };
             else return new RangeIndexSearchResult { WhereItBelongs = (-index) - 1 };
         }
