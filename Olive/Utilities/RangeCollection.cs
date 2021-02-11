@@ -19,6 +19,20 @@
 
         public RangeCollection() { }
 
+        public RangeCollection(IEnumerable<Range<T>> ranges)
+        {
+            if (ranges == null) return;
+
+            var array = ranges.ToArray();
+
+            for (var index = 0; index < array.Length; index++)
+                for (var inner = index + 1; inner < array.Length; inner++)
+                    if (array[index].Intersects(array[inner]))
+                        throw new ArgumentException("The initializing ranges should not intersect each other.");
+
+            ranges.Do(r => this.ranges.Add(r.From, r));
+        }
+
         public override string ToString()
         {
             return ranges.Select(x => x.Value.From.Equals(x.Value.To) ? x.Value.From.ToString() : x.Value.ToString("-")).ToString("|");
@@ -35,20 +49,6 @@
             });
 
             return new RangeCollection<T>(ranges);
-        }
-
-        public RangeCollection(IEnumerable<Range<T>> ranges)
-        {
-            if (ranges == null) return;
-
-            var array = ranges.ToArray();
-
-            for (var index = 0; index < array.Length; index++)
-                for (var inner = index + 1; inner < array.Length; inner++)
-                    if (array[index].Intersects(array[inner]))
-                        throw new ArgumentException("The initializing ranges should not intersect each other.");
-
-            ranges.Do(r => this.ranges.Add(r.From, r));
         }
 
         static T Invoke(Func<T, T> method, T arg)

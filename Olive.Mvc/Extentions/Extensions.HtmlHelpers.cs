@@ -31,7 +31,11 @@ namespace Olive.Mvc
             return @this.ToJson(data);
         }
 
-        public static IHtmlContent RadioButtonsFor<TModel, TProperty>(this IHtmlHelper<TModel> @this, Expression<Func<TModel, TProperty>> property, IEnumerable<SelectListItem> selectList, object htmlAttributes)
+        public static IHtmlContent RadioButtonsFor<TModel, TProperty>(
+            this IHtmlHelper<TModel> @this,
+            Expression<Func<TModel, TProperty>> property,
+            IEnumerable<SelectListItem> selectList,
+            object htmlAttributes)
         {
             var propertyInfo = property.GetProperty();
 
@@ -176,7 +180,7 @@ namespace Olive.Mvc
 
             var r = new StringBuilder();
 
-            return settings.Select(x => x.name + "=\"" + x.value + "\"").ToString(" ").WithPrefix(" ");
+            return settings.Select(x => x.name + "=\"" + x.value.ToStringOrEmpty().HtmlEncode() + "\"").ToString(" ").WithPrefix(" ");
         }
 
         // //START : frz:Should remove in next version

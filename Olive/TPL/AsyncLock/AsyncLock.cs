@@ -29,6 +29,7 @@ namespace Olive
             }
         }
 
+        [EscapeGCop("Special case. Waiting for Result is intended here.")]
         void Release()
         {
             IDisposable toRelease = null;

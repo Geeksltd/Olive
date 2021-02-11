@@ -6,13 +6,15 @@ namespace Olive
 {
     public class PerformanceProfiler : IDisposable
     {
+        const int INDENTATION = 30;
+
         static readonly ConcurrentDictionary<string, ConcurrentList<TimeSpan>> Watchers =
             new ConcurrentDictionary<string, ConcurrentList<TimeSpan>>();
         readonly ConcurrentList<TimeSpan> Watcher;
         readonly DateTime Start;
         readonly string Action;
 
-        public PerformanceProfiler(string action, int millisecondAccuracy = 2)
+        public PerformanceProfiler(string action)
         {
             Action = action;
             Watcher = Watchers.GetOrAdd(action, x => new ConcurrentList<TimeSpan>());
@@ -26,7 +28,7 @@ namespace Olive
             var average = Watcher.Average(x => x.TotalSeconds).Round(2);
             var max = Watcher.Max(x => x.TotalSeconds).Round(2);
 
-            Console.WriteLine(Action.PadRight(30) +
+            Console.WriteLine(Action.PadRight(INDENTATION) +
                 " Avg: " + average.ToString().PadRight(10) +
                " Max: " + max.ToString().PadRight(10));
         }

@@ -56,7 +56,7 @@ namespace Olive.Logging
                     try { await WriteMessagesAsync(CurrentBatch, CancellationTokenSource.Token); }
                     catch
                     {
-                        // ignored
+                        // No logging is needed.
                     }
 
                     CurrentBatch.Clear();
@@ -77,6 +77,7 @@ namespace Olive.Logging
                 catch
                 {
                     // cancellation token canceled or CompleteAdding called
+                    // no logging needed.
                 }
             }
         }

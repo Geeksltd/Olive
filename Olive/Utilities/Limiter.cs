@@ -20,7 +20,7 @@ namespace Olive
         public Limiter(int limitTo)
         {
             Limit = limitTo;
-            Timer = new System.Timers.Timer(500.Milliseconds().TotalMilliseconds);
+            Timer = new System.Timers.Timer(500);
             Timer.Elapsed += Timer_Elapsed;
             Timer.Start();
         }

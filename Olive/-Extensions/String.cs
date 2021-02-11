@@ -347,11 +347,7 @@ namespace Olive
         {
             var ending = char.ToLower(singular[singular.Length - 1]);
 
-            char secondEnding;
-            if (singular.Length > 1)
-                secondEnding = char.ToLower(singular[singular.Length - 2]);
-            else
-                secondEnding = char.MinValue;
+            var secondEnding = singular.Length > 1 ? char.ToLower(singular[singular.Length - 2]) : char.MinValue;
 
             if (ending == 'x' || ending == 'z' || ending == 's' || (secondEnding.ToString() + ending) == "ch" || (secondEnding.ToString() + ending) == "sh")
                 return singular + "es";

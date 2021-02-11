@@ -158,9 +158,9 @@ namespace Olive
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
 
-            using var zippedStream = @this.AsStream();
-            using var decompress = new GZipStream(zippedStream, CompressionMode.Decompress);
-            return decompress.ReadAllBytes();
+            using (var zippedStream = @this.AsStream())
+            using (var decompress = new GZipStream(zippedStream, CompressionMode.Decompress))
+                return decompress.ReadAllBytes();
         }
 
         /// <summary>

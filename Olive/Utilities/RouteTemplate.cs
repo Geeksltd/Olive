@@ -39,7 +39,7 @@ namespace Olive
             foreach (var p in Parameters)
             {
                 var routeKey = routeData.Keys.FirstOrDefault(x => x.ToUpper() == p.Key.ToUpper());
-                if (routeKey != null)
+                if (routeKey is not null)
                 {
                     if (!p.MatchesType(routeData[routeKey]))
                         return false;
@@ -87,7 +87,7 @@ namespace Olive
             foreach (var p in Parameters)
             {
                 var routeKey = routeData.Keys.FirstOrDefault(x => x.ToUpper() == p.Key.ToUpper());
-                if (routeKey != null)
+                if (routeKey is not null)
                 {
                     // TODO: Type check
                     result = result.Replace(p.Parameter, routeData[routeKey]);

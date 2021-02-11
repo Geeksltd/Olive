@@ -130,7 +130,7 @@ namespace Olive
 
                 string data;
 
-                if (mapping.Value == null)
+                if (mapping.Value is null)
                     // The setter for this property is identified, while no property mapping is specified.
                     data = null;
                 else

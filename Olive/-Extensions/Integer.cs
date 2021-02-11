@@ -100,7 +100,7 @@ namespace Olive
 
             if (@this > 0)
             {
-                if (words != "") words += "and ";
+                if (words.HasValue()) words += "and ";
 
                 if (@this < TWENTY)
                     words += NumberWordsUnits[@this];
@@ -182,6 +182,7 @@ namespace Olive
         /// <summary>
         /// E.g. converts 1 to 1st or 13 to 13th.
         /// </summary>
+        [EscapeGCop("Handling hardcoded numbers here is acceptable")]
         public static string ToOrdinal(this int @this)
         {
             switch (@this % 100)

@@ -58,7 +58,7 @@ namespace Olive
         static T TryHard<T>(FileSystemInfo fileOrFolder, Func<T> action, string error)
         {
             var result = default(T);
-            DoTryHard(fileOrFolder, delegate { result = action(); }, error);
+            DoTryHard(fileOrFolder, () => result = action(), error);
             return result;
         }
 

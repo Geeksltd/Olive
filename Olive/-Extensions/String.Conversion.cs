@@ -9,7 +9,7 @@ namespace Olive
     {
         public delegate bool TryParseProvider(string text, Type type, out object result);
 
-        public static List<TryParseProvider> TryParseProviders = new();
+        public static readonly List<TryParseProvider> TryParseProviders = new();
 
         /// <summary>
         /// Determines whether this string can be converted to the specified type.

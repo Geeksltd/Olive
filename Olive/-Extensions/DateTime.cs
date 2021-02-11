@@ -959,7 +959,7 @@ new DateTime(2099,04,13)};
         /// Gets the total number of seconds elapsed since 1st Jan 1970.
         /// </summary>
         public static long ToUnixTime(this DateTime @this)
-            => (int)@this.ToUniversalTime().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            => (int)@this.ToUniversal().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
     }
 
     public enum CalendarMonth
