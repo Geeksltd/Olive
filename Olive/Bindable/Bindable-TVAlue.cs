@@ -27,7 +27,7 @@ namespace Olive
         }
 
         /// <summary>
-        /// Sets the value by source API and fires the Changed event. 
+        /// Sets the value by source API and fires the Changed (and ChangedBySource) events. 
         /// </summary>
         public void Set(TValue newValue)
         {
