@@ -6,7 +6,7 @@
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.219</Version>
+    <Version>2.1.221</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -31,6 +31,9 @@
   <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">

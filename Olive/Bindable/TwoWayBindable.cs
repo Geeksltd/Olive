@@ -5,8 +5,12 @@ namespace Olive
     /// <summary>
     /// A bindable abstraction with specialised events to distinguish between changes made by the user, and by the API, to prevent infinite loops, and enable proper cascading.
     /// </summary>
-    public class TwoWayBindable<TValue> : Bindable<TValue> where TValue : IEquatable<TValue>
+    public class TwoWayBindable<TValue> : Bindable<TValue>
     {
+        public TwoWayBindable() : base() { }
+
+        public TwoWayBindable(TValue defaultValue) : base(defaultValue) { }
+
         /// <summary>
         /// Fired when the value is changed by input (user action) rather than source (API).
         /// </summary>

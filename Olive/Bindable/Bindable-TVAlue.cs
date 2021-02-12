@@ -29,16 +29,13 @@ namespace Olive
         /// <summary>
         /// Sets the value by source API and fires the Changed (and ChangedBySource) events. 
         /// </summary>
-        public void Set(TValue newValue)
-        {
-            SetValue(newValue);
-            Changed?.Invoke();
-        }
+        public virtual void Set(TValue newValue) => SetValue(newValue);
 
         protected override void SetValue(object value)
         {
             this.value = (TValue)value;
             foreach (var item in Bindings) item.Apply((TValue)value);
+            Changed?.Invoke();
         }
 
         protected override object GetValue() => Value;
