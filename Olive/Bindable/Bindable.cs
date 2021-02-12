@@ -1,8 +1,5 @@
 namespace Olive
 {
-    using System;
-    using System.Reflection;
-
     public abstract partial class Bindable : IBindable
     {
         object IBindable.Value { get => GetValue(); set => SetValue(value); }
@@ -17,5 +14,7 @@ namespace Olive
         /// Rebinds it to the same value. Particularly useful for expression based bindings to get updated.
         /// </summary>
         public void Refresh() => SetValue(GetValue());
+
+        public override string ToString() => GetValue().ToStringOrEmpty();
     }
 }
