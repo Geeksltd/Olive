@@ -20,7 +20,6 @@ namespace Olive
         /// Tries to parse this text to the specified type.
         /// Returns null if parsing is not possible.
         /// </summary>
-        [EscapeGCop("It is ok for trying methods to have out param.")]
         public static T? TryParseAs<T>(this string text) where T : struct
         {
             if (text.IsEmpty()) return default;
@@ -41,7 +40,6 @@ namespace Olive
             }
         }
 
-        [EscapeGCop("It is ok for trying methods to have out param.")]
         static bool TryParseToCommonTypes<T>(this string text, out T? result) where T : struct
         {
             result = null;
@@ -137,7 +135,6 @@ namespace Olive
             }
         }
 
-        [EscapeGCop("I AM the solutino to this GCop rule.")]
         static object ChangeType(string text, Type targetType)
         {
             if (targetType == typeof(string)) return text;
@@ -163,7 +160,6 @@ namespace Olive
             return Convert.ChangeType(text, targetType);
         }
 
-        [EscapeGCop("It is ok for trying methods to have out param.")]
         static bool TryParseToCommonTypes(string text, Type targetType, out object result)
         {
             var actualTargetType = targetType;

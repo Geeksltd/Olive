@@ -12,7 +12,6 @@ namespace Olive
         /// It's recommended to use Task.Factory.RunSync() instead.
         /// If you can't, at then call this while making it explicit that you know what you're doing.
         /// </summary>        
-        [EscapeGCop("I AM the solution to the GCop warning itself!")]
         public static TResult RiskDeadlockAndAwaitResult<TResult>(this Task<TResult> task)
               => Task.Run(async () => await task).Result;
 
@@ -22,7 +21,6 @@ namespace Olive
         /// Otherwise the result will be returned.
         /// Use this instead of calling the Result property when you know that the result is ready to avoid deadlocks.
         /// </summary>
-        [EscapeGCop("I AM the solution to the GCop warning itself!")]
         public static TResult GetAlreadyCompletedResult<TResult>(this Task<TResult> @this)
         {
             if (@this == null) return default;

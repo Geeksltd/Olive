@@ -71,7 +71,6 @@ namespace Olive
 
         public static bool Implements<T>(this Type @this) => Implements(@this, typeof(T));
 
-        [EscapeGCop("I am the solution to this GCop warning")]
         public static bool IsA<T>(this Type @this) => typeof(T).IsAssignableFrom(@this);
 
         public static MethodInfo GetGenericMethod(this Type @this, string methodName, params Type[] genericTypes)
@@ -79,7 +78,6 @@ namespace Olive
             return @this.GetMethod(methodName).MakeGenericMethod(genericTypes);
         }
 
-        [EscapeGCop("I am the solution to this GCop warning")]
         public static bool IsA(this Type @this, Type type) => type.IsAssignableFrom(@this);
 
         public static bool References(this Assembly @this, Assembly anotherAssembly)

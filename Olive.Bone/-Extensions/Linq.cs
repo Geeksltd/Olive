@@ -58,7 +58,7 @@ namespace Olive
         /// <param name="predicate">Determines the pattern.</param>
         public static bool Any<T>(this IEnumerable<T> @this, Func<T, int, bool> predicate) => @this.Any(predicate);
 
-        [EscapeGCop("I am the solution to this GCop warning")]
+        
 
         /// <summary>
         /// Determines if this is null or an empty list.
@@ -172,7 +172,6 @@ namespace Olive
         /// Gets all items of this list except those meeting a specified criteria.
         /// </summary>
         /// <param name="criteria">Exclusion criteria</param>
-        [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static IEnumerable<T> Except<T>(this IEnumerable<T> list, Func<T, bool> criteria) => list.Where(i => !criteria(i));
 
         /// <summary>
@@ -181,7 +180,6 @@ namespace Olive
         /// <param name="item">The item which is not returned.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, T item) => @this.Except(new T[] { item });
 
-        [EscapeGCop("It is the Except definition and so it cannot call itself")]
         /// <summary>
         /// Gets all items of this list except those meeting a specified criteria.
         /// </summary>
@@ -299,7 +297,6 @@ namespace Olive
             return visitedAny;
         }
 
-        [EscapeGCop("This is for performance reasons.")]
         /// <summary>
         /// Determines whether this value has one item or not. If this value has one item, it returns true. Otherwise, it returns false.
         /// </summary>
@@ -315,7 +312,6 @@ namespace Olive
             return first != null;
         }
 
-        [EscapeGCop("This is impossible to instantiate an interface so, we cannot use IEnumerable.")]
         /// <summary>
         /// Clone is a full-featured language includes methods that may not be recommended. 
         /// In C# (for example) the Clone method and ICloneable interface are available. But using these features causes confusion.
@@ -618,7 +614,7 @@ namespace Olive
         /// Determines if none of the items in this list meet a given criteria.
         /// </summary>
         /// <param name="criteria">The Func() which determines the rule.</param>
-        [EscapeGCop("I am the solution to this GCop warning")]
+        
         public static bool None<T>(this IEnumerable<T> @this, Func<T, bool> criteria) => !@this.Any(criteria);
 
         /// <summary>
@@ -1228,7 +1224,7 @@ namespace Olive
         /// <summary>
         /// Returns an empty collection if this collection is null.
         /// </summary>
-        [EscapeGCop("I am the solution to this GCop warning")]
+        
         public static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> @this) => @this ?? Enumerable.Empty<T>();
 
         /// <summary>
@@ -1568,7 +1564,6 @@ namespace Olive
         /// </summary>
         /// <param name="condition">If true, the filter predicate will be executed .</param>
         /// <param name="predicate">The Func() which is executed if the condition is true.</param>
-        [EscapeGCop("The condition param should not be last in this case.")]
         public static IEnumerable<T> FilterIf<T>(this IEnumerable<T> source,
              bool condition, Func<T, bool> predicate)
             => condition ? source.Where(predicate) : source;

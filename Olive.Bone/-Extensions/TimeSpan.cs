@@ -10,22 +10,16 @@ namespace Olive
         const double ACTUAL_DAYS_PER_YEAR = 365.2425;
         const int NINETEEN_HUNDRED = 1900;
 
-        [EscapeGCop("I AM the solution myself!")]
         public static TimeSpan Days(this int number) => TimeSpan.FromDays(number);
 
-        [EscapeGCop("I AM the solution myself!")]
         public static TimeSpan Hours(this int number) => TimeSpan.FromHours(number);
 
-        [EscapeGCop("I AM the solution myself!")]
         public static TimeSpan Minutes(this int number) => TimeSpan.FromMinutes(number);
 
-        [EscapeGCop("I AM the solution myself!")]
         public static TimeSpan Seconds(this int number) => TimeSpan.FromSeconds(number);
 
-        [EscapeGCop("I AM the solution myself!")]
         public static TimeSpan Milliseconds(this int number) => TimeSpan.FromMilliseconds(number);
 
-        [EscapeGCop("I AM the solution myself!")]
         public static TimeSpan Ticks(this int number) => TimeSpan.FromTicks(number);
 
         public static TimeSpan Multiply(this TimeSpan @this, double by) => TimeSpan.FromMilliseconds(@this.TotalMilliseconds * by);
@@ -56,7 +50,6 @@ namespace Olive
         public static string ToNaturalTime(this TimeSpan @this, int precisionParts) =>
             ToNaturalTime(@this, precisionParts, longForm: true);
 
-        [EscapeGCop("It is ok for trying methods to have out param.")]
         static bool TryReduceDays(ref TimeSpan period, int len, out double result)
         {
             if (period.TotalDays >= len)

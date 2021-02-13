@@ -127,13 +127,11 @@ namespace Olive
         /// <summary>
         /// Determines whether this instance of string is null or empty.
         /// </summary>
-        [EscapeGCop("I am the solution myself!")]
         public static bool IsEmpty(this string text) => string.IsNullOrEmpty(text);
 
         /// <summary>
         /// Determines whether this instance of string is not null or empty.
         /// </summary>
-        [EscapeGCop("I am the solution myself!")]
         public static bool HasValue(this string text) => !string.IsNullOrEmpty(text);
 
         /// <summary>
@@ -372,7 +370,6 @@ namespace Olive
                 secondEnding != 'u';
         }
 
-        [EscapeGCop("It is fine for this method to be long.")]
         static string GetIrregularPlural(string singular)
         {
             singular = singular.ToLower();
@@ -816,7 +813,6 @@ namespace Olive
         /// Removes the specified substrings from this string object.
         /// </summary>
         /// <param name="substringsToRemove">A list of Strings which are removed.</param>
-        [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static string Remove(this string text, string[] substringsToRemove)
         {
             if (text.IsEmpty()) return text;
@@ -853,7 +849,6 @@ namespace Olive
         /// Removes the specified substrings from this string object.
         /// </summary>
         /// <param name="substringToRemove">String which is removed.</param>
-        [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static string Remove(this string text, string substringToRemove)
         {
             if (text.IsEmpty()) return text;
@@ -1160,7 +1155,6 @@ namespace Olive
         /// <summary>
         /// Converts this path into a file object.
         /// </summary>
-        [EscapeGCop("I AM the solution myself!")]
         public static FileInfo AsFile(this string @this)
         {
             if (@this.IsEmpty()) return null;
@@ -1412,7 +1406,6 @@ namespace Olive
         /// <summary>
         /// If it's null, it return empty string. Otherwise it returns this.
         /// </summary>
-        [EscapeGCop("I AM the solution myself!")]
         public static string OrEmpty(this string @this) => @this ?? string.Empty;
 
         /// <summary>
@@ -1676,7 +1669,6 @@ namespace Olive
         /// </summary>
         /// <param name="trueText">The string which is returned if this value is true.</param>
         /// <param name="falseText">The string which is returned if this value is false.</param>
-        [EscapeGCop("It is an extension for boolean type")]
         public static string ToString(this bool value, string trueText, string falseText) =>
             ToString(value, trueText, falseText, nullText: null);
 

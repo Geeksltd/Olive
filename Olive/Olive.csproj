@@ -36,17 +36,6 @@
     <DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
-    </None>
-    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
     <PackageReference Include="GCop.Common" Version="2.7.2" />
     <PackageReference Include="GCop.Linq" Version="2.7.1-rc.2" />
@@ -56,9 +45,10 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <ProjectReference Include="..\Olive.Bone\Olive.Bone.csproj" />
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) E:\Nuget\packages\olive\2.1.222\lib\netstandard2.0" />
+    <!--<Exec Command="copy /y $(TargetPath) E:\Nuget\packages\olive\2.1.222\lib\netstandard2.0" />-->
   </Target>
 </Project>

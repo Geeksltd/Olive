@@ -2,10 +2,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Olive</AssemblyName>
+    <AssemblyName>Olive.Bone</AssemblyName>
     <RootNamespace>Olive</RootNamespace>
-    <PackageId>Olive</PackageId>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <PackageId>Olive.Bone</PackageId>
+    <Product>Olive (netstandard2.0)</Product>
     <Version>2.1.224</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
@@ -57,6 +57,6 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) E:\Nuget\packages\olive\2.1.222\lib\netstandard2.0" />
+    <!--<Exec Command="copy /y $(TargetPath) E:\Nuget\packages\olive\2.1.222\lib\netstandard2.0" />-->
   </Target>
 </Project>
