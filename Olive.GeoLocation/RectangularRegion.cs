@@ -1,4 +1,4 @@
-﻿namespace Zebble
+﻿namespace Olive.GeoLocation
 {
     using System.Linq;
     using Olive.GeoLocation;
