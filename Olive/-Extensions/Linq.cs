@@ -228,9 +228,14 @@ namespace Olive
             @this.Except(itemsToExclude.ToArray());
 
         /// <summary>
+        /// Gets all non-default items of this list.
+        /// </summary>
+        public static IEnumerable<T> ExceptDefault<T>(this IEnumerable<T> @this) => @this.Where(i => i.Equals(default(T)));
+
+        /// <summary>
         /// Gets all Non-NULL items of this list.
         /// </summary>
-        public static IEnumerable<T> ExceptNull<T>(this IEnumerable<T> @this) where T : class => @this.Where(i => i != null);
+        public static IEnumerable<T> ExceptNull<T>(this IEnumerable<T> @this) => @this.Where(i => i != null);
 
         /// <summary>
         /// Gets all Non-NULL items of this list.
