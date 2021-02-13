@@ -5,7 +5,7 @@ namespace Olive.Entities
 {
     /// <summary>Represents a base Entity with ID of type Guid.</summary>
     [Serializable]
-    public abstract class GuidEntity : Entity<Guid>, IEntity<Guid>
+    public abstract class GuidEntity : Entity<Guid>
     {
         bool IsIdLoaded; // For performance, this is used instead of Nullable<Guid>
         Guid id;

@@ -71,6 +71,6 @@ namespace Olive
         /// Gets all parents hierarchy of this node.
         /// </summary>
         public static IEnumerable<T> GetAllParents<T>(this IHierarchy child) where T : IHierarchy =>
-            (child as IHierarchy).GetAllParents().Cast<T>().ToArray();
+            child.GetAllParents().Cast<T>().ToArray();
     }
 }

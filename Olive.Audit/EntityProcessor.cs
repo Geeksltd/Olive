@@ -117,7 +117,7 @@ namespace Olive.Audit
             if (type == null)
                 throw new Exception("Could not load the type " + applicationEvent.ItemType);
 
-            if (applicationEvent.Event == "Update" || applicationEvent.Event == "Insert")
+            if (applicationEvent.Event.IsAnyOf("Update", "Insert"))
                 return await Database.Get(applicationEvent.ItemId.To<Guid>(), type);
 
             if (applicationEvent.Event == "Delete")
