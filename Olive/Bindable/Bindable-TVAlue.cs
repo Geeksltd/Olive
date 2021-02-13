@@ -64,11 +64,21 @@ namespace Olive
             Bindings.Add(binding);
             binding.Apply(value);
 
-            if (target is IBindableInput inp)
-                inp.AddBinding(this);
+            if (target is IBindableInput input)
+            {
+                void Input_InputChanged(string changedProperty)
+                {
+                    if (changedProperty == propertyName)
+                        SeValuetByInput((TValue)binding.Property.GetValue(target));
+                }
+
+                input.InputChanged += Input_InputChanged;
+            }
 
             return binding;
         }
+
+        internal virtual void SeValuetByInput(TValue value) => SetValue(value);
 
         public IBinding<TValue> AddBinding<TProperty>(object target, string propertyName, Func<TValue, TProperty> expression)
         {

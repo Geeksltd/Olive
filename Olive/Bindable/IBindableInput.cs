@@ -2,6 +2,8 @@
 {
     public interface IBindableInput
     {
-        void AddBinding(Bindable bindable);
+        event InputChanged InputChanged;
     }
+
+    public delegate void InputChanged(string property);
 }

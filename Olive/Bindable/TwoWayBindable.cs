@@ -35,5 +35,7 @@ namespace Olive
             base.SetValue(value);
             ChangedBySource?.Invoke();
         }
+
+        internal override void SeValuetByInput(TValue value) => SetByInput(value);
     }
 }
