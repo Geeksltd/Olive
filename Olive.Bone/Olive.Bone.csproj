@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Olive</AssemblyName>
+    <RootNamespace>Olive</RootNamespace>
+    <PackageId>Olive</PackageId>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>2.1.224</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <PackageTags>olive</PackageTags>
+    <Title>Olive</Title>
+    <Description>Olive Framework</Description>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="C:\Users\mohse\.nuget\packages\gcop.all.geeks\2.6.1\contentFiles\any\netstandard1.3\tools\install.ps1" />
+    <None Remove="C:\Users\mohse\.nuget\packages\gcop.all.geeks\2.6.1\contentFiles\any\netstandard1.3\tools\uninstall.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="5.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
+    </None>
+    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y $(TargetPath) E:\Nuget\packages\olive\2.1.222\lib\netstandard2.0" />
+  </Target>
+</Project>

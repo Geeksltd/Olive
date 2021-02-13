@@ -119,7 +119,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.GeoLocation.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSharp.Build", "Utils\MSharp.Build\MSharp.Build.csproj", "{126292EE-733D-4C27-8343-E38A310B72F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Net4x.Compatibility", "Olive.Net4x.Compatibility\Olive.Net4x.Compatibility.csproj", "{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Net4x.Compatibility", "Olive.Net4x.Compatibility\Olive.Net4x.Compatibility.csproj", "{53AE4974-CFE9-4FAD-A908-99AE5AEB9D41}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.EventBus", "Olive.EventBus\Olive.EventBus.csproj", "{CE18C25B-E11F-429F-A3B3-F23C30B00731}"
 EndProject
@@ -168,6 +168,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.SMS.TextMagic", "Olive.SMS.TextMagic\Olive.SMS.TextMagic.csproj", "{CF9CAD17-3BA6-47B7-8815-084A84A5D1F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Sms.Aws", "Olive.Sms.Aws\Olive.Sms.Aws.csproj", "{59BC7334-BFF7-46F0-B84D-E2829613F1D5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Bone", "Olive.Bone\Olive.Bone.csproj", "{96809EAA-CE47-42C5-AC68-48BFE056DC22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -438,6 +440,10 @@ Global
 		{59BC7334-BFF7-46F0-B84D-E2829613F1D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59BC7334-BFF7-46F0-B84D-E2829613F1D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59BC7334-BFF7-46F0-B84D-E2829613F1D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96809EAA-CE47-42C5-AC68-48BFE056DC22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96809EAA-CE47-42C5-AC68-48BFE056DC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96809EAA-CE47-42C5-AC68-48BFE056DC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96809EAA-CE47-42C5-AC68-48BFE056DC22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -510,6 +516,7 @@ Global
 		{F9E4B82C-F72E-4D58-A31B-1E971182A29A} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
 		{BC185AF9-EC42-4926-B45D-2261E63FF0F0} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
 		{59BC7334-BFF7-46F0-B84D-E2829613F1D5} = {6A937A37-1CEC-4347-9594-C471645B43DA}
+		{96809EAA-CE47-42C5-AC68-48BFE056DC22} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
