@@ -19,7 +19,7 @@ namespace Olive
 
             return (Bindable<TTarget>)Dependents.GetOrAdd(key, k =>
             {
-                var result = new Bindable<TTarget>();
+                var result = new ExpressionBindable<TTarget, TValue>(this, valueProvider);
                 result.Bind(this, valueProvider);
                 return result;
             });

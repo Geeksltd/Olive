@@ -6,7 +6,7 @@
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.224</Version>
+    <Version>2.1.227</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -59,6 +59,6 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) E:\Nuget\packages\olive\2.1.222\lib\netstandard2.0" />
+    <Exec Command="update-local-nuget-cache $(TargetDir)" />
   </Target>
 </Project>

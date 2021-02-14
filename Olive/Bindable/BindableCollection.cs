@@ -11,6 +11,8 @@ namespace Olive
 
         IEnumerator IEnumerable.GetEnumerator() => GetItemsEnumerator();
         protected abstract IEnumerator GetItemsEnumerator();
+
+        public virtual void ClearBindings() => Changed = null;
     }
 
     public class BindableCollection<T> : BindableCollection, IEnumerable<T>
@@ -22,6 +24,13 @@ namespace Olive
 
         public event Action<T> Removing;
         protected void FireRemoving(T item) => Removing?.Invoke(item);
+
+        public override void ClearBindings()
+        {
+            base.ClearBindings();
+            Added = null;
+            Removing = null;
+        }
 
         /// <summary>
         /// Adds a single item and then fires Changed, to update the UI. 

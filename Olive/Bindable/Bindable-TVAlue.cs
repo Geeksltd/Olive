@@ -112,5 +112,7 @@ namespace Olive
 
             return property;
         }
+
+        public override void ClearBindings() => Changed = null;
     }
 }

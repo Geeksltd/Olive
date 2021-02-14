@@ -16,5 +16,7 @@ namespace Olive
         public void Refresh() => SetValue(GetValue());
 
         public override string ToString() => GetValue().ToStringOrEmpty();
+
+        public abstract void ClearBindings();
     }
 }
