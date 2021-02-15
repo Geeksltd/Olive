@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 namespace Olive
 {
@@ -45,8 +46,11 @@ namespace Olive
 
         public void Add(IEnumerable<T> items)
         {
-            Items.AddRange(items.ExceptNull());
-            items.Do(x => FireAdded(x));
+            var validItems = items.ExceptNull().ToArray();
+            if (validItems.None()) throw new ArgumentException($"{nameof(items)} is empty.");
+
+            Items.AddRange(validItems);
+            validItems.Do(FireAdded);
             FireChanged();
         }
 
