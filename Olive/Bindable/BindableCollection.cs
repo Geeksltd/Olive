@@ -39,7 +39,8 @@ namespace Olive
         /// </summary> 
         public void Add(T item)
         {
-            Items.Add(item ?? throw new ArgumentNullException(nameof(item)));
+            if (item is null) return;
+            Items.Add(item);
             FireAdded(item);
             FireChanged();
         }
@@ -47,7 +48,7 @@ namespace Olive
         public void Add(IEnumerable<T> items)
         {
             var validItems = items.ExceptNull().ToArray();
-            if (validItems.None()) throw new ArgumentException($"{nameof(items)} is empty.");
+            if (validItems.None()) return;
 
             Items.AddRange(validItems);
             validItems.Do(FireAdded);
