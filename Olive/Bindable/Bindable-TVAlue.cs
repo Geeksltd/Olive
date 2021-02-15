@@ -43,6 +43,21 @@ namespace Olive
         public static implicit operator Bindable<TValue>(TValue value) => new Bindable<TValue>(value);
         public static implicit operator TValue(Bindable<TValue> item) => item.value;
 
+        public static bool operator ==(Bindable<TValue> item, object other)
+        {
+            if (item is null)
+                throw new InvalidOperationException("A bindable object should never be null. It should be instantiated upon declaration.");
+
+            if (other is IBindable bindable)
+                other = bindable.Value;
+
+            if (other is null) return item.value is null;
+            if (item.Value is null) return false;
+            return item.Value.Equals(other);
+        }
+
+        public static bool operator !=(Bindable<TValue> item, object other) => !(item == other);
+
         /// <summary>
         /// Binds this instance to another bindable source. Use it to cascade data bininding.
         /// </summary>
