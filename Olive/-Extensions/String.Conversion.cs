@@ -160,7 +160,10 @@ namespace Olive
                 if (parser(text, targetType, out var result2))
                     return result2;
 
-            return Convert.ChangeType(text, targetType);
+            if (targetType.IsNullable())
+                return ChangeType(text, targetType.GetGenericArguments().Single());
+            else
+                return Convert.ChangeType(text, targetType);
         }
 
         [EscapeGCop("It is ok for trying methods to have out param.")]
