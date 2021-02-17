@@ -216,5 +216,29 @@ namespace Olive
                     throw; // Although it is a try method, it is ok to raise an exception.
             }
         }
+
+        public static void Register<TTarget>(this List<TryParseProvider> @this, Func<string, TTarget> parse)
+             => @this.Add(new TryParseProvider<TTarget>(parse).TryParse);
+
+        class TryParseProvider<TTarget>
+        {
+            Func<string, TTarget> Parse;
+            public TryParseProvider(Func<string, TTarget> parse) => Parse = parse;
+
+            [EscapeGCop("This is a special pattern.")]
+            internal bool TryParse(string text, Type type, out object result)
+            {
+                result = null;
+
+                if (!type.IsA<TTarget>()) return false;
+
+                try { result = Parse(text); return true; }
+                catch
+                {
+                    // No logging is needed
+                    return false;
+                }
+            }
+        }
     }
 }
