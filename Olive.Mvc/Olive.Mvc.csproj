@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Mvc</RootNamespace>
     <PackageId>Olive.Mvc</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.117.0</Version>
+    <Version>3.1.118.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
