@@ -72,14 +72,14 @@ You have 8 options:
 
 | Option  | When your priorities are | And you're happy to accept
 | ------------- | ------------- | ----------
-| FreshOrCacheOrFail  | **Up-to-date** then **Minimum crashing** | *Lower speed**
-| FreshOrCacheOrNull  | **Up-to-date** then **No crashing** | *Lower speed**
-| CacheOrFreshOrFail  | **Speed** then **Minimum crashing** | *Relatively out-of-date result**
-| CacheOrFreshOrNull  | **Speed** then **No crashing** | *Relatively out-of-date result**
-| FreshOrFail  | **Must be up-to-date** | *Lower speed and more crashing**
-| FreshOrNull  | **Must be up-to-date** | *Lower speed, no crashing and maybe null result**
-| CacheOrFail  | **Speed** | *Relatively out-of-date result and more crashing**
-| CacheOrNull  | **Speed** | *Relatively out-of-date result, no crashing and maybe null result**
+| FreshOrCacheOrFail  | **Up-to-date** then **Minimum crashing** | *Lower speed*
+| FreshOrCacheOrNull  | **Up-to-date** then **No crashing** | *Lower speed*
+| CacheOrFreshOrFail  | **Speed** then **Minimum crashing** | *Relatively out-of-date result*
+| CacheOrFreshOrNull  | **Speed** then **No crashing** | *Relatively out-of-date result*
+| FreshOrFail  | **Must be up-to-date** | *Lower speed and more crashing*
+| FreshOrNull  | **Must be up-to-date** | *Lower speed, no crashing and maybe null result*
+| CacheOrFail  | **Speed** | *Relatively out-of-date result and more crashing*
+| CacheOrNull  | **Speed** | *Relatively out-of-date result, no crashing and maybe null result*
 
 #### CachePolicy.FreshOrCacheOrFail (default)
 
