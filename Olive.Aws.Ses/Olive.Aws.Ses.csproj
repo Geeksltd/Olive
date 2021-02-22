@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Olive.Aws.Ses</AssemblyName>
     <RootNamespace>Olive.Aws.Ses</RootNamespace>
     <PackageId>Olive.Aws.Ses</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.102.0</Version>
+    <Version>3.1.103</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
