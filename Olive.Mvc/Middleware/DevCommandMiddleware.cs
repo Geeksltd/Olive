@@ -50,6 +50,8 @@ namespace Olive.Mvc
 
         async Task<string> InvokeCommand(string command)
         {
+            command = command.OrEmpty().TrimEnd('/');
+
             if (command.IsEmpty())
             {
                 return "<html><body><h3>Available commands:</h3><ul>" +
