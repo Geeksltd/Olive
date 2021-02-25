@@ -159,8 +159,9 @@
             if (GcmBroker != null) return;
 
             if (Config.Get("PushNotification:Google:SenderId").IsEmpty()) return;
-
-            var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"), Config.Get("PushNotification:Google:AuthToken"), null)
+            
+            var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"), 
+                Config.Get("PushNotification:Google:AuthToken"), null)
             { GcmUrl = "https://fcm.googleapis.com/fcm/send" };
 
             GcmBroker = new GcmServiceBroker(config);

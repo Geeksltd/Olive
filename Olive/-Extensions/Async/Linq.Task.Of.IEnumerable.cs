@@ -286,5 +286,15 @@ namespace Olive
         public static Task<IEnumerable<T>> FilterIf<T>(this Task<IEnumerable<T>> source,
              bool condition, Func<T, bool> predicate)
             => condition ? source.Where(predicate) : source;
+
+        /// <summary>
+        /// Returns an empty List if this collection is null.
+        /// </summary>
+        [EscapeGCop("I am the GCop solution")]
+        public static async Task<IEnumerable<T>> OrEmpty<T>(this Task<IEnumerable<T>> @this)
+        {
+            var result = await @this;
+            return result ?? Enumerable.Empty<T>();
+        }
     }
 }

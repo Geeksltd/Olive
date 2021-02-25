@@ -185,6 +185,9 @@ namespace Olive
         public static Task<List<TSource>> ToList<TSource>(this Task<TSource[]> @this)
             => @this.ForLinq().ToList();
 
+        public static Task<T[]> OrEmpty<T>(this Task<T[]> @this)
+            => @this.ForLinq().OrEmpty().ToArray() ?? Task.FromResult(new T[0]);
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.

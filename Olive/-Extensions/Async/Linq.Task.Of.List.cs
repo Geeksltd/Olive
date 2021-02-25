@@ -177,5 +177,7 @@ namespace Olive
 
         public static Task<TResult> Min<TSource, TResult>(
         this Task<List<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
+
+        public static Task<IEnumerable<T>> OrEmpty<T>(this Task<List<T>> @this) => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<T>());
     }
 }
