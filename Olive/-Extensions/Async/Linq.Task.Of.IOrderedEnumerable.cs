@@ -181,5 +181,7 @@ namespace Olive
 
         public static Task<TSource[]> ToArray<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
             => @this.ForLinq().ToArray();
+
+        public static Task<IEnumerable<T>> OrEmpty<T>(this Task<IOrderedEnumerable<T>> @this) => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<T>());
     }
 }

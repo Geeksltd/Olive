@@ -492,7 +492,7 @@ new DateTime(2099,04,13)};
         public static bool IsToday(this DateTime date) => date.Date == LocalTime.Today;
 
         /// <summary>
-        /// Determines whether this date is in the past. It returns true if the the date is smaller than LocalTime.Today.
+        /// Determines whether this date is in the past. It returns true if the the date is smaller than LocalTime.Now.
         /// </summary>
         public static bool IsInThePast(this DateTime date) => date < LocalTime.Now;
 
