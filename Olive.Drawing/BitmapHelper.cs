@@ -89,12 +89,10 @@ namespace Olive.Drawing
             var result = new Bitmap(source);
 
             using (var gr = Graphics.FromImage(result))
+            using (var brush = new SolidBrush(Color.FromArgb(level, Color.White)))
             {
-                using (var brush = new SolidBrush(Color.FromArgb(level, Color.White)))
-                {
-                    gr.FillRectangle(brush, new Rectangle(Point.Empty, source.Size));
-                    return result;
-                }
+                gr.FillRectangle(brush, new Rectangle(Point.Empty, source.Size));
+                return result;
             }
         }
 

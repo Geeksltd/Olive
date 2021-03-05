@@ -76,16 +76,10 @@ namespace Olive.Drawing
         {
             try
             {
-                using (var source = SKBitmap.Decode(sourceData))
-                {
-                    using (var resultBitmap = Optimize(source))
-                    {
-                        using (var image = SKImage.FromBitmap(resultBitmap))
-                        {
-                            return image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, Quality).ToArray();
-                        }
-                    }
-                }
+                using var source = SKBitmap.Decode(sourceData);
+                using var resultBitmap = Optimize(source);
+                using var image = SKImage.FromBitmap(resultBitmap);
+                return image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, Quality).ToArray();
             }
             catch
             {
@@ -114,12 +108,10 @@ namespace Olive.Drawing
             }
 
             using (source)
+            using (var optimizedImage = SKImage.FromBitmap(Optimize(source)))
             {
-                using (var optimizedImage = SKImage.FromBitmap(Optimize(source)))
-                {
-                    var encoded = optimizedImage.Encode(SKEncodedImageFormat.Jpeg, Quality).ToArray();
-                    await optimizedImagePath.AsFile().WriteAllBytesAsync(encoded);
-                }
+                var encoded = optimizedImage.Encode(SKEncodedImageFormat.Jpeg, Quality).ToArray();
+                await optimizedImagePath.AsFile().WriteAllBytesAsync(encoded);
             }
         }
 

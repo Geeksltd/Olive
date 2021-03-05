@@ -94,7 +94,7 @@ namespace Olive.Aws
                 }
             }
 
-            return messages.Count > 0;
+            return messages.Any();
         }
 
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)

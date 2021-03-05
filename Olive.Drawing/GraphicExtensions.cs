@@ -58,7 +58,7 @@ namespace Olive.Drawing
         public static Bitmap Insert(this Bitmap host, int columnIndex, Bitmap image)
         {
             if (image == null)
-                throw new ArgumentNullException("image");
+                throw new ArgumentNullException(nameof(image));
 
             if (image.Height != host.Height)
                 throw new ArgumentException("The height of the specified image is different from the host image.");
@@ -104,7 +104,7 @@ namespace Olive.Drawing
         public static Bitmap Rotate(this Image image, double degrees)
         {
             if (image == null)
-                throw new ArgumentNullException("image");
+                throw new ArgumentNullException(nameof(image));
 
             // Use radians:
             degrees *= RADIANS;

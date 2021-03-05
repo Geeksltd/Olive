@@ -101,7 +101,7 @@
 
                 // TODO: Add for the other platfoorms.
 
-                return !(ApnsBroker == null);
+                return ApnsBroker is not null;
             }
             catch (Exception ex)
             {
@@ -159,8 +159,8 @@
             if (GcmBroker != null) return;
 
             if (Config.Get("PushNotification:Google:SenderId").IsEmpty()) return;
-            
-            var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"), 
+
+            var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"),
                 Config.Get("PushNotification:Google:AuthToken"), null)
             { GcmUrl = "https://fcm.googleapis.com/fcm/send" };
 
