@@ -44,4 +44,4 @@ There will usually be many such microservices in the solution, each with one or 
 > To the end user, the starting point is Access Hub home page. From there he can click on each menu item to get to the final destination page. The fact that the final page, which provide the desired functionality, is coming from another application (microservice) is seemless and irrelevant.
 
 ## Shared Theme (CSS and Javascript)
-Access Hub will come with shared Javascripts, CSS theme and genral layout code, that is indirectly used by all *feature microservices*. This enables the feature microservices to be developed as simple pages in a blank template, without worrying about styles or javascript framework.
+Access Hub will come with shared Javascripts, CSS theme and general layout code, that is indirectly used by all *feature microservices*. This enables the feature microservices to be developed as simple pages in a blank template, without worrying about styles or javascript framework.
