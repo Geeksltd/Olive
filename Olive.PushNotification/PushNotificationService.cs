@@ -15,13 +15,15 @@
     public class PushNotificationService : IPushNotificationService
     {
         readonly ILogger<PushNotificationService> Logger;
+        readonly ISubscriptionIdResolver Resolver;
         ApnsServiceBroker ApnsBroker; // Apple service broker
         GcmServiceBroker GcmBroker; // Google service broker
         WnsServiceBroker WnsBroker; // Windows service broker
 
-        public PushNotificationService(ILogger<PushNotificationService> logger)
+        public PushNotificationService(ILogger<PushNotificationService> logger, ISubscriptionIdResolver resolver)
         {
             Logger = logger;
+            Resolver = resolver;
         }
 
         public bool Send(string messageTitle, string messageBody, IEnumerable<IUserDevice> devices)
@@ -170,6 +172,9 @@
             {
                 aggregateEx.Handle(ex =>
                 {
+                    if (ex is DeviceSubscriptionExpiredException expiredException)
+                        Resolver.ResolveExpiredSubscription(expiredException.OldSubscriptionId, expiredException.NewSubscriptionId);
+
                     LogError(GcmBroker, ex);
                     return true; // Mark it as handled
                 });
