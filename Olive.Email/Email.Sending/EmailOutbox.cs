@@ -112,7 +112,7 @@ namespace Olive.Email
                 {
                     await SendError.Raise(new EmailSendingEventArgs(message, mail) { Error = ex });
                     await RecordRetry(message);
-                    Log.Error(ex, $"Error in sending an email for this EmailQueueItem of '{message.GetId()}'");
+                    Log.Error(ex, $"Error in sending an email for this EmailQueueItem of '{message.GetId()}' because : " + Environment.NewLine + ex.ToFullMessage());
                     return false;
                 }
             }
