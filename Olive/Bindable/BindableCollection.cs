@@ -40,17 +40,16 @@ namespace Olive
         public void Add(T item)
         {
             if (item is null) return;
-            Items.Add(item);
+            lock (Items) Items.Add(item);
             FireAdded(item);
             FireChanged();
         }
 
         public void Add(IEnumerable<T> items)
         {
-            var validItems = items.ExceptNull().ToArray();
-            if (validItems.None()) return;
-
-            Items.AddRange(validItems);
+            var validItems = items.OrEmpty().ExceptNull().ToArray();
+            lock (Items)
+                Items.AddRange(validItems);
             validItems.Do(FireAdded);
             FireChanged();
         }
@@ -63,7 +62,8 @@ namespace Olive
         {
             if (item == null) return;
             FireRemoving(item);
-            Items.Remove(item);
+            lock (Items)
+                Items.Remove(item);
             FireChanged();
         }
 
@@ -95,12 +95,24 @@ namespace Olive
 
         void ClearCore()
         {
-            Items.Do(x => FireRemoving(x));
-            Items.Clear();
+            lock (Items)
+            {
+                Items.ToArray().Do(x => FireRemoving(x));
+                Items.Clear();
+            }
         }
 
-        public IEnumerator<T> GetEnumerator() => Items.GetEnumerator();
-        protected override IEnumerator GetItemsEnumerator() => Items.GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            lock (Items)
+                return ((IEnumerable<T>)Items.ToArray()).GetEnumerator();
+        }
+
+        protected override IEnumerator GetItemsEnumerator()
+        {
+            lock (Items)
+                return Items.ToArray().GetEnumerator();
+        }
 
         /// <summary>
         /// Gets the item at the specified index.

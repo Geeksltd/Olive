@@ -6,7 +6,7 @@
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.237</Version>
+    <Version>2.1.239</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -47,10 +47,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.6.1" />
-    <PackageReference Include="GCop.Common" Version="2.7.2" />
-    <PackageReference Include="GCop.Linq" Version="2.7.1-rc.2" />
-    <PackageReference Include="GCop.String" Version="2.7.2" />
+    <PackageReference Include="GCop.All.Geeks" Version="2.7.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />

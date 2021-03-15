@@ -15,13 +15,15 @@
     public class PushNotificationService : IPushNotificationService
     {
         readonly ILogger<PushNotificationService> Logger;
+        readonly ISubscriptionIdResolver Resolver;
         ApnsServiceBroker ApnsBroker; // Apple service broker
         GcmServiceBroker GcmBroker; // Google service broker
         WnsServiceBroker WnsBroker; // Windows service broker
 
-        public PushNotificationService(ILogger<PushNotificationService> logger)
+        public PushNotificationService(ILogger<PushNotificationService> logger, ISubscriptionIdResolver resolver)
         {
             Logger = logger;
+            Resolver = resolver;
         }
 
         public bool Send(string messageTitle, string messageBody, IEnumerable<IUserDevice> devices)
@@ -101,7 +103,7 @@
 
                 // TODO: Add for the other platfoorms.
 
-                return !(ApnsBroker == null);
+                return ApnsBroker is not null;
             }
             catch (Exception ex)
             {
@@ -131,14 +133,7 @@
             ApnsBroker = new ApnsServiceBroker(config);
 
             // Wire up events
-            ApnsBroker.OnNotificationFailed += (notification, aggregateEx) =>
-            {
-                aggregateEx.Handle(ex =>
-                {
-                    LogError(ApnsBroker, ex);
-                    return true; // Mark it as handled
-                });
-            };
+            ApnsBroker.OnNotificationFailed += (notification, aggregateEx) => HandleError(ApnsBroker, aggregateEx);
 
             // Start the broker
             ApnsBroker.Start();
@@ -159,21 +154,14 @@
             if (GcmBroker != null) return;
 
             if (Config.Get("PushNotification:Google:SenderId").IsEmpty()) return;
-            
-            var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"), 
+
+            var config = new GcmConfiguration(Config.Get("PushNotification:Google:SenderId"),
                 Config.Get("PushNotification:Google:AuthToken"), null)
             { GcmUrl = "https://fcm.googleapis.com/fcm/send" };
 
             GcmBroker = new GcmServiceBroker(config);
 
-            GcmBroker.OnNotificationFailed += (notification, aggregateEx) =>
-            {
-                aggregateEx.Handle(ex =>
-                {
-                    LogError(GcmBroker, ex);
-                    return true; // Mark it as handled
-                });
-            };
+            GcmBroker.OnNotificationFailed += (notification, aggregateEx) => HandleError(GcmBroker, aggregateEx);
 
             GcmBroker.OnNotificationSucceeded += notification =>
             {
@@ -195,48 +183,55 @@
 
             WnsBroker = new WnsServiceBroker(config);
 
-            WnsBroker.OnNotificationFailed += (notification, aggregateEx) =>
-            {
-                aggregateEx.Handle(ex =>
-                {
-                    LogError(WnsBroker, ex);
-                    return true; // Mark it as handled
-                });
-            };
+            WnsBroker.OnNotificationFailed += (notification, aggregateEx) => HandleError(WnsBroker, aggregateEx);
 
             WnsBroker.Start();
+        }
+
+        void HandleError(object broker, AggregateException aggregateEx)
+        {
+            aggregateEx.Handle(ex =>
+            {
+                LogError(broker, ex);
+                return true; // Mark it as handled
+            });
         }
 
         void LogError(object broker, Exception ex)
         {
             var description = broker.GetType().Name + " - Push notification failed.";
 
-            if (ex is ApnsNotificationException)
+            if (ex is ApnsNotificationException apnsException)
             {
-                var error = ex as ApnsNotificationException;
-                description += $"ID={error.Notification.Identifier}, Code={error.ErrorStatusCode}";
+                description += $"ID={apnsException.Notification.Identifier}, Code={apnsException.ErrorStatusCode}";
+
+                if (apnsException.ErrorStatusCode == ApnsNotificationErrorStatusCode.InvalidToken)
+                    Resolver.ResolveExpiredSubscription(apnsException.Notification.DeviceToken, null);
             }
 
-            if (ex is GcmNotificationException notificationError)
+            if (ex is GcmNotificationException notificationException)
             {
-                description += $"ID={notificationError.Notification.MessageId}, Desc={notificationError.Description}";
+                description += $"ID={notificationException.Notification.MessageId}, Desc={notificationException.Description}";
             }
-            else if (ex is GcmMulticastResultException multiCastError)
+            else if (ex is GcmMulticastResultException multiCastException)
             {
-                description += multiCastError.Succeeded.Select(x => "ID=" + x.MessageId).ToString(", ").WithWrappers("\r\n Succeeded:{", "}");
+                description += multiCastException.Succeeded.Select(x => "ID=" + x.MessageId)
+                    .ToString(", ").WithWrappers("\r\n Succeeded:{", "}");
 
-                description += multiCastError.Failed.Select(x => "ID=" + x.Key.MessageId + ", Desc=" + x.Value.Message)
+                description += multiCastException.Failed.Select(x => "ID=" + x.Key.MessageId + ", Desc=" + x.Value.Message)
                     .ToString(", ").WithWrappers("\r\n Failed:{", "}");
             }
-            else if (ex is DeviceSubscriptionExpiredException error)
+            else if (ex is DeviceSubscriptionExpiredException expiredException)
             {
-                description += $"Device RegistrationId Expired: {error.OldSubscriptionId}";
-                description += error.NewSubscriptionId.WithPrefix("\r\nDevice RegistrationId Changed To:");
+                description += $"Device RegistrationId Expired: {expiredException.OldSubscriptionId}";
+                description += expiredException.NewSubscriptionId.WithPrefix("\r\nDevice RegistrationId Changed To:");
+
+                Resolver.ResolveExpiredSubscription(expiredException.OldSubscriptionId, expiredException.NewSubscriptionId);
             }
-            else if (ex is RetryAfterException raeError)
+            else if (ex is RetryAfterException retryException)
             {
                 // If you get rate limited, you should stop sending messages until after the RetryAfterUtc date
-                description += $"GCM Rate Limited, don't send more until after {raeError.RetryAfterUtc}";
+                description += $"GCM Rate Limited, don't send more until after {retryException.RetryAfterUtc}";
             }
 
             Logger.Error(ex, description);

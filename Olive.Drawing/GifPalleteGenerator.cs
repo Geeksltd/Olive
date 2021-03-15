@@ -21,7 +21,7 @@
         public static ColorPalette GeneratePallete(Bitmap image)
         {
             if (image == null)
-                throw new ArgumentNullException("image");
+                throw new ArgumentNullException(nameof(image));
 
             var result = CreateEmptyPallette();
 
