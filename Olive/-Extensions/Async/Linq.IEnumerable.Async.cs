@@ -30,10 +30,10 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> SelectManyAsync<TSource, TResult>(
           this IEnumerable<TSource> @this, Func<TSource, IEnumerable<Task<TResult>>> func)
-            => @this.SelectMany(func).AwaitAll();
+            => @this.OrEmpty().SelectMany(func).AwaitAll();
 
         public static Task<IEnumerable<T>> Except<T>(this IEnumerable<T> @this, Func<T, Task<bool>> criteria)
-           => @this.Where(i => criteria(i));
+           => @this.OrEmpty().Where(i => criteria(i).ContinueWith(x => !x.GetAlreadyCompletedResult()));
 
         public static async Task<IEnumerable<T>> Where<T>(
           this IEnumerable<T> @this, Func<T, Task<bool>> predicate)
