@@ -35,7 +35,7 @@
                 // Send to iOS devices
                 if (ApnsBroker != null)
                 {
-                    devices.Where(d => d.DeviceType == "iOS").Do(d =>
+                    devices.Where(d => d.DeviceType.Equals("iOS", caseSensitive: false)).Do(d =>
                     {
                         ApnsBroker.QueueNotification(new ApnsNotification
                         {
@@ -48,7 +48,7 @@
                 // Send to Android devices
                 if (GcmBroker != null)
                 {
-                    var androidDevices = devices.Where(d => d.DeviceType == "Android").Select(d => d.PushNotificationToken).ToList();
+                    var androidDevices = devices.Where(d => d.DeviceType.Equals("Android", caseSensitive: false)).Select(d => d.PushNotificationToken).ToList();
                     if (androidDevices.Any())
                         GcmBroker.QueueNotification(new GcmNotification
                         {
@@ -61,7 +61,7 @@
                 // Send to Windows devices
                 if (WnsBroker != null)
                 {
-                    foreach (var uri in devices.Where(d => d.DeviceType == "Windows").Select(d => d.PushNotificationToken))
+                    foreach (var uri in devices.Where(d => d.DeviceType.Equals("Windows", caseSensitive: false)).Select(d => d.PushNotificationToken))
                     {
                         // Queue a notification to send
                         WnsBroker.QueueNotification(new WnsToastNotification
@@ -90,7 +90,7 @@
                 // Send to iOS devices
                 if (ApnsBroker != null)
                 {
-                    devices.Where(d => d.DeviceType == "iOS").Do(d =>
+                    devices.Where(d => d.DeviceType.Equals("iOS", caseSensitive: false)).Do(d =>
                     {
                         // Queue a notification to send
                         ApnsBroker.QueueNotification(new ApnsNotification
