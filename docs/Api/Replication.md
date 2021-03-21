@@ -105,10 +105,10 @@ A utility named **generate-data-endpoint-proxy** (distributed as a nuget global 
 ```batch
 C:\> dotnet tool install -g generate-data-endpoint-proxy
 
-C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /out:"c:\temp\generated-packages"
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:MyNamespace.OrdersEndpoint /out:"c:\temp\generated-packages"
 
 // Or to publish directly:
-C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /push:http://my-nuget-server.com/nuget /apiKey:12345...
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:MyNamespace.OrdersEndpoint /push:http://my-nuget-server.com/nuget /apiKey:12345...
 
 ```
 
