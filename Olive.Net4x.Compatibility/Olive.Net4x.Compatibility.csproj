@@ -1,11 +1,12 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>Olive.Net4x.Compatibility</AssemblyName>
     <RootNamespace>Olive.Net4x.Compatibility</RootNamespace>
     <PackageId>Olive.Net4x.Compatibility</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.131.0</Version>
+    <Version>1.0.132</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

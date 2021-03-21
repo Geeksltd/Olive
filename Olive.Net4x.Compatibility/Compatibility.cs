@@ -18,7 +18,7 @@ namespace Olive
         /// <summary>
         /// Initializes Olive context for legacy (non ASP.NET Core apps).
         /// </summary>
-        public static void Initialize()
+        public static void Initialize(Action<IServiceCollection> addServices = null)
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -27,6 +27,8 @@ namespace Olive
             //services.AddSingleton(typeof(ILoggerFactory), new LoggerFactory());
             services.AddSingleton(typeof(IConfiguration), new XmlConfigReader());
             services.AddSingleton(typeof(IHttpClientFactory), new HttpClientFactory());
+
+            addServices?.Invoke(services);
 
             var provider = new BasicOliveServiceProvider(services);
             Context.Initialize(provider, () => provider);
