@@ -106,6 +106,10 @@ A utility named **generate-data-endpoint-proxy** (distributed as a nuget global 
 C:\> dotnet tool install -g generate-data-endpoint-proxy
 
 C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /out:"c:\temp\generated-packages"
+
+// Or to publish directly:
+C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:OrdersEndpoint /push:http://my-nuget-server.com/nuget /apiKey:12345...
+
 ```
 
 It will generate the following two nuget packages:
