@@ -99,9 +99,11 @@ To generate the nuget package, run the following command.
 ```
 C:\> dotnet tool install -g generate-eventbus-command-proxy
 
-C:\> generate-eventbus-command-proxy /assembly:C:\Projects\...\website.dll /command:FooCommand /out:C:\...\PrivatePackages
+C:\> generate-eventbus-command-proxy /assembly:C:\Projects\...\website.dll /command:MyNamespace.FooCommand /out:C:\...\PrivatePackages
+
+// Or to publish directly:
+C:\> generate-eventbus-command-proxy /assembly:C:\Projects\...\website.dll /command:MyNamespace.FooCommand /push:http://my-nuget-server.com/nuget /apiKey:12345...
 ```
-Or, if you want to directly publish the generated nuget package to a nuget server, instead of `/out:...` parameter add `/push:http://my-nuget-server.com/nuget /apiKey:...`
 
 The generated proxy dll will generate the class, plus a method named `Publish()` for convinience. For example:
 ```csharp
