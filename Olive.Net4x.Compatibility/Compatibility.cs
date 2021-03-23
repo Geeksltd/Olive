@@ -36,8 +36,21 @@ namespace Olive
 
         public class HttpClientFactory : IHttpClientFactory
         {
-            Dictionary<string, HttpClient> All = new Dictionary<string, HttpClient>();
-            public HttpClient CreateClient(string name) => All.TryGet(name) ?? (All[name] = new HttpClient());
+            // Dictionary<string, HttpClient> All = new Dictionary<string, HttpClient>();
+
+            HttpClient IHttpClientFactory.CreateClient(string name) => new HttpClient();
+
+
+            //=> All.TryGet(name) ?? (All[name] = new LivingHttpClient());
+
+            //class LivingHttpClient : HttpClient
+            //{
+            //    protected override void Dispose(bool disposing)
+            //    {
+            //        // Never disposed
+            //    }
+            //}
+
         }
 
         /// <summary>
