@@ -76,6 +76,10 @@ namespace Olive
             var property = FindProperty(target, propertyName);
 
             var binding = new PropertyBinding<TValue> { Target = target.GetWeakReference(), Property = property };
+
+            var result = Bindings.FirstOrDefault(x => x.Equals(binding));
+            if (!(result is null)) return result;
+
             Bindings.Add(binding);
             binding.Apply(value);
 
@@ -106,9 +110,11 @@ namespace Olive
                 Expression = x => (object)expression(x)
             };
 
+            var result = Bindings.FirstOrDefault(x => x.Equals(binding));
+            if (!(result is null)) return result;
+
             Bindings.Add(binding);
             binding.Apply(value);
-
             return binding;
         }
 
