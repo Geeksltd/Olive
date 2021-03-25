@@ -129,7 +129,7 @@ public override async Task OnStartUpAsync(IApplicationBuilder app)
 
 When the `Subscribe()` method is called, it will do the following:
 - It will handle messages posted to the eventbus queue by the publisher service to receive all changes made to the data on the publisher side (via an event bus queue) and keep its local copy of the data up-to-date.
-- If the replicated table has no records, it assumes that it's the first run and a full initial data dump is required. To make that happen, it will insert an eventbus message to the *REFRESH* queue, which instructs the publisher service to dump all current records to the queue.
+- To populate the exposed entities please go to the https://[Publishing_Microservice_Domain]/olive/entities/replication/dump/all where all the exposed entities are listed as separate links. Clicking a link will trigger pushing all the exposed entities into the relavant queue which the consuming microservice is listening to.
 
 #### Package 2: CustomerService.OrdersEndpoint.MSharp
 This package will be referenced by the consumer service's `#Model` project to enable the necessary code generation.
