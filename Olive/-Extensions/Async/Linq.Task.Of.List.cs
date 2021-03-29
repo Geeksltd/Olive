@@ -149,6 +149,18 @@ namespace Olive
         public static Task<bool> Any<TSource>(this Task<List<TSource>> @this, Func<TSource, int, bool> func)
             => @this.ForLinq().Any(func);
 
+        public static Task<bool> None<TSource>(this Task<List<TSource>> @this)
+         => @this.ForLinq().None();
+
+        public static Task<bool> None<TSource>(this Task<List<TSource>> @this, Func<TSource, bool> func)
+            => @this.ForLinq().None(func);
+
+        public static Task<bool> None<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> func)
+            => @this.ForLinq().None(func);
+
+        public static Task<bool> None<TSource>(this Task<List<TSource>> @this, Func<TSource, int, bool> func)
+            => @this.ForLinq().None(func);
+
         public static Task<bool> Contains<TSource>(this Task<List<TSource>> @this, TSource item)
             => @this.ForLinq().Contains(item);
 

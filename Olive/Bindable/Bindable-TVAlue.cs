@@ -41,6 +41,7 @@ namespace Olive
         protected override object GetValue() => Value;
 
         public static implicit operator Bindable<TValue>(TValue value) => new Bindable<TValue>(value);
+
         public static implicit operator TValue(Bindable<TValue> item) => item.value;
 
         public static bool operator ==(Bindable<TValue> item, object other)
