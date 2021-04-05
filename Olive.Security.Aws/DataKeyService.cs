@@ -2,6 +2,7 @@
 using Amazon.KeyManagementService.Model;
 using Microsoft.Extensions.Configuration;
 using Olive.Aws;
+using Olive.Security.Cloud;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -65,13 +66,6 @@ namespace Olive.Security.Aws
 
                 return decryptedData.Plaintext.ReadAllBytes();
             }
-        }
-
-        internal class Key
-        {
-            public byte[] EncryptionKeyReference { get; set; }
-
-            public byte[] EncryptionKey { get; set; }
         }
     }
 }
