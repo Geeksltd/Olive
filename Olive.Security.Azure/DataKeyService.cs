@@ -17,7 +17,7 @@ namespace Olive.Security.Azure
         static string masterKeyName;
 
         static string KeyValutUri =>
-            (keyValutUri ??= Context.Current.Config.GetValue("Azure:KeyVault:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_URI"))) ?? throw new Exception("Azure Key Valut uri is not specified.");
+            (keyValutUri ??= Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_URI"))) ?? throw new Exception("Azure Key Valut Authentication uri is not specified.");
 
         static string MasterKeyName =>
     (masterKeyName ??= Context.Current.Config.GetValue("Azure:KeyVault:KeyName", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_KEY_NAME"))) ?? throw new Exception("Azure Key Valut Key Name is not specified.");
