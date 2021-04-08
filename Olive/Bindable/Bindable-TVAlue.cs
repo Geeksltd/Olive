@@ -112,11 +112,17 @@ namespace Olive
             };
 
             var result = Bindings.FirstOrDefault(x => x.Equals(binding));
-            if (!(result is null)) return result;
-
-            Bindings.Add(binding);
-            binding.Apply(value);
-            return binding;
+            if (result is null)
+            {
+                Bindings.Add(binding);
+                binding.Apply(value);
+                return binding;
+            }
+            else
+            {
+                if (binding.IsRemoved) binding.IsRemoved = false;
+                return result;
+            }
         }
 
         static PropertyInfo FindProperty(object target, string propertyName)
