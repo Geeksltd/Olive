@@ -9,12 +9,9 @@ namespace Olive.Mvc.Microservices
         //this issue has been mentioned here: https://github.com/aspnet/AspNetCore/issues/2378
         //it seems this issue has been fixed in the .net core 2.2 but we are using 2.1.5 right now.
 
-        readonly RequestDelegate next;
+        readonly RequestDelegate Next;
 
-        public MaintainCorsHeader(RequestDelegate next)
-        {
-            this.next = next;
-        }
+        public MaintainCorsHeader(RequestDelegate next) => Next = next;
 
         public async Task Invoke(HttpContext httpContext)
         {
@@ -42,7 +39,7 @@ namespace Olive.Mvc.Microservices
             }, httpContext);
 
             // Call the pipeline ...
-            await next(httpContext);
+            await Next(httpContext);
         }
     }
 }
