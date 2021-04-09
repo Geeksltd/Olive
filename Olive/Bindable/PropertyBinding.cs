@@ -53,6 +53,7 @@
         {
             if (!(obj is PropertyBinding<TValue> binding)) return false;
 
+            if (binding.IsRemoved != IsRemoved) return false;
             if (binding.Property != Property) return false;
             if (!binding.Target.TryGetTarget(out var target)) return false;
             if (target is null) return false;
