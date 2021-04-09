@@ -35,6 +35,7 @@ namespace Olive.Mvc
             if (modelType.IsA<ColumnSelection>()) return new ColumnSelectionBinder();
             if (modelType.IsA<IEntity>()) return new EntityModelBinder(modelType);
             if (modelType.IsA<BlobViewModel>()) return new BlobViewModelModelBinder();
+            if (modelType.IsA<List<BlobViewModel>>()) return new BlobListViewModelModelBinder();
 
             if (PrimitiveTypes.Contains(modelType)) return new PrimitiveValueModelBinder();
 

@@ -77,13 +77,6 @@ namespace Olive
             var property = FindProperty(target, propertyName);
 
             var binding = new PropertyBinding<TValue> { Target = target.GetWeakReference(), Property = property };
-
-            var result = Bindings.FirstOrDefault(x => x.Equals(binding));
-            if (!(result is null)) return result;
-
-            Bindings.Add(binding);
-            binding.Apply(value);
-
             if (target is IBindableInput input)
             {
                 void Input_InputChanged(string changedProperty)
@@ -95,7 +88,7 @@ namespace Olive
                 input.InputChanged += Input_InputChanged;
             }
 
-            return binding;
+            return Add(binding);
         }
 
         internal virtual void SeValuetByInput(TValue value) => SetValue(value);
@@ -111,18 +104,22 @@ namespace Olive
                 Expression = x => (object)expression(x)
             };
 
-            var result = Bindings.FirstOrDefault(x => x.Equals(binding));
-            if (result is null)
+            return Add(binding);
+        }
+
+        IBinding<TValue> Add(PropertyBinding<TValue> binding)
+        {
+            var old = Bindings.FirstOrDefault(x => x.Equals(binding));
+
+            if (!(old is null))
             {
-                Bindings.Add(binding);
-                binding.Apply(value);
-                return binding;
+                old.Remove();
+                Bindings.Remove(old);
             }
-            else
-            {
-                if (binding.IsRemoved) binding.IsRemoved = false;
-                return result;
-            }
+
+            Bindings.Add(binding);
+            binding.Apply(value);
+            return binding;
         }
 
         static PropertyInfo FindProperty(object target, string propertyName)
