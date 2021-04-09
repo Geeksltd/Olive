@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
+  </ItemGroup>
+
 </Project>

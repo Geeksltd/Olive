@@ -40,6 +40,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Olive\Olive.csproj" />
+    <ProjectReference Include="..\Olive.Cloud\Olive.Cloud.csproj" />
   </ItemGroup>
 </Project>

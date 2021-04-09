@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace Olive.Mvc.Microservices
 {
@@ -16,9 +17,10 @@ namespace Olive.Mvc.Microservices
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            var permittedUrls = Config.Get("PermittedDomains").Split(",").Union(Microservice.Of("Hub").Url()).Select(d => d.TrimEnd("/")).Union(HubDevUrl).ToArray();
             Configuration.MergeEnvironmentVariables();
             services.AddCors(x => x.AddPolicy("AllowHubOrigin",
-                f => f.WithOrigins(Microservice.Of("Hub").Url().TrimEnd("/"), HubDevUrl)
+                f => f.WithOrigins(permittedUrls)
                 .SetIsOriginAllowed(x => true)
                 .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 

@@ -40,5 +40,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Olive.Aws\Olive.Aws.csproj" />
     <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
+    <ProjectReference Include="..\Olive.Security.Cloud\Olive.Security.Cloud.csproj" />
   </ItemGroup>
 </Project>
