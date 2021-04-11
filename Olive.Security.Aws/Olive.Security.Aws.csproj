@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Security.Aws</RootNamespace>
     <PackageId>Olive.Security.Aws</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.115</Version>
+    <Version>3.1.116</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
