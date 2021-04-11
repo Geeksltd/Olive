@@ -66,10 +66,13 @@ namespace Olive.Mvc
 
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
 
-            services.AddControllersWithViews().AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = null);
+            services.AddControllersWithViews().AddJsonOptions(ConfigureJsonOptions);
             // Caused "Urecognized SameSiteMode value -1
             //services.ConfigureNonBreakingSameSiteCookies();
         }
+
+        protected virtual void ConfigureJsonOptions(Microsoft.AspNetCore.Mvc.JsonOptions options) =>
+            options.JsonSerializerOptions.PropertyNamingPolicy = null;
 
         protected virtual void ConfigureAuthentication(AuthenticationBuilder auth)
         {

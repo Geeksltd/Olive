@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Microservices</RootNamespace>
     <PackageId>Olive.Microservices</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.108</Version>
+    <Version>2.1.109</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
