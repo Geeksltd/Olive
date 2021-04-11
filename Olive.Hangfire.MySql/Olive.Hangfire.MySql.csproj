@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Hangfire.MySql</RootNamespace>
     <PackageId>Olive.Hangfire.MySql</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.103.0</Version>
+    <Version>3.1.104</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -35,7 +35,7 @@
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.7.18" />
     <PackageReference Include="Hangfire.MySqlStorage" Version="2.0.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.14" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Hangfire\Olive.Hangfire.csproj" />

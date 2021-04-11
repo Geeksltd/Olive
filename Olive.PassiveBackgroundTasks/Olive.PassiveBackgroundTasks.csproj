@@ -5,7 +5,7 @@
     <RootNamespace>Olive.PassiveBackgroundTasks</RootNamespace>
     <PackageId>Olive.PassiveBackgroundTasks</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.18.0</Version>
+    <Version>1.0.19</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -37,7 +37,7 @@
     <PackageReference Include="Cronos" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.14" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />

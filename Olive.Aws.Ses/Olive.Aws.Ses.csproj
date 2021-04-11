@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Aws.Ses</RootNamespace>
     <PackageId>Olive.Aws.Ses</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.103</Version>
+    <Version>3.1.104</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -35,9 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.5.0.57" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="3.1.14" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Email\Olive.Email.csproj" />
