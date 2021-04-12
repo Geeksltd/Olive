@@ -11,6 +11,7 @@
         {
             readonly MemberInfo Member;
             readonly Bindable<TValue> ViewModel;
+
             public ViewModelMemberBinding(Bindable<TValue> viewModel, Expression<Func<TValue, TMember>> viewModelMember)
             {
                 ViewModel = viewModel ?? throw new ArgumentNullException(nameof(ViewModel));

@@ -15,6 +15,7 @@ namespace Olive
         /// Fired when the value is changed by either source (API) or user input.
         /// </summary>
         public event Action Changed;
+        protected void FireChanged() => Changed?.Invoke();
 
         public Bindable() { }
 
@@ -35,7 +36,7 @@ namespace Olive
         {
             this.value = (TValue)value;
             foreach (var item in Bindings) item.Apply((TValue)value);
-            Changed?.Invoke();
+            FireChanged();
         }
 
         protected override object GetValue() => Value;

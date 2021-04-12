@@ -6,7 +6,7 @@ namespace Olive
 {
     partial class Bindable<TValue>
     {
-        readonly ConcurrentDictionary<string, IBindable> Dependents = new ConcurrentDictionary<string, IBindable>();
+        readonly ConcurrentDictionary<string, IBindable> Dependents = new();
 
         /// <summary>
         /// Returns a durable unique nested Bindable whose value remains in sync with this instance.

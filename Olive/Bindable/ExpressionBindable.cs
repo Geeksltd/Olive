@@ -6,6 +6,7 @@ namespace Olive
     {
         Bindable<TParam1> Source;
         Func<TParam1, TOut> Expression;
+
         public ExpressionBindable(Bindable<TParam1> source, Func<TParam1, TOut> expression)
         {
             Source = source;

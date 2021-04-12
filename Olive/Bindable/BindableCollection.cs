@@ -5,26 +5,16 @@ using System.Linq;
 
 namespace Olive
 {
-    public abstract class BindableCollection : IEnumerable
+    public class BindableCollection<T> : Bindable<IList<T>>, IEnumerable<T>
     {
-        public event Action Changed;
-        protected void FireChanged() => Changed?.Invoke();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetItemsEnumerator();
-        protected abstract IEnumerator GetItemsEnumerator();
-
-        public virtual void ClearBindings() => Changed = null;
-    }
-
-    public class BindableCollection<T> : BindableCollection, IEnumerable<T>
-    {
-        readonly List<T> Items = new List<T>();
 
         public event Action<T> Added;
         protected void FireAdded(T item) => Added?.Invoke(item);
 
         public event Action<T> Removing;
         protected void FireRemoving(T item) => Removing?.Invoke(item);
+
+        public BindableCollection() : base(new List<T>()) { }
 
         public override void ClearBindings()
         {
@@ -40,7 +30,7 @@ namespace Olive
         public void Add(T item)
         {
             if (item is null) return;
-            lock (Items) Items.Add(item);
+            lock (Value) Value.Add(item);
             FireAdded(item);
             FireChanged();
         }
@@ -48,8 +38,8 @@ namespace Olive
         public void Add(IEnumerable<T> items)
         {
             var validItems = items.OrEmpty().ExceptNull().ToArray();
-            lock (Items)
-                Items.AddRange(validItems);
+            lock (Value)
+                Value.AddRange(validItems);
             validItems.Do(FireAdded);
             FireChanged();
         }
@@ -62,8 +52,8 @@ namespace Olive
         {
             if (item == null) return;
             FireRemoving(item);
-            lock (Items)
-                Items.Remove(item);
+            lock (Value)
+                Value.Remove(item);
             FireChanged();
         }
 
@@ -95,28 +85,30 @@ namespace Olive
 
         void ClearCore()
         {
-            lock (Items)
+            lock (Value)
             {
-                Items.ToArray().Do(x => FireRemoving(x));
-                Items.Clear();
+                Value.ToArray().Do(x => FireRemoving(x));
+                Value.Clear();
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator() => GetItemsEnumerator();
+
         public IEnumerator<T> GetEnumerator()
         {
-            lock (Items)
-                return ((IEnumerable<T>)Items.ToArray()).GetEnumerator();
+            lock (Value)
+                return ((IEnumerable<T>)Value.ToArray()).GetEnumerator();
         }
 
-        protected override IEnumerator GetItemsEnumerator()
+        protected virtual IEnumerator GetItemsEnumerator()
         {
-            lock (Items)
-                return Items.ToArray().GetEnumerator();
+            lock (Value)
+                return Value.ToArray().GetEnumerator();
         }
 
         /// <summary>
         /// Gets the item at the specified index.
         /// </summary>
-        public T this[int index] => Items[index];
+        public T this[int index] => Value[index];
     }
 }

@@ -9,8 +9,8 @@
     /// </summary>
     public class StoredBindable<T> : Bindable<T>
     {
-        static object SyncLock = new();
-        static JsonSerializerSettings Settings = new() { TypeNameHandling = TypeNameHandling.Auto };
+        static readonly object SyncLock = new();
+        static readonly JsonSerializerSettings Settings = new() { TypeNameHandling = TypeNameHandling.Auto };
         readonly FileInfo File;
 
         public StoredBindable(FileInfo jsonFile, T defaultValue = default)
