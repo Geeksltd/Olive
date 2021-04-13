@@ -5,9 +5,8 @@ using System.Linq;
 
 namespace Olive
 {
-    public class BindableCollection<T> : Bindable<IList<T>>, IEnumerable<T>
+    public class BindableCollection<T> : Bindable<IList<T>>, IBindableCollection<T>, IEnumerable<T>
     {
-
         public event Action<T> Added;
         protected void FireAdded(T item) => Added?.Invoke(item);
 
