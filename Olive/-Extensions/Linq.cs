@@ -1263,6 +1263,12 @@ namespace Olive
         /// Determines if this items are in the specified list.
         /// </summary>
         /// <param name="items">The items which are searched into the list.</param>
+        public static bool IsAnyOf<T>(this T @this, params T[] items) => items.Contains(@this);
+
+        /// <summary>
+        /// Determines if this items are in the specified list.
+        /// </summary>
+        /// <param name="items">The items which are searched into the list.</param>
         public static bool IsAnyOf(this int @this, IEnumerable<int> items) => items.Contains(@this);
 
         /// <summary>
