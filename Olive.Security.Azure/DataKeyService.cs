@@ -10,24 +10,24 @@ using azure = global::Azure;
 
 namespace Olive.Security.Azure
 {
-    class DataKeyService
+    public class DataKeyService : IDataKeyService
     {
         readonly static ConcurrentDictionary<string, byte[]> EncryptionKeys = new ConcurrentDictionary<string, byte[]>();
         static string keyValutUri;
         static string masterKeyName;
 
-        static string KeyValutUri =>
-            (keyValutUri ??= Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_URI"))) ?? throw new Exception("Azure Key Valut Authentication uri is not specified.");
+        string KeyValutUri =>
+          (keyValutUri ??= Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_URI"))) ?? throw new Exception("Azure Key Valut Authentication uri is not specified.");
 
         static string MasterKeyName =>
     (masterKeyName ??= Context.Current.Config.GetValue("Azure:KeyVault:KeyName", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_KEY_NAME"))) ?? throw new Exception("Azure Key Valut Key Name is not specified.");
 
-        static KeyClient CreateClient()
-            => new KeyClient(new Uri(KeyValutUri), new azure.Identity.DefaultAzureCredential());
+        KeyClient CreateClient()
+          => new KeyClient(new Uri(KeyValutUri), new azure.Identity.DefaultAzureCredential());
 
-        static EncryptionAlgorithm EncryptionAlgorithm => EncryptionAlgorithm.RsaOaep;
+        EncryptionAlgorithm EncryptionAlgorithm => EncryptionAlgorithm.RsaOaep;
 
-        static async Task<CryptographyClient> GetCryptographyClient()
+        async Task<CryptographyClient> GetCryptographyClient()
         {
             var client = CreateClient();
 
@@ -39,7 +39,7 @@ namespace Olive.Security.Azure
             return new CryptographyClient(response.Value.Id, new azure.Identity.DefaultAzureCredential());
         }
 
-        internal static async Task<Key> GenerateKey()
+        public async Task<Key> GenerateKey()
         {
 
             var encryptionKey = Guid.NewGuid().ToString();
@@ -54,7 +54,7 @@ namespace Olive.Security.Azure
             };
         }
 
-        internal static byte[] GetEncryptionKey(byte[] encryptionKeyReference)
+        public byte[] GetEncryptionKey(byte[] encryptionKeyReference)
         {
             var keyRef = encryptionKeyReference.ToBase64String();
 
@@ -62,7 +62,7 @@ namespace Olive.Security.Azure
                 x => Task.Factory.RunSync(() => DownloadEncryptionKey(encryptionKeyReference)));
         }
 
-        static async Task<byte[]> DownloadEncryptionKey(byte[] encryptionKeyReference)
+        async Task<byte[]> DownloadEncryptionKey(byte[] encryptionKeyReference)
         {
             var cryptoClient = await GetCryptographyClient();
 

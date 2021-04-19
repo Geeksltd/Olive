@@ -7,19 +7,9 @@ using System.Threading.Tasks;
 
 namespace Olive.Security.Azure
 {
-    public class KeyVaultDataProtectionProvider : Olive.Security.Cloud.DataProtectionProvider
+    public class KeyVaultDataProtectionProvider : Olive.Security.Cloud.DataProtectionProvider<DataKeyService>
     {
         public override IDataProtector CreateProtector(string purpose)
             => new KeyVaultDataProtectionProvider { Purpose = purpose };
-
-        protected override Task<Key> GenerateKey()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override byte[] GetDecryptionKey(byte[] encryptionKeyReference)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
