@@ -43,7 +43,7 @@ namespace Olive.Security.Azure
         const int KEY_LENGTH_DEFAULT = 20;
         public async Task<Key> GenerateKey()
         {
-            var encryptionKey = Guid.NewGuid().ToString().Take(Config.Get("Azure:KeyVault:CookieAuthentication:KeyName", KEY_LENGTH_DEFAULT)).ToString(string.Empty);
+            var encryptionKey = Guid.NewGuid().ToString().Take(Config.Get("Azure:KeyVault:CookieAuthentication:KeyLength", KEY_LENGTH_DEFAULT)).ToString(string.Empty);
             var encryptionKeyBytes = encryptionKey.ToBytes(System.Text.Encoding.UTF8);
             var cryptoClient = await GetCryptographyClient();
             var encryptedKeyBytes = await cryptoClient.EncryptAsync(EncryptionAlgorithm, encryptionKeyBytes);
