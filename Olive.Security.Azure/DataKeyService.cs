@@ -26,7 +26,7 @@ namespace Olive.Security.Azure
         KeyClient CreateClient()
           => new KeyClient(new Uri(KeyValutUri), new azure.Identity.DefaultAzureCredential());
 
-        EncryptionAlgorithm EncryptionAlgorithm => EncryptionAlgorithm.RsaOaep;
+        EncryptionAlgorithm EncryptionAlgorithm => EncryptionAlgorithm.Rsa15;
 
         async Task<CryptographyClient> GetCryptographyClient()
         {
@@ -45,7 +45,7 @@ namespace Olive.Security.Azure
             var encryptionKey = Guid.NewGuid().ToString();
             var encryptionKeyBytes = encryptionKey.ToBytes(System.Text.Encoding.UTF8);
             var cryptoClient = await GetCryptographyClient();
-            
+
             var encryptedKeyBytes = await cryptoClient.EncryptAsync(EncryptionAlgorithm, encryptionKeyBytes);
 
             return new Key
