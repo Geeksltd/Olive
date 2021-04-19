@@ -30,8 +30,8 @@ namespace Olive.Security.Cloud
 
             // To make it secure, we should combine the key's length, the key and the cipher data. 
             var cipher = key.EncryptionKeyReference;
-            //if (cipher.Length > byte.MaxValue)
-            //    throw new Exception("Cipher key is longer than a byte!");
+            if (cipher.Length > byte.MaxValue)
+                throw new Exception("Cipher key is longer than a byte!");
 
             return new byte[] { (byte)cipher.Length }
             .Concat(cipher, encryptedData).ToArray().GZip();
