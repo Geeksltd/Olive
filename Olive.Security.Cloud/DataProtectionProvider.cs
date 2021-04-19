@@ -6,15 +6,21 @@ using System.Threading.Tasks;
 
 namespace Olive.Security.Cloud
 {
-    public abstract class DataProtectionProvider : IDataProtector
+    public abstract class DataProtectionProvider<TDataKeyService> : IDataProtector where TDataKeyService : IDataKeyService, new()
     {
+        protected IDataKeyService DataKeyService;
         static ConcurrentDictionary<string, byte[]> CachedDecrptedData = new ConcurrentDictionary<string, byte[]>();
         protected string Purpose;
 
         public abstract IDataProtector CreateProtector(string purpose);
 
-        protected abstract Task<Key> GenerateKey();
-        protected abstract byte[] GetDecryptionKey(byte[] encryptionKeyReference);
+        public DataProtectionProvider()
+        {
+            DataKeyService = new TDataKeyService();
+        }
+
+        protected Task<Key> GenerateKey() => DataKeyService.GenerateKey();
+        protected byte[] GetDecryptionKey(byte[] encryptionKeyReference) => DataKeyService.GetEncryptionKey(encryptionKeyReference);
 
         public byte[] Protect(byte[] plaintext)
         {
