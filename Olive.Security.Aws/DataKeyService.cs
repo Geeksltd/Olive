@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Security.Aws
 {
-    class DataKeyService
+    public class DataKeyService : IDataKeyService
     {
         readonly static ConcurrentDictionary<string, byte[]> EncryptionKeys = new ConcurrentDictionary<string, byte[]>();
         static string masterKeyArn;
@@ -29,7 +29,7 @@ namespace Olive.Security.Aws
         static AmazonKeyManagementServiceClient CreateClient()
             => new AmazonKeyManagementServiceClient();
 
-        internal static async Task<Key> GenerateKey()
+        public async Task<Key> GenerateKey()
         {
             using (var kms = CreateClient())
             {
@@ -47,7 +47,7 @@ namespace Olive.Security.Aws
             }
         }
 
-        internal static byte[] GetEncryptionKey(byte[] encryptionKeyReference)
+        public byte[] GetEncryptionKey(byte[] encryptionKeyReference)
         {
             var keyRef = encryptionKeyReference.ToBase64String();
 

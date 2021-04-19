@@ -8,12 +8,9 @@ using Olive.Security.Cloud;
 
 namespace Olive.Security.Aws
 {
-    public class KmsDataProtectionProvider : Cloud.DataProtectionProvider
+    public class KmsDataProtectionProvider : Cloud.DataProtectionProvider<DataKeyService>
     {
         public override IDataProtector CreateProtector(string purpose)
             => new KmsDataProtectionProvider { Purpose = purpose };
-
-        protected override Task<Key> GenerateKey() => DataKeyService.GenerateKey();
-        protected override byte[] GetDecryptionKey(byte[] encryptionKeyReference) => DataKeyService.GetEncryptionKey(encryptionKeyReference);
     }
 }
