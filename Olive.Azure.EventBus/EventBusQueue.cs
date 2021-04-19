@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using azureMessaging = Azure.Messaging.ServiceBus;
 
-namespace Olive.Aws
+namespace Olive.Azure
 {
     public class EventBusQueue : IEventBusQueue
     {

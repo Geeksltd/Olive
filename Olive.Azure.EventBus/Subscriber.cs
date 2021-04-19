@@ -1,26 +1,23 @@
-﻿using Amazon.SQS.Model;
+﻿using Azure.Messaging.ServiceBus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Olive.Aws
+namespace Olive.Azure
 {
     class Subscriber
     {
         public Func<string, Task> Handler { get; }
-        //ReceiveMessageRequest Request;
-        //DeleteMessageRequest Receipt;
         EventBusQueue Queue;
+        string QueueUrl => Queue.QueueUrl;
         Thread PollingThread;
 
         public Subscriber(EventBusQueue queue, Func<string, Task> handler)
         {
             Handler = handler;
             Queue = queue;
-
-            // Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
         }
 
         public void Start()
@@ -30,36 +27,27 @@ namespace Olive.Aws
 
         public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 0);
 
-        async Task<List<KeyValuePair<string, Message>>> FetchEvents(int waitTimeSeconds)
+        async Task<List<KeyValuePair<string, ServiceBusReceivedMessage>>> FetchEvents(int waitTimeSeconds)
         {
-            var response = await Fetch(waitTimeSeconds);
-            var result = new List<KeyValuePair<string, Message>>();
+            var result = new List<KeyValuePair<string, ServiceBusReceivedMessage>>();
 
-            foreach (var item in response.Messages)
+            foreach (var item in await Fetch(waitTimeSeconds))
             {
-                result.Add(new KeyValuePair<string, Message>(item.Body, item));
+                result.Add(new KeyValuePair<string, ServiceBusReceivedMessage>(item.Body.ToString(), item));
             }
 
             return result;
         }
 
-        async Task<ReceiveMessageResponse> Fetch(int waitTimeSeconds)
+        async Task<IEnumerable<ServiceBusReceivedMessage>> Fetch(int waitTimeSeconds)
         {
             try
             {
-                var request = new ReceiveMessageRequest
+                await using (var context = CreateMessagingContext())
                 {
-                    QueueUrl = Queue.QueueUrl,
-                    MaxNumberOfMessages = Queue.MaxNumberOfMessages,
-                    VisibilityTimeout = Queue.VisibilityTimeout,
-                    WaitTimeSeconds = waitTimeSeconds //10
-                };
+                    return await context.Receiver.ReceiveMessagesAsync(Queue.MaxNumberOfMessages, TimeSpan.FromSeconds(waitTimeSeconds));
+                }
 
-                return await Queue.Client.ReceiveMessageAsync(request);
-            }
-            catch (TaskCanceledException)
-            {
-                return new ReceiveMessageResponse { Messages = new List<Message>() };
             }
             catch (Exception ex)
             {
@@ -74,12 +62,13 @@ namespace Olive.Aws
             {
                 try
                 {
-                    var receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
                     Log.For(this).Info("Fetched message : " + item.Value.Body);
                     await Handler(item.Key);
 
-                    receipt.ReceiptHandle = item.Value.ReceiptHandle;
-                    await Queue.Client.DeleteMessageAsync(receipt);
+                    await using (var context = CreateMessagingContext())
+                    {
+                        await context.Receiver.CompleteMessageAsync(item.Value);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -96,6 +85,11 @@ namespace Olive.Aws
             }
 
             return messages.Any();
+        }
+
+        private AzureMessagingContext CreateMessagingContext()
+        {
+            return new AzureMessagingContext(QueueUrl);
         }
 
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)

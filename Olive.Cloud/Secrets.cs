@@ -40,7 +40,7 @@ namespace Olive.Cloud
             {
                 var secrets = DownloadSecrets();
                 if (secrets.IsEmpty())
-                    throw new Exception("AWS SecretString was empty!");
+                    throw new Exception("SecretString was empty!");
 
                 SecretString = secrets;
 
@@ -48,7 +48,7 @@ namespace Olive.Cloud
             }
             catch (AggregateException ex)
             {
-                Log.Error(ex.InnerException, "Failed to obtain the AWS secret: " + SecretId);
+                Log.Error(ex.InnerException, "Failed to obtain the secret: " + SecretId);
                 throw;
             }
             catch (Exception ex)
@@ -57,7 +57,6 @@ namespace Olive.Cloud
                 throw;
             }
         }
-
 
     }
 }

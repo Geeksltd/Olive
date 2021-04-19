@@ -1,7 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.4</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Data.AppConfiguration" Version="1.1.0-beta.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Cloud\Olive.Cloud.csproj" />
+  </ItemGroup>
 
 </Project>
