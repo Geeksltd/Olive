@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Aws.Ses.AutoFetch</RootNamespace>
     <PackageId>Olive.Aws.Ses.AutoFetch</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.5.1</Version>
+    <Version>1.0.6.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -33,9 +33,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.5.7.4" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.0.15" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.14" />
-    <PackageReference Include="MimeKit" Version="2.10.1" />
+    <PackageReference Include="MimeKit" Version="2.11.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
