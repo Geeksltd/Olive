@@ -30,7 +30,6 @@ namespace Olive.Logging
 
         public override async Task WriteMessagesAsync(IEnumerable<LogMessage> messages, CancellationToken token)
         {
-
             var message = new EventBusLoggerMessage
             {
                 Messages = messages.ToArray(),

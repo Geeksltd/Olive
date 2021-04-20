@@ -21,7 +21,7 @@ namespace Olive.Logging
             if (exception != null) r.AppendLine(exception.ToFullMessage());
 
             Console.WriteLine("EventBusLogger: sending log to provider");
-            Provider.AddMessage(timestamp, r.ToString(), (int)logLevel);
+            Provider.AddMessage(timestamp, r.ToString(), exception?.GetUsefulStack(), (int)logLevel);
         }
     }
 }
