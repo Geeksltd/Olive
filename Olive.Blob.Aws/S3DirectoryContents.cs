@@ -18,7 +18,7 @@ namespace Olive.BlobAws
         readonly string BucketName;
         readonly string Subpath;
 
-        IEnumerable<IFileInfo> contents;
+        IEnumerable<IFileInfo> Contents;
 
         /// <summary>
         /// Initializes a <see cref="S3DirectoryContents"/> instance.
@@ -67,13 +67,13 @@ namespace Olive.BlobAws
         public IEnumerator<IFileInfo> GetEnumerator()
         {
             EnumerateContents();
-            return contents.GetEnumerator();
+            return Contents.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             EnumerateContents();
-            return contents.GetEnumerator();
+            return Contents.GetEnumerator();
         }
 
         void EnumerateContents()
@@ -93,7 +93,7 @@ namespace Olive.BlobAws
             var directories = response.CommonPrefixes
                                       .Select(x => new S3FileInfo(AmazonS3, BucketName, x));
 
-            contents = directories.Concat(files);
+            Contents = directories.Concat(files);
         }
     }
 }

@@ -29,10 +29,8 @@
 
             result.Entries[0] = TRANSPARENT;
 
-            for (int i = 1; i < STANDARD_COLOR_PALLETTE_SIZE; i++)
-                if (usedColours.Count >= i)
-                    result.Entries[i] = usedColours[i - 1].Key;
-                else result.Entries[i] = Color.White;
+            for (var i = 1; i < STANDARD_COLOR_PALLETTE_SIZE; i++)
+                result.Entries[i] = usedColours.Count >= i ? usedColours[i - 1].Key : Color.White;
 
             return result;
         }
@@ -53,8 +51,8 @@
         {
             var colors = new Dictionary<Color, int>();
 
-            for (int x = 0; x < image.Width; x++)
-                for (int y = 0; y < image.Height; y++)
+            for (var x = 0; x < image.Width; x++)
+                for (var y = 0; y < image.Height; y++)
                 {
                     var pixel = image.GetPixel(x, y);
 

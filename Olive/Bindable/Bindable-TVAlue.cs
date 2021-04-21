@@ -60,6 +60,10 @@ namespace Olive
 
         public static bool operator !=(Bindable<TValue> item, object other) => !(item == other);
 
+        public override bool Equals(object obj) => this == obj;
+
+        public override int GetHashCode() => GetValue()?.GetHashCode() ?? -1;
+
         /// <summary>
         /// Binds this instance to another bindable source. Use it to cascade data bininding.
         /// </summary>

@@ -63,5 +63,11 @@
 
             return false;
         }
+
+        public override int GetHashCode()
+        {
+            return (Target.TryGetTarget(out var myTarget) ? myTarget?.GetHashCode() : -1)
+                ?? base.GetHashCode();
+        }
     }
 }

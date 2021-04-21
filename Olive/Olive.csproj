@@ -6,7 +6,7 @@
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.259</Version>
+    <Version>2.1.261</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -34,6 +34,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
+    <DefineConstants>TRACE;ProfileGCop</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
@@ -47,6 +48,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="GCop.All.Geeks" Version="2.7.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.14" />

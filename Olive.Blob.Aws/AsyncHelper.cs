@@ -6,7 +6,7 @@ namespace Olive.BlobAws
 {
     public static class AsyncHelper
     {
-        static readonly TaskFactory taskFactory = new
+        static readonly TaskFactory TaskFactory = new
             TaskFactory(CancellationToken.None,
                         TaskCreationOptions.None,
                         TaskContinuationOptions.None,
@@ -17,7 +17,7 @@ namespace Olive.BlobAws
         /// </summary>
         public static TResult RunSync<TResult>(Func<Task<TResult>> func)
         {
-            return taskFactory
+            return TaskFactory
                            .StartNew(func)
                            .Unwrap()
                            .GetAwaiter()
@@ -29,7 +29,7 @@ namespace Olive.BlobAws
         /// </summary>
         public static void RunSync(Func<Task> func)
         {
-            taskFactory
+            TaskFactory
                    .StartNew(func)
                    .Unwrap()
                    .GetAwaiter()
