@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Data.AppConfiguration" Version="1.1.0-beta.1" />
+    <PackageReference Include="Azure.Identity" Version="1.4.0-beta.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
   </ItemGroup>
 
