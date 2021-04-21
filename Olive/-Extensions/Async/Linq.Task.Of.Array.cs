@@ -63,6 +63,10 @@ namespace Olive
           this Task<TSource[]> @this, Func<TSource, bool> func)
             => @this.ForLinq().FirstOrDefault(func);
 
+        public static Task<TSource> FirstOrDefault<TSource>(
+          this Task<TSource[]> @this)
+            => @this.ForLinq().FirstOrDefault();
+
         public static Task<IEnumerable<TSource>> Intersect<TSource>(
         this Task<TSource[]> @this, IEnumerable<TSource> second) => @this.ForLinq().Intersect(second);
 

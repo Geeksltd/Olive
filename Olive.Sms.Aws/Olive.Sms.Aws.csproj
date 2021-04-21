@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Sms.Aws</RootNamespace>
     <PackageId>Olive.Sms.Aws</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.5</Version>
+    <Version>1.0.6.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -35,7 +35,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.5.1.28" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.0.14" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.14" />
