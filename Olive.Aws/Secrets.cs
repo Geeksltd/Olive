@@ -1,14 +1,9 @@
-﻿using Amazon.SecretsManager;
-using Amazon.SecretsManager.Model;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
 using Olive.Aws.Providers;
-using System;
-using System.Collections.Generic;
 
 namespace Olive.Aws
 {
-    public class Secrets : Olive.Cloud.Secrets
+    public class Secrets : Cloud.Secrets
     {
         SecretProviderType SecretProviderType;
         protected override string SecretId => Config["Aws:Secrets:Id"];

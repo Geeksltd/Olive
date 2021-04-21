@@ -48,6 +48,9 @@ namespace Olive.Logging
                 IsEnabled = false;
                 Console.WriteLine("Fatal error: Failed to publish the logs to the event bus.");
                 Console.WriteLine(ex.ToFullMessage());
+                Console.WriteLine("\n\n");
+                foreach (var msg in messages)
+                    Console.WriteLine(msg.Message + "\n" + msg.Stack + "\n----------\n");
             }
         }
 
