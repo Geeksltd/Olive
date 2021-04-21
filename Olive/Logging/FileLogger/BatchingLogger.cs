@@ -34,7 +34,7 @@ namespace Olive.Logging
 
             if (exception != null) r.AppendLine(exception.ToFullMessage());
 
-            Provider.AddMessage(timestamp, r.ToString(), (int)logLevel);
+            Provider.AddMessage(timestamp, r.ToString(), exception?.GetUsefulStack(), (int)logLevel);
         }
 
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)

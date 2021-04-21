@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive.Log.EventBus</AssemblyName>
     <RootNamespace>Olive.Log.EventBus</RootNamespace>
     <PackageId>Olive.Log.EventBus</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.115</Version>
+    <Version>2.1.118</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -30,15 +31,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile> 
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.14" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache" />
+  </Target>
 </Project>

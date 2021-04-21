@@ -5,6 +5,7 @@ using Olive;
 using Olive.Security.Cloud;
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading.Tasks;
 using azure = global::Azure;
 
@@ -25,7 +26,7 @@ namespace Olive.Security.Azure
         KeyClient CreateClient()
           => new KeyClient(new Uri(KeyValutUri), new azure.Identity.DefaultAzureCredential());
 
-        EncryptionAlgorithm EncryptionAlgorithm => EncryptionAlgorithm.RsaOaep;
+        KeyWrapAlgorithm EncryptionAlgorithm => KeyWrapAlgorithm.Rsa15;
 
         async Task<CryptographyClient> GetCryptographyClient()
         {
@@ -41,15 +42,15 @@ namespace Olive.Security.Azure
 
         public async Task<Key> GenerateKey()
         {
-
             var encryptionKey = Guid.NewGuid().ToString();
             var encryptionKeyBytes = encryptionKey.ToBytes(System.Text.Encoding.UTF8);
             var cryptoClient = await GetCryptographyClient();
-            var encryptedKeyBytes = await cryptoClient.EncryptAsync(EncryptionAlgorithm, encryptionKeyBytes);
+
+            var encryptedKeyBytes = await cryptoClient.WrapKeyAsync(EncryptionAlgorithm, encryptionKeyBytes);
 
             return new Key
             {
-                EncryptionKeyReference = encryptedKeyBytes.Ciphertext,
+                EncryptionKeyReference = encryptedKeyBytes.EncryptedKey,
                 EncryptionKey = encryptionKeyBytes
             };
         }
@@ -66,9 +67,9 @@ namespace Olive.Security.Azure
         {
             var cryptoClient = await GetCryptographyClient();
 
-            var response = await cryptoClient.DecryptAsync(EncryptionAlgorithm, encryptionKeyReference);
+            var response = await cryptoClient.UnwrapKeyAsync(EncryptionAlgorithm, encryptionKeyReference);
 
-            return response.Plaintext;
+            return response.Key;
         }
     }
 }

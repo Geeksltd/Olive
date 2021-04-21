@@ -8,10 +8,8 @@ namespace Olive.Logging
     {
         public static ILoggingBuilder AddEventBus(this ILoggingBuilder @this, Action<EventBusLoggerOptions> configure = null)
         {
-            Console.WriteLine("Registering Olive.Log.EventBus");
             @this.Services.AddSingleton<ILoggerProvider, EventBusLoggerProvider>();
             if (configure != null) @this.Services.Configure(configure);
-            Console.WriteLine("Registered Olive.Log.EventBus");
             return @this;
         }
     }

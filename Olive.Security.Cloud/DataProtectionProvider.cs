@@ -30,10 +30,12 @@ namespace Olive.Security.Cloud
 
             // To make it secure, we should combine the key's length, the key and the cipher data. 
             var cipher = key.EncryptionKeyReference;
-            if (cipher.Length > byte.MaxValue)
-                throw new Exception("Cipher key is longer than a byte!");
+            var cipherBytes = BitConverter.GetBytes(cipher.Length);
+            if (cipherBytes.Length > byte.MaxValue)
+                throw new Exception("Cipher key length is longer than a byte!");
 
-            return new byte[] { (byte)cipher.Length }
+            return new byte[] { (byte)cipherBytes.Length }
+            .Concat(cipherBytes)
             .Concat(cipher, encryptedData).ToArray().GZip();
         }
 
@@ -44,9 +46,11 @@ namespace Olive.Security.Cloud
             var cacheKey = protectedData.ToBase64String();
             return CachedDecrptedData.GetOrAdd(cacheKey, (key) =>
             {
-                var keyLength = protectedData.First();
-                var encryptionKeyReference = protectedData.Skip(1).Take(keyLength).ToArray();
-                var dataPart = protectedData.Skip(1 + keyLength).ToArray();
+                var keyBufferLength = protectedData.First();
+                var keyLength = BitConverter.ToInt32(protectedData.Skip(1).Take(keyBufferLength).ToArray());
+
+                var encryptionKeyReference = protectedData.Skip(1 + keyBufferLength).Take(keyLength).ToArray();
+                var dataPart = protectedData.Skip(1 + keyBufferLength + keyLength).ToArray();
 
                 var encryptionKey = GetDecryptionKey(encryptionKeyReference);
                 return CreateProtector(encryptionKey).Unprotect(dataPart);

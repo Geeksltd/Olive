@@ -67,13 +67,19 @@ namespace Olive.Logging
             }
         }
 
-        public void AddMessage(DateTimeOffset timestamp, string message, int severity = 0)
+        public void AddMessage(DateTimeOffset timestamp, string message, string stack = null, int severity = 0)
         {
             if (!MessageQueue.IsAddingCompleted)
             {
                 try
                 {
-                    MessageQueue.Add(new LogMessage { Message = message, Timestamp = timestamp, Severity = severity }, CancellationTokenSource.Token);
+                    MessageQueue.Add(new LogMessage
+                    {
+                        Message = message,
+                        Timestamp = timestamp,
+                        Severity = severity,
+                        Stack = stack
+                    }, CancellationTokenSource.Token);
                 }
                 catch
                 {
