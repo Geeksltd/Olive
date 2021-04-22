@@ -14,17 +14,28 @@ namespace Olive.Security.Azure
     public class DataKeyService : IDataKeyService
     {
         readonly static ConcurrentDictionary<string, byte[]> EncryptionKeys = new ConcurrentDictionary<string, byte[]>();
-        static string keyValutUri;
+        static Uri keyValutUri;
         static string masterKeyName;
 
-        string KeyValutUri =>
-          (keyValutUri ??= Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_URI"))) ?? throw new Exception("Azure Key Valut Authentication uri is not specified.");
+        internal static Uri KeyValutUri
+        {
+            get
+            {
+                if (keyValutUri == null)
+                {
+                    var uriValue = Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_URI"));
+                    if (uriValue.IsEmpty()) throw new Exception("Azure Key Valut Authentication uri is not specified.");
 
+                    keyValutUri = uriValue.AsUri();
+                }
+                return keyValutUri;
+            }
+        }
         static string MasterKeyName =>
     (masterKeyName ??= Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:KeyName", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_KEY_NAME"))) ?? throw new Exception("Azure Key Valut Key Name is not specified.");
 
         KeyClient CreateClient()
-          => new KeyClient(new Uri(KeyValutUri), new azure.Identity.DefaultAzureCredential());
+          => new KeyClient(KeyValutUri, new azure.Identity.DefaultAzureCredential());
 
         KeyWrapAlgorithm EncryptionAlgorithm => KeyWrapAlgorithm.Rsa15;
 
