@@ -23,7 +23,7 @@ namespace Olive.Security.Azure
             {
                 if (keyValutUri == null)
                 {
-                    var uriValue = Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_URI"));
+                    var uriValue = Config.Get("Azure:KeyVault:CookieAuthentication:Uri", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_URI"));
                     if (uriValue.IsEmpty()) throw new Exception("Azure Key Valut Authentication uri is not specified.");
 
                     keyValutUri = uriValue.AsUri();
@@ -32,7 +32,7 @@ namespace Olive.Security.Azure
             }
         }
         static string MasterKeyName =>
-    (masterKeyName ??= Context.Current.Config.GetValue("Azure:KeyVault:CookieAuthentication:KeyName", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_KEY_NAME"))) ?? throw new Exception("Azure Key Valut Key Name is not specified.");
+    (masterKeyName ??= Config.Get("Azure:KeyVault:CookieAuthentication:KeyName", Environment.GetEnvironmentVariable("AZURE_KEY_VALUT_COOKIE_AUTHENTICATION_KEY_NAME"))) ?? throw new Exception("Azure Key Valut Key Name is not specified.");
 
         KeyClient CreateClient()
           => new KeyClient(KeyValutUri, new azure.Identity.DefaultAzureCredential());
