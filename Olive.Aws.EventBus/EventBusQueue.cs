@@ -13,7 +13,7 @@ namespace Olive.Aws
     {
         const int MAX_RETRY = 4;
         internal string QueueUrl;
-        internal AmazonSQSClient Client => new AmazonSQSClient();
+        internal IAmazonSQS Client => Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
 
@@ -77,7 +77,7 @@ namespace Olive.Aws
             if (IsFifo)
             {
                 request.Entries
-                	.ForEach(message =>
+                    .ForEach(message =>
                 {
                     message.MessageDeduplicationId =
                         JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
@@ -97,7 +97,7 @@ namespace Olive.Aws
                     throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
 
                 Log.For(this)
-                	.Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+                    .Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
 
                 var toSend = response.Failed.Select(f => f.Message);
                 successfuls.AddRange(await PublishBatch(toSend, retry++));
@@ -127,7 +127,7 @@ namespace Olive.Aws
                 var receipt = new DeleteMessageRequest { QueueUrl = QueueUrl, ReceiptHandle = item.ReceiptHandle };
                 result.Add(new QueueMessageHandle(item.Body, item.MessageId, () => Client.DeleteMessageAsync(receipt)));
             }
-            
+
             return result;
         }
 
