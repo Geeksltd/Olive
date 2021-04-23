@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Csv</RootNamespace>
     <PackageId>Olive.Csv</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.110</Version>
+    <Version>2.1.111</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>    
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
