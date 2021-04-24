@@ -25,9 +25,9 @@ namespace Olive.Azure
             (PollingThread = new Thread(async () => await KeepPolling())).Start();
         }
 
-        public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 0);
+        public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty);
 
-        async Task<List<KeyValuePair<string, ServiceBusReceivedMessage>>> FetchEvents(int waitTimeSeconds)
+        async Task<List<KeyValuePair<string, ServiceBusReceivedMessage>>> FetchEvents(int? waitTimeSeconds)
         {
             var result = new List<KeyValuePair<string, ServiceBusReceivedMessage>>();
 
@@ -39,13 +39,13 @@ namespace Olive.Azure
             return result;
         }
 
-        async Task<IEnumerable<ServiceBusReceivedMessage>> Fetch(int waitTimeSeconds)
+        async Task<IEnumerable<ServiceBusReceivedMessage>> Fetch(int? waitTimeSeconds)
         {
             try
             {
                 await using (var context = CreateMessagingContext())
                 {
-                    return await context.Receiver.ReceiveMessagesAsync(Queue.MaxNumberOfMessages, TimeSpan.FromSeconds(waitTimeSeconds));
+                    return await context.Receiver.ReceiveMessagesAsync(Queue.MaxNumberOfMessages, waitTimeSeconds?.Seconds());
                 }
 
             }
@@ -55,7 +55,7 @@ namespace Olive.Azure
             }
         }
 
-        async Task<bool> Poll(int waitTimeSeconds)
+        async Task<bool> Poll(int? waitTimeSeconds)
         {
             var messages = await FetchEvents(waitTimeSeconds);
             foreach (var item in messages)
@@ -92,7 +92,7 @@ namespace Olive.Azure
             return new AzureMessagingContext(QueueUrl);
         }
 
-        async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
+        async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int? waitTimeSeconds = 10)
         {
             var queueIsEmpty = false;
             do

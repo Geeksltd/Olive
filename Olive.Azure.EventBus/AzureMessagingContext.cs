@@ -1,20 +1,26 @@
-﻿using Azure.Messaging.ServiceBus;
+﻿using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Olive;
 
 
 
 class AzureMessagingContext : IAsyncDisposable
 {
-    string QueueName;
+    string QueueUrl;
+    string QueueName => QueueUrl?.Split('/').Last();
+    string ServiceBusFullyQualifiedName => QueueUrl?.TrimStart("https://").Split('/').First();
     AzureMessagingContext()
     {
 
     }
 
-    public AzureMessagingContext(string queueName)
+    public AzureMessagingContext(string queueUrl)
     {
-        QueueName = queueName;
+        QueueUrl = queueUrl;
+        Client = new ServiceBusClient(ServiceBusFullyQualifiedName, new DefaultAzureCredential());
     }
 
     ServiceBusSender _Sender;
