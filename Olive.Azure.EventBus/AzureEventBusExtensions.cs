@@ -4,7 +4,7 @@ namespace Olive
 {
     public static class AzureEventBusExtensions
     {
-        public static IServiceCollection AddAwsEventBus(this IServiceCollection @this)
+        public static IServiceCollection AddAzureEventBus(this IServiceCollection @this)
         {
             return @this.AddTransient<IEventBusQueueProvider, Azure.EventBusProvider>();
         }

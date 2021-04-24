@@ -2,7 +2,7 @@
   <PropertyGroup>    
   <LangVersion>8.0</LangVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
