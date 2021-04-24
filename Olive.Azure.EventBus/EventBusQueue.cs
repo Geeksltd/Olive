@@ -76,7 +76,7 @@ namespace Olive.Azure
             {
                 var receiver = context.Receiver;
 
-                foreach (var message in await receiver.ReceiveMessagesAsync(MaxNumberOfMessages))
+                foreach (var message in await receiver.ReceiveMessagesAsync(MaxNumberOfMessages, timeoutSeconds.Seconds()))
                     result.Add(new QueueMessageHandle(message.Body.ToString(), message.MessageId, () => Task.CompletedTask));
             }
 
