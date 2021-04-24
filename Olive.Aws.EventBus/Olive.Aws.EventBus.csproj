@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Aws.EventBus</RootNamespace>
     <PackageId>Olive.Aws.EventBus</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.141.0</Version>
+    <Version>2.1.142.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -40,4 +40,7 @@
     <ProjectReference Include="..\Olive.Aws\Olive.Aws.csproj" />
     <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache" />
+  </Target>
 </Project>
