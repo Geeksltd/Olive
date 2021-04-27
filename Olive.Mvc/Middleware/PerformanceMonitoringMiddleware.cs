@@ -10,7 +10,7 @@ namespace Olive.Mvc
     {
         static HashSet<string> Whitelist = new HashSet<string>();
 
-        const int PERFROMANCE_THRESHOLD_SECONDS = 3; // Should not be set in config since developers will increase it to hide slow pages.
+        const int PERFROMANCE_THRESHOLD_SECONDS = 3;
         public PerformanceMonitoringMiddleware(RequestDelegate next) : base(next)
         {
         }
@@ -27,13 +27,13 @@ namespace Olive.Mvc
 
             var url = context.Request.Path.Value.ToLower();
             var user = context.User?.GetId();
-            if (length > PERFROMANCE_THRESHOLD_SECONDS) // slow
+            if (length > Config.Get("PerformanceThresholdSeconds", PERFROMANCE_THRESHOLD_SECONDS)) // slow
                 if (!Whitelist.Contains(url))
                     Log.For(this)
-                    	.Error(new UnacceptablePerformanceException($"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : ")));
+                        .Error(new UnacceptablePerformanceException($"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : ")));
                 else
                     Log.For(this)
-                    	.Warning($"UnacceptablePerformance ({length}) seconds for whitelisted url : " + url + user.WithPrefix(" for user : "));
+                        .Warning($"UnacceptablePerformance ({length}) seconds for whitelisted url : " + url + user.WithPrefix(" for user : "));
         }
 
         internal static void IgnorePerformance(string url) => Whitelist.Add(url.ToLower());
