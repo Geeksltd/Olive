@@ -14,9 +14,12 @@ namespace Olive.PassiveBackgroundTasks
     public static class Extensions
     {
         static IDatabase Database => Context.Current.Database();
-        public static IServiceCollection AddScheduledTasks<T>(this IServiceCollection services) where T : class, IBackgourndTask
+        public static IServiceCollection AddScheduledTasks<TPlan, TBackgroundTask>(this IServiceCollection services)
+            where TBackgroundTask : class, IBackgourndTask
+            where TPlan : BackgroundJobsPlan, new()
         {
-            services.AddSingleton<IBackgourndTask, T>();
+            services.AddSingleton<IBackgourndTask, TBackgroundTask>();
+            services.AddSingleton<BackgroundJobsPlan, TPlan>();
             return services;
         }
 
@@ -25,7 +28,7 @@ namespace Olive.PassiveBackgroundTasks
         {
             if (Config.Get<bool>("Automated.Tasks:Enabled"))
             {
-                var plan = new TPlan();
+                var plan = Context.Current.GetService<BackgroundJobsPlan>();
                 plan.Initialize();
 
                 foreach (var job in BackgroundJobsPlan.Jobs.Values)
