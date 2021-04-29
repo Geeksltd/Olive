@@ -34,15 +34,24 @@ To allow CORS access to other applications/domains you can use the appSettings.j
 In the base StartUp class, a Cors policy named "AllowedByConfig" will be defined for that.
 
 ## 26 Oct 2020
-Upgrade MSharp nuget to the latest version. Then change the following at the end of your `#Model.csproj`:
+Upgrade MSharp nuget to the latest version. 
+
+Change the end of `#Model.csproj` to:
 ```xml
 <Target Name="Generate code" AfterTargets="AfterBuild">
    <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /model" />
-   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="start &quot;&quot; msharp /diagnose" />
+   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="start /min &quot;&quot; msharp /diagnose" />
 </Target>
 ```
 
-Do the same in #UI.csproj but change `/model` to `/ui`.
+Change the end of `#UI.csproj` to:
+```xml
+<Target Name="Generate code" AfterTargets="AfterBuild">
+   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="dotnet msharp.dsl.dll /build /ui" />
+   <Exec Condition="'$(MSHARP_BUILD)' != 'FULL'" WorkingDirectory="$(TargetDir)" Command="start /min &quot;&quot; msharp /diagnose" />
+</Target>
+```
+
 
 Previously, the code generation, and the design-time diagnostics (warnings, extension related files, etc) happened at the same time. This slowed down the build process. The above change will fix it so that:
 
