@@ -12,23 +12,51 @@ namespace Olive.Entities.Replication
 {
     public static class Extensions
     {
-        public static IApplicationBuilder PullAll<T>(this IApplicationBuilder app, Assembly domainAssembly)
+        static bool IsMultiServerMode =>
+            (Olive.Config.Get("DataReplication:Mode") ?? throw new Exception("DataReplication:Mode has not be specified. Options: MultiServer, SingleServer")) == "MultiServer";
+
+        const string EVERY_MINUTE_CRON = "* * * * *";
+
+        public static IApplicationBuilder RegisterSubscriber<T>(this IApplicationBuilder app, Assembly domainAssembly)
             where T : DestinationEndpoint
         {
-            app.Use(async (context, next) =>
-            {
-                if (!context.Request.Path.Value.ToLower().EndsWithAny(".png", ".jpg", ".xml", ".css", ".js"))
+
+            var endpoint = (T)Activator.CreateInstance(typeof(T), domainAssembly);
+
+            if (IsMultiServerMode)
+                Context.Current.GetService<BackgroundJobsPlan>()
+                        .Register(new BackgroundJob(typeof(T).FullName, () => endpoint.PullAll(), EVERY_MINUTE_CRON));
+            else
+                Task.Factory.RunSync(() => endpoint.Subscribe());
+
+            app.Map("/olive-endpoints/" + typeof(T).FullName.ToLower().Replace(".", "-"),
+                x => x.Use(async (ctx, next) =>
                 {
-                    var start = LocalTime.Now;
-                    Log.For<T>().Info("Pulling all");
-                    await ((T)Activator.CreateInstance(typeof(T), domainAssembly)).PullAll();
-                    Log.For<T>().Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
-                }
-                await next();
-            });
+                    Log.For(typeof(T)).Info("Pulling all trigger by the endpoint handler");
+                    await endpoint.PullAll();
+                    Log.For(typeof(T)).Info("Pulled all trigger by the endpoint handler");
+                }));
 
             return app;
         }
+
+        //public static IApplicationBuilder PullAll<T>(this IApplicationBuilder app, Assembly domainAssembly)
+        //    where T : DestinationEndpoint
+        //{
+        //    app.Use(async (context, next) =>
+        //    {
+        //        if (!context.Request.Path.Value.ToLower().EndsWithAny(".png", ".jpg", ".xml", ".css", ".js"))
+        //        {
+        //            var start = LocalTime.Now;
+        //            Log.For<T>().Info("Pulling all");
+        //            await ((T)Activator.CreateInstance(typeof(T), domainAssembly)).PullAll();
+        //            Log.For<T>().Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
+        //        }
+        //        await next();
+        //    });
+
+        //    return app;
+        //}
         static List<string> ExposedEndpoints = new List<string>();
         static bool RegisteredExposedEndpionts;
         const string EXPOSED_ENDPOINTS_ACTION_PREFIX = "/olive/entities/replication/dump/";
