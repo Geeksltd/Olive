@@ -143,8 +143,9 @@ namespace Olive.Entities.Data
                     {
                         return TypeProviders[type] = factory.GetProvider(type);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Log.For(this).Error(ex);
                         return null;
                     }
                 }
