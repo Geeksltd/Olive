@@ -1,6 +1,12 @@
 
 # Olive compatibility change log
 
+## 10 May 2021
+We have updated `Olive.PassiveBackgroundTasks` ,please change this part in the Startup.cs:
+
+`services.AddScheduledTasks<BackgroundTask>();` to `services.AddScheduledTasks<TaskManager, BackgroundTask>();`
+
+
 ## 5 Jan 2021
 - Replace any nuget reference to `Olive.Testing` with `Olive.Mvc.Testing`
 - Replace any nuget reference to `Olive.BlobAws` with `Olive.Blob.Aws`
