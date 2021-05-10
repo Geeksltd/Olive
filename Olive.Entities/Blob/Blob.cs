@@ -15,13 +15,13 @@ namespace Olive.Entities
         /// In Test projects particularly, having files save themselves on the disk can waste space.
         /// To prevent that, apply this setting in the config file.
         /// </summary>
-        static bool SuppressPersistence = Config.Get("Blob:WebTest:SuppressPersistence", defaultValue: false);
+        static readonly bool SuppressPersistence = Config.Get("Blob:WebTest:SuppressPersistence", defaultValue: false);
 
         public const string EMPTY_FILE = "NoFile.Empty";
         public const string UNCHANGED_FILE = "«UNCHANGED»";
         public const string DefaultEncryptionKey = "Default_ENC_Key:_This_Better_Be_Calculated_If_Possible";
 
-        static string[] UnsafeExtensions = new[] { "aspx", "ascx", "ashx", "axd", "master", "bat", "bas", "asp", "app", "bin","cla","class", "cmd", "com","sitemap","skin", "asa", "cshtml",
+        static readonly string[] UnsafeExtensions = new[] { "aspx", "ascx", "ashx", "axd", "master", "bat", "bas", "asp", "app", "bin","cla","class", "cmd", "com","sitemap","skin", "asa", "cshtml",
             "cpl","crt","csc","dll","drv","exe","hta","htm","html", "ini", "ins","js","jse","lnk","mdb","mde","mht","mhtm","mhtml","msc", "msi","msp", "mdb", "ldb","resources", "resx",
             "mst","obj", "config","ocx","pgm","pif","scr","sct","shb","shs", "smm", "sys","url","vb","vbe","vbs","vxd","wsc","wsf","wsh" , "php", "asmx", "cs", "jsl", "asax","mdf",
             "cdx","idc", "shtm", "shtml", "stm", "browser"};
@@ -127,12 +127,12 @@ namespace Olive.Entities
         /// <summary>
         /// Gets an empty blob object.
         /// </summary>
-        public static Blob Empty() => new Blob(null, EMPTY_FILE) { IsEmptyBlob = true };
+        public static Blob Empty() => new(null, EMPTY_FILE) { IsEmptyBlob = true };
 
         /// <summary>
         /// Gets an empty blob object.
         /// </summary>
-        public static Blob Unchanged() => new Blob(new byte[0], UNCHANGED_FILE);
+        public static Blob Unchanged() => new(new byte[0], UNCHANGED_FILE);
 
         /// <summary>
         /// Gets the Url of this blob.
