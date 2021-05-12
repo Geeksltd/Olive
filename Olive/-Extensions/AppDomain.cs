@@ -75,6 +75,7 @@ namespace Olive
                 catch (Exception ex)
                 {
                     Log.For(typeof(OliveExtensions)).Info($"Could not load assembly " + assembly.FullName + " because: " + ex.ToFullMessage());
+                    throw;
                     // Can't load assembly. No logging is needed.
                 }
             }
