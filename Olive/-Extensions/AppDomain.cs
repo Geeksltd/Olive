@@ -72,9 +72,9 @@ namespace Olive
                             Log.For(typeof(OliveExtensions)).Info($"{type} does not implement " + interfaceType.FullName);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Log.For(typeof(OliveExtensions)).Info($"Could not load assembly" + assembly.FullName);
+                    Log.For(typeof(OliveExtensions)).Info($"Could not load assembly " + assembly.FullName + " because: " + ex.ToFullMessage());
                     // Can't load assembly. No logging is needed.
                 }
             }
