@@ -46,6 +46,8 @@ namespace Olive.Entities
             else
                 result = baseType.Assembly.GetExportedTypes().Where(t => t.GetParentTypes().Contains(baseType)).Union(new[] { baseType });
 
+            Log.For(typeof(EntityFinder)).Info("Found :" + result.Select(c => c.FullName).ToString("|"));
+
             result = result
                 // Not transient objects:
                 .Where(t => !TransientEntityAttribute.IsTransient(t))
@@ -55,6 +57,8 @@ namespace Olive.Entities
                 .Where(t => PersistentAttribute.IsTypePersistent(t))
                 // Leaf nodes first (most concrete):
                 .OrderByDescending(t => t.GetParentTypes().Count());
+
+            Log.For(typeof(EntityFinder)).Info("Desirable types :" + result.Select(c => c.FullName).ToString("|"));
 
             if (result.None())
             {
