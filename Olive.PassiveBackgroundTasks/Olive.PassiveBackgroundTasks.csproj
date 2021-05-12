@@ -5,7 +5,7 @@
     <RootNamespace>Olive.PassiveBackgroundTasks</RootNamespace>
     <PackageId>Olive.PassiveBackgroundTasks</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.21</Version>
+    <Version>1.0.22</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
