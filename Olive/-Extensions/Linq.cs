@@ -1260,10 +1260,16 @@ namespace Olive
         }
 
         /// <summary>
-        /// Determines if this items are in the specified list.
+        /// Determines if this item is in the specified list.
         /// </summary>
-        /// <param name="items">The items which are searched into the list.</param>
+        /// <param name="items">The items which are searched.</param>
         public static bool IsAnyOf<T>(this T @this, params T[] items) => items.Contains(@this);
+
+        /// <summary>
+        /// Determines if this item is not in the specified list.
+        /// </summary>
+        /// <param name="items">The items which are searched.</param>
+        public static bool IsNoneOf<T>(this T @this, params T[] items) => items.Lacks(@this);
 
         /// <summary>
         /// Determines if this items are in the specified list.

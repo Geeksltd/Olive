@@ -13,29 +13,9 @@ namespace Olive
         /// <summary>
         /// Determines if this item is in a specified list of specified items.
         /// </summary>
-        public static bool IsAnyOf<T>(this T item, params T[] options) where T : IEntity
-        {
-            if (item == null) return options.Contains(default(T));
-
-            return options.Contains(item);
-        }
-
-        /// <summary>
-        /// Determines if this item is in a specified list of specified items.
-        /// </summary>
         public static bool IsAnyOf<T>(this T item, IEnumerable<T> options) where T : IEntity
         {
             return options.Contains(item);
-        }
-
-        /// <summary>
-        /// Determines if this item is none of a list of specified items.
-        /// </summary>
-        public static bool IsNoneOf<T>(this T item, params T[] options) where T : IEntity
-        {
-            if (item == null) return !options.Contains(default(T));
-
-            return !options.Contains(item);
         }
 
         /// <summary>

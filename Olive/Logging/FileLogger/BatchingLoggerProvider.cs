@@ -11,7 +11,7 @@ namespace Olive.Logging
 {
     public abstract class BatchingLoggerProvider : ILoggerProvider
     {
-        readonly List<LogMessage> CurrentBatch = new List<LogMessage>();
+        readonly List<LogMessage> CurrentBatch = new();
         readonly TimeSpan Interval;
         readonly int? QueueSize, BatchSize;
 

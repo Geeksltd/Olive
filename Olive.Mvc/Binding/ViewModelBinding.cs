@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Olive.Mvc
 {
@@ -15,9 +11,9 @@ namespace Olive.Mvc
     {
         class ViewModelBinding
         {
-            static ConcurrentDictionary<string, MethodInfo[]> PreBindingCache = new ConcurrentDictionary<string, MethodInfo[]>();
-            static ConcurrentDictionary<string, MethodInfo[]> PreBoundCache = new ConcurrentDictionary<string, MethodInfo[]>();
-            static ConcurrentDictionary<string, MethodInfo[]> BoundCache = new ConcurrentDictionary<string, MethodInfo[]>();
+            static readonly ConcurrentDictionary<string, MethodInfo[]> PreBindingCache = new();
+            static readonly ConcurrentDictionary<string, MethodInfo[]> PreBoundCache = new();
+            static readonly ConcurrentDictionary<string, MethodInfo[]> BoundCache = new();
 
             public IViewModel Model;
             public Controller[] Controllers;
