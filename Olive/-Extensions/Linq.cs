@@ -380,6 +380,12 @@ namespace Olive
 
 		/// <summary>
 		/// Performs an action for all items within the list.
+		/// </summary>        
+		public static Task DoAsync<T>(this IEnumerable<T> @this, Func<T, Task> action)
+			=> @this.DoAsync((x, i) => action(x));
+
+		/// <summary>
+		/// Performs an action for all items within the list.
 		/// It will provide the index of the item in the list to the action handler as well.
 		/// </summary>        
 		public static async Task DoAsync<T>(this IEnumerable<T> @this, Func<T, int, Task> action)
