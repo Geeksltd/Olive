@@ -145,7 +145,7 @@ namespace Olive
         /// A shorter more readable alternative to nested ContinueWith() methods.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static async Task Then<TSource, TResult>(this Task<TSource> @this, Action<TSource> action)
+        public static async Task Then<TSource>(this Task<TSource> @this, Action<TSource> action)
         {
             var item = await @this.ConfigureAwait(continueOnCapturedContext: false);
             action(item);
