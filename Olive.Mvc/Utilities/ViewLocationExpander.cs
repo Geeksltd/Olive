@@ -15,13 +15,15 @@ namespace Olive.Mvc
             var partialViewLocationFormats = new[] {
                 "~/Views/Modules/{0}.cshtml",
                 "~/Views/Layouts/{0}.cshtml",
-                "~/Views/Shared/{0}.cshtml" };
+                "~/Views/Shared/{0}.cshtml",
+                "~/Views/Modules/Components/{1}/Default.cshtml"};
 
             var viewLocationFormats = new[] {
                 "~/Views/Modules/{0}.cshtml",
                 "~/Views/Pages/{1}.cshtml",
                 "~/Views/Modules/{1}.cshtml",
-                "~/Views/Shared/{0}.cshtml" };
+                "~/Views/Shared/{0}.cshtml",
+                "~/Views/Modules/Components/{1}/Default.cshtml"};
 
             return context.IsMainPage ? viewLocationFormats : partialViewLocationFormats;
         }
