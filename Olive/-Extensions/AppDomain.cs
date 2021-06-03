@@ -59,17 +59,25 @@ namespace Olive
             {
                 try
                 {
+                    Log.For(typeof(OliveExtensions)).Info($"Looking for {interfaceType.FullName} in " + assembly.FullName);
                     foreach (var type in assembly.GetTypes())
                     {
+                        Log.For(typeof(OliveExtensions)).Info($"Checking {type}");
                         if (type == interfaceType) continue;
                         if (type.IsInterface) continue;
 
                         if (type.Implements(interfaceType))
                             result.Add(type);
+                        else
+                            Log.For(typeof(OliveExtensions)).Info($"{type} does not implement " + interfaceType.FullName);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Log.For(typeof(OliveExtensions)).Info($"##Could not load assembly " + assembly.FullName);
+
+                    Log.For(typeof(OliveExtensions)).Info($"Could not load assembly " + assembly.FullName + " because: " + ex.Message);
+                    Log.For(typeof(OliveExtensions)).Info($"Could not load assembly " + assembly.FullName + " because: " + ex.ToFullMessage());
                     // Can't load assembly. No logging is needed.
                 }
             }

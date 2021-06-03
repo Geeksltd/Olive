@@ -9,8 +9,8 @@ namespace Olive.Entities.Data
     partial class DataProvider
     {
         string Fields, TablesTemplate;
-        Dictionary<string, string> ColumnMapping = new Dictionary<string, string>();
-        Dictionary<string, string> SubqueryMapping = new Dictionary<string, string>();
+        readonly Dictionary<string, string> ColumnMapping = new();
+        readonly Dictionary<string, string> SubqueryMapping = new();
 
         public ISqlCommandGenerator SqlCommandGenerator { get; }
 
@@ -53,7 +53,7 @@ namespace Olive.Entities.Data
 
         public virtual string MapColumn(string propertyName)
         {
-            if (ColumnMapping.TryGetValue(propertyName, out string result)) return result;
+            if (ColumnMapping.TryGetValue(propertyName, out var result)) return result;
 
             return $"{MetaData.TableAlias}.{SqlCommandGenerator.SafeId(propertyName)}";
         }
@@ -97,7 +97,7 @@ namespace Olive.Entities.Data
 
         public virtual IEntity Parse(IDataReader reader)
         {
-            for (int index = MetaData.DrivedClasses.Length - 1; index > -1; index--)
+            for (var index = MetaData.DrivedClasses.Length - 1; index > -1; index--)
             {
                 var current = MetaData.DrivedClasses[index];
 
@@ -130,7 +130,7 @@ namespace Olive.Entities.Data
 
         public virtual string MapSubquery(string path, string parent)
         {
-            if (SubqueryMapping.TryGetValue(path, out string value))
+            if (SubqueryMapping.TryGetValue(path, out var value))
                 return value.FormatWith(parent, parent.Or(MetaData.TableAlias));
 
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
