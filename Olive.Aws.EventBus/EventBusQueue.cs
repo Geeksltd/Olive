@@ -13,9 +13,15 @@ namespace Olive.Aws
     {
         const int MAX_RETRY = 4;
         internal string QueueUrl;
-        internal IAmazonSQS Client => Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
+        public IAmazonSQS Client { get; set; }
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
+
+        public EventBusQueue Region(Amazon.RegionEndpoint region)
+        {
+            Client = new AmazonSQSClient(region);
+            return this;
+        }
 
         /// <summary>
         ///     Gets and sets the property MaxNumberOfMessages.
@@ -35,6 +41,7 @@ namespace Olive.Aws
         public EventBusQueue(string queueUrl)
         {
             QueueUrl = queueUrl;
+            Client = Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
         }
 
         public async Task<string> Publish(string message)
@@ -108,7 +115,20 @@ namespace Olive.Aws
 
         public void Subscribe(Func<string, Task> handler) => new Subscriber(this, handler).Start();
 
-        public Task PullAll(Func<string, Task> handler) => new Subscriber(this, handler).PullAll();
+        public async Task PullAll(Func<string, Task> handler)
+        {
+            while (true)
+            {
+                var batch = await PullBatch();
+                if (batch.None()) return;
+
+                foreach (var item in batch)
+                {
+                    await handler(item.RawMessage);
+                    await item.Complete();
+                }
+            }
+        }       
 
         public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10, int? maxNumerOfMessages = null)
         {
