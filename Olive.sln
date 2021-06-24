@@ -179,6 +179,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Azure", "Olive.Azure\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Cloud", "Olive.Cloud\Olive.Cloud.csproj", "{BDBEA4E4-90CB-4EB1-826A-B96F519F6E6A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.LambdaFunction", "Olive.Aws.LambdaFunction\Olive.Aws.LambdaFunction.csproj", "{B4D7EE86-79CE-4823-8E0C-D9610CA9BF9C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -464,6 +466,10 @@ Global
 		{BDBEA4E4-90CB-4EB1-826A-B96F519F6E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDBEA4E4-90CB-4EB1-826A-B96F519F6E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDBEA4E4-90CB-4EB1-826A-B96F519F6E6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4D7EE86-79CE-4823-8E0C-D9610CA9BF9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4D7EE86-79CE-4823-8E0C-D9610CA9BF9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4D7EE86-79CE-4823-8E0C-D9610CA9BF9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4D7EE86-79CE-4823-8E0C-D9610CA9BF9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -542,6 +548,7 @@ Global
 		{F48C8466-B3CA-4D61-9C63-F6029ABD1DFD} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
 		{CF1AA4D8-62BE-433C-9213-75F8CAE0C60E} = {B99F5737-0E7D-440E-BE69-CF0D064B4BE5}
 		{BDBEA4E4-90CB-4EB1-826A-B96F519F6E6A} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
+		{B4D7EE86-79CE-4823-8E0C-D9610CA9BF9C} = {6A937A37-1CEC-4347-9594-C471645B43DA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}

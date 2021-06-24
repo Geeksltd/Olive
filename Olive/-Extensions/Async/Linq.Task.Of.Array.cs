@@ -77,7 +77,7 @@ namespace Olive
         this Task<TSource[]> @this, Func<TSource, bool> func) => @this.ForLinq().LastOrDefault(func);
 
         public static Task<TSource> LastOrDefault<TSource>(
-        this Task<TSource[]> @this) => @this.ForLinq().LastOrDefault();
+        this Task<TSource[]> @this) => @this.ForLinq().LastOrDefault(x => true);
 
         public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
         this Task<TSource[]> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderBy(func);
