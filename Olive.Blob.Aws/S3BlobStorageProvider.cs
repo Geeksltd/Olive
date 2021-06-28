@@ -194,6 +194,7 @@ namespace Olive.BlobAws
         {
             return new PutObjectRequest
             {
+                ContentType = document.GetMimeType(),
                 BucketName = AWSInfo.S3BucketName,
                 Key = document.GetKey(),
                 InputStream = new MemoryStream(await document.GetFileDataAsync())
