@@ -8,10 +8,11 @@ namespace Olive.Aws
 {
     public abstract class Startup
     {
-        IServiceCollection ServiceCollection;
+        protected IServiceCollection ServiceCollection { get; private set; }
         public IServiceProvider Services { get; private set; }
         public IHostEnvironment Environment { get; private set; }
         public IConfiguration Configuration { get; private set; }
+        protected IHost Host { get; private set; }
 
         protected Startup()
         {
@@ -49,13 +50,20 @@ namespace Olive.Aws
                 ConfigureLogging(context, logging);
                 Log.Init(Context.Current.GetService<ILoggerFactory>());
             });
+
+            ConfigureHost(host);
+
+            Host = host.Build();
         }
 
         protected virtual void ConfigureHost(HostBuilder hostBuilder) { }
+
         protected virtual void ConfigureServices(IServiceCollection services) { }
+
         public virtual void ConfigureLogging(HostBuilderContext context, ILoggingBuilder builder) { }
+
         protected virtual void ConfigureConfiguration(HostBuilderContext context, IConfigurationBuilder builder) { }
 
-        protected static string AwsServiceUrl => Config.Get("Aws:ServiceUrl");
+        protected string AwsServiceUrl => Configuration["Aws:ServiceUrl"];
     }
 }
