@@ -93,5 +93,16 @@ namespace Olive
 
             return result.ToArray();
         }
+
+        public static Type GetTypeByName(this AppDomain @this, Type interfaceType, string typeName)
+        {
+            foreach (var assembly in @this.GetAssemblies().Where(a => a == interfaceType.Assembly || a.References(interfaceType.Assembly)))
+            {
+                var type = assembly.GetTypes().SingleOrDefault(x => x.Name == typeName);
+                if (type != null)
+                    return type;
+            }
+            return null;
+        }
     }
 }
