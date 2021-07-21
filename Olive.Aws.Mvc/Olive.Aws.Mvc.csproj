@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Olive.Aws.Mvc</AssemblyName>
     <RootNamespace>Olive.Aws</RootNamespace>
-    <PackageId>Olive.Aws.Aws</PackageId>
+    <PackageId>Olive.Aws.Mvc</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>1.0.0</Version>
     <PackOnBuild>true</PackOnBuild>
