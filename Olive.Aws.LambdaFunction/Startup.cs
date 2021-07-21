@@ -60,7 +60,7 @@ namespace Olive.Aws
 
         protected virtual void ConfigureServices(IServiceCollection services) { }
 
-        public virtual void ConfigureLogging(HostBuilderContext context, ILoggingBuilder builder) { }
+        protected virtual void ConfigureLogging(HostBuilderContext context, ILoggingBuilder builder) { }
 
         protected virtual void ConfigureConfiguration(HostBuilderContext context, IConfigurationBuilder builder) { }
 
