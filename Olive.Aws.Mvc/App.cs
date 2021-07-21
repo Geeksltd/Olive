@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Olive.Aws
 {
-	public abstract class App<TStartup> : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction where TStartup : Startup, new()
+	public abstract class App<TStartup> : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction where TStartup : Startup
 	{
 		protected IConfiguration Configuration { get; private set; }
 
