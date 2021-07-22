@@ -37,15 +37,7 @@ namespace Olive.Aws
         static void ConfigureLogging(WebHostBuilderContext context, ILoggingBuilder logging)
         {
             if (context.HostingEnvironment.IsDevelopment()) return;
-            logging.AddLambdaLogger(new LambdaLoggerOptions
-            {
-                IncludeCategory = true,
-                IncludeScopes = true,
-                IncludeLogLevel = true,
-                IncludeEventId = true,
-                IncludeException = true,
-                IncludeNewline = true,
-            });
+            logging.AddLambdaLogger(context.Configuration, "Logging");
         }
     }
 }
