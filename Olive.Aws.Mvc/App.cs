@@ -25,8 +25,14 @@ namespace Olive.Aws
         protected static void LocalRun<TApp>(string[] args)
             where TApp : App<TStartup>, new()
         {
+            LocalRun(new TApp(), args);
+        }
+
+        protected static void LocalRun<TApp>(TApp app, string[] args)
+            where TApp : App<TStartup>
+        {
             var builder = WebHost.CreateDefaultBuilder(args);
-            new TApp().Init(builder);
+            app.Init(builder);
             builder.Build().Run();
         }
 
