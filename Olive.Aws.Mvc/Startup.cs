@@ -8,7 +8,7 @@ namespace Olive.Aws
 {
     public abstract class Startup : Mvc.Startup
     {
-        protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory) : base(env, config, loggerFactory)
+        protected Startup(IWebHostEnvironment env, IConfiguration config) : base(env, config, null)
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture =
                    CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = GetRequestCulture();

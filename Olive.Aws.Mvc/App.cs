@@ -4,36 +4,30 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Amazon.Lambda.AspNetCoreServer;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
 namespace Olive.Aws
 {
-    public abstract class App<TApp, TStartup> : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
-        where TApp : App<TApp, TStartup>, new()
+    public abstract class App<TStartup> : APIGatewayProxyFunction
         where TStartup : Startup
     {
         protected IConfiguration Configuration { get; private set; }
 
         protected override void Init(IWebHostBuilder builder)
         {
-            ConfigureBuilder(builder);
+            builder
+                .UseStartup<TStartup>()
+                .ConfigureLogging(ConfigureLogging);
         }
 
-        public ILogger Log => Olive.Log.For(this);
-
-        protected static void LocalRun(string[] args)
+        protected static void LocalRun<TApp>(string[] args)
+            where TApp : App<TStartup>, new()
         {
             var builder = WebHost.CreateDefaultBuilder(args);
             new TApp().Init(builder);
             builder.Build().Run();
-        }
-
-        protected virtual void ConfigureBuilder(IWebHostBuilder builder)
-        {
-            builder
-                .UseStartup<TStartup>()
-                .ConfigureLogging(ConfigureLogging);
         }
 
         protected virtual void ConfigureLogging(WebHostBuilderContext context, ILoggingBuilder logging)
