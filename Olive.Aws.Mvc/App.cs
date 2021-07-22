@@ -9,7 +9,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Olive.Aws
 {
-    public abstract class App<TStartup> : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction where TStartup : Startup
+    public abstract class App<TApp, TStartup> : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
+        where TApp : App<TApp, TStartup>, new()
+        where TStartup : Startup
     {
         protected IConfiguration Configuration { get; private set; }
 
@@ -20,21 +22,21 @@ namespace Olive.Aws
 
         public ILogger Log => Olive.Log.For(this);
 
-        protected static void Run(string[] args)
+        protected static void LocalRun(string[] args)
         {
             var builder = WebHost.CreateDefaultBuilder(args);
-            ConfigureBuilder(builder);
+            new TApp().Init(builder);
             builder.Build().Run();
         }
 
-        static void ConfigureBuilder(IWebHostBuilder builder)
+        protected virtual void ConfigureBuilder(IWebHostBuilder builder)
         {
             builder
                 .UseStartup<TStartup>()
                 .ConfigureLogging(ConfigureLogging);
         }
 
-        static void ConfigureLogging(WebHostBuilderContext context, ILoggingBuilder logging)
+        protected virtual void ConfigureLogging(WebHostBuilderContext context, ILoggingBuilder logging)
         {
             if (context.HostingEnvironment.IsDevelopment()) return;
             logging.AddLambdaLogger(context.Configuration, "Logging");
