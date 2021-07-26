@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -18,31 +17,30 @@ namespace Olive.Aws
         {
             var builder = Host.CreateDefaultBuilder(args);
             Init(builder);
-            builder.Build();
+            var host = builder.Build();
+            HostCreated(host);
         }
 
         protected virtual void Init(IHostBuilder builder)
         {
             var startup = new TStartup();
 
-            builder.ConfigureAppConfiguration((context, builder) =>
-            {
-                startup.ConfigureConfiguration(context, builder);
-                Config.SetConfiguration(context.Configuration);
-            });
-            builder.ConfigureServices(services =>
-            {
-                startup.ConfigureServices(services);
-                Context.Initialize(services.BuildServiceProvider(), null);
-                Context.Current.GetService<IConfiguration>().MergeEnvironmentVariables();
-            });
-            builder.ConfigureLogging((context, builder) =>
-            {
-                startup.ConfigureLogging(context, builder);
-                Log.Init(Context.Current.GetService<ILoggerFactory>());
-            });
+            builder.ConfigureAppConfiguration(startup.ConfigureConfiguration);
+            builder.ConfigureServices(startup.ConfigureServices);
+            builder.ConfigureLogging(startup.ConfigureLogging);
 
             startup.ConfigureHost(builder);
+        }
+
+        protected virtual void HostCreated(IHost host)
+        {
+            Context.Initialize(host.Services, null);
+
+            var configuration = Context.Current.GetService<IConfiguration>();
+            Config.SetConfiguration(configuration);
+            configuration.MergeEnvironmentVariables();
+
+            Log.Init(Context.Current.GetService<ILoggerFactory>());
         }
 
         protected static Task LocalExecute<TFunction>(string[] args)
