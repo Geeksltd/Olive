@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Aws</RootNamespace>
     <PackageId>Olive.Aws.Mvc</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.11.0</Version>
+    <Version>1.0.12.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
