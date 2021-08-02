@@ -43,7 +43,15 @@ namespace Olive.Aws
 			if (context.HostingEnvironment.IsDevelopment()) logging.AddConsole();
 			else
 			{
-				logging.AddLambdaLogger(context.Configuration, "Logging");
+				logging.AddLambdaLogger(new LambdaLoggerOptions
+				{​​​​​
+					IncludeCategory = true,
+					IncludeLogLevel = true,
+					IncludeNewline = true,
+					IncludeEventId = true,
+					IncludeScopes = true,
+					IncludeException = true
+				}​​​​​);
 				logging.SetMinimumLevel(LogLevel.Debug);
 			}
 		}
