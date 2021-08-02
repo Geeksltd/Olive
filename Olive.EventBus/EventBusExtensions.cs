@@ -52,7 +52,6 @@ namespace Olive
             });
         }
 
-
         public static Task PullAll<TMessage>(this IEventBusQueue queue, Func<TMessage, Task> @handler)
         where TMessage : IEventBusMessage
         {
@@ -79,17 +78,9 @@ namespace Olive
            where TMessage : IEventBusMessage
         {
             var item = await queue.Pull(timeoutSeconds);
-            if (item == null || item.RawMessage.IsEmpty()) return null;
+            if (item == null) return null;
 
-            try
-            {
-                var message = JsonConvert.DeserializeObject<TMessage>(item.RawMessage);
-                return new QueueMessageHandle<TMessage>(item.RawMessage, item.MessageId, message, () => item.Complete());
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to deserialize event message to " + typeof(TMessage).FullName + ":\r\n" + item.RawMessage, ex);
-            }
+            return item.As<TMessage>();
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Olive</AssemblyName>
-    <RootNamespace>Olive</RootNamespace>
-    <PackageId>Olive</PackageId>
+    <AssemblyName>Olive.Aws.LambdaFunction</AssemblyName>
+    <RootNamespace>Olive.Aws</RootNamespace>
+    <PackageId>Olive.Aws.LambdaFunction</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.278.0</Version>
+    <Version>1.0.109.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <LangVersion>latest</LangVersion>
     <DebugType>portable</DebugType>
@@ -15,7 +16,7 @@
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive</Title>
+    <Title>Olive.Aws.LambdaFunction</Title>
     <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>
@@ -31,28 +32,27 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
-    <DefineConstants>TRACE;ProfileGCop</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
-    <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
-    </None>
-    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="GCop.All.Geeks" Version="2.7.7" />
+    <PackageReference Include="AWS.Logger.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.14" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.14" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.14" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.0.0" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.1" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive\Olive.csproj" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
+  </Target>
 </Project>

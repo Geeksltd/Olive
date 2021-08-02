@@ -10,8 +10,6 @@ namespace Olive.Aws
     class Subscriber
     {
         public Func<string, Task> Handler { get; }
-        //ReceiveMessageRequest Request;
-        //DeleteMessageRequest Receipt;
         EventBusQueue Queue;
         Thread PollingThread;
 
@@ -19,8 +17,6 @@ namespace Olive.Aws
         {
             Handler = handler;
             Queue = queue;
-
-            // Receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
         }
 
         public void Start()

@@ -14,6 +14,7 @@ namespace Olive.PassiveBackgroundTasks
     public static class Extensions
     {
         static IDatabase Database => Context.Current.Database();
+
         public static IServiceCollection AddScheduledTasks<TPlan, TBackgroundTask>(this IServiceCollection services)
             where TBackgroundTask : class, IBackgourndTask
             where TPlan : BackgroundJobsPlan, new()

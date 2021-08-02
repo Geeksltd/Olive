@@ -1785,7 +1785,8 @@ namespace Olive
             if (@this.Contains(",") || @this.Contains("\"") || @this.Contains("\n"))
                 @this = "\"{0}\"".FormatWith(@this.Replace("\"", "\"\""));
 
-            if (@this.StartsWithAny("+", "-", "@"))
+
+            if (@this.StartsWithAny("+", "@"))
                 return "'" + @this;
 
             return @this;
