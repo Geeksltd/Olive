@@ -29,6 +29,7 @@ namespace Olive.Mvc
 
         protected readonly IWebHostEnvironment Environment;
         protected readonly IConfiguration Configuration;
+
         protected IServiceCollection Services { get; private set; }
 
         protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
@@ -83,12 +84,6 @@ namespace Olive.Mvc
         {
             mvc.AddMvcOptions(x => x.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
             mvc.AddJsonOptions(ConfigureJsonOptions);
-
-            //mvc.ConfigureApplicationPartManager(manager =>
-            //{
-            //    manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
-            //    manager.FeatureProviders.Add(new ReferencesMetadataReferenceFeatureProvider());
-            //});
 
             mvc.AddMvcOptions(options =>
             {

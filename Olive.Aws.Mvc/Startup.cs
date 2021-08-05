@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace Olive.Aws
 {
@@ -19,14 +19,15 @@ namespace Olive.Aws
         public override void ConfigureServices(IServiceCollection services)
         {
             base.ConfigureServices(services);
-
             services.AddCors(c => c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin()));
+
+            if (Environment.IsProduction())
+                services.AddDataProtection().PersistKeysToAWSSystemsManager(Configuration["Aws:Secrets:Id"]);
         }
 
         protected override void ConfigureMvc(IMvcBuilder mvc)
         {
             base.ConfigureMvc(mvc);
-
             mvc.AddRazorPagesOptions(ConfigureRazorPagesOptions);
         }
 
