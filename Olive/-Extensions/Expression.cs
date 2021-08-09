@@ -29,7 +29,7 @@ namespace Olive
                 asMemberExpression = (@this.Body as UnaryExpression)?.Operand as MemberExpression;
             }
 
-            if (asMemberExpression == null) throw new Exception("Invalid expression");
+            if (asMemberExpression == null) throw new("Invalid expression");
 
             return asMemberExpression.Member;
         }
@@ -56,7 +56,7 @@ namespace Olive
 
             if (@this is UnaryExpression u) return u.Operand.GetPropertyPath();
 
-            throw new Exception("Failed to get the property name from this expression: " + @this);
+            throw new("Failed to get the property name from this expression: " + @this);
         }
 
         public static object CompileAndInvoke(this Expression @this)

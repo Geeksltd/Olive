@@ -21,7 +21,7 @@
         public void Do(Func<TArgs, Task> work)
         {
             if (AsyncHandler is null) AsyncHandler = work;
-            else throw new Exception("Do() is already called once.");
+            else throw new("Do() is already called once.");
         }
     }
 }

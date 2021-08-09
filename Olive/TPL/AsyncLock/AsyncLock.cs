@@ -7,9 +7,9 @@ namespace Olive
     public sealed class AsyncLock
     {
         bool IsTaken;
-        readonly AsyncWaitQueue<IDisposable> Queue = new AsyncWaitQueue<IDisposable>();
+        readonly AsyncWaitQueue<IDisposable> Queue = new();
         readonly Task<IDisposable> WaitTask;
-        readonly object Mutex = new object();
+        readonly object Mutex = new();
 
         public AsyncLock() => WaitTask = Task.FromResult<IDisposable>(new Key(this));
 

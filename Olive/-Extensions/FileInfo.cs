@@ -117,7 +117,7 @@ namespace Olive
                 process.WaitForExit();
 
                 if (process.ExitCode != 0)
-                    throw new Exception($"Error running '{@this.FullName}':{output}");
+                    throw new($"Error running '{@this.FullName}':{output}");
                 else process.Dispose();
             }
 

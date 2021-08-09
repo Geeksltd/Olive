@@ -44,7 +44,7 @@ namespace Olive
             if (File.Exists(fileName))
                 return Assembly.Load(AssemblyName.GetAssemblyName(fileName));
 
-            throw new Exception($"Failed to find the requrested assembly: '{assemblyName}'");
+            throw new($"Failed to find the requrested assembly: '{assemblyName}'");
         }
 
         public static Type[] FindImplementers(this AppDomain @this, Type interfaceType) =>
@@ -60,6 +60,7 @@ namespace Olive
                 try
                 {
                     Log.For(typeof(OliveExtensions)).Info($"Looking for {interfaceType.FullName} in " + assembly.FullName);
+
                     foreach (var type in assembly.GetTypes())
                     {
                         Log.For(typeof(OliveExtensions)).Info($"Checking {type}");
@@ -76,8 +77,10 @@ namespace Olive
                 {
                     Log.For(typeof(OliveExtensions)).Info($"##Could not load assembly " + assembly.FullName);
 
-                    Log.For(typeof(OliveExtensions)).Info($"Could not load assembly " + assembly.FullName + " because: " + ex.Message);
-                    Log.For(typeof(OliveExtensions)).Info($"Could not load assembly " + assembly.FullName + " because: " + ex.ToFullMessage());
+                    Log.For(typeof(OliveExtensions))
+                    	.Info($"Could not load assembly " + assembly.FullName + " because: " + ex.Message);
+                    Log.For(typeof(OliveExtensions))
+                    	.Info($"Could not load assembly " + assembly.FullName + " because: " + ex.ToFullMessage());
                     // Can't load assembly. No logging is needed.
                 }
             }
@@ -99,9 +102,9 @@ namespace Olive
             foreach (var assembly in @this.GetAssemblies().Where(a => a == interfaceType.Assembly || a.References(interfaceType.Assembly)))
             {
                 var type = assembly.GetTypes().SingleOrDefault(x => x.Name == typeName);
-                if (type != null)
-                    return type;
+                if (type != null) return type;
             }
+
             return null;
         }
     }

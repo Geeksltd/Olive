@@ -10,7 +10,7 @@ namespace Olive
 {
     public partial class Context
     {
-        static Context current = new Context();
+        static Context current = new();
         internal static Func<Context> ContextProvider = () => new Context();
 
         IServiceProvider ApplicationServices;
@@ -29,7 +29,7 @@ namespace Olive
 
         public static Context Initialize(IServiceProvider applicationServices, Func<IServiceProvider> scopeServiceProvider)
         {
-            return current = new Context
+            return current = new()
             {
                 ApplicationServices = applicationServices,
                 ScopeServiceProvider = scopeServiceProvider

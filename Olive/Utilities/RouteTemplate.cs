@@ -10,7 +10,7 @@ namespace Olive
     public class RouteTemplate
     {
         public string Template;
-        public List<RouteTemplateParameter> Parameters = new List<RouteTemplateParameter>();
+        public List<RouteTemplateParameter> Parameters = new();
         public RouteTemplate(string pattern)
         {
             Template = pattern;
@@ -31,7 +31,7 @@ namespace Olive
                     key = key.Split(':').First();
                 }
 
-                Parameters.Add(new RouteTemplateParameter { Parameter = parameter, Key = key.ToCamelCaseId(), Type = type, IsMandatory = mandatory });
+                Parameters.Add(new() { Parameter = parameter, Key = key.ToCamelCaseId(), Type = type, IsMandatory = mandatory });
                 remaining = remaining.Substring(remaining.IndexOf("{") + 1);
             }
         }
@@ -103,7 +103,7 @@ namespace Olive
                 {
                     if (p.IsMandatory)
                     {
-                        throw new Exception("The value of " + p.Parameter + " in the route " + Template + " is not provided.");
+                        throw new("The value of " + p.Parameter + " in the route " + Template + " is not provided.");
                     }
 
                     result = result.Remove(p.Parameter);

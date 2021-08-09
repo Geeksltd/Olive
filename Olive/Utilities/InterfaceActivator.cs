@@ -6,7 +6,7 @@ namespace Olive
 {
     public static class InterfaceActivator
     {
-        static readonly ConcurrentDictionary<Type, Type> Mapping = new ConcurrentDictionary<Type, Type>();
+        static readonly ConcurrentDictionary<Type, Type> Mapping = new();
 
         public static object CreateInstance(Type interfaceType, params object[] args)
         {
@@ -16,10 +16,10 @@ namespace Olive
             var implmenters = interfaceType.FindImplementerClasses();
 
             if (implmenters.None())
-                throw new Exception($"No type in the currently loaded assemblies implements {interfaceType.FullName}.");
+                throw new($"No type in the currently loaded assemblies implements {interfaceType.FullName}.");
 
             if (implmenters.HasMany())
-                throw new Exception($"More than one type in the currently loaded assemblies implement {interfaceType.FullName}: {implmenters.Select(x => x.FullName).ToString(" and ")}");
+                throw new($"More than one type in the currently loaded assemblies implement {interfaceType.FullName}: {implmenters.Select(x => x.FullName).ToString(" and ")}");
 
             var type = implmenters.First();
 

@@ -9,7 +9,7 @@ namespace Olive
         const int INDENTATION = 30;
 
         static readonly ConcurrentDictionary<string, ConcurrentList<TimeSpan>> Watchers =
-            new ConcurrentDictionary<string, ConcurrentList<TimeSpan>>();
+new();
         readonly ConcurrentList<TimeSpan> Watcher;
         readonly DateTime Start;
         readonly string Action;

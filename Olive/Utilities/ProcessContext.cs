@@ -62,12 +62,12 @@ namespace Olive
         /// Create a process context for the specified object.
         /// To access the context object, you can use ProcessContext&lt;Your Type&gt;.Current.
         /// </summary>
-        public static ProcessContext<T> Create<T>(T contextObject) => new ProcessContext<T>(contextObject);
+        public static ProcessContext<T> Create<T>(T contextObject) => new(contextObject);
 
         /// <summary>
         /// Create a process context for the specified object with the specified key.
         /// To access the context object, you can use ProcessContext&lt;Your Type&gt;.GetCurrent(key).
         /// </summary>
-        public static ProcessContext<T> Create<T>(string key, T contextObject) => new ProcessContext<T>(key, contextObject);
+        public static ProcessContext<T> Create<T>(string key, T contextObject) => new(key, contextObject);
     }
 }

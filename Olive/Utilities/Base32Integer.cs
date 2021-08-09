@@ -60,6 +60,6 @@
 
         public static implicit operator int(Base32Integer value) => value.Value;
 
-        public static implicit operator Base32Integer(int value) => new Base32Integer(value);
+        public static implicit operator Base32Integer(int value) => new(value);
     }
 }

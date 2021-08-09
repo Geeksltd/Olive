@@ -9,7 +9,7 @@
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <DebugType>portable</DebugType>
     <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>

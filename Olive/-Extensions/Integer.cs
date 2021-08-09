@@ -45,7 +45,7 @@ namespace Olive
         /// Converts this number to a short textual representation.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Base32Integer ToBase32(this int @this) => new Base32Integer(@this);
+        public static Base32Integer ToBase32(this int @this) => new(@this);
 
         /// <summary>
         /// Compare two values and returns 0, 1 or -1.

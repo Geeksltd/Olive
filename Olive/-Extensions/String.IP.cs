@@ -7,7 +7,6 @@ namespace Olive
     partial class OliveExtensions
     {
         static readonly Range<uint>[] PrivateIpRanges = new[] {
-             //new Range<uint>(0u, 50331647u),              // 0.0.0.0 to 2.255.255.255
              new Range<uint>(167772160u, 184549375u),     // 10.0.0.0 to 10.255.255.255
              new Range<uint>(2130706432u, 2147483647u),   // 127.0.0.0 to 127.255.255.255
              new Range<uint>(2851995648u, 2852061183u),   // 169.254.0.0 to 169.254.255.255

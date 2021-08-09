@@ -154,7 +154,7 @@ namespace Olive
             }
             catch (Exception ex)
             {
-                throw new Exception($"Could not get the value of property '{@this.DeclaringType.Name}.{@this.Name}' " +
+                throw new($"Could not get the value of property '{@this.DeclaringType.Name}.{@this.Name}' " +
                     "on the specified instance: {ex.Message}", ex);
             }
         }
@@ -176,7 +176,7 @@ namespace Olive
         public static object CreateInstanceWithDI(this Type @this)
         {
             var ctors = @this.GetConstructors();
-            if (ctors.HasMany()) throw new Exception("Multiple constructors found for: " + @this.FullName);
+            if (ctors.HasMany()) throw new("Multiple constructors found for: " + @this.FullName);
 
             var parameters = ctors.Single().GetParameters()
                 .Select(x => Context.Current.ServiceProvider.GetService(x.ParameterType))
@@ -283,7 +283,7 @@ namespace Olive
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
-                    throw new Exception("Could not load the types of the assembly '{0}'. Type-load exceptions: {1}".FormatWith(@this.FullName,
+                    throw new("Could not load the types of the assembly '{0}'. Type-load exceptions: {1}".FormatWith(@this.FullName,
                         ex.LoaderExceptions.Select(e => e.Message).Distinct().ToString(" | ")));
                 }
             });
@@ -354,7 +354,7 @@ namespace Olive
         public static PropertyInfo GetPropertyOrThrow(this Type @this, string name)
         {
             return @this.GetProperty(name)
-                ?? throw new Exception(@this.FullName + " does not have a property named " + name);
+                ?? throw new(@this.FullName + " does not have a property named " + name);
         }
 
         public static IEnumerable<MemberInfo> GetPropertiesAndFields(this Type @this, BindingFlags flags) =>
@@ -407,7 +407,7 @@ namespace Olive
                 var directProperty = @this.GetProperty(propertyPath.RemoveFrom("."));
 
                 if (directProperty == null)
-                    throw new Exception(@this.FullName + " does not have a property named '" + propertyPath.RemoveFrom(".") + "'");
+                    throw new(@this.FullName + " does not have a property named '" + propertyPath.RemoveFrom(".") + "'");
 
                 var associatedObject = directProperty.GetValue(instance);
                 if (associatedObject == null) return null;
@@ -475,7 +475,7 @@ namespace Olive
         }
 
         public static WeakReference<T> GetWeakReference<T>(this T item) where T : class
-            => new WeakReference<T>(item);
+            => new(item);
 
         public static object GetValue(this MemberInfo @this, object obj)
         {
@@ -485,7 +485,7 @@ namespace Olive
 
             if (@this is MethodInfo asMethod) return asMethod.Invoke(obj, new object[0]);
 
-            throw new Exception("GetValue() is not implemented for " + @this?.GetType().Name);
+            throw new("GetValue() is not implemented for " + @this?.GetType().Name);
         }
 
         public static void SetValue(this MemberInfo @this, object obj, object value)
@@ -494,7 +494,7 @@ namespace Olive
 
             if (@this is FieldInfo asField) { asField.SetValue(obj, value); return; }
 
-            throw new Exception("SetValue() is not implemented for " + @this?.GetType().Name);
+            throw new("SetValue() is not implemented for " + @this?.GetType().Name);
         }
 
         public static bool IsIEnumerableOf(this Type @this, Type typeofT)
