@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Olive.GeoLocation
 {
@@ -53,10 +53,11 @@ namespace Olive.GeoLocation
         {
             return @this.AddSingleton<IGeoLocationService, GeoLocationService>();
         }
-        
+
         public static double GetCompassAngle(this IGeoLocation from, IGeoLocation to)
         {
             var longitudeDifference = (to.Longitude - from.Longitude).ToRadians();
+
             var dPhi = Math.Log(Math.Tan(to.Latitude.ToRadians() / 2 + Math.PI / 4)
                                 / Math.Tan(from.Latitude.ToRadians() / 2 + Math.PI / 4));
 

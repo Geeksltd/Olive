@@ -1,8 +1,8 @@
 ﻿namespace Olive.Security
 {
-    using Microsoft.Extensions.Configuration;
     using System;
     using System.Security.Cryptography;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Provides secure password hashing service based on PBKDF2. 
@@ -60,8 +60,10 @@
         static bool SlowEquals(byte[] leftBytes, byte[] rightBytes)
         {
             var diff = (uint)leftBytes.Length ^ (uint)rightBytes.Length;
+
             for (var i = 0; i < leftBytes.Length && i < rightBytes.Length; i++)
                 diff |= (uint)(leftBytes[i] ^ rightBytes[i]);
+
             return diff == 0;
         }
 

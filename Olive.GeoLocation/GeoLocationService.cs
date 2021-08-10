@@ -13,8 +13,7 @@ namespace Olive.GeoLocation
     public class GeoLocationService : IGeoLocationService
     {
         const string DIRECTION_URL = "https://maps.googleapis.com/maps/api/distancematrix/xml?units=imperial";
-        readonly string GoogleClientKey;
-        readonly string GoogleSignatureKey;
+        readonly string GoogleClientKey, GoogleSignatureKey;
 
         ConcurrentDictionary<string, Task<GeoLocation>> CachedLocations;
 
@@ -70,6 +69,7 @@ namespace Olive.GeoLocation
                       GoogleSignatureKey.UrlEncode().WithPrefix("&signature=");
 
             XElement response;
+
             using (var client = new HttpClient())
                 response = (await client.GetStringAsync(url)).To<XElement>();
 
@@ -136,6 +136,7 @@ namespace Olive.GeoLocation
             if (miles == null) throw new Exception("Unexpected result from Google API: \r\n\r\n" + response);
 
             var result = miles.Value.Split(' ').FirstOrDefault().TryParseAs<double>();
+
             if (result == null)
                 throw new Exception("Unexpected result format from Google API: \r\n\r\n" + response);
 
