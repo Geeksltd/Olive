@@ -1,9 +1,9 @@
-﻿using Olive.Entities;
-using System;
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Olive.Entities;
 
 namespace Olive.Csv
 {
@@ -49,16 +49,20 @@ namespace Olive.Csv
                 if (!isFirstRowHeaders)
                 {
                     var headerRow = output.NewRow();
+
                     foreach (var column in output.Columns.OfType<DataColumn>())
                         headerRow[column.ColumnName] = csvResult.Context.HeaderRecord[column.Ordinal];
+
                     output.Rows.Add(headerRow);
                 }
 
                 while (csvResult.Read())
                 {
                     var row = output.NewRow();
+
                     foreach (var column in output.Columns.OfType<DataColumn>())
                         row[column.ColumnName] = csvResult.GetField(column.DataType, column.Ordinal);
+
                     output.Rows.Add(row);
                 }
 

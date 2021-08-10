@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Olive.Cloud
 {
@@ -12,12 +12,10 @@ namespace Olive.Cloud
         protected string SecretString;
 
         protected abstract string DownloadSecrets();
+
         protected abstract string SecretId { get; }
 
-        protected Secrets(IConfiguration config)
-        {
-            Config = config;
-        }
+        protected Secrets(IConfiguration config) => Config = config;
 
         static ILogger Log => Olive.Log.For(typeof(Secrets));
 
@@ -39,6 +37,7 @@ namespace Olive.Cloud
             try
             {
                 var secrets = DownloadSecrets();
+
                 if (secrets.IsEmpty())
                     throw new Exception("SecretString was empty!");
 
@@ -57,6 +56,5 @@ namespace Olive.Cloud
                 throw;
             }
         }
-
     }
 }

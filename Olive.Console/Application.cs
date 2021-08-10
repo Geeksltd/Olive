@@ -19,6 +19,7 @@ namespace Olive.Console
             Startup.Args = args;
 
             var host = new HostBuilder();
+
             host.ConfigureAppConfiguration((hostingContext, config) =>
              {
                  config.AddJsonFile("appsettings.json", optional: true);

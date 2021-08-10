@@ -1,5 +1,5 @@
-﻿using Olive.Entities;
-using System;
+﻿using System;
+using Olive.Entities;
 
 namespace Olive.Audit
 {

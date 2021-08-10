@@ -1,11 +1,11 @@
-﻿using Olive.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Olive.Entities;
 
 namespace Olive.Audit
 {
@@ -96,6 +96,7 @@ namespace Olive.Audit
             r.Append("</old>");
 
             r.Append("<new>");
+
             foreach (var key in changes.Keys)
             {
                 var value = changes[key];
@@ -115,7 +116,7 @@ namespace Olive.Audit
             var type = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(applicationEvent.ItemType)).ExceptNull().FirstOrDefault();
 
             if (type == null)
-                throw new Exception("Could not load the type " + applicationEvent.ItemType);
+                throw new("Could not load the type " + applicationEvent.ItemType);
 
             if (applicationEvent.Event.IsAnyOf("Update", "Insert"))
                 return await Database.Get(applicationEvent.ItemId.To<Guid>(), type);
@@ -146,6 +147,7 @@ namespace Olive.Audit
         {
             if (original == null) throw new ArgumentNullException(nameof(original));
             if (updated == null) throw new ArgumentNullException(nameof(updated));
+
             if (updated.GetType() != original.GetType())
                 throw new ArgumentException($"GetChanges() expects two instances of the same type, while {original.GetType().FullName} is not the same as {updated.GetType().FullName}.");
 

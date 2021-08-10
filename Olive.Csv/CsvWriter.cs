@@ -23,6 +23,7 @@ namespace Olive.Csv
         public static string ToCsv(this Dictionary<string, string> @this)
         {
             var csv = new StringBuilder();
+
             foreach (var pair in @this)
                 csv.AppendLine(string.Format("{0},{1}", pair.Key, pair.Value));
 
@@ -80,6 +81,7 @@ namespace Olive.Csv
             }
 
             sb.AppendLine();
+
             foreach (var dr in @this.GetRows())
             {
                 for (var i = 0; i < @this.Columns.Count; i++)
