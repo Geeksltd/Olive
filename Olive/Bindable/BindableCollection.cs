@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Olive
@@ -8,12 +8,12 @@ namespace Olive
     public class BindableCollection<T> : Bindable<IList<T>>, IBindableCollection<T>, IEnumerable<T>
     {
         public event Action<T> Added;
+
+        public BindableCollection() : base(new List<T>()) { }
         protected void FireAdded(T item) => Added?.Invoke(item);
 
         public event Action<T> Removing;
         protected void FireRemoving(T item) => Removing?.Invoke(item);
-
-        public BindableCollection() : base(new List<T>()) { }
 
         public override void ClearBindings()
         {
@@ -37,8 +37,10 @@ namespace Olive
         public void Add(IEnumerable<T> items)
         {
             var validItems = items.OrEmpty().ExceptNull().ToArray();
+
             lock (Value)
                 Value.AddRange(validItems);
+
             validItems.Do(FireAdded);
             FireChanged();
         }
@@ -51,8 +53,10 @@ namespace Olive
         {
             if (item == null) return;
             FireRemoving(item);
+
             lock (Value)
                 Value.Remove(item);
+
             FireChanged();
         }
 

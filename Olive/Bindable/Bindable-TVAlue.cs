@@ -15,11 +15,11 @@ namespace Olive
         /// Fired when the value is changed by either source (API) or user input.
         /// </summary>
         public event Action Changed;
+
+        public Bindable(TValue value) => this.value = value;
         protected void FireChanged() => Changed?.Invoke();
 
         public Bindable() { }
-
-        public Bindable(TValue value) => this.value = value;
 
         public TValue Value
         {
@@ -82,6 +82,7 @@ namespace Olive
             var property = FindProperty(target, propertyName);
 
             var binding = new PropertyBinding<TValue> { Target = target.GetWeakReference(), Property = property };
+
             if (target is IBindableInput input)
             {
                 void Input_InputChanged(string changedProperty)
