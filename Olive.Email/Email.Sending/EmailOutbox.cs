@@ -13,8 +13,6 @@ namespace Olive.Email
     {
         static Random Random = new Random();
         AsyncLock AsyncLock = new AsyncLock();
-        IDatabase Database;
-        EmailConfiguration Config;
         ILogger<EmailOutbox> Log;
 
         public event AwaitableEventHandler<EmailSendingEventArgs> Sending;
@@ -22,24 +20,17 @@ namespace Olive.Email
         public event AwaitableEventHandler<EmailSendingEventArgs> SendError;
         public IEmailDispatcher Dispatcher { get; }
         public IMailMessageCreator MessageCreator { get; }
+        public IEmailRepository Repository { get; }
 
         public EmailOutbox(IEmailDispatcher dispatcher,
             IMailMessageCreator messageCreator,
-            IDatabase database, IConfiguration config, ILogger<EmailOutbox> log)
+            IEmailRepository repository,
+            ILogger<EmailOutbox> log)
         {
             Dispatcher = dispatcher;
             MessageCreator = messageCreator;
-            Database = database;
-            Config = config.GetSection("Email").Get<EmailConfiguration>();
+            Repository = repository;
             Log = log;
-        }
-
-        async Task<IEmailMessage[]> GetUnsentEmails()
-        {
-            var unsentEmails = await Database.Of<IEmailMessage>()
-                .Where(x => x.Retries < Config.MaxRetries)
-                  .GetList();
-            return unsentEmails.OrderBy(x => x.SendableDate).ToArray();
         }
 
         public async Task SendAll(TimeSpan? delayPerSend = null)
@@ -47,7 +38,7 @@ namespace Olive.Email
             Log.Info("Sending all ...");
             using (await AsyncLock.Lock())
             {
-                var toSend = await GetUnsentEmails();
+                var toSend = await Repository.GetUnsentEmails();
 
                 Log.Info($"Loaded {toSend.Count()} emails to send ...");
 
@@ -85,7 +76,7 @@ namespace Olive.Email
             if (message.SendableDate > LocalTime.Now)
             {
                 Log.Info($"Skipping Send() command for IEmailMessage ({message.GetId()}). SendableDate is in the future.");
-                if (message.IsNew) await Database.Save(message);
+                await Repository.SaveForFutureSend(message);
 
                 return false;
             }
@@ -103,7 +94,7 @@ namespace Olive.Email
                     await Sending.Raise(new EmailSendingEventArgs(message, mail));
                     await Dispatcher.Dispatch(mail, message);
 
-                    if (!message.IsNew) await Database.Delete(message);
+                    await Repository.RecordEmailSent(message);
                     await Sent.Raise(new EmailSendingEventArgs(message, mail));
 
                     return true;
@@ -111,38 +102,14 @@ namespace Olive.Email
                 catch (Exception ex)
                 {
                     await SendError.Raise(new EmailSendingEventArgs(message, mail) { Error = ex });
-                    await RecordRetry(message);
+                    await Repository.RecordRetry(message);
                     Log.Error(ex, $"Error in sending an email for this EmailQueueItem of '{message.GetId()}' because : " + Environment.NewLine + ex.ToFullMessage());
                     return false;
                 }
             }
         }
 
-        async Task RecordRetry(IEmailMessage message)
-        {
-            var retries = message.Retries + 1;
-
-            if (!message.IsNew)
-            {
-                await Database.Update(message, e => e.Retries = retries);
-                // Also update this local instance:
-                message.Retries = retries;
-            }
-            else
-            {
-                message.Retries += 1;
-                await Database.Save(message);
-            }
-        }
-
         public async Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage
-        {
-            using (new SoftDeleteAttribute.Context(bypassSoftdelete: false))
-            {
-                var records = await Database.GetList<T>();
-                var result = records.OfType<Entity>().Where(x => SoftDeleteAttribute.IsMarked(x));
-                return result.Cast<T>();
-            }
-        }
+            => await Repository.GetSentEmails<T>();
     }
 }
