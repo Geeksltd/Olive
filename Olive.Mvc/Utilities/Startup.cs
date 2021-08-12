@@ -109,10 +109,12 @@ namespace Olive.Mvc
         protected virtual void ConfigureSecurity(IApplicationBuilder app)
         {
             app.UseCookiePolicy();
-            app.UseMicroserviceAccessKeyAuthentication();
+            ConfigureMicroserviceSecurity(app);
             app.UseAuthentication();
             app.UseMiddleware<SplitRoleClaimsMiddleware>();
         }
+
+        protected virtual void ConfigureMicroserviceSecurity(IApplicationBuilder app) => app.UseMicroserviceAccessKeyAuthentication();
 
         protected virtual void ConfigureRequestHandlers(IApplicationBuilder app)
         {
