@@ -13,14 +13,14 @@ namespace Olive
     public class Limiter
     {
         readonly System.Timers.Timer Timer;
-        readonly ConcurrentDictionary<long, int> Cache = new ConcurrentDictionary<long, int>();
+        readonly ConcurrentDictionary<long, int> Cache = new();
 
         public int Limit { get; }
 
         public Limiter(int limitTo)
         {
             Limit = limitTo;
-            Timer = new System.Timers.Timer(500);
+            Timer = new(500);
             Timer.Elapsed += Timer_Elapsed;
             Timer.Start();
         }

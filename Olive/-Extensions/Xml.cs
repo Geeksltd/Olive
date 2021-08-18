@@ -76,7 +76,7 @@ namespace Olive
             if (node is XElement) value = (node as XElement).Value;
             else if (node is XAttribute) value = (node as XAttribute).Value;
             else if (node != null)
-                throw new Exception("The provided path (" + path + ") points to an invalid Xml node (" + node.GetType() + ").");
+                throw new("The provided path (" + path + ") points to an invalid Xml node (" + node.GetType() + ").");
 
             if (value.IsEmpty()) return default;
 

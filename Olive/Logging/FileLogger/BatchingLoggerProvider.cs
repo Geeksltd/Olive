@@ -73,7 +73,7 @@ namespace Olive.Logging
             {
                 try
                 {
-                    MessageQueue.Add(new LogMessage
+                    MessageQueue.Add(new()
                     {
                         Message = message,
                         Timestamp = timestamp,
@@ -92,10 +92,10 @@ namespace Olive.Logging
         void Start()
         {
             if (QueueSize == null)
-                MessageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>());
-            else MessageQueue = new BlockingCollection<LogMessage>(new ConcurrentQueue<LogMessage>(), QueueSize.Value);
+                MessageQueue = new(new ConcurrentQueue<LogMessage>());
+            else MessageQueue = new(new ConcurrentQueue<LogMessage>(), QueueSize.Value);
 
-            CancellationTokenSource = new CancellationTokenSource();
+            CancellationTokenSource = new();
             OutputTask = Task.Factory.StartNew(ProcessLogQueue, null, TaskCreationOptions.LongRunning);
         }
 

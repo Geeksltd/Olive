@@ -5,14 +5,14 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        static readonly Random Random = new Random();
+        static readonly Random Random = new();
 
         /// <summary>
         /// Gets all possible items in the range based on the specified intervals.
         /// </summary>
         public static IEnumerable<int> GetIntervals(this Range<int> @this, int interval = 1)
         {
-            if (interval <= 0) throw new Exception("Interval should be a positive number.");
+            if (interval <= 0) throw new("Interval should be a positive number.");
 
             for (var item = @this.From; item <= @this.To; item += interval)
                 yield return item;
@@ -39,7 +39,7 @@ namespace Olive
 
                 if (counter == count - 1) upperBound = @this.To;
 
-                result[counter] = new Range<int>(lowerBound, upperBound);
+                result[counter] = new(lowerBound, upperBound);
             }
 
             return result;

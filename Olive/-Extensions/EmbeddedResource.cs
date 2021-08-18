@@ -20,7 +20,7 @@ namespace Olive
 
             using (var resource = @this.GetManifestResourceStream(result))
                 if (resource == null)
-                    throw new Exception($"The requested embedded resource '{result}' does not exist in the assembly '{@this.FullName}'");
+                    throw new($"The requested embedded resource '{result}' does not exist in the assembly '{@this.FullName}'");
 
             return result;
         }
@@ -40,7 +40,7 @@ namespace Olive
                 using var stream = @this.GetManifestResourceStream(resourceName);
 
                 if (stream == null)
-                    throw new Exception("There is no embedded resource named '" + resourceName +
+                    throw new("There is no embedded resource named '" + resourceName +
                    "' in the assembly: " + @this.FullName);
 
                 return await stream.ReadAllBytesAsync();
@@ -87,7 +87,7 @@ namespace Olive
                 using var stream = @this.GetManifestResourceStream(resourceName);
 
                 if (stream == null)
-                    throw new Exception("There is no embedded resource named '" + resourceName +
+                    throw new("There is no embedded resource named '" + resourceName +
                    "' in the assembly: " + @this.FullName);
 
                 return stream.ReadAllBytes();

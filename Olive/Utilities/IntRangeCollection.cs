@@ -12,7 +12,7 @@
     [Serializable]
     public class IntRangeCollection : IEnumerable<int>
     {
-        readonly SortedList<int, Range<int>> ranges = new SortedList<int, Range<int>>();
+        readonly SortedList<int, Range<int>> ranges = new();
 
         public IntRangeCollection() { }
 
@@ -46,7 +46,7 @@
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to extract Range<int> from " + text, ex);
+                throw new("Failed to extract Range<int> from " + text, ex);
             }
         }
 
@@ -165,10 +165,8 @@
 
             var range = GetRange(search.WhereItBelongs - 1);
 
-            if (range.To == item)
-                ShrinkFromUpperBound(range);
-            else if (range.Contains(item))
-                Split(item, range);
+            if (range.To == item) ShrinkFromUpperBound(range);
+            else if (range.Contains(item)) Split(item, range);
 
             return true;
         }
@@ -201,7 +199,7 @@
             ranges.Add(newRange.From, newRange);
         }
 
-        void AddAsNewRange(int item) => ranges.Add(item, new Range<int>(item, item));
+        void AddAsNewRange(int item) => ranges.Add(item, new(item, item));
 
         void ExtendFromUpperBound(int item, Range<int> range)
         {
@@ -228,6 +226,7 @@
         RangeIndexSearchResult DetectRange(int item)
         {
             var index = ranges.Keys.ToList().BinarySearch(item);
+
             if (index >= 0) return new RangeIndexSearchResult { ExistingRangeStartingWith = index };
             else return new RangeIndexSearchResult { WhereItBelongs = -(index + 1) };
         }

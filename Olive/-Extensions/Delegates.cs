@@ -28,7 +28,7 @@ namespace Olive
         public static T Invoke<T>(this Func<T> function, int retries, TimeSpan waitBeforeRetries, Action<Exception> onEveryError = null)
         {
             if (retries < 2)
-                throw new Exception("retries should be greater than 2.");
+                throw new("retries should be greater than 2.");
 
             var count = 0;
 

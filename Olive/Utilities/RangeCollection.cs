@@ -12,7 +12,7 @@
     [Serializable]
     public class RangeCollection<T> : IEnumerable<T> where T : IComparable, IComparable<T>
     {
-        readonly SortedList<T, Range<T>> ranges = new SortedList<T, Range<T>>();
+        readonly SortedList<T, Range<T>> ranges = new();
 
         [NonSerialized]
         Func<T, T> getNextItem, getPreviousItem;
@@ -198,7 +198,7 @@
             ranges.Add(newRange.From, newRange);
         }
 
-        void AddAsNewRange(T item) => ranges.Add(item, new Range<T>(item, item));
+        void AddAsNewRange(T item) => ranges.Add(item, new(item, item));
 
         void ExtendFromUpperBound(T item, Range<T> range)
         {

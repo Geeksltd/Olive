@@ -29,6 +29,7 @@ namespace Olive.Mvc
 
         protected readonly IWebHostEnvironment Environment;
         protected readonly IConfiguration Configuration;
+
         protected IServiceCollection Services { get; private set; }
 
         protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
@@ -84,12 +85,6 @@ namespace Olive.Mvc
             mvc.AddMvcOptions(x => x.ModelBinderProviders.Insert(0, new OliveBinderProvider()));
             mvc.AddJsonOptions(ConfigureJsonOptions);
 
-            //mvc.ConfigureApplicationPartManager(manager =>
-            //{
-            //    manager.FeatureProviders.RemoveWhere(x => x is MetadataReferenceFeatureProvider);
-            //    manager.FeatureProviders.Add(new ReferencesMetadataReferenceFeatureProvider());
-            //});
-
             mvc.AddMvcOptions(options =>
             {
                 options.ModelMetadataDetailsProviders.Add(
@@ -114,10 +109,12 @@ namespace Olive.Mvc
         protected virtual void ConfigureSecurity(IApplicationBuilder app)
         {
             app.UseCookiePolicy();
-            app.UseMicroserviceAccessKeyAuthentication();
+            ConfigureMicroserviceSecurity(app);
             app.UseAuthentication();
             app.UseMiddleware<SplitRoleClaimsMiddleware>();
         }
+
+        protected virtual void ConfigureMicroserviceSecurity(IApplicationBuilder app) => app.UseMicroserviceAccessKeyAuthentication();
 
         protected virtual void ConfigureRequestHandlers(IApplicationBuilder app)
         {

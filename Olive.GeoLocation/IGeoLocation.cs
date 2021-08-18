@@ -13,7 +13,7 @@ namespace Olive.GeoLocation
     {
         public double Longitude { get; set; }
         public double Latitude { get; set; }
-        
+
         public GeoLocation() { }
 
         public GeoLocation(double latitude, double longitude)

@@ -286,7 +286,7 @@ namespace Olive
             @this = @this.Or("").Trim();
 
             if (@this.IsEmpty())
-                throw new Exception("'name' cannot be empty for ToCountString().");
+                throw new("'name' cannot be empty for ToCountString().");
 
             if (count < 0)
                 throw new ArgumentException("count should be greater than or equal to 0.");
@@ -1149,7 +1149,7 @@ namespace Olive
                     if (currentArray.Any())
                     {
                         yield return currentArray;
-                        currentArray = new List<string>();
+                        currentArray = new();
                     }
                 }
                 else
@@ -1195,7 +1195,7 @@ namespace Olive
         /// <summary>
         /// Converts this path into a Uri object.
         /// </summary>
-        public static Uri AsUri(this string @this) => new Uri(@this);
+        public static Uri AsUri(this string @this) => new(@this);
 
         /// <summary>
         /// Converts this path into a directory object.
@@ -1398,7 +1398,7 @@ namespace Olive
         /// Gets a SHA1 hash of this text where all characters are alpha numeric.
         /// </summary>
         public static string ToSimplifiedSHA1Hash(this string @this) =>
-            new string(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray());
+new(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray());
 
         /// <summary>
         /// Attempts to Parse this String as the given Enum type.
@@ -1784,7 +1784,6 @@ namespace Olive
 
             if (@this.Contains(",") || @this.Contains("\"") || @this.Contains("\n"))
                 @this = "\"{0}\"".FormatWith(@this.Replace("\"", "\"\""));
-
 
             if (@this.StartsWithAny("+", "@"))
                 return "'" + @this;

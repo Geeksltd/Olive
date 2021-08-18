@@ -6,10 +6,7 @@ namespace Olive.GeoLocation
     {
         const double MetersPerMile = 1609.344;
         const double MetersPerKilometer = 1000.0;
-        public Distance(double meters)
-        {
-            Meters = meters;
-        }
+        public Distance(double meters) => Meters = meters;
 
         public double Meters
         {
@@ -54,8 +51,7 @@ namespace Olive.GeoLocation
         public bool Equals(Distance other) => Meters.Equals(other.Meters);
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-                return false;
+            if (ReferenceEquals(null, obj)) return false;
             return obj is Distance && Equals((Distance)obj);
         }
 

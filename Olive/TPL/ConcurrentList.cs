@@ -9,21 +9,21 @@ namespace Olive
     public class ConcurrentList<T> : IList<T>
     {
         readonly List<T> List;
-        readonly object Lock = new object();
+        readonly object Lock = new();
         bool IsVirgin = true; // For performance  
         T FirstItem;
 
-        public ConcurrentList() => List = new List<T>();
+        public ConcurrentList() => List = new();
 
         public ConcurrentList(int capacity)
         {
             Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-            List = new List<T>(capacity);
+            List = new(capacity);
         }
 
         public ConcurrentList(IEnumerable<T> items)
         {
-            List = new List<T>(items);
+            List = new(items);
             IsVirgin = false;
         }
 

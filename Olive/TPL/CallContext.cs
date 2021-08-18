@@ -6,7 +6,7 @@
     public static class CallContext<T>
     {
         static readonly ConcurrentDictionary<string, AsyncLocal<T>> State
-            = new ConcurrentDictionary<string, AsyncLocal<T>>();
+            = new();
 
         /// <summary> 
         /// Stores a given object and associates it with the specified name.

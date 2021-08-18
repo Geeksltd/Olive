@@ -1223,7 +1223,6 @@ namespace Olive
 
             foreach (var item in @this)
                 if (criteria(item)) yield return index++;
-
         }
 
         /// <summary>

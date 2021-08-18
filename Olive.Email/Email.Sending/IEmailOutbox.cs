@@ -34,6 +34,7 @@ namespace Olive.Email
         /// <summary>
         /// Gets the email items which have been sent (marked as soft deleted).
         /// </summary>
+        [Obsolete("Please use IEmailProvider.GetSentEmails<T>() directly.")]
         Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage;
     }
 }

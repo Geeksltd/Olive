@@ -85,10 +85,10 @@ namespace Olive
                     var propertyInTarget = targetType.GetProperty(property.Name);
 
                     if (propertyInTarget == null)
-                        throw new Exception(targetType.FullName + " does not have a property named " + property.Name);
+                        throw new(targetType.FullName + " does not have a property named " + property.Name);
 
                     if (!propertyInTarget.CanWrite)
-                        throw new Exception($"{targetType.FullName}.{property.Name} property is read-only.");
+                        throw new($"{targetType.FullName}.{property.Name} property is read-only.");
 
                     var mappedName = (string)property.GetValue(declaredMappings);
                     result[property.Name] = mappedName;
@@ -113,7 +113,7 @@ namespace Olive
                 }
                 else if (potential.Any())
                 {
-                    throw new Exception("The specified data contains multiple potential matches for the property '{0}'. The potentially matched columns found: {1}. You must use explicit mappings in this case."
+                    throw new("The specified data contains multiple potential matches for the property '{0}'. The potentially matched columns found: {1}. You must use explicit mappings in this case."
                         .FormatWith(property.Name, potential.Select(c => $"'{c}'").ToString(", ")));
                 }
             }
@@ -153,7 +153,7 @@ namespace Olive
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Could not set the value of the property '{mapping.Key}' from the value of '{data}'.", ex);
+                    throw new($"Could not set the value of the property '{mapping.Key}' from the value of '{data}'.", ex);
                 }
             }
 

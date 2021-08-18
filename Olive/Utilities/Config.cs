@@ -59,7 +59,7 @@ namespace Olive
             var result = Get(key);
 
             if (result.HasValue()) return result;
-            else throw new Exception($"AppSetting value of '{key}' is not specified.");
+            else throw new($"AppSetting value of '{key}' is not specified.");
         }
 
         public static string Get(string key, string defaultValue)
@@ -92,7 +92,7 @@ namespace Olive
 
                 foreach (var item in configNodes)
                 {
-                    var value = Environment.GetEnvironmentVariable(variable);
+                    var value = GetSafeEnvironmentVariable(variable);
                     var finalValue = item.Value.Replace(key, value);
 
                     try
@@ -107,6 +107,14 @@ namespace Olive
             }
 
             return config;
+        }
+
+        public static string GetSafeEnvironmentVariable(string key)
+        {
+            return new[] { "\\n", "\\r", "\\r\\n" }.Aggregate(
+                Environment.GetEnvironmentVariable(key),
+                (v, t) => v.Replace(t, Environment.NewLine)
+            );
         }
     }
 }

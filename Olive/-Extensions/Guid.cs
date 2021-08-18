@@ -9,7 +9,7 @@ namespace Olive
         /// <summary>
         /// Shortens this GUID.
         /// </summary>
-        public static ShortGuid Shorten(this Guid @this) => new ShortGuid(@this);
+        public static ShortGuid Shorten(this Guid @this) => new(@this);
 
         public static bool IsAnyOf(this Guid? @this, params Guid?[] items)
             => items?.Contains(@this) ?? false;

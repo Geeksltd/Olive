@@ -17,7 +17,7 @@
                 ViewModel = viewModel ?? throw new ArgumentNullException(nameof(ViewModel));
 
                 Member = viewModelMember.GetMember();
-                if (Member is null) throw new Exception("No such public field or property was found on " + typeof(TValue).Name);
+                if (Member is null) throw new("No such public field or property was found on " + typeof(TValue).Name);
             }
 
             public Task Update(TMember value)

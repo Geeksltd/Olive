@@ -39,7 +39,7 @@ namespace Olive
         /// </summary>
         public static IEnumerable<double> GetIntervals(this Range<double> range, double interval)
         {
-            if (interval <= 0) throw new Exception("Interval should be a positive number.");
+            if (interval <= 0) throw new("Interval should be a positive number.");
 
             for (var item = range.From; item <= range.To; item += interval)
                 yield return item;
@@ -50,7 +50,7 @@ namespace Olive
         /// </summary>
         public static IEnumerable<decimal> GetIntervals(this Range<decimal> range, decimal interval)
         {
-            if (interval <= 0) throw new Exception("Interval should be a positive number.");
+            if (interval <= 0) throw new("Interval should be a positive number.");
 
             for (var item = range.From; item <= range.To; item += interval)
                 yield return item;
@@ -83,7 +83,7 @@ namespace Olive
                 }
                 else
                 {
-                    last = new Range<DateTime>(last.From, item.To);
+                    last = new(last.From, item.To);
                 }
             }
 

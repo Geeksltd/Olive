@@ -7,7 +7,7 @@ namespace Olive
         /// <summary>
         /// Creates a CachedValue the specified value builder.
         /// </summary>
-        public static CachedValue<T> Create<T>(Func<T> valueBuilder) => new CachedValue<T>(valueBuilder);
+        public static CachedValue<T> Create<T>(Func<T> valueBuilder) => new(valueBuilder);
     }
 
     public class CachedValue<T>
@@ -49,6 +49,6 @@ namespace Olive
 
         public static implicit operator T(CachedValue<T> value) => value.Value;
 
-        public static implicit operator CachedValue<T>(T value) => new CachedValue<T>(value);
+        public static implicit operator CachedValue<T>(T value) => new(value);
     }
 }

@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Olive.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Olive.Entities;
 
 namespace Olive
 {
@@ -103,6 +103,7 @@ namespace Olive
         public static IEnumerable<Task<T>> GetList<T>(this HttpRequest @this, string key, char seperator) where T : class, IEntity
         {
             var ids = @this.Param(key);
+
             if (ids.IsEmpty()) yield break;
             else
                 foreach (var id in ids.Split(seperator))
@@ -125,6 +126,7 @@ namespace Olive
             foreach (var possibleQuerystringKey in new[] { "q", "as_q" })
             {
                 var queryString = urlReferrer.Split('?').Skip(1).FirstOrDefault();
+
                 var query = queryString.TrimStart("?").Split('&').Trim().
                     FirstOrDefault(p => p.StartsWith(possibleQuerystringKey + "="));
 
@@ -231,7 +233,7 @@ namespace Olive
             if (result.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
                 result.ToCharArray().ContainsAny('\'', '\"', '>', '<') ||
                 result.ContainsAny(new[] { "//", ":" }, caseSensitive: false))
-                throw new Exception("Invalid ReturnUrl.");
+                throw new("Invalid ReturnUrl.");
 
             return result;
         }
@@ -239,6 +241,7 @@ namespace Olive
         public static bool IsLocal(this HttpRequest @this)
         {
             var connection = @this.HttpContext.Connection;
+
             if (connection.RemoteIpAddress != null)
             {
                 if (IPAddress.IsLoopback(connection.RemoteIpAddress)) return true;

@@ -2,7 +2,6 @@ namespace Olive.GeoLocation
 {
     using System;
     using Olive;
-    using Olive.GeoLocation;
 
     public class RadialRegion
     {
@@ -49,7 +48,7 @@ namespace Olive.GeoLocation
         {
             unchecked
             {
-                int hashCode = Center.GetHashCode();
+                var hashCode = Center.GetHashCode();
                 hashCode = (hashCode * 397) ^ LongitudeDegrees.GetHashCode();
                 hashCode = (hashCode * 397) ^ LatitudeDegrees.GetHashCode();
                 return hashCode;
@@ -79,6 +78,7 @@ namespace Olive.GeoLocation
         }
 
         public static double LatitudeDegreesToKm(double latitudeDegrees) => EarthCircumferenceKm * latitudeDegrees / 360;
+
         public static double LongitudeDegreesToKm(GeoLocation position, double longitudeDegrees)
         {
             var latCircumference = LatitudeCircumferenceKm(position);

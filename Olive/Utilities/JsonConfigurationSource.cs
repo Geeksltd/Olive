@@ -21,7 +21,7 @@ namespace Olive
     {
         readonly string Json;
         string CurrentPath;
-        readonly Stack<string> Context = new Stack<string>();
+        readonly Stack<string> Context = new();
 
         public JsonConfigurationProvider(string json) => Json = json;
 

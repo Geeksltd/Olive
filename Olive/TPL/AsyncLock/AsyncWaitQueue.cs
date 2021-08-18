@@ -5,7 +5,7 @@ namespace Olive
 
     internal sealed class AsyncWaitQueue<T>
     {
-        readonly AsyncLockDeque<TaskCompletionSource<T>> Queue = new AsyncLockDeque<TaskCompletionSource<T>>();
+        readonly AsyncLockDeque<TaskCompletionSource<T>> Queue = new();
 
         public int Count { get { lock (Queue) return Queue.Count; } }
 

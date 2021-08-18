@@ -13,7 +13,7 @@ namespace Olive
         /// </summary>
         public static bool NextBoolean(this Random random, double chance)
         {
-            if (chance < 0 || chance > 100) throw new Exception("Chance should be between 0 and 100 percent.");
+            if (chance < 0 || chance > 100) throw new("Chance should be between 0 and 100 percent.");
 
             return random.NextDouble() >= 1 - (chance / 100.0);
         }

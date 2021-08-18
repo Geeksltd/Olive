@@ -81,7 +81,7 @@ namespace Olive
 
                 if (!value.GetType().IsA(typeof(TValue)))
                 {
-                    throw new Exception("The value on property '{0}' is of type '{1}' which cannot be casted as '{2}'."
+                    throw new("The value on property '{0}' is of type '{1}' which cannot be casted as '{2}'."
                         .FormatWith(property.Name, value.GetType().FullName, typeof(TValue).FullName));
                 }
 

@@ -133,7 +133,7 @@ namespace Olive
             }
             catch (Exception ex)
             {
-                throw new Exception($"Could not convert \"{text}\" to type { targetType.FullName}.", ex);
+                throw new($"Could not convert \"{text}\" to type { targetType.FullName}.", ex);
             }
         }
 

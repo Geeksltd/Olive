@@ -92,7 +92,7 @@ namespace Olive
             }
             catch (WebException ex)
             {
-                throw new Exception(await ex.GetResponseBody());
+                throw new(await ex.GetResponseBody());
             }
         }
     }

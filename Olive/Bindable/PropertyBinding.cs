@@ -32,7 +32,7 @@
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to apply the binding value of '{value}' on the {Property.Name} property of {target.GetType().FullName}", ex);
+                throw new($"Failed to apply the binding value of '{value}' on the {Property.Name} property of {target.GetType().FullName}", ex);
             }
         }
 

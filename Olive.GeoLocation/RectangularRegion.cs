@@ -1,7 +1,6 @@
 ﻿namespace Olive.GeoLocation
 {
     using System.Linq;
-    using Olive.GeoLocation;
 
     public class RectangularRegion
     {
