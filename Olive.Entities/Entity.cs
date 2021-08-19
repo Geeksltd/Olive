@@ -88,10 +88,15 @@ namespace Olive.Entities
 
         /// <summary>
         /// Determines whether this object is already cloned and updated in the database without this instance being updated.
+        /// </summary>                
+        public bool IsStale => !(UpdatedClone is null);
+
+        /// <summary>
+        /// Gets or sets the clone of this object which was updated in the database.
         /// </summary>
         [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
-        [EscapeGCop("Defined as a field on purpose.")]
-        public bool IsStale;
+        [EscapeGCop("Defined as a field on purpose for performance reasons.")]
+        public Entity UpdatedClone;
 
         /// <summary>
         /// Initializes this instance.
@@ -248,6 +253,7 @@ namespace Olive.Entities
             result.IsImmutable = false;
 
             result._ClonedFrom = this;
+            result.UpdatedClone = null;
             return result;
         }
 

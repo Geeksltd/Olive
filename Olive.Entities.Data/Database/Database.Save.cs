@@ -23,9 +23,9 @@ namespace Olive.Entities.Data
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-            Func<Task> save = async () => await DoSave(entity, behaviour);
+            Task save() => new SaveOperation(this, entity, behaviour).Run();
 
-            Func<Task> doSave = async () =>
+            async Task doSave()
             {
                 if (entity.IsNew) await save();
                 else using (await GetSyncLock(entity.GetType().FullName + entity.GetId()).Lock()) await save();
@@ -33,90 +33,6 @@ namespace Olive.Entities.Data
 
             if (ProviderConfig.Configuration.Transaction.EnforceForSave) await EnlistOrCreateTransaction(doSave);
             else await doSave();
-        }
-
-        async Task DoSave(IEntity entity, SaveBehaviour behaviour)
-        {
-            var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
-
-            var asEntity = entity as Entity;
-            if (mode == SaveMode.Update && (asEntity._ClonedFrom?.IsStale == true) && AnyOpenTransaction())
-            {
-                throw new InvalidOperationException("This " + entity.GetType().Name + " instance in memory is out-of-date. " +
-                    "A clone of it is already updated in the transaction. It is not allowed to update the same instance multiple times in a transaction, because then the earlier updates would be overwriten by the older state of the instance in memory. \r\n\r\n" +
-                    @"BAD: 
-Database.Update(myObject, x=> x.P1 = ...); // Note: this could also be nested inside another method that's called here instead.
-Database.Update(myObject, x=> x.P2 = ...);
-
-GOOD: 
-Database.Update(myObject, x=> x.P1 = ...);
-myObject = Database.Reload(myObject);
-Database.Update(myObject, x=> x.P2 = ...);");
-            }
-
-            if (Entity.Services.IsImmutable(entity))
-                throw new ArgumentException("An immutable record must be cloned before any modifications can be applied on it. " +
-                    $"Type={entity.GetType().FullName}, Id={entity.GetId()}.");
-
-            var dataProvider = GetProvider(entity);
-
-            if (!IsSet(behaviour, SaveBehaviour.BypassValidation))
-            {
-                await Entity.Services.RaiseOnValidating(entity as Entity, EventArgs.Empty);
-                await entity.Validate();
-            }
-            else if (!dataProvider.SupportValidationBypassing())
-            {
-                throw new ArgumentException(dataProvider.GetType().Name + " does not support bypassing validation.");
-            }
-
-            #region Raise saving event
-
-            if (!IsSet(behaviour, SaveBehaviour.BypassSaving))
-            {
-                var savingArgs = new System.ComponentModel.CancelEventArgs();
-                await Entity.Services.RaiseOnSaving(entity, savingArgs);
-
-                if (savingArgs.Cancel)
-                {
-                    Cache.Remove(entity);
-                    return;
-                }
-            }
-
-            #endregion
-
-            if (!IsSet(behaviour, SaveBehaviour.BypassLogging))
-                if (mode == SaveMode.Insert) await Audit.LogInsert(entity);
-                else await Audit.LogUpdate(entity);
-
-            await dataProvider.Save(entity);
-            Cache.UpdateRowVersion(entity);
-
-            if (mode == SaveMode.Update && asEntity?._ClonedFrom != null && AnyOpenTransaction())
-            {
-                asEntity._ClonedFrom.IsStale = true;
-                asEntity.IsStale = false;
-            }
-
-            if (mode == SaveMode.Insert)
-                Entity.Services.SetSaved(entity);
-
-            Cache.Remove(entity);
-
-            if (Transaction.Current != null)
-                Transaction.Current.TransactionCompleted += (s, e) => { Cache.Remove(entity); };
-
-            DbTransactionScope.Root?.OnTransactionCompleted(() => Cache.Remove(entity));
-
-            await Updated.Raise(entity);
-
-            if (!IsSet(behaviour, SaveBehaviour.BypassSaved))
-                await Entity.Services.RaiseOnSaved(entity, new SaveEventArgs(mode));
-
-            // OnSaved event handler might have read the object again and put it in the cache, which would
-            // create invalid CachedReference objects.
-            Cache.Remove(entity);
         }
 
         public Task<IEnumerable<T>> Save<T>(List<T> records) where T : IEntity => Save(records as IEnumerable<T>);
@@ -164,8 +80,7 @@ Database.Update(myObject, x=> x.P2 = ...);");
 
         async Task<T> Update<T>(T item, Action<T> action, Func<T, Task> asyncAction, SaveBehaviour behaviour) where T : IEntity
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
+            if (item is null) throw new ArgumentNullException(nameof(item));
 
             if (!(action == null ^ asyncAction == null))
                 throw new ArgumentNullException(nameof(action));
@@ -173,37 +88,36 @@ Database.Update(myObject, x=> x.P2 = ...);");
             if (item.IsNew)
                 throw new InvalidOperationException("New instances cannot be updated using the Update method.");
 
-            if (!(item is Entity))
+            if (!(item is Entity entity))
                 throw new ArgumentException($"Database.Update() method accepts a type inheriting from {typeof(Entity).FullName}. So {typeof(T).FullName} is not supported.");
 
-            if ((item as Entity)._ClonedFrom?.IsStale == true && AnyOpenTransaction())
-                // No need for an error. We can just get the fresh version here.
-                item = await Reload(item);
-
-            async Task doAction(T obj)
+            async Task doAction(object obj)
             {
-                if (action == null) await asyncAction(obj);
-                else action(obj);
+                if (action == null) await asyncAction((T)obj);
+                else action((T)obj);
             }
 
-            if (Entity.Services.IsImmutable(item as Entity))
+            if (Entity.Services.IsImmutable(entity))
             {
-                var clone = (T)((IEntity)item).Clone();
-
+                var clone = entity.Clone();
                 await doAction(clone);
-
-                await Save(clone as Entity, behaviour);
-
-                if (!AnyOpenTransaction()) await doAction(item);
-
-                return clone;
+                await Save(clone, behaviour);
+                if (!AnyOpenTransaction()) await doAction(entity);
+                return (T)clone;
             }
-            else
+            else // entity is already cloned once
             {
-                await doAction(item);
-                await Save(item, behaviour);
+                if (entity._ClonedFrom?.IsStale == true && AnyOpenTransaction())
+                {
+                    if (!ReferenceEquals(entity._ClonedFrom.UpdatedClone, entity))
+                        // No need for an error. We can just get the fresh version here.
+                        entity = await Reload(entity);
+                }
 
-                return item;
+                await doAction(entity);
+                await Save(entity, behaviour);
+
+                return (T)(object)entity;
             }
         }
 

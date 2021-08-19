@@ -11,17 +11,17 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class Database : IDatabase
     {
-       public ICache Cache { get; private set; }
+        public ICache Cache { get; private set; }
 
         /// <summary>
         /// Initialize instance of Database by injecting ICache dependency
         /// </summary>
         /// 
-        bool IsSet(SaveBehaviour setting, SaveBehaviour behaviour) => (setting & behaviour) == behaviour;
+        internal static bool IsSet(SaveBehaviour setting, SaveBehaviour behaviour) => (setting & behaviour) == behaviour;
 
-        bool IsSet(DeleteBehaviour setting, DeleteBehaviour behaviour) => (setting & behaviour) == behaviour;
+        internal static bool IsSet(DeleteBehaviour setting, DeleteBehaviour behaviour) => (setting & behaviour) == behaviour;
 
-        bool NeedsTypeResolution(Type type) => type.IsInterface || type == typeof(Entity);
+        internal static bool NeedsTypeResolution(Type type) => type.IsInterface || type == typeof(Entity);
 
         public event AwaitableEventHandler CacheRefreshed;
 
