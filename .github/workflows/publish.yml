@@ -15,7 +15,7 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: Olive.Mvc/Olive.Mvc.csproj
+      Solution_Name: Olive/Olive.csproj
       
     steps:
     - uses: actions/checkout@v2
@@ -38,5 +38,5 @@ jobs:
     - name: Publish Olive Mvc NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
+        PROJECT_FILE_PATH: Olive/Olive.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
