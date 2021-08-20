@@ -1,0 +1,27 @@
+name: Publish Olive Packages
+
+on:
+  push:
+    branches: [ Add-publish-action ]
+
+jobs:
+  publish-nuget:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+    
+    - name: Install dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Publish Olive Mvc NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
