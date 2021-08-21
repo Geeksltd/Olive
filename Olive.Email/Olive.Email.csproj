@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Email</RootNamespace>
     <PackageId>Olive.Email-test</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.106</Version>
+    <Version>3.1.107</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
