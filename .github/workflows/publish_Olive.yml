@@ -41,8 +41,8 @@ jobs:
    #     PROJECT_FILE_PATH: Olive/Olive.csproj
    #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
       
-    - name: Publish Olive Audit NuGet Package
+    - name: Publish Olive Web NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: Olive.Audit/Olive.Audit.csproj
+        PROJECT_FILE_PATH: Olive.Web/Olive.Web.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
