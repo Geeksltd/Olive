@@ -1,4 +1,4 @@
-name: Publish Olive Packages
+name: Publish Olive Mvc Package
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: Olive.Entities/Olive.Entities.csproj
+      Solution_Name: Olive.Mvc/Olive.Mvc.csproj
       
     steps:
     - uses: actions/checkout@v2
@@ -35,8 +35,8 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    - name: Publish Olive Entities NuGet Package
+    - name: Publish Olive Mvc NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
+        PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}

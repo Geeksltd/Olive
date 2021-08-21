@@ -1,4 +1,4 @@
-name: Publish Olive Packages
+name: Publish Olive Package
 
 on:
   push:
