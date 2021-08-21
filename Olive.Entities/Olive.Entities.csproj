@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive.Entities</AssemblyName>
     <RootNamespace>Olive.Entities</RootNamespace>
-    <PackageId>Olive.Entities</PackageId>
+    <PackageId>Olive.Entities-test</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>2.1.158</Version>
     <PackOnBuild>true</PackOnBuild>
@@ -17,7 +17,7 @@
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive.Entities</Title>
+    <Title>Olive.Entities-test</Title>
     <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>

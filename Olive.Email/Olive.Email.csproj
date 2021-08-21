@@ -3,7 +3,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Olive.Email</AssemblyName>
     <RootNamespace>Olive.Email</RootNamespace>
-    <PackageId>Olive.Email</PackageId>
+    <PackageId>Olive.Email-test</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>3.1.106</Version>
     <PackOnBuild>true</PackOnBuild>
@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive.Email</Title>
+    <Title>Olive.Email-test</Title>
     <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>
