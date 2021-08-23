@@ -28,6 +28,7 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -54,4 +55,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
+  <PropertyGroup Condition="'$(Running)'=='local'">
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
+    </Target>
+  </PropertyGroup>
 </Project>
