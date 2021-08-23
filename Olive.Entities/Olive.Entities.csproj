@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive.Entities</AssemblyName>
     <RootNamespace>Olive.Entities</RootNamespace>
-    <PackageId>Olive.Entities</PackageId>
+    <PackageId>Olive.Entities-test</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>2.1.161</Version>
     <PackOnBuild>true</PackOnBuild>

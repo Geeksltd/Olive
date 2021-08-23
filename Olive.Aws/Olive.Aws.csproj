@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive.Aws</AssemblyName>
     <RootNamespace>Olive.Aws</RootNamespace>
-    <PackageId>Olive.Aws</PackageId>
+    <PackageId>Olive.Aws-test</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>2.2.127.0</Version>
     <PackOnBuild>true</PackOnBuild>
