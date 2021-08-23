@@ -41,8 +41,8 @@ jobs:
    #     PROJECT_FILE_PATH: Olive/Olive.csproj
    #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
       
-    - name: Publish Olive Azure NuGet Package
+    - name: Publish Olive Aws NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: Olive.Azure/Olive.Azure.csproj
+        PROJECT_FILE_PATH: Olive.Aws/Olive.Aws.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
