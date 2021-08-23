@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Olive.Mvc</AssemblyName>
     <RootNamespace>Olive.Mvc</RootNamespace>
-    <PackageId>Olive.Mvc</PackageId>
+    <PackageId>Olive.Mvc-test</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>3.1.130</Version>
     <PackOnBuild>true</PackOnBuild>
@@ -17,7 +17,7 @@
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive.Mvc</Title>
+    <Title>Olive.Mvc-test</Title>
     <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>

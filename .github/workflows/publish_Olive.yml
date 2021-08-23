@@ -1,4 +1,4 @@
-name: Publish Olive Package
+name: Publish Olive Packages
 
 on:
   push:
@@ -6,43 +6,35 @@ on:
 
 jobs:
  build:
-
     strategy:
       matrix:
         configuration: [Release]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
 
-    env:
-      Solution_Name: Olive.Aws/Olive.Aws.csproj
-      
     steps:
     - uses: actions/checkout@v2
-     # Install the .NET Core workload
-#    - name: Install .NET Core
-#      uses: actions/setup-dotnet@v1
-#      with:
-#        dotnet-version: 5.0.x
+   
+    - name: Publish Olive NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive/Olive.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
- #   - name: Setup MSBuild.exe
- #     uses: microsoft/setup-msbuild@v1.0.2
-
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
- #   - name: Restore the application
- #     run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
- #     env:
- #       Configuration: ${{ matrix.configuration }}
-    
-   # - name: Publish Olive NuGet Package
-   #   uses: brandedoutcast/publish-nuget@v2
-   #   with:
-   #     PROJECT_FILE_PATH: Olive/Olive.csproj
-   #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-      
     - name: Publish Olive Aws NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Olive.Aws/Olive.Aws.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    
+    - name: Publish Olive Entities NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Olive Mvc NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
