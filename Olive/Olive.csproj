@@ -58,5 +58,4 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
 	  <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
   </Target>
-  </PropertyGroup>
 </Project>
