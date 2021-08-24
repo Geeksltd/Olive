@@ -3,7 +3,7 @@
     "Olive.Mvc.Security": {
       "commandName": "Project",
       "environmentVariables": {
-        "Running": "pipeline"
+        "Running": "local"
       }
     }
   }
