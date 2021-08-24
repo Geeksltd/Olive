@@ -3,9 +3,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive.Aws</AssemblyName>
     <RootNamespace>Olive.Aws</RootNamespace>
-    <PackageId>Olive.Aws-test</PackageId>
+    <PackageId>Olive.Aws</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.2.127.0</Version>
+    <Version>2.2.126.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive.Aws-test</Title>
+    <Title>Olive.Aws</Title>
     <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>

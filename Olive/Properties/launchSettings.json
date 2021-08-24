@@ -3,7 +3,7 @@
     "Olive": {
       "commandName": "Project",
       "environmentVariables": {
-        "Running": "local"
+        "Running": "pipeline"
       }
     }
   }

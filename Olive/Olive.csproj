@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Olive</AssemblyName>
     <RootNamespace>Olive</RootNamespace>
-    <PackageId>Olive-test</PackageId>
+    <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <Version>2.1.279.0</Version>
     <PackOnBuild>true</PackOnBuild>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
     <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
     <PackageTags>olive</PackageTags>
-    <Title>Olive-test</Title>
+    <Title>Olive</Title>
     <Description>Olive Framework</Description>
     <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
     <Owners>Geeks Ltd</Owners>
