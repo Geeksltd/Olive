@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Entities</RootNamespace>
     <PackageId>Olive.Entities</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.158</Version>
+    <Version>2.1.159</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -40,6 +40,6 @@
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache" />
+    <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
   </Target>
 </Project>
