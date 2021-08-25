@@ -61,7 +61,7 @@
 
             if (connectionType.IsEmpty())
             {
-                type = ConnectionTypes.FirstOrDefault().Value ?? throw new Exception("No data provider is registered.");
+                type = ConnectionTypes.FirstOrDefault().Value ?? throw new Exception("No data provider is registered. Please ensure you've already called IDatabaseProviderConfig.Configure");
             }
             else if (!ConnectionTypes.TryGetValue(connectionType, out type))
             {
