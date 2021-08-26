@@ -119,7 +119,9 @@ namespace Olive.Aws
         {
             while (true)
             {
-                var batch = await PullBatch();
+                // Instead of having multiple 10-secs waits it's better to have multiple 1-sec waits
+                // Also this change will make it more Olive.Mvc.PerformanceMonitoringMiddleware friendly
+                var batch = await PullBatch(timeoutSeconds: 1);
                 if (batch.None()) return;
 
                 foreach (var item in batch)
