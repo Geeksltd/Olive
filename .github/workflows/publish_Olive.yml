@@ -39,6 +39,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive Entities Data Replication NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.Replication/Olive.Entities.Data.Replication.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Email NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
