@@ -1,0 +1,52 @@
+name: Publish Olive Packages
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+ build:
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+   
+    - name: Publish Olive NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive/Olive.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Olive Azure NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Azure/Olive.Azure.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Olive Aws NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Aws/Olive.Aws.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    
+    - name: Publish Olive Entities NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Olive Email NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Email/Olive.Email.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Olive Mvc NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}

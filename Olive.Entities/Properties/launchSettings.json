@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Olive.Entities": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Running": "pipeline"
+      }
+    }
+  }
+}
