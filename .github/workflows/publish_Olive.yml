@@ -15,10 +15,21 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+     # This step will create "an array" of strings, e.g. "path1 path2 path3"
     - name: array
       id: arr
       run: |
-        git diff --name-only HEAD~1 --diff-filter=AMDR
+        arr=()
+        for i in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
+        do
+          if [[ $i == *"path1"* ]]; then
+            arr+=("path1")
+          fi
+          if [[ $i == *"path2"* ]]; then
+            arr+=("path2")
+          fi
+        done
+        echo ::set-output name=arr::${arr[@]}
    
  #   - name: Publish Olive NuGet Package
  #     uses: brandedoutcast/publish-nuget@v2
