@@ -8,22 +8,15 @@ jobs:
  build:
     strategy:
       matrix:
-        configuration: [Release]
+        configuration: [Olive, Olive.Aws]
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
-     # This step will create "an array" of strings, e.g. "path1 path2 path3"
-    - name: array
-      id: arr
-      run: |
-       changes=$(git diff --name-only HEAD~1 --diff-filter=AMDR)
-       echo $changes
-   
- #   - name: Publish Olive NuGet Package
- #     uses: brandedoutcast/publish-nuget@v2
- #     with:
- #       PROJECT_FILE_PATH: Olive/Olive.csproj
- #       NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish ${{matrix.configuratio}} NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: ${{matrix.configuratio}}/${{matrix.configuratio}}.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
