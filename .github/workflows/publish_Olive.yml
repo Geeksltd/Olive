@@ -19,17 +19,7 @@ jobs:
     - name: array
       id: arr
       run: |
-        arr=()
-        for i in "$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})"
-        do
-          if [[ $i == *"path1"* ]]; then
-            arr+=("path1")
-          fi
-          if [[ $i == *"path2"* ]]; then
-            arr+=("path2")
-          fi
-        done
-        echo ::set-output name=arr::${arr[@]}
+       git diff --name-only HEAD~1 --diff-filter=AMDR
    
  #   - name: Publish Olive NuGet Package
  #     uses: brandedoutcast/publish-nuget@v2
