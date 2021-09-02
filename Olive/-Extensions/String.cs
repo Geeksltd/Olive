@@ -856,7 +856,7 @@ namespace Olive
         [EscapeGCop("It is the Except definition and so it cannot call itself")]
         public static string Remove(this string text, string substringToRemove)
         {
-            if (text.IsEmpty()) return text;
+            if (text.IsEmpty() || substringToRemove.IsEmpty()) return text;
 
             return text.Replace(substringToRemove, string.Empty);
         }
@@ -868,7 +868,7 @@ namespace Olive
         /// <param name="caseSensitive">Determines whether case sensitive is important or not.</param>
         public static string Remove(this string text, string substringToRemove, bool caseSensitive)
         {
-            if (text.IsEmpty()) return text;
+            if (text.IsEmpty() || substringToRemove.IsEmpty()) return text;
 
             var comparison = caseSensitive ? RegexOptions.None : RegexOptions.IgnoreCase;
             return Regex.Replace(text, substringToRemove, string.Empty, comparison);
