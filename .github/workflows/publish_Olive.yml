@@ -19,7 +19,7 @@ jobs:
     - name: array
       id: arr
       run: |
-       git diff --name-only HEAD~1 --diff-filter=AMDR
+       git diff --name-only HEAD --diff-filter=AMDR
    
  #   - name: Publish Olive NuGet Package
  #     uses: brandedoutcast/publish-nuget@v2
