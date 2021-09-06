@@ -82,7 +82,16 @@ namespace Olive.Entities.Replication
 
         protected override async Task<object> GetValue(IEntity entity)
         {
-            var result = Property.GetValue(entity);
+            object result;
+            try
+            {
+                result = Property.GetValue(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to get a property value. Property: " + Property.DeclaringType.GetProgrammingName() + "." +
+                    Property.Name + " | Object type " + entity.GetType().GetProgrammingName(), ex);
+            }
 
             if (result is Task t)
             {

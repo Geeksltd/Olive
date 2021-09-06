@@ -80,8 +80,8 @@ namespace Olive.Aws
                 catch (Exception ex)
                 {
                     var exception = new Exception("Failed to run queue event handler " +
-                        Handler.Method.DeclaringType.FullName + "." +
-                        Handler.Method.GetDisplayName() +
+                        Handler.Method.DeclaringType.GetProgrammingName() + "." +
+                        Handler.Method.Name +
                         "message: " + item.Key?.ToJsonText(), ex);
 
                     if (Queue.IsFifo)
