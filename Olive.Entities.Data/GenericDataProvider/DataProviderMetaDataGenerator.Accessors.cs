@@ -187,7 +187,7 @@ namespace Olive.Entities.Data
                 if (type.IsA<char>()) return "reader.GetChar(index)";
                 if (type.IsA<DateTime>()) return "reader.GetDateTime(index)";
                 if (type.IsA<decimal>()) return "reader.GetDecimal(index)";
-                if (type.IsA<double>()) return "reader.GetDouble(index)";
+                if (type.IsA<double>()) return "(double) reader.GetDecimal(index)";;
                 if (type.IsA<float>()) return "reader.GetFloat(index)";
                 if (type.IsA<short>()) return "reader.GetInt16(index)";
                 if (type.IsA<int>()) return "reader.GetInt32(index)";
