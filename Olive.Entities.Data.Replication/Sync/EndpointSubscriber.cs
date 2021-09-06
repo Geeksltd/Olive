@@ -64,8 +64,7 @@ namespace Olive.Entities.Replication
                 var existingRecords = await Database.Of(DomainType).GetList();
                 Log.Debug($"Deleting all {message.TypeFullName} ({existingRecords.Count()} records)");
 
-                foreach (var item in existingRecords)
-                    await Database.Delete(item, DeleteBehaviour.BypassAll);
+                await Database.GetAccess(DomainType).ExecuteNonQuery($"truncate table {TableNameAttribute.GetTableName(DomainType)}");
 
                 return;
             }
