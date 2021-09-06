@@ -29,7 +29,9 @@ namespace Olive.Console
             Configuration.MergeEnvironmentVariables();
         }
 
-        async Task IHostedService.StartAsync(CancellationToken cancellationToken)
+        async Task IHostedService.StartAsync(CancellationToken cancellationToken) => OnStart();
+
+        internal virtual async Task OnStart()
         {
             await Run();
             Process.GetCurrentProcess().Kill();
@@ -38,5 +40,21 @@ namespace Olive.Console
         Task IHostedService.StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         protected abstract Task Run();
+    }
+    public abstract class UnitTestStartup : Startup
+    {
+        protected UnitTestStartup(IConfiguration config) : base(config)
+        {
+        }
+
+        internal override Task OnStart()
+        {
+            return Task.CompletedTask;
+        }
+
+        protected override Task Run()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

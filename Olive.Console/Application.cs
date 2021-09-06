@@ -16,16 +16,21 @@ namespace Olive.Console
 
         public static Task Start<TStartup>(string[] args, Action<HostBuilder> configure = null) where TStartup : Startup
         {
+            return Initialize<TStartup>(args, configure).RunConsoleAsync();
+        }
+
+        static IHostBuilder Initialize<TStartup>(string[] args, Action<HostBuilder> configure = null) where TStartup : Startup
+        {
             Startup.Args = args;
 
             var host = new HostBuilder();
 
             host.ConfigureAppConfiguration((hostingContext, config) =>
-             {
-                 config.AddJsonFile("appsettings.json", optional: true);
-                 config.AddEnvironmentVariables();
-                 if (args != null) config.AddCommandLine(args);
-             });
+            {
+                config.AddJsonFile("appsettings.json", optional: true);
+                config.AddEnvironmentVariables();
+                if (args != null) config.AddCommandLine(args);
+            });
 
             configure?.Invoke(host);
 
@@ -42,7 +47,12 @@ namespace Olive.Console
                 logging.AddConsole();
             });
 
-            return host.RunConsoleAsync();
+            return host;
+        }
+
+        public static void StartUnitTest<TStartup>(Action<HostBuilder> configure = null) where TStartup : Olive.Console.Startup
+        {
+            Initialize<TStartup>(new string[0], configure).Build().RunAsync();
         }
     }
 }
