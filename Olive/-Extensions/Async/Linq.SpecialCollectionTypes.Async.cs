@@ -10,6 +10,10 @@ namespace Olive
     {
         
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, TResult> func)
+            => @this.Get(x => x.OrEmpty().Select(func));
+
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<TSource[]> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
 
@@ -197,6 +201,10 @@ namespace Olive
             => condition ? @this.ForLinq().Where(predicate) : @this.ForLinq();
 
    
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func)
+            => @this.Get(x => x.OrEmpty().Select(func));
+
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
@@ -386,6 +394,10 @@ namespace Olive
 
    
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, TResult> func)
+            => @this.Get(x => x.OrEmpty().Select(func));
+
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<List<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
 
@@ -573,6 +585,10 @@ namespace Olive
             => condition ? @this.ForLinq().Where(predicate) : @this.ForLinq();
 
    
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, TResult> func)
+            => @this.Get(x => x.OrEmpty().Select(func));
+
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IList<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);

@@ -18,6 +18,10 @@ namespace Olive
         <# foreach (var t in listTypes) { #>
 
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
+          this Task<<#=t#>> @this, Func<TSource, TResult> func)
+            => @this.Get(x => x.OrEmpty().Select(func));
+
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<<#=t#>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
 

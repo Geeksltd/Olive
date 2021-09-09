@@ -17,6 +17,10 @@ namespace Olive
     partial class OliveExtensions
     {
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
+          this Task<IEnumerable<TSource>> @this, Func<TSource, TResult> func)
+            => @this.Get(x => x.OrEmpty().Select(func));
+
+        public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.Get(x => x.OrEmpty().SequentialSelect(func));
 
