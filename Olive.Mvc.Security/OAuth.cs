@@ -35,7 +35,7 @@ namespace Olive.Security
 
             await Context.Current.Http().ChallengeAsync(provider, new AuthenticationProperties
             {
-                RedirectUri = "/ExternalLoginCallback",
+                RedirectUri = $"/ExternalLoginCallback?ReturnUrl={Context.Current.Request().Param("ReturnUrl")}",
                 Items = { new KeyValuePair<string, string>("LoginProvider", provider) }
             });
         }
