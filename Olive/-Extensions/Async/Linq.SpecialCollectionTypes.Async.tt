@@ -208,6 +208,19 @@ namespace Olive
              bool condition, Func<TSource, bool> predicate)
             => condition ? @this.ForLinq().Where(predicate) : @this.ForLinq();
 
+        public static Task<bool> HasMany<TSource>(this Task<<#=t#>> @this)
+            => @this.Get(x => x.HasMany());
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<<#=t#>> @this, TSource item)
+            => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<<#=t#>> other)
+            => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Where<TSource>(this Task<<#=t#>> @this, Func<TSource, Task<bool>> predicate)
+          => @this.Get(x => x.Where(predicate));        
+
    <# } #>
     }
 }

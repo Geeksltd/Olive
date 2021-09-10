@@ -49,6 +49,11 @@ namespace Olive
             return tasks.Where(x => x.Predicate.GetAlreadyCompletedResult()).Select(x => x.Value);
         }
 
+        public static Task<IEnumerable<T>> Where<T>(this Task<IEnumerable<T>> @this, Func<T, Task<bool>> predicate)
+        {
+            return @this.Get(x => x.Where(predicate));
+        }
+
         public static async Task<IEnumerable<T>> Concat<T>(
           this IEnumerable<T> @this, Task<IEnumerable<T>> second) => @this.Concat((await second).OrEmpty());
 

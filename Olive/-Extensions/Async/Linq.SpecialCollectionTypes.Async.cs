@@ -200,6 +200,19 @@ namespace Olive
              bool condition, Func<TSource, bool> predicate)
             => condition ? @this.ForLinq().Where(predicate) : @this.ForLinq();
 
+        public static Task<bool> HasMany<TSource>(this Task<TSource[]> @this)
+            => @this.Get(x => x.HasMany());
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<TSource[]> @this, TSource item)
+            => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<TSource[]> other)
+            => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Where<TSource>(this Task<TSource[]> @this, Func<TSource, Task<bool>> predicate)
+          => @this.Get(x => x.Where(predicate));        
+
    
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func)
@@ -391,6 +404,19 @@ namespace Olive
         public static Task<IEnumerable<TSource>> FilterIf<TSource>(this Task<IOrderedEnumerable<TSource>> @this,
              bool condition, Func<TSource, bool> predicate)
             => condition ? @this.ForLinq().Where(predicate) : @this.ForLinq();
+
+        public static Task<bool> HasMany<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
+            => @this.Get(x => x.HasMany());
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IOrderedEnumerable<TSource>> @this, TSource item)
+            => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<IOrderedEnumerable<TSource>> other)
+            => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> predicate)
+          => @this.Get(x => x.Where(predicate));        
 
    
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
@@ -584,6 +610,19 @@ namespace Olive
              bool condition, Func<TSource, bool> predicate)
             => condition ? @this.ForLinq().Where(predicate) : @this.ForLinq();
 
+        public static Task<bool> HasMany<TSource>(this Task<List<TSource>> @this)
+            => @this.Get(x => x.HasMany());
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<List<TSource>> @this, TSource item)
+            => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<List<TSource>> other)
+            => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Where<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> predicate)
+          => @this.Get(x => x.Where(predicate));        
+
    
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IList<TSource>> @this, Func<TSource, TResult> func)
@@ -775,6 +814,19 @@ namespace Olive
         public static Task<IEnumerable<TSource>> FilterIf<TSource>(this Task<IList<TSource>> @this,
              bool condition, Func<TSource, bool> predicate)
             => condition ? @this.ForLinq().Where(predicate) : @this.ForLinq();
+
+        public static Task<bool> HasMany<TSource>(this Task<IList<TSource>> @this)
+            => @this.Get(x => x.HasMany());
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IList<TSource>> @this, TSource item)
+            => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<IList<TSource>> other)
+            => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IList<TSource>> @this, Func<TSource, Task<bool>> predicate)
+          => @this.Get(x => x.Where(predicate));        
 
        }
 }

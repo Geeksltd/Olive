@@ -282,6 +282,16 @@ namespace Olive
         public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<IEnumerable> @this)
             => @this.Get(x => x.OfType<TResult>());
 
+        public static Task<bool> HasMany<TSource>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.HasMany());
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IEnumerable<TSource>> @this, TSource item)
+            => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<IEnumerable<TSource>> other)
+            => @this.Get(x => x.Concat(other));
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.

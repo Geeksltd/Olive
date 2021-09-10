@@ -119,5 +119,7 @@
         public new async Task<IEnumerable<TEntity>> GetList() => (await base.GetList()).Cast<TEntity>();
 
         public new async Task<TEntity> FirstOrDefault() => (TEntity)(await base.FirstOrDefault());
+
+        public Task<TEntity[]> ToArray() => GetList().ToArray();
     }
 }
