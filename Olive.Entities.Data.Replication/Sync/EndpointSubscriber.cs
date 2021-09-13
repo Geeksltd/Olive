@@ -96,7 +96,12 @@ namespace Olive.Entities.Replication
 
 					if (!await Endpoint.OnSaving(message, entity, mode)) return;
 
-					await Database.Save(entity, SaveBehaviour.BypassAll);
+					var bypass = SaveBehaviour.BypassAll;
+
+					if (Config.Get("Database:Audit:EnableForEndpointDataReplication", defaultValue: false))
+						bypass &= ~SaveBehaviour.BypassLogging;
+
+					await Database.Save(entity, bypass);
 					await GlobalEntityEvents.OnInstanceSaved(new GlobalSaveEventArgs(entity, mode));
 					await Endpoint.OnSaved(message, entity, mode);
 
