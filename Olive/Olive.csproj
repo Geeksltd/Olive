@@ -5,7 +5,7 @@
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.280.0</Version>
+    <Version>2.1.284.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -36,14 +36,23 @@
     <DefineConstants>TRACE;ProfileGCop</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <None Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.tt">
+      <LastGenOutput>Linq.SpecialCollectionTypes.Async.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
+      <LastGenOutput>Linq.SpecialCollectionTypes.Async.cs</LastGenOutput>
     </None>
-    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
+    <Compile Update="-Extensions\Async\Linq - Copy.NumericIEnumerable.Async.cs">
+      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
+    </Compile>
+    <Compile Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Linq.SpecialCollectionTypes.Async.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -75,6 +75,10 @@ namespace Olive
           this Task<IEnumerable<TSource>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Distinct(func));
 
+        public static Task<IEnumerable<IGrouping<TKey, TSource>>> GroupBy<TSource, TKey>(
+          this Task<IEnumerable<TSource>> @this, Func<TSource, TKey> groupBy)
+          => @this.Get(x => x.GroupBy(groupBy));
+
         public static Task<TSource> First<TSource>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, bool> func)
             => @this.Get(x => x.OrEmpty().First(func));
@@ -277,6 +281,16 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<IEnumerable> @this)
             => @this.Get(x => x.OfType<TResult>());
+
+        public static Task<bool> HasMany<TSource>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.HasMany());
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IEnumerable<TSource>> @this, TSource item)
+            => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<IEnumerable<TSource>> other)
+            => @this.Get(x => x.Concat(other));
 
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.

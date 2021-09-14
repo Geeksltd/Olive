@@ -1,6 +1,7 @@
 ﻿namespace Olive.Web
 {
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a HttpRequest level cache of objects.
@@ -19,7 +20,7 @@
             var bag = Olive.Context.Current.Http().Items;
             if (bag == null) return valueProducer();
 
-            if (!bag.TryGetValue(key, out object value))
+            if (!bag.TryGetValue(key, out var value))
             {
                 value = valueProducer();
 
