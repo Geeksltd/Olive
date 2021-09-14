@@ -218,6 +218,14 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Except<TSource>(this Task<TSource[]> @this, TSource item)
             => @this.Get(x => x.Except(item));
 
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<TSource[]> @this,
+            IEnumerable<TSource> items)
+            => @this.ForLinq().Except(items);
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<TSource[]> @this,
+           Task<IEnumerable<TSource>> items)
+            => @this.ForLinq().Except(items);
+
         public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
            Task<TSource[]> other)
             => @this.Get(x => x.Concat(other.ForLinq()));
@@ -434,6 +442,14 @@ namespace Olive
 
         public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IOrderedEnumerable<TSource>> @this, TSource item)
             => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IOrderedEnumerable<TSource>> @this,
+            IEnumerable<TSource> items)
+            => @this.ForLinq().Except(items);
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IOrderedEnumerable<TSource>> @this,
+           Task<IEnumerable<TSource>> items)
+            => @this.ForLinq().Except(items);
 
         public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
            Task<IOrderedEnumerable<TSource>> other)
@@ -652,6 +668,14 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Except<TSource>(this Task<List<TSource>> @this, TSource item)
             => @this.Get(x => x.Except(item));
 
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<List<TSource>> @this,
+            IEnumerable<TSource> items)
+            => @this.ForLinq().Except(items);
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<List<TSource>> @this,
+           Task<IEnumerable<TSource>> items)
+            => @this.ForLinq().Except(items);
+
         public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
            Task<List<TSource>> other)
             => @this.Get(x => x.Concat(other.ForLinq()));
@@ -868,6 +892,14 @@ namespace Olive
 
         public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IList<TSource>> @this, TSource item)
             => @this.Get(x => x.Except(item));
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IList<TSource>> @this,
+            IEnumerable<TSource> items)
+            => @this.ForLinq().Except(items);
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IList<TSource>> @this,
+           Task<IEnumerable<TSource>> items)
+            => @this.ForLinq().Except(items);
 
         public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
            Task<IList<TSource>> other)
