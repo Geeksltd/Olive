@@ -65,9 +65,15 @@ namespace Olive
           this Task<<#=t#>> @this, Func<TSource, bool> func)
             => @this.ForLinq().First(func);
 
+        public static Task<TSource> First<TSource>(this Task<<#=t#>> @this)
+            => @this.ForLinq().First();
+
         public static Task<TSource> FirstOrDefault<TSource>(
           this Task<<#=t#>> @this, Func<TSource, bool> func)
             => @this.ForLinq().FirstOrDefault(func);
+
+        public static Task<TSource> FirstOrDefault<TSource>(this Task<<#=t#>> @this)
+            => @this.ForLinq().FirstOrDefault();
 
         public static Task<IEnumerable<TSource>> Intersect<TSource>(
         this Task<<#=t#>> @this, IEnumerable<TSource> second) => @this.ForLinq().Intersect(second);
@@ -77,6 +83,12 @@ namespace Olive
 
         public static Task<TSource> LastOrDefault<TSource>(
         this Task<<#=t#>> @this, Func<TSource, bool> func) => @this.ForLinq().LastOrDefault(func);
+
+        public static Task<TSource> Last<TSource>(this Task<<#=t#>> @this)
+            => @this.ForLinq().Last();
+
+        public static Task<TSource> LastOrDefault<TSource>(this Task<<#=t#>> @this) 
+            => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
         this Task<<#=t#>> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderBy(func);

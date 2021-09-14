@@ -17,9 +17,9 @@ namespace Olive
         public event Action Changed;
 
         public Bindable(TValue value) => this.value = value;
-        protected void FireChanged() => Changed?.Invoke();
-
         public Bindable() { }
+
+        protected void FireChanged() => Changed?.Invoke();
 
         public TValue Value
         {

@@ -93,6 +93,12 @@ namespace Olive
         public static Task<TSource> FirstOrDefault<TSource>(this Task<IEnumerable<TSource>> @this)
             => @this.Get(x => x.OrEmpty().FirstOrDefault());
 
+        public static Task<TSource> Last<TSource>(this Task<IEnumerable<TSource>> @this)
+    => @this.Get(x => x.OrEmpty().Last());
+
+        public static Task<TSource> LastOrDefault<TSource>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.OrEmpty().LastOrDefault());
+
         public static Task<IEnumerable<TSource>> Intersect<TSource>(
         this Task<IEnumerable<TSource>> @this, IEnumerable<TSource> second)
             => @this.Get(x => x.OrEmpty().Intersect(second));

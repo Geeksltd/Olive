@@ -353,7 +353,8 @@ namespace Olive
 
             var secondEnding = singular.Length > 1 ? char.ToLower(singular[singular.Length - 2]) : char.MinValue;
 
-            if (ending == 'x' || ending == 'z' || ending == 's' || (secondEnding.ToString() + ending) == "ch" || (secondEnding.ToString() + ending) == "sh")
+            if (ending.IsAnyOf('x', 'z', 's')
+                || (secondEnding.ToString() + ending).IsAnyOf("ch", "sh"))
                 return singular + "es";
 
             else if (ItNeedsIESForPlural(ending, secondEnding))
@@ -364,12 +365,7 @@ namespace Olive
 
         static bool ItNeedsIESForPlural(char ending, char secondEnding)
         {
-            return ending == 'y' &&
-                secondEnding != 'a' &&
-                secondEnding != 'e' &&
-                secondEnding != 'o' &&
-                secondEnding != 'i' &&
-                secondEnding != 'u';
+            return ending == 'y' && secondEnding.IsNoneOf('a', 'e', 'o', 'i', 'u');
         }
 
         [EscapeGCop("It is fine for this method to be long.")]
@@ -489,7 +485,8 @@ namespace Olive
         /// Trims some unnecessary text from the end of this string, if it exists.
         /// </summary>
         /// <param name="unnecessaryText">Specific number of characters from this value that you want to be removed.</param>
-        public static string TrimEnd(this string @this, string unnecessaryText) => TrimEnd(@this, unnecessaryText, caseSensitive: true);
+        public static string TrimEnd(this string @this, string unnecessaryText)
+            => TrimEnd(@this, unnecessaryText, caseSensitive: true);
 
         /// <summary>
         /// Trims some unnecessary text from the end of this string, if it exists.
@@ -501,11 +498,11 @@ namespace Olive
             if (unnecessaryText.IsEmpty() || @this.IsEmpty())
                 return @this.OrEmpty();
 
-            else if (@this.EndsWith(unnecessaryText, caseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase))
+            if (@this.EndsWith(unnecessaryText,
+              caseSensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase))
                 return @this.TrimEnd(unnecessaryText.Length);
 
-            else
-                return @this;
+            return @this;
         }
 
         /// <summary>

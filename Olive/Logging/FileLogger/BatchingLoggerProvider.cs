@@ -91,7 +91,7 @@ namespace Olive.Logging
 
         void Start()
         {
-            if (QueueSize == null)
+            if (QueueSize is null)
                 MessageQueue = new(new ConcurrentQueue<LogMessage>());
             else MessageQueue = new(new ConcurrentQueue<LogMessage>(), QueueSize.Value);
 
