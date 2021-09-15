@@ -75,13 +75,13 @@ namespace Olive
                 }
                 catch (Exception ex)
                 {
-                    Log.For(typeof(OliveExtensions)).Info($"##Could not load assembly " + assembly.FullName);
+                    Log.For(typeof(OliveExtensions)).Info($"Could not load assembly {assembly.FullName}");
 
                     Log.For(typeof(OliveExtensions))
-                        .Info($"Could not load assembly " + assembly.FullName + " because: " + ex.Message);
+                        .Info($"Could not load assembly {assembly.FullName} because: {ex.Message}");
 
                     Log.For(typeof(OliveExtensions))
-                        .Info($"Could not load assembly " + assembly.FullName + " because: " + ex.ToFullMessage());
+                        .Info($"Could not load assembly {assembly.FullName} because: {ex.ToFullMessage()}");
                     // Can't load assembly. No logging is needed.
                 }
             }

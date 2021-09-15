@@ -88,10 +88,16 @@ namespace Olive
             => @this.Get(x => x.OrEmpty().FirstOrDefault(func));
 
         public static Task<TSource> First<TSource>(this Task<IEnumerable<TSource>> @this)
-    => @this.Get(x => x.OrEmpty().First());
+            => @this.Get(x => x.OrEmpty().First());
 
         public static Task<TSource> FirstOrDefault<TSource>(this Task<IEnumerable<TSource>> @this)
             => @this.Get(x => x.OrEmpty().FirstOrDefault());
+
+        public static Task<TSource> Last<TSource>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.OrEmpty().Last());
+
+        public static Task<TSource> LastOrDefault<TSource>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.OrEmpty().LastOrDefault());
 
         public static Task<IEnumerable<TSource>> Intersect<TSource>(
         this Task<IEnumerable<TSource>> @this, IEnumerable<TSource> second)
@@ -291,6 +297,10 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
            Task<IEnumerable<TSource>> other)
             => @this.Get(x => x.Concat(other));
+
+        public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IEnumerable<TSource>> @this,
+           Task<IEnumerable<TSource>> exclude)
+            => exclude.Get(x => @this.Except(x));
 
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.

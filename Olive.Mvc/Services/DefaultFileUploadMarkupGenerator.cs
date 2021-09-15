@@ -44,7 +44,7 @@ namespace Olive.Mvc
                         <a target=""_blank"" href=""{Blob.Url?.HtmlEncode()}"">{Blob.Filename.OrEmpty().HtmlEncode()}</a>
                     </span>
                     <label for={GetId("fileInput")} hidden>HiddenLabel</label>
-                    {html.TextBox(PropertyInfo.Name, "value".OnlyWhen(Blob.HasValue), string.Empty, HiddenFieldSettings).GetString()}
+                    {html.TextBox(PropertyInfo.Name, string.Empty, string.Empty, HiddenFieldSettings).GetString()}
                     <input type=""file"" id={GetId("fileInput")} name=""files"" {GetHtmlAttributes(htmlAttributes)}/>
                     {GetHiddenInput(x => x.Action)}
                     {GetHiddenInput(x => x.TempFileId)}
