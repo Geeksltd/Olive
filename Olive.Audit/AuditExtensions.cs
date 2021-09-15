@@ -20,67 +20,26 @@ namespace Olive
             return @this;
         }
 
-        public static string RenderDataToHtml(this IAuditEvent applicationEvent, bool onlyNewChanges = false)
+        public static async Task<string> NewChangesToHtml(this IAuditEvent applicationEvent)
         {
-            if (onlyNewChanges)
-            {
-                if (applicationEvent.Event.Equals("Update", caseSensitive: false))
-                    return applicationEvent.ToHtml("//new");
+            if (applicationEvent.Event == "Update")
+                return await applicationEvent.ToHtml("//new");
 
-                if (applicationEvent.Event.Equals("Insert", caseSensitive: false))
-                    return applicationEvent.ToHtml("/*");
-            }
-
-            if (!applicationEvent.Event.Equals("Update", caseSensitive: false))
-                return applicationEvent.ToHtml("//old");
-
-            if (applicationEvent.Event.Equals("Delete", caseSensitive: false))
-                return applicationEvent.ToHtml("//old");
+            if (applicationEvent.Event == "Insert")
+                return await applicationEvent.ToHtml("/*");
 
             return string.Empty;
         }
 
-        private static string ToHtml(this IAuditEvent applicationEvent, string parentNode)
+        public static async Task<string> OldChangesToHtml(this IAuditEvent applicationEvent)
         {
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(applicationEvent.ItemData);
-
-            var ouputBuilder = new StringBuilder();
-            ouputBuilder.AppendLine("<div style =\"padding: 10px;\">");
-
-            var childNodes = xmlDoc.SelectSingleNode(parentNode);
-            var linker = ":";
-            if (parentNode == "//new")
-                linker = "\u2192";
-
-            foreach (XmlNode node in childNodes)
-                ouputBuilder.AppendLine($"<span>{node.Name}</span> {linker} <span>{node.InnerText}</span><br>");
-
-            ouputBuilder.AppendLine("</div>");
-            return ouputBuilder.ToString();
-        }
-
-        public static async Task<string> RenderDataToStylishHtml(this IAuditEvent applicationEvent, bool onlyNewChanges = false)
-        {
-            if (onlyNewChanges)
-            {
-                if (applicationEvent.Event.Equals("Update", caseSensitive: false))
-                    return await applicationEvent.ToStylishHtml("//new");
-
-                if (applicationEvent.Event.Equals("Insert", caseSensitive: false))
-                    return await applicationEvent.ToStylishHtml("/*");
-            }
-
-            if (applicationEvent.Event.Equals("Update", caseSensitive: false))
-                return await applicationEvent.ToStylishHtml("//old", "background-color : #f0f0f0");
-
-            if (applicationEvent.Event.Equals("Delete", caseSensitive: false))
-                return await applicationEvent.ToStylishHtml("//old", "background-color : gray");
+            if (applicationEvent.Event.IsAnyOf("Update", "Delete"))
+                return await applicationEvent.ToHtml("//old", isOld: true);
 
             return string.Empty;
         }
 
-        private static async Task<string> ToStylishHtml(this IAuditEvent applicationEvent, string parentNode, string style = null)
+        private static async Task<string> ToHtml(this IAuditEvent applicationEvent, string parentNode, bool isOld = false)
         {
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(applicationEvent.ItemData);
@@ -90,28 +49,33 @@ namespace Olive
 
             var linkedProperties = item.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(pr => pr.PropertyType.IsClass && !pr.PropertyType.Assembly.FullName.StartsWith("Olive.Entities") && !pr.PropertyType.Assembly.FullName.StartsWith("System")).ToArray();
+                .Where(pr => pr.PropertyType.IsClass
+                && !pr.PropertyType.Assembly.FullName.StartsWith("Olive.Entities")
+                && !pr.PropertyType.Assembly.FullName.StartsWith("System")).ToArray();
 
 
             var ouputBuilder = new StringBuilder();
-            ouputBuilder.AppendLine($"<div style =\"padding: 10px;{style}\">");
+
+            if (isOld)
+                ouputBuilder.AppendLine("<div class =\"audit-log-old\">");
+            else
+                ouputBuilder.AppendLine("<div class =\"audit-log-new\">");
 
             var childNodes = xmlDoc.SelectSingleNode(parentNode);
-            string linker = ":";
-            if (parentNode == "//new")
-                linker = "\u2192";
+            var linker = parentNode == "//new" ? "\u2192" : ":";
 
-            string color;
+            string propertyClass;
 
             foreach (XmlNode node in childNodes)
             {
                 var prop = properties.FirstOrDefault(x => x.Name.Equals(node.Name, caseSensitive: false));
 
-                if (linkedProperties.Any(x => prop.Name.StartsWith(x.Name, caseSensitive: false))) color = "#a22";
-                else if (prop.GetPropertyOrFieldType() == typeof(Boolean)) color = "#22c";
-                else color = "#333";
+                if (linkedProperties.Any(x => prop.Name.StartsWith(x.Name, caseSensitive: false)))
+                    propertyClass = "audit-log-property-linked";
+                else if (prop.GetPropertyOrFieldType() == typeof(Boolean)) propertyClass = "audit-log-property-bool";
+                else propertyClass = "audit-log-property";
 
-                ouputBuilder.AppendLine($"<span style=\"width:150px;text-align: right;color:#aaa\">{node.Name?.ToLiteralFromPascalCase()}</span> {linker} <span style=\"color:{color}\">{node.InnerText}</span><br>");
+                ouputBuilder.AppendLine($"<span class=\"audit-log-label\">{node.Name?.ToLiteralFromPascalCase()}</span> {linker} <span class=\"{propertyClass}\">{node.InnerText}</span><br>");
             }
 
             ouputBuilder.AppendLine("</div>");
