@@ -38,7 +38,7 @@
     <ProjectReference Include="..\Olive.Export\Olive.Export.csproj" />
     <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
     <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
   </Target>
 </Project>
