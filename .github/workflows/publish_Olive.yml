@@ -87,11 +87,11 @@ jobs:
    #     PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch.TestConsole/Olive.Aws.Ses.AutoFetch.TestConsole.csproj
    #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    - name: Publish Olive Aws Ses AutoFetch Tests NuGet Package
-      uses: brandedoutcast/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch.Tests/Olive.Aws.Ses.AutoFetch.Tests.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+   # - name: Publish Olive Aws Ses AutoFetch Tests NuGet Package
+   #   uses: brandedoutcast/publish-nuget@v2
+   #   with:
+   #     PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch.Tests/Olive.Aws.Ses.AutoFetch.Tests.csproj
+   #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Azure NuGet Package
       uses: brandedoutcast/publish-nuget@v2
