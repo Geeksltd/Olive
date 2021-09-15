@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Olive": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Running": "pipeline"
+      }
+    }
+  }
+}
