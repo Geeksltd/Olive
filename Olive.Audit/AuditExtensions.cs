@@ -57,23 +57,22 @@ namespace Olive
             var ouputBuilder = new StringBuilder();
 
             if (isOld)
-                ouputBuilder.AppendLine("<div class =\"audit-log-old\">");
+                ouputBuilder.AppendLine("<div class =\"audit-log audit-log-old\">");
             else
-                ouputBuilder.AppendLine("<div class =\"audit-log-new\">");
+                ouputBuilder.AppendLine("<div class =\"audit-log audit-log-new\">");
 
             var childNodes = xmlDoc.SelectSingleNode(parentNode);
             var linker = parentNode == "//new" ? "\u2192" : ":";
 
-            string propertyClass;
-
             foreach (XmlNode node in childNodes)
             {
+                var propertyClass = "audit-log-property";
+
                 var prop = properties.FirstOrDefault(x => x.Name.Equals(node.Name, caseSensitive: false));
 
                 if (linkedProperties.Any(x => prop.Name.StartsWith(x.Name, caseSensitive: false)))
-                    propertyClass = "audit-log-property-linked";
-                else if (prop.GetPropertyOrFieldType() == typeof(Boolean)) propertyClass = "audit-log-property-bool";
-                else propertyClass = "audit-log-property";
+                    propertyClass = $"{propertyClass} audit-log-property-linked";
+                else if (prop.GetPropertyOrFieldType() == typeof(Boolean)) propertyClass = $"{propertyClass} audit-log-property-bool";
 
                 ouputBuilder.AppendLine($"<span class=\"audit-log-label\">{node.Name?.ToLiteralFromPascalCase()}</span> {linker} <span class=\"{propertyClass}\">{node.InnerText}</span><br>");
             }
