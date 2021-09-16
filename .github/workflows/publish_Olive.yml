@@ -2,7 +2,7 @@ name: Publish Olive Packages
 
 on:
   push:
-    branches: [ add-packages ]
+    branches: [ master ]
 
 jobs:
  build:
