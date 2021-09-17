@@ -41,7 +41,7 @@
     <ProjectReference Include="..\Olive.Encryption\Olive.Encryption.csproj" />
     <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
     <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
   </Target>
 </Project>
