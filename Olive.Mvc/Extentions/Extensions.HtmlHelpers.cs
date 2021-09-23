@@ -53,7 +53,7 @@ namespace Olive.Mvc
             {
                 result.AppendHtmlLine($"<div{settings}>");
 
-                var id = propertyInfo.Name + "_" + selectList.IndexOf(item);
+                var id = propertyInfo.Name + "_" + selectList.IndexOf(item) + "_" + Guid.NewGuid();
 
                 result.AppendHtml(@this.RadioButton(propertyInfo.Name, item.Value, IsSelected(item, value),
                     new { id, @class = "form-check-input" }));
@@ -67,7 +67,6 @@ namespace Olive.Mvc
 
             return result;
         }
-
         static bool IsSelected(SelectListItem item, object boundValue)
         {
             if (boundValue.ToStringOrEmpty() == item.Value) return true;
