@@ -111,32 +111,63 @@ namespace Olive.Audit
         /// <summary>
         /// Loads the item recorded in this event.
         /// </summary>
-        public static async Task<IEntity> LoadItem(IAuditEvent applicationEvent)
+        public static async Task<IEntity> LoadItem(IAuditEvent applicationEvent, bool newItem = false)
         {
-            var type = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(applicationEvent.ItemType)).ExceptNull().FirstOrDefault();
+            var type = AppDomain.CurrentDomain.GetAssemblies()
+                .Select(a => a.GetType(applicationEvent.ItemType))
+                .ExceptNull().FirstOrDefault();
 
             if (type == null)
                 throw new("Could not load the type " + applicationEvent.ItemType);
 
             if (applicationEvent.Event.IsAnyOf("Update", "Insert"))
-                return await Database.Get(applicationEvent.ItemId.To<Guid>(), type);
-
-            if (applicationEvent.Event == "Delete")
             {
-                var result = Activator.CreateInstance(type) as GuidEntity;
-                result.ID = applicationEvent.ItemId.To<Guid>();
+                var item = await Context.Current.Database().GetOrDefault(applicationEvent.ItemId.To<Guid>(), type);
 
-                foreach (var p in XElement.Parse(applicationEvent.ItemData).Elements())
-                {
-                    var old = p.Value;
-                    var property = type.GetProperty(p.Name.LocalName);
-                    property.SetValue(result, old.To(property.PropertyType));
-                }
+                if (item == null)
+                    return MapAuditToInstance(applicationEvent, type, newItem);
 
-                return result;
+                return item;
             }
 
+            if (applicationEvent.Event == "Delete")
+                return MapAuditToInstance(applicationEvent, type, newItem);
+
             throw new NotSupportedException();
+        }
+
+        private static GuidEntity MapAuditToInstance(IAuditEvent applicationEvent, Type type, bool newItem)
+        {
+            var item = Activator.CreateInstance(type) as GuidEntity;
+            item.ID = applicationEvent.ItemId.To<Guid>();
+
+            string parentNode;
+            if (applicationEvent.Event == "Insert") parentNode = null;
+            else if (applicationEvent.Event == "Update" && newItem) parentNode = "new";
+            else parentNode = "old";
+
+            var elements = XElement.Parse(applicationEvent.ItemData).Elements();
+            elements = parentNode.HasValue() ? elements.FirstOrDefault(x => x.Name.LocalName == parentNode)?.Elements() : elements;
+
+            foreach (var element in elements.ToArray())
+            {
+                var eValue = element.Value;
+                var property = type.GetProperty(element.Name.LocalName);
+                if (property.IsEntity(item))
+                {
+                    continue;
+                }
+                else if (property.PropertyType == typeof(Blob))
+                {
+                    property.SetValue(item, (new Blob()).Attach(item, property.Name));
+                }
+                else
+                {
+                    property.SetValue(item, eValue.To(property.PropertyType));
+                }
+            }
+
+            return item;
         }
 
         /// <summary>

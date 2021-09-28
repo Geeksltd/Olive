@@ -4,10 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Olive;
 using System.Reflection;
-using System.Xml;
 using System.Text;
 using Olive.Audit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Olive.Entities;
+using System.Xml.Linq;
 
 namespace Olive
 {
@@ -15,7 +16,7 @@ namespace Olive
     {
         public static IServiceCollection AddDefaultAudit(this IServiceCollection @this)
         {
-            @this.TryAddSingleton<Audit.IAudit, Audit.DefaultAudit>();
+            @this.TryAddSingleton<IAudit, DefaultAudit>();
 
             return @this;
         }
@@ -23,10 +24,10 @@ namespace Olive
         public static async Task<string> NewChangesToHtml(this IAuditEvent applicationEvent)
         {
             if (applicationEvent.Event == "Update")
-                return await applicationEvent.ToHtml("//new");
+                return await applicationEvent.ToHtml("new");
 
             if (applicationEvent.Event == "Insert")
-                return await applicationEvent.ToHtml("/*");
+                return await applicationEvent.ToHtml();
 
             return string.Empty;
         }
@@ -34,51 +35,58 @@ namespace Olive
         public static async Task<string> OldChangesToHtml(this IAuditEvent applicationEvent)
         {
             if (applicationEvent.Event.IsAnyOf("Update", "Delete"))
-                return await applicationEvent.ToHtml("//old", isOld: true);
+                return await applicationEvent.ToHtml("old");
 
             return string.Empty;
         }
 
-        private static async Task<string> ToHtml(this IAuditEvent applicationEvent, string parentNode, bool isOld = false)
+        private static async Task<string> ToHtml(this IAuditEvent applicationEvent, string parentNode = null)
         {
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(applicationEvent.ItemData);
+            var item = await EntityProcessor.LoadItem(applicationEvent, parentNode == "new");
 
-            var item = await EntityProcessor.LoadItem(applicationEvent);
-            var properties = item.GetType().GetProperties();
+            if (item == null)
+                throw new("Could not load the type " + applicationEvent.ItemType);
 
-            var linkedProperties = item.GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(pr => pr.PropertyType.IsClass
-                && !pr.PropertyType.Assembly.FullName.StartsWith("Olive.Entities")
-                && !pr.PropertyType.Assembly.FullName.StartsWith("System")).ToArray();
-
-
+            var properties = item.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var ouputBuilder = new StringBuilder();
 
-            if (isOld)
+            if (parentNode == "old")
                 ouputBuilder.AppendLine("<div class =\"audit-log audit-log-old\">");
             else
                 ouputBuilder.AppendLine("<div class =\"audit-log audit-log-new\">");
 
-            var childNodes = xmlDoc.SelectSingleNode(parentNode);
-            var linker = parentNode == "//new" ? "\u2192" : ":";
+            var elements = XElement.Parse(applicationEvent.ItemData).Elements();
+            elements = parentNode.HasValue() ? elements.FirstOrDefault(x => x.Name.LocalName == parentNode)?.Elements() : elements;
 
-            foreach (XmlNode node in childNodes)
+            var linker = parentNode == "new" ? "\u2192" : ":";
+
+            foreach (var element in elements.ToArray())
             {
                 var propertyClass = "audit-log-property";
+                var property = properties.FirstOrDefault(x => x.Name == element.Name.LocalName);
 
-                var prop = properties.FirstOrDefault(x => x.Name.Equals(node.Name, caseSensitive: false));
+                if (property == null) continue;
 
-                if (linkedProperties.Any(x => prop.Name.StartsWith(x.Name, caseSensitive: false)))
-                    propertyClass = $"{propertyClass} audit-log-property-linked";
-                else if (prop.GetPropertyOrFieldType() == typeof(Boolean)) propertyClass = $"{propertyClass} audit-log-property-bool";
+                if (property.IsEntity(item))
+                    propertyClass = $"{propertyClass} audit-log-property-entity";
+                else if (property.PropertyType == typeof(Boolean))
+                    propertyClass = $"{propertyClass} audit-log-property-bool";
 
-                ouputBuilder.AppendLine($"<span class=\"audit-log-label\">{node.Name?.ToLiteralFromPascalCase()}</span> {linker} <span class=\"{propertyClass}\">{node.InnerText}</span><br>");
+                ouputBuilder.AppendLine($"<span class=\"audit-log-label\">{element.Name.LocalName?.ToLiteralFromPascalCase()}</span> {linker} <span class=\"{propertyClass}\">{element.Value}</span><br>");
             }
 
             ouputBuilder.AppendLine("</div>");
             return ouputBuilder.ToString();
+        }
+
+        public static bool IsEntity(this PropertyInfo property, object obj)
+        {
+            if (obj == null || property == null) return false;
+
+            var type = property.PropertyType;
+            return (property.GetValue(obj) is IEntity) || (type.IsClass
+                && !type.Assembly.FullName.StartsWith("Olive.Entities")
+                && !type.Assembly.FullName.StartsWith("System"));
         }
     }
 }
