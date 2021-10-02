@@ -138,6 +138,24 @@ namespace Olive.Entities.Data
                         continue;
                     }
                 }
+                else if (propertyType == typeof(Blob))
+                {
+                    try
+                    {
+                        var originalBlob = p.GetValue(original) as Blob;
+                        originalValue = originalBlob.IsEmpty() ? null : originalBlob.FileName;
+                        if (updated != null)
+                        {
+                            var updatedBlob = p.GetValue(updated) as Blob;
+                            updatedValue = updatedBlob.IsEmpty() ? null : updatedBlob.FileName;
+                        }
+                    }
+                    catch
+                    {
+                        // No logging is needed.
+                        continue;
+                    }
+                }
                 else
                 {
                     try

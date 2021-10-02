@@ -65,6 +65,11 @@ namespace Olive.Audit
                         propertyValue = (p.GetValue(entity) as IList<Guid>).ToString(",");
                     else if (propertyType.IsGenericType)
                         propertyValue = (p.GetValue(entity) as IEnumerable<object>).ToString(", ");
+                    else if (propertyType == typeof(Blob))
+                    {
+                        var blob = p.GetValue(entity) as Blob;
+                        propertyValue = blob.IsEmpty() ? null : blob.FileName;
+                    }
                     else
                         propertyValue = p.GetValue(entity).ToStringOrEmpty();
 
