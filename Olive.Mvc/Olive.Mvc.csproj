@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Mvc</RootNamespace>
     <PackageId>Olive.Mvc</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.132</Version>
+    <Version>3.1.133</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -40,8 +40,6 @@
     <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
     <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
     <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
