@@ -92,6 +92,16 @@ namespace Olive
 
                 return method.Invoke(instance, methodExpression.Arguments.Select(a => ExtractValue(a)).ToArray());
             }
+            else if (@this is UnaryExpression unary)
+            {
+                if (unary.NodeType == ExpressionType.Not)
+                    return !(bool)unary.Operand.ExtractValue();
+
+                if (unary.NodeType == ExpressionType.Convert)
+                    return unary.Operand.ExtractValue();
+
+                return @this.CompileAndInvoke();
+            }
             else
             {
                 return @this.CompileAndInvoke();

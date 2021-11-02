@@ -125,7 +125,7 @@ namespace Olive.Entities
             }
             else
             {
-                var value = Expression.Lambda(valueExpression).Compile().DynamicInvoke();
+                var value = valueExpression.ExtractValue();
 
                 if (!(value is string) && value is IEnumerable asEnum)
                 {
