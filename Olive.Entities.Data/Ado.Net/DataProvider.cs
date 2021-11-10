@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -160,9 +161,9 @@ namespace Olive.Entities.Data
                 {
                     try
                     {
-                        originalValue = $"{p.GetValue(original)}";
+                        originalValue = Convert.ToString(p.GetValue(original), CultureInfo.GetCultureInfo("en-GB"));
                         if (updated != null)
-                            updatedValue = $"{p.GetValue(updated)}";
+                            updatedValue = Convert.ToString(p.GetValue(updated), CultureInfo.GetCultureInfo("en-GB"));
                     }
                     catch
                     {
