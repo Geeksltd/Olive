@@ -5,7 +5,7 @@
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.289.0</Version>
+    <Version>2.1.290.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -65,6 +65,6 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
-	  <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
+    <Exec Command="update-local-nuget-cache &quot;$(TargetPath)&quot;" />
   </Target>
 </Project>

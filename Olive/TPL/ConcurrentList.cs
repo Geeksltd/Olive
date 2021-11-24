@@ -141,6 +141,24 @@ namespace Olive
             }
         }
 
+        public T[] ToArray()
+        {
+            lock (Lock)
+            {
+                if (IsVirgin) return new T[0];
+                return List.ToArray<T>();
+            }
+        }
+
+        public List<T> ToList()
+        {
+            lock (Lock)
+            {
+                if (IsVirgin) return new List<T>();
+                return List.ToList();
+            }
+        }
+
         public IEnumerable<TType> OfType<TType>() where TType : T
         {
             lock (Lock)
