@@ -129,42 +129,46 @@ namespace Olive
         /// </summary>
         public static string GetMimeType(this FileInfo @this)
         {
-            switch (@this.Extension.ToLower().OrEmpty().TrimStart("."))
+            return @this.Extension.ToLower().OrEmpty().TrimStart(".") switch
             {
-                case "doc": case "docx": return "application/msword";
-                case "pdf": return "application/pdf";
-                case "rtf": return "application/rtf";
-                case "gz": return "application/x-gzip";
-                case "zip": return "application/zip";
-                case "mpga": case "mp2": return "audio/mpeg";
-                case "ram": return "audio/x-pn-realaudio";
-                case "ra": return "audio/x-realaudio";
-                case "wav": return "audio/x-wav";
-                case "gif": return "image/gif";
-                case "jpeg": case "jpg": case "jpe": return "image/jpeg";
-                case "png": return "image/png";
-                case "tiff": case "tif": return "image/tiff";
-                case "svg": return "image/svg+xml";
-                case "html": case "htm": return "text/html";
-                case "txt": return "text/plain";
-                case "mpeg": case "mpg": case "mpe": return "video/mpeg";
-                case "mov": case "qt": return "video/quicktime";
-                case "avi": return "video/avi";
-                case "mid": return "audio/mid";
-                case "midi": return "application/x-midi";
-                case "divx": return "video/divx";
-                case "webm": return "video/webm";
-                case "wma": return "audio/x-ms-wma";
-                case "mp3": return "audio/mp3";
-                case "ogg": return "audio/ogg";
-                case "rma": return "audio/rma";
-                case "mp4": return "video/mp4";
-                case "wmv": return "video/x-ms-wmv";
-                case "f4v": return "video/x-f4v";
-                case "ogv": return "video/ogg";
-                case "3gp": return "video/3gpp";
-                default: return "application/octet-stream";
-            }
+                "doc" => "application/msword",
+                "ppt" => "application/vnd.ms-powerpoint",
+                "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                "pdf" => "application/pdf",
+                "rtf" => "application/rtf",
+                "gz" => "application/x-gzip",
+                "zip" => "application/zip",
+                "mpga" or "mp2" => "audio/mpeg",
+                "ram" => "audio/x-pn-realaudio",
+                "ra" => "audio/x-realaudio",
+                "wav" => "audio/x-wav",
+                "gif" => "image/gif",
+                "jpeg" or "jpg" or "jpe" => "image/jpeg",
+                "png" => "image/png",
+                "tiff" or "tif" => "image/tiff",
+                "svg" => "image/svg+xml",
+                "html" or "htm" => "text/html",
+                "txt" => "text/plain",
+                "mpeg" or "mpg" or "mpe" => "video/mpeg",
+                "mov" or "qt" => "video/quicktime",
+                "avi" => "video/avi",
+                "mid" => "audio/mid",
+                "midi" => "application/x-midi",
+                "divx" => "video/divx",
+                "webm" => "video/webm",
+                "wma" => "audio/x-ms-wma",
+                "mp3" => "audio/mp3",
+                "ogg" => "audio/ogg",
+                "rma" => "audio/rma",
+                "mp4" => "video/mp4",
+                "wmv" => "video/x-ms-wmv",
+                "f4v" => "video/x-f4v",
+                "ogv" => "video/ogg",
+                "3gp" => "video/3gpp",
+                _ => "application/octet-stream",
+            };
         }
 
         /// <summary>

@@ -18,21 +18,6 @@ namespace Olive.BlobAws
 
         static AmazonS3Client CreateClient() => new AmazonS3Client();
 
-        internal static string GetPresignedUrl(Blob document)
-        {
-            using (var client = CreateClient())
-            {
-                var request = new GetPreSignedUrlRequest
-                {
-                    BucketName = AWSInfo.S3BucketName,
-                    Key = document.GetKey(),
-                    Expires = AWSInfo.PreSignedUrlLifespan
-                };
-
-                return client.GetPreSignedURL(request);
-            }
-        }
-
         /// <summary>
         /// Uploads a document to the Amazon S3 Client.
         /// </summary>
