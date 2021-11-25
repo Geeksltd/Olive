@@ -168,7 +168,6 @@ namespace Olive.Entities.Data
             }
         }
 
-
         static Type[] GetParents(Type type)
         {
             var result = new List<Type>();

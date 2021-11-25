@@ -22,6 +22,7 @@ namespace Olive.Mvc
             var modelType = context.Metadata.ModelType;
 
             if (modelType.Defines<ModelBinderAttribute>()) return null;
+
             if (modelType.IsA<IViewModel>())
             {
                 var propertyBinders = GetProperties(context.Metadata)

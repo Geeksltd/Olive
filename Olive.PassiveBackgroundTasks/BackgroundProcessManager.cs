@@ -11,6 +11,7 @@ namespace Olive.PassiveBackgroundTasks
     public class BackgroundProcessManager
     {
         public static Task Run() => Current.DoRun();
+
         public static BackgroundProcessManager Current { get; } = new BackgroundProcessManager();
         Dictionary<string, Func<Task>> Actions = new Dictionary<string, Func<Task>>();
 

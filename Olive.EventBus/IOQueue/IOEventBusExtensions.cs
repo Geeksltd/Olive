@@ -18,6 +18,7 @@ namespace Olive
         {
             @this.Subscribe(x => x.Process());
         }
+
         public static async Task PullAll<TCommandMessage>(this EventBusQueue<TCommandMessage> @this)
           where TCommandMessage : EventBusCommandMessage, new()
         {

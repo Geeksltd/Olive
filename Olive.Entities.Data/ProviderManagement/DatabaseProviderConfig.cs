@@ -136,6 +136,7 @@ namespace Olive.Entities.Data
                 return result;
 
             var factory = GetProviderFactory(type);
+
             if (factory != null)
                 lock (TypeProviders)
                 {

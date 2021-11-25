@@ -73,6 +73,7 @@ namespace Olive.Mvc
             var fieldName = property.BinderModelName ?? property.PropertyName;
 
             ModelBindingResult result;
+
             using (bindingContext.EnterNestedScope(
                 modelMetadata: property,
                 fieldName: fieldName,

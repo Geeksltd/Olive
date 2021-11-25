@@ -31,26 +31,28 @@ namespace Olive.Mvc
 
         public bool Enabled => Options.Enabled;
 
-		public string SiteKey => Options.SiteKey;
+        public string SiteKey => Options.SiteKey;
 
         public string JavaScriptUrl => Options.JavaScriptUrl;
 
-        public string ValidationMessage => 
+        public string ValidationMessage =>
             Options.ValidationMessage.Or("Validate that you are not a robot.");
 
         public string LanguageCode => Options.LanguageCode;
 
-        public RecaptchaControlSettings ControlSettings { get; } 
+        public RecaptchaControlSettings ControlSettings { get; }
 
         public async Task ValidateResponseAsync(string response, string remoteIp)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, RecaptchaDefaults.ResponseValidationEndpoint);
+
             var paramaters = new Dictionary<string, string>
             {
                 ["secret"] = Options.SecretKey,
                 ["response"] = response,
                 ["remoteip"] = remoteIp
             };
+
             request.Content = new FormUrlEncodedContent(paramaters);
 
             var resp = await BackChannel.SendAsync(request);

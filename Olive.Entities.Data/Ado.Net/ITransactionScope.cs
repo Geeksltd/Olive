@@ -18,7 +18,7 @@ namespace Olive.Entities.Data
 
         public Guid ID { get; } = Guid.NewGuid();
 
-        public TransactionScopeWrapper(TransactionScope scope) { Scope = scope; }
+        public TransactionScopeWrapper(TransactionScope scope) => Scope = scope;
 
         public void Complete() => Scope.Complete();
 

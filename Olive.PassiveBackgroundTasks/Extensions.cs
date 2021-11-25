@@ -34,7 +34,8 @@ namespace Olive.PassiveBackgroundTasks
 
                 foreach (var job in BackgroundJobsPlan.Jobs.Values)
                 {
-                    app.Logger().Info("Registering " + job.Name + " cron : " + job.ScheduleCron + " -> " + CronParser.Minutes(job.ScheduleCron) + " minutes");
+                    app.Logger()
+                        .Info("Registering " + job.Name + " cron : " + job.ScheduleCron + " -> " + CronParser.Minutes(job.ScheduleCron) + " minutes");
                     await BackgroundProcessManager.Current.Register(job.Name, job.Action, CronParser.Minutes(job.ScheduleCron), job.TimeoutInMinutes);
                     app.Logger().Info("Registered " + job.Name);
                 }
@@ -51,6 +52,7 @@ namespace Olive.PassiveBackgroundTasks
         internal static Task RecordExecution(this IBackgourndTask task)
         {
             task.Logger().Info("Recording execution for " + task.Name);
+
             return Update(task, t =>
             {
                 t.LastExecuted = LocalTime.Now;
@@ -80,6 +82,7 @@ namespace Olive.PassiveBackgroundTasks
 
             return await Database.Reload(clone);
         }
+
         static void LogInfo(string message) => Log.For<IBackgourndTask>().Info(LocalTime.UtcNow.ToString("HH:mm:ss") + " : " + message);
 
         internal static async Task<bool> TryPick(this IBackgourndTask task)
@@ -87,6 +90,7 @@ namespace Olive.PassiveBackgroundTasks
             var result = false;
 
             LogInfo($"Checking to see if {task.Name} has to run.");
+
             using (var scope = Database.CreateTransactionScope())
             {
                 LogInfo($"Causing a distributed lock for {task.Name}.");

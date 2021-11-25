@@ -10,10 +10,7 @@ namespace @Olive.PassiveBackgroundTasks
     {
         readonly RequestDelegate Next;
 
-        public DistributedBackgroundTasksMiddleware(RequestDelegate _next)
-        {
-            Next = _next;
-        }
+        public DistributedBackgroundTasksMiddleware(RequestDelegate _next) => Next = _next;
 
         public async Task Invoke(HttpContext httpContext)
         {

@@ -27,19 +27,20 @@ namespace Olive.BlobAzure
             if (BlobContainerClient == null)
                 return BlobContainerClient = BlobServiceClient.GetBlobContainerClient(AzureBlobInfo.StorageContainer);
 
-
             return BlobContainerClient;
         }
 
         public async Task SaveAsync(Blob document)
         {
             var containerClient = await GetBlobContainer();
+
             try
             {
                 Log.Debug("Blob create upload object");
                 var blobClient = containerClient.GetBlobClient(document.GetKey());
 
                 Log.Debug("Upload Blob to Azure");
+
                 using (var dataStream = new MemoryStream(await document.GetFileDataAsync()))
                     await blobClient.UploadAsync(dataStream, true);
             }
@@ -72,6 +73,7 @@ namespace Olive.BlobAzure
             var blobContainer = await GetBlobContainer();
             var key = document.GetKey();
             var blobClient = blobContainer.GetBlobClient(key);
+
             try
             {
                 var file = await blobClient.DownloadAsync();

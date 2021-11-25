@@ -43,6 +43,7 @@ namespace Olive
                     Data = (TData)(object)text;
                 else
                     Data = JsonConvert.DeserializeObject<TData>(text, settings);
+
                 DeserializedCache.TryAdd(Key, Data);
             }
             catch (Exception ex)

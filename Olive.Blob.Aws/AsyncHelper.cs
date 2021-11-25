@@ -30,10 +30,10 @@ namespace Olive.BlobAws
         public static void RunSync(Func<Task> func)
         {
             TaskFactory
-                   .StartNew(func)
-                   .Unwrap()
-                   .GetAwaiter()
-                   .GetResult();
+.StartNew(func)
+                .Unwrap()
+                .GetAwaiter()
+                .GetResult();
         }
     }
 }

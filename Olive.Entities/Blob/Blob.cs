@@ -79,8 +79,10 @@ namespace Olive.Entities
                 else
                 {
                     var result = Path.GetExtension(fileName) ?? string.Empty;
+
                     if (result.Length > 0 && !result.StartsWith("."))
                         result = "." + result;
+
                     return result;
                 }
             }
@@ -250,6 +252,7 @@ namespace Olive.Entities
                 if (NewFileData.HasAny())
                     result = new Blob(await GetFileDataAsync(), FileName);
                 else result = new ClonedDocument(this);
+
                 if (attach)
                 {
                     if (!@readonly) Attach(OwnerEntity, OwnerProperty);
@@ -273,6 +276,7 @@ namespace Olive.Entities
         {
             OwnerEntity = owner;
             OwnerProperty = propertyName;
+
             if (owner is GuidEntity) owner.Saving += Owner_Saving;
             else owner.Saved += Owner_Saved;
 
@@ -353,10 +357,12 @@ namespace Olive.Entities
             var propertyName = parts.Last();
 
             var entity = await Database.GetOrDefault(id, type);
+
             if (entity == null)
                 throw new ArgumentException($"Could not load an instance of '{parts.First()}' with the ID of '{id} from the database.");
 
             var property = type.GetProperty(propertyName);
+
             if (property == null)
                 throw new Exception($"The type {type.FullName} does not have a property named {propertyName}.");
 
@@ -445,6 +451,7 @@ namespace Olive.Entities
                 var me = NewFileData?.Length;
                 var him = other.NewFileData?.Length;
                 if (me == him) return 0;
+
                 if (me > him) return 1;
                 else return -1;
             }

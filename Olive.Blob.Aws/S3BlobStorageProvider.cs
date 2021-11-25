@@ -31,7 +31,6 @@ namespace Olive.BlobAws
             {
                 try
                 {
-
                     Log.Debug("Blob create upload request");
                     var request = await CreateUploadRequest(document);
                     Log.Debug("Blob create upload object");
@@ -91,6 +90,7 @@ namespace Olive.BlobAws
         public async Task DeleteAsync(Blob document)
         {
             var key = document.GetKey();
+
             using (var client = CreateClient)
             {
                 var response = await client.DeleteObjectAsync(AWSInfo.S3BucketName, key);
@@ -170,6 +170,7 @@ namespace Olive.BlobAws
             using (var client = CreateClient)
             {
                 var request = CreateGetObjectsRequest(document);
+
                 return (await client.ListObjectsAsync(request))
                     .S3Objects.Select(s => s.Key);
             }

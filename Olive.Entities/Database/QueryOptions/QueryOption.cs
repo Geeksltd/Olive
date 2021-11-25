@@ -13,8 +13,10 @@ namespace Olive.Entities
         {
             if (keyword.IsEmpty())
                 throw new ArgumentNullException(nameof(keyword));
+
             if (properties == null || properties.None())
                 throw new ArgumentNullException(nameof(properties));
+
             return new FullTextSearchQueryOption { Keyword = keyword, Properties = properties };
         }
 
@@ -22,12 +24,16 @@ namespace Olive.Entities
         {
             if (properties == null || properties.None())
                 throw new ArgumentNullException(nameof(properties));
+
             var propertyNames = new List<string>();
+
             foreach (var property in properties)
             {
                 var propertyExpression = (property.Body as UnaryExpression)?.Operand as MemberExpression;
+
                 if (propertyExpression == null)
                     throw new Exception($"Unsupported FullTextSearch expression. The only supported format is \"() => x.Property\". You provided: {property}");
+
                 propertyNames.Add(propertyExpression.Member.Name);
             }
 
@@ -38,12 +44,16 @@ namespace Olive.Entities
         {
             if (properties == null || properties.None())
                 throw new ArgumentNullException(nameof(properties));
+
             var propertyNames = new List<string>();
+
             foreach (var property in properties)
             {
                 var propertyExpression = (property.Body as UnaryExpression)?.Operand as MemberExpression;
+
                 if (propertyExpression == null || !(propertyExpression.Expression is ParameterExpression))
                     throw new Exception($"Unsupported OrderBy expression. The only supported format is \"x => x.Property\". You provided: {property}");
+
                 propertyNames.Add(propertyExpression.Member.Name);
             }
 

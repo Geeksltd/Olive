@@ -26,7 +26,7 @@
         protected override void WriteEntityRange(HttpResponse response, long rangeStartIndex, long rangeEndIndex)
         {
             response.Body
-            	.Write(FileContents, Convert.ToInt32(rangeStartIndex), Convert.ToInt32(rangeEndIndex - rangeStartIndex) + 1);
+                .Write(FileContents, Convert.ToInt32(rangeStartIndex), Convert.ToInt32(rangeEndIndex - rangeStartIndex) + 1);
         }
     }
 }

@@ -30,7 +30,6 @@ namespace Olive
             @this.LoadAwsDevIdentity(accessKey, secret, endpoint, loadSecrets);
         }
 
-
         [Obsolete("Instead of hardcoding accessKey and secret, either use the default host credentials (role or default user) " +
             "or at least use appSettings (under Aws { Credentials { AccessKey: ... , Secret: ... } }).")]
         /// <summary>
@@ -39,6 +38,7 @@ namespace Olive
         public static void LoadAwsDevIdentity(this IConfiguration @this, string accessKey, string secret, RegionEndpoint endpoint, bool loadSecrets)
         {
             AWSConfigs.RegionEndpoint = endpoint;
+
             if (accessKey.HasValue() && secret.HasValue())
             {
                 FallbackCredentialsFactory.Reset();

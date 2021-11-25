@@ -25,6 +25,7 @@ namespace Olive
             if (@this.Email.HasValue()) claims.Add(new Claim(ClaimTypes.Email, @this.Email));
 
             var roles = @this.GetRoles().OrEmpty().ToString(",");
+
             if (roles.HasValue())
                 claims.Add(new Claim(ClaimTypes.Role, roles));
 

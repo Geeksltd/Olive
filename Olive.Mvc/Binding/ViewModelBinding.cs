@@ -31,6 +31,7 @@ namespace Olive.Mvc
             static MethodInfo[] FindMethods<TAtt>(Controller controller, object model) where TAtt : Attribute
             {
                 var key = controller.GetType().FullName + "|" + model.GetType().FullName;
+
                 return GetCache<TAtt>().GetOrAdd(key,
                       t =>
                       {
@@ -50,12 +51,15 @@ namespace Olive.Mvc
                 foreach (var info in viewModel.GetType().GetProperties())
                 {
                     if (!info.CanWrite) continue;
+
                     if (info.PropertyType.IsA<IViewModel>())
                     {
                         var nestedValue = info.GetValue(viewModel);
+
                         if (nestedValue != null)
                         {
                             var binders = FindMethods<TAttribute>(controller, nestedValue);
+
                             if (binders.Any())
                                 tasks.Add(InvokeMethods<TAttribute>(binders, controller, nestedValue));
                         }

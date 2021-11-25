@@ -43,7 +43,7 @@ namespace Olive.Mvc.CKEditorFileManager
         public async Task<IActionResult> Browser()
         {
             var files = await Database.GetList<ICKEditorFile>();
-            
+
             var model = new ViewModel
             {
                 Files = files.Select(f => new DownloadableFileDto

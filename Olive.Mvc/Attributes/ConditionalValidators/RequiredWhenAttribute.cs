@@ -17,9 +17,9 @@
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             return ConditionalValidatorsHelper.ValidateIfTrue(
-                base.IsValid, 
-                value, 
-                validationContext, 
+                base.IsValid,
+                value,
+                validationContext,
                 PropertyName);
         }
     }

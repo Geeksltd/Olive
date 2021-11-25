@@ -27,6 +27,7 @@ namespace Olive.Mvc
 
             var url = context.Request.Path.Value.ToLower();
             var user = context.User?.GetId();
+
             if (length > Config.Get("PerformanceThresholdSeconds", PERFROMANCE_THRESHOLD_SECONDS)) // slow
                 if (!Whitelist.Contains(url))
                     Log.For(this)

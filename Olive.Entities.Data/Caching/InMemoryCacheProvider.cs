@@ -21,6 +21,7 @@ namespace Olive.Entities.Data
             var entities = GetEntities(entityType);
 
             if (entities == null) return null;
+
             try
             {
                 if (entities.TryGetValue(id, out var result))
@@ -42,6 +43,7 @@ namespace Olive.Entities.Data
             lock (entities)
             {
                 var id = entity.GetId().ToString();
+
                 if (entities.ContainsKey(id))
                 {
                     entities.GetOrDefault(id)?.InvalidateCachedReferences();

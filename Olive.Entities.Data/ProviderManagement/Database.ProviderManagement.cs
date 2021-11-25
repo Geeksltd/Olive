@@ -36,7 +36,6 @@ namespace Olive.Entities.Data
 
         public IDataAccess GetAccess(string connectionString = null) => ProviderConfig.GetAccess(connectionString);
 
-
         /// <summary>
         /// Creates a transaction scope.
         /// </summary>
@@ -50,6 +49,7 @@ namespace Olive.Entities.Data
             {
                 Type type = null; // this is a workaround.
                 var dummy = typeof(DbTransactionScope);
+
                 if (dummy.AssemblyQualifiedName.StartsWith(typeName))
                     type = dummy;
                 else

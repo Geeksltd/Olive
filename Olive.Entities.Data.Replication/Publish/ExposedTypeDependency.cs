@@ -14,7 +14,6 @@ namespace Olive.Entities.Replication
 
         Type[] DependenciesEnitityTypes;
 
-
         public DataDependency<TTriggerer> AddNestedChildDependency<TTriggerer>(
            Func<TTriggerer, Task<IEnumerable<IEntity>>> childDependents)
            where TTriggerer : class, IEntity
@@ -23,9 +22,10 @@ namespace Olive.Entities.Replication
                 async child =>
                 {
                     var deps = await childDependents(child);
-                    if(deps == null) return null;
-                    foreach (var x in deps) 
-                        if(x != null) await RaiseSaveEventFor(x);
+                    if (deps == null) return null;
+
+                    foreach (var x in deps)
+                        if (x != null) await RaiseSaveEventFor(x);
 
                     return null;
                 });

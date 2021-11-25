@@ -14,12 +14,10 @@ namespace Olive.Security.Cloud
 
         public abstract IDataProtector CreateProtector(string purpose);
 
-        public DataProtectionProvider()
-        {
-            DataKeyService = new TDataKeyService();
-        }
+        public DataProtectionProvider() => DataKeyService = new TDataKeyService();
 
         protected Task<Key> GenerateKey() => DataKeyService.GenerateKey();
+
         protected byte[] GetDecryptionKey(byte[] encryptionKeyReference) => DataKeyService.GetEncryptionKey(encryptionKeyReference);
 
         public byte[] Protect(byte[] plaintext)
@@ -31,6 +29,7 @@ namespace Olive.Security.Cloud
             // To make it secure, we should combine the key's length, the key and the cipher data. 
             var cipher = key.EncryptionKeyReference;
             var cipherBytes = BitConverter.GetBytes(cipher.Length);
+
             if (cipherBytes.Length > byte.MaxValue)
                 throw new Exception("Cipher key length is longer than a byte!");
 
@@ -44,6 +43,7 @@ namespace Olive.Security.Cloud
             protectedData = protectedData.UnGZip();
 
             var cacheKey = protectedData.ToBase64String();
+
             return CachedDecrptedData.GetOrAdd(cacheKey, (key) =>
             {
                 var keyBufferLength = protectedData.First();

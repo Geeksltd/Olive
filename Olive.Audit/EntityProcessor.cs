@@ -141,12 +141,13 @@ namespace Olive.Audit
             throw new NotSupportedException();
         }
 
-        private static GuidEntity MapAuditToInstance(IAuditEvent applicationEvent, Type type, bool newItem)
+        static GuidEntity MapAuditToInstance(IAuditEvent applicationEvent, Type type, bool newItem)
         {
             var item = Activator.CreateInstance(type) as GuidEntity;
             item.ID = applicationEvent.ItemId.To<Guid>();
 
             string parentNode;
+
             if (applicationEvent.Event == "Insert") parentNode = null;
             else if (applicationEvent.Event == "Update" && newItem) parentNode = "new";
             else parentNode = "old";
@@ -158,10 +159,8 @@ namespace Olive.Audit
             {
                 var eValue = element.Value;
                 var property = type.GetProperty(element.Name.LocalName);
-                if (property.IsEntity(item))
-                {
-                    continue;
-                }
+
+                if (property.IsEntity(item)) continue;
                 else if (property.PropertyType == typeof(Blob))
                 {
                     property.SetValue(item, (new Blob()).Attach(item, property.Name));

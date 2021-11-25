@@ -24,7 +24,7 @@ namespace Olive.Mvc
 
         public IHtmlContent Generate<TModel, TProperty>(IHtmlHelper html, object viewModel, Expression<Func<TModel, TProperty>> property, object htmlAttributes)
         {
-            lock(LockObject)
+            lock (LockObject)
                 return DoGenerate(html, viewModel, property, htmlAttributes);
         }
 

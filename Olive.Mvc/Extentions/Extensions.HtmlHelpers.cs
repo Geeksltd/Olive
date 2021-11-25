@@ -67,6 +67,7 @@ namespace Olive.Mvc
 
             return result;
         }
+
         static bool IsSelected(SelectListItem item, object boundValue)
         {
             if (boundValue.ToStringOrEmpty() == item.Value) return true;

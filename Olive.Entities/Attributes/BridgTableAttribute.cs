@@ -13,9 +13,6 @@ namespace Olive.Entities
         /// </summary>
         /// 
         public string TableName { get; set; }
-        public BridgTableAttribute(string name)
-        {
-            TableName = name;
-        }
+        public BridgTableAttribute(string name) => TableName = name;
     }
 }

@@ -15,8 +15,7 @@ namespace Olive.BlobAws
     public class S3DirectoryContents : IDirectoryContents
     {
         readonly IAmazonS3 AmazonS3;
-        readonly string BucketName;
-        readonly string Subpath;
+        readonly string BucketName, Subpath;
 
         IEnumerable<IFileInfo> Contents;
 
@@ -59,6 +58,7 @@ namespace Olive.BlobAws
 
                         return false;
                     });
+
                     return false;
                 }
             }
@@ -84,6 +84,7 @@ namespace Olive.BlobAws
                 Delimiter = "/",
                 Prefix = IsRoot ? "" : Subpath
             };
+
             var response = AmazonS3.ListObjectsV2Async(request).Result;
 
             var files = response.S3Objects

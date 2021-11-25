@@ -8,9 +8,6 @@
 
         public Exception Error { get; internal set; }
 
-        public SmsSendingEventArgs(ISmsMessage item)
-        {
-            Item = item;
-        }
+        public SmsSendingEventArgs(ISmsMessage item) => Item = item;
     }
 }

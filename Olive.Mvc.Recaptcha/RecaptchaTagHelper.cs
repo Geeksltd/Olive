@@ -24,10 +24,7 @@ namespace Olive.Mvc
         [HtmlAttributeName(TabindexAttributeName)]
         public int TabIndex { get; set; }
 
-        public RecaptchaTagHelper(IRecaptchaConfigurationService service)
-        {
-            Service = service;
-        }
+        public RecaptchaTagHelper(IRecaptchaConfigurationService service) => Service = service;
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {

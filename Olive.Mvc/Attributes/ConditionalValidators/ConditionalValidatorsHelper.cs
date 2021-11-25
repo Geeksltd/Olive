@@ -27,7 +27,7 @@
             Func<object, ValidationContext, ValidationResult> isValid,
             object value,
             ValidationContext validationContext,
-            string propertyName, 
+            string propertyName,
             bool expectedValue)
         {
             var property = validationContext.ObjectType.GetProperty(propertyName);

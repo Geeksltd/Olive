@@ -108,6 +108,7 @@ namespace Olive.Entities
 
                 if (Current != null)
                     ParentContext = Current;
+
                 Current = this;
             }
 

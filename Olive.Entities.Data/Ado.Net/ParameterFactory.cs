@@ -16,10 +16,7 @@ namespace Olive.Entities
     {
         readonly DbCommand Command;
 
-        public DefaultParameterFactory()
-        {
-            Command = new TConnection().CreateCommand();
-        }
+        public DefaultParameterFactory() => Command = new TConnection().CreateCommand();
 
         public IDataParameter CreateParameter(string name, object value, DbType? dbType)
         {

@@ -98,6 +98,7 @@ namespace Olive.Email
             {
                 var htmlView = AlternateView.CreateAlternateViewFromString(
                     message.Body, new ContentType("text/html; charset=UTF-8"));
+
                 htmlView.LinkedResources.AddRange(AttachmentSerializer.GetLinkedResources(message));
                 yield return htmlView;
             }
@@ -110,6 +111,7 @@ namespace Olive.Email
 
                 var calendarView = AlternateView
                     .CreateAlternateViewFromString(message.VCalendarView, calendarType);
+
                 calendarView.TransferEncoding = TransferEncoding.SevenBit;
 
                 yield return calendarView;

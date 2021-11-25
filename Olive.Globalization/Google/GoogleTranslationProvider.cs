@@ -43,6 +43,7 @@ namespace Olive.Globalization
             phrase = phrase.Replace(Environment.NewLine, "<br/>");
 
             var request = "https://www.googleapis.com/language/translate/v2?key={0}&q={1}&source={2}&target={3}".FormatWith(ApiKey, HttpUtility.UrlEncode(phrase), languageIsoCodeFrom.ToLower(), languageIsoCodeTo.ToLower());
+
             if (request.Length > RequestCharacterLimit)
                 throw new ArgumentOutOfRangeException("Cannot use google translate with queries larger than {0} characters".FormatWith(RequestCharacterLimit));
 
@@ -58,6 +59,7 @@ namespace Olive.Globalization
                 }
 
                 var ser = new DataContractJsonSerializer(typeof(GoogleTranslateJsonResponseRootObject));
+
                 using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(response)))
                 {
                     if (ser.ReadObject(stream) is GoogleTranslateJsonResponseRootObject rootObjectResponse)
@@ -86,6 +88,7 @@ namespace Olive.Globalization
             if (IsMisconfigured) return null;
 
             var request = "https://www.googleapis.com/language/translate/v2/detect?key={0}&q={1}".FormatWith(ApiKey, HttpUtility.UrlEncode(phrase));
+
             if (request.Length > RequestCharacterLimit)
                 throw new ArgumentOutOfRangeException("Cannot use google translate with queries larger than {0} characters".FormatWith(RequestCharacterLimit));
 

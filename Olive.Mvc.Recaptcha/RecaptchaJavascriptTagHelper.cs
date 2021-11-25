@@ -74,9 +74,9 @@ window.addEventListener('load', recaptchaInitialScript, false );
             };
 
             script.InnerHtml
-            	.AppendHtml(
+                .AppendHtml(
                 ScriptSnippet.FormatWith(
-                    ValidationMessageElementId, 
+                    ValidationMessageElementId,
                     Service.ValidationMessage
                 ));
 

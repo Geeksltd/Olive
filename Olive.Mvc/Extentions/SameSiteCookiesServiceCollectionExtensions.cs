@@ -50,8 +50,10 @@ namespace Olive.Mvc
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.MinimumSameSitePolicy = Unspecified;
+
                 options.OnAppendCookie = cookieContext =>
                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+
                 options.OnDeleteCookie = cookieContext =>
                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
             });

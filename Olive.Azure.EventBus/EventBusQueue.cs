@@ -21,10 +21,7 @@ namespace Olive.Azure
         /// </summary>
         public int MaxNumberOfMessages { get; set; } = Config.Get("Azure:EventBusQueue:MaxNumberOfMessages", 10);
 
-        public EventBusQueue(string queueUrl)
-        {
-            QueueUrl = queueUrl;
-        }
+        public EventBusQueue(string queueUrl) => QueueUrl = queueUrl;
 
         public async Task<string> Publish(string message)
         {
@@ -65,6 +62,7 @@ namespace Olive.Azure
         public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10, int? maxNumerOfMessages = null)
         {
             var result = new List<QueueMessageHandle>();
+
             await using (var context = new AzureMessagingContext(QueueUrl))
             {
                 var receiver = context.Receiver;

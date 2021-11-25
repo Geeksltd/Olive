@@ -8,13 +8,13 @@ namespace Olive.Entities
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class SkipAutoSortAttribute : Attribute
     {
-        static readonly ConcurrentDictionary<Type, bool> Cache = 
+        static readonly ConcurrentDictionary<Type, bool> Cache =
             new ConcurrentDictionary<Type, bool>();
 
         public static bool HasAttribute(Type type)
         {
             return Cache.GetOrAdd(
-                type, 
+                type,
                 t => t.GetCustomAttributes<SkipAutoSortAttribute>(true).Any());
         }
     }

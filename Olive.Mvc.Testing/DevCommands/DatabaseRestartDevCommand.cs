@@ -24,6 +24,7 @@ namespace Olive.Mvc.Testing
         public override async Task<string> Run()
         {
             var context = ContextAccessor.HttpContext;
+
             if (context.Request.Param("runner").HasValue())
                 WebTestWidgetExtensions.IsUITestExecutionMode = true;
 

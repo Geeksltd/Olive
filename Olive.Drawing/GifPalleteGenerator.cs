@@ -38,9 +38,8 @@
         static ColorPalette CreateEmptyPallette()
         {
             using (var temp = new Bitmap(1, 1, PixelFormat.Format8bppIndexed))
-            {
                 return temp.Palette;
-            }
+            
         }
 
         /// <summary>

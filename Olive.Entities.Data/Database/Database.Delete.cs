@@ -56,6 +56,7 @@ namespace Olive.Entities.Data
             await EnlistOrCreateTransaction(async () => await DoDelete(entity, behaviour));
 
             Cache.Remove(entity);
+
             if (Transaction.Current != null)
                 Transaction.Current.TransactionCompleted += (s, e) => { Cache.Remove(entity); };
 

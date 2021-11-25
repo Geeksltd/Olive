@@ -20,6 +20,7 @@ namespace Olive
         public static Type GetRootEntityType(this Type objectType)
         {
             var baseType = objectType.BaseType;
+
             if (baseType == null)
                 throw new NotSupportedException(objectType.FullName + " not recognised. It must be a subclass of Olive.Entities.Entity.");
 
@@ -97,6 +98,7 @@ namespace Olive
 
             for (var index = 0; index < parameters.Length; index++)
                 dataParams[index] = @this.CreateParameter(expectedParams[index].Value, parameters[index]);
+
             return dataParams;
         }
 

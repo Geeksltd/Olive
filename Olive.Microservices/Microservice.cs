@@ -26,6 +26,7 @@ namespace Olive
             get
             {
                 var url = Config.Get("Microservice:Me:Url");
+
                 if (url.IsEmpty()) url = "Config value not specified for 'Microservice:Me:Url'";
                 else url = url.EnsureEndsWith("/");
 

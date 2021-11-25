@@ -23,6 +23,7 @@ namespace Olive.Mvc.Testing
         static void DatabaseStateChangeCommand_ExecutedChangeCommand(DatabaseStateChangeCommand change)
         {
             var node = new XElement("Change");
+
             if (change.CommandType != CommandType.Text)
                 node.Add(new XAttribute("Type", change.CommandType.ToString()));
 
@@ -62,6 +63,7 @@ namespace Olive.Mvc.Testing
                 {
                     var command = xmlElement.GetAttribute("Command").Replace("&#xD;&#xA;", Environment.NewLine);
                     var commandType = CommandType.Text;
+
                     if (!xmlElement.GetAttribute("Type").IsEmpty())
                         commandType = xmlElement.GetAttribute("Type").To<CommandType>();
 

@@ -84,7 +84,6 @@ namespace Olive
         {
             do
             {
-
                 using (await SyncLock.Lock())
                     if (await HandleNext()) continue;
 

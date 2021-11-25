@@ -21,6 +21,7 @@ namespace Olive
         public static string GetFullPath(this IHierarchy hierarchy, string seperator)
         {
             if (hierarchy == null) return null;
+
             if (hierarchy.GetParent() == null || hierarchy.GetParent() == hierarchy)
                 return hierarchy.Name;
             else return hierarchy.GetParent().GetFullPath(seperator) + seperator + hierarchy.Name;

@@ -48,6 +48,7 @@ namespace Olive.Entities
             var right = From(expression.Right);
 
             if (left == null && right == null) return null;
+
             if ((left == null) != (right == null))
             {
                 // Only one of them has value.

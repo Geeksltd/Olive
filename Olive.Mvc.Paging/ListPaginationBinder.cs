@@ -12,12 +12,14 @@ namespace Olive.Mvc
             var old = bindingContext.Model as ListPagination;
 
             var result = old;
+
             if (value.FirstValue.HasValue())
             {
                 result = new ListPagination(old?.Container, value.FirstValue)
                 {
                     Prefix = old.Prefix,
                 };
+
                 if (old != null)
                 {
                     result.UseAjaxPost = old.UseAjaxPost;

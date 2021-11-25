@@ -47,6 +47,7 @@ namespace Olive.Mvc.Testing
             ConnectionString = Context.Current
                 .GetService<IConnectionStringProvider>()
                 .GetConnectionString("Default");
+
             DatabaseManager = databaseManager;
         }
 
@@ -148,6 +149,7 @@ namespace Olive.Mvc.Testing
             LoadMetaDirectory();
 
             TempDatabaseName = DatabaseManager.GetDatabaseName().Or("Default.Temp");
+
             if (!TempDatabaseName.ToLower().EndsWith(".temp"))
             {
                 Debug.WriteLine($"Temp databae creation aborted as '{TempDatabaseName}' does not end in '.Temp'.");
@@ -170,6 +172,7 @@ namespace Olive.Mvc.Testing
         void LoadMetaDirectory()
         {
             DbDirectory = AppDomain.CurrentDomain.WebsiteRoot().Parent.GetSubDirectory("DB");
+
             if (!DbDirectory.Exists())
                 throw new Exception("Failed to find the DB folder from which to create the temp database: " +
                     DbDirectory.FullName);
@@ -182,6 +185,7 @@ namespace Olive.Mvc.Testing
             var path = Config.Get("Blob:WebTest:Origin", "..\\Test\\ReferenceFiles");
 
             var source = AppDomain.CurrentDomain.WebsiteRoot().GetSubDirectory(path);
+
             if (source.Exists())
                 source.CopyTo(DiskBlobStorageProvider.Root.FullName, overwrite: true);
         }

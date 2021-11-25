@@ -194,6 +194,7 @@ namespace Olive.Entities
                 try
                 {
                     IEnumerable collection;
+
                     if (getSiblingsMethod.ReturnType.IsA<Task>())
                         collection = await (dynamic)getSiblingsMethod.Invoke(item, null) as IEnumerable<ISortable>;
                     else

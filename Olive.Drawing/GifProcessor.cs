@@ -46,7 +46,7 @@
                     {
                         var pixel = source.GetPixel((int)x, (int)y);
 
-                        byte* newPointer = x + pointer + y * stride;
+                        var newPointer = x + pointer + y * stride;
 
                         // Set that byte to the color in the new pallet
                         *newPointer = FindPalleteEntryIndex(pixel);

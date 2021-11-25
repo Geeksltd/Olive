@@ -14,6 +14,7 @@ namespace Olive.Mvc
         public async Task<Blob> Bind(string fileKey)
         {
             var folder = GetFolder(fileKey);
+
             if (!folder.Exists())
                 throw new Exception("The folder for this uploaded file does not exist: " + fileKey);
 
@@ -52,6 +53,7 @@ namespace Olive.Mvc
             var id = Guid.NewGuid().ToString();
 
             var path = GetFolder(id).EnsureExists().GetFile(file.FileName.ToSafeFileName());
+
             if (path.FullName.Length >= 260)
                 return new { Error = "File name length is too long." };
 
@@ -91,6 +93,7 @@ namespace Olive.Mvc
             var url = "/temp-file/" + key;
 
             var http = Context.Current.Http();
+
             if (http != null)
                 url = http?.GetUrlHelper().Content("~" + url);
 

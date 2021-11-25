@@ -8,8 +8,8 @@ namespace Olive.Entities
 
     public class GlobalDeleteEventArgs : DeleteEventArgs
     {
-        public Type EntityType { get; private set;}
-        public object EnityID { get; private set;}
+        public Type EntityType { get; private set; }
+        public object EnityID { get; private set; }
         public IEntity Entity;
         public GlobalDeleteEventArgs(IEntity entity)
         {

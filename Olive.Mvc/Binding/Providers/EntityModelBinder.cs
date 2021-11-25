@@ -64,8 +64,6 @@ namespace Olive.Mvc
 
         #region Custom parsers
 
-
-
         #endregion
 
         object FromRequestValues(ModelBindingContext bindingContext)

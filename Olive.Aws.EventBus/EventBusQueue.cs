@@ -17,6 +17,12 @@ namespace Olive.Aws
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
 
+        public EventBusQueue(string queueUrl)
+        {
+            QueueUrl = queueUrl;
+            Client = Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
+        }
+
         public EventBusQueue Region(Amazon.RegionEndpoint region)
         {
             Client = new AmazonSQSClient(region);
@@ -37,12 +43,6 @@ namespace Olive.Aws
         ///     retrieve requests after being retrieved by a ReceiveMessage request.
         /// </summary>
         public int VisibilityTimeout { get; set; } = Config.Get("Aws:EventBusQueue:VisibilityTimeout", 300);
-
-        public EventBusQueue(string queueUrl)
-        {
-            QueueUrl = queueUrl;
-            Client = Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
-        }
 
         public async Task<string> Publish(string message)
         {
@@ -88,6 +88,7 @@ namespace Olive.Aws
                 {
                     message.MessageDeduplicationId =
                         JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
+
                     message.MessageGroupId = "Default";
                 });
             }
@@ -130,11 +131,12 @@ namespace Olive.Aws
                     await item.Complete();
                 }
             }
-        }       
+        }
 
         public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10, int? maxNumerOfMessages = null)
         {
             var result = new List<QueueMessageHandle>();
+
             var request = new ReceiveMessageRequest
             {
                 QueueUrl = QueueUrl,
@@ -144,6 +146,7 @@ namespace Olive.Aws
             };
 
             var response = await Client.ReceiveMessageAsync(request);
+
             foreach (var item in response.Messages)
             {
                 var receipt = new DeleteMessageRequest { QueueUrl = QueueUrl, ReceiptHandle = item.ReceiptHandle };
@@ -155,9 +158,6 @@ namespace Olive.Aws
 
         public Task<QueueMessageHandle> Pull(int timeoutSeconds = 10) => PullBatch(timeoutSeconds, 1).FirstOrDefault();
 
-        public Task Purge()
-        {
-            return Client.PurgeQueueAsync(new PurgeQueueRequest { QueueUrl = QueueUrl });
-        }
+        public Task Purge() => Client.PurgeQueueAsync(new PurgeQueueRequest { QueueUrl = QueueUrl });
     }
 }

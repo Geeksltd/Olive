@@ -51,6 +51,7 @@
             foreach (var property in properties)
             {
                 var clean = (string)property.GetValue(entity);
+
                 if (clean.HasValue())
                     property.SetValue(entity, valueConverter(clean, EncryptionKey));
             }

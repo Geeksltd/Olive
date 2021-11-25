@@ -12,8 +12,10 @@ namespace Olive.Export
         string GenerateExcelWorksheet()
         {
             var result = new StringBuilder();
+
             result.AddFormattedLine(@"<Worksheet ss:Name=""{0}"">",
                 DocumentName.Remove("/", @"\", "?", "*", ":", "[", "]", "\r", "\n").KeepReplacing("  ", " ").Summarize(MAX_LENGTH_FOR_SUMMARIZE, enforceMaxLength: true).XmlEncode());
+
             result.AddFormattedLine(@"<Table DefaultColumnWidth=""{0}"">", DefaultColumnWidth);
 
             result.AppendLine(Columns.Select((h, i) => GenerateColumnTag(h, i + 1)).Trim().ToLinesString());
@@ -171,6 +173,7 @@ namespace Olive.Export
             sheets.Do(s => s.MergeStyles());
 
             var uniqueStyles = sheets.SelectMany(x => x.GetAllStyles()).Distinct(x => x.GetStyleId()).ToList();
+
             foreach (var style in uniqueStyles)
                 r.AppendLine(style.GenerateStyle());
 

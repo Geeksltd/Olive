@@ -24,6 +24,7 @@ namespace Olive.Entities.Data
                 IsolationLevel = @this,
                 Timeout = TransactionManager.DefaultTimeout
             };
+
             return new TransactionScope(scopeOption, options);
         }
     }

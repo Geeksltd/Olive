@@ -58,6 +58,7 @@ namespace Olive.Mvc
         public static bool IsInvisible(this IViewModel @this, string propertyName)
         {
             if (@this == null) return false;
+
             if (propertyName.Contains("."))
             {
                 var member = propertyName.Split('.').First();

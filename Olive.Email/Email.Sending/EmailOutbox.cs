@@ -36,6 +36,7 @@ namespace Olive.Email
         public async Task SendAll(TimeSpan? delayPerSend = null)
         {
             Log.Info("Sending all ...");
+
             using (await AsyncLock.Lock())
             {
                 var toSend = await Repository.GetUnsentEmails();

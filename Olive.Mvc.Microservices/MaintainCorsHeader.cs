@@ -6,8 +6,8 @@ namespace Olive.Mvc.Microservices
 {
     public class MaintainCorsHeader
     {
-        //this issue has been mentioned here: https://github.com/aspnet/AspNetCore/issues/2378
-        //it seems this issue has been fixed in the .net core 2.2 but we are using 2.1.5 right now.
+        // this issue has been mentioned here: https://github.com/aspnet/AspNetCore/issues/2378
+        // it seems this issue has been fixed in the .net core 2.2 but we are using 2.1.5 right now.
 
         readonly RequestDelegate Next;
 
@@ -17,6 +17,7 @@ namespace Olive.Mvc.Microservices
         {
             // Find and hold onto any CORS related headers ...
             var corsHeaders = new HeaderDictionary();
+
             foreach (var pair in httpContext.Response.Headers)
             {
                 if (!pair.Key.ToLower().StartsWith("access-control-", StringComparison.OrdinalIgnoreCase)) { continue; } // Not CORS related
@@ -24,7 +25,8 @@ namespace Olive.Mvc.Microservices
             }
 
             // Bind to the OnStarting event so that we can make sure these CORS headers are still included going to the client
-            httpContext.Response.OnStarting(o =>
+            httpContext.Response
+                .OnStarting(o =>
             {
                 var ctx = (HttpContext)o;
                 var headers = ctx.Response.Headers;

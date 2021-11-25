@@ -40,7 +40,7 @@ namespace Olive
             return string.Empty;
         }
 
-        private static async Task<string> ToHtml(this IAuditEvent applicationEvent, string parentNode = null)
+        static async Task<string> ToHtml(this IAuditEvent applicationEvent, string parentNode = null)
         {
             var item = await EntityProcessor.LoadItem(applicationEvent, parentNode == "new");
 
@@ -69,7 +69,7 @@ namespace Olive
 
                 if (property.IsEntity(item))
                     propertyClass = $"{propertyClass} audit-log-property-entity";
-                else if (property.PropertyType == typeof(Boolean))
+                else if (property.PropertyType == typeof(bool))
                     propertyClass = $"{propertyClass} audit-log-property-bool";
 
                 ouputBuilder.AppendLine($"<span class=\"audit-log-label\">{element.Name.LocalName?.ToLiteralFromPascalCase()}</span> {linker} <span class=\"{propertyClass}\">{element.Value}</span><br>");
@@ -84,6 +84,7 @@ namespace Olive
             if (obj == null || property == null) return false;
 
             var type = property.PropertyType;
+
             return (property.GetValue(obj) is IEntity) || (type.IsClass
                 && !type.Assembly.FullName.StartsWith("Olive.Entities")
                 && !type.Assembly.FullName.StartsWith("System"));

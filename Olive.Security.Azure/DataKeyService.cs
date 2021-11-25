@@ -28,6 +28,7 @@ namespace Olive.Security.Azure
 
                     keyValutUri = uriValue.AsUri();
                 }
+
                 return keyValutUri;
             }
         }

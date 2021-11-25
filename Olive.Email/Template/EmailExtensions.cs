@@ -19,6 +19,7 @@ namespace Olive.Email
         {
             // Make sure that all place holders appear in the email body or subject.
             var missingElements = template.GetPlaceholderTokens().Except(t => (template.Subject + template.Body).Contains(t));
+
             if (missingElements.Any())
                 throw new ValidationException("Email template subject or body must have all place-holders for {0}. The missing ones are: {1}", template.Key, missingElements.ToString(", "));
         }

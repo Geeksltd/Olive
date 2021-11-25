@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
 namespace Olive
 {
     partial class OliveExtensions
     {
-        
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<TSource[]> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
@@ -79,7 +77,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<TSource[]> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<TSource[]> @this) 
+        public static Task<TSource> LastOrDefault<TSource>(this Task<TSource[]> @this)
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
@@ -200,9 +198,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<TSource[]> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<TSource[]> @this) 
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<TSource[]> @this)
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
- 
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -231,9 +229,8 @@ namespace Olive
             => @this.Get(x => x.Concat(other.ForLinq()));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<TSource[]> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
 
-   
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
@@ -304,7 +301,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<IOrderedEnumerable<TSource>> @this) 
+        public static Task<TSource> LastOrDefault<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
@@ -425,9 +422,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IOrderedEnumerable<TSource>> @this) 
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
- 
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -456,9 +453,8 @@ namespace Olive
             => @this.Get(x => x.Concat(other.ForLinq()));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
 
-   
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<List<TSource>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
@@ -529,7 +525,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<List<TSource>> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<List<TSource>> @this) 
+        public static Task<TSource> LastOrDefault<TSource>(this Task<List<TSource>> @this)
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
@@ -650,9 +646,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<List<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<List<TSource>> @this) 
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<List<TSource>> @this)
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
- 
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -681,9 +677,8 @@ namespace Olive
             => @this.Get(x => x.Concat(other.ForLinq()));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
 
-   
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IList<TSource>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
@@ -754,7 +749,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<IList<TSource>> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<IList<TSource>> @this) 
+        public static Task<TSource> LastOrDefault<TSource>(this Task<IList<TSource>> @this)
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
@@ -875,9 +870,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<IList<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IList<TSource>> @this) 
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IList<TSource>> @this)
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
- 
+
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -906,7 +901,6 @@ namespace Olive
             => @this.Get(x => x.Concat(other.ForLinq()));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IList<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
-
-       }
+          => @this.Get(x => x.Where(predicate));
+    }
 }

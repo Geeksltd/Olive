@@ -39,6 +39,7 @@ namespace Olive.Entities.Replication
                     Log.For(this).Debug($"Finding the value of {fieldName} field");
 
                     var value = f.GetSerializableValue(entity);
+
                     if (value == null) properties[f.GetName()] = null;
                     else
                     {
@@ -76,7 +77,9 @@ namespace Olive.Entities.Replication
             message.ToDelete = true;
             return message;
         }
+
         string GetTypeFullName() => GetType().Namespace + "." + GetType().Name;
+
         ReplicateDataMessage ToReplicateDataMessage(Dictionary<string, object> properties)
         {
             var serialized = JsonConvert.SerializeObject(properties);

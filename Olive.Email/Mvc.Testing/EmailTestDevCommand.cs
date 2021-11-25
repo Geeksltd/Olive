@@ -63,6 +63,7 @@ namespace Olive.Email
         public async Task<string> Process()
         {
             string response;
+
             if (AttachmentFile != null)
             {
                 if (IsTextFile(AttachmentFile.Name))
@@ -72,6 +73,7 @@ namespace Olive.Email
                 {
                     await Response.Dispatch(await AttachmentFile.ContentStream.ReadAllBytesAsync(),
                         AttachmentFile.Name);
+
                     return default(string);
                 }
             }
@@ -172,8 +174,10 @@ namespace Olive.Email
                     r.AddFormattedLine("<td>{0}</td>", item.SendableDate.ToString("yyyy-MM-dd"));
                     r.AddFormattedLine("<td>{0}</td>", item.SendableDate.ToSmallTime());
                     r.AddFormattedLine("<td>{0}</td>", mail.From.DisplayName + "(" + mail.From.Address + ")");
+
                     r.AddFormattedLine("<td>{0}</td>",
                         mail.ReplyToList.First().DisplayName + "(" + mail.ReplyToList.First().Address + ")");
+
                     r.AddFormattedLine("<td>{0}</td>", item.To);
                     r.AddFormattedLine("<td>{0}</td>", item.Cc);
                     r.AddFormattedLine("<td>{0}</td>", item.Bcc);

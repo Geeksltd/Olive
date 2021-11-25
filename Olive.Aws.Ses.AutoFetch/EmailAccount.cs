@@ -11,13 +11,9 @@ namespace Olive.Aws.Ses.AutoFetch
         public string S3Bucket { get; private set; }
         EmailAccount()
         {
-
         }
 
-        internal EmailAccount(string s3Bucket)
-        {
-            S3Bucket = s3Bucket;
-        }
+        internal EmailAccount(string s3Bucket) => S3Bucket = s3Bucket;
 
         protected abstract IMailMessage CreateMailMessageInstance();
 
@@ -33,7 +29,6 @@ namespace Olive.Aws.Ses.AutoFetch
             result.Date = message.Date.DateTime;
             result.Sender = message.Sender?.ToString();
             result.Subject = message.Subject;
-
 
             return result;
         }

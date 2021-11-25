@@ -22,6 +22,7 @@ namespace Olive.Security.Azure
 
                     blobStorageUri = uriValue.AsUri();
                 }
+
                 return blobStorageUri;
             }
         }
@@ -32,6 +33,5 @@ namespace Olive.Security.Azure
         /// <param name="keyVaultUri">https://[#name#].vault.azure.net/keys/DATAPROTECTIONKEY/</param>
         public static void PersistKeysToAzureBlobStorage(this IDataProtectionBuilder builder) =>
             builder.PersistKeysToAzureBlobStorage(BlobStorageUri, new DefaultAzureCredential());
-
     }
 }

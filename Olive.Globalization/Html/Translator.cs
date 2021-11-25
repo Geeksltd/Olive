@@ -39,6 +39,7 @@ namespace Olive.Globalization
             if (node.Name == "img")
             {
                 var alt = node.Attributes["alt"];
+
                 if (alt != null)
                     alt.Value = await Translate(alt.Value, language);
             }

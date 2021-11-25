@@ -7,6 +7,6 @@
     {
         public bool CanCopy;
 
-        public CopyDataAttribute(bool canCopy) { CanCopy = canCopy; }
+        public CopyDataAttribute(bool canCopy) => CanCopy = canCopy;
     }
 }

@@ -10,15 +10,13 @@ namespace Olive.Mvc
 {
     public partial class BindAttributeRunner
     {
-
-
         readonly Controller RootController;
         readonly Dictionary<IViewModel, ViewModelBinding> ViewModels = new Dictionary<IViewModel, ViewModelBinding>();
-
 
         public BindAttributeRunner(Controller rootController, IViewModel[] models)
         {
             RootController = rootController;
+
             foreach (var item in models)
                 Add(item);
         }
@@ -47,6 +45,7 @@ namespace Olive.Mvc
             foreach (var p in properties.Where(v => v.GetPropertyOrFieldType().IsA<IViewModel>()))
             {
                 var obj = p.GetValue(model) as IViewModel;
+
                 if (obj != null)
                     if (Add(obj)) added.Add(obj);
             }
@@ -54,6 +53,7 @@ namespace Olive.Mvc
             foreach (var p in properties.Where(v => v.GetPropertyOrFieldType().IsIEnumerableOf(typeof(IViewModel))))
             {
                 var objs = p.GetValue(model) as IEnumerable<IViewModel>;
+
                 foreach (var obj in objs.OrEmpty().ExceptNull())
                     if (Add(obj)) added.Add(obj);
             }
@@ -72,6 +72,7 @@ namespace Olive.Mvc
             yield return RootController;
 
             var type = item?.GetType().GetCustomAttribute<BindingControllerAttribute>()?.Type;
+
             if (type != null)
             {
                 var result = type.CreateInstanceWithDI() as Controller;
@@ -107,6 +108,7 @@ namespace Olive.Mvc
             }
 
             var remaining = ExpandAll();
+
             if (remaining.Any())
             {
                 await ExecutePreBinding();
@@ -123,6 +125,7 @@ namespace Olive.Mvc
             }
 
             var remaining = ExpandAll();
+
             if (remaining.Any())
             {
                 await ExecutePreBinding();
@@ -130,9 +133,5 @@ namespace Olive.Mvc
                 await ExecuteBound();
             }
         }
-
-
-
-
     }
 }

@@ -25,6 +25,7 @@ namespace Olive.Mvc
             var itemIds = GetValue(bindingContext, "ItemId");
             var urls = GetValue(bindingContext, "Url");
             var result = new List<BlobViewModel>();
+
             if (tempFileIds?.Any() == true)
             {
                 foreach (var tempFileId in tempFileIds.Select((value, index) => new { value, index }))
@@ -40,9 +41,11 @@ namespace Olive.Mvc
 
                     blobViewModel.IsEmpty = blobViewModel.TempFileId.HasValue() ||
                         (blobViewModel.Filename.HasValue() && blobViewModel.Filename != Blob.EMPTY_FILE);
+
                     result.Add(blobViewModel);
                 }
             }
+
             return result;
         }
 

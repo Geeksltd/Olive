@@ -27,6 +27,7 @@ namespace Olive.Entities.Data
         public static async Task RaiseOnLoaded(this EntityServices @this, IEntity record)
         {
             await ((Entity)record).OnLoaded();
+
             foreach (var item in Context.Current.GetServices<IEntityLoadedInterceptor>())
             {
                 var task = item.Process(record);

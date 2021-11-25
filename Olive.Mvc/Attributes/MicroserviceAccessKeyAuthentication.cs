@@ -16,11 +16,13 @@ namespace Olive.Mvc
             app.Use((context, next) =>
             {
                 var clientId = context.Request.Headers["Microservice.AccessKey"].ToString("|");
+
                 if (clientId.HasValue())
                 {
                     var claims = GetRoles(clientId).SelectMany(x => x.Split(',')).Trim()
                     .Select(r => new Claim(ClaimTypes.Role, r))
                     .Concat(new Claim(ClaimTypes.Name, "Microservice.ApiUser"));
+
                     context.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "Service"));
                 }
 
@@ -34,6 +36,7 @@ namespace Olive.Mvc
         {
             var provider = Context.Current.GetOptionalService<PermissionsProvider>() ??
                 new AppSettingsPermissionsProvider();
+
             return provider.GetRoles(clientId);
         }
 
@@ -49,6 +52,7 @@ namespace Olive.Mvc
                 var expectedSection = "Authentication:Api.Clients:" + clientId;
 
                 var section = Config.GetSection(expectedSection);
+
                 if (section == null)
                 {
                     Console.WriteLine($"Invalid request: {expectedSection} is not defined in appSettings.");

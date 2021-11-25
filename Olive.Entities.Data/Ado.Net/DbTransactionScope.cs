@@ -32,7 +32,7 @@ namespace Olive.Entities.Data
             ScopeOption = scopeOption;
             Parent = Root;
             Current = this;
-            
+
             if (Root == null) Root = this;
         }
 
@@ -150,9 +150,11 @@ namespace Olive.Entities.Data
             foreach (var item in Connections)
             {
                 var retries = 1;
+
                 while (AsyncCommandInProgress(item.Value.Connection))
                 {
                     Thread.Sleep(retries * 10);
+
                     if (retries++ > 10)
                         throw new Exception("Async command is in progress in this transaction.");
                 }

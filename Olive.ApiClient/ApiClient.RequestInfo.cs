@@ -54,6 +54,7 @@ namespace Olive
                 set
                 {
                     jsonData = value;
+
                     if (value != null)
                     {
                         ContentType = "application/json";
@@ -97,10 +98,12 @@ namespace Olive
                 try
                 {
                     var response = ResponseText;
+
                     if (typeof(TResponse) == typeof(string) && response.HasValue())
                         response = ResponseText.EnsureStartsWith("\"").EnsureEndsWith("\"");
 
                     TResponse result;
+
                     if (typeof(TResponse) == typeof(string))
                     {
                         result = (TResponse)(object)response;
@@ -153,6 +156,7 @@ namespace Olive
                 using (CreateRequestMessage())
                 {
                     string responseBody = null;
+
                     try
                     {
                         var response = await Client.SendAsync(HttpClient, RequestMessage)
@@ -167,6 +171,7 @@ namespace Olive
                             return null;
 
                         responseBody = await response.Content.ReadAsStringAsync();
+
                         if (ResponseCode.IsError())
                         {
                             throw new Exception("Server error " + ResponseCode);
@@ -194,6 +199,7 @@ namespace Olive
                     try
                     {
                         var serverError = JsonConvert.DeserializeObject<ServerError>(responseBody);
+
                         if (serverError != null)
                             return serverError.Message.Or(serverError.ExceptionMessage);
                     }

@@ -52,6 +52,7 @@ namespace Olive.Entities.Data
         public async Task<IDbConnection> GetOrCreateConnection()
         {
             var result = await (DbTransactionScope.Root?.GetDbConnection() ?? Task.FromResult<IDbConnection>(null));
+
             if (result != null) return (TConnection)result;
             else return await CreateConnection();
         }
@@ -166,6 +167,7 @@ namespace Olive.Entities.Data
             try
             {
                 var openTransaction = DbTransactionScope.Root;
+
                 if (openTransaction == null)
                     return await dbCommand.ExecuteReaderAsync(CommandBehavior.CloseConnection);
                 else
@@ -255,6 +257,7 @@ namespace Olive.Entities.Data
                     var watch = StartWatch(c.Key);
 
                     DbCommand dbCommand = null;
+
                     try
                     {
                         dbCommand = await CreateCommand(commandType, c.Key, connection, c.Value);

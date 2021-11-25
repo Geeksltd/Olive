@@ -16,6 +16,5 @@ namespace Olive.Entities
         }
 
         public static string GetKey(this Blob document) => (document.FolderName + "/" + document.OwnerId()).KeepReplacing("//", "/").TrimStart("/");
-
     }
 }

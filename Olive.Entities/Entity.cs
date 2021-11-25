@@ -50,6 +50,7 @@ namespace Olive.Entities
         internal void RegisterCachedCopy(ICachedReference cachedCopy)
         {
             if (cachedCopy == null) return;
+
             lock (CachedCopiesLock)
             {
                 if (CachedCopies == null) CachedCopies = new List<ICachedReference>();
@@ -112,6 +113,7 @@ namespace Olive.Entities
         PropertyInfo[] GetPrimitiveProperties()
         {
             var myType = GetType();
+
             if (PrimitiveProperties.ContainsKey(myType))
             {
                 // Already cached:
@@ -123,6 +125,7 @@ namespace Olive.Entities
                 {
                     if (PrimitiveProperties.ContainsKey(myType))
                         return PrimitiveProperties[myType];
+
                     var result = ExtractPrimitiveProperties(myType);
                     PrimitiveProperties.Add(myType, result);
                     return result;
@@ -137,6 +140,7 @@ namespace Olive.Entities
         {
             var result = new List<PropertyInfo>();
             var primitiveTypes = new[] { typeof(string), typeof(int), typeof(int?), typeof(double), typeof(double?), typeof(DateTime), typeof(DateTime?) };
+
             foreach (var p in type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead).Where(p => primitiveTypes.Contains(p.PropertyType)))
             {
                 if (p.Name == nameof(IsNew)) continue;
@@ -157,6 +161,7 @@ namespace Olive.Entities
             if (format == "F")
             {
                 var r = new StringBuilder();
+
                 foreach (var p in GetPrimitiveProperties())
                 {
                     try

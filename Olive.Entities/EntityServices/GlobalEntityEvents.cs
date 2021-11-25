@@ -38,11 +38,14 @@ namespace Olive.Entities
         public static event AwaitableEventHandler<GlobalDeleteEventArgs> InstanceDeleted;
 
         internal static Task OnInstanceDeleted(GlobalDeleteEventArgs args) => InstanceDeleted.Raise(args);
+
         internal static Task OnInstanceDeleting(CancelEventArgs args) => InstanceDeleting.Raise(args);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static Task OnInstanceSaved(GlobalSaveEventArgs args) => InstanceSaved.Raise(args);
+
         internal static Task OnInstanceValidating(EventArgs args) => InstanceValidating.Raise(args);
+
         internal static Task OnInstanceSaving(CancelEventArgs args) => InstanceSaving.Raise(args);
     }
 }

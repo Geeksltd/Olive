@@ -72,6 +72,7 @@ namespace Olive.Entities.Data
             foreach (var instance in await GetList<T>())
             {
                 string objectString;
+
                 try { objectString = instance.ToString(); }
                 catch (Exception ex)
                 {

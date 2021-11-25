@@ -17,6 +17,5 @@ namespace Olive.Mvc
 
         [JsonProperty("error-codes")]
         public List<string> ErrorCodes { get; set; }
-
     }
 }

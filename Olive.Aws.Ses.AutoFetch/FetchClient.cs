@@ -34,6 +34,7 @@ namespace Olive.Aws.Ses.AutoFetch
         async Task Fetch()
         {
             var isEmpty = false;
+
             while (!isEmpty)
             {
                 LogInfo($"Downloading from " + Account.S3Bucket);
@@ -43,9 +44,8 @@ namespace Olive.Aws.Ses.AutoFetch
                 LogInfo($"Downloaded {response.S3Objects.Count} items from " + Account.S3Bucket);
 
                 foreach (var item in response.S3Objects)
-                {
                     await Fetch(item);
-                }
+                
 
                 Log.For(this).Info($"Downloaded {response.S3Objects.Count} items from " + Account.S3Bucket);
 
@@ -75,7 +75,6 @@ namespace Olive.Aws.Ses.AutoFetch
 
                 scope.Complete();
             }
-
         }
 
         async Task<IMailMessage> GetObject(Amazon.S3.Model.S3Object item)
@@ -93,9 +92,6 @@ namespace Olive.Aws.Ses.AutoFetch
             return S3Client.DeleteObjectAsync(request);
         }
 
-        public void Dispose()
-        {
-            S3Client?.Dispose();
-        }
+        public void Dispose() => S3Client?.Dispose();
     }
 }

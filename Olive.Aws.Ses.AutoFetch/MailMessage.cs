@@ -25,7 +25,6 @@ namespace Olive.Aws.Ses.AutoFetch
 
             if (From.IsEmpty())
                 throw new ValidationException($"Please provide a value for {nameof(From)}");
-
         }
     }
 }

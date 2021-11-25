@@ -81,6 +81,7 @@ namespace Olive.Mvc
             if (model.ModelType?.IsA<IViewModel>() == true)
             {
                 var key = "AlreadyRan." + actionsKey + model.ModelType.FullName;
+
                 if (httpContext.Items[key].ToStringOrEmpty() == "true") return;
                 else httpContext.Items[key] = "true";
             }

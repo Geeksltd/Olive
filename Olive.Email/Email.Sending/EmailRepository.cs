@@ -24,6 +24,7 @@ namespace Olive.Email
             var unsentEmails = await Database.Of<IEmailMessage>()
                 .Where(x => x.Retries < Config.MaxRetries)
                   .GetList();
+
             return unsentEmails.OrderBy(x => x.SendableDate);
         }
 

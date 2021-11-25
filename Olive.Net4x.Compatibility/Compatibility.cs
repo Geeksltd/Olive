@@ -24,7 +24,7 @@ namespace Olive
 
             var services = new ServiceCollection();
             services.AddLogging();
-            //services.AddSingleton(typeof(ILoggerFactory), new LoggerFactory());
+            // services.AddSingleton(typeof(ILoggerFactory), new LoggerFactory());
             services.AddSingleton(typeof(IConfiguration), new XmlConfigReader());
             services.AddSingleton(typeof(IHttpClientFactory), new HttpClientFactory());
 
@@ -40,17 +40,15 @@ namespace Olive
 
             HttpClient IHttpClientFactory.CreateClient(string name) => new HttpClient();
 
+            // => All.TryGet(name) ?? (All[name] = new LivingHttpClient());
 
-            //=> All.TryGet(name) ?? (All[name] = new LivingHttpClient());
-
-            //class LivingHttpClient : HttpClient
-            //{
+            // class LivingHttpClient : HttpClient
+            // {
             //    protected override void Dispose(bool disposing)
             //    {
             //        // Never disposed
             //    }
-            //}
-
+            // }
         }
 
         /// <summary>

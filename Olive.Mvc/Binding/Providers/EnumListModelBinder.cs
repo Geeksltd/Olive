@@ -30,6 +30,7 @@ namespace Olive.Mvc
                     foreach (var item in ids.Split('|').Trim())
                     {
                         var asInt = item.TryParseAs<int>();
+
                         if (asInt.HasValue)
                             result.Add(Enum.ToObject(EnumType, asInt));
                         else

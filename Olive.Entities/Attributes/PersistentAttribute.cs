@@ -8,10 +8,7 @@ namespace Olive.Entities
     public sealed class PersistentAttribute : Attribute
     {
         bool IsPersistent;
-        public PersistentAttribute(bool isPersistent)
-        {
-            IsPersistent = isPersistent;
-        }
+        public PersistentAttribute(bool isPersistent) => IsPersistent = isPersistent;
 
         internal static bool IsTypePersistent(Type type)
         {

@@ -21,6 +21,7 @@ namespace Olive.Security.Aws
                 if (masterKeyArn.HasValue()) return masterKeyArn;
 
                 var fromEnvironment = Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN");
+
                 return masterKeyArn = Context.Current.Config.GetValue("Aws:Kms:MasterKeyArn", defaultValue: fromEnvironment).OrNullIfEmpty()
                        ?? throw new Exception("Aws Master Key Arn is not specified.");
             }

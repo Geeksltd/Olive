@@ -14,10 +14,7 @@ namespace Olive
 
         internal Exception Error;
 
-        protected GetImplementation(ApiClient apiClient)
-        {
-            ApiClient = apiClient;
-        }
+        protected GetImplementation(ApiClient apiClient) => ApiClient = apiClient;
 
         internal Task OnFallBackEvent(FallBackEvent args) => FallBackEvent.Raise(args);
 

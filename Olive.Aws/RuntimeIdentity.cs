@@ -47,6 +47,7 @@ namespace Olive.Aws
             while (true)
             {
                 await Task.Delay(interval);
+
                 try
                 {
                     await Renew();
@@ -78,7 +79,9 @@ namespace Olive.Aws
                 var credentials = response.Credentials;
 
                 FallbackCredentialsFactory.Reset();
-                FallbackCredentialsFactory.CredentialsGenerators.Insert(0, () =>
+
+                FallbackCredentialsFactory.CredentialsGenerators
+                    .Insert(0, () =>
                 {
                     Log.Debug("Generating credentials => " + credentials.AccessKeyId.Substring(20) + " of total : " + FallbackCredentialsFactory.CredentialsGenerators.Count);
                     return credentials;
@@ -86,7 +89,6 @@ namespace Olive.Aws
                 );
 
                 Log.Debug("Obtained assume role credentials." + credentials.AccessKeyId.Substring(20));
-
             }
             catch (Exception ex)
             {

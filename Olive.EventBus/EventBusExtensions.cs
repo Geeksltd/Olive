@@ -40,6 +40,7 @@ namespace Olive
             queue.Subscribe(message =>
             {
                 if (message.IsEmpty()) return Task.CompletedTask;
+
                 try
                 {
                     var @event = JsonConvert.DeserializeObject<TMessage>(message);
@@ -58,6 +59,7 @@ namespace Olive
             return queue.PullAll(message =>
             {
                 if (message.IsEmpty()) return Task.CompletedTask;
+
                 try
                 {
                     var @event = JsonConvert.DeserializeObject<TMessage>(message);

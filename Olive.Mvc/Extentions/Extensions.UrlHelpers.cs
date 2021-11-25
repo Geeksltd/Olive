@@ -50,6 +50,7 @@ namespace Olive.Mvc
             if (queryParameters == null) queryParameters = new Dictionary<string, string>();
 
             var result = @this.CurrentUri().RemoveEmptyQueryParameters();
+
             foreach (var item in queryParameters)
                 result = result.RemoveQueryString(item.Key).AddQueryString(item.Key, item.Value);
 

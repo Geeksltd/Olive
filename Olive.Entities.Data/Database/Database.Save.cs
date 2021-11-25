@@ -29,7 +29,7 @@ namespace Olive.Entities.Data
             {
                 if (entity.IsNew) await save();
                 else using (await GetSyncLock(entity.GetType().FullName + entity.GetId()).Lock()) await save();
-            };
+            }
 
             if (ProviderConfig.Configuration.Transaction.EnforceForSave) await EnlistOrCreateTransaction(doSave);
             else await doSave();

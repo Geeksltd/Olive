@@ -23,10 +23,11 @@ namespace Olive
         public async Task<string> Publish(string message)
         {
             FileInfo path;
+
             using (await SyncLock.Lock())
-            {
                 path = Folder.GetFile(DateTime.UtcNow.Ticks.ToString());
-            }
+            
+
             await path.WriteAllTextAsync(message);
             return path.Name;
         }
@@ -55,6 +56,7 @@ namespace Olive
         }
 
         public void Subscribe(Func<string, Task> handler) => new IOSubscriber(this, handler).Start();
+
         public Task PullAll(Func<string, Task> handler) => new IOSubscriber(this, handler).PullAll();
     }
 }

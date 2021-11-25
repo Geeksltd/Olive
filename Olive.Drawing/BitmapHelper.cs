@@ -43,9 +43,8 @@ namespace Olive.Drawing
         public static Image FromBuffer(byte[] buffer)
         {
             using (var stream = new MemoryStream(buffer))
-            {
                 return Bitmap.FromStream(stream);
-            }
+            
         }
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace Olive.Drawing
         /// </summary>
         public static Image Crop(this Image image, Rectangle rectangle)
         {
-            //var result = new Bitmap(image, rectangle.Size);
+            // var result = new Bitmap(image, rectangle.Size);
             var result = new Bitmap(rectangle.Width, rectangle.Height);
 
             using (var gr = result.CreateGraphics())

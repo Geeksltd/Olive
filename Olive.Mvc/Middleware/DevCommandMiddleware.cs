@@ -24,6 +24,7 @@ namespace Olive.Mvc
             await (ServiceProvider.GetService<ITempDatabase>()?.AwaitReadiness() ?? Task.CompletedTask);
 
             var path = context.Request.Path.Value.TrimStart("/");
+
             if (!path.StartsWith("cmd/"))
             {
                 await Next.Invoke(context);
@@ -42,6 +43,7 @@ namespace Olive.Mvc
             if (context.Response.HasStarted) return;
 
             var urlReferrer = context.Request.Headers["Referer"].ToString();
+
             if (urlReferrer.IsEmpty()) context.Response.Redirect("/");
             else context.Response.Redirect(urlReferrer);
         }

@@ -9,6 +9,7 @@ namespace Olive.Mvc
         {
             if (!type.IsA<Controller>())
                 throw new ArgumentException(type.FullName + " is not a Controller type.");
+
             Type = type;
         }
     }

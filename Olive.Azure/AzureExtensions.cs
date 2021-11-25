@@ -7,10 +7,10 @@ namespace Olive
 {
     public static class AzureExtensions
     {
-        //public static void LoadAzureDevIdentity(this IConfiguration @this, bool loadSecrets = false)
-        //{
+        // public static void LoadAzureDevIdentity(this IConfiguration @this, bool loadSecrets = false)
+        // {
         //    throw new NotImplementedException();
-        //}
+        // }
 
         /// <summary>
         /// Loads secret information from Azure App Configuration. 
@@ -19,6 +19,4 @@ namespace Olive
         /// <param name="this"></param>
         public static void LoadAzureSecrets(this IConfiguration @this) => new Secrets(@this).Load();
     }
-
-
 }

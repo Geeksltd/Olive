@@ -16,6 +16,7 @@ namespace Olive.Entities
             {
                 var part = parts[i];
                 Property = declaringType.GetProperty(part);
+
                 if (i == parts.Length - 1)
                 {
                     // Last one is the actual end property.
@@ -45,6 +46,7 @@ namespace Olive.Entities
             if (Property.PropertyType != typeof(Guid) && Property.PropertyType != typeof(Guid?)) return;
 
             var entityProperty = Property.DeclaringType.GetProperty(Property.Name.TrimEnd(2));
+
             if (entityProperty != null &&
                 entityProperty.PropertyType.IsA<IEntity>() &&
                 !entityProperty.Defines<CalculatedAttribute>())

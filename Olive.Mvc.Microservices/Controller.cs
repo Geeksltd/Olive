@@ -5,10 +5,7 @@ namespace Olive.Mvc.Microservices
 {
     public abstract class Controller : Olive.Mvc.Controller
     {
-        protected Controller()
-        {
-            ApiClient.FallBack += ev => Notify(ev.Args.FriendlyMessage, false);
-        }
+        protected Controller() => ApiClient.FallBack += ev => Notify(ev.Args.FriendlyMessage, false);
 
         protected override bool IsMicrofrontEnd => true;
 

@@ -50,8 +50,10 @@ namespace Olive
         {
             var name = property.Name;
             if (!name.EndsWith("Id") || NotAssociationAttribute.Marked(property)) return name;
+
             if (property.PropertyType.IsAnyOf(typeof(Guid), typeof(Guid?)))
                 name = name.TrimEnd(2);
+
             return name;
         }
 

@@ -168,6 +168,7 @@ namespace Olive.Drawing
                 throw new Exception("Bitmap.Stretch() should be called on an image with one column only.");
 
             var result = new Bitmap(width, image.Height);
+
             for (int column = 0; column < image.Height; column++)
                 for (int row = 0; row < width; row++)
                     result.SetPixel(row, column, image.GetPixel(0, column));

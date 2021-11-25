@@ -81,6 +81,7 @@ namespace Olive.Export
         public void RemoveColumn(string headerText)
         {
             var columns = Columns.Where(c => c.HeaderText == headerText);
+
             if (columns.HasMany())
                 throw new ArgumentException($"There are {columns.Count()} columns with header text of '{headerText}'. Please use RemoveColumn(index) instead.");
 
@@ -192,6 +193,7 @@ namespace Olive.Export
             foreach (var row in DataRows)
             {
                 var fields = new List<string>();
+
                 for (var i = 0; i < row.Length; i++)
                 {
                     var cell = row[i];

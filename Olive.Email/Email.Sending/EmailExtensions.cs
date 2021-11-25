@@ -125,6 +125,7 @@ namespace Olive.Email
 
             email.To = toNotify;
             email.Subject = "Error In Application";
+
             email.Body = $"URL: {Context.Current.Request()?.ToAbsoluteUri()}{Environment.NewLine}" +
                 $"IP: {Context.Current.Http()?.Connection?.RemoteIpAddress}{Environment.NewLine}" +
                 $"User: {Context.Current.User().GetId()}{Environment.NewLine}" +

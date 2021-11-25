@@ -7,7 +7,7 @@ namespace Olive
     {
         bool Silent;
 
-        public GetCache(ApiClient client, bool silent) : base(client) { Silent = silent; }
+        public GetCache(ApiClient client, bool silent) : base(client) => Silent = silent;
 
         public override async Task<bool> Attempt(string url)
         {

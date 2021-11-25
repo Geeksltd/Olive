@@ -75,6 +75,7 @@
                 }
 
                 var sourceValue = property.GetValue(from);
+
                 if (sourceValue is Task asTask)
                 {
                     if (sourceValue.GetType().GenericTypeArguments.IsSingle())
@@ -185,9 +186,11 @@
             if (target.IsA<IViewModel>() && source is IEntity)
             {
                 IViewModel result;
+
                 if (target.GetConstructor(new[] { source.GetType() }) != null)
                     result = (IViewModel)Activator.CreateInstance(target, new object[] { source });
                 else result = (IViewModel)Activator.CreateInstance(target);
+
                 await (source as IEntity).CopyDataTo(result);
                 return result;
             }
@@ -202,7 +205,7 @@
             {
                 if (target.IsA<IEnumerable<Blob>>())
                     throw new NotSupportedException();
-                    //return await new BlobModelBinder().BindDocuments(source.ToStringOrEmpty());
+                // return await new BlobModelBinder().BindDocuments(source.ToStringOrEmpty());
 
                 var result = await ConvertCollection(source as IEnumerable, target);
                 if (result != null) return result;

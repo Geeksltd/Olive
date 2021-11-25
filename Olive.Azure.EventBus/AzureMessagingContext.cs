@@ -5,8 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Olive;
 
-
-
 class AzureMessagingContext : IAsyncDisposable
 {
     string QueueUrl;
@@ -14,7 +12,6 @@ class AzureMessagingContext : IAsyncDisposable
     string ServiceBusFullyQualifiedName => QueueUrl?.TrimStart("https://").Split('/').First();
     AzureMessagingContext()
     {
-
     }
 
     public AzureMessagingContext(string queueUrl)
@@ -31,8 +28,5 @@ class AzureMessagingContext : IAsyncDisposable
     internal ServiceBusReceiver Purger => _Purger ??= Client.CreateReceiver(QueueName, new ServiceBusReceiverOptions { ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete });
     readonly ServiceBusClient Client;
 
-    public ValueTask DisposeAsync()
-    {
-        return Client.DisposeAsync();
-    }
+    public ValueTask DisposeAsync() => Client.DisposeAsync();
 }

@@ -18,11 +18,9 @@ namespace Olive.Mvc
                 attribute is RequiredWhenAttribute)
                 return new RequiredAttributeAdapter(attribute as RequiredAttribute, stringLocalizer);
 
-
             if (attribute is RangeUnlessAttribute ||
                 attribute is RangeWhenAttribute)
                 return new RangeAttributeAdapter(attribute as RangeAttribute, stringLocalizer);
-
 
             if (attribute is StringLengthUnlessAttribute ||
                 attribute is StringLengthWhenAttribute)

@@ -22,6 +22,7 @@ namespace Olive.Mvc.Testing
             if (IsTempDbMode.HasValue) return IsTempDbMode.Value;
 
             var database = DatabaseManager.GetDatabaseName().ToLowerOrEmpty();
+
             if (database.IsEmpty() || database.EndsWith(".temp")) IsTempDbMode = true;
             else if (DatabaseManager.GetDataSource() == ":memory:") IsTempDbMode = true;
 

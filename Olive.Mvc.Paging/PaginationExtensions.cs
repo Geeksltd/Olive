@@ -8,8 +8,7 @@ namespace Olive.Mvc
 {
     public static class PaginationExtensions
     {
-        const int DEFAULT_VISIBLE_PAGES = 7;
-        const int DEFATLT_PAGE_SIZE = 100000;
+        const int DEFAULT_VISIBLE_PAGES = 7, DEFATLT_PAGE_SIZE = 100000;
 
         public static IEnumerable<T> TakePage<T>(this IEnumerable<T> list, ListPagination paging)
         {

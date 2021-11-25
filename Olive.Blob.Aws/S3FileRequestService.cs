@@ -15,8 +15,7 @@ namespace Olive.BlobAws
 {
     class S3FileRequestService : IFileRequestService
     {
-        readonly string TempBucket;
-        readonly string Region;
+        readonly string TempBucket, Region;
 
         public S3FileRequestService(FileUploadSettings settings)
         {
@@ -100,5 +99,4 @@ namespace Olive.BlobAws
             throw new InvalidOperationException("Client should upload to S3 directly.");
         }
     }
-
 }

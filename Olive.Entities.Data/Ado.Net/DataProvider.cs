@@ -111,11 +111,13 @@ namespace Olive.Entities.Data
                 var propertyType = p.PropertyType;
                 // Get the original value:
                 string originalValue, updatedValue = null;
+
                 if (propertyType == typeof(IList<Guid>))
                 {
                     try
                     {
                         originalValue = (p.GetValue(original) as IList<Guid>).ToString(",");
+
                         if (updated != null)
                             updatedValue = (p.GetValue(updated) as IList<Guid>).ToString(",");
                     }
@@ -130,6 +132,7 @@ namespace Olive.Entities.Data
                     try
                     {
                         originalValue = (p.GetValue(original) as IEnumerable<object>).ToString(", ");
+
                         if (updated != null)
                             updatedValue = (p.GetValue(updated) as IEnumerable<object>).ToString(", ");
                     }
@@ -145,6 +148,7 @@ namespace Olive.Entities.Data
                     {
                         var originalBlob = p.GetValue(original) as Blob;
                         originalValue = originalBlob.IsEmpty() ? null : originalBlob.FileName;
+
                         if (updated != null)
                         {
                             var updatedBlob = p.GetValue(updated) as Blob;
@@ -162,6 +166,7 @@ namespace Olive.Entities.Data
                     try
                     {
                         originalValue = Convert.ToString(p.GetValue(original), CultureInfo.GetCultureInfo("en-GB"));
+
                         if (updated != null)
                             updatedValue = Convert.ToString(p.GetValue(updated), CultureInfo.GetCultureInfo("en-GB"));
                     }
@@ -264,7 +269,7 @@ namespace Olive.Entities.Data
             }
         }
 
-        void LoadConnectionString(string key) => 
+        void LoadConnectionString(string key) =>
             connectionString = Context.Current.GetService<IConnectionStringProvider>().GetConnectionString(key);
 
         /// <summary>
@@ -342,6 +347,7 @@ namespace Olive.Entities.Data
             parts.AddRange(query.OrderByParts.Select(p => query.Column(p.Property) + " DESC".OnlyWhen(p.Descending)));
 
             var offset = string.Empty;
+
             if (query.PageSize > 0)
                 offset = $" OFFSET {query.PageStartIndex} ROWS FETCH NEXT {query.PageSize} ROWS ONLY";
 

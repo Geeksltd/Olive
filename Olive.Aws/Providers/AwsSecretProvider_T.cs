@@ -10,9 +10,6 @@ namespace Olive.Aws.Providers
     {
         protected TAwsClient AwsClient { get; private set; }
 
-        public AwsSecretProvider()
-        {
-            AwsClient = new TAwsClient();
-        }
+        public AwsSecretProvider() => AwsClient = new TAwsClient();
     }
 }

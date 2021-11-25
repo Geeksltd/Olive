@@ -16,6 +16,7 @@ namespace Olive.Entities
         public AssociationSubQuery(PropertyInfo property, string mappedSubquery)
         {
             Property = property;
+
             var subquerySplitted = mappedSubquery.Split(new[] { " WHERE " }, StringSplitOptions.RemoveEmptyEntries)
                 .Trim().ToArray();
 

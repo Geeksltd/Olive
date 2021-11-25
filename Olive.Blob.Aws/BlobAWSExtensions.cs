@@ -17,9 +17,7 @@ namespace Olive
             return @this
                 .AddSingleton<IBlobStorageProvider, S3BlobStorageProvider>()
                 .AddTransient<IS3PresignedUrlGenerator, S3PresignedUrlGenerator>(serviceProvider =>
-                {
-                    return new S3PresignedUrlGenerator(PresignedUrlTimeout);
-                });
+new S3PresignedUrlGenerator(PresignedUrlTimeout));
         }
 
         public static IServiceCollection AddS3BlobStorageProvider(this IServiceCollection @this)

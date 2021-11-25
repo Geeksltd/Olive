@@ -88,6 +88,7 @@ exec sp_detach_db '{0}'".FormatWith(databaseName);
                 using (var cmd = connection.CreateCommand())
                 {
                     cmd.CommandType = CommandType.Text;
+
                     cmd.CommandText = @"SELECT [filename] FROM master.dbo.sysdatabases WHERE name='" +
                         database + "'";
 

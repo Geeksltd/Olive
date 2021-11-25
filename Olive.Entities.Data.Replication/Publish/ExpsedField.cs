@@ -33,6 +33,7 @@ namespace Olive.Entities.Replication
                 await t;
 
                 var resultProperty = t.GetType().GetProperty("Result");
+
                 if (resultProperty == null)
                     throw new Exception(result.GetType().GetProgrammingName() + " is a Task but does not have Result property.");
 
@@ -83,6 +84,7 @@ namespace Olive.Entities.Replication
         protected override async Task<object> GetValue(IEntity entity)
         {
             object result;
+
             try
             {
                 result = Property.GetValue(entity);

@@ -61,7 +61,7 @@ namespace Olive
             response.Headers.Add("Pragma", "no-cache");
 
             response.Headers
-            	.Add("Content-Disposition", "attachment; filename=\"{0}\"".FormatWith(fileName.Remove("\"", ",")));
+                .Add("Content-Disposition", "attachment; filename=\"{0}\"".FormatWith(fileName.Remove("\"", ",")));
 
             await response.Body.WriteAsync(responseData, 0, responseData.Length);
             await response.Body.FlushAsync();

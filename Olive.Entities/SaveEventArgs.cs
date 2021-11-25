@@ -4,7 +4,7 @@ namespace Olive.Entities
 {
     public class SaveEventArgs : EventArgs
     {
-        public SaveEventArgs(SaveMode mode) { Mode = mode; }
+        public SaveEventArgs(SaveMode mode) => Mode = mode;
         public SaveMode Mode { get; private set; }
     }
 

@@ -129,8 +129,11 @@ namespace Olive.Entities.Data
         }
 
         public async Task<T> Get<T>(int id) where T : IEntity<int> => (T)await Get(id, typeof(T));
+
         public async Task<T> Get<T>(long id) where T : IEntity<long> => (T)await Get(id, typeof(T));
+
         public async Task<T> Get<T>(byte id) where T : IEntity<byte> => (T)await Get(id, typeof(T));
+
         public async Task<T> Get<T>(short id) where T : IEntity<short> => (T)await Get(id, typeof(T));
 
         /// <summary>

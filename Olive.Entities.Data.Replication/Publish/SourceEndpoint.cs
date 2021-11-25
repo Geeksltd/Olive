@@ -61,19 +61,22 @@ namespace Olive.Entities.Replication
                 var exception = new Exception("There is no published endpoint for the type: " + typeName +
                     "\r\n\r\nRegistered types are:\r\n" +
                     Agents.Select(x => x.Key).ToLinesString());
+
                 Log.For(this).Error(exception, "Failed to UploadAll");
                 throw exception;
             }
         }
 
         public Task UploadAll(string typeName) => HandleRefreshMessage(typeName);
+
         public Task UploadAll() => Agents.Do(i => HandleRefreshMessage(i.Key));
 
         void HandleRefreshRequests()
         {
             Log.For(this).Debug("Subscribing to " + RefreshQueueUrl);
+
             EventBus.Queue(RefreshQueueUrl)
-            	.Subscribe<RefreshMessage>(async message => await HandleRefreshMessage(message.TypeName));
+                .Subscribe<RefreshMessage>(async message => await HandleRefreshMessage(message.TypeName));
         }
     }
 }

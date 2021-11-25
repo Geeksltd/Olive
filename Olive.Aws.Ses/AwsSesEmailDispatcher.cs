@@ -17,6 +17,7 @@ namespace Olive.Aws.Ses
             using (var client = new AmazonSimpleEmailServiceClient())
             {
                 var response = await client.SendEmailAsync(request);
+
                 if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                     throw new Exception("Failed to send an email: " + response.HttpStatusCode);
             }
