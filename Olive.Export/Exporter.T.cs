@@ -173,12 +173,12 @@ namespace Olive.Export
 
         public string Generate(Format format)
         {
-            switch (format)
+            return format switch
             {
-                case Format.Csv: return GenerateCsv();
-                case Format.ExcelXml: return GenerateExcelXml(this);
-                default: throw new NotSupportedException();
-            }
+                Format.Csv => GenerateCsv(),
+                Format.ExcelXml => GenerateExcelXml(this),
+                _ => throw new NotSupportedException(),
+            };
         }
 
         string GenerateCsv()
@@ -232,13 +232,12 @@ namespace Olive.Export
         /// </summary>
         public string GetFileExtension(Format output)
         {
-            switch (output)
+            return output switch
             {
-                case Format.ExcelXml: return ".xls";
-                case Format.Csv: return ".csv";
-                default:
-                    throw new NotSupportedException();
-            }
+                Format.ExcelXml => ".xls",
+                Format.Csv => ".csv",
+                _ => throw new NotSupportedException(),
+            };
         }
 
         public Blob ToDocument(Format type)

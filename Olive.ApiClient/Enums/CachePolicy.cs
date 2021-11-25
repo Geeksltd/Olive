@@ -59,34 +59,18 @@ namespace Olive
 
             GetImplementation<T> cacheRaise() => new GetCache<T>(client, silent: false);
 
-            switch (policy)
+            return policy switch
             {
-                case CachePolicy.FreshOrNull:
-                    return new[] { fresh(), @null() };
-
-                case CachePolicy.FreshOrFail:
-                    return new[] { fresh(), fail() };
-
-                case CachePolicy.FreshOrCacheOrNull:
-                    return new[] { fresh(), cacheRaise(), @null() };
-
-                case CachePolicy.FreshOrCacheOrFail:
-                    return new[] { fresh(), cacheRaise(), fail() };
-
-                case CachePolicy.CacheOrNull:
-                    return new[] { cache(), @null() };
-
-                case CachePolicy.CacheOrFail:
-                    return new[] { cache(), fail() };
-
-                case CachePolicy.CacheOrFreshOrNull:
-                    return new[] { cache(), fresh(), @null() };
-
-                case CachePolicy.CacheOrFreshOrFail:
-                    return new[] { cache(), fresh(), fail() };
-
-                default: throw new Exception("Cache policy has not implemented yet!");
-            }
+                CachePolicy.FreshOrNull => new[] { fresh(), @null() },
+                CachePolicy.FreshOrFail => new[] { fresh(), fail() },
+                CachePolicy.FreshOrCacheOrNull => new[] { fresh(), cacheRaise(), @null() },
+                CachePolicy.FreshOrCacheOrFail => new[] { fresh(), cacheRaise(), fail() },
+                CachePolicy.CacheOrNull => new[] { cache(), @null() },
+                CachePolicy.CacheOrFail => new[] { cache(), fail() },
+                CachePolicy.CacheOrFreshOrNull => new[] { cache(), fresh(), @null() },
+                CachePolicy.CacheOrFreshOrFail => new[] { cache(), fresh(), fail() },
+                _ => throw new Exception("Cache policy has not implemented yet!"),
+            };
         }
     }
 }

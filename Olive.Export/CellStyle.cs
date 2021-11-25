@@ -280,15 +280,12 @@ namespace Olive.Export
 
         string GetCellRotation()
         {
-            switch (Orientation)
+            return Orientation switch
             {
-                case Exporter.CellOrientation.Vertical:
-                    return "90";
-                case Exporter.CellOrientation.Horizontal:
-                    return "0";
-                default:
-                    throw new NotSupportedException("This orientation is not supported.");
-            }
+                Exporter.CellOrientation.Vertical => "90",
+                Exporter.CellOrientation.Horizontal => "0",
+                _ => throw new NotSupportedException("This orientation is not supported."),
+            };
         }
 
         internal CellStyle OverrideWith(CellStyle overrideStyle)

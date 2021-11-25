@@ -54,8 +54,8 @@ namespace Olive.Compression
             {
                 try
                 {
-                    var file = item.AsDirectory().GetFile( "7-Zip\\7z.exe");
-                    if ( file.Exists()) return file.FullName;
+                    var file = item.AsDirectory().GetFile("7-Zip\\7z.exe");
+                    if (file.Exists()) return file.FullName;
                 }
                 catch { }
             }
@@ -65,15 +65,15 @@ namespace Olive.Compression
 
         static string GetCompressionModeSwitch(CompressionMode mode)
         {
-            switch (mode)
+            return mode switch
             {
-                case CompressionMode.Fastest: return "-mx1";
-                case CompressionMode.Fast: return "-mx3";
-                case CompressionMode.Normal: return "-mx5";
-                case CompressionMode.HighCompression: return "-mx7";
-                case CompressionMode.MaximumCompression: return "-mx9";
-                default: throw new NotSupportedException(mode + " is not supported in GetCompressionModeSwitch()");
-            }
+                CompressionMode.Fastest => "-mx1",
+                CompressionMode.Fast => "-mx3",
+                CompressionMode.Normal => "-mx5",
+                CompressionMode.HighCompression => "-mx7",
+                CompressionMode.MaximumCompression => "-mx9",
+                _ => throw new NotSupportedException(mode + " is not supported in GetCompressionModeSwitch()"),
+            };
         }
 
         /// <summary>
