@@ -42,14 +42,15 @@ new S3PresignedUrlGenerator(PresignedUrlTimeout));
                 {
                     BucketName = AWSInfo.S3BucketName,
                     Key = document.GetKey(),
-                    Expires = AWSInfo.PreSignedUrlLifespan
+                    Expires = AWSInfo.PreSignedUrlLifespan,
+                    ResponseHeaderOverrides = new ResponseHeaderOverrides
+                    {
+                        ContentType = document.GetMimeType(),
+                        ContentDisposition = $"attachment; filename=\"{document.FileName.Remove("\"", ",")}\"",
+                    }
                 };
 
-                request.ResponseHeaderOverrides.ContentType = document.GetMimeType();
-                request.ResponseHeaderOverrides.ContentDisposition = $"attachment; filename=\"{document.FileName.Remove("\"", ",")}\"";
-
                 config?.Invoke(request);
-
                 return client.GetPreSignedURL(request);
             }
         }

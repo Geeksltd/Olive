@@ -26,6 +26,6 @@ namespace Olive.BlobAws
             }
         }
 
-        internal static DateTime PreSignedUrlLifespan => LocalTime.UtcNow.AddSeconds(Config.Get("Blob:S3:PreSignedUrl:LifeSeconds", 60));
+        internal static DateTime PreSignedUrlLifespan => LocalTime.Now.AddSeconds(Config.Get("Blob:S3:PreSignedUrl:LifeSeconds", 300));
     }
 }
