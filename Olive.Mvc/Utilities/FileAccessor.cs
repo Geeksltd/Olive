@@ -37,8 +37,8 @@ namespace Olive.Mvc
         {
             await FindRequestedObject();
 
-            if (NeedsSecureAccess())
-                SecurityErrors = GetSecurityErrors();
+            if (PropertyInfo.Defines<SecureFileAttribute>())
+                SecurityErrors = await GetSecurityErrors();
         }
 
         public bool IsAllowed() => SecurityErrors.IsEmpty();
@@ -58,23 +58,30 @@ namespace Olive.Mvc
                 + "' on " + Instance.GetType().FullName + ".");
         }
 
-        bool NeedsSecureAccess() => PropertyInfo.GetCustomAttribute<SecureFileAttribute>() != null;
-
-        string GetSecurityErrors()
+        async Task<string> GetSecurityErrors()
         {
-            var method = Type.GetMethod($"Is{PropertyInfo.Name}VisibleTo", BindingFlags.Public | BindingFlags.Instance);
+            var methodName = $"Is{PropertyInfo.Name}VisibleTo";
+            var type = Type.GetProgrammingName();
 
-            if (method == null)
-                return $"{Type.FullName}.Is{PropertyInfo.Name}VisibleTo() method is not defined.";
+            var method = Type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+
+            if (method is null) return $"{type}.{methodName}() method is not defined.";
 
             if (!method.GetParameters().IsSingle() ||
                 !method.GetParameters().Single().ParameterType.Implements<IPrincipal>())
-                return $"{Type.FullName}.{method.Name}() doesn't accept a single argument that implements IPrincipal";
+                return $"{type}.{methodName}() should take a single argument, and of type IPrincipal";
 
-            if (!(bool)method.Invoke(Instance, new object[] { CurrentUser }))
-                return "You are not authorised to view the requested file.";
+            var result = method.Invoke(Instance, new object[] { CurrentUser });
 
-            return null;
+            if (result is Task<bool> task) result = await task;
+
+            if (result is null) result = false;
+
+            if (result is bool good)
+                if (good) return null;
+                else return "You are not authorised to view the requested file.";
+
+            return $"{methodName} returned {result.GetType().GetProgrammingName()}. Expected: bool or Task<bool>";
         }
     }
 }
