@@ -23,7 +23,16 @@ namespace Olive
         {
             try
             {
-                if (item is DictionaryEntry d) return d.Key + ": " + d.Value;
+                if (item is DictionaryEntry d)
+                {
+                    var value = d.Value.ToStringOrEmpty();
+                    if (d.Key.ToStringOrEmpty() == "ConnectionString")
+                        value = value.Remove(" ").Split(';').Trim()
+                            .Select(x => x.ToLower().StartsWithAny("pwd=", "password=") ? (x.RemoveFromAfter("=") + "*****") : x)
+                            .ToString("; ");
+
+                    return d.Key + ": " + value;
+                }
                 return item.ToString();
             }
             catch
