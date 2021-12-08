@@ -18,7 +18,7 @@ namespace Olive.Entities.Replication
         {
             return GetType().GetCustomAttributes<ExportDataAttribute>()
                 .Select(x => x.Type)
-                .Concat(GetType().GetNestedTypes(BindingFlags.NonPublic).Where(x => x.IsA<ExposedType>()))
+                .Concat(GetType().GetNestedTypes(BindingFlags.NonPublic).Concat(GetType().GetNestedTypes()).Where(x => x.IsA<ExposedType>()))
                 .Distinct()
                 .ToArray();
         }
