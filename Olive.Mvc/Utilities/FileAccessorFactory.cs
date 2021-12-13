@@ -39,7 +39,13 @@ namespace Olive.Mvc
 
             var typeName = pathParts[0].Split('.')[0];
 
-            var type = FindType(typeName);
+            var type = ProviderConfig.GetRegisteredAssemblies()
+                .Select(a => a.GetExportedTypes().SingleOrDefault(t => t.Name == typeName))
+                .ExceptNull().FirstOrDefault();
+
+            if (type == null)
+                type = AppDomain.CurrentDomain.FindImplementers(typeof(IEntity), ignoreDrivedClasses: false)
+                        .SingleOrDefault(x => x.Name == typeName);
 
             if (type == null) throw new Exception($"Invalid type name specified: '{typeName}'");
 
@@ -50,39 +56,6 @@ namespace Olive.Mvc
                 throw new Exception($"Could not find the property '{property}' on the type '{type.FullName}'.");
 
             return (type, propertyInfo, pathParts[1]);
-        }
-
-        private Type FindType(string typeName)
-        {
-            var assemblies = ProviderConfig.GetRegisteredAssemblies().ToList();
-            foreach (var assembly in assemblies)
-            {
-                var type = assembly.GetExportedTypes().SingleOrDefault(t => t.Name == typeName);
-                if (type != null)
-                    return type;
-
-            }
-            var interfaceType = typeof(IEntity);
-            assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a == interfaceType.Assembly || a.References(interfaceType.Assembly))
-                .OrderBy(a => !a.FullName.Contains("Domain"))
-                .ToList();
-
-            foreach (var assembly in assemblies)
-            {
-                try
-                {
-                    var type = assembly.GetTypes().FirstOrDefault(t => t.Implements(interfaceType) && t.Name == typeName);
-                    if (type != null)
-                        return type;
-                }
-                catch (Exception ex)
-                {
-                    Log.For(typeof(OliveExtensions))
-                        .Info($"Could not load assembly {assembly.FullName} because: {ex.Message}");
-                }
-            }
-            return null;
         }
     }
 }
