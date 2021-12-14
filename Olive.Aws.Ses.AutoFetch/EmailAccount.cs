@@ -48,7 +48,7 @@ namespace Olive.Aws.Ses.AutoFetch
             result.To = message.To.Select(f => f.ToString()).ToString(",");
             result.Cc = message.Cc?.ToString();
             result.Bcc = message.Bcc?.ToString();
-            result.Body = message.HtmlBody;
+            result.Body = message.HtmlBody.Or(message.TextBody);
             result.Date = message.Date.DateTime;
             result.Sender = message.Sender?.ToString();
             result.Subject = message.Subject;
