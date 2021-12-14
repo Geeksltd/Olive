@@ -1,7 +1,5 @@
-﻿using Olive.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using Olive.Entities;
 
 namespace Olive.Aws.Ses.AutoFetch
 {
@@ -15,5 +13,11 @@ namespace Olive.Aws.Ses.AutoFetch
         string Body { get; set; }
         string Sender { get; set; }
         DateTime Date { get; set; }
+        string Bucket { get; set; }
+
+        /// <summary>
+        /// Json array of Olive.Aws.Ses.AutoFetch.Attachment
+        /// </summary>
+        string Attachments { get; set; }
     }
 }

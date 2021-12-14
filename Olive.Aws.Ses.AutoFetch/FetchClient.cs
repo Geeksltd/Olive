@@ -45,7 +45,7 @@ namespace Olive.Aws.Ses.AutoFetch
 
                 foreach (var item in response.S3Objects)
                     await Fetch(item);
-                
+
 
                 Log.For(this).Info($"Downloaded {response.S3Objects.Count} items from " + Account.S3Bucket);
 
@@ -82,7 +82,7 @@ namespace Olive.Aws.Ses.AutoFetch
             var request = new Amazon.S3.Model.GetObjectRequest { Key = item.Key, BucketName = item.BucketName };
             var response = await S3Client.GetObjectAsync(request);
             var sesMessage = MimeMessage.Load(response.ResponseStream);
-            return Account.CreateMailMessage(sesMessage);
+            return Account.CreateMailMessage(sesMessage, Account.S3Bucket);
         }
 
         Task Delete(Amazon.S3.Model.S3Object item)
