@@ -20,6 +20,8 @@ CREATE TABLE [dbo].[MailMessages](
 	[Date] [datetime] NOT NULL,
 	[Sender] [nvarchar](300) NULL,
 	[Body] [nvarchar](max) NULL,
+	[Attachments] [nvarchar](max) NULL,
+    [Bucket] [nvarchar](200) NULL,
 ) ON [PRIMARY]
 ";
         internal static Task EnsureDatabaseTable<T>() => Entities.Data.DataAccess.Create().ExecuteNonQuery(CREATE_TABLE_COMMAND);

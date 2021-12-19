@@ -1,14 +1,10 @@
-﻿using Olive.Aws.Ses.AutoFetch;
-using Olive.Entities;
-using Olive;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using Olive.Entities;
 
 namespace Olive.Aws.Ses.AutoFetch
 {
-    public class MailMessage : Olive.Entities.GuidEntity, IMailMessage
+    public class MailMessage : GuidEntity, IMailMessage
     {
         public string From { get; set; }
         public string To { get; set; }
@@ -17,7 +13,13 @@ namespace Olive.Aws.Ses.AutoFetch
         public string Subject { get; set; }
         public string Body { get; set; }
         public string Sender { get; set; }
+        public string Bucket { get; set; }
         public DateTime Date { get; set; }
+
+        /// <summary>
+        /// Json array of Olive.Aws.Ses.AutoFetch.Attachment
+        /// </summary>
+        public string Attachments { get; set; }
 
         protected override async Task ValidateProperties()
         {
