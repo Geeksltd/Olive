@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+	  <Version>2.1.0.0</Version>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
+    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Entities.Data.SqlServer\Olive.Entities.Data.SqlServer.csproj" />
+    <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
+    <ProjectReference Include="..\Olive.Log.EventBus\Olive.Log.EventBus.csproj" />
+  </ItemGroup>
+
+</Project>
