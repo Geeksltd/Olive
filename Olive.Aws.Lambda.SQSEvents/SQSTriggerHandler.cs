@@ -13,8 +13,8 @@ namespace Olive.Aws.Lambda.SQSEvents
     public abstract class SQSTriggerHandler<TMessage>
     {
         string EnvironmentName => Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        bool IsProduction => EnvironmentName == "Production";
-        bool IsUAT => EnvironmentName == "UAT";
+        protected bool IsProduction => EnvironmentName == "Production";
+        protected bool IsUAT => EnvironmentName == "UAT";
         public SQSTriggerHandler()
         {
             var services = new ServiceCollection();
@@ -52,7 +52,7 @@ namespace Olive.Aws.Lambda.SQSEvents
 
         protected virtual void ConfigureServices(IServiceCollection services) { }
 
-        protected virtual void OnStartup(IConfiguration configration) { }
+        protected virtual void OnStartup(IConfiguration configuration) { }
       
 
         public async Task FunctionHandler(SQSEvent evnt, ILambdaContext context)
