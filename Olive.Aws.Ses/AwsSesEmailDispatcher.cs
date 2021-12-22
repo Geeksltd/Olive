@@ -14,7 +14,7 @@ namespace Olive.Aws.Ses
     {
         public async Task Dispatch(MailMessage mail, IEmailMessage _)
         {
-            var request = new SendRawEmailRequest{RawMessage = new RawMessage(GetMessageStream(mail))};
+           var request = new SendRawEmailRequest{ RawMessage = GetMessage(mail).ToRawMessage() };
 
             using (var client = new AmazonSimpleEmailServiceClient())
             {
@@ -23,13 +23,6 @@ namespace Olive.Aws.Ses
                 if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                     throw new Exception("Failed to send an email: " + response.HttpStatusCode);
             }
-        }
-
-        MemoryStream GetMessageStream(MailMessage mail)
-        {
-            var stream = new MemoryStream();
-            GetMessage(mail).WriteTo(stream);
-            return stream;
         }
 
         MimeMessage GetMessage(MailMessage mail)
