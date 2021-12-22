@@ -1,7 +1,9 @@
 ﻿using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
+using MimeKit;
 using Olive.Email;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -12,39 +14,47 @@ namespace Olive.Aws.Ses
     {
         public async Task Dispatch(MailMessage mail, IEmailMessage _)
         {
-            var request = CreateEmailRequest(mail);
+            var request = new SendRawEmailRequest{RawMessage = new RawMessage(GetMessageStream(mail))};
 
             using (var client = new AmazonSimpleEmailServiceClient())
             {
-                var response = await client.SendEmailAsync(request);
+                var response = await client.SendRawEmailAsync(request);
 
                 if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                     throw new Exception("Failed to send an email: " + response.HttpStatusCode);
             }
         }
 
-        SendEmailRequest CreateEmailRequest(MailMessage mail)
+        MemoryStream GetMessageStream(MailMessage mail)
         {
-            return new SendEmailRequest
+            var stream = new MemoryStream();
+            GetMessage(mail).WriteTo(stream);
+            return stream;
+        }
+
+        MimeMessage GetMessage(MailMessage mail)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(mail.From?.DisplayName, mail.From.Address));
+            mail.To.Do(t=>message.To.Add(new MailboxAddress(t.DisplayName, t.Address)));
+            mail.Bcc.Do(b => message.Bcc.Add(new MailboxAddress(b.DisplayName, b.Address)));
+            mail.CC.Do(c => message.Cc.Add(new MailboxAddress(c.DisplayName, c.Address)));
+            message.Subject = mail.Subject;
+            message.Body = CreateMessageBody(mail);
+            return message;
+        }
+
+        MimeEntity CreateMessageBody(MailMessage mail)
+        {
+            var body = new BodyBuilder()
             {
-                Source = mail.From.Address,
-                Destination = new Destination
-                {
-                    ToAddresses = mail.To.Select(t => t.Address).ToList()
-                },
-                Message = new Message
-                {
-                    Subject = new Content(mail.Subject),
-                    Body = new Body
-                    {
-                        Html = new Content
-                        {
-                            Charset = "UTF-8",
-                            Data = mail.Body
-                        }
-                    }
-                }
+                HtmlBody = mail.Body
             };
+
+            foreach (var attc in mail.Attachments)
+                body.Attachments.Add(attc.Name, attc.ContentStream);
+
+            return body.ToMessageBody();
         }
     }
 }
