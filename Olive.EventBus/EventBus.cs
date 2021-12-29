@@ -15,7 +15,7 @@
         /// </summary>
         public static EventBusQueue<TMessage> Queue<TMessage>() where TMessage : IEventBusMessage
         {
-            var url = Config.Get($"EventBus:Queues:{typeof(TMessage).FullName.Replace(".", "_")}:Url") ?? Config.GetOrThrow($"EventBus:Queues:{typeof(TMessage).FullName}:Url");
+            var url = Config.Get($"EventBus:Queues:{typeof(TMessage).FullName.Replace(".", "_")}:Url").Or(Config.GetOrThrow($"EventBus:Queues:{typeof(TMessage).FullName}:Url"));
             
             return new EventBusQueue<TMessage>(Queue(url));
         }
