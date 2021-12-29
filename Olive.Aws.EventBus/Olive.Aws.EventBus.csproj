@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Aws.EventBus</RootNamespace>
     <PackageId>Olive.Aws.EventBus</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.146.0</Version>
+    <Version>2.1.147.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
