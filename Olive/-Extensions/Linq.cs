@@ -358,7 +358,7 @@ namespace Olive
         {
             if (@this == null || func == null) return;
 
-            foreach (var item in @this) await func(item);
+            foreach (var item in @this) await func(item).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace Olive
 
             foreach (var item in @this)
             {
-                await action(item, index);
+                await action(item, index).ConfigureAwait(false);
                 index++;
             }
         }
@@ -1509,14 +1509,12 @@ namespace Olive
         /// <param name="task">The task of method.</param>
         public static async Task AwaitSequential<T>(this IEnumerable<T> @this, Func<T, Task> task)
         {
-            var tasks = new List<Task>();
-
             if (@this == null) return;
 
             foreach (var item in @this)
             {
                 var awaitable = task(item);
-                if (awaitable != null) await awaitable;
+                if (awaitable != null) await awaitable.ConfigureAwait(false);
             }
         }
 
@@ -1533,7 +1531,7 @@ namespace Olive
                 foreach (var item in @this)
                     tasks.Add(task?.Invoke(item));
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return tasks.Select(x => x.GetAlreadyCompletedResult());
         }
@@ -1609,7 +1607,7 @@ namespace Olive
                {
                    using (partition)
                        while (partition.MoveNext())
-                           await func(partition.Current, index);
+                           await func(partition.Current, index).ConfigureAwait(false);
                })));
         }
 

@@ -30,7 +30,7 @@ namespace Olive
         {
             using var memoryStream = new MemoryStream();
             if (stream.CanSeek) stream.Position = 0;
-            await stream.CopyToAsync(memoryStream);
+            await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
             return memoryStream.ToArray();
         }
 
@@ -48,13 +48,13 @@ namespace Olive
 
             var read = new char[256];
             // Reads 256 characters at a time.
-            var count = await readStream.ReadAsync(read, 0, read.Length);
+            var count = await readStream.ReadAsync(read, 0, read.Length).ConfigureAwait(false);
 
             while (count > 0)
             {
                 // Dumps the 256 characters on a string and displays the string to the console.
                 result += new string(read, 0, count);
-                count = await readStream.ReadAsync(read, 0, read.Length);
+                count = await readStream.ReadAsync(read, 0, read.Length).ConfigureAwait(false);
             }
 
             return result;

@@ -29,9 +29,9 @@ namespace Olive
                 request.CookieContainer.SetCookies(@this, cookieValue.OrEmpty());
             }
 
-            using var response = await request.GetResponseAsync();
+            using var response = await request.GetResponseAsync().ConfigureAwait(false);
             using var stream = response.GetResponseStream();
-            return await stream.ReadAllText();
+            return await stream.ReadAllText().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -49,9 +49,9 @@ namespace Olive
                 request.CookieContainer.SetCookies(@this, cookieValue.OrEmpty());
             }
 
-            using var response = await request.GetResponseAsync();
+            using var response = await request.GetResponseAsync().ConfigureAwait(false);
             using var stream = response.GetResponseStream();
-            return await stream.ReadAllBytesAsync();
+            return await stream.ReadAllBytesAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -64,33 +64,33 @@ namespace Olive
             req.Method = WebRequestMethods.Http.Post;
             req.ContentType = "application/json";
 
-            using (var stream = new StreamWriter(await req.GetRequestStreamAsync()))
-                await stream.WriteAsync(JsonConvert.SerializeObject(data));
+            using (var stream = new StreamWriter(await req.GetRequestStreamAsync().ConfigureAwait(false)))
+                await stream.WriteAsync(JsonConvert.SerializeObject(data)).ConfigureAwait(false);
 
-            return await req.GetResponseString();
+            return await req.GetResponseString().ConfigureAwait(false);
         }
 
         /// <summary>
         /// Posts the specified data to this url and returns the response as string.
         /// All items in the postData object will be sent as individual FORM parameters to the destination.
         /// </summary>
-        public static async Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
+        public static Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
         {
             using var client = new HttpClient();
             customiseClient?.Invoke(client);
 
-            return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
+            return client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
         }
 
         /// <summary>
         /// Posts the specified data to this url and returns the response as string.
         /// All items in the postData object will be sent as individual FORM parameters to the destination.
         /// </summary>
-        public static async Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
+        public static Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
         {
             using var client = new HttpClient();
             customiseClient?.Invoke(client);
-            return await client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
+            return client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
         }
 
         /// <summary>

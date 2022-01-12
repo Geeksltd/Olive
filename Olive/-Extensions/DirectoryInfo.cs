@@ -38,7 +38,7 @@ namespace Olive
             {
                 // No loging is needed
                 // Normal attempt failed. Let's try it harshly!
-                await HarshDelete(@this);
+                await HarshDelete(@this).ConfigureAwait(false);
             }
         }
 
@@ -58,10 +58,10 @@ namespace Olive
 
             await DoTryHardAsync(directory, async () =>
             {
-                await directory.GetFiles().Do(async (f) => await f.DeleteAsync(harshly: true));
-                await directory.GetDirectories().Do(async (d) => await HarshDelete(d));
-                await Task.Factory.StartNew(directory.Delete);
-            }, "The system cannot delete the directory, even after several attempts. Directory: {0}");
+                await directory.GetFiles().Do(async (f) => await f.DeleteAsync(harshly: true).ConfigureAwait(false)).ConfigureAwait(false);
+                await directory.GetDirectories().Do(async (d) => await HarshDelete(d).ConfigureAwait(false)).ConfigureAwait(false);
+                await Task.Factory.StartNew(directory.Delete).ConfigureAwait(false);
+            }, "The system cannot delete the directory, even after several attempts. Directory: {0}").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -103,10 +103,10 @@ namespace Olive
             destination.AsDirectory().EnsureExists();
 
             foreach (var file in @this.GetFiles())
-                await file.CopyToAsync(Path.Combine(destination, file.Name).AsFile(), overwrite);
+                await file.CopyToAsync(Path.Combine(destination, file.Name).AsFile(), overwrite).ConfigureAwait(false);
 
             foreach (var sub in @this.GetDirectories())
-                await sub.CopyToAsync(Path.Combine(destination, sub.Name), overwrite);
+                await sub.CopyToAsync(Path.Combine(destination, sub.Name), overwrite).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace Olive
         /// <summary>
         /// Copies this file to a specified destination directiry with the original file name.
         /// </summary>
-        public static async Task CopyTo(this FileInfo @this, DirectoryInfo destinationDirectory, bool overwrite = false) =>
-            await @this.CopyToAsync(destinationDirectory.GetFile(@this.Name), overwrite);
+        public static Task CopyTo(this FileInfo @this, DirectoryInfo destinationDirectory, bool overwrite = false) =>
+              @this.CopyToAsync(destinationDirectory.GetFile(@this.Name), overwrite);
 
         public static string[] GetFiles(this DirectoryInfo @this, bool includeSubDirectories)
         {

@@ -14,13 +14,13 @@ namespace Olive.PassiveBackgroundTasks
             {
                 try
                 {
-                    await TaskExecution.Run(t);
+                    await TaskExecution.Run(t).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     Log.For<ExecutionEngine>().Error(ex, $"Failed to run background task : {t.Name} because : " + ex.ToFullMessage());
                 }
-            }));
+            })).ConfigureAwait(false);
         }
     }
 }

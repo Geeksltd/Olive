@@ -7,7 +7,7 @@ namespace Olive
     {
         public async Task<bool> Delete(object jsonParams = null)
         {
-            var result = await DoDelete<string>(jsonParams);
+            var result = await DoDelete<string>(jsonParams).ConfigureAwait(false);
             return result.Item2.Error == null;
         }
 

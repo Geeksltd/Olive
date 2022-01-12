@@ -32,14 +32,14 @@ namespace Olive
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<Task<TResult>>> func)
         {
             var source = await @this.Get(x => x.OrEmpty().SelectMany(func)).ConfigureAwait(false);
-            return await source.SequentialSelect(x => x);
+            return await source.SequentialSelect(x => x).ConfigureAwait(false);
         }
 
         public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<IEnumerable<TResult>>> func)
         {
-            var source = await @this.Get(x => x.OrEmpty().Select(func));
-            return await source.SequentialSelect(x => x).SelectMany(v => v);
+            var source = await @this.Get(x => x.OrEmpty().Select(func)).ConfigureAwait(false);
+            return await source.SequentialSelect(x => x).SelectMany(v => v).ConfigureAwait(false);
         }
 
         public static Task<IEnumerable<TSource>> Except<TSource>(
@@ -317,8 +317,7 @@ namespace Olive
         [EscapeGCop("I am the GCop solution")]
         public static async Task<IEnumerable<T>> OrEmpty<T>(this Task<IEnumerable<T>> @this)
         {
-            var result = await @this;
-            return result ?? Enumerable.Empty<T>();
+            return (await @this.ConfigureAwait(false)) ?? Enumerable.Empty<T>();
         }
     }
 }

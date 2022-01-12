@@ -31,7 +31,7 @@ namespace Olive
                 var file = Path.GetFile(FilePrefix + group.Key.ToString("yyyyMMdd") + ".txt");
                 if (MaxFileSize > 0 && file.Exists() && file.Length > MaxFileSize) return;
 
-                await file.AppendAllTextAsync(group.Select(x => x.Message).ToLinesString());
+                await file.AppendAllTextAsync(group.Select(x => x.Message).ToLinesString()).ConfigureAwait(false);
             }
         }
 

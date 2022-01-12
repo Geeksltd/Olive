@@ -21,7 +21,8 @@ namespace Olive.PassiveBackgroundTasks
             var context = Context.Current;
             var database = context.Database();
 
-            var instance = (IBackgourndTask)((await database.GetList<IBackgourndTask>(b => b.Name == name)).SingleOrDefault() ?? context.GetService<IBackgourndTask>()).Clone();
+            var instance = (IBackgourndTask)((await database.FirstOrDefault<IBackgourndTask>(b => b.Name == name).ConfigureAwait(false))
+                ?? context.GetService<IBackgourndTask>()).Clone();
 
             instance.Name = name;
             instance.IntervalInMinutes = intervalInMinutes;
@@ -29,7 +30,7 @@ namespace Olive.PassiveBackgroundTasks
 
             Actions[name] = action.Compile();
 
-            await context.Database().Save(instance);
+            await context.Database().Save(instance).ConfigureAwait(false);
 
             this.Logger().Info("Registered a background task for " + name);
         }
@@ -40,12 +41,12 @@ namespace Olive.PassiveBackgroundTasks
         {
             this.Logger().Info("Checking background tasks ... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
 
-            var toRun = (await Scheduler.GetTasksToRun()).ToArray();
+            var toRun = (await Scheduler.GetTasksToRun().ConfigureAwait(false)).ToArray();
             var taskNames = toRun.Select(c => c.Name).ToString(",");
 
             this.Logger().Info($"Found {toRun.Count()} task(s){taskNames.WithWrappers(" [", "]")} to run.");
 
-            await ExecutionEngine.RunAll(toRun);
+            await ExecutionEngine.RunAll(toRun).ConfigureAwait(false);
 
             if (toRun.Any())
                 this.Logger().Info($"Finished running {taskNames}.");

@@ -36,7 +36,7 @@ namespace Olive.PassiveBackgroundTasks
                 {
                     app.Logger()
                         .Info("Registering " + job.Name + " cron : " + job.ScheduleCron + " -> " + CronParser.Minutes(job.ScheduleCron) + " minutes");
-                    await BackgroundProcessManager.Current.Register(job.Name, job.Action, CronParser.Minutes(job.ScheduleCron), job.TimeoutInMinutes);
+                    await BackgroundProcessManager.Current.Register(job.Name, job.Action, CronParser.Minutes(job.ScheduleCron), job.TimeoutInMinutes).ConfigureAwait(false);
                     app.Logger().Info("Registered " + job.Name);
                 }
 
@@ -61,26 +61,26 @@ namespace Olive.PassiveBackgroundTasks
             });
         }
 
-        internal static async Task<IBackgourndTask> SendHeartbeat(this IBackgourndTask task)
+        internal static Task<IBackgourndTask> SendHeartbeat(this IBackgourndTask task)
         {
             task.Logger().Info("Recording heartbeat for " + task.Name + " from instance : " + ExecutionEngine.Id);
 
-            return await Update(task, t =>
-             {
-                 t.Heartbeat = LocalTime.Now;
-                 t.ExecutingInstance = ExecutionEngine.Id;
-             });
+            return Update(task, t =>
+           {
+               t.Heartbeat = LocalTime.Now;
+               t.ExecutingInstance = ExecutionEngine.Id;
+           });
         }
 
         static async Task<IBackgourndTask> Update(IBackgourndTask task, Action<IBackgourndTask> action)
         {
-            var clone = (IBackgourndTask)(await Database.Reload(task)).Clone();
+            var clone = (IBackgourndTask)(await Database.Reload(task).ConfigureAwait(false)).Clone();
 
             action(clone);
 
-            clone = await Database.Save(clone);
+            clone = await Database.Save(clone).ConfigureAwait(false);
 
-            return await Database.Reload(clone);
+            return await Database.Reload(clone).ConfigureAwait(false);
         }
 
         static void LogInfo(string message) => Log.For<IBackgourndTask>().Info(LocalTime.UtcNow.ToString("HH:mm:ss") + " : " + message);
@@ -95,9 +95,11 @@ namespace Olive.PassiveBackgroundTasks
             {
                 LogInfo($"Causing a distributed lock for {task.Name}.");
                 // cause a distributed lock
-                await DataAccess.Create().ExecuteNonQuery($"update {task.GetType().Name.ToPlural()} set Heartbeat = Heartbeat where Name = '{task.Name}'");
+                await DataAccess.Create()
+                    .ExecuteNonQuery($"update {task.GetType().Name.ToPlural()} set Heartbeat = Heartbeat where Name = '{task.Name}'")
+                    .ConfigureAwait(false);
 
-                task = await Database.Reload(task);
+                task = await Database.Reload(task).ConfigureAwait(false);
 
                 var lastExecuted = task.LastExecuted.GetValueOrDefault();
                 var nextExecution = lastExecuted.AddMinutes(task.IntervalInMinutes);
@@ -120,7 +122,7 @@ namespace Olive.PassiveBackgroundTasks
                     else
                     {
                         LogInfo($"[{task.Name}] is not running. Last heartbeat : " + lastHeartbeat);
-                        await task.SendHeartbeat();
+                        await task.SendHeartbeat().ConfigureAwait(false);
                     }
 
                     result = !stillAlive;

@@ -54,7 +54,7 @@ namespace Olive.Logging
 
                 if (CurrentBatch.Any())
                 {
-                    try { await WriteMessagesAsync(CurrentBatch, CancellationTokenSource.Token); }
+                    try { await WriteMessagesAsync(CurrentBatch, CancellationTokenSource.Token).ConfigureAwait(false); }
                     catch
                     {
                         // No logging is needed.
@@ -63,7 +63,7 @@ namespace Olive.Logging
                     CurrentBatch.Clear();
                 }
 
-                await Task.Delay(Interval, CancellationTokenSource.Token);
+                await Task.Delay(Interval, CancellationTokenSource.Token).ConfigureAwait(false);
             }
         }
 

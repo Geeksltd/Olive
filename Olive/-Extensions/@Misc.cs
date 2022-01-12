@@ -17,7 +17,7 @@ namespace Olive
         static Task<T> TryHardAsync<T>(FileSystemInfo fileOrFolder, Func<Task<T>> func, string error)
         {
             var resultTask = new TaskCompletionSource<T>();
-            DoTryHardAsync(fileOrFolder, async () => resultTask.TrySetResult(await func()), error).GetAwaiter();
+            DoTryHardAsync(fileOrFolder, async () => resultTask.TrySetResult(await func().ConfigureAwait(false)), error).GetAwaiter();
             return resultTask.Task;
         }
 
@@ -31,7 +31,7 @@ namespace Olive
             {
                 try
                 {
-                    if (func != null) await func();
+                    if (func != null) await func().ConfigureAwait(false);
                     return;
                 }
                 catch (Exception ex)
@@ -48,7 +48,7 @@ namespace Olive
                     attempt++;
 
                     // Pause for a short amount of time (to allow a potential external process to leave the file/directory).
-                    await Task.Delay(ATTEMPT_PAUSE);
+                    await Task.Delay(ATTEMPT_PAUSE).ConfigureAwait(false);
                 }
             }
 

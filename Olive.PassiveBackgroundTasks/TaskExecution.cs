@@ -30,7 +30,7 @@ namespace Olive.PassiveBackgroundTasks
         {
             using (var runner = new TaskExecution(task))
             {
-                await runner.DoRun();
+                await runner.DoRun().ConfigureAwait(false);
             }
         }
 
@@ -39,24 +39,24 @@ namespace Olive.PassiveBackgroundTasks
             var start = LocalTime.Now;
             Log.For(this).Info($"Execution started for {BackgroundTask.Name} at {start}");
 
-            if (await EnsureIAmTheOnlyRunningInstance() == false) return;
+            if (await EnsureIAmTheOnlyRunningInstance().ConfigureAwait(false) == false) return;
 
-            Task.Run(() => HeartbeatTask);
+            await Task.Run(() => HeartbeatTask).ConfigureAwait(false);
 
-            await BackgroundTask.GetActionTask();
+            await BackgroundTask.GetActionTask().ConfigureAwait(false);
 
-            await BackgroundTask.RecordExecution();
+            await BackgroundTask.RecordExecution().ConfigureAwait(false);
 
             Log.For(this).Info($"Execution Finished for {BackgroundTask.Name} at {LocalTime.Now}. Took : {LocalTime.Now.Subtract(start).ToNaturalTime()}");
         }
 
         async Task<bool> EnsureIAmTheOnlyRunningInstance()
         {
-            return (await Context.Current.Database().Reload(BackgroundTask)).ExecutingInstance == ExecutionEngine.Id;
+            return (await Context.Current.Database().Reload(BackgroundTask).ConfigureAwait(false)).ExecutingInstance == ExecutionEngine.Id;
         }
 
         const int HEARTBEAT_DELAY = 1000;
-        private Task CreateHeartbeatTask()
+        Task CreateHeartbeatTask()
         {
             return Task.Run(async () =>
             {
@@ -64,14 +64,14 @@ namespace Olive.PassiveBackgroundTasks
                 {
                     try
                     {
-                        BackgroundTask = await BackgroundTask.SendHeartbeat();
+                        BackgroundTask = await BackgroundTask.SendHeartbeat().ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         Log.For(this).Error(ex, "Failed to log heartbeat because : " + ex.ToFullMessage());
                     }
 
-                    await Task.Delay(HEARTBEAT_DELAY);
+                    await Task.Delay(HEARTBEAT_DELAY).ConfigureAwait(false);
                 }
             }, CancellationToken);
         }

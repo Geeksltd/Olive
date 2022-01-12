@@ -55,7 +55,7 @@ namespace Olive
         }
 
         public static async Task<IEnumerable<T>> Concat<T>(
-          this IEnumerable<T> @this, Task<IEnumerable<T>> second) => @this.Concat((await second).OrEmpty());
+          this IEnumerable<T> @this, Task<IEnumerable<T>> second) => @this.Concat((await second.ConfigureAwait(false)).OrEmpty());
 
         public static Task<IEnumerable<T>> Concat<T>(
           this IEnumerable<T> @this, IEnumerable<Task<T>> second) => @this.Concat(second.AwaitAll());
@@ -77,14 +77,14 @@ namespace Olive
         public static async Task<T> First<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
             foreach (var item in @this)
-                if (await func(item)) return item;
+                if (await func(item).ConfigureAwait(false)) return item;
 
             throw new InvalidOperationException("No item in the source sequence matches the provided predicte.");
         }
 
         public static async Task<IEnumerable<T>> Except<T>(this IEnumerable<T> @this, Task<IEnumerable<T>> exclude)
         {
-            return @this.Except(await exclude);
+            return @this.Except(await exclude.ConfigureAwait(false));
         }
 
         public static Task<IEnumerable<T>> Except<T>(this IEnumerable<T> @this, Task<T[]> exclude)
@@ -105,13 +105,13 @@ namespace Olive
         public static async Task<T> FirstOrDefault<T>(this IEnumerable<T> @this, Func<T, Task<bool>> func)
         {
             foreach (var item in @this)
-                if (await func(item)) return item;
+                if (await func(item).ConfigureAwait(false)) return item;
 
             return default;
         }
 
         public static async Task<IEnumerable<T>> Intersect<T>(
-        this IEnumerable<T> @this, Task<IEnumerable<T>> second) => @this.Intersect((await second).OrEmpty());
+        this IEnumerable<T> @this, Task<IEnumerable<T>> second) => @this.Intersect((await second.ConfigureAwait(false)).OrEmpty());
 
         public static Task<IEnumerable<T>> Intersect<T>(
         this IEnumerable<T> @this, IEnumerable<Task<T>> second) => @this.Intersect(second.AwaitAll());
@@ -289,6 +289,6 @@ namespace Olive
         [EscapeGCop("The condition param should not be last in this case.")]
         public static async Task<IEnumerable<T>> FilterIf<T>(this IEnumerable<T> source,
              bool condition, Func<T, Task<bool>> predicate)
-            => condition ? await source.Where(predicate) : source;
+            => condition ? await source.Where(predicate).ConfigureAwait(false) : source;
     }
 }
