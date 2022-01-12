@@ -59,7 +59,7 @@ namespace Olive.PassiveBackgroundTasks
 
         internal static async Task Run()
         {
-            Log.Info("Checking background tasks ... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
+            Log.Info("Checking background tasks... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
 
             var toRun = await Db.GetList<IBackgourndTask>().Where(ShouldRun).ToArray();
 
@@ -90,12 +90,12 @@ namespace Olive.PassiveBackgroundTasks
             }
             finally
             {
-                await Db.Update(task, t =>
-                {
-                    t.LastExecuted = LocalTime.Now;
-                    t.ExecutingInstance = null;
-                    t.Heartbeat = null;
-                }).ConfigureAwait(false);
+                await Db.Update(await Db.Reload(task), t =>
+               {
+                   t.LastExecuted = LocalTime.Now;
+                   t.ExecutingInstance = null;
+                   t.Heartbeat = null;
+               }).ConfigureAwait(false);
             }
         }
     }

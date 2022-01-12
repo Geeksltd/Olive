@@ -16,9 +16,7 @@ namespace @Olive.PassiveBackgroundTasks
         {
             try
             {
-                Log.For(this).Info("Running background tasks ...");
                 await Engine.Run().ConfigureAwait(false);
-                Log.For(this).Info("Finished running background tasks ...");
             }
             catch (Exception ex)
             {
