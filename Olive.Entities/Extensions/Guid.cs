@@ -15,7 +15,7 @@ namespace Olive
         {
             if (guid == null) return default(T);
 
-            return await guid.Value.To<T>();
+            return await guid.Value.To<T>().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Olive
         {
             if (guid == Guid.Empty) return default(T);
 
-            return await Context.Current.Database().Get<T>(guid);
+            return await Context.Current.Database().Get<T>(guid).ConfigureAwait(false);
         }
 
         public static bool IsAnyOf(this Guid? @this, params GuidEntity[] items)

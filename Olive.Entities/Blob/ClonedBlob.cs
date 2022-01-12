@@ -20,8 +20,8 @@ namespace Olive.Entities
         {
             if (BelongsToOriginal) return;
 
-            NewFileData = await GetFileDataAsync();
-            await base.Save();
+            NewFileData = await GetFileDataAsync().ConfigureAwait(false);
+            await base.Save().ConfigureAwait(false);
         }
     }
 }

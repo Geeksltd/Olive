@@ -66,7 +66,7 @@ namespace Olive.Entities
 
             if (id == null) return null;
 
-            var result = await Database.Get<TEntity>(id.ToString());
+            var result = await Database.Get<TEntity>(id.ToString()).ConfigureAwait(false);
 
             if (!Database.AnyOpenTransaction())
             {
@@ -90,7 +90,7 @@ namespace Olive.Entities
 
             if (id == null) return null;
 
-            var result = await Database.GetOrDefault<TEntity>(id.ToString());
+            var result = await Database.GetOrDefault<TEntity>(id.ToString()).ConfigureAwait(false);
             if (result == null) return result;
 
             if (!Database.AnyOpenTransaction())

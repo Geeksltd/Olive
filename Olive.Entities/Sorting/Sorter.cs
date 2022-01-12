@@ -17,10 +17,10 @@ namespace Olive.Entities
         static IDatabase Database => Context.Current.Database();
 
         public static async Task<ISortable> FindItemAbove(ISortable item) =>
-            (await FindSiblings(item)).Except(item).Where(o => o.Order <= item.Order).WithMax(o => o.Order);
+            (await FindSiblings(item).ConfigureAwait(false)).Except(item).Where(o => o.Order <= item.Order).WithMax(o => o.Order);
 
         public static async Task<ISortable> FindItemBelow(ISortable item) =>
-            (await FindSiblings(item)).Except(item).Where(i => i.Order >= item.Order).WithMin(i => i.Order);
+            (await FindSiblings(item).ConfigureAwait(false)).Except(item).Where(i => i.Order >= item.Order).WithMin(i => i.Order);
 
         public static bool CanMoveUp(ISortable item) => FindItemAbove(item) != null;
 
@@ -35,9 +35,9 @@ namespace Olive.Entities
 
             if (newOrder < 0) newOrder = 0;
 
-            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour).ConfigureAwait(false);
 
-            await JustifyOrders(item, saveBehaviour);
+            await JustifyOrders(item, saveBehaviour).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -47,9 +47,9 @@ namespace Olive.Entities
         {
             var newOrder = (after == null ? 0 : after.Order) + 1;
 
-            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour).ConfigureAwait(false);
 
-            await JustifyOrders(item, saveBehaviour);
+            await JustifyOrders(item, saveBehaviour).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -59,19 +59,19 @@ namespace Olive.Entities
         {
             using (await AsyncLock.Lock())
             {
-                var above = await FindItemAbove(item);
+                var above = await FindItemAbove(item).ConfigureAwait(false);
 
                 if (above == null) return false;
 
                 if (above.Order == item.Order) above.Order--;
 
-                await Swap(item, above, saveBehaviour);
+                await Swap(item, above, saveBehaviour).ConfigureAwait(false);
 
-                item = await Database.Reload(item);
-                above = await Database.Reload(above);
+                item = await Database.Reload(item).ConfigureAwait(false);
+                above = await Database.Reload(above).ConfigureAwait(false);
             }
 
-            await JustifyOrders(item, saveBehaviour);
+            await JustifyOrders(item, saveBehaviour).ConfigureAwait(false);
 
             return true;
         }

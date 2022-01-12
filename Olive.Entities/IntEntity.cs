@@ -44,7 +44,7 @@
         {
             // One generator per hierarchy
             if (type.BaseType != typeof(IntEntity))
-                return await DefaultNewIdGenerator(type.BaseType);
+                return await DefaultNewIdGenerator(type.BaseType).ConfigureAwait(false);
 
             async Task<int> initialize(Type typ)
             {
@@ -58,7 +58,7 @@
                 else return 1;
             }
 
-            var value = await initialize(type);
+            var value = await initialize(type).ConfigureAwait(false);
 
             return LastUsedIds.AddOrUpdate(type, value, (t, old) => old + 1);
         }

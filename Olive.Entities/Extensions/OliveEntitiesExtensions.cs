@@ -42,7 +42,7 @@ namespace Olive
             if (url.IsFile)
                 fileName = url.ToString().Split('/').Last();
 
-            return new Blob(await url.DownloadData(cookieValue, timeOutSeconds), fileName);
+            return new Blob(await url.DownloadData(cookieValue, timeOutSeconds).ConfigureAwait(false), fileName);
         }
 
         public static IDatabase Database(this Context @this) => @this.GetService<IDatabase>();
@@ -130,7 +130,7 @@ namespace Olive
 
         static async Task<IEnumerable<T>> Select<T>(this Task<IDataReader> @this, Func<IDataReader, T> mapper, Func<IDataReader, Task<T>> asyncMapper)
         {
-            var reader = await @this;
+            var reader = await @this.ConfigureAwait(false);
 
             var result = new List<T>();
 
@@ -139,7 +139,7 @@ namespace Olive
                     result.Add(mapper(reader));
             else
                 while (reader.Read())
-                    result.Add(await asyncMapper(reader));
+                    result.Add(await asyncMapper(reader).ConfigureAwait(false));
 
             if (!reader.IsClosed) reader.Close();
 
