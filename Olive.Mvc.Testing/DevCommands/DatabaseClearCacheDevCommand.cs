@@ -5,9 +5,7 @@ namespace Olive.Mvc.Testing
 {
     class DatabaseClearCacheDevCommand : IDevCommand
     {
-        IDatabase Database;
-
-        public DatabaseClearCacheDevCommand(IDatabase database) => Database = database;
+        static IDatabase Database => Olive.Context.Current.Database();
 
         public string Name => "db-clear-cache";
 

@@ -7,7 +7,7 @@ namespace Olive.SMS
 {
     public class SmsService : ISmsService
     {
-        readonly IDatabase Database;
+        IDatabase Database => Context.Current.Database();
         readonly ILogger<SmsService> Log;
         ISmsDispatcher Dispatcher;
         int MaximumRetries;
@@ -17,9 +17,8 @@ namespace Olive.SMS
         /// </summary>
         public event AwaitableEventHandler<SmsSendingEventArgs> SendError;
 
-        public SmsService(IDatabase database, ISmsDispatcher dispatcher, ILogger<SmsService> log)
+        public SmsService(ISmsDispatcher dispatcher, ILogger<SmsService> log)
         {
-            Database = database;
             Dispatcher = dispatcher;
             Log = log;
             MaximumRetries = Config.Get("SMS:MaximumRetries", 3);

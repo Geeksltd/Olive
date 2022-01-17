@@ -10,12 +10,11 @@ namespace Olive.Email
 {
     public class EmailRepository : IEmailRepository
     {
-        readonly IDatabase Database;
+        static IDatabase Database => Context.Current.Database();
         readonly EmailConfiguration Config;
 
-        public EmailRepository(IDatabase database, IConfiguration config)
+        public EmailRepository(IConfiguration config)
         {
-            Database = database;
             Config = config.GetSection("Email").Get<EmailConfiguration>();
         }
 
