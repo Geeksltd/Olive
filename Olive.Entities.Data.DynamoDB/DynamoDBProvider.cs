@@ -32,15 +32,20 @@ namespace Olive.Entities.Data
 
         public Task BulkInsert(IEntity[] entities, int batchSize)
         {
-            throw new NotImplementedException();
+            var writer = Dynamo.Db.CreateBatchWrite<T>();
+            writer.AddPutItems(entities.Cast<T>());
+            return writer.ExecuteAsync();
         }
 
         public Task BulkUpdate(IEntity[] entities, int batchSize)
         {
-            throw new NotImplementedException();
+            var writer = Dynamo.Db.CreateBatchWrite<T>();
+            entities.Do(x => writer.AddDeleteKey(x.GetId()));
+            writer.AddPutItems(entities.Cast<T>());
+            return writer.ExecuteAsync();
         }
 
-        public Task<int> Count(IDatabaseQuery query) => throw new NotImplementedException();
+        public Task<int> Count(IDatabaseQuery query) => GetList(query).Count();
 
         public Task Delete(IEntity record) => Dynamo.Db.DeleteAsync<T>(record);
 
