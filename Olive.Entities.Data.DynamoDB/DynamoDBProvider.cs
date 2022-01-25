@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,9 +77,18 @@ namespace Olive.Entities.Data
                 if (prop is null) return (false, null);
 
                 var attr = prop.GetCustomAttribute<DynamoDBHashKeyAttribute>();
-                if (attr is null) return (false, null);
+                if (attr?.GetType() != typeof(DynamoDBHashKeyAttribute)) return (false, null);
 
                 return (true, criterion.Value);
+            }
+
+            var hashKeyInfo = query.Criteria.Select(IsHashKey).ExceptNull().FirstOrDefault();
+            if (hashKeyInfo.IsHashKey)
+            {
+                if (hashKeyInfo.Value is null) return Enumerable.Empty<IEntity>();
+                var item = await Get(hashKeyInfo.Value);
+                if (item is null) return Enumerable.Empty<IEntity>();
+                return new[] { item };
             }
 
             (bool IsIndex, string Name, object Value) IsIndex(ICriterion criterion)
@@ -86,17 +96,10 @@ namespace Olive.Entities.Data
                 var prop = EntityType.GetProperty(criterion.PropertyName);
                 if (prop is null) return (false, null, null);
 
-                var indexAttr = prop.GetCustomAttribute<DynamoDBGlobalSecondaryIndexHashKeyAttribute>();
-                if (indexAttr is null) return (false, null, null);
+                var attr = prop.GetCustomAttribute<DynamoDBGlobalSecondaryIndexHashKeyAttribute>();
+                if (attr?.GetType() != typeof(DynamoDBGlobalSecondaryIndexHashKeyAttribute)) return (false, null, null);
 
-                return (true, indexAttr.IndexNames.FirstOrDefault(), criterion.Value);
-            }
-
-            var hashKeyInfo = query.Criteria.Select(IsHashKey).ExceptNull().FirstOrDefault();
-            if (hashKeyInfo.IsHashKey)
-            {
-                if (hashKeyInfo.Value is null) return Enumerable.Empty<IEntity>();
-                return new[] { await Get(hashKeyInfo.Value) };
+                return (true, attr.IndexNames.FirstOrDefault(), criterion.Value);
             }
 
             var indexInfo = query.Criteria.Select(IsIndex).ExceptNull().FirstOrDefault();
@@ -106,7 +109,55 @@ namespace Olive.Entities.Data
                 return (await Dynamo.Index<T>(indexInfo.Name).All(indexInfo.Value)).Cast<IEntity>();
             }
 
-            return Enumerable.Empty<IEntity>();
+            ScanCondition ToCondition(ICriterion criterion)
+            {
+                ScanOperator GetOperator()
+                {
+                    switch (criterion.FilterFunction)
+                    {
+                        case FilterFunction.Is:
+                            if (criterion.Value is null) return ScanOperator.IsNull;
+                            return ScanOperator.Equal;
+                        case FilterFunction.IsNot:
+                            if (criterion.Value is null) return ScanOperator.IsNotNull;
+                            return ScanOperator.NotEqual;
+                        case FilterFunction.Null:
+                            return ScanOperator.IsNull;
+                        case FilterFunction.NotNull:
+                            return ScanOperator.IsNotNull;
+                        case FilterFunction.Contains:
+                            return ScanOperator.Contains;
+                        case FilterFunction.NotContains:
+                            return ScanOperator.NotContains;
+                        case FilterFunction.In:
+                            return ScanOperator.In;
+                        case FilterFunction.BeginsWith:
+                            return ScanOperator.BeginsWith;
+                        case FilterFunction.InRange:
+                            return ScanOperator.Between;
+                        case FilterFunction.LessThan:
+                            return ScanOperator.LessThan;
+                        case FilterFunction.LessThanOrEqual:
+                            return ScanOperator.LessThanOrEqual;
+                        case FilterFunction.MoreThan:
+                            return ScanOperator.GreaterThan;
+                        case FilterFunction.MoreThanOrEqual:
+                            return ScanOperator.GreaterThanOrEqual;
+                    }
+
+                    throw new ArgumentOutOfRangeException(
+                        nameof(criterion.FilterFunction),
+                        $"{criterion.FilterFunction} isn't supported by DynamoDB."
+                    );
+                };
+
+                var @operator = GetOperator();
+                var values = new[] { criterion.Value }.ExceptNull().ToArray();
+
+                return new ScanCondition(criterion.PropertyName, @operator, values);
+            }
+
+            return (await Dynamo.Db.ScanAsync<T>(query.Criteria.Select(ToCondition)).GetRemainingAsync()).Cast<IEntity>();
         }
 
         public IDictionary<string, Tuple<string, string>> GetUpdatedValues(IEntity original, IEntity updated)
