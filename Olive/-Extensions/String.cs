@@ -1397,6 +1397,16 @@ namespace Olive
         public static string ToSimplifiedSHA1Hash(this string @this) =>
 new(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray());
 
+        static Dictionary<string, string> IOSafeHashes = new();
+        public static string ToIOSafeHash(this string clearText)
+        {
+            if (IOSafeHashes.TryGetValue(clearText, out string result)) return result;
+
+            result = new string(clearText.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray());
+            lock (IOSafeHashes) IOSafeHashes[clearText] = result;
+            return result;
+        }
+
         /// <summary>
         /// Attempts to Parse this String as the given Enum type.
         /// </summary>

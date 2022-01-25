@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace Olive
@@ -239,6 +240,25 @@ namespace Olive
                     return false;
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int FastToInt(this string number)
+        {
+            var result = 0;
+            for (var i = 0; i < number.Length; i++)
+                result = result * 10 + (number[i] - '0');
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static short FastToShort(this string number) => (short)FastToInt(number);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int? FastToIntOrNull(this string number)
+        {
+            if (number.IsEmpty()) return null;
+            return FastToInt(number);
         }
     }
 }
