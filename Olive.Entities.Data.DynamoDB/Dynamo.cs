@@ -1,10 +1,8 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
@@ -17,11 +15,6 @@ namespace Olive.Entities.Data
         public static DbIndex<T> Index<T>(string name) => new(Db, name);
 
         public static DbTable<T> Table<T>() => new(Db);
-
-        public Task UpdateItemAsync(UpdateItemRequest request, CancellationToken cancellationToken = default)
-        {
-            return Client.UpdateItemAsync(request, cancellationToken);
-        }
 
         public class DbIndex<T>
         {

@@ -48,7 +48,7 @@ namespace Olive.Entities.Data
 
         public Task<int> Count(IDatabaseQuery query) => GetList(query).Count();
 
-        public Task Delete(IEntity record) => Dynamo.Db.DeleteAsync<T>(record);
+        public Task Delete(IEntity record) => Dynamo.Db.DeleteAsync((T)record);
 
         public Task<int> ExecuteNonQuery(string command) => throw new NotImplementedException();
 
@@ -180,7 +180,20 @@ namespace Olive.Entities.Data
             throw new NotImplementedException();
         }
 
-        public Task Save(IEntity record) => Dynamo.Db.SaveAsync((T)record);
+        public async Task Save(IEntity record)
+        {
+            var entity = record as Entity;
+            var clonedFrom = entity._ClonedFrom;
+            var updatedClone = entity.UpdatedClone;
+
+            entity._ClonedFrom = null;
+            entity.UpdatedClone = null;
+
+            await Dynamo.Db.SaveAsync((T)record);
+
+            entity._ClonedFrom = clonedFrom;
+            entity.UpdatedClone = updatedClone;
+        }
 
         public bool SupportValidationBypassing() => throw new NotImplementedException();
     }
