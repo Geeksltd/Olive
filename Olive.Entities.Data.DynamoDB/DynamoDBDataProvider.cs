@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
-    class DynamoDBProvider<T> : IDataProvider
+    public class DynamoDBDataProvider<T> : IDataProvider
     {
         public IDataAccess Access => throw new NotImplementedException();
 
@@ -157,7 +157,7 @@ namespace Olive.Entities.Data
                 return new ScanCondition(criterion.PropertyName, @operator, values);
             }
 
-            return (await Dynamo.Db.ScanAsync<T>(query.Criteria.Select(ToCondition)).GetRemainingAsync()).Cast<IEntity>();
+            return (await Dynamo.Table<T>().All(query.Criteria.Select(ToCondition).ToArray())).Cast<IEntity>();
         }
 
         public IDictionary<string, Tuple<string, string>> GetUpdatedValues(IEntity original, IEntity updated)
