@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
-    public class DynamoDBDataProvider<T> : IDataProvider
+    public partial class DynamoDBDataProvider<T> : IDataProvider
     {
         public IDataAccess Access => throw new NotImplementedException();
 
@@ -201,17 +202,25 @@ namespace Olive.Entities.Data
 
         public async Task Save(IEntity record)
         {
-            var entity = record as Entity;
-            var clonedFrom = entity._ClonedFrom;
-            var updatedClone = entity.UpdatedClone;
+            var entityType = record.GetType();
 
-            entity._ClonedFrom = null;
-            entity.UpdatedClone = null;
+            var tableName = entityType.GetCustomAttribute<DynamoDBTableAttribute>().TableName;
+            var properties = entityType.GetProperties()
+                .Select(x => UpdatePropertyData.FromProperty(x, record))
+                .ToArray();
+            var hashKeyProp = properties.Single(x => x.IsHashKey);
+            var propertiesToUpdate = properties.Except(hashKeyProp).ToArray();
 
-            await Dynamo.Db.SaveAsync((T)record);
+            var key = new Dictionary<string, AttributeValue> { {
+                hashKeyProp.Name, hashKeyProp.GetAttributeValue()
+            } };
+            var updates = propertiesToUpdate.ToDictionary(
+                x => x.Name, x => x.GetAttributeValueUpdate()
+            );
 
-            entity._ClonedFrom = clonedFrom;
-            entity.UpdatedClone = updatedClone;
+            await Dynamo.Client.UpdateItemAsync(
+                new UpdateItemRequest(tableName, key, updates)
+            );
         }
 
         public bool SupportValidationBypassing() => throw new NotImplementedException();
