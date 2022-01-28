@@ -1,44 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Olive.Aws</AssemblyName>
-    <RootNamespace>Olive.Aws</RootNamespace>
-    <PackageId>Olive.Aws</PackageId>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.2.128.0</Version>
-    <PackOnBuild>true</PackOnBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <LangVersion>latest</LangVersion>
-    <DebugType>portable</DebugType>
-    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
-    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <PackageTags>olive</PackageTags>
-    <Title>Olive.Aws</Title>
-    <Description>Olive Framework</Description>
-    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
-    <Owners>Geeks Ltd</Owners>
-    <Authors>Geeks Ltd</Authors>
-    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
-    <DisableExtraReferences>true</DisableExtraReferences>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.0.13" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.1.2" />
-    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.1.6" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive.Cloud\Olive.Cloud.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<AssemblyName>Olive.Aws</AssemblyName>
+		<RootNamespace>Olive.Aws</RootNamespace>
+		<PackageId>Olive.Aws</PackageId>
+		<Product>$(AssemblyName) ($(TargetFramework))</Product>
+		<Version>2.2.129.0</Version>
+		<PackOnBuild>true</PackOnBuild>
+		<NeutralLanguage>en</NeutralLanguage>
+		<LangVersion>default</LangVersion>
+		<UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+		<LangVersion>latest</LangVersion>
+		<DebugType>portable</DebugType>
+		<PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+		<PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+		<PackageTags>olive</PackageTags>
+		<Title>Olive.Aws</Title>
+		<Description>Olive Framework</Description>
+		<PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+		<Owners>Geeks Ltd</Owners>
+		<Authors>Geeks Ltd</Authors>
+		<Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+		<DisableExtraReferences>true</DisableExtraReferences>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+		<DebugSymbols>true</DebugSymbols>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="AWSSDK.SecretsManager" Version="3.7.0.13" />
+		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.1.2" />
+		<PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.1.6" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Olive.Cloud\Olive.Cloud.csproj" />
+	</ItemGroup>
 </Project>
