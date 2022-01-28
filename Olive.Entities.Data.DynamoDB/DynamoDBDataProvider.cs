@@ -71,6 +71,13 @@ namespace Olive.Entities.Data
 
         public async Task<IEnumerable<IEntity>> GetList(IDatabaseQuery query)
         {
+            return await FindByHashKey(query) ?? await FindByIndex(query) ?? await FindByConditions(query);
+        }
+
+        async Task<IEnumerable<IEntity>> FindByHashKey(IDatabaseQuery query)
+        {
+            if (query.Criteria.HasMany()) return null;
+
             (bool IsHashKey, object Value) IsHashKey(ICriterion criterion)
             {
                 var prop = EntityType.GetProperty(criterion.PropertyName);
@@ -91,6 +98,13 @@ namespace Olive.Entities.Data
                 return new[] { item };
             }
 
+            return null;
+        }
+
+        async Task<IEnumerable<IEntity>> FindByIndex(IDatabaseQuery query)
+        {
+            if (query.Criteria.HasMany()) return null;
+
             (bool IsIndex, string Name, object Value) IsIndex(ICriterion criterion)
             {
                 var prop = EntityType.GetProperty(criterion.PropertyName);
@@ -109,6 +123,11 @@ namespace Olive.Entities.Data
                 return (await Dynamo.Index<T>(indexInfo.Name).All(indexInfo.Value)).Cast<IEntity>();
             }
 
+            return null;
+        }
+
+        async Task<IEnumerable<IEntity>> FindByConditions(IDatabaseQuery query)
+        {
             ScanCondition ToCondition(ICriterion criterion)
             {
                 ScanOperator GetOperator()
