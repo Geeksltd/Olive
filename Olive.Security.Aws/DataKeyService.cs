@@ -22,7 +22,7 @@ namespace Olive.Security.Aws
             {
                 var dataKey = await kms.GenerateDataKeyAsync(new GenerateDataKeyRequest
                 {
-                    KeyId = MasterKeyArn.OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified."),
+                    KeyId = GetKeyIdOrThrow(),
                     KeySpec = DataKeySpec.AES_256
                 });
 
@@ -34,6 +34,8 @@ namespace Olive.Security.Aws
             }
         }
 
+        private string GetKeyIdOrThrow() => MasterKeyArn.OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified.");
+
         public byte[] GetEncryptionKey(byte[] encryptionKeyReference)
         {
             var keyRef = encryptionKeyReference.ToBase64String();
@@ -42,13 +44,14 @@ namespace Olive.Security.Aws
                 x => Task.Factory.RunSync(() => DownloadEncryptionKey(encryptionKeyReference)));
         }
 
-        static async Task<byte[]> DownloadEncryptionKey(byte[] encryptionKeyReference)
+        async Task<byte[]> DownloadEncryptionKey(byte[] encryptionKeyReference)
         {
             using (var kms = CreateClient())
             {
                 var decryptedData = await kms.DecryptAsync(new DecryptRequest
                 {
-                    CiphertextBlob = encryptionKeyReference.AsStream()
+                    CiphertextBlob = encryptionKeyReference.AsStream(),
+                    KeyId = GetKeyIdOrThrow()
                 });
 
                 return decryptedData.Plaintext.ReadAllBytes();
