@@ -46,16 +46,17 @@ namespace Olive.Security.Aws
 
         async Task<byte[]> DownloadEncryptionKey(byte[] encryptionKeyReference)
         {
-            using (var kms = CreateClient())
-            {
-                var decryptedData = await kms.DecryptAsync(new DecryptRequest
+                using (var kms = CreateClient())
                 {
-                    CiphertextBlob = encryptionKeyReference.AsStream(),
-                    KeyId = GetKeyIdOrThrow()
-                });
+                    var decryptedData = await kms.DecryptAsync(new DecryptRequest
+                    {
+                        CiphertextBlob = encryptionKeyReference.AsStream(),
+                        KeyId = GetKeyIdOrThrow()
+                    });
 
-                return decryptedData.Plaintext.ReadAllBytes();
-            }
+                    return decryptedData.Plaintext.ReadAllBytes();
+                }
+            
         }
     }
 }
