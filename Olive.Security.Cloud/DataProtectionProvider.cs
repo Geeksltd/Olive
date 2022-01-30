@@ -8,7 +8,7 @@ namespace Olive.Security.Cloud
 {
     public abstract class DataProtectionProvider<TDataKeyService> : IDataProtector where TDataKeyService : IDataKeyService, new()
     {
-        protected IDataKeyService DataKeyService;
+        protected TDataKeyService DataKeyService;
         static ConcurrentDictionary<string, byte[]> CachedDecrptedData = new ConcurrentDictionary<string, byte[]>();
         protected string Purpose;
 
