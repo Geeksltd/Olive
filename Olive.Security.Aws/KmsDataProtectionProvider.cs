@@ -5,14 +5,14 @@ using Olive;
 
 namespace Olive.Security.Aws
 {
-    public class KmsDataProtectionProvider : Cloud.DataProtectionProvider<DataKeyService>
+    public partial class KmsDataProtectionProvider : Cloud.DataProtectionProvider<DataKeyService>
     {
-        public KmsDataProtectionProvider(string masterKeyArn = null)
+        public KmsDataProtectionProvider()
         {
-            DataKeyService.MasterKeyArn = masterKeyArn.OrNullIfEmpty().Or(GetMasterKeyArn());
+            DataKeyService.MasterKeyArn = GetMasterKeyArn();
         }
 
-        string GetMasterKeyArn()
+        protected virtual string GetMasterKeyArn()
         {
 
             var fromEnvironment = Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN");
@@ -21,9 +21,8 @@ namespace Olive.Security.Aws
                    ?? throw new Exception("Aws Master Key Arn is not specified.");
         }
 
-        public override IDataProtector CreateProtector(string purpose) => CreateProtector(purpose, null);
+        public override IDataProtector CreateProtector(string purpose)
+            => new KmsDataProtectionProvider() { Purpose = purpose };
 
-        public IDataProtector CreateProtector(string purpose, string masterKeyArn = null)
-            => new KmsDataProtectionProvider(masterKeyArn) { Purpose = purpose };
     }
 }
