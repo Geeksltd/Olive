@@ -15,7 +15,7 @@ namespace Olive
         {
             var root = @this.BaseDirectory.AsDirectory();
 
-            if (root.Name.StartsWith("netcoreapp")) return root.Parent.Parent.Parent;
+            if (root.Name.StartsWith("net")) return root.Parent.Parent.Parent;
             else return root;
         }
 

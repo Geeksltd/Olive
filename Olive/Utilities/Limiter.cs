@@ -38,12 +38,12 @@ namespace Olive
             {
                 var oldest = effective.First().Key;
                 var delay = TimeSpan.FromTicks((oldest - effectiveSince).LimitMin(0) + 1);
-                await Task.Delay(delay);
-                await Add(count);
+                await Task.Delay(delay).ConfigureAwait(false);
+                await Add(count).ConfigureAwait(false);
             }
 
             if (!Cache.TryAdd(LocalTime.UtcNow.Ticks, count))
-                await Add(count);
+                await Add(count).ConfigureAwait(false);
         }
 
         void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

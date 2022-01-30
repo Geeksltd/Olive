@@ -192,6 +192,16 @@ namespace Olive
             @this.IsDefined(typeof(TAttribute), inherit);
 
         /// <summary>
+        /// Determines whether it has a specified attribute applied to it.
+        /// </summary>
+        /// <returns>
+        /// true if one *exact* instance of attributeType is
+        /// applied to this member; otherwise, false.
+        /// </returns>
+        public static bool ExactlyDefines<TAttribute>(this MemberInfo @this, bool inherit = true) where TAttribute : Attribute =>
+            @this.GetCustomAttribute<TAttribute>(inherit)?.GetType() == typeof(TAttribute);
+
+        /// <summary>
         /// Creates the instance of this type casted to the specified type.
         /// </summary>
         public static TCast CreateInstance<TCast>(this Type @this, params object[] constructorParameters) =>

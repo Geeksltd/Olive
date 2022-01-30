@@ -18,7 +18,7 @@
 
                 if (ev.AsyncHandler != null)
                 {
-                    await ev.AsyncHandler.Invoke(args);
+                    await ev.AsyncHandler.Invoke(args).ConfigureAwait(false);
                     ev.AsyncHandler = null; // Help GC
                 }
             }
@@ -38,7 +38,7 @@
 
                 if (ev.AsyncHandler != null)
                 {
-                    await ev.AsyncHandler.Invoke();
+                    await ev.AsyncHandler.Invoke().ConfigureAwait(false);
                     ev.AsyncHandler = null; // Help GC
                 }
             }

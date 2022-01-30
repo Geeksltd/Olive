@@ -12,10 +12,10 @@ namespace Olive
         /// <summary>
         /// Gets the response data as string.
         /// </summary>
-        public static async Task<string> GetResponseString(this HttpWebRequest request)
+        public static Task<string> GetResponseString(this HttpWebRequest request)
         {
             using var response = request.GetResponse();
-            return await response.GetString();
+            return response.GetString();
         }
 
         /// <summary>
@@ -41,11 +41,11 @@ namespace Olive
         /// <summary>
         /// Gets the response data as string.
         /// </summary>
-        public static async Task<string> GetString(this WebResponse response)
+        public static Task<string> GetString(this WebResponse response)
         {
             using var stream = response.GetResponseStream();
             using var reader = new StreamReader(stream);
-            return await reader.ReadToEndAsync();
+            return reader.ReadToEndAsync();
         }
 
         /// <summary>

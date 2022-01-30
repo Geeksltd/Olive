@@ -14,7 +14,7 @@ namespace Olive
         /// </summary>        
         [EscapeGCop("I AM the solution to the GCop warning itself!")]
         public static TResult RiskDeadlockAndAwaitResult<TResult>(this Task<TResult> task)
-              => Task.Run(async () => await task).Result;
+              => Task.Run(async () => await task.ConfigureAwait(false)).Result;
 
         /// <summary>
         /// If the task is not completed already it throws an exception warning you to await the task.
@@ -55,14 +55,14 @@ namespace Olive
 
         public static async Task WithTimeout(this Task @this, TimeSpan timeout, Action success = null, Action timeoutAction = null)
         {
-            if (await Task.WhenAny(@this, Task.Delay(timeout)) == @this) success?.Invoke();
+            if (await Task.WhenAny(@this, Task.Delay(timeout)).ConfigureAwait(false) == @this) success?.Invoke();
             else if (timeoutAction is null) throw new TimeoutException("The task didn't complete within " + timeout + "ms");
             else timeoutAction();
         }
 
         public static async Task<T> WithTimeout<T>(this Task<T> @this, TimeSpan timeout, Action success = null, Func<T> timeoutAction = null)
         {
-            if (await Task.WhenAny(@this, Task.Delay(timeout)) == @this)
+            if (await Task.WhenAny(@this, Task.Delay(timeout)).ConfigureAwait(false) == @this)
             {
                 success?.Invoke();
                 return @this.GetAlreadyCompletedResult();
@@ -80,7 +80,7 @@ namespace Olive
             => @this.Get(x => x.OrEmpty().ToArray());
 
         public static async Task<IEnumerable<T>> AwaitAll<T>(this IEnumerable<Task<T>> @this)
-            => await Task.WhenAll(@this);
+            => await Task.WhenAll(@this).ConfigureAwait(false);
 
         /// <summary>
         /// Casts the result type of the input task as if it were covariant.

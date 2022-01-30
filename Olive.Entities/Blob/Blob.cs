@@ -98,7 +98,7 @@ namespace Olive.Entities
             if (NewFileData != null && NewFileData.Length > 0)
                 return NewFileData;
 
-            return CachedFileData = await GetStorageProvider().LoadAsync(this);
+            return CachedFileData = await GetStorageProvider().LoadAsync(this).ConfigureAwait(false);
         }
 
         public void SetData(byte[] data)
@@ -150,9 +150,9 @@ namespace Olive.Entities
 
             try
             {
-                using (var mem = new MemoryStream(await GetFileDataAsync()))
+                using (var mem = new MemoryStream(await GetFileDataAsync().ConfigureAwait(false)))
                 using (var reader = new StreamReader(mem))
-                    return await reader.ReadToEndAsync();
+                    return await reader.ReadToEndAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -250,7 +250,7 @@ namespace Olive.Entities
             if (OwnerEntity != null)
             {
                 if (NewFileData.HasAny())
-                    result = new Blob(await GetFileDataAsync(), FileName);
+                    result = new Blob(await GetFileDataAsync().ConfigureAwait(false), FileName);
                 else result = new ClonedDocument(this);
 
                 if (attach)
@@ -309,7 +309,7 @@ namespace Olive.Entities
         async Task DeleteAsync()
         {
             if (OwnerEntity == null) throw new InvalidOperationException();
-            await GetStorageProvider().DeleteAsync(this);
+            await GetStorageProvider().DeleteAsync(this).ConfigureAwait(false);
             CachedFileData = NewFileData = null;
         }
 
@@ -327,8 +327,8 @@ namespace Olive.Entities
         public virtual async Task Save()
         {
             if (NewFileData.HasAny())
-                await GetStorageProvider().SaveAsync(this);
-            else if (IsEmptyBlob) await DeleteAsync();
+                await GetStorageProvider().SaveAsync(this).ConfigureAwait(false);
+            else if (IsEmptyBlob) await DeleteAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace Olive.Entities
             var id = parts[1];
             var propertyName = parts.Last();
 
-            var entity = await Database.GetOrDefault(id, type);
+            var entity = await Database.GetOrDefault(id, type).ConfigureAwait(false);
 
             if (entity == null)
                 throw new ArgumentException($"Could not load an instance of '{parts.First()}' with the ID of '{id} from the database.");

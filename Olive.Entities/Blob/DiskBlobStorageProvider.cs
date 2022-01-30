@@ -41,23 +41,23 @@ namespace Olive.Entities
             var path = File(blob);
             if (path == null) throw new InvalidOperationException("This blob is not linked to any entity.");
 
-            var fileDataToSave = await blob.GetFileDataAsync(); // Because file data will be lost in delete.
-            await DeleteAsync(blob);
-            await path.WriteAllBytesAsync(fileDataToSave);
+            var fileDataToSave = await blob.GetFileDataAsync().ConfigureAwait(false); // Because file data will be lost in delete.
+            await DeleteAsync(blob).ConfigureAwait(false);
+            await path.WriteAllBytesAsync(fileDataToSave).ConfigureAwait(false);
         }
 
         public virtual async Task DeleteAsync(Blob blob)
         {
             // Delete old file. TODO: Archive the files instead of deleting.
             foreach (var file in Folder(blob).GetFiles(blob.OwnerId() + ".*"))
-                await file.DeleteAsync(harshly: true);
+                await file.DeleteAsync(harshly: true).ConfigureAwait(false);
         }
 
         public virtual async Task<byte[]> LoadAsync(Blob blob)
         {
             var path = File(blob);
             if (path == null) return new byte[0];
-            return await path.ReadAllBytesAsync();
+            return await path.ReadAllBytesAsync().ConfigureAwait(false);
         }
 
         public virtual Task<bool> FileExistsAsync(Blob blob) => File(blob).ExistsAsync();

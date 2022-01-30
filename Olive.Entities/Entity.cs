@@ -224,8 +224,8 @@ namespace Olive.Entities
         protected internal virtual async Task OnSaved(SaveEventArgs e)
         {
             InvalidateCachedReferences();
-            await Saved.Raise(e);
-            await GlobalEntityEvents.OnInstanceSaved(new GlobalSaveEventArgs(this, e.Mode));
+            await Saved.Raise(e).ConfigureAwait(false);
+            await GlobalEntityEvents.OnInstanceSaved(new GlobalSaveEventArgs(this, e.Mode)).ConfigureAwait(false);
             InvalidateCachedReferences();
         }
 
@@ -242,8 +242,8 @@ namespace Olive.Entities
         protected internal virtual async Task OnDeleted(EventArgs e)
         {
             InvalidateCachedReferences();
-            await Deleted.Raise();
-            await GlobalEntityEvents.OnInstanceDeleted(new GlobalDeleteEventArgs(this));
+            await Deleted.Raise().ConfigureAwait(false);
+            await GlobalEntityEvents.OnInstanceDeleted(new GlobalDeleteEventArgs(this)).ConfigureAwait(false);
             InvalidateCachedReferences();
         }
 

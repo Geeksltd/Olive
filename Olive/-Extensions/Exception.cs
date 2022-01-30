@@ -90,7 +90,7 @@ namespace Olive
             if (@this.Response == null) return default;
 
             using var reader = new StreamReader(@this.Response.GetResponseStream());
-            return await reader.ReadToEndAsync();
+            return await reader.ReadToEndAsync().ConfigureAwait(false);
         }
 
         /// <summary>

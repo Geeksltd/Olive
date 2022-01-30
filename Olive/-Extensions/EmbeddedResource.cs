@@ -43,7 +43,7 @@ namespace Olive
                     throw new("There is no embedded resource named '" + resourceName +
                    "' in the assembly: " + @this.FullName);
 
-                return await stream.ReadAllBytesAsync();
+                return await stream.ReadAllBytesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace Olive
         public static async Task<string> ReadEmbeddedTextFileAsync(this Assembly @this, string resourceName,
            Encoding encoding)
         {
-            return encoding.GetString(await @this.ReadEmbeddedResourceAsync(resourceName));
+            return encoding.GetString(await @this.ReadEmbeddedResourceAsync(resourceName).ConfigureAwait(false));
         }
 
         /// <param name="rootNamespace">The default namespace of your Visual Studio project.</param>
