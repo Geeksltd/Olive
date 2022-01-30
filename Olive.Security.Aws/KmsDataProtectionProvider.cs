@@ -21,7 +21,9 @@ namespace Olive.Security.Aws
                    ?? throw new Exception("Aws Master Key Arn is not specified.");
         }
 
-        public override IDataProtector CreateProtector(string purpose)
-            => new KmsDataProtectionProvider { Purpose = purpose };
+        public override IDataProtector CreateProtector(string purpose) => CreateProtector(purpose, null);
+
+        public IDataProtector CreateProtector(string purpose, string masterKeyArn = null)
+            => new KmsDataProtectionProvider(masterKeyArn) { Purpose = purpose };
     }
 }
