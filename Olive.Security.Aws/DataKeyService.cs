@@ -1,7 +1,5 @@
 ﻿using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
-using Microsoft.Extensions.Configuration;
-using Olive.Aws;
 using Olive.Security.Cloud;
 using System;
 using System.Collections.Concurrent;
@@ -12,20 +10,8 @@ namespace Olive.Security.Aws
     public class DataKeyService : IDataKeyService
     {
         readonly static ConcurrentDictionary<string, byte[]> EncryptionKeys = new ConcurrentDictionary<string, byte[]>();
-        static string masterKeyArn;
+        internal string MasterKeyArn;
 
-        static string MasterKeyArn
-        {
-            get
-            {
-                if (masterKeyArn.HasValue()) return masterKeyArn;
-
-                var fromEnvironment = Environment.GetEnvironmentVariable("AWS_KMS_MASTERKEY_ARN");
-
-                return masterKeyArn = Context.Current.Config.GetValue("Aws:Kms:MasterKeyArn", defaultValue: fromEnvironment).OrNullIfEmpty()
-                       ?? throw new Exception("Aws Master Key Arn is not specified.");
-            }
-        }
 
         static AmazonKeyManagementServiceClient CreateClient()
             => new AmazonKeyManagementServiceClient();
@@ -36,7 +22,7 @@ namespace Olive.Security.Aws
             {
                 var dataKey = await kms.GenerateDataKeyAsync(new GenerateDataKeyRequest
                 {
-                    KeyId = MasterKeyArn,
+                    KeyId = MasterKeyArn.OrNullIfEmpty() ?? throw new Exception("Aws Master Key Arn is not specified."),
                     KeySpec = DataKeySpec.AES_256
                 });
 
