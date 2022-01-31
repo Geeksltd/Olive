@@ -49,7 +49,6 @@ namespace Olive.Aws
             var request = new AssumeRoleRequest
             {
                 RoleArn = RoleArn,
-                DurationSeconds = (int)12.Hours().TotalSeconds,
                 ExternalId = "Pod",
                 RoleSessionName = "Pod"
             };
