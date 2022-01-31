@@ -40,12 +40,7 @@ namespace Olive.Aws
 
             RenewingTask = Task.Factory.StartNew(async () =>
             {
-                while (true)
-                {
-                    await Task.Delay(5.Minutes());
-
-                    await SignalRenew();
-                }
+                while (true) await Task.Delay(5.Minutes()).Then(SignalRenew);
             }, TaskCreationOptions.LongRunning);
         }
 
@@ -54,7 +49,9 @@ namespace Olive.Aws
             var request = new AssumeRoleRequest
             {
                 RoleArn = RoleArn,
-                DurationSeconds = (int)12.Hours().TotalSeconds
+                DurationSeconds = (int)12.Hours().TotalSeconds,
+                ExternalId = "Pod",
+                RoleSessionName = "Pod"
             };
 
             try
