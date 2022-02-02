@@ -20,6 +20,7 @@ namespace Olive.Entities.Data
 
             public string Name { get; private set; }
             public object Value { get; private set; }
+            bool IsString;
             bool IsBool;
             bool IsNumber;
             bool IsDateTime;
@@ -33,6 +34,7 @@ namespace Olive.Entities.Data
                 {
                     Name = prop.Name,
                     Value = prop.GetValue(owner),
+                    IsString = prop.PropertyType == typeof(string),
                     IsBool = prop.PropertyType == typeof(bool),
                     IsNumber = prop.PropertyType.IsBasicNumeric(),
                     IsDateTime = prop.PropertyType == typeof(DateTime),
@@ -46,13 +48,12 @@ namespace Olive.Entities.Data
 
             public AttributeValueUpdate GetAttributeValueUpdate()
             {
-                if (GetAttributeAction() == AttributeAction.DELETE)
-                    return new AttributeValueUpdate
-                    {
-                        Action = GetAttributeAction()
-                    };
+                var action = GetAttributeAction();
 
-                return new(GetAttributeValue(), GetAttributeAction());
+                if (action == AttributeAction.DELETE)
+                    return new AttributeValueUpdate { Action = action };
+
+                return new AttributeValueUpdate(GetAttributeValue(), action);
             }
 
             AttributeAction GetAttributeAction()
@@ -66,7 +67,8 @@ namespace Olive.Entities.Data
             {
                 var newValue = new AttributeValue();
 
-                if (Value is null) newValue.NULL = true;
+                if (IsString) newValue.S = Value.ToStringOrEmpty();
+                else if (Value is null) newValue.NULL = true;
                 else if (IsBool) newValue.BOOL = (bool)Value;
                 else if (IsNumber) newValue.N = Value.ToString();
                 else if (IsDateTime) newValue.S = ((DateTime)Value).ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
