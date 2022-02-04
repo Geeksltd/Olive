@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Olive.RabbitMQ</AssemblyName>
+    <RootNamespace>Olive.RabbitMQ</RootNamespace>
+    <PackageId>Olive.RabbitMQ</PackageId>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <Version>2.1.147.1</Version>
+    <PackOnBuild>true</PackOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+    <PackageTags>olive</PackageTags>
+    <Title>Olive.RabbitMQ</Title>
+    <Description>Olive Framework</Description>
+    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+    <Owners>Geeks Ltd</Owners>
+    <Authors>Geeks Ltd</Authors>
+    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+    <DisableExtraReferences>true</DisableExtraReferences>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.0.14" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
+    <Exec Command="update-local-nuget-cache" />
+  </Target>
+</Project>
