@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Olive.Aws
+namespace Olive.RabbitMQ
 {
     public class EventBusProvider : IEventBusQueueProvider
     {
