@@ -1,10 +1,11 @@
-﻿using Amazon.SQS;
-using Amazon.SQS.Model;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive.RabbitMQ
@@ -13,20 +14,17 @@ namespace Olive.RabbitMQ
     {
         const int MAX_RETRY = 4;
         internal string QueueUrl;
-        public IAmazonSQS Client { get; set; }
+        public IModel Client { get; set; }
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
 
         public EventBusQueue(string queueUrl)
         {
             QueueUrl = queueUrl;
-            Client = Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
-        }
 
-        public EventBusQueue Region(Amazon.RegionEndpoint region)
-        {
-            Client = new AmazonSQSClient(region);
-            return this;
+            var factory = new ConnectionFactory() { HostName = Host, UserName = UserName, Password = Password };
+            var connection = factory.CreateConnection();
+            Client = connection.CreateModel();
         }
 
         /// <summary>
@@ -36,6 +34,9 @@ namespace Olive.RabbitMQ
         ///     to 10. Default: 1.
         /// </summary>
         public int MaxNumberOfMessages { get; set; } = Config.Get("RabbitMQ:EventBusQueue:MaxNumberOfMessages", 10);
+        public string Host { get; set; } = Config.Get("RabbitMQ:Host");
+        public string UserName { get; set; } = Config.Get("RabbitMQ:Username");
+        public string Password { get; set; } = Config.Get("RabbitMQ:Password");
 
         /// <summary>
         ///     Gets and sets the property VisibilityTimeout.
@@ -48,70 +49,69 @@ namespace Olive.RabbitMQ
         {
             await Limiter.Add(1);
 
-            var request = new SendMessageRequest
-            {
-                QueueUrl = QueueUrl,
-                MessageBody = message,
-            };
+            //var request = new SendMessageRequest
+            //{
+            //    QueueUrl = QueueUrl,
+            //    MessageBody = message,
+            //};
 
-            if (IsFifo)
-            {
-                request.MessageDeduplicationId = JsonConvert.DeserializeObject<JObject>(message)["DeduplicationId"]?.ToString();
-                request.MessageGroupId = "Default";
-            }
-
-            var response = await Client.SendMessageAsync(request);
-            return response.MessageId;
+            //if (IsFifo)
+            //{
+            //    request.MessageDeduplicationId = JsonConvert.DeserializeObject<JObject>(message)["DeduplicationId"]?.ToString();
+            //    request.MessageGroupId = "Default";
+            //}
+            var body = Encoding.UTF8.GetBytes(message);
+            //Client.QueueDeclare(QueueUrl, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Direct);
+            Client.BasicPublish(exchange: QueueUrl,
+                                 routingKey: QueueUrl,
+                                 basicProperties: null,
+                                 body: body);
+            return "";
         }
 
         public Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages) => PublishBatch(messages, 0);
 
         public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages, int retry = 0)
         {
-            var request = new SendMessageBatchRequest
-            {
-                QueueUrl = QueueUrl,
-            };
+            var request = Client.CreateBasicPublishBatch();
 
             messages.Do(message =>
-                request.Entries.Add(new SendMessageBatchRequestEntry
-                {
-                    MessageBody = message,
-                    Id = JsonConvert.DeserializeObject<JObject>(message)["Id"]?.ToString()
-                        ?? Guid.NewGuid().ToString(),
-                }));
+                request.Add(QueueUrl, QueueUrl, false, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(message))));
 
-            if (IsFifo)
-            {
-                request.Entries
-                    .ForEach(message =>
-                {
-                    message.MessageDeduplicationId =
-                        JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
+            //if (IsFifo)
+            //{
+            //    request.Entries
+            //        .ForEach(message =>
+            //    {
+            //        message.MessageDeduplicationId =
+            //            JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
 
-                    message.MessageGroupId = "Default";
-                });
-            }
+            //        message.MessageGroupId = "Default";
+            //    });
+            //}
 
-            await Limiter.Add(request.Entries.Count);
+            await Limiter.Add(messages.Count());
 
-            var response = await Client.SendMessageBatchAsync(request);
+            request.Publish();
 
-            var successfuls = response.Successful.Select(m => m.MessageId).ToList();
+            //var successfuls = response.Successful.Select(m => m.MessageId).ToList();
 
-            if (response.Failed.Any())
-            {
-                if (retry > MAX_RETRY)
-                    throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
+            //if (response.Failed.Any())
+            //{
+            //    if (retry > MAX_RETRY)
+            //        throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
 
-                Log.For(this)
-                    .Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+            //    Log.For(this)
+            //        .Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
 
-                var toSend = response.Failed.Select(f => f.Message);
-                successfuls.AddRange(await PublishBatch(toSend, retry++));
-            }
+            //    var toSend = response.Failed.Select(f => f.Message);
+            //    successfuls.AddRange(await PublishBatch(toSend, retry++));
+            //}
 
-            return successfuls;
+            //return successfuls;
+
+            return new List<string>();
         }
 
         public void Subscribe(Func<string, Task> handler) => new Subscriber(this, handler).Start();
@@ -135,29 +135,29 @@ namespace Olive.RabbitMQ
 
         public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10, int? maxNumerOfMessages = null)
         {
+            await Task.Run(() => { });
             var result = new List<QueueMessageHandle>();
 
-            var request = new ReceiveMessageRequest
+            var consumer = new EventingBasicConsumer(Client);
+
+            consumer.Received += (model, ea) =>
             {
-                QueueUrl = QueueUrl,
-                WaitTimeSeconds = timeoutSeconds,
-                MaxNumberOfMessages = maxNumerOfMessages ?? MaxNumberOfMessages,
-                VisibilityTimeout = VisibilityTimeout,
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                Log.For(this)
+                    .Info($"RabbitMQ recieved message: Queue " + QueueUrl);
+                result.Add(new QueueMessageHandle(message, ea.DeliveryTag.ToString(), () => Task.Run(() => Client.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false))));
             };
 
-            var response = await Client.ReceiveMessageAsync(request);
-
-            foreach (var item in response.Messages)
-            {
-                var receipt = new DeleteMessageRequest { QueueUrl = QueueUrl, ReceiptHandle = item.ReceiptHandle };
-                result.Add(new QueueMessageHandle(item.Body, item.MessageId, () => Client.DeleteMessageAsync(receipt)));
-            }
+            Client.BasicConsume(queue: QueueUrl,
+                                autoAck: false,
+                                consumer: consumer);
 
             return result;
         }
 
         public Task<QueueMessageHandle> Pull(int timeoutSeconds = 10) => PullBatch(timeoutSeconds, 1).FirstOrDefault();
 
-        public Task Purge() => Client.PurgeQueueAsync(new PurgeQueueRequest { QueueUrl = QueueUrl });
+        public Task Purge() => Task.Run(() => Client.QueuePurge(QueueUrl));
     }
 }

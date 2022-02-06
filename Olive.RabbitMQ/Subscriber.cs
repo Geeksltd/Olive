@@ -1,7 +1,9 @@
-﻿using Amazon.SQS.Model;
+﻿using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,83 +28,52 @@ namespace Olive.RabbitMQ
 
         public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 0);
 
-        async Task<List<KeyValuePair<string, Message>>> FetchEvents(int waitTimeSeconds)
+
+        void Poll(int waitTimeSeconds)
         {
-            var response = await Fetch(waitTimeSeconds);
-            var result = new List<KeyValuePair<string, Message>>();
+            var consumer = new EventingBasicConsumer(Queue.Client);
 
-            foreach (var item in response.Messages)
-            {
-                result.Add(new KeyValuePair<string, Message>(item.Body, item));
-            }
-
-            return result;
-        }
-
-        async Task<ReceiveMessageResponse> Fetch(int waitTimeSeconds)
-        {
-            try
-            {
-                var request = new ReceiveMessageRequest
-                {
-                    QueueUrl = Queue.QueueUrl,
-                    MaxNumberOfMessages = Queue.MaxNumberOfMessages,
-                    VisibilityTimeout = Queue.VisibilityTimeout,
-                    WaitTimeSeconds = waitTimeSeconds //10
-                };
-
-                return await Queue.Client.ReceiveMessageAsync(request);
-            }
-            catch (TaskCanceledException)
-            {
-                return new ReceiveMessageResponse { Messages = new List<Message>() };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to fetch from Queue " + Queue.QueueUrl, ex);
-            }
-        }
-
-        async Task<bool> Poll(int waitTimeSeconds)
-        {
-            var messages = await FetchEvents(waitTimeSeconds);
-            foreach (var item in messages)
+            consumer.Received += async (model, ea) =>
             {
                 try
                 {
-                    var receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
-                    Log.For(this).Info("Fetched message : " + item.Value.Body);
-                    await Handler(item.Key);
-
-                    receipt.ReceiptHandle = item.Value.ReceiptHandle;
-                    await Queue.Client.DeleteMessageAsync(receipt);
+                    var body = ea.Body.ToArray();
+                    var message = Encoding.UTF8.GetString(body);
+                    Log.For(this)
+                        .Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
+                    await Handler(message);
+                    Queue.Client.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
                 }
                 catch (Exception ex)
                 {
                     var exception = new Exception("Failed to run queue event handler " +
                         Handler.Method.DeclaringType.GetProgrammingName() + "." +
                         Handler.Method.Name +
-                        "message: " + item.Key?.ToJsonText(), ex);
+                        "message: " + ea.DeliveryTag.ToString()?.ToJsonText(), ex);
 
                     if (Queue.IsFifo)
                         throw exception;
                     else
                         Log.For<Subscriber>().Error(exception);
                 }
-            }
+            };
 
-            return messages.Any();
+            Queue.Client.BasicConsume(queue: Queue.QueueUrl,
+                                autoAck: false,
+                                consumer: consumer);
         }
 
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
         {
-            var queueIsEmpty = false;
-            do
-            {
-                try { queueIsEmpty = !await Poll(waitTimeSeconds); }
-                catch (Exception exception) { Log.For<Subscriber>().Error(exception); }
-            }
-            while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
+            await Task.Run(() => { });
+            Poll(waitTimeSeconds);
+            //var queueIsEmpty = false;
+            //do
+            //{
+            //try { queueIsEmpty = !await Poll(waitTimeSeconds); }
+            //catch (Exception exception) { Log.For<Subscriber>().Error(exception); }
+            //}
+            //while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
         }
     }
 }
