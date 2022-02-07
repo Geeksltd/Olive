@@ -50,6 +50,13 @@ namespace Olive.Entities.Replication
             Log.For(this).Info("Pulled from queue in " + LocalTime.Now.Subtract(start).ToNaturalTime());
         }
 
+        public Task Handle(string message, bool bypassDelete = true)
+        {
+            var replicatedMessage = Newtonsoft.Json.JsonConvert.DeserializeObject<ReplicateDataMessage>(message);
+            replicatedMessage.ToDelete = !bypassDelete;
+            return Import(replicatedMessage);
+        }
+
         async Task EnsureRefreshData()
         {
             foreach (var item in Subscribers.Values)
