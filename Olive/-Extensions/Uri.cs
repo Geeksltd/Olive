@@ -59,15 +59,16 @@ namespace Olive
         /// </summary>
         public static async Task<string> PostJson(this Uri @this, object data)
         {
-            var req = (HttpWebRequest)WebRequest.Create(@this);
+            using var client = new HttpClient();
 
-            req.Method = WebRequestMethods.Http.Post;
-            req.ContentType = "application/json";
+            var @string = JsonConvert.SerializeObject(data);
+            var requestContent = new StringContent(@string, Encoding.UTF8, "application/json");
 
-            using (var stream = new StreamWriter(await req.GetRequestStreamAsync().ConfigureAwait(false)))
-                await stream.WriteAsync(JsonConvert.SerializeObject(data)).ConfigureAwait(false);
+            var response = await client.PostAsync(@this, requestContent);
 
-            return await req.GetResponseString().ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
         }
 
         /// <summary>
