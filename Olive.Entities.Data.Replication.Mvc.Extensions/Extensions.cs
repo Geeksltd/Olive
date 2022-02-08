@@ -66,12 +66,10 @@ namespace Olive.Entities.Replication
         /// <typeparam name="TSourceEndpoint"></typeparam>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder RegisterPublisher<TSourceEndpoint>(this IApplicationBuilder app)
-        where TSourceEndpoint : SourceEndpoint, new()
+        public static IApplicationBuilder RegisterPublisher(this IApplicationBuilder app, SourceEndpoint endpoint)
         {
-            var endpoint = new TSourceEndpoint();
-
             endpoint.Publish(false);
+            var logger = Log.For(endpoint);
 
             void Register(string key, Func<HttpContext, Task> handler)
             {
@@ -80,33 +78,35 @@ namespace Olive.Entities.Replication
                 app.Map(action, x => x.Use(async (context, next) =>
                 {
                     var start = LocalTime.Now;
-                    Log.For<TSourceEndpoint>().Info("Pulling refresh messages ...");
+                    logger.Info("Pulling refresh messages ...");
                     await handler(context);
-                    Log.For<TSourceEndpoint>().Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
+                    logger.Info("Pulled all in " + LocalTime.Now.Subtract(start).ToNaturalTime());
                 }));
             }
 
             if (!RegisteredExposedEndpionts)
             {
                 RegisteredExposedEndpionts = true;
-                Log.For<TSourceEndpoint>().Info("Registering the /all action");
+                logger.Info("Registering the /all action");
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
-                    {
-                        await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => $"<a href='{e}'>{e}</a>").ToHtmlLines());
-                    }));
-                Log.For<TSourceEndpoint>().Info("Registered the /all action");
+                {
+                    await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => $"<a href='{e}'>{e}</a>").ToHtmlLines());
+                }));
+                logger.Info("Registered the /all action");
             }
 
-            Log.For<TSourceEndpoint>().Info("Registering refresh messages for All ...");
+            logger.Info("Registering refresh messages for All ...");
             Register("All", async context =>
             {
                 await endpoint.UploadAll();
                 await context.Response.WriteHtmlAsync("All done!");
             });
-            Log.For<TSourceEndpoint>().Info("Registered refresh messages for All ...");
+            logger.Info("Registered refresh messages for All ...");
 
             return app;
         }
+        public static IApplicationBuilder RegisterPublisher<TSourceEndpoint>(this IApplicationBuilder app)
+        where TSourceEndpoint : SourceEndpoint, new() => RegisterPublisher(app, new TSourceEndpoint());
 
         static Task WriteHtmlAsync(this HttpResponse response, string html)
         {
