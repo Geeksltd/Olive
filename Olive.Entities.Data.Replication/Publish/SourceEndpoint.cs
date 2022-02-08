@@ -12,7 +12,7 @@ namespace Olive.Entities.Replication
         Dictionary<string, ExposedType> Agents = new Dictionary<string, ExposedType>();
         public IEnumerable<string> ExposedTypes => Agents.Keys;
 
-        string UrlPattern
+        public string UrlPattern
         {
             get
             {
