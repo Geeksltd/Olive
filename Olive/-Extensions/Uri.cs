@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Olive
 {
@@ -61,7 +60,7 @@ namespace Olive
         {
             using var client = new HttpClient();
 
-            var @string = JsonConvert.SerializeObject(data);
+            var @string = JsonSerializer.Serialize(data);
             var requestContent = new StringContent(@string, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync(@this, requestContent);
