@@ -5,6 +5,7 @@ using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,6 +24,15 @@ namespace Olive.RabbitMQ
             QueueUrl = queueUrl;
 
             var factory = new ConnectionFactory() { HostName = Host, UserName = UserName, Password = Password };
+            factory.Port = Port;
+
+            if (EnableSSL)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
+                factory.Ssl = new SslOption { Enabled = true, Version = System.Security.Authentication.SslProtocols.Tls11 | System.Security.Authentication.SslProtocols.Tls12 };
+
+            }
+
             var connection = factory.CreateConnection();
             Client = connection.CreateModel();
         }
@@ -37,6 +47,8 @@ namespace Olive.RabbitMQ
         public string Host { get; set; } = Config.Get("RabbitMQ:Host");
         public string UserName { get; set; } = Config.Get("RabbitMQ:Username");
         public string Password { get; set; } = Config.Get("RabbitMQ:Password");
+        public int Port { get; set; } = Config.Get("RabbitMQ:Port", 5672);
+        public bool EnableSSL { get; set; } = Config.Get("RabbitMQ:EnableSSL", false);
 
         /// <summary>
         ///     Gets and sets the property VisibilityTimeout.
@@ -61,7 +73,7 @@ namespace Olive.RabbitMQ
             //    request.MessageGroupId = "Default";
             //}
             var body = Encoding.UTF8.GetBytes(message);
-            //Client.QueueDeclare(QueueUrl, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            Client.QueueDeclare(QueueUrl, true, false, false, null);
             Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Direct);
             Client.BasicPublish(exchange: QueueUrl,
                                  routingKey: QueueUrl,

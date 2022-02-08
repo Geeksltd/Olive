@@ -57,7 +57,8 @@ namespace Olive.RabbitMQ
                         Log.For<Subscriber>().Error(exception);
                 }
             };
-
+            Queue.Client.QueueDeclare(Queue.QueueUrl, true, false, false, null);
+            //Queue.Client.ExchangeDeclare(exchange: Queue.QueueUrl, type: ExchangeType.Direct);
             Queue.Client.BasicConsume(queue: Queue.QueueUrl,
                                 autoAck: false,
                                 consumer: consumer);
