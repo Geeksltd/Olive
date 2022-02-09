@@ -19,7 +19,7 @@ namespace Olive.Entities.Replication
                 var url = Config.Get($"DataReplication:{GetType().FullName.Replace(".", "_")}:Url");
 
                 if (url.IsEmpty())
-                    url = Config.GetOrThrow($"DataReplication:{GetType().FullName}:Url");
+                    url = Config.Get($"DataReplication:{GetType().FullName}:Url");
 
                 if (url.IsEmpty())
                     url = $"FOR_DEVELOPMENT_ONLY_DataReplication_{GetType().FullName}";
