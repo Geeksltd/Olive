@@ -74,10 +74,14 @@ namespace Olive.RabbitMQ
             //}
             var body = Encoding.UTF8.GetBytes(message);
             Client.QueueDeclare(QueueUrl, true, false, false, null);
-            Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Direct);
-            Client.BasicPublish(exchange: QueueUrl,
+            //Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Fanout);
+            //Client.ExchangeBind()
+            var properties = Client.CreateBasicProperties();
+            properties.Persistent = true;
+            properties.ContentType = "application/json";
+            Client.BasicPublish("",
                                  routingKey: QueueUrl,
-                                 basicProperties: null,
+                                 basicProperties: properties,
                                  body: body);
             return "";
         }
