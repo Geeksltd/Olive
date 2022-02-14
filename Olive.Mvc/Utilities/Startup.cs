@@ -47,7 +47,7 @@ namespace Olive.Mvc
             services.AddHttpContextAccessor();
             services.AddCors(opt => opt.FromConfig(Configuration));
 
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddScoped<IActionContextAccessor, ActionContextAccessor>();
             services.TryAddTransient<IFileAccessorFactory, FileAccessorFactory>();
             services.AddDatabase(Configuration);
             services.AddHttpClient();

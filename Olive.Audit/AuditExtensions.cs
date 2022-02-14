@@ -16,8 +16,7 @@ namespace Olive
     {
         public static IServiceCollection AddDefaultAudit(this IServiceCollection @this)
         {
-            @this.TryAddSingleton<IAudit, DefaultAudit>();
-
+            @this.TryAddTransient<IAudit, DefaultAudit>();
             return @this;
         }
 

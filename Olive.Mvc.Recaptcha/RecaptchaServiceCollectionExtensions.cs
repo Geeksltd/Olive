@@ -15,7 +15,7 @@ namespace Olive.Mvc
             services.TryAddSingleton<IRecaptchaValidationService>((sp) => sp.GetRequiredService<IRecaptchaService>());
             services.TryAddSingleton<IRecaptchaConfigurationService>((sp) => sp.GetRequiredService<IRecaptchaService>());
             services.TryAddSingleton<IValidateRecaptchaFilter, ValidateRecaptchaFilter>();
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddScoped<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         public static void AddRecaptcha(this IServiceCollection services, Action<RecaptchaOptions> configuration)

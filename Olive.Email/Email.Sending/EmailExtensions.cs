@@ -13,12 +13,12 @@ namespace Olive.Email
         public static IServiceCollection AddEmail(this IServiceCollection @this)
         {
             return @this
-                 .AddSingleton<IEmailAttachmentSerializer, EmailAttachmentSerializer>()
-                 .AddSingleton<IEmailDispatcher, EmailDispatcher>()
-                 .AddSingleton<IEmailRepository, EmailRepository>()
-                 .AddSingleton<IEmailOutbox, EmailOutbox>()
-                 .AddSingleton<IMailMessageCreator, MailMessageCreator>()
-                 .AddSingleton<IDevCommand, EmailTestDevCommand>();
+                 .AddTransient<IEmailAttachmentSerializer, EmailAttachmentSerializer>()
+                 .AddTransient<IEmailDispatcher, EmailDispatcher>()
+                 .AddTransient<IEmailRepository, EmailRepository>()
+                 .AddTransient<IEmailOutbox, EmailOutbox>()
+                 .AddTransient<IMailMessageCreator, MailMessageCreator>()
+                 .AddTransient<IDevCommand, EmailTestDevCommand>();
         }
 
         /// <summary>

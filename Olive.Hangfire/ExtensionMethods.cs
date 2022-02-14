@@ -31,7 +31,7 @@ namespace Olive.Hangfire
         }
 
         internal static void AddDevCommand(this IServiceCollection @this) =>
-            @this.AddSingleton<IDevCommand, ShceduledTasksDevCommand>();
+            @this.AddTransient<IDevCommand, ShceduledTasksDevCommand>();
 
         /// <summary>
         /// It will register the hangfire server.
