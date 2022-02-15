@@ -34,20 +34,15 @@ namespace Olive.Security.Cloud.CustomEncryption
 
         byte[] Encrypt(string message)
         {
-            byte[] result;
-
             var encryptor = EncryptionClient.CreateEncryptor(EncryptionClient.Key, EncryptionClient.IV);
             using (var ms = new MemoryStream())
             using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
             {
                 using (var sw = new StreamWriter(cs))
-                {
                     sw.Write(message); // Write all data to the stream.
-                }
-                result = ms.ToArray();
+                return ms.ToArray();
             }
 
-            return result;
         }
 
 
@@ -60,8 +55,7 @@ namespace Olive.Security.Cloud.CustomEncryption
             {
                 cs.Write(encryptionKeyReference, 0, encryptionKeyReference.Length);
                 cs.FlushFinalBlock();
-                var result = ms.ReadAllBytes();
-                return result;
+                return ms.ReadAllBytes();
             }
         }
 
