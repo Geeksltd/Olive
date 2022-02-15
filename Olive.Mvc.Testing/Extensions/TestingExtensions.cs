@@ -14,19 +14,17 @@ namespace Olive.Mvc.Testing
         {
             var services = @this.Services;
 
-            services.AddSingleton<ITempDatabase, TempDatabase>();
-            services.AddSingleton<IDatabaseServer, TDatabaseServer>();
-            services.AddSingleton<IReferenceData, TReferenceData>();
+            services.AddTransient<ITempDatabase, TempDatabase>();
+            services.AddTransient<IDatabaseServer, TDatabaseServer>();
+            services.AddTransient<IReferenceData, TReferenceData>();
 
-            services.AddSingleton<IDevCommand, DatabaseRestartDevCommand>();
-            services.AddSingleton<IDevCommand, DatabaseGetChangesDevCommand>();
-            services.AddSingleton<IDevCommand, DatabaseRunChangesDevCommand>();
-
-            services.AddSingleton<IDevCommand, DatabaseProfileStartDevCommand>();
-            services.AddSingleton<IDevCommand, DatabaseProfileSnapshotDevCommand>();
-            services.AddSingleton<IDevCommand, DatabaseProfileStopDevCommand>();
-
-            services.AddSingleton<IDevCommand, CsvImportDataDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseRestartDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseGetChangesDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseRunChangesDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseProfileStartDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseProfileSnapshotDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseProfileStopDevCommand>();
+            services.AddTransient<IDevCommand, CsvImportDataDevCommand>();
 
             return @this;
         }
@@ -36,9 +34,9 @@ namespace Olive.Mvc.Testing
         {
             Entities.GuidEntity.NewIdGenerator = PredictableGuidGenerator.Generate;
 
-            @this.AddSingleton<IDevCommand, TestContextDevCommand>();
-            @this.AddSingleton<IDevCommand, InjectTimeDevCommand>();
-            @this.AddSingleton<IDevCommand, DatabaseClearCacheDevCommand>();
+            @this.AddTransient<IDevCommand, TestContextDevCommand>();
+            @this.AddTransient<IDevCommand, InjectTimeDevCommand>();
+            @this.AddTransient<IDevCommand, DatabaseClearCacheDevCommand>();
 
             options?.Invoke(new DevCommandsOptions(@this));
 

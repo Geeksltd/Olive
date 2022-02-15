@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Olive.Audit;
 
 namespace Olive
@@ -7,7 +8,7 @@ namespace Olive
     {
         public static IServiceCollection AddDatabaseLogger(this IServiceCollection @this)
         {
-            return @this.AddSingleton<Audit.IAuditLogger>(new DatabaseLogger());
+            return @this.AddTransient<Audit.IAuditLogger>(new DatabaseLogger());
         }
     }
 }

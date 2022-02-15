@@ -22,7 +22,7 @@ namespace Olive
     {
         public static DevCommandsOptions AddClearApiCache(this DevCommandsOptions @this)
         {
-            @this.Services.AddSingleton<IDevCommand, ClearApiCacheDevCommand>();
+            @this.Services.AddTransient<IDevCommand, ClearApiCacheDevCommand>();
             return @this;
         }
     }
