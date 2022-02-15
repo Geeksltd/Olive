@@ -61,21 +61,12 @@ namespace Olive.RabbitMQ
         {
             await Limiter.Add(1);
 
-            //var request = new SendMessageRequest
-            //{
-            //    QueueUrl = QueueUrl,
-            //    MessageBody = message,
-            //};
-
-            //if (IsFifo)
-            //{
-            //    request.MessageDeduplicationId = JsonConvert.DeserializeObject<JObject>(message)["DeduplicationId"]?.ToString();
-            //    request.MessageGroupId = "Default";
-            //}
             var body = Encoding.UTF8.GetBytes(message);
             Client.QueueDeclare(QueueUrl, true, false, false, null);
-            //Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Fanout);
-            //Client.ExchangeBind()
+            Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Fanout, durable: true);
+            Client.QueueBind(queue: QueueUrl,
+                  exchange: QueueUrl,
+                  routingKey: QueueUrl);
             var properties = Client.CreateBasicProperties();
             properties.Persistent = true;
             properties.ContentType = "application/json";

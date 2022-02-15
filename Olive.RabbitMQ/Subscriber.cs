@@ -57,8 +57,11 @@ namespace Olive.RabbitMQ
                         Log.For<Subscriber>().Error(exception);
                 }
             };
+            Queue.Client.ExchangeDeclare(exchange: Queue.QueueUrl, type: ExchangeType.Fanout, durable: true);
             Queue.Client.QueueDeclare(Queue.QueueUrl, true, false, false, null);
-            //Queue.Client.ExchangeDeclare(exchange: Queue.QueueUrl, type: ExchangeType.Direct);
+            Queue.Client.QueueBind(queue: Queue.QueueUrl,
+                  exchange: Queue.QueueUrl,
+                  routingKey: Queue.QueueUrl);
             Queue.Client.BasicConsume(queue: Queue.QueueUrl,
                                 autoAck: false,
                                 consumer: consumer);
