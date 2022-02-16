@@ -62,7 +62,7 @@ namespace Olive.Entities.Replication
             {
                 Log.Debug($"Received Clear Signal for {message.TypeFullName}");
 
-                await Database.GetAccess(DomainType).ExecuteNonQuery($"truncate table {SchemaAttribute.GetSchema(DomainType).WithSuffix(".")}{TableNameAttribute.GetTableName(DomainType)}");
+                await Database.GetAccess(DomainType).ExecuteNonQuery($"delete from {SchemaAttribute.GetSchema(DomainType).WithSuffix(".")}{TableNameAttribute.GetTableName(DomainType)}");
 
                 return;
             }
