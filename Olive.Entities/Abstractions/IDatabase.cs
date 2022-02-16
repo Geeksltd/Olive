@@ -87,7 +87,7 @@ namespace Olive.Entities
 
         #endregion
 
-        Task<IEnumerable<T>> GetList<T>(Expression<Func<T, bool>> criteria = null) where T : IEntity;
+        Task<T[]> GetList<T>(Expression<Func<T, bool>> criteria = null) where T : IEntity;
 
         ITransactionScope CreateTransactionScope(DbTransactionScopeOption option = DbTransactionScopeOption.Required);
 

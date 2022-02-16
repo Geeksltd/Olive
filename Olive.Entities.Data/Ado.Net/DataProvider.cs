@@ -298,7 +298,7 @@ namespace Olive.Entities.Data
 
         public virtual string GenerateSelectCommand(IDatabaseQuery iquery)
         {
-            return GenerateSelectCommand(iquery, GetFields());
+            return GenerateSelectCommand(iquery, GetFields(iquery));
         }
 
         public async Task<IDataReader> ExecuteGetListReader(IDatabaseQuery query)

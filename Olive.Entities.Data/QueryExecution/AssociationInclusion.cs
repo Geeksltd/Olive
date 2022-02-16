@@ -69,7 +69,7 @@ Hint: All associated {Association.Name} Ids are:
                 .ToDictionary(i => i.Key, i => i.ToArray());
         }
 
-        Task<IEnumerable<IEntity>> LoadTheAssociatedObjects(DatabaseQuery query)
+        Task<IEntity[]> LoadTheAssociatedObjects(DatabaseQuery query)
         {
             var nestedQuery = Context.Current.Database().Of(Association.PropertyType);
             var provider = ((DatabaseQuery)nestedQuery).Provider;

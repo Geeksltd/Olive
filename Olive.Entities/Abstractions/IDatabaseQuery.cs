@@ -43,19 +43,21 @@ namespace Olive.Entities
         Task<int> Count();
         Task<bool> Any();
         Task<bool> None();
-        Task<IEnumerable<IEntity>> GetList();
+        Task<IEntity[]> GetList();
         Task<IEntity> FirstOrDefault();
+        IDatabaseQuery Select(params string[] columns);
     }
 
     public interface IDatabaseQuery<TEntity> : IDatabaseQuery
         where TEntity : IEntity
     {
         IDatabaseQuery<TEntity> Where(Expression<Func<TEntity, bool>> criteria);
-        new Task<IEnumerable<TEntity>> GetList();
+        new Task<TEntity[]> GetList();
         new Task<TEntity> FirstOrDefault();
         new IDatabaseQuery<TEntity> OrderBy(string property);
         new IDatabaseQuery<TEntity> Top(int rows);
         new IDatabaseQuery<TEntity> Where(params ICriterion[] criteria);
+        new IDatabaseQuery<TEntity> Select(params string[] columns);
 
         IDatabaseQuery<TEntity> ThenBy(Expression<Func<TEntity, object>> property, bool descending = false);
         IDatabaseQuery<TEntity> OrderByDescending(Expression<Func<TEntity, object>> property);

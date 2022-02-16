@@ -9,7 +9,7 @@
     {
         bool IsCacheable()
         {
-            if (TakeTop.HasValue || PageSize.HasValue) return false;
+            if (TakeTop.HasValue || PageSize.HasValue || Columns.Any()) return false;
 
             if (Criteria.Except(typeof(DirectDatabaseCriterion)).Any(c => c.PropertyName.Contains(".")))
                 return false; // This doesn't work with cache expiration rules.
@@ -23,21 +23,21 @@
             return true;
         }
 
-        public async Task<IEnumerable<IEntity>> GetList()
+        public async Task<IEntity[]> GetList()
         {
-            if (!IsCacheable()) return await LoadFromDatabase();
+            if (!IsCacheable()) return await LoadFromDatabase().ToArray();
 
             if (Criteria.Any() || Context.Current.Database().AnyOpenTransaction())
-                return await LoadFromDatabaseAndCache();
+                return await LoadFromDatabaseAndCache().ToArray();
 
-            var result = Cache.GetList(EntityType)?.Cast<IEntity>();
+            var result = Cache.GetList(EntityType)?.Cast<IEntity>().ToArray();
             if (result != null)
             {
                 await LoadIncludedAssociations(result);
                 return result;
             }
 
-            result = await LoadFromDatabaseAndCache();
+            result = await LoadFromDatabaseAndCache().ToArray();
 
             Cache.AddList(EntityType, result);
 
@@ -116,10 +116,8 @@
 
     partial class DatabaseQuery<TEntity>
     {
-        public new async Task<IEnumerable<TEntity>> GetList() => (await base.GetList()).Cast<TEntity>();
+        public new async Task<TEntity[]> GetList() => (await base.GetList()).Cast<TEntity>().ToArray();
 
         public new async Task<TEntity> FirstOrDefault() => (TEntity)(await base.FirstOrDefault());
-
-        public Task<TEntity[]> ToArray() => GetList().ToArray();
     }
 }

@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
     partial class DataProvider
     {
-        string Fields, TablesTemplate;
+        MappedProperty[] AllFields;
+        string fields, TablesTemplate;
         readonly Dictionary<string, string> ColumnMapping = new();
         readonly Dictionary<string, string> SubqueryMapping = new();
 
@@ -91,7 +93,15 @@ namespace Olive.Entities.Data
             else await Update(record);
         }
 
-        public virtual string GetFields() => Fields;
+        public string GetFields() => fields ?? (fields = AllFields.ToString(", "));
+
+        string GetFields(IDatabaseQuery query)
+        {
+            if (query is DatabaseQuery q && q.Columns.Any())
+                return AllFields.Where(v => q.Columns.Contains(v.Name)).ToString(", ");
+            else
+                return GetFields();
+        }
 
         public virtual string GetTables(string prefix = null) => TablesTemplate.FormatWith(prefix);
 
@@ -218,22 +228,32 @@ namespace Olive.Entities.Data
 
         void PrepareTableTemplate() => TablesTemplate = MetaData.GetTableTemplate(SqlCommandGenerator);
 
+        struct MappedProperty
+        {
+            public string Name, SqlSource, Alias;
+
+            public MappedProperty(string name, string sql, string alias)
+            {
+                Name = name;
+                SqlSource = sql;
+                Alias = alias;
+            }
+
+            public override string ToString() => $"{SqlSource} as {Alias}";
+        }
+
+
+
+        MappedProperty GetField(IDataProviderMetaData table, IPropertyData prop)
+        {
+            return new MappedProperty(prop.Name, GetSqlCommandColumn(table, prop), GetSqlCommandColumnAlias(table, prop));
+        }
+
         void PrepareFields()
         {
-            Fields = "";
-
-            foreach (var parent in MetaData.BaseClassesInOrder)
-                foreach (var prop in parent.UserDefienedAndIdAndDeletedProperties)
-                    Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}, ";
-
-            foreach (var prop in MetaData.UserDefienedAndIdAndDeletedProperties)
-                Fields += $"{GetSqlCommandColumn(MetaData, prop)} as {GetSqlCommandColumnAlias(MetaData, prop)}, ";
-
-            foreach (var parent in MetaData.DrivedClasses)
-                foreach (var prop in parent.UserDefienedAndIdAndDeletedProperties)
-                    Fields += $"{GetSqlCommandColumn(parent, prop)} as {GetSqlCommandColumnAlias(parent, prop)}, ";
-
-            Fields = Fields.TrimEnd(2);
+            AllFields = MetaData.BaseClassesInOrder.Concat(MetaData).Concat(MetaData.DrivedClasses)
+                .SelectMany(parent => parent.UserDefienedAndIdAndDeletedProperties.Select(prop => GetField(parent, prop)))
+                .ToArray();
         }
 
         void PrepareColumnMappingDictonary()
