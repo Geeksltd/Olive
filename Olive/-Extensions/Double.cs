@@ -296,6 +296,26 @@ namespace Olive
         public static long LimitWithin(this long @this, long minValue, long maxValue) => @this.LimitMin(minValue).LimitMax(maxValue);
 
         /// <summary>
+        /// Determines the maximum limitation of two values.
+        /// </summary>
+        /// <param name="maxValue">If this value is smaller than {maxValue}, this value is returned, owherwise, {maxvalue} is returned.</param>
+        public static decimal LimitMax(this decimal @this, decimal maxValue) => @this > maxValue ? maxValue : @this;
+
+        /// <summary>
+        /// Determines the minimum limitation of two values.
+        /// </summary>
+        /// <param name="minValue">If this value is greater than {minValue}, this value is returned, owherwise, {minvalue} is returned.</param>
+        public static decimal LimitMin(this decimal @this, decimal minValue) => @this < minValue ? minValue : @this;
+
+        /// <summary>
+        /// Determines the minimum and maximum limitation of two values.
+        /// If this value is between {minValue} and {maxValue}, this value is returned. If this value is smaller than {minvalue}, {minvalue} is returned. If this value is greater than {maxvalue}, {maxvalue} is returned.
+        /// </summary>
+        /// <param name="minValue">Determines the minimum value for comparing.</param>
+        /// <param name="maxValue">Determines the maximum value for comparing.</param>
+        public static decimal LimitWithin(this decimal @this, decimal minValue, decimal maxValue) => @this.LimitMin(minValue).LimitMax(maxValue);
+
+        /// <summary>
         /// Compare two values and returns 0, 1 or -1. If this value is equal to {othervalue}, it returns 0.
         /// If this value is greater than {othervalue}, it returns 1. If this value is smaller than {othervalue}, it returns -1.
         /// </summary>
