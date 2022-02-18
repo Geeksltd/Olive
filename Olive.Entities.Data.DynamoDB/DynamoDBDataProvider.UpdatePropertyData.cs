@@ -60,6 +60,7 @@ namespace Olive.Entities.Data
             {
                 if (CustomAttributes.Any(x => x.AttributeType.IsAnyOf(Ignores))) return AttributeAction.DELETE;
                 if (!CanRead || !CanWrite) return AttributeAction.DELETE;
+                if (Value is null) return AttributeAction.DELETE;
                 return AttributeAction.PUT;
             }
 
@@ -68,7 +69,6 @@ namespace Olive.Entities.Data
                 var newValue = new AttributeValue();
 
                 if (IsString) newValue.S = Value.ToStringOrEmpty();
-                else if (Value is null) newValue.NULL = true;
                 else if (IsBool) newValue.BOOL = (bool)Value;
                 else if (IsNumber) newValue.N = Value.ToString();
                 else if (IsDateTime) newValue.S = ((DateTime)Value).ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
