@@ -11,8 +11,11 @@ namespace Olive
         internal DirectoryInfo Folder;
         AsyncLock SyncLock = new AsyncLock();
 
+        public string QueueUrl { get; set; }
+
         public IOEventBusQueue(string queueUrl)
         {
+            QueueUrl = queueUrl;
             var folder = queueUrl.TrimStart("https:").TrimStart("http:").TrimStart("//")
                  .Select(x => Path.GetInvalidFileNameChars().Contains(x) ? '_' : x)
                  .ToString("").KeepReplacing("__", "_");
@@ -26,7 +29,7 @@ namespace Olive
 
             using (await SyncLock.Lock())
                 path = Folder.GetFile(DateTime.UtcNow.Ticks.ToString());
-            
+
 
             await path.WriteAllTextAsync(message);
             return path.Name;

@@ -16,10 +16,10 @@
         public static EventBusQueue<TMessage> Queue<TMessage>() where TMessage : IEventBusMessage
         {
             var url = Config.Get($"EventBus:Queues:{typeof(TMessage).FullName.Replace(".", "_")}:Url");
-            
-            if(url.IsEmpty())
-             url = Config.GetOrThrow($"EventBus:Queues:{typeof(TMessage).FullName}:Url");
-            
+
+            if (url.IsEmpty())
+                url = Config.GetOrThrow($"EventBus:Queues:{typeof(TMessage).FullName}:Url");
+
             return new EventBusQueue<TMessage>(Queue(url));
         }
 

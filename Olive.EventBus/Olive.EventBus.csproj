@@ -1,39 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Olive.EventBus</AssemblyName>
-    <RootNamespace>Olive.EventBus</RootNamespace>
-    <PackageId>Olive.EventBus</PackageId>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.130</Version>
-    <PackOnBuild>true</PackOnBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <LangVersion>latest</LangVersion>
-    <DebugType>portable</DebugType>
-    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
-    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <PackageTags>olive</PackageTags>
-    <Title>Olive.EventBus</Title>
-    <Description>Olive Framework</Description>
-    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
-    <Owners>Geeks Ltd</Owners>
-    <Authors>Geeks Ltd</Authors>
-    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
-    <DisableExtraReferences>true</DisableExtraReferences>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive\Olive.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<AssemblyName>Olive.EventBus</AssemblyName>
+		<RootNamespace>Olive.EventBus</RootNamespace>
+		<PackageId>Olive.EventBus</PackageId>
+		<Product>$(AssemblyName) ($(TargetFramework))</Product>
+		<Version>2.1.131</Version>
+		<PackOnBuild>true</PackOnBuild>
+		<NeutralLanguage>en</NeutralLanguage>
+		<LangVersion>default</LangVersion>
+		<UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+		<LangVersion>latest</LangVersion>
+		<DebugType>portable</DebugType>
+		<PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+		<PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+		<PackageTags>olive</PackageTags>
+		<Title>Olive.EventBus</Title>
+		<Description>Olive Framework</Description>
+		<PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+		<Owners>Geeks Ltd</Owners>
+		<Authors>Geeks Ltd</Authors>
+		<Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+		<DisableExtraReferences>true</DisableExtraReferences>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+		<DebugSymbols>true</DebugSymbols>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Olive\Olive.csproj" />
+	</ItemGroup>
 </Project>

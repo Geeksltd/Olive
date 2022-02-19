@@ -35,5 +35,7 @@ namespace Olive
         /// Deletes all messages on the specified queue.
         /// </summary>
         Task Purge();
+
+        string QueueUrl { get; }
     }
 }
