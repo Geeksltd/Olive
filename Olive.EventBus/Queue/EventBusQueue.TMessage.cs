@@ -12,6 +12,7 @@ namespace Olive
     {
         public IEventBusQueue Queue { get; }
         public EventBusQueue(IEventBusQueue queue) => Queue = queue;
+        public string QueueUrl { get => Queue.QueueUrl; }
 
         Task<string> IEventBusQueue.Publish(string message) => Queue.Publish(message);
 
