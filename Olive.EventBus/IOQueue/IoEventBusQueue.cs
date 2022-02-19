@@ -52,6 +52,11 @@ namespace Olive
             return new QueueMessageHandle(item.Value, item.Key.Name, () => { item.Key.DeleteIfExists(); return Task.CompletedTask; });
         }
 
+        public Task Handle(string message, string messageId, bool deleteAfter = false)
+        {
+            throw new NotSupportedException("Not supported yet!");
+        }
+
         public Task Purge()
         {
             Folder.GetFiles().Do(x => x.DeleteIfExists());
