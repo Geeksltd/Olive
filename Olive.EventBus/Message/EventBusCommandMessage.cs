@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -12,5 +13,10 @@ namespace Olive
         /// Will handle the received message. It should not hide exceptions.
         /// </summary>
         public abstract Task Process();
+
+        public static Task Process(string message, Type eventBusCommandMessageType)
+        {
+            return ((EventBusCommandMessage)Newtonsoft.Json.JsonConvert.DeserializeObject(message, eventBusCommandMessageType)).Process();
+        }
     }
 }

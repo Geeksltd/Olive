@@ -30,13 +30,10 @@ namespace Olive
         /// After completing the message processing, you must call Complete().
         /// </summary>
         Task<QueueMessageHandle> Pull(int timeoutSeconds = 10);
-        Task Handle(string message, string messageId, bool deleteAfter = false);
 
         /// <summary>
         /// Deletes all messages on the specified queue.
         /// </summary>
         Task Purge();
-
-        string QueueUrl { get; }
     }
 }

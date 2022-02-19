@@ -12,7 +12,6 @@ namespace Olive
     {
         public IEventBusQueue Queue { get; }
         public EventBusQueue(IEventBusQueue queue) => Queue = queue;
-        public string QueueUrl { get => Queue.QueueUrl; }
 
         Task<string> IEventBusQueue.Publish(string message) => Queue.Publish(message);
 
@@ -33,8 +32,6 @@ namespace Olive
         /// </summary>
         public Task<QueueMessageHandle<TMessage>> Pull<TMsg>(int timeoutSeconds = 10)
             where TMsg : IEventBusMessage => Queue.Pull<TMessage>(timeoutSeconds);
-
-        public Task Handle(string message, string messageId, bool deleteAfter = false) => Queue.Handle(message, messageId, deleteAfter);
 
         /// <summary>
         /// Publishes the specified event to the current event bus provider.
