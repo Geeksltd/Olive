@@ -11,9 +11,9 @@ namespace Olive.Entities.Data
         {
             var query = (DatabaseQuery)iquery;
 
-            var r = new StringBuilder("SELECT");
+            var r = new StringBuilder();
 
-            r.AppendLine($" {fields} FROM {tables}");
+            r.AppendLine($"SELECT {fields} FROM {tables}");
             r.AppendLine(GenerateWhere(query));
             r.AppendLine(GenerateSort(query).WithPrefix(" ORDER BY "));
             r.AppendLine(GeneratePagination(query));

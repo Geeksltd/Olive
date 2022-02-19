@@ -25,6 +25,8 @@
         public int? PageSize { get; set; }
         public int? TakeTop { get; set; }
 
+        public string[] Columns { get; set; } = new string[0];
+
         internal DatabaseQuery(Type entityType)
         {
             if (entityType == null) throw new ArgumentNullException(nameof(entityType));
@@ -69,6 +71,12 @@
                 include[immediateAssociation].IncludeNestedAssociation(nestedAssociations);
 
             // TODO: Support one-to-many too
+            return this;
+        }
+
+        IDatabaseQuery IDatabaseQuery.Select(params string[] colunms)
+        {
+            Columns = colunms.Trim().ToArray();
             return this;
         }
 

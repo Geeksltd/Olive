@@ -6,7 +6,6 @@ namespace Olive.Entities.Data
 {
     public class SqlServerSqlCommandGenerator : SqlCommandGenerator
     {
-
         public override string GenerateSelectCommand(IDatabaseQuery iquery, string tables, string fields)
         {
             var query = (DatabaseQuery)iquery;

@@ -23,6 +23,12 @@
             return this;
         }
 
+        IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Select(params string[] colunms)
+        {
+            ((IDatabaseQuery)this).Select(colunms);
+            return this;
+        }
+
         IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Top(int rows)
         {
             TakeTop = rows;
