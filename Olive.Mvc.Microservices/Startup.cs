@@ -31,6 +31,8 @@ namespace Olive.Mvc.Microservices
         {
             //add menu route
             app.Map("/api/menu", x => x.Run(async context => { await MenuApiMiddleWare.Menu(context); }));
+            //get controller data automatically
+            app.Map("/olive/features", x => x.Run(async context => { await NavigationApiMiddleWare.Navigate(context); }));
 
             app.UseCors("AllowHubOrigin");
 
