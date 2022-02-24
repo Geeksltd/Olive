@@ -12,10 +12,11 @@ namespace Olive.Mvc.Microservices
     {
         public class Feature
         {
-            public string Name;
+            public string[] Featues;
             public string Icon;
             public string Url;
             public string Permissions;
+            public string Desc;
         }
 
         protected List<Feature> Features = new List<Feature>();
@@ -24,25 +25,26 @@ namespace Olive.Mvc.Microservices
 
         public abstract void Define();
 
-        protected void Add<TController>(string feature = null, string icon = null) where TController : Controller
+        protected void Add<TController>(string features = null, string icon = null, string desc = null) where TController : Controller
         {
             var url = Url.Index<TController>();
-            if (feature.IsEmpty())
-                feature = typeof(TController).Name.TrimEnd("Controller");
+            if (features.IsEmpty())
+                features = typeof(TController).Name.TrimEnd("Controller");
 
             var permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(feature, url, permissions, icon);
+            Add(features.Split("/"), url, permissions, icon, desc);
         }
 
-        protected void Add(string feature, string url, string permissions, string icon)
+        protected void Add(string[] features, string url, string permissions, string icon, string desc)
         {
             Add(new Feature
             {
-                Name = feature,
+                Featues = features,
                 Url = url,
                 Permissions = permissions,
-                Icon = icon
+                Icon = icon,
+                Desc = desc
             });
         }
 
