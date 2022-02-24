@@ -15,7 +15,7 @@ namespace Olive.Mvc.Microservices
             var navigations = GetEnumerableOfType<Navigation>();
 
             if (navigations.None()) return;
-            var result = string.Concat(navigations.Select(x => Newtonsoft.Json.JsonConvert.SerializeObject(x)));
+            var result = Newtonsoft.Json.JsonConvert.SerializeObject(navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToList());
             await context.Response.WriteAsync(result);
         }
         public static IEnumerable<T> GetEnumerableOfType<T>() where T : Navigation

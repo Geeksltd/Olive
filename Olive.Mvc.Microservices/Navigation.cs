@@ -21,6 +21,7 @@ namespace Olive.Mvc.Microservices
 
         protected List<Feature> Features = new List<Feature>();
 
+        internal List<Feature> GetFeatures() => Features;
         protected static IUrlHelper Url => new UrlHelper(Context.Current.ActionContext());
 
         public abstract void Define();
