@@ -12,7 +12,7 @@ namespace Olive.Mvc.Microservices
     {
         public class Feature
         {
-            public string[] Featues;
+            public string Featues;
             public string Icon;
             public string Url;
             public string Permissions;
@@ -34,10 +34,10 @@ namespace Olive.Mvc.Microservices
 
             var permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(features.Split("/"), url, permissions, icon, desc);
+            Add(features, url, permissions, icon, desc);
         }
 
-        protected void Add(string[] features, string url, string permissions, string icon, string desc)
+        protected void Add(string features, string url, string permissions, string icon, string desc)
         {
             Add(new Feature
             {
