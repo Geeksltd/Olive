@@ -30,9 +30,10 @@ namespace Olive.Mvc.Microservices
         public override void Configure(IApplicationBuilder app)
         {
             //add menu route
-            app.Map("/api/menu", x => x.Run(async context => { await MenuApiMiddleWare.Menu(context); }));
+            app.Map("/api/menu", x => x.Run(MenuApiMiddleWare.Menu));
+
             //get controller data automatically
-            app.Map("/olive/features", x => x.Run(async context => { await NavigationApiMiddleWare.Navigate(context); }));
+            app.Map("/olive/features", x => x.Run(NavigationApiMiddleWare.Navigate));
 
             app.UseCors("AllowHubOrigin");
 

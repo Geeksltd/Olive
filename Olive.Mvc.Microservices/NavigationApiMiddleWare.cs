@@ -12,22 +12,24 @@ namespace Olive.Mvc.Microservices
     {
         internal static async Task Navigate(HttpContext context)
         {
-            var navigations = GetEnumerableOfType<Navigation>();
+
+            var navigations = GetNavigationsFromAssembly<Navigation>();
 
             if (navigations.None()) return;
             var result = Newtonsoft.Json.JsonConvert.SerializeObject(navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToList());
             await context.Response.WriteAsync(result);
         }
-        public static IEnumerable<T> GetEnumerableOfType<T>() where T : Navigation
+
+        public static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : Navigation
         {
-            var objects = new List<T>();
-            foreach (var type in
-                Assembly.GetAssembly(typeof(T)).GetTypes()
-                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))))
-            {
-                objects.Add((T)Activator.CreateInstance(type));
-            }
-            objects.ForEach(x => x.Define());
+            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToArray();
+            types = types.Where(x => x.IsA<Navigation>() && !x.IsAbstract).ToArray();
+
+            var objects = types.Select(t => (T)Activator.CreateInstance(t)).ToArray();
+
+            foreach (var x in objects)
+                x.Define();
+
             return objects;
         }
     }

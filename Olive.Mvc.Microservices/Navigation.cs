@@ -10,45 +10,55 @@ namespace Olive.Mvc.Microservices
 {
     public abstract class Navigation
     {
+        /// <summary>
+        /// Feature{
+        ///     FullPath = "Path/TO/The/Page"
+        ///     Icon = "fas fa-key"
+        ///     RelativeUrl = "url/path/in/the/microservice"
+        ///     Permissions = "permission1, permission2"
+        ///     Description = "Brief description"
+        /// }
+        /// </summary>
         public class Feature
         {
-            public string Featues;
+            public string FullPath;
             public string Icon;
-            public string Url;
+            public string RelativeUrl;
             public string Permissions;
-            public string Desc;
+            public string Description;
         }
 
         protected List<Feature> Features = new List<Feature>();
 
         internal List<Feature> GetFeatures() => Features;
-        protected static IUrlHelper Url => new UrlHelper(Context.Current.ActionContext());
+        protected static IUrlHelper Url => new UrlHelper(new ActionContext(Context.Current.Http(), new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()));
 
         public abstract void Define();
 
-        protected void Add<TController>(string features = null, string icon = null, string desc = null) where TController : Controller
+        protected void Add<TController>(string fullPath = null, string icon = null, string desc = null) where TController : Controller
         {
             var url = Url.Index<TController>();
-            if (features.IsEmpty())
-                features = typeof(TController).Name.TrimEnd("Controller");
+            if (fullPath.IsEmpty())
+                fullPath = typeof(TController).Name.TrimEnd("Controller");
 
             var permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(features, url, permissions, icon, desc);
+            Add(fullPath, url, permissions, icon, desc);
         }
 
-        protected void Add(string features, string url, string permissions, string icon, string desc)
+        protected void Add(string fullPath, string url, string permissions, string icon, string desc)
         {
             Add(new Feature
             {
-                Featues = features,
-                Url = url,
+                FullPath = fullPath,
+                RelativeUrl = url,
                 Permissions = permissions,
                 Icon = icon,
-                Desc = desc
+                Description = desc
             });
         }
 
         protected void Add(Feature feature) => Features.Add(feature);
+
     }
 }
