@@ -33,12 +33,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NuGet.CommandLine" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Olive.ApiClient\Olive.ApiClient.csproj" />
     <ProjectReference Include="..\Olive.Microservices\Olive.Microservices.csproj" />
     <ProjectReference Include="..\Olive.Mvc\Olive.Mvc.csproj" />
