@@ -32,19 +32,23 @@ namespace Olive.Entities.Data
             throw new NotImplementedException();
         }
 
-        public Task BulkInsert(IEntity[] entities, int batchSize)
+        public async Task BulkInsert(IEntity[] entities, int batchSize)
         {
             var writer = Dynamo.Db.CreateBatchWrite<T>();
             writer.AddPutItems(entities.Cast<T>());
-            return writer.ExecuteAsync();
+            await writer.ExecuteAsync();
+
+            SetIsNewAndOriginalId(entities);
         }
 
-        public Task BulkUpdate(IEntity[] entities, int batchSize)
+        public async Task BulkUpdate(IEntity[] entities, int batchSize)
         {
             var writer = Dynamo.Db.CreateBatchWrite<T>();
             entities.Do(x => writer.AddDeleteKey(x.GetId()));
             writer.AddPutItems(entities.Cast<T>());
-            return writer.ExecuteAsync();
+            await writer.ExecuteAsync();
+
+            SetIsNewAndOriginalId(entities);
         }
 
         public Task<int> Count(IDatabaseQuery query) => GetList(query).Count();
@@ -62,7 +66,8 @@ namespace Olive.Entities.Data
 
         public async Task<IEntity> Get(object objectID)
         {
-            return (IEntity)await Dynamo.Table<T>().Get(objectID);
+            var result = (IEntity)await Dynamo.Table<T>().Get(objectID);
+            return SetIsNewAndOriginalId(result);
         }
 
         public DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association)
@@ -96,6 +101,8 @@ namespace Olive.Entities.Data
                 if (hashKeyInfo.Value is null) return Enumerable.Empty<IEntity>();
                 var item = await Get(hashKeyInfo.Value);
                 if (item is null) return Enumerable.Empty<IEntity>();
+
+                SetIsNewAndOriginalId(item);
                 return new[] { item };
             }
 
@@ -121,7 +128,9 @@ namespace Olive.Entities.Data
             if (indexInfo.IsIndex)
             {
                 if (indexInfo.Value is null) return Enumerable.Empty<IEntity>();
-                return (await Dynamo.Index<T>(indexInfo.Name).All(indexInfo.Value)).Cast<IEntity>();
+
+                var result = (await Dynamo.Index<T>(indexInfo.Name).All(indexInfo.Value)).Cast<IEntity>();
+                return SetIsNewAndOriginalId(result);
             }
 
             return null;
@@ -177,7 +186,8 @@ namespace Olive.Entities.Data
                 return new ScanCondition(criterion.PropertyName, @operator, values);
             }
 
-            return (await Dynamo.Table<T>().All(query.Criteria.Select(ToCondition).ToArray())).Cast<IEntity>();
+            var result = (await Dynamo.Table<T>().All(query.Criteria.Select(ToCondition).ToArray())).Cast<IEntity>();
+            return SetIsNewAndOriginalId(result);
         }
 
         public IDictionary<string, Tuple<string, string>> GetUpdatedValues(IEntity original, IEntity updated)
@@ -221,8 +231,22 @@ namespace Olive.Entities.Data
             await Dynamo.Client.UpdateItemAsync(
                 new UpdateItemRequest(tableName, key, updates)
             );
+
+            SetIsNewAndOriginalId(record);
         }
 
         public bool SupportValidationBypassing() => throw new NotImplementedException();
+
+        IEntity SetIsNewAndOriginalId(IEntity entity)
+        {
+            Entity.Services.SetSaved(entity);
+            Entity.Services.SetOriginalId(entity);
+            return entity;
+        }
+        IEnumerable<IEntity> SetIsNewAndOriginalId(IEnumerable<IEntity> entities)
+        {
+            entities.Do(i => SetIsNewAndOriginalId(i));
+            return entities;
+        }
     }
 }
