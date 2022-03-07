@@ -12,11 +12,14 @@ namespace Olive.Mvc.Microservices
     {
         /// <summary>
         /// Feature{
-        ///     FullPath = "Path/TO/The/Page"
-        ///     Icon = "fas fa-key"
-        ///     RelativeUrl = "url/path/in/the/microservice"
-        ///     Permissions = "permission1, permission2"
-        ///     Description = "Brief description"
+        ///     FullPath = "Path/TO/The/Page",
+        ///     Icon = "fas fa-key",
+        ///     RelativeUrl = "url/path/in/the/microservice",
+        ///     Permissions = "permission1, permission2",
+        ///     Description = "Brief description",
+        ///     Refrance    = "Unique refrance for special cases",
+        ///     BadgeUrl    = "/@Services/Badge.ashx?type=forecast",
+        ///     ShowOnRight = true
         /// }
         /// </summary>
         public class Feature
@@ -26,6 +29,9 @@ namespace Olive.Mvc.Microservices
             public string RelativeUrl;
             public string Permissions;
             public string Description;
+            public string Refrance;
+            public string BadgeUrl;
+            public bool ShowOnRight;
         }
 
         protected List<Feature> Features = new List<Feature>();
@@ -35,7 +41,7 @@ namespace Olive.Mvc.Microservices
 
         public abstract void Define();
 
-        protected void Add<TController>(string fullPath = null, string icon = null, string desc = null) where TController : Controller
+        protected void Add<TController>(string fullPath = null, string icon = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false) where TController : Controller
         {
             var url = Url.Index<TController>();
             if (fullPath.IsEmpty())
@@ -43,10 +49,10 @@ namespace Olive.Mvc.Microservices
 
             var permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(fullPath, url, permissions, icon, desc);
+            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight);
         }
 
-        protected void Add(string fullPath, string url, string permissions, string icon, string desc)
+        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh)
         {
             Add(new Feature
             {
@@ -54,7 +60,10 @@ namespace Olive.Mvc.Microservices
                 RelativeUrl = url,
                 Permissions = permissions,
                 Icon = icon,
-                Description = desc
+                Description = desc,
+                Refrance = @ref,
+                BadgeUrl = badgeUrl,
+                ShowOnRight = showOnRigh,
             });
         }
 
