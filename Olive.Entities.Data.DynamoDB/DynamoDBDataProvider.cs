@@ -38,7 +38,7 @@ namespace Olive.Entities.Data
             writer.AddPutItems(entities.Cast<T>());
             await writer.ExecuteAsync();
 
-            SetIsNewAndOriginalId(entities);
+            OnEntityLoaded(entities);
         }
 
         public async Task BulkUpdate(IEntity[] entities, int batchSize)
@@ -48,7 +48,7 @@ namespace Olive.Entities.Data
             writer.AddPutItems(entities.Cast<T>());
             await writer.ExecuteAsync();
 
-            SetIsNewAndOriginalId(entities);
+            OnEntityLoaded(entities);
         }
 
         public Task<int> Count(IDatabaseQuery query) => GetList(query).Count();
@@ -67,7 +67,7 @@ namespace Olive.Entities.Data
         public async Task<IEntity> Get(object objectID)
         {
             var result = (IEntity)await Dynamo.Table<T>().Get(objectID);
-            return SetIsNewAndOriginalId(result);
+            return OnEntityLoaded(result);
         }
 
         public DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association)
@@ -102,7 +102,7 @@ namespace Olive.Entities.Data
                 var item = await Get(hashKeyInfo.Value);
                 if (item is null) return Enumerable.Empty<IEntity>();
 
-                SetIsNewAndOriginalId(item);
+                OnEntityLoaded(item);
                 return new[] { item };
             }
 
@@ -130,7 +130,7 @@ namespace Olive.Entities.Data
                 if (indexInfo.Value is null) return Enumerable.Empty<IEntity>();
 
                 var result = (await Dynamo.Index<T>(indexInfo.Name).All(indexInfo.Value)).Cast<IEntity>();
-                return SetIsNewAndOriginalId(result);
+                return OnEntityLoaded(result);
             }
 
             return null;
@@ -187,7 +187,7 @@ namespace Olive.Entities.Data
             }
 
             var result = (await Dynamo.Table<T>().All(query.Criteria.Select(ToCondition).ToArray())).Cast<IEntity>();
-            return SetIsNewAndOriginalId(result);
+            return OnEntityLoaded(result);
         }
 
         public IDictionary<string, Tuple<string, string>> GetUpdatedValues(IEntity original, IEntity updated)
@@ -232,20 +232,21 @@ namespace Olive.Entities.Data
                 new UpdateItemRequest(tableName, key, updates)
             );
 
-            SetIsNewAndOriginalId(record);
+            OnEntityLoaded(record);
         }
 
         public bool SupportValidationBypassing() => throw new NotImplementedException();
 
-        IEntity SetIsNewAndOriginalId(IEntity entity)
+        IEntity OnEntityLoaded(IEntity entity)
         {
             Entity.Services.SetSaved(entity);
             Entity.Services.SetOriginalId(entity);
             return entity;
         }
-        IEnumerable<IEntity> SetIsNewAndOriginalId(IEnumerable<IEntity> entities)
+
+        IEnumerable<IEntity> OnEntityLoaded(IEnumerable<IEntity> entities)
         {
-            entities.Do(i => SetIsNewAndOriginalId(i));
+            entities.Do(i => OnEntityLoaded(i));
             return entities;
         }
     }
