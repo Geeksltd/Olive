@@ -31,6 +31,15 @@ We'll review your code ASAP and we will do the merge if everything was just fine
 Olive projects might have dependencies to each other. You might need to build other projects recursively to run a certain project. All projects have dependencies to **Olive** project; So you need to build this one first.
 Also you can run **BuildAll.bat**, which is located in the root of the project, to build all of the Olive projects.
 
+### publish Olive Nuget Package
+
+Olive nuget package is published automatically using Github Actions. For this automatic publish to happen we need to take these few steps:
+- Navigate to ```Olive.csproj``` and update the version inside.
+ ```<Version>x.y.z.m</Version> ==> <Version>x`.y`.z`.m`</Version>```
+- Create a new Tag here https://github.com/Geeksltd/Olive/tags and set the tag to ```vx`.y`.z`.m` ```.
+- Wait for it to be published.
+
+
 ### Authors
 
 This project is maintained and supported by Geeks Ltd.
