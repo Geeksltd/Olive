@@ -2,7 +2,7 @@ name: Publish Olive Packages
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, publish-action ]
     
 jobs:
  build:
@@ -11,7 +11,7 @@ jobs:
         configuration: [Release]
         dotnet-version: [5.1.x]
 
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
     - uses: actions/checkout@v2
