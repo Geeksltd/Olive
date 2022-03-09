@@ -2,7 +2,7 @@ name: Publish Olive Packages
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, publish-action-fix ]
 
 jobs:
  build:
@@ -15,11 +15,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
    
-    - name: Publish Olive NuGet Package
-      uses: rohith/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: Olive/Olive.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    #- name: Publish Olive NuGet Package
+     # uses: rohith/publish-nuget@v2
+      #with:
+       # PROJECT_FILE_PATH: Olive/Olive.csproj
+        #NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive ApiClient NuGet Package
       uses: rohith/publish-nuget@v2
