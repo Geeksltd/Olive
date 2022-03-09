@@ -14,12 +14,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-   
-    #- name: Publish Olive NuGet Package
-     # uses: rohith/publish-nuget@v2
-      #with:
-       # PROJECT_FILE_PATH: Olive/Olive.csproj
-        #NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.200
+        
+    - name: Publish Olive NuGet Package
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive/Olive.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive ApiClient NuGet Package
       uses: rohith/publish-nuget@v2
