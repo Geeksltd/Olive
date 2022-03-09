@@ -9,14 +9,14 @@ jobs:
     strategy:
       matrix:
         configuration: [Release]
-        dotnet-version: [5.1.x]
+
 
     runs-on: windows-2019
 
     steps:
     - uses: actions/checkout@v2
     
-    - name: Setup dotnet three
+    - name: Setup dotnet 
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
