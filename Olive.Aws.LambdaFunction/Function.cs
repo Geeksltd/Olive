@@ -24,7 +24,7 @@ namespace Olive.Aws
         protected virtual void Init(IHostBuilder builder)
         {
             var startup = new TStartup();
-
+            
             builder.ConfigureAppConfiguration(startup.ConfigureConfiguration);
             builder.ConfigureServices(startup.ConfigureServices);
             builder.ConfigureLogging(startup.ConfigureLogging);
