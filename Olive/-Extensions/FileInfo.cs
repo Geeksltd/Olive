@@ -132,6 +132,7 @@ namespace Olive
             return @this.Extension.ToLower().OrEmpty().TrimStart(".") switch
             {
                 "doc" => "application/msword",
+                "json" => "application/json",
                 "ppt" => "application/vnd.ms-powerpoint",
                 "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
