@@ -7,12 +7,18 @@ namespace Olive.Aws
 {
     public abstract class Startup
     {
-        protected IConfiguration Configuration => Context.Current.GetService<IConfiguration>();
+        protected IConfiguration Configuration;
+        protected IServiceCollection Services { get; private set; }
 
-        public virtual void ConfigureConfiguration(HostBuilderContext context, IConfigurationBuilder builder) { }
+        public virtual void ConfigureConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
+        {
+            Config.SetConfiguration(Configuration = context.Configuration);
+        }
 
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            Configuration.MergeEnvironmentVariables();
+            Services = services;
             services.AddOptions();
         }
 
