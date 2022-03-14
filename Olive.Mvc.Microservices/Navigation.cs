@@ -17,7 +17,8 @@ namespace Olive.Mvc.Microservices
     ///     Description = "Brief description",
     ///     Refrance    = "Unique refrance for special cases",
     ///     BadgeUrl    = "/@Services/Badge.ashx?type=forecast",
-    ///     ShowOnRight = true
+    ///     ShowOnRight = true,
+    ///     Iframe      = false
     /// }
     /// </summary>
     public class Feature
@@ -30,6 +31,7 @@ namespace Olive.Mvc.Microservices
         public string Refrance;
         public string BadgeUrl;
         public bool ShowOnRight;
+        public bool Iframe;
     }
     public abstract class Navigation
     {
@@ -40,7 +42,7 @@ namespace Olive.Mvc.Microservices
 
         public abstract void Define();
 
-        protected void Add<TController>(string fullPath = null, string icon = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false) where TController : Controller
+        protected void Add<TController>(string fullPath = null, string icon = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false) where TController : Controller
         {
             var url = Url.Index<TController>();
             if (fullPath.IsEmpty())
@@ -48,10 +50,10 @@ namespace Olive.Mvc.Microservices
 
             var permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight);
+            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight, iframe);
         }
 
-        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh)
+        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh, bool iframe)
         {
             Add(new Feature
             {
@@ -63,6 +65,7 @@ namespace Olive.Mvc.Microservices
                 Refrance = @ref,
                 BadgeUrl = badgeUrl,
                 ShowOnRight = showOnRigh,
+                Iframe = iframe
             });
         }
 
