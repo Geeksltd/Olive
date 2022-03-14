@@ -13,19 +13,24 @@ namespace Olive.Aws
     {
         const int MAX_RETRY = 4;
         internal string QueueUrl;
-        public IAmazonSQS Client { get; set; }
+
+
+        IAmazonSQS client;
+
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
 
         public EventBusQueue(string queueUrl)
         {
             QueueUrl = queueUrl;
-            Client = Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
+            client = Context.Current.GetOptionalService<IAmazonSQS>();
         }
+
+        public IAmazonSQS Client => client ?? new AmazonSQSClient();
 
         public EventBusQueue Region(Amazon.RegionEndpoint region)
         {
-            Client = new AmazonSQSClient(region);
+            client = new AmazonSQSClient(region);
             return this;
         }
 
