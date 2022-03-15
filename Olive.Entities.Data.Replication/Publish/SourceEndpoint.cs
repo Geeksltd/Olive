@@ -12,21 +12,7 @@ namespace Olive.Entities.Replication
         Dictionary<string, ExposedType> Agents = new Dictionary<string, ExposedType>();
         public IEnumerable<string> ExposedTypes => Agents.Keys;
 
-        public string UrlPattern
-        {
-            get
-            {
-                var url = Config.Get($"DataReplication:{GetType().FullName.Replace(".", "_")}:Url");
-
-                if (url.IsEmpty())
-                    url = Config.Get($"DataReplication:{GetType().FullName}:Url");
-
-                if (url.IsEmpty())
-                    url = $"FOR_DEVELOPMENT_ONLY_DataReplication_{GetType().FullName}";
-
-                return url;
-            }
-        }
+        public string UrlPattern => QueueUrlProvider.GetUrl(GetType());
 
 
         public virtual IEnumerable<Type> GetTypes()
