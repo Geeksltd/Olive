@@ -11,7 +11,6 @@ namespace Olive
         {
             Source = source;
             Expression = expression;
-            this.RefreshOn(source);
         }
 
         protected override object GetValue() => Expression(Source.Value);
