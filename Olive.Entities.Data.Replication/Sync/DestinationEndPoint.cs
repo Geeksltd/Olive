@@ -14,7 +14,7 @@ namespace Olive.Entities.Replication
         ConcurrentDictionary<string, DateTime> ResetRequestUtcs = new ConcurrentDictionary<string, DateTime>();
         Dictionary<string, EndpointSubscriber> Subscribers = new Dictionary<string, EndpointSubscriber>();
 
-        public virtual string QueueUrl => QueueUrlProvider.GetUrl(GetType());
+        public abstract string QueueUrl { get; }
 
         protected DestinationEndpoint(Assembly domainAssembly)
         {
