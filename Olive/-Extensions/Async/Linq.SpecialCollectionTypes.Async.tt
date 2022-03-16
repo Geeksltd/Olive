@@ -16,11 +16,16 @@ namespace Olive
     partial class OliveExtensions
     {
         <# foreach (var t in listTypes) { #>
-
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<<#=t#>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<<#=t#>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
@@ -131,6 +136,8 @@ namespace Olive
         this Task<<#=t#>> @this, int count) => @this.ForLinq().Take(count);
 
         public static Task<TSource[]> ToArray<TSource>(this Task<<#=t#>> @this) => @this.ForLinq().ToArray();
+        
+        public static Task<List<TSource>> ToList<TSource>(this Task<<#=t#>> @this) => @this.ForLinq().ToList();
 
         public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<<#=t#>> @this, int lower, int count) => @this.ForLinq().Take(lower, count);

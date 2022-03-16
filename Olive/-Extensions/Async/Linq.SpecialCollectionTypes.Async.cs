@@ -3,14 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace Olive
 {
     partial class OliveExtensions
     {
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<TSource[]> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<TSource[]> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
@@ -122,6 +129,8 @@ namespace Olive
 
         public static Task<TSource[]> ToArray<TSource>(this Task<TSource[]> @this) => @this.ForLinq().ToArray();
 
+        public static Task<List<TSource>> ToList<TSource>(this Task<TSource[]> @this) => @this.ForLinq().ToList();
+
         public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<TSource[]> @this, int lower, int count) => @this.ForLinq().Take(lower, count);
 
@@ -231,10 +240,16 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<TSource[]> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
@@ -346,6 +361,8 @@ namespace Olive
 
         public static Task<TSource[]> ToArray<TSource>(this Task<IOrderedEnumerable<TSource>> @this) => @this.ForLinq().ToArray();
 
+        public static Task<List<TSource>> ToList<TSource>(this Task<IOrderedEnumerable<TSource>> @this) => @this.ForLinq().ToList();
+
         public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<IOrderedEnumerable<TSource>> @this, int lower, int count) => @this.ForLinq().Take(lower, count);
 
@@ -455,10 +472,16 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<List<TSource>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<List<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
@@ -570,6 +593,8 @@ namespace Olive
 
         public static Task<TSource[]> ToArray<TSource>(this Task<List<TSource>> @this) => @this.ForLinq().ToArray();
 
+        public static Task<List<TSource>> ToList<TSource>(this Task<List<TSource>> @this) => @this.ForLinq().ToList();
+
         public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<List<TSource>> @this, int lower, int count) => @this.ForLinq().Take(lower, count);
 
@@ -679,10 +704,16 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IList<TSource>> @this, Func<TSource, TResult> func)
             => @this.Get(x => x.OrEmpty().Select(func));
 
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IList<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
@@ -794,6 +825,8 @@ namespace Olive
 
         public static Task<TSource[]> ToArray<TSource>(this Task<IList<TSource>> @this) => @this.ForLinq().ToArray();
 
+        public static Task<List<TSource>> ToList<TSource>(this Task<IList<TSource>> @this) => @this.ForLinq().ToList();
+
         public static Task<IEnumerable<TSource>> Take<TSource>(
         this Task<IList<TSource>> @this, int lower, int count) => @this.ForLinq().Take(lower, count);
 
@@ -902,5 +935,6 @@ namespace Olive
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IList<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
+
     }
 }
