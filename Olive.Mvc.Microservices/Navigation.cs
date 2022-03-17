@@ -42,13 +42,13 @@ namespace Olive.Mvc.Microservices
 
         public abstract void Define();
 
-        protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false) where TController : Controller
+        protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null) where TController : Controller
         {
             if (url.IsEmpty()) url = Url.Index<TController>();
             if (fullPath.IsEmpty())
                 fullPath = typeof(TController).Name.TrimEnd("Controller");
 
-            var permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
+            if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
             Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight, iframe);
         }
