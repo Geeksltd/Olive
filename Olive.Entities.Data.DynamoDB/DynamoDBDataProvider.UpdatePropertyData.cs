@@ -30,14 +30,18 @@ namespace Olive.Entities.Data
 
             public static UpdatePropertyData FromProperty(PropertyInfo prop, object owner)
             {
+                var propertyType = prop.PropertyType;
+                if (propertyType.IsNullable())
+                    propertyType = propertyType.GetGenericArguments()[0];
+
                 return new UpdatePropertyData
                 {
                     Name = prop.Name,
                     Value = prop.GetValue(owner),
-                    IsString = prop.PropertyType == typeof(string),
-                    IsBool = prop.PropertyType == typeof(bool),
-                    IsNumber = prop.PropertyType.IsBasicNumeric(),
-                    IsDateTime = prop.PropertyType == typeof(DateTime),
+                    IsString = propertyType == typeof(string),
+                    IsBool = propertyType == typeof(bool),
+                    IsNumber = propertyType.IsBasicNumeric(),
+                    IsDateTime = propertyType == typeof(DateTime),
                     CanRead = prop.CanRead,
                     CanWrite = prop.CanWrite,
                     CustomAttributes = prop.CustomAttributes.ToArray(),
