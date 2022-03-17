@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Olive.Entities;
 using System;
@@ -12,20 +13,15 @@ namespace Olive.Email
     public class EmailOutbox : IEmailOutbox
     {
         static Random Random = new Random();
-        AsyncLock AsyncLock = new AsyncLock();
+        bool IsBusySending;
         ILogger<EmailOutbox> Log;
 
-        public event AwaitableEventHandler<EmailSendingEventArgs> Sending;
-        public event AwaitableEventHandler<EmailSendingEventArgs> Sent;
-        public event AwaitableEventHandler<EmailSendingEventArgs> SendError;
+        public event AwaitableEventHandler<EmailSendingEventArgs> Sending, Sent, SendError;
         public IEmailDispatcher Dispatcher { get; }
         public IMailMessageCreator MessageCreator { get; }
         public IEmailRepository Repository { get; }
 
-        public EmailOutbox(IEmailDispatcher dispatcher,
-            IMailMessageCreator messageCreator,
-            IEmailRepository repository,
-            ILogger<EmailOutbox> log)
+        public EmailOutbox(IEmailDispatcher dispatcher, IMailMessageCreator messageCreator, IEmailRepository repository, ILogger<EmailOutbox> log)
         {
             Dispatcher = dispatcher;
             MessageCreator = messageCreator;
@@ -35,37 +31,53 @@ namespace Olive.Email
 
         public async Task SendAll(TimeSpan? delayPerSend = null)
         {
+            if (IsBusySending)
+            {
+                Log.Info("Skipped as it's busy sending already.");
+                return;
+            }
+
             Log.Info("Sending all ...");
 
-            using (await AsyncLock.Lock())
+            try
             {
-                var toSend = await Repository.GetUnsentEmails();
+                IsBusySending = true;
+                await DoSendAll(delayPerSend);
+            }
+            finally
+            {
+                IsBusySending = false;
+            }
+        }
 
-                Log.Info($"Loaded {toSend.Count()} emails to send ...");
+        async Task DoSendAll(TimeSpan? delayPerSend)
+        {
+            var toSend = await Repository.GetUnsentEmails();
 
-                foreach (var mail in toSend)
+            Log.Info($"Loaded {toSend.Count()} emails to send ...");
+
+            foreach (var mail in toSend)
+            {
+                if (delayPerSend > TimeSpan.Zero)
                 {
-                    if (delayPerSend > TimeSpan.Zero)
-                    {
-                        var multiply = 1 + (Random.NextDouble() - 0.5) / 4; // from 0.8 to 1.2
+                    var multiply = 1 + (Random.NextDouble() - 0.5) / 4; // from 0.8 to 1.2
 
-                        try { await Task.Delay(delayPerSend.Value.Multiply(multiply)); }
-                        catch (ThreadAbortException)
-                        {
-                            return; // Application terminated.
-                        }
+                    try { await Task.Delay(delayPerSend.Value.Multiply(multiply)); }
+                    catch (ThreadAbortException)
+                    {
+                        return; // Application terminated.
                     }
+                }
 
-                    try
-                    {
-                        Log.Info($"Sending {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
-                        await Send(mail);
-                        Log.Info($"Sent {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "Could not send a queued email message " + mail.GetId() + " because " + ex.ToFullMessage());
-                    }
+                try
+                {
+                    Log.Info($"Sending {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
+                    await Send(mail);
+                    Log.Info($"Sent {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Could not send a queued email message " + mail.GetId() + " because " + ex.ToFullMessage());
                 }
             }
         }
