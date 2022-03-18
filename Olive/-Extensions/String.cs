@@ -512,12 +512,21 @@ namespace Olive
         /// less an empty string is returned
         /// </summary>
         /// <param name="length">Number of characters to return</param>
-        public static string Right(this string @this, int length)
+        public static string Right(this string @this, int length) => @this.RightWithPrefix(length, "");
+
+        /// <summary>
+        /// Returns the last few characters of the string with a length
+        /// specified by the given parameter and prepends the prefix. If the string's length is less than the 
+        /// given length the complete string is returned. If length is zero or 
+        /// less an empty string is returned
+        /// </summary>
+        /// <param name="length">Number of characters to return</param>
+        public static string RightWithPrefix(this string @this, int length, string prefix)
         {
             length = Math.Max(length, 0);
 
             if (@this.Length > length)
-                return @this.Substring(@this.Length - length, length);
+                return @this.Substring(@this.Length - length, length).WithPrefix(prefix);
             else
                 return @this;
         }
@@ -529,12 +538,21 @@ namespace Olive
         /// less an empty string is returned
         /// </summary>
         /// <param name="length">Number of characters to return</param>
-        public static string Left(this string @this, int length)
+        public static string Left(this string @this, int length) => @this.LeftWithSuffix(length, "");
+
+        /// <summary>
+        /// Returns the first few characters of the string with a length
+        /// specified by the given parameter and appends the suffix. If the string's length is less than the 
+        /// given length the complete string is returned. If length is zero or 
+        /// less an empty string is returned
+        /// </summary>
+        /// <param name="length">Number of characters to return</param>
+        public static string LeftWithSuffix(this string @this, int length, string suffix)
         {
             length = Math.Max(length, 0);
 
             if (@this.Length > length)
-                return @this.Substring(0, length);
+                return @this.Substring(0, length).WithSuffix(suffix);
             else
                 return @this;
         }
