@@ -14,7 +14,7 @@ namespace Olive.Aws.Ses
     {
         public async Task Dispatch(MailMessage mail, IEmailMessage _)
         {
-           var request = new SendRawEmailRequest{ RawMessage = GetMessage(mail).ToRawMessage() };
+            var request = new SendRawEmailRequest { RawMessage = GetMessage(mail, _).ToRawMessage() };
 
             using (var client = new AmazonSimpleEmailServiceClient())
             {
@@ -25,27 +25,31 @@ namespace Olive.Aws.Ses
             }
         }
 
-        MimeMessage GetMessage(MailMessage mail)
+        MimeMessage GetMessage(MailMessage mail, IEmailMessage _ = null)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(mail.From?.DisplayName, mail.From.Address));
-            mail.To.Do(t=>message.To.Add(new MailboxAddress(t.DisplayName, t.Address)));
+            mail.To.Do(t => message.To.Add(new MailboxAddress(t.DisplayName, t.Address)));
             mail.Bcc.Do(b => message.Bcc.Add(new MailboxAddress(b.DisplayName, b.Address)));
             mail.CC.Do(c => message.Cc.Add(new MailboxAddress(c.DisplayName, c.Address)));
             message.Subject = mail.Subject;
-            message.Body = CreateMessageBody(mail);
+            message.Body = CreateMessageBody(mail, _);
             return message;
         }
 
-        MimeEntity CreateMessageBody(MailMessage mail)
+        MimeEntity CreateMessageBody(MailMessage mail, IEmailMessage _ = null)
         {
             var body = new BodyBuilder()
             {
                 HtmlBody = mail.Body
             };
 
+            if (_ != null && _.VCalendarView.HasValue())
+                body.HtmlBody += _.VCalendarView;
+
             foreach (var attc in mail.Attachments)
                 body.Attachments.Add(attc.Name, attc.ContentStream);
+
 
             return body.ToMessageBody();
         }
