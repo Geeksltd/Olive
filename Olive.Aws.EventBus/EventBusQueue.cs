@@ -1,11 +1,11 @@
-﻿using Amazon.SQS;
-using Amazon.SQS.Model;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.SQS;
+using Amazon.SQS.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Olive.Aws
 {
@@ -13,7 +13,6 @@ namespace Olive.Aws
     {
         const int MAX_RETRY = 4;
         internal string QueueUrl;
-
 
         IAmazonSQS client;
 
@@ -65,8 +64,15 @@ namespace Olive.Aws
                 request.MessageGroupId = "Default";
             }
 
-            var response = await Client.SendMessageAsync(request);
-            return response.MessageId;
+            try
+            {
+                var response = await Client.SendMessageAsync(request);
+                return response.MessageId;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to publish a message to queue: " + QueueUrl, ex);
+            }
         }
 
         public Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages) => PublishBatch(messages, 0);
