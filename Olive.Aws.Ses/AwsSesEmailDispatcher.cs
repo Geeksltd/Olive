@@ -1,10 +1,8 @@
-﻿using Amazon.SimpleEmail;
+using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using MimeKit;
 using Olive.Email;
 using System;
-using System.IO;
-using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
@@ -12,9 +10,9 @@ namespace Olive.Aws.Ses
 {
     public class AwsSesEmailDispatcher : IEmailDispatcher
     {
-        public async Task Dispatch(MailMessage mail, IEmailMessage _)
+        public async Task Dispatch(MailMessage mail, IEmailMessage iEmailMessage)
         {
-            var request = new SendRawEmailRequest { RawMessage = GetMessage(mail, _).ToRawMessage() };
+            var request = new SendRawEmailRequest { RawMessage = GetMessage(mail, iEmailMessage).ToRawMessage() };
 
             using (var client = new AmazonSimpleEmailServiceClient())
             {
@@ -25,7 +23,7 @@ namespace Olive.Aws.Ses
             }
         }
 
-        MimeMessage GetMessage(MailMessage mail, IEmailMessage _ = null)
+        MimeMessage GetMessage(MailMessage mail, IEmailMessage iEmailMessage = null)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(mail.From?.DisplayName, mail.From.Address));
@@ -33,23 +31,25 @@ namespace Olive.Aws.Ses
             mail.Bcc.Do(b => message.Bcc.Add(new MailboxAddress(b.DisplayName, b.Address)));
             mail.CC.Do(c => message.Cc.Add(new MailboxAddress(c.DisplayName, c.Address)));
             message.Subject = mail.Subject;
-            message.Body = CreateMessageBody(mail, _);
+            message.Body = CreateMessageBody(mail, iEmailMessage);
             return message;
         }
 
-        MimeEntity CreateMessageBody(MailMessage mail, IEmailMessage _ = null)
+        MimeEntity CreateMessageBody(MailMessage mail, IEmailMessage iEmailMessage = null)
         {
             var body = new BodyBuilder()
             {
                 HtmlBody = mail.Body
             };
 
-            if (_ != null && _.VCalendarView.HasValue())
-                body.HtmlBody += _.VCalendarView;
+            if (iEmailMessage != null && iEmailMessage.VCalendarView.HasValue())
+                body.Attachments.Add(
+                    "meeting.ics",
+                    System.Text.Encoding.Unicode.GetBytes(iEmailMessage.VCalendarView),
+                    new MimeKit.ContentType("text", "calendar"));
 
             foreach (var attc in mail.Attachments)
                 body.Attachments.Add(attc.Name, attc.ContentStream);
-
 
             return body.ToMessageBody();
         }
