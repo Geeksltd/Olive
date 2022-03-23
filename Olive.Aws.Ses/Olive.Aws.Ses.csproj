@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Aws.Ses</RootNamespace>
     <PackageId>Olive.Aws.Ses</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.107.0</Version>
+    <Version>3.1.108.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
