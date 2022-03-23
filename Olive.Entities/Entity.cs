@@ -139,7 +139,7 @@ namespace Olive.Entities
         static PropertyInfo[] ExtractPrimitiveProperties(Type type)
         {
             var result = new List<PropertyInfo>();
-            var primitiveTypes = new[] { typeof(string), typeof(int), typeof(int?), typeof(double), typeof(double?), typeof(DateTime), typeof(DateTime?) };
+            var primitiveTypes = new[] { typeof(string), typeof(int), typeof(int?), typeof(double), typeof(double?), typeof(decimal), typeof(decimal?), typeof(DateTime), typeof(DateTime?) };
 
             foreach (var p in type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.CanRead).Where(p => primitiveTypes.Contains(p.PropertyType)))
             {
