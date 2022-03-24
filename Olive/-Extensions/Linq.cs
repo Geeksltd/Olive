@@ -1610,6 +1610,27 @@ namespace Olive
                            await func(partition.Current, index).ConfigureAwait(false);
                })));
         }
+        
+        /// <summary>
+        /// To process a concurrent queue with several tasks at the same time but not all at the same time. 
+        /// When tasks are resource consuming and executing all at one has side effects.
+        /// </summary>
+        /// <param name="degreeOfParallelism">The maximum degree of parallelism depends on the tasks.</param>
+        /// <param name="func">Actual work to do.</param>
+        public static Task ProcessQueueAsync<T>(this ConcurrentQueue<T> source, int degreeOfParallelism, Func<T, Task> func)
+		{
+			var tasks = new List<Task>();
+			for (int n = 0; n < degreeOfParallelism; n++)
+			{
+				tasks.Add(Task.Run(async () => {
+					while (source.TryDequeue(out T item))
+					{
+						await func(item);
+					}
+				}));
+			}
+			return Task.WhenAll(tasks);
+		}
 
         /// <summary>
         /// Gets the element before a specified item in this list.
@@ -1620,5 +1641,6 @@ namespace Olive
         {
             return list.TakeWhile(x => x != item);
         }
+        
     }
 }
