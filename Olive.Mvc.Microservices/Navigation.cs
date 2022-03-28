@@ -32,7 +32,7 @@ namespace Olive.Mvc.Microservices
         public string BadgeUrl;
         public bool ShowOnRight;
         public bool Iframe;
-        public int Order;
+        public int? Order;
     }
     public abstract class Navigation
     {
@@ -43,7 +43,7 @@ namespace Olive.Mvc.Microservices
 
         public abstract void Define();
 
-        protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int order = 100) where TController : Controller
+        protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
         {
             if (url.IsEmpty()) url = Url.Index<TController>();
             if (fullPath.IsEmpty())
@@ -54,7 +54,7 @@ namespace Olive.Mvc.Microservices
             Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight, iframe, order);
         }
 
-        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh, bool iframe, int order)
+        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh, bool iframe, int? order)
         {
             Add(new Feature
             {
