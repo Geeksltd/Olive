@@ -132,7 +132,8 @@ namespace Olive.Mvc.Testing
                     {
                         return line
                             .Replace("#DATABASE.NAME#", TempDatabaseName)
-                            .Replace("#STORAGE.PATH#", DatabaseFilesPath.FullName);
+                            .Replace("#STORAGE.PATH#", DatabaseFilesPath.FullName)
+                            .Replace("\\", Path.DirectorySeparatorChar.ToString());
                     }
 
                     return line;
