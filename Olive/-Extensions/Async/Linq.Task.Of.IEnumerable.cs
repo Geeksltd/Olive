@@ -32,14 +32,14 @@ namespace Olive
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<Task<TResult>>> func)
         {
             var source = await @this.Get(x => x.OrEmpty().SelectMany(func)).ConfigureAwait(false);
-            return await source.SequentialSelect(x => x).ConfigureAwait(false);
+            return await source.SequentialAwait().ConfigureAwait(false);
         }
 
         public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<IEnumerable<TResult>>> func)
         {
             var source = await @this.Get(x => x.OrEmpty().Select(func)).ConfigureAwait(false);
-            return await source.SequentialSelect(x => x).SelectMany(v => v).ConfigureAwait(false);
+            return await source.SequentialAwait().SelectMany(v => v).ConfigureAwait(false);
         }
 
         public static Task<IEnumerable<TSource>> Except<TSource>(
@@ -327,6 +327,27 @@ namespace Olive
         public static async Task<IEnumerable<T>> OrEmpty<T>(this Task<IEnumerable<T>> @this)
         {
             return (await @this.ConfigureAwait(false)) ?? Enumerable.Empty<T>();
+        }
+
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this IEnumerable<TSource> @this, Func<TSource, TKey> key, Func<TSource, Task<TValue>> value)
+        {
+            return @this.Select(async x => new KeyValuePair<TKey, TValue>(key(x), await value(x)))
+                 .SequentialAwait().Get(x => x.ToDictionary());
+        }
+
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this IEnumerable<TSource> @this, Func<TSource, Task<TKey>> key, Func<TSource, Task<TValue>> value)
+        {
+            return @this.Select(async x => new KeyValuePair<TKey, TValue>(await key(x), await value(x)))
+                 .SequentialAwait().Get(x => x.ToDictionary());
+        }
+
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this IEnumerable<TSource> @this, Func<TSource, Task<TKey>> key, Func<TSource, TValue> value)
+        {
+            return @this.Select(async x => new KeyValuePair<TKey, TValue>(await key(x), value(x)))
+                 .SequentialAwait().Get(x => x.ToDictionary());
         }
     }
 }

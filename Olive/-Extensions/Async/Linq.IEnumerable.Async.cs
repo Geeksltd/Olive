@@ -60,6 +60,9 @@ namespace Olive
         public static Task<IEnumerable<T>> Concat<T>(
           this IEnumerable<T> @this, IEnumerable<Task<T>> second) => @this.Concat(second.AwaitAll());
 
+        public static Task<IEnumerable<T>> SequentialAwait<T>(this IEnumerable<Task<T>> @this) =>
+          @this.SequentialSelect(x => x);
+
         public static async Task<IEnumerable<TSource>> Distinct<TSource, TResult>(
           this IEnumerable<TSource> @this, Func<TSource, Task<TResult>> func)
         {
