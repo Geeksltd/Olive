@@ -8,6 +8,7 @@ namespace Olive
 {
     partial class OliveExtensions
     {
+        #region TSource[]
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -43,6 +44,15 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<TSource[]> @this)
             => @this.ForLinq().Cast<TSource, TResult>();
+
+        public static Task<IEnumerable<TResult>> OfType<TSource, TResult>(this Task<TSource[]> @this)
+            => @this.ForLinq().OfType<TSource, TResult>();
+
+        public static Task<TSource> WithMin<TSource, TKey>(this Task<TSource[]> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMin(keySelector));
+
+        public static Task<TSource> WithMax<TSource, TKey>(this Task<TSource[]> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMax(keySelector));
 
         public static Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<TSource[]> @this, IEnumerable<TSource> second)
@@ -87,10 +97,10 @@ namespace Olive
         public static Task<TSource> LastOrDefault<TSource>(this Task<TSource[]> @this)
             => @this.ForLinq().LastOrDefault();
 
-        public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
         this Task<TSource[]> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderBy(func);
 
-        public static Task<IOrderedEnumerable<TSource>> ThenByDescending<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderByDescending<TSource, TKey>(
         this Task<TSource[]> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderByDescending(func);
 
         public static Task<IEnumerable<TSource>> Reverse<TSource>(
@@ -233,13 +243,20 @@ namespace Olive
            Task<IEnumerable<TSource>> items)
             => @this.ForLinq().Except(items);
 
-        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
-           Task<TSource[]> other)
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this, Task<TSource[]> other)
             => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<TSource[]> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Concat(other));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<TSource[]> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<TSource[]> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
+        #endregion
 
+        #region IOrderedEnumerable<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -275,6 +292,15 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IOrderedEnumerable<TSource>> @this)
             => @this.ForLinq().Cast<TSource, TResult>();
+
+        public static Task<IEnumerable<TResult>> OfType<TSource, TResult>(this Task<IOrderedEnumerable<TSource>> @this)
+            => @this.ForLinq().OfType<TSource, TResult>();
+
+        public static Task<TSource> WithMin<TSource, TKey>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMin(keySelector));
+
+        public static Task<TSource> WithMax<TSource, TKey>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMax(keySelector));
 
         public static Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<IOrderedEnumerable<TSource>> @this, IEnumerable<TSource> second)
@@ -319,10 +345,10 @@ namespace Olive
         public static Task<TSource> LastOrDefault<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
             => @this.ForLinq().LastOrDefault();
 
-        public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
         this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderBy(func);
 
-        public static Task<IOrderedEnumerable<TSource>> ThenByDescending<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderByDescending<TSource, TKey>(
         this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderByDescending(func);
 
         public static Task<IEnumerable<TSource>> Reverse<TSource>(
@@ -465,13 +491,20 @@ namespace Olive
            Task<IEnumerable<TSource>> items)
             => @this.ForLinq().Except(items);
 
-        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
-           Task<IOrderedEnumerable<TSource>> other)
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this, Task<IOrderedEnumerable<TSource>> other)
             => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<IOrderedEnumerable<TSource>> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Concat(other));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<IOrderedEnumerable<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
+        #endregion
 
+        #region List<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -507,6 +540,15 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<List<TSource>> @this)
             => @this.ForLinq().Cast<TSource, TResult>();
+
+        public static Task<IEnumerable<TResult>> OfType<TSource, TResult>(this Task<List<TSource>> @this)
+            => @this.ForLinq().OfType<TSource, TResult>();
+
+        public static Task<TSource> WithMin<TSource, TKey>(this Task<List<TSource>> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMin(keySelector));
+
+        public static Task<TSource> WithMax<TSource, TKey>(this Task<List<TSource>> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMax(keySelector));
 
         public static Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<List<TSource>> @this, IEnumerable<TSource> second)
@@ -551,10 +593,10 @@ namespace Olive
         public static Task<TSource> LastOrDefault<TSource>(this Task<List<TSource>> @this)
             => @this.ForLinq().LastOrDefault();
 
-        public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
         this Task<List<TSource>> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderBy(func);
 
-        public static Task<IOrderedEnumerable<TSource>> ThenByDescending<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderByDescending<TSource, TKey>(
         this Task<List<TSource>> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderByDescending(func);
 
         public static Task<IEnumerable<TSource>> Reverse<TSource>(
@@ -697,13 +739,20 @@ namespace Olive
            Task<IEnumerable<TSource>> items)
             => @this.ForLinq().Except(items);
 
-        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
-           Task<List<TSource>> other)
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this, Task<List<TSource>> other)
             => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<List<TSource>> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Concat(other));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<List<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
+        #endregion
 
+        #region IList<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -739,6 +788,15 @@ namespace Olive
 
         public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IList<TSource>> @this)
             => @this.ForLinq().Cast<TSource, TResult>();
+
+        public static Task<IEnumerable<TResult>> OfType<TSource, TResult>(this Task<IList<TSource>> @this)
+            => @this.ForLinq().OfType<TSource, TResult>();
+
+        public static Task<TSource> WithMin<TSource, TKey>(this Task<IList<TSource>> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMin(keySelector));
+
+        public static Task<TSource> WithMax<TSource, TKey>(this Task<IList<TSource>> @this, Func<TSource, TKey> keySelector)
+            => @this.Get(v => v.OrEmpty().WithMax(keySelector));
 
         public static Task<IEnumerable<TSource>> Concat<TSource>(
           this Task<IList<TSource>> @this, IEnumerable<TSource> second)
@@ -783,10 +841,10 @@ namespace Olive
         public static Task<TSource> LastOrDefault<TSource>(this Task<IList<TSource>> @this)
             => @this.ForLinq().LastOrDefault();
 
-        public static Task<IOrderedEnumerable<TSource>> ThenBy<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
         this Task<IList<TSource>> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderBy(func);
 
-        public static Task<IOrderedEnumerable<TSource>> ThenByDescending<TSource, TKey>(
+        public static Task<IOrderedEnumerable<TSource>> OrderByDescending<TSource, TKey>(
         this Task<IList<TSource>> @this, Func<TSource, TKey> func) => @this.ForLinq().OrderByDescending(func);
 
         public static Task<IEnumerable<TSource>> Reverse<TSource>(
@@ -929,12 +987,18 @@ namespace Olive
            Task<IEnumerable<TSource>> items)
             => @this.ForLinq().Except(items);
 
-        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
-           Task<IList<TSource>> other)
+        public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this, Task<IList<TSource>> other)
             => @this.Get(x => x.Concat(other.ForLinq()));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<IList<TSource>> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Concat(other));
+
+        public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<IList<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IList<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
+        #endregion
 
     }
 }

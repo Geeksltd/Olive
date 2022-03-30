@@ -24,20 +24,15 @@ namespace Olive
         }
 
         /// <summary>
-        /// Concatenates all members of this object and inserts {separator} among them.  
+        /// If this object is null, it returns an empty enumerable, to prevent null exceptions.
         /// </summary>
-        /// <param name="separator">It is located among all characters.</param>
-        public static Task<string> ToString(this Task<IEnumerable> @this, string separator)
-        {
-            if (@this == null) return Task.FromResult("{NULL}");
-            return @this.Get(x => x.ToString(separator));
-        }
+        public static IEnumerable OrEmpty(this IEnumerable @this) => @this ?? Enumerable.Empty<object>();
 
         /// <summary>
         /// Concatenates all members of this object and inserts {separator} among them.  
         /// </summary>
         /// <param name="separator">It is located among all characters.</param>
-        public static Task<string> ToString<T>(this Task<IEnumerable<T>> @this, string separator)
+        public static Task<string> ToString<TList>(this Task<TList> @this, string separator) where TList : IEnumerable
         {
             if (@this == null) return Task.FromResult("{NULL}");
             return @this.Get(x => x.ToString(separator));

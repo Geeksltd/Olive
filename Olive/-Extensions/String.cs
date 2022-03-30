@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -149,7 +150,8 @@ namespace Olive
         /// <summary>
         /// Will join all items with a BR tag and return the result as a raw html.
         /// </summary>
-        public static Task<string> ToHtmlLines<T>(this Task<IEnumerable<T>> @this) => @this.ToString("<br/>");
+        public static Task<string> ToHtmlLines<TList>(this Task<TList> @this) where TList : IEnumerable
+            => @this.Get(x => x.ToString("<br/>"));
 
         /// <summary>
         /// Gets the same string if it is not null or empty. Otherwise it returns the specified default value.

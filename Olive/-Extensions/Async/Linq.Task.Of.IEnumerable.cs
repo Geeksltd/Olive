@@ -57,6 +57,12 @@ namespace Olive
         public static Task<IEnumerable<TSource>> ExceptNull<TSource>(
          this Task<IEnumerable<TSource>> @this) => @this.Where(x => x is not null);
 
+        public static Task<IEnumerable<TResult>> OfType<TSource, TResult>(this Task<IEnumerable<TSource>> @this)
+            => @this.Get(x => x.OrEmpty().OfType<TResult>());
+
+        public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<IEnumerable> @this)
+            => @this.Get(x => x.OrEmpty().OfType<TResult>());
+
         public static Task<IEnumerable<TResult>> Cast<TSource, TResult>(this Task<IEnumerable<TSource>> @this)
             => @this.Get(x => x.OrEmpty().Cast<TResult>());
 
@@ -285,14 +291,17 @@ namespace Olive
         public static Task<IEnumerable<TResult>> Cast<TResult>(this Task<IEnumerable> @this)
             => @this.Get(x => x.Cast<TResult>());
 
-        public static Task<IEnumerable<TResult>> OfType<TResult>(this Task<IEnumerable> @this)
-            => @this.Get(x => x.OfType<TResult>());
-
         public static Task<bool> HasMany<TSource>(this Task<IEnumerable<TSource>> @this)
             => @this.Get(x => x.HasMany());
 
         public static Task<IEnumerable<TSource>> Except<TSource>(this Task<IEnumerable<TSource>> @this, TSource item)
             => @this.Get(x => x.Except(item));
+
+        public static Task<IOrderedEnumerable<T>> ThenBy<T, TKey>(this Task<IOrderedEnumerable<T>> @this, Func<T, TKey> keySelector)
+            => @this.Get(x => x.ThenBy(keySelector));
+
+        public static Task<IOrderedEnumerable<T>> ThenByDescending<T, TKey>(this Task<IOrderedEnumerable<T>> @this, Func<T, TKey> keySelector)
+            => @this.Get(x => x.ThenByDescending(keySelector));
 
         public static Task<IEnumerable<TSource>> Concat<TSource>(this Task<IEnumerable<TSource>> @this,
            Task<IEnumerable<TSource>> other)
