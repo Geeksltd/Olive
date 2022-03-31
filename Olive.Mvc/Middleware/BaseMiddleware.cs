@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
-    abstract class BaseMiddleware
+    public abstract class BaseMiddleware
     {
         protected readonly RequestDelegate Next;
 
