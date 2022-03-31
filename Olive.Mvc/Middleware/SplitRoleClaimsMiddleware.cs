@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
-    class SplitRoleClaimsMiddleware : BaseMiddleware
+    public class SplitRoleClaimsMiddleware : BaseMiddleware
     {
         public SplitRoleClaimsMiddleware(RequestDelegate next) : base(next) { }
 
