@@ -8,22 +8,22 @@ using System.Xml.Linq;
 
 namespace Olive.Mvc.Microservices
 {
-    internal static class NavigationApiMiddleWare
+    internal static class WidgetsApiMiddleware
     {
-        internal static async Task Navigate(HttpContext context)
+        internal static async Task GetWidgets(HttpContext context)
         {
 
-            var navigations = GetNavigationsFromAssembly<Navigation>();
+            var boardWidgets = GetNavigationsFromAssembly<BoardWidgets>();
 
-            if (navigations.None()) return;
-            var result = Newtonsoft.Json.JsonConvert.SerializeObject(navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToList());
+            if (boardWidgets.None()) return;
+            var result = Newtonsoft.Json.JsonConvert.SerializeObject(boardWidgets.Select(x => x.GetWidgets()).SelectMany(x => x).ToList());
             await context.Response.WriteAsync(result);
         }
 
-        private static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : Navigation
+        private static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : BoardWidgets
         {
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToArray();
-            types = types.Where(x => x.IsA<Navigation>() && !x.IsAbstract).ToArray();
+            types = types.Where(x => x.IsA<BoardWidgets>() && !x.IsAbstract).ToArray();
 
             var objects = types.Select(t => (T)Activator.CreateInstance(t)).ToArray();
 
@@ -33,4 +33,3 @@ namespace Olive.Mvc.Microservices
             return objects;
         }
     }
-}
