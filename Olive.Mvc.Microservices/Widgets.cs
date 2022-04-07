@@ -32,6 +32,10 @@ namespace Olive.Mvc.Microservices
         /// Permissions for acceess management
         /// </summary>
         public string Permissions;
+        /// <summary>
+        /// Group of the widget EG: People, Projects
+        /// </summary>
+        public string Group;
     }
     public abstract class BoardWidgets
     {
