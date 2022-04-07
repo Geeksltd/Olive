@@ -6,16 +6,16 @@
     public class BoardInfo
     {
         /// <summary>
-        /// Url to which the user will be redirected for adding a new item.
+        /// Url For the Widget to be shown.
         /// For relative Url to the current site use ~/my-url syntax.
         /// </summary>
-        public string AddUrl { get; set; }
+        public string FeatureUrl { get; set; }
 
         /// <summary>
-        /// Url to which the user will be redirected to manage these objects.
+        /// Url to which the user will be redirected to manage this widget.
         /// For relative Url to the current site use ~/my-url syntax.
         /// </summary>
-        public string ManageUrl { get; set; }
+        public string SettingsUrl { get; set; }
 
         /// <summary>
         /// Name of the search result. This is mandatory.
