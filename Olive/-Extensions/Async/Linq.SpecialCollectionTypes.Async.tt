@@ -31,6 +31,17 @@ namespace Olive
           this Task<<#=t#>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
 
+        /// <summary>
+        /// Selects the requested items one by one rather than in parallel. Use this in database operations to prevent over-concurrency.
+        /// </summary>
+        public static Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
+            this Task<<#=t#>> @this, Func<TSource, Task<TResult>> selector)
+            => @this.ForLinq().SequentialSelect(selector);
+
+        public static Task<IEnumerable<TSource>> WhereAsync<TSource>(
+        this Task<<#=t#>> @this, Func<TSource, Task<bool>> func)
+         => @this.ForLinq().WhereAsync(func);
+
         public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<<#=t#>> @this, Func<TSource, IEnumerable<TResult>> func)
             => @this.ForLinq().SelectMany(func);

@@ -8,7 +8,7 @@ namespace Olive
 {
     partial class OliveExtensions
     {
-        #region TSource[]
+            #region TSource[]
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -22,6 +22,17 @@ namespace Olive
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<TSource[]> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
+
+        /// <summary>
+        /// Selects the requested items one by one rather than in parallel. Use this in database operations to prevent over-concurrency.
+        /// </summary>
+        public static Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
+            this Task<TSource[]> @this, Func<TSource, Task<TResult>> selector)
+            => @this.ForLinq().SequentialSelect(selector);
+
+        public static Task<IEnumerable<TSource>> WhereAsync<TSource>(
+        this Task<TSource[]> @this, Func<TSource, Task<bool>> func)
+         => @this.ForLinq().WhereAsync(func);
 
         public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<TSource[]> @this, Func<TSource, IEnumerable<TResult>> func)
@@ -94,7 +105,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<TSource[]> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<TSource[]> @this)
+        public static Task<TSource> LastOrDefault<TSource>(this Task<TSource[]> @this) 
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
@@ -138,7 +149,7 @@ namespace Olive
         this Task<TSource[]> @this, int count) => @this.ForLinq().Take(count);
 
         public static Task<TSource[]> ToArray<TSource>(this Task<TSource[]> @this) => @this.ForLinq().ToArray();
-
+        
         public static Task<List<TSource>> ToList<TSource>(this Task<TSource[]> @this) => @this.ForLinq().ToList();
 
         public static Task<IEnumerable<TSource>> Take<TSource>(
@@ -217,9 +228,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<TSource[]> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<TSource[]> @this)
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<TSource[]> @this) 
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-
+ 
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -253,10 +264,10 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<TSource[]> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));
+          => @this.Get(x => x.Where(predicate));        
         #endregion
 
-        #region IOrderedEnumerable<TSource>
+       #region IOrderedEnumerable<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -270,6 +281,17 @@ namespace Olive
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
+
+        /// <summary>
+        /// Selects the requested items one by one rather than in parallel. Use this in database operations to prevent over-concurrency.
+        /// </summary>
+        public static Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
+            this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<TResult>> selector)
+            => @this.ForLinq().SequentialSelect(selector);
+
+        public static Task<IEnumerable<TSource>> WhereAsync<TSource>(
+        this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> func)
+         => @this.ForLinq().WhereAsync(func);
 
         public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, IEnumerable<TResult>> func)
@@ -342,7 +364,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
+        public static Task<TSource> LastOrDefault<TSource>(this Task<IOrderedEnumerable<TSource>> @this) 
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
@@ -386,7 +408,7 @@ namespace Olive
         this Task<IOrderedEnumerable<TSource>> @this, int count) => @this.ForLinq().Take(count);
 
         public static Task<TSource[]> ToArray<TSource>(this Task<IOrderedEnumerable<TSource>> @this) => @this.ForLinq().ToArray();
-
+        
         public static Task<List<TSource>> ToList<TSource>(this Task<IOrderedEnumerable<TSource>> @this) => @this.ForLinq().ToList();
 
         public static Task<IEnumerable<TSource>> Take<TSource>(
@@ -465,9 +487,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IOrderedEnumerable<TSource>> @this) 
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-
+ 
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -501,10 +523,10 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));
+          => @this.Get(x => x.Where(predicate));        
         #endregion
 
-        #region List<TSource>
+       #region List<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -518,6 +540,17 @@ namespace Olive
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<List<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
+
+        /// <summary>
+        /// Selects the requested items one by one rather than in parallel. Use this in database operations to prevent over-concurrency.
+        /// </summary>
+        public static Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
+            this Task<List<TSource>> @this, Func<TSource, Task<TResult>> selector)
+            => @this.ForLinq().SequentialSelect(selector);
+
+        public static Task<IEnumerable<TSource>> WhereAsync<TSource>(
+        this Task<List<TSource>> @this, Func<TSource, Task<bool>> func)
+         => @this.ForLinq().WhereAsync(func);
 
         public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<List<TSource>> @this, Func<TSource, IEnumerable<TResult>> func)
@@ -590,7 +623,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<List<TSource>> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<List<TSource>> @this)
+        public static Task<TSource> LastOrDefault<TSource>(this Task<List<TSource>> @this) 
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
@@ -634,7 +667,7 @@ namespace Olive
         this Task<List<TSource>> @this, int count) => @this.ForLinq().Take(count);
 
         public static Task<TSource[]> ToArray<TSource>(this Task<List<TSource>> @this) => @this.ForLinq().ToArray();
-
+        
         public static Task<List<TSource>> ToList<TSource>(this Task<List<TSource>> @this) => @this.ForLinq().ToList();
 
         public static Task<IEnumerable<TSource>> Take<TSource>(
@@ -713,9 +746,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<List<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<List<TSource>> @this)
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<List<TSource>> @this) 
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-
+ 
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -749,10 +782,10 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));
+          => @this.Get(x => x.Where(predicate));        
         #endregion
 
-        #region IList<TSource>
+       #region IList<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -766,6 +799,17 @@ namespace Olive
         public static Task<IEnumerable<TResult>> Select<TSource, TResult>(
           this Task<IList<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.ForLinq().Select(func);
+
+        /// <summary>
+        /// Selects the requested items one by one rather than in parallel. Use this in database operations to prevent over-concurrency.
+        /// </summary>
+        public static Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
+            this Task<IList<TSource>> @this, Func<TSource, Task<TResult>> selector)
+            => @this.ForLinq().SequentialSelect(selector);
+
+        public static Task<IEnumerable<TSource>> WhereAsync<TSource>(
+        this Task<IList<TSource>> @this, Func<TSource, Task<bool>> func)
+         => @this.ForLinq().WhereAsync(func);
 
         public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IList<TSource>> @this, Func<TSource, IEnumerable<TResult>> func)
@@ -838,7 +882,7 @@ namespace Olive
         public static Task<TSource> Last<TSource>(this Task<IList<TSource>> @this)
             => @this.ForLinq().Last();
 
-        public static Task<TSource> LastOrDefault<TSource>(this Task<IList<TSource>> @this)
+        public static Task<TSource> LastOrDefault<TSource>(this Task<IList<TSource>> @this) 
             => @this.ForLinq().LastOrDefault();
 
         public static Task<IOrderedEnumerable<TSource>> OrderBy<TSource, TKey>(
@@ -882,7 +926,7 @@ namespace Olive
         this Task<IList<TSource>> @this, int count) => @this.ForLinq().Take(count);
 
         public static Task<TSource[]> ToArray<TSource>(this Task<IList<TSource>> @this) => @this.ForLinq().ToArray();
-
+        
         public static Task<List<TSource>> ToList<TSource>(this Task<IList<TSource>> @this) => @this.ForLinq().ToList();
 
         public static Task<IEnumerable<TSource>> Take<TSource>(
@@ -961,9 +1005,9 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<IList<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IList<TSource>> @this)
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IList<TSource>> @this) 
         => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-
+ 
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
         /// Otherwise the original list will be returned.
@@ -997,8 +1041,8 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IList<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));
+          => @this.Get(x => x.Where(predicate));        
         #endregion
 
-    }
+       }
 }

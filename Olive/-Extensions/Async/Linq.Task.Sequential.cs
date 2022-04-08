@@ -6,6 +6,9 @@ namespace Olive
 {
     partial class OliveExtensions
     {
+        /// <summary>
+        /// Selects the requested items one by one rather than in parallel. Use this in database operations to prevent over-concurrency.
+        /// </summary>
         public static async Task<IEnumerable<TResult>> SequentialSelect<TSource, TResult>(
             this IEnumerable<TSource> @this, Func<TSource, Task<TResult>> selector)
         {
@@ -21,6 +24,9 @@ namespace Olive
             return result;
         }
 
+        /// <summary>
+        /// Selects the requested items one by one rather than in parallel. Use this in database operations to prevent over-concurrency.
+        /// </summary>
         public static async Task<IEnumerable<TResult>> SequentialSelectMany<TSource, TResult>(
            this IEnumerable<TSource> @this, Func<TSource, Task<IEnumerable<TResult>>> selector)
         {
