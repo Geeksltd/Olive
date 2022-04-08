@@ -668,6 +668,7 @@ namespace Olive
                 .Replace("<br >", Environment.NewLine)
                 .Replace("<p>", Environment.NewLine);
 
+
             var from = new string[] {
                 "&quot;", "&apos;", "&amp;", "&lt;", "&gt;", "&nbsp;",
                 "&iexcl;","&cent;","&pound;","&curren;","&yen;","&brvbar;","&sect;","&uml;",
@@ -682,7 +683,7 @@ namespace Olive
                 "&atilde;","&auml;","&aring;","&aelig;","&ccedil;","&egrave;","&eacute;",
                 "&ecirc;","&euml;","&igrave;","&iacute;","&icirc;","&iuml;","&eth;","&ntilde;",
                 "&ograve;","&oacute;","&ocirc;","&otilde;","&ouml;","&oslash;","&ugrave;",
-                "&uacute;","&ucirc;","&uuml;","&yacute;","&thorn;","&yuml;"};
+                "&uacute;","&ucirc;","&uuml;","&yacute;","&thorn;","&yuml;","&#39;"};
 
             var to = new string[] { "\"", "'", "&", "<", ">", " ",
                 "¡","¢","£","¤","¥","¦","§","¨","©","ª","«","¬","-","®","¯","°","±","²",
@@ -690,7 +691,7 @@ namespace Olive
                 "Ã","Ä","Å","Æ","Ç","È","É","Ê","Ë","Ì","Í","Î","Ï","Ð","Ñ","Ò","Ó","Ô",
                 "Õ","Ö","Ø","Ù","Ú","Û","Ü","Ý","Þ","ß","à","á","â","ã","ä","å","æ","ç",
                 "è","é","ê","ë","ì","í","î","ï","ð","ñ","ò","ó","ô","õ","ö","ø","ù","ú",
-                "û","ü","ý","þ","ÿ",
+                "û","ü","ý","þ","ÿ","'"
             };
 
             for (var i = 0; i < from.Length; i++)
