@@ -3,19 +3,13 @@
     /// <summary>
     /// Represents a single item that is displayed to the user.
     /// </summary>
-    public class BoardInfo
+    public class BoardMenue
     {
         /// <summary>
-        /// Url For the Widget to be shown.
+        /// Url to which the user will be redirected to manage these objects.
         /// For relative Url to the current site use ~/my-url syntax.
         /// </summary>
-        public string FeatureUrl { get; set; }
-
-        /// <summary>
-        /// Url to which the user will be redirected to manage this widget.
-        /// For relative Url to the current site use ~/my-url syntax.
-        /// </summary>
-        public string SettingsUrl { get; set; }
+        public string Url { get; set; }
 
         /// <summary>
         /// Name of the search result. This is mandatory.
@@ -30,6 +24,10 @@
         /// <summary>
         /// For relative Url to the current site use ~/my-url syntax.
         /// </summary>
-        public string IconUrl { get; set; }
+        public string Icon { get; set; }
+        /// <summary>
+        /// Permissions for acceess management
+        /// </summary>
+        public string Permissions;
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Olive.Mvc.Microservices
@@ -35,11 +36,8 @@ namespace Olive.Mvc.Microservices
             //get features data automatically
             app.Map("/olive/features", x => x.Run(NavigationApiMiddleWare.Navigate));
 
-            //get widgets data automatically
-            app.Map("/olive/widgets", x => x.Run(WidgetsApiMiddleware.GetWidgets));
-
             //get dynamic board data
-            app.Map("/api/board-components", x => x.Run(BoardApiMiddleware.Search));
+            app.Map("/api/board-components", x => x.Run(NavigationApiMiddleWare.Search));
 
             app.UseCors("AllowHubOrigin");
 
