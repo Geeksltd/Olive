@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Olive.Mvc.Microservices
@@ -32,8 +33,11 @@ namespace Olive.Mvc.Microservices
             //add menu route
             app.Map("/api/menu", x => x.Run(MenuApiMiddleWare.Menu));
 
-            //get controller data automatically
+            //get features data automatically
             app.Map("/olive/features", x => x.Run(NavigationApiMiddleWare.Navigate));
+
+            //get dynamic board data
+            app.Map("/api/board-componentsV2", x => x.Run(NavigationApiMiddleWare.Search));
 
             app.UseCors("AllowHubOrigin");
 
