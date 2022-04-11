@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Olive.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using Microsoft.AspNetCore.Http;
+using Olive.Entities;
 
 namespace Olive.Mvc.Microservices
 {
@@ -13,7 +11,6 @@ namespace Olive.Mvc.Microservices
     {
         internal static async Task Navigate(HttpContext context)
         {
-
             var navigations = GetNavigationsFromAssembly<Navigation>();
             navigations.Do(r => r.Define());
 
@@ -38,17 +35,21 @@ namespace Olive.Mvc.Microservices
             if (guidEntity == null) return;
             var navigations = GetNavigationsFromAssembly<Navigation>();
             navigations.Do(r => r.DefineDynamic(context.User, guidEntity));
+
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new
                 {
                     Widgets = navigations.SelectMany(x => x.GetBoardwidgets()),
                     Htmls = navigations.SelectMany(x => x.GetBoardHtmls()),
+                    Buttons = navigations.SelectMany(x => x.GetBoardButtons()),
                     Infos = navigations.SelectMany(x => x.GetBoardInfos()),
                     Menues = navigations.SelectMany(x => x.GetBoardMenues()),
                 });
+
             await context.Response.WriteAsync(response);
         }
-        private static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : Navigation
+
+        static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : Navigation
         {
             var types = AllLoadedTypes();
             types = types.Where(x => x.IsA<Navigation>() && !x.IsAbstract).ToArray();

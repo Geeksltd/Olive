@@ -1,22 +1,12 @@
-﻿using System.Collections.Generic;
-
-namespace Olive.Mvc.Microservices
+﻿namespace Olive.Mvc.Microservices
 {
     /// <summary>
     /// Represents a single item that is displayed to the user.
     /// </summary>
-    public class BoardInfo : BoardBox
+    public class BoardMenue
     {
-        public enum UrlTarget
-        {
-            Redirect,
-            Popup,
-            NewWindow
-        }
-        public BoardInfo(Navigation navigation) : base(navigation) => this.Navigation = navigation;
-
         /// <summary>
-        /// Url to which the user will be redirected. This is mandatory.
+        /// Url to which the user will be redirected to manage these objects.
         /// For relative Url to the current site use ~/my-url syntax.
         /// </summary>
         public string Url { get; set; }
@@ -27,9 +17,9 @@ namespace Olive.Mvc.Microservices
         public string Name { get; set; }
 
         /// <summary>
-        /// Body.
+        /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string Body { get; set; }
 
         /// <summary>
         /// For relative Url to the current site use ~/my-url syntax.
@@ -37,8 +27,8 @@ namespace Olive.Mvc.Microservices
         public string Icon { get; set; }
 
         /// <summary>
-        /// How you want it to be presented.
+        /// Permissions for acceess management
         /// </summary>
-        public UrlTarget Action { get; set; }
+        public string Permissions { get; set; }
     }
 }

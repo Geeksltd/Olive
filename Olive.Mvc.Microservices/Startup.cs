@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Olive.Mvc.Microservices
 {
@@ -20,6 +19,7 @@ namespace Olive.Mvc.Microservices
         {
             var permittedUrls = Config.Get("PermittedDomains").Split(",").Union(Microservice.Of("Hub").Url()).Select(d => d.TrimEnd("/")).Union(HubDevUrl).ToArray();
             Configuration.MergeEnvironmentVariables();
+
             services.AddCors(x => x.AddPolicy("AllowHubOrigin",
                 f => f.WithOrigins(permittedUrls)
                 .SetIsOriginAllowed(x => true)
@@ -30,18 +30,18 @@ namespace Olive.Mvc.Microservices
 
         public override void Configure(IApplicationBuilder app)
         {
-            //add menu route
+            // add menu route
             app.Map("/api/menu", x => x.Run(MenuApiMiddleWare.Menu));
 
-            //get features data automatically
+            // get features data automatically
             app.Map("/olive/features", x => x.Run(NavigationApiMiddleWare.Navigate));
 
-            //get dynamic board data
+            // get dynamic board data
             app.Map("/api/board-componentsV2", x => x.Run(NavigationApiMiddleWare.Search));
 
             app.UseCors("AllowHubOrigin");
 
-            //fix CORS issue            
+            // fix CORS issue
             app.UseMiddleware<MaintainCorsHeader>();
 
             base.Configure(app);

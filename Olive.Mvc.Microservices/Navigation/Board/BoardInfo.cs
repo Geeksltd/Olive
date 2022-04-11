@@ -3,10 +3,10 @@
     /// <summary>
     /// Represents a single item that is displayed to the user.
     /// </summary>
-    public class BoardMenue
+    public class BoardInfo : BoardBoxContent
     {
         /// <summary>
-        /// Url to which the user will be redirected to manage these objects.
+        /// Url to which the user will be redirected. This is mandatory.
         /// For relative Url to the current site use ~/my-url syntax.
         /// </summary>
         public string Url { get; set; }
@@ -17,17 +17,25 @@
         public string Name { get; set; }
 
         /// <summary>
-        /// Description
+        /// Body.
         /// </summary>
-        public string Body { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// For relative Url to the current site use ~/my-url syntax.
         /// </summary>
         public string Icon { get; set; }
+
         /// <summary>
-        /// Permissions for acceess management
+        /// How you want it to be presented.
         /// </summary>
-        public string Permissions;
+        public UrlTarget Action { get; set; }
+
+        public enum UrlTarget
+        {
+            Redirect,
+            Popup,
+            NewWindow
+        }
     }
 }
