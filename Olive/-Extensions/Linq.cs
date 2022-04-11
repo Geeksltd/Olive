@@ -951,6 +951,12 @@ namespace Olive
         }
 
         /// <summary>
+        /// Trims all elements in this list and excludes all null and "empty string" elements from the list.
+        /// </summary>
+        public static Task<string[]> Trim<TCollection>(this Task<TCollection> @this) where TCollection : IEnumerable<string>
+            => @this.Get(v => v.Trim()).ToArray();
+
+        /// <summary>
         /// Determines whether this list of strings contains the specified string.
         /// </summary>
         /// <param name="instance">The specified string which is checked in method.</param>
