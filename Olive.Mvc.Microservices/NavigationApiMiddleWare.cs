@@ -21,9 +21,9 @@ namespace Olive.Mvc.Microservices
 
         static Dictionary<string, List<GuidEntity>> BoardTypeCache = new Dictionary<string, List<GuidEntity>>();
 
-        static Func<List<GuidEntity>> DiscoverType(string name)
+        static List<T> DiscoverType<T>(string name) where T : GuidEntity
         {
-            return AllLoadedTypes().OfType<GuidEntity>().Where(x => x.GetType().Name == name).ToList;
+            return AllLoadedTypes().Where(x => x.IsA<GuidEntity>() && x.Name == name).Select(t => (T)Activator.CreateInstance(t)).ToList();
         }
 
         internal static async Task Search(HttpContext context)
@@ -31,11 +31,14 @@ namespace Olive.Mvc.Microservices
             var id = context.Request.Param("boardItemId").OrEmpty();
             var typeName = context.Request.Param("boardtype").OrEmpty();
             if (id.IsEmpty() || typeName.IsEmpty()) return;
-            var guidEntity = BoardTypeCache.GetOrAdd(typeName, DiscoverType(typeName)).FirstOrDefault(x => x.GetId().ToString() == id);
-            if (guidEntity == null) return;
+            var guidEntity = BoardTypeCache.GetValueOrDefault(typeName);
+            if (guidEntity == null)
+            {
+                guidEntity = DiscoverType<GuidEntity>(typeName);
+                BoardTypeCache.Add(typeName, guidEntity);
+            }
             var navigations = GetNavigationsFromAssembly<Navigation>();
-            navigations.Do(r => r.DefineDynamic(context.User, guidEntity));
-
+            navigations.Do(r => r.DefineDynamic(context.User, guidEntity.FirstOrDefault(x => x.GetId().ToString() == id)));
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new
                 {
