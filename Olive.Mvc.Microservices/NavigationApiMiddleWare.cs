@@ -28,7 +28,7 @@ namespace Olive.Mvc.Microservices
             var typeName = context.Request.Param("boardtype").OrEmpty();
             if (id.IsEmpty() || typeName.IsEmpty()) return;
             Type type;
-            if (!BoardTypeCache.TryGetValue(id, out type)) BoardTypeCache.Add(typeName, DiscoverType(typeName));
+            if (!BoardTypeCache.TryGetValue(typeName, out type)) BoardTypeCache.Add(typeName, DiscoverType(typeName));
             if (type == null) return;
             var navigations = GetNavigationsFromAssembly<Navigation>().ToList();
             foreach (var nav in navigations)
