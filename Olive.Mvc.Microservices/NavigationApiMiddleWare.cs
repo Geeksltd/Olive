@@ -19,26 +19,22 @@ namespace Olive.Mvc.Microservices
             await context.Response.WriteAsync(result);
         }
 
-        static Dictionary<string, List<GuidEntity>> BoardTypeCache = new Dictionary<string, List<GuidEntity>>();
+        static Dictionary<string, Type> BoardTypeCache = new Dictionary<string, Type>();
 
-        static List<T> DiscoverType<T>(string name) where T : GuidEntity
-        {
-            return AllLoadedTypes().Where(x => x.IsA<GuidEntity>() && x.Name == name).Select(t => (T)Activator.CreateInstance(t)).ToList();
-        }
-
+        static Func<Type> DiscoverType(string name) => AllLoadedTypes().FirstOrDefault(x => x.Name == name).GetType;
         internal static async Task Search(HttpContext context)
         {
             var id = context.Request.Param("boardItemId").OrEmpty();
             var typeName = context.Request.Param("boardtype").OrEmpty();
             if (id.IsEmpty() || typeName.IsEmpty()) return;
-            var guidEntity = BoardTypeCache.GetValueOrDefault(typeName);
-            if (guidEntity == null)
+            var type = BoardTypeCache.GetOrAdd(typeName, DiscoverType(typeName));
+            if (type == null) return;
+            var navigations = GetNavigationsFromAssembly<Navigation>().ToList();
+            foreach (var nav in navigations)
             {
-                guidEntity = DiscoverType<GuidEntity>(typeName);
-                BoardTypeCache.Add(typeName, guidEntity);
+                var guideEntity = id.Is<Guid>() ? (GuidEntity)await Context.Current.Database().Get(id.To<Guid>, type) : await nav.GetBoardObjectFromText(type, id);
+                nav.DefineDynamic(context.User, guideEntity);
             }
-            var navigations = GetNavigationsFromAssembly<Navigation>();
-            navigations.Do(r => r.DefineDynamic(context.User, guidEntity.FirstOrDefault(x => x.GetId().ToString() == id)));
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new
                 {
@@ -48,7 +44,6 @@ namespace Olive.Mvc.Microservices
                     Infos = navigations.SelectMany(x => x.GetBoardInfos()),
                     Menues = navigations.SelectMany(x => x.GetBoardMenues()),
                 });
-
             await context.Response.WriteAsync(response);
         }
 

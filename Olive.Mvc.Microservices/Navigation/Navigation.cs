@@ -1,9 +1,11 @@
 ﻿namespace Olive.Mvc.Microservices
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Routing;
@@ -29,6 +31,11 @@
         public abstract void Define();
 
         public abstract void DefineDynamic(ClaimsPrincipal user, GuidEntity board);
+
+        public async Task<GuidEntity> GetBoardObjectFromText(Type type, string id)
+        {
+            throw new NotImplementedException();
+        }
 
         protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
         {
