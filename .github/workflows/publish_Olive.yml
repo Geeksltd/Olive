@@ -34,11 +34,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Audit/Olive.Audit.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    - name: Publish Olive Audit DatabaseLogger NuGet Package
-      uses: brandedoutcast/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+#     - name: Publish Olive Audit DatabaseLogger NuGet Package
+#       uses: brandedoutcast/publish-nuget@v2
+#       with:
+#         PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
+#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws NuGet Package
       uses: brandedoutcast/publish-nuget@v2
