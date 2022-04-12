@@ -32,10 +32,7 @@
 
         public abstract void DefineDynamic(ClaimsPrincipal user, GuidEntity board);
 
-        public async Task<GuidEntity> GetBoardObjectFromText(Type type, string id)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<GuidEntity> GetBoardObjectFromText(Type type, string id);
 
         protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
         {
