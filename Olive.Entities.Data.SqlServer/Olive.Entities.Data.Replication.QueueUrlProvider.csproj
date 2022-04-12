@@ -10,6 +10,6 @@
 		<Version>1.0.0</Version>
 	</PropertyGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Olive\Olive.csproj" />
+		<PackageReference Include="Olive" Version="2.1.204" />
 	</ItemGroup>
 </Project>

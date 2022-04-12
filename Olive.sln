@@ -188,7 +188,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RabbitMQ", "RabbitMQ", "{89
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.RabbitMQ", "Olive.RabbitMQ\Olive.RabbitMQ.csproj", "{60B3D3F8-C740-4316-BD6A-0DA22CB176D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Security.Cloud.CustomEncryption", "Olive.Security.Cloud.CustomEncryption\Olive.Security.Cloud.CustomEncryption.csproj", "{CD238FF7-D1AD-481A-ADF4-4D237E131196}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Security.Cloud.CustomEncryption", "Olive.Security.Cloud.CustomEncryption\Olive.Security.Cloud.CustomEncryption.csproj", "{CD238FF7-D1AD-481A-ADF4-4D237E131196}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Entities.Data.Replication.QueueUrlProvider", "Olive.Entities.Data.Replication.QueueUrlProvider\Olive.Entities.Data.Replication.QueueUrlProvider.csproj", "{32B11163-919B-4B56-A668-20E5EB4FBC21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -495,6 +497,10 @@ Global
 		{CD238FF7-D1AD-481A-ADF4-4D237E131196}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD238FF7-D1AD-481A-ADF4-4D237E131196}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD238FF7-D1AD-481A-ADF4-4D237E131196}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32B11163-919B-4B56-A668-20E5EB4FBC21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32B11163-919B-4B56-A668-20E5EB4FBC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32B11163-919B-4B56-A668-20E5EB4FBC21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32B11163-919B-4B56-A668-20E5EB4FBC21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -579,6 +585,7 @@ Global
 		{8957474A-EBF2-4411-8EF3-11434D1688F6} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
 		{60B3D3F8-C740-4316-BD6A-0DA22CB176D7} = {8957474A-EBF2-4411-8EF3-11434D1688F6}
 		{CD238FF7-D1AD-481A-ADF4-4D237E131196} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
+		{32B11163-919B-4B56-A668-20E5EB4FBC21} = {4F5D9D95-8E6C-40CE-84EE-3D2157EB8928}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
