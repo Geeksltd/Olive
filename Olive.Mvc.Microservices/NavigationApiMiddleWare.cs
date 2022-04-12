@@ -32,8 +32,9 @@ namespace Olive.Mvc.Microservices
             var navigations = GetNavigationsFromAssembly<Navigation>().ToList();
             foreach (var nav in navigations)
             {
-                var guideEntity = id.Is<Guid>() ? (GuidEntity)await Context.Current.Database().Get(id.To<Guid>(), type) : await nav.GetBoardObjectFromText(type, id);
-                nav.DefineDynamic(context.User, guideEntity);
+                if (id.Is<Guid>())
+                    nav.DefineDynamic(context.User, (GuidEntity)await Context.Current.Database().Get(id.To<Guid>(), type));
+                else nav.DefineDynamic(context.User, await nav.GetBoardObjectFromText(type, id));
             }
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new
