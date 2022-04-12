@@ -21,14 +21,18 @@ namespace Olive.Mvc.Microservices
 
         static Dictionary<string, Type> BoardTypeCache = new Dictionary<string, Type>();
 
-        static Type DiscoverType(string name) => AllLoadedTypes().FirstOrDefault(x => x.Name == name).GetType();
+        static Type DiscoverType(string name) => AllLoadedTypes().FirstOrDefault(x => x.IsA<GuidEntity>() && x.Name == name);
         internal static async Task Search(HttpContext context)
         {
             var id = context.Request.Param("boardItemId").OrEmpty();
             var typeName = context.Request.Param("boardtype").OrEmpty();
             if (id.IsEmpty() || typeName.IsEmpty()) return;
             Type type;
-            if (!BoardTypeCache.TryGetValue(typeName, out type)) BoardTypeCache.Add(typeName, DiscoverType(typeName));
+            if (!BoardTypeCache.TryGetValue(typeName, out type))
+            {
+                type = DiscoverType(typeName);
+                BoardTypeCache.Add(typeName, type);
+            }
             if (type == null) return;
             var navigations = GetNavigationsFromAssembly<Navigation>().ToList();
             foreach (var nav in navigations)
