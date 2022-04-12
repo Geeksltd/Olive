@@ -165,11 +165,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    - name: Publish Olive Entities Cache Redis NuGet Package
-      uses: brandedoutcast/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: Olive.Entities.Cache.Redis/Olive.Entities.Cache.Redis.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+#     - name: Publish Olive Entities Cache Redis NuGet Package
+#      uses: brandedoutcast/publish-nuget@v2
+#       with:
+#        PROJECT_FILE_PATH: Olive.Entities.Cache.Redis/Olive.Entities.Cache.Redis.csproj
+#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data NuGet Package
       uses: brandedoutcast/publish-nuget@v2
