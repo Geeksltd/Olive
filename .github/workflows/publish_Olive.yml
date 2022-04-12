@@ -105,11 +105,11 @@ jobs:
 #         PROJECT_FILE_PATH: Olive.Blob.Aws/Olive.Blob.Aws.csproj
 #         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    - name: Publish Olive Blob Azure NuGet Package
-      uses: brandedoutcast/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: Olive.Blob.Azure/Olive.Blob.Azure.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    #- name: Publish Olive Blob Azure NuGet Package
+     # uses: brandedoutcast/publish-nuget@v2
+      #with:
+       # PROJECT_FILE_PATH: Olive.Blob.Azure/Olive.Blob.Azure.csproj
+        #NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Cloud NuGet Package
       uses: brandedoutcast/publish-nuget@v2
