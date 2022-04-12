@@ -34,11 +34,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Audit/Olive.Audit.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    #- name: Publish Olive Audit DatabaseLogger NuGet Package
-     # uses: brandedoutcast/publish-nuget@v2
-      #with:
-       # PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
-        #NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Audit DatabaseLogger NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws NuGet Package
       uses: brandedoutcast/publish-nuget@v2
@@ -105,11 +105,11 @@ jobs:
 #         PROJECT_FILE_PATH: Olive.Blob.Aws/Olive.Blob.Aws.csproj
 #         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    #- name: Publish Olive Blob Azure NuGet Package
-     # uses: brandedoutcast/publish-nuget@v2
-      #with:
-       # PROJECT_FILE_PATH: Olive.Blob.Azure/Olive.Blob.Azure.csproj
-        #NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Blob Azure NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Blob.Azure/Olive.Blob.Azure.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Cloud NuGet Package
       uses: brandedoutcast/publish-nuget@v2
@@ -165,11 +165,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Entities Cache Redis NuGet Package
-#      uses: brandedoutcast/publish-nuget@v2
-#       with:
-#        PROJECT_FILE_PATH: Olive.Entities.Cache.Redis/Olive.Entities.Cache.Redis.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Entities Cache Redis NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Cache.Redis/Olive.Entities.Cache.Redis.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data NuGet Package
       uses: brandedoutcast/publish-nuget@v2
@@ -189,95 +189,95 @@ jobs:
         PROJECT_FILE_PATH: Olive.Entities.Data.PostgreSQL/Olive.Entities.Data.PostgreSQL.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Entities Data Replication NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Entities.Data.Replication/Olive.Entities.Data.Replication.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Entities Data Replication NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.Replication/Olive.Entities.Data.Replication.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Entities Data Replication Mvc Extensions NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.Mvc.Extensions/Olive.Entities.Data.Replication.Mvc.Extensions.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Entities Data Replication Mvc Extensions NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.Replication.Mvc.Extensions/Olive.Entities.Data.Replication.Mvc.Extensions.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Entities Data SQLite NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Entities.Data.SQLite/Olive.Entities.Data.SQLite.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Entities Data SQLite NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.SQLite/Olive.Entities.Data.SQLite.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Entities Data SqlServer NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Entities.Data.SqlServer/Olive.Entities.Data.SqlServer.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Entities Data SqlServer NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.SqlServer/Olive.Entities.Data.SqlServer.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive EventBus NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.EventBus/Olive.EventBus.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive EventBus NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.EventBus/Olive.EventBus.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Export NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Export/Olive.Export.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Export NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Export/Olive.Export.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive GeoLocation NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.GeoLocation/Olive.GeoLocation.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive GeoLocation NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.GeoLocation/Olive.GeoLocation.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Globalization NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Globalization/Olive.Globalization.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Globalization NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Globalization/Olive.Globalization.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Hangfire NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Hangfire/Olive.Hangfire.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Hangfire NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Hangfire/Olive.Hangfire.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Hangfire MySql NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Hangfire.MySql/Olive.Hangfire.MySql.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Hangfire MySql NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Hangfire.MySql/Olive.Hangfire.MySql.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Log EventBus NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Log.EventBus/Olive.Log.EventBus.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Log EventBus NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Log.EventBus/Olive.Log.EventBus.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Microservices NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Microservices/Olive.Microservices.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Microservices NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Microservices/Olive.Microservices.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Mvc NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Mvc NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Mvc CKEditorFileManager NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Mvc.CKEditorFileManager/Olive.Mvc.CKEditorFileManager.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Mvc CKEditorFileManager NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc.CKEditorFileManager/Olive.Mvc.CKEditorFileManager.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Mvc IpFilter NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Mvc.IpFilter/Olive.Mvc.IpFilter.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Mvc IpFilter NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc.IpFilter/Olive.Mvc.IpFilter.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc Microservices NuGet Package
       uses: brandedoutcast/publish-nuget@v2
@@ -285,104 +285,104 @@ jobs:
         PROJECT_FILE_PATH: Olive.Mvc.Microservices/Olive.Mvc.Microservices.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Mvc Paging NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Mvc.Paging/Olive.Mvc.Paging.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Mvc Paging NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc.Paging/Olive.Mvc.Paging.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Mvc Recaptcha NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Mvc.Recaptcha/Olive.Mvc.Recaptcha.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Mvc Recaptcha NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc.Recaptcha/Olive.Mvc.Recaptcha.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Mvc Security NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Mvc.Security/Olive.Mvc.Security.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Mvc Security NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc.Security/Olive.Mvc.Security.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Mvc Testing NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Mvc.Testing/Olive.Mvc.Testing.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Mvc Testing NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Mvc.Testing/Olive.Mvc.Testing.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Net4x Compatibility NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Net4x.Compatibility/Olive.Net4x.Compatibility.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Net4x Compatibility NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Net4x.Compatibility/Olive.Net4x.Compatibility.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive PassiveBackgroundTasks NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.PassiveBackgroundTasks/Olive.PassiveBackgroundTasks.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive PassiveBackgroundTasks NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.PassiveBackgroundTasks/Olive.PassiveBackgroundTasks.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive PDF NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.PDF/Olive.PDF.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive PDF NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.PDF/Olive.PDF.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive PushNotification NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.PushNotification/Olive.PushNotification.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive PushNotification NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.PushNotification/Olive.PushNotification.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Security Auth0 NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Security.Auth0/Olive.Security.Auth0.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Security Auth0 NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Security.Auth0/Olive.Security.Auth0.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Security Aws NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Security.Aws/Olive.Security.Aws.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Security Aws NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Security.Aws/Olive.Security.Aws.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Security Azure NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Security.Azure/Olive.Security.Azure.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Security Azure NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Security.Azure/Olive.Security.Azure.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Security Cloud NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Security.Cloud/Olive.Security.Cloud.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Security Cloud NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Security.Cloud/Olive.Security.Cloud.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Security Impersonation NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Security.Impersonation/Olive.Security.Impersonation.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Security Impersonation NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Security.Impersonation/Olive.Security.Impersonation.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive SMS NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.SMS/Olive.SMS.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive SMS NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.SMS/Olive.SMS.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Sms Aws NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Sms.Aws/Olive.Sms.Aws.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Sms Aws NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Sms.Aws/Olive.Sms.Aws.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive SMS TextMagic NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.SMS.TextMagic/Olive.SMS.TextMagic.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive SMS TextMagic NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.SMS.TextMagic/Olive.SMS.TextMagic.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Web NuGet Package
-#       uses: brandedoutcast/publish-nuget@v2
-#       with:
-#         PROJECT_FILE_PATH: Olive.Web/Olive.Web.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Web NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Web/Olive.Web.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
