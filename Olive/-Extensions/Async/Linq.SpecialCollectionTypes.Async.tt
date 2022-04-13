@@ -10,11 +10,26 @@ using System.Linq;
 using System.Threading.Tasks;
 
 <# var listTypes = new [] { "TSource[]", "IOrderedEnumerable<TSource>", "List<TSource>", "IList<TSource>" }; #>
+<# var resultListTypes = new [] { "TResult[]", "IOrderedEnumerable<TResult>", "List<TResult>", "IList<TResult>" }; #>
 
 namespace Olive
 {
     partial class OliveExtensions
     {
+    <# foreach (var t in listTypes) { #>
+    <# foreach (var r in resultListTypes) { #>
+      public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<<#=t#>> @this, Func<TSource, <#=r#>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<<#=t#>> @this, Func<TSource, Task<<#=r#>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+            <# } #>
+            <# } #>
+
+
+
         <# foreach (var t in listTypes) { #>
     #region <#=t#>
         /// <summary>
