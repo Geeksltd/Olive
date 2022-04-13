@@ -84,6 +84,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "docs", "docs\", "{D3A7C778-
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "57392"
+		SlnRelativePath = "docs\"
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Mvc.Paging", "Olive.Mvc.Paging\Olive.Mvc.Paging.csproj", "{A504705A-BAAA-447D-A15F-C99BEFF296F7}"

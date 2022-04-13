@@ -30,7 +30,7 @@
 
         public abstract void Define();
 
-        public abstract void DefineDynamic(ClaimsPrincipal user, GuidEntity board);
+        public abstract Task DefineDynamic(ClaimsPrincipal user, GuidEntity board);
 
         public abstract Task<GuidEntity> GetBoardObjectFromText(Type type, string id);
 

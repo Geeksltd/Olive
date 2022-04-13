@@ -38,8 +38,8 @@ namespace Olive.Mvc.Microservices
             foreach (var nav in navigations)
             {
                 if (id.Is<Guid>())
-                    nav.DefineDynamic(context.User, (GuidEntity)await Context.Current.Database().Get(id.To<Guid>(), type));
-                else nav.DefineDynamic(context.User, await nav.GetBoardObjectFromText(type, id));
+                    await nav.DefineDynamic(context.User, (GuidEntity)await Context.Current.Database().Get(id.To<Guid>(), type));
+                else await nav.DefineDynamic(context.User, await nav.GetBoardObjectFromText(type, id));
             }
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new
