@@ -1,4 +1,6 @@
-﻿namespace Olive.Mvc.Microservices
+﻿using Newtonsoft.Json;
+
+namespace Olive.Mvc.Microservices
 {
     /// <summary>
     /// Feature{
@@ -13,6 +15,7 @@
     ///     Iframe      = false
     /// }
     /// </summary>
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class Feature
     {
         /// <summary>

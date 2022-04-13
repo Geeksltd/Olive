@@ -1,8 +1,11 @@
-﻿namespace Olive.Mvc.Microservices
+﻿using Newtonsoft.Json;
+
+namespace Olive.Mvc.Microservices
 {
     /// <summary>
     /// Represents a single widget that is displayed to the user.
     /// </summary>
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class BoardWidget : BoardBoxContent
     {
         /// <summary>

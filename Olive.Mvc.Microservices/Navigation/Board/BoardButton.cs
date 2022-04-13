@@ -1,5 +1,8 @@
-﻿namespace Olive.Mvc.Microservices
+﻿using Newtonsoft.Json;
+
+namespace Olive.Mvc.Microservices
 {
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class BoardButton : BoardBoxContent
     {
         /// <summary>

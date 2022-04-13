@@ -16,7 +16,7 @@
         protected readonly List<Feature> Features = new();
         protected readonly List<BoardMenue> BoardMenues = new();
         protected internal readonly List<BoardBoxContent> BoardContents = new();
-
+        public IDatabase Database => Context.Current.Database();
         internal List<Feature> GetFeatures() => Features;
 
         internal IEnumerable<BoardWidget> GetBoardwidgets() => BoardContents.OfType<BoardWidget>();
@@ -30,9 +30,9 @@
 
         public abstract void Define();
 
-        public abstract Task DefineDynamic(ClaimsPrincipal user, GuidEntity board);
+        public virtual async Task DefineDynamic(ClaimsPrincipal user, GuidEntity board) { return; }
 
-        public abstract Task<GuidEntity> GetBoardObjectFromText(Type type, string id);
+        public virtual async Task<GuidEntity> GetBoardObjectFromText(Type type, string id) { return null; }
 
         protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
         {
