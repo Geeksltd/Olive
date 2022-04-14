@@ -24,9 +24,21 @@ namespace Olive
           this Task<IEnumerable<TSource>> @this, Func<TSource, Task<TResult>> func)
             => @this.Get(x => x.OrEmpty().SequentialSelect(func));
 
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult, TSourceCollection, TResultCollection>(
+          this Task<TSourceCollection> @this, Func<TSource, TResultCollection> func)
+            where TSourceCollection : IEnumerable<TSource>
+            where TResultCollection : IEnumerable<TResult>
+            => @this.Get(v => v.SelectMany(x => func(x)));
+
+
         public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<TResult>> func)
             => @this.Get(x => x.OrEmpty().SelectMany(func));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult, TCollection>(
+          this Task<IEnumerable<TSource>> @this, Func<TSource, TCollection> func)
+           where TCollection : IEnumerable<TResult>
+            => @this.Get(x => x.OrEmpty().SelectMany(x => func(x)));
 
         public static async Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
           this Task<IEnumerable<TSource>> @this, Func<TSource, IEnumerable<Task<TResult>>> func)

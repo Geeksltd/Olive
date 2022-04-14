@@ -8,6 +8,121 @@ namespace Olive
 {
     partial class OliveExtensions
     {
+              public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, TResult[]> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, Task<TResult[]>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, IOrderedEnumerable<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, Task<IOrderedEnumerable<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, List<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, Task<List<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, IList<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<TSource[]> @this, Func<TSource, Task<IList<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult[]> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<TResult[]>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, IOrderedEnumerable<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<IOrderedEnumerable<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, List<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<List<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, IList<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<IList<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, TResult[]> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, Task<TResult[]>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, IOrderedEnumerable<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, Task<IOrderedEnumerable<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, List<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, Task<List<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, IList<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<List<TSource>> @this, Func<TSource, Task<IList<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, TResult[]> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, Task<TResult[]>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, IOrderedEnumerable<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, Task<IOrderedEnumerable<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, List<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, Task<List<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                  public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, IList<TResult>> func)
+            => @this.ForLinq().SelectMany(x=>func(x));
+
+        public static Task<IEnumerable<TResult>> SelectMany<TSource, TResult>(
+          this Task<IList<TSource>> @this, Func<TSource, Task<IList<TResult>>> func)
+            => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
+                        
+
+
             #region TSource[]
         /// <summary>
         /// Projects each element of a sequence into a new form.
