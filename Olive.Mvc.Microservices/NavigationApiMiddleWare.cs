@@ -49,6 +49,7 @@ namespace Olive.Mvc.Microservices
                     Buttons = navigations.SelectMany(x => x.GetBoardButtons()),
                     Infos = navigations.SelectMany(x => x.GetBoardInfos()),
                     Menues = navigations.SelectMany(x => x.GetBoardMenues()),
+                    Intros = navigations.SelectMany(x => x.GetBoardIntros()),
                 });
             await context.Response.WriteAsync(response);
         }

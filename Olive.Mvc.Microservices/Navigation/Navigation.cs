@@ -15,6 +15,7 @@
     {
         protected readonly List<Feature> Features = new();
         protected readonly List<BoardMenue> BoardMenues = new();
+        protected readonly List<BoardIntro> BoardIntros = new();
         protected internal readonly List<BoardBoxContent> BoardContents = new();
         public IDatabase Database => Context.Current.Database();
         internal List<Feature> GetFeatures() => Features;
@@ -24,6 +25,7 @@
         internal IEnumerable<BoardHtml> GetBoardHtmls() => BoardContents.OfType<BoardHtml>();
         internal IEnumerable<BoardButton> GetBoardButtons() => BoardContents.OfType<BoardButton>();
         internal IEnumerable<BoardMenue> GetBoardMenues() => BoardMenues;
+        internal IEnumerable<BoardIntro> GetBoardIntros() => BoardIntros;
 
         protected static IUrlHelper Url
             => new UrlHelper(new ActionContext(Context.Current.Http(), new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()));
@@ -77,11 +79,22 @@
                 Permissions = permissions
             });
         }
+        protected void AddIntro(string name, string url, string imageUrl = null, string desc = null)
+        {
+            Add(new BoardIntro
+            {
+                Name = name,
+                Url = url,
+                ImageUrl = imageUrl,
+                Description = desc
+            });
+        }
 
         protected BoardBox ForBox(string boxTitle, string colour) => new BoardBox(this) { Title = boxTitle, Colour = colour };
 
         protected void Add(Feature feature) => Features.Add(feature);
-
         protected void Add(BoardMenue boardMenue) => BoardMenues.Add(boardMenue);
+        protected void Add(BoardIntro boardIntro) => BoardIntros.Add(boardIntro);
+
     }
 }
