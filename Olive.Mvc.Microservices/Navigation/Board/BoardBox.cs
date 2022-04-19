@@ -56,10 +56,8 @@
             Add(new BoardHtml { RawHtml = rawHtml, Permissions = permissions });
         }
 
-        public void AddButton(string icon, string url, string text = null, string tooltip = null)
-            => AddButton(new BoardButton { Icon = icon, Url = url, Text = text, Tooltip = tooltip });
-
-        public void AddButton(BoardButton button) => Add(button);
+        public void AddButton(string icon, string url, string text = null, string tooltip = null, string permissions = null)
+            => Add(new BoardButton { Icon = icon, Url = url, Text = text, Tooltip = tooltip, Permissions = permissions });
 
     }
 }
