@@ -24,8 +24,8 @@ namespace Olive.Mvc.Microservices
         static Type DiscoverType(string name) => AllLoadedTypes().FirstOrDefault(x => x.IsA<GuidEntity>() && x.Name == name);
         internal static async Task Search(HttpContext context)
         {
-            var id = context.Request.Param("boardItemId").OrEmpty();
-            var typeName = context.Request.Param("boardtype").OrEmpty();
+            var id = context.Request.Param("id").OrEmpty();
+            var typeName = context.Request.Param("type").OrEmpty();
             if (id.IsEmpty() || typeName.IsEmpty()) return;
             Type type;
             if (!BoardTypeCache.TryGetValue(typeName, out type))
