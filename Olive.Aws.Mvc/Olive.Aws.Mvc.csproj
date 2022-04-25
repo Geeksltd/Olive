@@ -33,6 +33,7 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.0.0" />
 		<PackageReference Include="AWSSDK.Core" Version="3.7.1" />
 		<PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="6.0.3" />
 		<PackageReference Include="Amazon.AspNetCore.DataProtection.SSM" Version="2.1.0" />
