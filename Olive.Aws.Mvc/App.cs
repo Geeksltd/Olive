@@ -44,14 +44,14 @@ namespace Olive.Aws
             else
             {
                 logging.AddLambdaLogger(new LambdaLoggerOptions
-                {​​​​​
+                {
 					IncludeCategory = true,
                     IncludeLogLevel = true,
                     IncludeNewline = true,
                     IncludeEventId = true,
                     IncludeScopes = true,
                     IncludeException = true
-                }​​​​​);
+                });
 
                 logging.SetMinimumLevel(LogLevel.Debug);
             }
