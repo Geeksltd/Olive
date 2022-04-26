@@ -34,10 +34,5 @@ namespace Olive.Mvc.Microservices
         /// </summary>
         public UrlTarget Action { get; set; }
     }
-    public enum UrlTarget
-    {
-        Redirect,
-        Popup,
-        NewWindow
-    }
+
 }
