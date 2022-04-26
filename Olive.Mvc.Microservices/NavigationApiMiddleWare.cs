@@ -46,9 +46,7 @@ namespace Olive.Mvc.Microservices
                     else
                         secondParameter = await nav.GetBoardObjectFromText(type, id);
                     if (secondParameter == null) continue;
-                    var generic = defineDynamic.MakeGenericMethod(context.User.GetType(), type);
-                    var task = (Task)generic.Invoke(nav, new object[] { context.User, Convert.ChangeType(secondParameter, type) });
-                    await task.ConfigureAwait(false);
+                    await (Task)defineDynamic.Invoke(nav, new object[] { context.User, Convert.ChangeType(secondParameter, type) });
                 }
             }
 
