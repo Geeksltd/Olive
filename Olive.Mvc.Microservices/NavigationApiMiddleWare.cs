@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Olive.Entities;
@@ -37,9 +38,14 @@ namespace Olive.Mvc.Microservices
             var navigations = GetNavigationsFromAssembly<Navigation>().ToList();
             foreach (var nav in navigations)
             {
-                if (id.Is<Guid>())
-                    await nav.DefineDynamic(context.User, (GuidEntity)await Context.Current.Database().Get(id.To<Guid>(), type));
-                else await nav.DefineDynamic(context.User, await nav.GetBoardObjectFromText(type, id));
+                foreach (var defineDynamic in nav.GetType().GetMethods().Where(x => x.Name == "DefineDynamic"))
+                {
+                    if (id.Is<Guid>())
+                        await (Task)defineDynamic.Invoke(nav, new object[] { context.User, await Context.Current.Database().Get(id.To<Guid>(), type) });
+                    else
+                        await (Task)defineDynamic.Invoke(nav, new object[] { context.User, await nav.GetBoardObjectFromText(type, id) });
+
+                }
             }
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new
@@ -67,7 +73,7 @@ namespace Olive.Mvc.Microservices
             if (navigations.None()) return;
             var boardSources = navigations
                 .SelectMany(x => x.GetType().GetMethods().Where(x => x.Name == "DefineDynamic"))
-                .Select(x => x.GetParameters().LastOrDefault().GetType().Name).Distinct();
+                .Select(x => x.GetParameters().LastOrDefault().ParameterType.Name).Distinct();
             var result = Newtonsoft.Json.JsonConvert.SerializeObject(boardSources);
             await context.Response.WriteAsync(result);
         }

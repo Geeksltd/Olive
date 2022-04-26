@@ -31,8 +31,6 @@
 
         public abstract void Define();
 
-        public virtual async Task DefineDynamic(ClaimsPrincipal user, GuidEntity board) { return; }
-
         public virtual async Task<GuidEntity> GetBoardObjectFromText(Type type, string id) { return null; }
 
         protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
