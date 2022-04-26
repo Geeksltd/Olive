@@ -39,6 +39,9 @@ namespace Olive.Mvc.Microservices
             // get dynamic board data
             app.Map("/olive/board/features", x => x.Run(NavigationApiMiddleWare.Search));
 
+            // get board sources
+            app.Map("/olive/board/sources", x => x.Run(NavigationApiMiddleWare.BoardSources));
+
             app.UseCors("AllowHubOrigin");
 
             // fix CORS issue

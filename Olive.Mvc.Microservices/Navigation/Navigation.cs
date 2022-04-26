@@ -26,7 +26,6 @@
         internal IEnumerable<BoardButton> GetBoardButtons() => BoardContents.OfType<BoardButton>();
         internal IEnumerable<BoardMenue> GetBoardMenues() => BoardMenues;
         internal IEnumerable<BoardIntro> GetBoardIntros() => BoardIntros;
-
         protected static IUrlHelper Url
             => new UrlHelper(new ActionContext(Context.Current.Http(), new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()));
 

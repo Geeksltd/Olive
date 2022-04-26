@@ -3,7 +3,12 @@
     using System;
     using System.Collections.Generic;
     using Microsoft.AspNetCore.Mvc;
-
+    public enum UrlTarget
+    {
+        Redirect,
+        Popup,
+        NewWindow
+    }
     public class BoardBox
     {
         Navigation Navigation;
@@ -36,7 +41,7 @@
             Add(new BoardWidget { Url = url, Permissions = permissions });
         }
 
-        public void AddInfo(string title, string description, string icon, string url, string permissions = null, BoardInfo.UrlTarget action = BoardInfo.UrlTarget.Redirect)
+        public void AddInfo(string title, string description, string icon, string url, string permissions = null, UrlTarget action = UrlTarget.Redirect)
         {
             var result = new BoardInfo
             {
@@ -56,8 +61,8 @@
             Add(new BoardHtml { RawHtml = rawHtml, Permissions = permissions });
         }
 
-        public void AddButton(string icon, string url, string text = null, string tooltip = null, string permissions = null)
-            => Add(new BoardButton { Icon = icon, Url = url, Text = text, Tooltip = tooltip, Permissions = permissions });
+        public void AddButton(string icon, string url, string text = null, string tooltip = null, string permissions = null, UrlTarget action = UrlTarget.Redirect)
+            => Add(new BoardButton { Icon = icon, Url = url, Text = text, Tooltip = tooltip, Permissions = permissions, Action = action });
 
     }
 }

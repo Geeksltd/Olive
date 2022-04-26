@@ -24,5 +24,10 @@ namespace Olive.Mvc.Microservices
         /// Tooltip description to show to the user.
         /// </summary>
         public string Tooltip { get; set; }
+
+        /// <summary>
+        /// How you want it to be presented.
+        /// </summary>
+        public UrlTarget Action { get; set; }
     }
 }

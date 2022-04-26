@@ -60,7 +60,17 @@ namespace Olive.Mvc.Microservices
             types = types.Where(x => x.IsA<Navigation>() && !x.IsAbstract).ToArray();
             return types.Select(t => (T)Activator.CreateInstance(t)).ToArray();
         }
+        internal static async Task BoardSources(HttpContext context)
+        {
+            var navigations = GetNavigationsFromAssembly<Navigation>();
 
+            if (navigations.None()) return;
+            var boardSources = navigations
+                .SelectMany(x => x.GetType().GetMethods().Where(x => x.Name == "DefineDynamic"))
+                .Select(x => x.GetParameters().LastOrDefault().GetType().Name).Distinct();
+            var result = Newtonsoft.Json.JsonConvert.SerializeObject(boardSources);
+            await context.Response.WriteAsync(result);
+        }
         static Type[] AllLoadedTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToArray();
     }
 }

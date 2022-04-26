@@ -33,12 +33,11 @@ namespace Olive.Mvc.Microservices
         /// How you want it to be presented.
         /// </summary>
         public UrlTarget Action { get; set; }
-
-        public enum UrlTarget
-        {
-            Redirect,
-            Popup,
-            NewWindow
-        }
+    }
+    public enum UrlTarget
+    {
+        Redirect,
+        Popup,
+        NewWindow
     }
 }
