@@ -46,11 +46,12 @@ namespace Olive.Mvc.Microservices
                     else
                         secondParameter = await nav.GetBoardObjectFromText(type, id);
                     if (secondParameter == null) continue;
-                    var generic = defineDynamic.MakeGenericMethod(context.User.GetType(), secondParameter.GetType());
-                    var task = (Task)generic.Invoke(nav, new object[] { context.User, secondParameter });
+                    var generic = defineDynamic.MakeGenericMethod(context.User.GetType(), type);
+                    var task = (Task)generic.Invoke(nav, new object[] { context.User, Convert.ChangeType(secondParameter, type) });
                     await task.ConfigureAwait(false);
                 }
             }
+
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
                 new
                 {
@@ -63,7 +64,10 @@ namespace Olive.Mvc.Microservices
                 });
             await context.Response.WriteAsync(response);
         }
-
+        static T CastObject<T>(object input)
+        {
+            return (T)input;
+        }
         static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : Navigation
         {
             var types = AllLoadedTypes();
