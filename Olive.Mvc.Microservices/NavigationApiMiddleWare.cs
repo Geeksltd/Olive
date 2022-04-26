@@ -40,11 +40,15 @@ namespace Olive.Mvc.Microservices
             {
                 foreach (var defineDynamic in nav.GetType().GetMethods().Where(x => x.Name == "DefineDynamic"))
                 {
+                    object secondParameter = null;
                     if (id.Is<Guid>())
-                        await (Task)defineDynamic.Invoke(nav, new object[] { context.User, await Context.Current.Database().Get(id.To<Guid>(), type) });
+                        secondParameter = await Context.Current.Database().Get(id.To<Guid>(), type);
                     else
-                        await (Task)defineDynamic.Invoke(nav, new object[] { context.User, await nav.GetBoardObjectFromText(type, id) });
-
+                        secondParameter = await nav.GetBoardObjectFromText(type, id);
+                    if (secondParameter == null) continue;
+                    var generic = defineDynamic.MakeGenericMethod(context.User.GetType(), secondParameter.GetType());
+                    var task = (Task)generic.Invoke(nav, new object[] { context.User, secondParameter });
+                    await task.ConfigureAwait(false);
                 }
             }
             var response = Newtonsoft.Json.JsonConvert.SerializeObject(
