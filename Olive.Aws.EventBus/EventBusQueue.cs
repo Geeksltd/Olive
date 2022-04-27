@@ -30,12 +30,12 @@ namespace Olive.Aws
         /// <summary>
         ///  Creates and uses a new Aws Client in the specified region.
         /// </summary>
-        public EventBusQueue Region(Amazon.RegionEndpoint region) => Client(new AmazonSQSClient(region));
-        
+        public EventBusQueue Region(Amazon.RegionEndpoint region) => SetClient(new AmazonSQSClient(region));
+
         /// <summary>
         ///  Changes the Aws Client to the specified one.
         /// </summary>
-        public EventBusQueue Client(IAmazonSQS client)
+        public EventBusQueue SetClient(IAmazonSQS client)
         {
             this.client = client;
             return this;
