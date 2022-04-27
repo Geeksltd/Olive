@@ -9,7 +9,7 @@ namespace Olive.Entities.Replication
     public abstract partial class DestinationEndpoint
     {
         Assembly DomainAssembly;
-        internal IEventBusQueue PublishQueue, RefreshQueue;
+        public readonly IEventBusQueue PublishQueue, RefreshQueue;
         protected IDatabase Database => Context.Current.Database();
         ConcurrentDictionary<string, DateTime> ResetRequestUtcs = new ConcurrentDictionary<string, DateTime>();
         Dictionary<string, EndpointSubscriber> Subscribers = new Dictionary<string, EndpointSubscriber>();
