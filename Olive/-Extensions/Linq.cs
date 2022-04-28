@@ -589,19 +589,7 @@ namespace Olive
         /// </summary>
         /// <param name="selector">The Func() which determines how items selected from the list.</param>
         public static IEnumerable<T> Distinct<T, TResult>(this IEnumerable<T> @this, Func<T, TResult> selector)
-        {
-            var keys = new List<TResult>();
-
-            foreach (var item in @this)
-            {
-                var keyValue = selector(item);
-
-                if (keys.Contains(keyValue)) continue;
-
-                keys.Add(keyValue);
-                yield return item;
-            }
-        }
+            => @this.GroupBy(selector).Select(x => x.First());
 
         /// <summary>
         /// Determines of this list contains all items of another given list.
