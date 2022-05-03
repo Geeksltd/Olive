@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Mvc.Microservices</RootNamespace>
     <PackageId>Olive.Mvc.Microservices</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.133</Version>
+    <Version>3.1.134</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -32,6 +32,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Olive.GlobalSearch.Source" Version="1.0.42" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.ApiClient\Olive.ApiClient.csproj" />
     <ProjectReference Include="..\Olive.Microservices\Olive.Microservices.csproj" />

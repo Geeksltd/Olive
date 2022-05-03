@@ -10,6 +10,8 @@ namespace Olive.Mvc.Microservices
 {
     internal static class NavigationApiMiddleWare
     {
+        static Dictionary<string, Type> BoardTypeCache = new Dictionary<string, Type>();
+
         internal static async Task Navigate(HttpContext context)
         {
             var navigations = GetNavigationsFromAssembly<Navigation>();
@@ -19,8 +21,6 @@ namespace Olive.Mvc.Microservices
             var result = Newtonsoft.Json.JsonConvert.SerializeObject(navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToList());
             await context.Response.WriteAsync(result);
         }
-
-        static Dictionary<string, Type> BoardTypeCache = new Dictionary<string, Type>();
 
         static Type DiscoverType(string name) => AllLoadedTypes().FirstOrDefault(x => x.IsA<GuidEntity>() && x.Name == name);
         internal static async Task Search(HttpContext context)
@@ -62,11 +62,7 @@ namespace Olive.Mvc.Microservices
                 });
             await context.Response.WriteAsync(response);
         }
-        static T CastObject<T>(object input)
-        {
-            return (T)input;
-        }
-        static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : Navigation
+        internal static IEnumerable<T> GetNavigationsFromAssembly<T>() where T : Navigation
         {
             var types = AllLoadedTypes();
             types = types.Where(x => x.IsA<Navigation>() && !x.IsAbstract).ToArray();

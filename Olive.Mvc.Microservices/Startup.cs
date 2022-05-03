@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,11 @@ namespace Olive.Mvc.Microservices
         const string HubDevUrl = "http://localhost:9011";
 
         protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory factory)
-            : base(env, config, factory) { }
+            : base(env, config, factory)
+        {
+            if (env.EnvironmentName == "Development")
+                Task.Factory.RunSync(DevelopmentShareInfo.ShareMyData);
+        }
 
         public override void ConfigureServices(IServiceCollection services)
         {
