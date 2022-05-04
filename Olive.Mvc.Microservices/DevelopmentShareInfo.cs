@@ -4,11 +4,13 @@ using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Olive.Mvc.Microservices
 {
     internal static class DevelopmentShareInfo
     {
+        internal static bool Shared = false;
         private static DevelopmentFullInfo SetFullInfo()
         {
             var navigations = NavigationApiMiddleWare.GetNavigationsFromAssembly<Navigation>();
@@ -39,19 +41,26 @@ namespace Olive.Mvc.Microservices
             types = types.Where(x => x.IsA<Olive.GlobalSearch.SearchSource>() && !x.IsAbstract).ToArray();
             return types.Select(t => (T)Activator.CreateInstance(t)).ToArray();
         }
-        internal static async Task ShareMyData()
+        internal static RequestDelegate ShareMyData(RequestDelegate next)
         {
-            var info = SetFullInfo();
-            if (info == null) return;
-            try
+            return async ctx =>
             {
-                var uri = (Microservice.Of("hub") + "/LocalSetup").AsUri();
-                await uri.PostJson(Newtonsoft.Json.JsonConvert.SerializeObject(info));
-            }
-            catch (Exception ex)
-            {
-                Log.For(typeof(DevelopmentShareInfo)).Error("Could not reach local hub.\n" + ex);
-            }
+                var info = SetFullInfo();
+                if (info != null)
+                {
+                    try
+                    {
+                        var uri = (Microservice.Of("hub") + "/LocalSetup").AsUri();
+                        await uri.PostJson(Newtonsoft.Json.JsonConvert.SerializeObject(info));
+                        Shared = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.For(typeof(DevelopmentShareInfo)).Error("Could not reach local hub.\n" + ex);
+                    }
+                }
+                await next(ctx);
+            };
         }
     }
 }

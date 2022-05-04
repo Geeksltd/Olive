@@ -4,8 +4,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Routing;
     using Olive.Entities;
 
     public abstract class Navigation
@@ -32,19 +35,18 @@
         public abstract void Define();
 
         public virtual async Task<GuidEntity> GetBoardObjectFromText(Type type, string id) => null;
-
+        protected static IUrlHelper Url
+            => new UrlHelper(new ActionContext(Context.Current.Http(), new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()));
         protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
         {
-            var controller = (TController)Activator.CreateInstance(typeof(TController));
-
-            if (url.IsEmpty()) url = controller.Url.Index<TController>();
+            if (url.IsEmpty()) url = Url.Index<TController>();
             if (fullPath.IsEmpty()) fullPath = typeof(TController).Name.TrimEnd("Controller");
             if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, order, showOnRight, iframe);
+            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight, iframe, order);
         }
 
-        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, int? order, bool showOnRigh, bool iframe)
+        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh, bool iframe, int? order)
         {
             Add(new Feature
             {
@@ -63,8 +65,7 @@
 
         protected void AddMenu<TController>(string name, string icon = null, string url = null, string desc = null, string permissions = null) where TController : Controller
         {
-            var controller = (TController)Activator.CreateInstance(typeof(TController));
-            if (url.IsEmpty()) url = controller.Url.Index<TController>();
+            if (url.IsEmpty()) url = Url.Index<TController>();
             if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
             Add(new BoardMenue

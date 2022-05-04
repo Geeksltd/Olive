@@ -50,8 +50,8 @@ namespace Olive.Mvc.Microservices
 
             base.Configure(app);
             Console.Title = Microservice.Me.Name;
-            if (Context.Current.Environment().EnvironmentName == "Development")
-                Task.Factory.RunSync(DevelopmentShareInfo.ShareMyData);
+            if (Context.Current.Environment().EnvironmentName == "Development" && !DevelopmentShareInfo.Shared)
+                app.Use(DevelopmentShareInfo.ShareMyData);
         }
     }
 }
