@@ -14,11 +14,7 @@ namespace Olive.Mvc.Microservices
         const string HubDevUrl = "http://localhost:9011";
 
         protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory factory)
-            : base(env, config, factory)
-        {
-            if (env.EnvironmentName == "Development")
-                Task.Factory.RunSync(DevelopmentShareInfo.ShareMyData);
-        }
+            : base(env, config, factory) { }
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -54,6 +50,8 @@ namespace Olive.Mvc.Microservices
 
             base.Configure(app);
             Console.Title = Microservice.Me.Name;
+            if (Context.Current.Environment().EnvironmentName == "Development")
+                Task.Factory.RunSync(DevelopmentShareInfo.ShareMyData);
         }
     }
 }
