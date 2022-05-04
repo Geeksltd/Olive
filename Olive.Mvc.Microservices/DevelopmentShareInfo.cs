@@ -48,15 +48,15 @@ namespace Olive.Mvc.Microservices
                 var info = SetFullInfo();
                 if (info != null)
                 {
-                    var uri = (Microservice.Of("hub") + "LocalSetup").AsUri();
                     try
                     {
+                        var uri = Microservice.Of("Hub").Url("LocalSetup").AsUri();
                         await uri.PostJson(Newtonsoft.Json.JsonConvert.SerializeObject(info));
                         Shared = true;
                     }
                     catch (Exception ex)
                     {
-                        Log.For(typeof(DevelopmentShareInfo)).Error(uri + "\nCould not reach local hub.\n" + ex);
+                        Log.For(typeof(DevelopmentShareInfo)).Error("With URL: " + Microservice.Of("Hub").Url("LocalSetup") + "\nCould not reach local hub.\n" + ex);
                     }
                 }
                 await next(ctx);
