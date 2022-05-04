@@ -4,11 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Routing;
     using Olive.Entities;
 
     public abstract class Navigation
@@ -21,31 +18,33 @@
         internal List<Feature> GetFeatures() => Features;
 
         internal IEnumerable<BoardWidget> GetBoardwidgets() => BoardContents.OfType<BoardWidget>();
+
         internal IEnumerable<BoardInfo> GetBoardInfos() => BoardContents.OfType<BoardInfo>();
+
         internal IEnumerable<BoardHtml> GetBoardHtmls() => BoardContents.OfType<BoardHtml>();
+
         internal IEnumerable<BoardButton> GetBoardButtons() => BoardContents.OfType<BoardButton>();
+
         internal IEnumerable<BoardMenue> GetBoardMenues() => BoardMenues;
+
         internal IEnumerable<BoardIntro> GetBoardIntros() => BoardIntros;
-        protected static IUrlHelper Url
-            => new UrlHelper(new ActionContext(Context.Current.Http(), new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()));
 
         public abstract void Define();
 
-        public virtual async Task<GuidEntity> GetBoardObjectFromText(Type type, string id) { return null; }
+        public virtual async Task<GuidEntity> GetBoardObjectFromText(Type type, string id) => null;
 
         protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
         {
-            if (url.IsEmpty()) url = Url.Index<TController>();
+            var controller = (TController)Activator.CreateInstance(typeof(TController));
 
-            if (fullPath.IsEmpty())
-                fullPath = typeof(TController).Name.TrimEnd("Controller");
-
+            if (url.IsEmpty()) url = controller.Url.Index<TController>();
+            if (fullPath.IsEmpty()) fullPath = typeof(TController).Name.TrimEnd("Controller");
             if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight, iframe, order);
+            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, order, showOnRight, iframe);
         }
 
-        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh, bool iframe, int? order)
+        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, int? order, bool showOnRigh, bool iframe)
         {
             Add(new Feature
             {
@@ -64,7 +63,8 @@
 
         protected void AddMenu<TController>(string name, string icon = null, string url = null, string desc = null, string permissions = null) where TController : Controller
         {
-            if (url.IsEmpty()) url = Url.Index<TController>();
+            var controller = (TController)Activator.CreateInstance(typeof(TController));
+            if (url.IsEmpty()) url = controller.Url.Index<TController>();
             if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
             Add(new BoardMenue
@@ -76,6 +76,7 @@
                 Permissions = permissions
             });
         }
+
         protected void AddIntro(string name, string url, string imageUrl = null, string desc = null)
         {
             Add(new BoardIntro
@@ -90,8 +91,9 @@
         protected BoardBox ForBox(string boxTitle, string colour) => new BoardBox(this) { Title = boxTitle, Colour = colour };
 
         protected void Add(Feature feature) => Features.Add(feature);
-        protected void Add(BoardMenue boardMenue) => BoardMenues.Add(boardMenue);
-        protected void Add(BoardIntro boardIntro) => BoardIntros.Add(boardIntro);
 
+        protected void Add(BoardMenue boardMenue) => BoardMenues.Add(boardMenue);
+
+        protected void Add(BoardIntro boardIntro) => BoardIntros.Add(boardIntro);
     }
 }
