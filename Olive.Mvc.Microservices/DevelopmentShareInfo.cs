@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace Olive.Mvc.Microservices
 {
@@ -50,8 +51,8 @@ namespace Olive.Mvc.Microservices
                 {
                     try
                     {
-                        var uri = Microservice.Of("Hub").Url("LocalSetup").AsUri();
-                        await uri.Post(Newtonsoft.Json.JsonConvert.SerializeObject(info));
+                        var url = Microservice.Of("Hub").Url("local-setup");
+                        new WebClient().UploadString(url, Newtonsoft.Json.JsonConvert.SerializeObject(info));
                         Shared = true;
                     }
                     catch (Exception ex)
