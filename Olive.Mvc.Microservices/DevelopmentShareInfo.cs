@@ -19,8 +19,8 @@ namespace Olive.Mvc.Microservices
                 .Select(x => x.GetParameters().LastOrDefault().ParameterType.Name)
                 .Distinct().ToArray();
         }
-        private static Feature[] GetFeatures(List<Navigation> navigations) => navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToArray(),
-        
+        private static Feature[] GetFeatures(List<Navigation> navigations) => navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToArray();
+
         private static Service GetService()
         {
             return new Service()
