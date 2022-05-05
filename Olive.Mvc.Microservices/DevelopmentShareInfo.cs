@@ -12,28 +12,23 @@ namespace Olive.Mvc.Microservices
     internal static class DevelopmentShareInfo
     {
         internal static bool Shared = false;
-        private static DevelopmentFullInfo SetFullInfo()
+        private static string[] GetBoardSources(List<Navigation> navigations)
         {
-            var navigations = NavigationApiMiddleWare.GetNavigationsFromAssembly<Navigation>();
-            if (navigations.None()) return null;
-            navigations.Do(r => r.Define());
-            return new DevelopmentFullInfo()
-            {
-                BoardSources = navigations
+            return navigations
                 .SelectMany(x => x.GetType().GetMethods().Where(x => x.Name == "DefineDynamic"))
                 .Select(x => x.GetParameters().LastOrDefault().ParameterType.Name)
-                .Distinct().ToArray(),
-                Features = navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToArray(),
-                Service = new Service()
-                {
-                    Name = Microservice.Me.Name,
-                    BaseUrl = Microservice.Me.Url(),
-                    Icon = "fas fa-" + Microservice.Me.Name.ToLower(),
-                },
-                GlobalySearchable = GetControllerFromAssembly<Olive.GlobalSearch.SearchSource>().HasAny(),
+                .Distinct().ToArray();
+        }
+        private static Feature[] GetFeatures(List<Navigation> navigations) => navigations.Select(x => x.GetFeatures()).SelectMany(x => x).ToArray(),
+        
+        private static Service GetService()
+        {
+            return new Service()
+            {
+                Name = Microservice.Me.Name,
+                BaseUrl = Microservice.Me.Url(),
+                Icon = "fas fa-" + Microservice.Me.Name.ToLower(),
             };
-
-
         }
         static Type[] AllLoadedTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToArray();
         private static IEnumerable<T> GetControllerFromAssembly<T>() where T : Olive.GlobalSearch.SearchSource
@@ -46,18 +41,25 @@ namespace Olive.Mvc.Microservices
         {
             return async ctx =>
             {
-                var info = SetFullInfo();
-                if (info != null)
+                var navigations = NavigationApiMiddleWare.GetNavigationsFromAssembly<Navigation>().ToList();
+                if (navigations.HasAny())
                 {
                     try
                     {
                         var url = Microservice.Of("Hub").Url("local-setup");
-                        new WebClient().UploadString(url, Newtonsoft.Json.JsonConvert.SerializeObject(info));
+                        navigations.Do(r => r.Define());
+                        new WebClient().UploadString(url, Newtonsoft.Json.JsonConvert.SerializeObject(new
+                        {
+                            Service = GetService(),
+                            BoardSources = GetBoardSources(navigations),
+                            Features = GetFeatures(navigations),
+                            GlobalySearchable = GetControllerFromAssembly<Olive.GlobalSearch.SearchSource>().HasAny()
+                        }));
                         Shared = true;
                     }
                     catch (Exception ex)
                     {
-                        Log.For(typeof(DevelopmentShareInfo)).Error("With URL: " + Microservice.Of("Hub").Url("LocalSetup") + "\nCould not reach local hub.\n" + ex);
+                        Log.For(typeof(DevelopmentShareInfo)).Error("With URL: " + Microservice.Of("Hub").Url("local-setup") + "\nCould not reach local hub.\n" + ex);
                     }
                 }
                 await next(ctx);

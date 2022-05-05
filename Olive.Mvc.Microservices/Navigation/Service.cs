@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Newtonsoft.Json;
+
 
 namespace Olive.Mvc.Microservices
 {
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     internal class Service
     {
         public string BaseUrl { get; set; }
