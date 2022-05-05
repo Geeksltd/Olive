@@ -51,7 +51,7 @@ namespace Olive.Mvc.Microservices
                     try
                     {
                         var uri = Microservice.Of("Hub").Url("LocalSetup").AsUri();
-                        await uri.PostJson(Newtonsoft.Json.JsonConvert.SerializeObject(info));
+                        await uri.Post(Newtonsoft.Json.JsonConvert.SerializeObject(info));
                         Shared = true;
                     }
                     catch (Exception ex)

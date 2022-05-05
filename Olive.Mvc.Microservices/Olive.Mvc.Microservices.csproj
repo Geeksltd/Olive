@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Mvc.Microservices</RootNamespace>
     <PackageId>Olive.Mvc.Microservices</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.139</Version>
+    <Version>3.1.140</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
