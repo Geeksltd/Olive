@@ -93,7 +93,7 @@
 
         protected void Add(Feature feature) => Features.Add(feature);
 
-        protected void Add(BoardMenu boardMenu) => BoardMenu.Add(boardMenu);
+        protected void Add(BoardMenu boardMenu) => BoardMenus.Add(boardMenu);
 
         protected void Add(BoardIntro boardIntro) => BoardIntros.Add(boardIntro);
     }
