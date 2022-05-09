@@ -36,12 +36,12 @@
             return content;
         }
 
-        public void AddFrom(string url, string permissions = null)
+        public void AddFrom(string url)
         {
-            Add(new BoardWidget { Url = url, Permissions = permissions });
+            Add(new BoardWidget { Url = url });
         }
 
-        public void AddInfo(string title, string description, string icon, string url, string permissions = null, UrlTarget action = UrlTarget.Redirect)
+        public void AddInfo(string title, string description, string icon, string url, UrlTarget action = UrlTarget.Redirect)
         {
             var result = new BoardInfo
             {
@@ -50,19 +50,18 @@
                 Icon = icon,
                 Description = description,
                 Action = action,
-                Permissions = permissions
             };
 
             Add(result);
         }
 
-        public void AddHtml(string rawHtml, string permissions = null)
+        public void AddHtml(string rawHtml)
         {
-            Add(new BoardHtml { RawHtml = rawHtml, Permissions = permissions });
+            Add(new BoardHtml { RawHtml = rawHtml });
         }
 
-        public void AddButton(string icon, string url, string text = null, string tooltip = null, string permissions = null, UrlTarget action = UrlTarget.Redirect)
-            => Add(new BoardButton { Icon = icon, Url = url, Text = text, Tooltip = tooltip, Permissions = permissions, Action = action });
+        public void AddButton(string icon, string url, string text = null, string tooltip = null, UrlTarget action = UrlTarget.Redirect)
+            => Add(new BoardButton { Icon = icon, Url = url, Text = text, Tooltip = tooltip, Action = action });
 
     }
 }

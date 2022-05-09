@@ -14,7 +14,7 @@
     public abstract class Navigation
     {
         protected readonly List<Feature> Features = new();
-        protected readonly List<BoardMenue> BoardMenues = new();
+        protected readonly List<BoardMenu> BoardMenus = new();
         protected readonly List<BoardIntro> BoardIntros = new();
         protected internal readonly List<BoardBoxContent> BoardContents = new();
         public IDatabase Database => Context.Current.Database();
@@ -28,7 +28,7 @@
 
         internal IEnumerable<BoardButton> GetBoardButtons() => BoardContents.OfType<BoardButton>();
 
-        internal IEnumerable<BoardMenue> GetBoardMenues() => BoardMenues;
+        internal IEnumerable<BoardMenu> GetBoardMenus() => BoardMenus;
 
         internal IEnumerable<BoardIntro> GetBoardIntros() => BoardIntros;
 
@@ -68,7 +68,7 @@
             if (url.IsEmpty()) url = Url.Index<TController>();
             if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(new BoardMenue
+            Add(new BoardMenu
             {
                 Name = name,
                 Icon = icon,
@@ -93,7 +93,7 @@
 
         protected void Add(Feature feature) => Features.Add(feature);
 
-        protected void Add(BoardMenue boardMenue) => BoardMenues.Add(boardMenue);
+        protected void Add(BoardMenu boardMenu) => BoardMenu.Add(boardMenu);
 
         protected void Add(BoardIntro boardIntro) => BoardIntros.Add(boardIntro);
     }

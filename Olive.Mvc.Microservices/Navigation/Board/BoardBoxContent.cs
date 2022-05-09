@@ -16,10 +16,5 @@
         /// Type of the item 
         /// </summary>
         public string BoxTitle { get; set; }
-
-        /// <summary>
-        /// Permissions for acceess management
-        /// </summary>
-        public string Permissions { get; set; }
     }
 }

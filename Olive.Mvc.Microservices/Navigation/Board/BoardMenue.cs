@@ -6,7 +6,7 @@ namespace Olive.Mvc.Microservices
     /// Represents a single item that is displayed to the user.
     /// </summary>
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class BoardMenue
+    public class BoardMenu
     {
         /// <summary>
         /// Url to which the user will be redirected to manage these objects.
