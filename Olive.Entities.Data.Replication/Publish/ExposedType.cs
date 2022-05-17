@@ -80,6 +80,8 @@ namespace Olive.Entities.Replication
 
         string GetTypeFullName() => GetType().Namespace + "." + GetType().Name;
 
+        public virtual string ToStringExpression { get => string.Empty; }
+
         ReplicateDataMessage ToReplicateDataMessage(Dictionary<string, object> properties)
         {
             var serialized = JsonConvert.SerializeObject(properties);
