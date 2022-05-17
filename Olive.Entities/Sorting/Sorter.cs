@@ -35,9 +35,9 @@ namespace Olive.Entities
 
             if (newOrder < 0) newOrder = 0;
 
-            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour).ConfigureAwait(true);
             await Database.Reload(item);
-            await JustifyOrders(item, saveBehaviour);
+            await JustifyOrders(item, saveBehaviour).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace Olive.Entities
         {
             var newOrder = (after == null ? 0 : after.Order) + 1;
 
-            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour).ConfigureAwait(true);
             await Database.Reload(item);
 
-            await JustifyOrders(item, saveBehaviour);
+            await JustifyOrders(item, saveBehaviour).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -161,25 +161,17 @@ namespace Olive.Entities
 
                 var order = 0;
 
-                foreach (var sibling in (await FindSiblings(item)).OrderBy(i => i.Order).Distinct().ToArray())
+                //var siblings = (await FindSiblings(item)).OrderBy(i => i.Order).Distinct(x=>x.GetId()).ToArray();
+
+                foreach (var sibling in (await FindSiblings(item)).OrderBy(i => i.Order).Distinct(x => x.GetId()).ToArray())
                 {
                     order += INCREMENT;
                     if (sibling.Order == order) continue;
-
                     var clone = sibling.Clone() as Entity;
                     (clone as ISortable).Order = order;
                     changed.Add(clone);
                 }
-
-                //await Database.Save(changed, saveBehaviour);
-                //for(int i=0; i<changed.Count; ++i)
-                //{
-                //    changed[i]=
-                //}
-                //foreach( var change in changed)
-                //{
-                //    change=await Database.Save(change,saveBehaviour);
-                //}
+                await Database.Save(changed, saveBehaviour);
             }
         }
 
