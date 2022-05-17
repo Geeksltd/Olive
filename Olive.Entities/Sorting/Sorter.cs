@@ -35,9 +35,9 @@ namespace Olive.Entities
 
             if (newOrder < 0) newOrder = 0;
 
-            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour).ConfigureAwait(true);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
             await Database.Reload(item);
-            await JustifyOrders(item, saveBehaviour).ConfigureAwait(true);
+            await JustifyOrders(item, saveBehaviour);
         }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace Olive.Entities
         {
             var newOrder = (after == null ? 0 : after.Order) + 1;
 
-            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour).ConfigureAwait(true);
+            item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour);
             await Database.Reload(item);
 
-            await JustifyOrders(item, saveBehaviour).ConfigureAwait(true);
+            await JustifyOrders(item, saveBehaviour);
         }
 
         /// <summary>
