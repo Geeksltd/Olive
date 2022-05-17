@@ -171,7 +171,15 @@ namespace Olive.Entities
                     changed.Add(clone);
                 }
 
-                await Database.Save(changed, saveBehaviour);
+                //await Database.Save(changed, saveBehaviour);
+                //for(int i=0; i<changed.Count; ++i)
+                //{
+                //    changed[i]=
+                //}
+                //foreach( var change in changed)
+                //{
+                //    change=await Database.Save(change,saveBehaviour);
+                //}
             }
         }
 
