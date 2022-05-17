@@ -163,7 +163,7 @@ namespace Olive.Entities
 
                 var siblings = (await FindSiblings(item)).OrderBy(i => i.Order).GroupBy(x => x.GetId()).Select(x => x.FirstOrDefault()).ToList();
 
-                foreach (var sibling in siblings)
+                foreach (var sibling in siblings.Distinct())
                 {
                     if (sibling == null) continue;
                     order += INCREMENT;
