@@ -36,7 +36,7 @@ namespace Olive.Entities
             if (newOrder < 0) newOrder = 0;
 
             item = await Database.Update(item, o => o.Order = newOrder, saveBehaviour).ConfigureAwait(false);
-
+            await Database.Reload(item);
             await JustifyOrders(item, saveBehaviour).ConfigureAwait(false);
         }
 
