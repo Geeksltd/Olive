@@ -161,18 +161,25 @@ namespace Olive.Entities
 
                 var order = 0;
 
-                var siblings = (await FindSiblings(item)).OrderBy(i => i.Order).GroupBy(x => x.GetId()).Select(x => x.FirstOrDefault()).ToList();
-
-                foreach (var sibling in siblings.Distinct())
+                foreach (var sibling in (await FindSiblings(item)).OrderBy(i => i.Order).Distinct().ToArray())
                 {
-                    if (sibling == null) continue;
                     order += INCREMENT;
                     if (sibling.Order == order) continue;
+
                     var clone = sibling.Clone() as Entity;
                     (clone as ISortable).Order = order;
-                    changed.Add(clone);
+                    //changed.Add(clone);
+                    try
+                    {
+                        await Database.Save(clone, saveBehaviour);
+                    }
+                    catch
+                    {
+
+                    }
                 }
-                await Database.Save(changed, saveBehaviour);
+
+                //await Database.Save(changed, saveBehaviour);
             }
         }
 
