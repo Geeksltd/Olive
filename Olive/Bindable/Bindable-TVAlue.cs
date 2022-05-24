@@ -88,7 +88,7 @@ namespace Olive
                 void Input_InputChanged(string changedProperty)
                 {
                     if (changedProperty == propertyName)
-                        SeValuetByInput((TValue)binding.Property.GetValue(target));
+                        SeValueByInput((TValue)binding.Property.GetValue(target));
                 }
 
                 input.InputChanged += Input_InputChanged;
@@ -97,7 +97,7 @@ namespace Olive
             return Add(binding);
         }
 
-        internal virtual void SeValuetByInput(TValue value) => SetValue(value);
+        internal virtual void SeValueByInput(TValue value) => SetValue(value);
 
         public IBinding<TValue> AddBinding<TProperty>(object target, string propertyName, Func<TValue, TProperty> expression)
         {
@@ -107,7 +107,7 @@ namespace Olive
             {
                 Target = target.GetWeakReference(),
                 Property = property,
-                Expression = x => (object)expression(x)
+                Expression = x => expression(x)
             };
 
             return Add(binding);
@@ -117,7 +117,7 @@ namespace Olive
         {
             var old = Bindings.FirstOrDefault(x => x.Equals(binding));
 
-            if (!(old is null))
+            if (old is not null)
             {
                 old.Remove();
                 Bindings.Remove(old);
@@ -127,7 +127,7 @@ namespace Olive
             binding.Apply(value);
             return binding;
         }
-
+        
         static PropertyInfo FindProperty(object target, string propertyName)
         {
             if (target is null) throw new ArgumentNullException(nameof(target));

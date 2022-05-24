@@ -36,7 +36,7 @@ namespace Olive
             ChangedBySource?.Invoke();
         }
 
-        internal override void SeValuetByInput(TValue value) => SetByInput(value);
+        internal override void SeValueByInput(TValue value) => SetByInput(value);
 
         public override void ClearBindings()
         {
