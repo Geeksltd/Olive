@@ -19,13 +19,9 @@ namespace Olive.Aws
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
 
-        public EventBusQueue(string queueUrl)
-        {
-            QueueUrl = queueUrl;
-            client = Context.Current.GetOptionalService<IAmazonSQS>();
-        }
+        public EventBusQueue(string queueUrl) => QueueUrl = queueUrl;
 
-        public IAmazonSQS Client => client ?? new AmazonSQSClient();
+        public IAmazonSQS Client => client ?? Context.Current.GetOptionalService<IAmazonSQS>() ?? new AmazonSQSClient();
 
         /// <summary>
         ///  Creates and uses a new Aws Client in the specified region.
@@ -33,7 +29,7 @@ namespace Olive.Aws
         public EventBusQueue Region(Amazon.RegionEndpoint region) => SetClient(new AmazonSQSClient(region));
 
         /// <summary>
-        ///  Changes the Aws Client to the specified one.
+        ///  Changes the Aws Client to the specified one. If used in AssumeRole configuration, make sure the Client object is refreshed.
         /// </summary>
         public EventBusQueue SetClient(IAmazonSQS client)
         {

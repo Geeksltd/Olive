@@ -37,7 +37,7 @@ namespace Olive.Aws.Ses.AutoFetch
 
             while (!isEmpty)
             {
-                LogInfo($"Downloading from " + Account.S3Bucket);
+                LogInfo("Downloading from " + Account.S3Bucket);
                 var request = new Amazon.S3.Model.ListObjectsV2Request { BucketName = Account.S3Bucket };
                 var response = await S3Client.ListObjectsV2Async(request);
 
