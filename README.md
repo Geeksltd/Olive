@@ -16,27 +16,28 @@
 
 # Olive
 
-Olive is a framework built on top of .NET for more productive cross-platform software development in .NET solutions. It provides a set of productivity tools to make .NET development easier, cleaner and more expressive. 
+Olive is a framework built on top of .NET for more productive cross-platform software development in .NET solutions. It provides a set of productivity tools to make .NET development easier, cleaner and more expressive. It is created, maintained and supported by Geeks Ltd.
 
-As a .NET Standard 2.0 library it's compatible with almost any .NET stack.
+- **Compatibility**: As a .NET Standard 2.0 library it's compatible with almost any .NET stack. 
+- **License**: Available under the GPL v3 license. See [License.md](License.md) for more information.
+- **Contributions welcome**: Just fork the repo, do your changes then make a merge request.
+- **Found an issue?** [report here](https://github.com/Geeksltd/Olive/issues).
+
 Check out the Olive documentation [HERE](geeksltd.github.com/Olive)
+  
+--- 
+# Debugging
+  
+## How to build
+Olive projects have dependencies to each other. You might need to build other projects recursively to run a certain project. All projects have dependencies to **Olive** project; So you need to build this one first. Also you can run **BuildAll.bat**, which is located in the root of the project, to build all of the Olive projects.
+  
+## Important Tip
+You may be  working on a project which has a NuGet dependency to Olive. You have a bug and suspect that the problem may be in Olive, or maybe you just want more diagnostics information. The following is a handy hack:
 
-## Contributing
+1. Compile Olive locally, so the source code lines resolve correctly
+2. Copy the new DLL and PDB files to your local nuget cache (%UserProfile%\.nuget\packages)
+3. Compile your project again. It will update the DLL from the nuget cache, which is overriden by your locally compiled dll.
+4. In Visual Studio, simply press F11 to step into any Olive calls.
 
-As this solution is an opensource project, so contributions are welcome! Just fork the repo, do your changes then make a merge request.
-We'll review your code ASAP and we will do the merge if everything was just fine. If there was any kind of issues, please post it in the [issues](https://github.com/Geeksltd/Olive/issues) section.
 
-### Build and running the code
 
-Olive projects might have dependencies to each other. You might need to build other projects recursively to run a certain project. All projects have dependencies to **Olive** project; So you need to build this one first.
-Also you can run **BuildAll.bat**, which is located in the root of the project, to build all of the Olive projects.
-
-### Authors
-
-This project is maintained and supported by Geeks Ltd.
-
-See also the list of [contributors](https://github.com/Geeksltd/Olive/contributors) who participated in this project.
-
-## License
-
-This project is available under the GPL v3 license. See [License.md](License.md) for more information.
