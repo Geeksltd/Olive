@@ -32,6 +32,6 @@ namespace Olive.Entities.Data
             }
         }
 
-        public bool SupportsPolymorphism() => throw new NotImplementedException();
+        public bool SupportsPolymorphism() => true;
     }
 }
