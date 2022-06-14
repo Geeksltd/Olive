@@ -46,7 +46,14 @@ namespace Olive.Mvc.Microservices
                     else
                         secondParameter = await nav.GetBoardObjectFromText(type, id);
                     if (secondParameter == null) continue;
-                    await (Task)defineDynamic.Invoke(nav, new object[] { context.User, Convert.ChangeType(secondParameter, type) });
+                    try
+                    {
+                        await (Task)defineDynamic.Invoke(nav, new object[] { context.User, Convert.ChangeType(secondParameter, type) });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.For(defineDynamic).Info("faild to invode define dynamic:" + ex);
+                    }
                 }
             }
 
