@@ -189,6 +189,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Entities.Data.PostgreSQL/Olive.Entities.Data.PostgreSQL.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive Entities Data DynamoDB NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.DynamoDB/Olive.Entities.Data.DynamoDB.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Entities Data Replication NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
