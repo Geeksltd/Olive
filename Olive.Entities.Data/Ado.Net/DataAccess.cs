@@ -215,7 +215,7 @@ namespace Olive.Entities.Data
             }
             catch (Exception ex)
             {
-                throw new Exception("Error in running Scalar SQL Command.", ex).AddData("Command", command)
+                throw new Exception("Error in running Scalar SQL Command: " + command, ex).AddData("Command", command)
                     .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
             }

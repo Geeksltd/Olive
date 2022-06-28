@@ -19,7 +19,7 @@ namespace Olive
             => @this.LogError(message);
 
         public static void Error(this ILogger @this, Exception ex, string message = null)
-            => @this.LogError(ex, message.Or(ex.ToFullMessage()));
+            => @this.LogError(ex, message.Or(ex.ToLogString()));
 
         public static void Warning(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
         {
