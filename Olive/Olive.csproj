@@ -5,7 +5,7 @@
     <RootNamespace>Olive</RootNamespace>
     <PackageId>Olive</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.320</Version>
+    <Version>2.1.321</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -60,7 +60,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.14" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.14" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

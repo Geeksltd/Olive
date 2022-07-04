@@ -31,6 +31,7 @@ namespace Olive.Mvc.Microservices
 
         public override void Configure(IApplicationBuilder app)
         {
+            app.UseCors("AllowHubOrigin");
             // add menu route
             app.Map("/api/menu", x => x.Run(MenuApiMiddleWare.Menu));
 
@@ -42,8 +43,6 @@ namespace Olive.Mvc.Microservices
 
             // get board sources
             app.Map("/olive/board/sources", x => x.Run(NavigationApiMiddleWare.BoardSources));
-
-            app.UseCors("AllowHubOrigin");
 
             // fix CORS issue
             app.UseMiddleware<MaintainCorsHeader>();
