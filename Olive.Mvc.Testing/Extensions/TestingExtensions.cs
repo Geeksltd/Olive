@@ -14,7 +14,7 @@ namespace Olive.Mvc.Testing
         {
             var services = @this.Services;
 
-            services.AddTransient<ITempDatabase, TempDatabase>();
+            services.AddSingleton<ITempDatabase, TempDatabase>();
             services.AddTransient<IDatabaseServer, TDatabaseServer>();
             services.AddTransient<IReferenceData, TReferenceData>();
 
