@@ -179,7 +179,8 @@ new DateTime(2099,04,13)};
         /// Dictionary that contains exceptional dates for Spring Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static readonly Dictionary<int, DateTime> SpringBankHolidayExceptions = new() { { 2012, new DateTime(2012, 06, 04) } };
+        static readonly Dictionary<int, DateTime> SpringBankHolidayExceptions
+            = new() { { 2012, new DateTime(2012, 06, 04) }, { 2022, new DateTime(2022, 06, 02) } };
 
         /// <summary>
         /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
@@ -191,7 +192,8 @@ new DateTime(2099,04,13)};
         /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
         /// Key: Year, Value: Exceptional Date for that year.
         /// </summary>
-        static readonly Dictionary<int, DateTime[]> AdditionalBankHolidays = new() { { 2012, new[] { new DateTime(2012, 6, 5) } } };
+        static readonly Dictionary<int, DateTime[]> AdditionalBankHolidays
+            = new() { { 2012, new[] { new DateTime(2012, 6, 5) } }, { 2022, new[] { new DateTime(2022, 06, 03) } } };
 
         /// <summary>
         /// Determines if a specified date is an English national holiday or weekend.
