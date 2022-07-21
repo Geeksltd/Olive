@@ -19,12 +19,17 @@ namespace Olive.Aws
         public override void ConfigureServices(IServiceCollection services)
         {
             base.ConfigureServices(services);
+
             services.AddCors(c => c.AddPolicy("AllowOrigin",
                 options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials()
             ));
 
-            if (Environment.IsProduction())
-                services.AddDataProtection().PersistKeysToAWSSystemsManager(Configuration["Aws:Secrets:Id"]);
+            if (!Environment.IsProduction()) return;
+
+            var secretId = Configuration["Aws:Secrets:Id"];
+            if (secretId.IsEmpty()) return;
+
+            services.AddDataProtection().PersistKeysToAWSSystemsManager(secretId);
         }
 
         protected override void ConfigureMvc(IMvcBuilder mvc)
