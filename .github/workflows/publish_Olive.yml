@@ -58,11 +58,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Aws.LambdaFunction/Olive.Aws.LambdaFunction.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-   # - name: Publish Olive Aws Mvc NuGet Package
-   #   uses: brandedoutcast/publish-nuget@v2
-   #   with:
-   #     PROJECT_FILE_PATH: Olive.Aws.Mvc/Olive.Aws.Mvc.csproj
-   #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Aws Mvc NuGet Package
+      uses: brandedoutcast/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Aws.Mvc/Olive.Aws.Mvc.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Aws Ses NuGet Package
       uses: brandedoutcast/publish-nuget@v2
       with:
