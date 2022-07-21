@@ -33,7 +33,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.8.0-beta.1" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
