@@ -19,7 +19,9 @@ namespace Olive.Aws
         public override void ConfigureServices(IServiceCollection services)
         {
             base.ConfigureServices(services);
-            services.AddCors(c => c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin()));
+            services.AddCors(c => c.AddPolicy("AllowOrigin",
+                options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+            ));
 
             if (Environment.IsProduction())
                 services.AddDataProtection().PersistKeysToAWSSystemsManager(Configuration["Aws:Secrets:Id"]);
