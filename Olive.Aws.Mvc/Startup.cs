@@ -21,7 +21,7 @@ namespace Olive.Aws
             base.ConfigureServices(services);
 
             services.AddCors(c => c.AddPolicy("AllowOrigin",
-                options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+                options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
             ));
 
             if (!Environment.IsProduction()) return;
