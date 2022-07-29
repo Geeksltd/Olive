@@ -12,6 +12,7 @@ namespace Olive
         const int MINUS_SIX = -6;
         const int MAC_DAY_COUNT_IN_MONTH = 31;
         const int HOURS_IN_A_DAY = 24;
+        static readonly DateTime UnixEpoch = new(1970, 1, 1);
 
         #region EasterMondays
 
@@ -961,7 +962,13 @@ new DateTime(2099,04,13)};
         /// Gets the total number of seconds elapsed since 1st Jan 1970.
         /// </summary>
         public static long ToUnixTime(this DateTime @this)
-            => (int)@this.ToUniversal().Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            => (int)@this.ToUniversal().Subtract(UnixEpoch).TotalSeconds;
+
+        /// <summary>
+        /// Gets the local date time based on the provided seconds elapsed since 1st Jan 1970.
+        /// </summary>
+        public static DateTime FromUnixTime(this long @this)
+            => UnixEpoch.AddSeconds(@this).ToLocal();
     }
 
     public enum CalendarMonth
