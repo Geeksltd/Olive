@@ -12,10 +12,19 @@
             Url = url;
         }
 
+        static string CurrentUrl() => Context.Current.Request().ToPathAndQuery().UrlDecode();
+
         public bool MatchesCurrentUrl()
         {
-            var currentUrl = Context.Current.Request().ToPathAndQuery().UrlDecode();
-            return currentUrl.StartsWith(Url.OrEmpty(), caseSensitive: false);
+            return CurrentUrl().StartsWith(Url.OrEmpty(), caseSensitive: false);
         }
+
+        public bool MatchesCurrentUrlWithoutQuery()
+        {
+            return CurrentUrl().RemoveFrom("?").StartsWith(Url.OrEmpty().RemoveFrom("?"), caseSensitive: false);
+        }
+
+
+        
     }
 }

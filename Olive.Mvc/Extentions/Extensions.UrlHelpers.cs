@@ -254,5 +254,14 @@ namespace Olive.Mvc
 
             return new RouteTemplate(routeTemplate).Merge(routeData);
         }
+
+        public static MenuItem BestMatchToCurrentUrl(this IEnumerable<MenuItem> @this)
+        {
+            return @this
+                .Where(v => v.MatchesCurrentUrlWithoutQuery())
+                .OrderByDescending(i => i.MatchesCurrentUrl())
+                .ThenByDescending(x => x.Url.Split('?').First().Length)
+                .FirstOrDefault();
+        }
     }
 }
