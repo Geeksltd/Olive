@@ -1826,5 +1826,16 @@ new(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray
             if (caseSensitive) return text == another;
             return text.Equals(another, StringComparison.OrdinalIgnoreCase);
         }
+
+        /// <summary>
+        /// Gets the bytes of this string (UTF-8), gzipped the binary, and then encodes the binary as a base64 string.
+        /// This can help when storage per record is limited, such as some cloud databases.
+        /// </summary>
+        public static string ToGZippedBase64(this string text) => text.OrEmpty().GZip().ToBase64String();
+
+        /// <summary>
+        /// This Base64 string is converted to binary, then ungzipped, and then encoded into string (UTF-8).
+        /// </summary>
+        public static string FromGZippedBase64(this string base64) => base64.IsEmpty() ? string.Empty : base64.ToBytesFromBase64().UnGZip().ToString(Encoding.UTF8);
     }
 }
