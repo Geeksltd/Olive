@@ -26,7 +26,7 @@ namespace Olive
         /// </summary>
         public static async Task<T> GetOrDefault<T>(this HttpRequest @this, string key)
         {
-            @this = @this ?? Olive.Context.Current.Request() ??
+            @this = @this ?? Context.Current.Request() ??
                     throw new InvalidOperationException("Request.GetOrDefault<T>() can only be called inside an Http context.");
 
             if (key == ".") key = "." + typeof(T).Name;
@@ -93,14 +93,16 @@ namespace Olive
             }
         }
 
-        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest @this, string key) where T : class, IEntity => GetList<T>(@this, key, ',');
+        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest @this, string key)
+            where T : class, IEntity => GetList<T>(@this, key, ',');
 
         /// <summary>
         /// Gets a list of objects of which Ids come in query string.
         /// </summary>
         /// <param name="key">The key of the query string element containing ids.</param>
         /// <param name="seperator">The sepeerator of Ids in the query string value. The default will be comma (",").</param>
-        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest @this, string key, char seperator) where T : class, IEntity
+        public static IEnumerable<Task<T>> GetList<T>(this HttpRequest @this, string key, char seperator)
+            where T : class, IEntity
         {
             var ids = @this.Param(key);
 
@@ -131,7 +133,7 @@ namespace Olive
                     FirstOrDefault(p => p.StartsWith(possibleQuerystringKey + "="));
 
                 if (query.HasValue())
-                    return HttpUtility.UrlDecode(query.Substring(1 + possibleQuerystringKey.Length));
+                    return query.Substring(1 + possibleQuerystringKey.Length).UrlDecode();
             }
 
             return null;
@@ -140,7 +142,8 @@ namespace Olive
         /// <summary>
         /// Gets the actual IP address of the user considering the Proxy and other HTTP elements.
         /// </summary>
-        public static string GetIPAddress(this HttpRequest @this) => @this.HttpContext.Connection.RemoteIpAddress.ToString();
+        public static string GetIPAddress(this HttpRequest @this)
+            => @this.HttpContext.Connection.RemoteIpAddress.ToString();
 
         /// <summary>
         /// Determines if the specified argument exists in the request (form, query string or route).
@@ -154,7 +157,7 @@ namespace Olive
 
         public static RouteValueDictionary GetRouteValues(this HttpRequest @this)
         {
-            return Olive.Context.Current.ActionContext()?.RouteData?.Values;
+            return Context.Current.ActionContext()?.RouteData?.Values;
         }
 
         /// <summary>
@@ -177,16 +180,30 @@ namespace Olive
         /// Gets the raw url of the request.
         /// </summary>
         public static string ToRawUrl(this HttpRequest @this) =>
-            $"{@this.PathBase}{@this.Path}{@this.QueryString}";
+            $"{@this.PathBase}{@this.ToPathAndQuery()}";
 
-        public static string ToPathAndQuery(this HttpRequest @this) =>
-            $"{@this.Path}{@this.QueryString}";
+        /// <summary>
+        /// Gets the relative request path plus the query string (encoded).
+        /// </summary>
+        public static string ToPathAndQuery(this HttpRequest @this)
+         => $"{@this.Path}{@this.Query.ToEncodedString()}";
+
+        /// <summary>
+        /// Returns the query string as originally requested with a ? prefix.
+        /// </summary>
+        public static string ToEncodedString(this IQueryCollection @this)
+        {
+            return @this.OrEmpty()
+                .Select(x => x.Key.UrlEncode() + "=" + x.Value.ToString(",").UrlEncode())
+                .ToString("&")
+                .WithPrefix("?");
+        }
 
         /// <summary>
         /// Gets the absolute Uri of the request.
         /// </summary>
-        public static string ToAbsoluteUri(this HttpRequest @this) =>
-            $"{@this.RootUrl().TrimEnd('/')}{@this.PathBase}{@this.Path}{@this.QueryString}";
+        public static string ToAbsoluteUri(this HttpRequest @this)
+            => @this.RootUrl().TrimEnd('/') + @this.ToRawUrl();
 
         /// <summary>
         /// Gets the absolute URL for a specified relative url.
