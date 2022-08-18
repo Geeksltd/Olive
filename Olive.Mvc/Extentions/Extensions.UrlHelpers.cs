@@ -35,6 +35,18 @@ namespace Olive.Mvc
             return result;
         }
 
+        /// <summary>
+        /// Gets the current url but encrypted as a gzipped base64 and then adapted to be url safe.
+        /// </summary>
+        public static string AsSafeReturnUrl(this IUrlHelper @this)
+        {
+            return "..." + @this.Current().ToGZippedBase64()
+                // 3 charactesr in Base64 should be replaced with Url safe alternatives
+                .Replace("+", "~")
+                .Replace("/", "_")
+                .Replace("=", "-");
+        }
+
         public static string Current(this IUrlHelper @this, object queryParameters)
         {
             if (queryParameters == null) return Current(@this);
@@ -71,9 +83,14 @@ namespace Olive.Mvc
             var url = @this.ActionContext.HttpContext.Request.Param("ReturnUrl");
             if (url.IsEmpty()) return string.Empty;
 
-            if (@this.IsLocalUrl(url)) return url;
+            // Using Safe Encode?
+            if (url.StartsWith("..."))
+                url = url.Substring(3).FromGZippedBase64().Replace("~", "+").Replace("_", "/").Replace("-", "=");
 
-            throw new Exception(url + " is not a valid ReturnUrl as it's external and so unsafe.");
+            if (!@this.IsLocalUrl(url))
+                throw new Exception(url + " is not a valid ReturnUrl as it's external and so unsafe.");
+
+            return url;
         }
 
         /// <summary>
