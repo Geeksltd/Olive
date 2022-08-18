@@ -85,7 +85,7 @@ namespace Olive.Mvc
 
             // Using Safe Encode?
             if (url.StartsWith("..."))
-                url = url.Substring(3).FromGZippedBase64().Replace("~", "+").Replace("_", "/").Replace("-", "=");
+                url = url.Substring(3).Replace("~", "+").Replace("_", "/").Replace("-", "=").FromGZippedBase64();
 
             if (!@this.IsLocalUrl(url))
                 throw new Exception(url + " is not a valid ReturnUrl as it's external and so unsafe.");
