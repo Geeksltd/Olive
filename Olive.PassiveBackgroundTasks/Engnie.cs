@@ -35,6 +35,13 @@ namespace Olive.PassiveBackgroundTasks
             Log.Info("Registered a background task for " + name);
         }
 
+        internal static async Task Cleanup(params string[] validNames)
+        {
+            await Db.DeleteAll<IBackgourndTask>(a => a.Name.IsNoneOf(validNames));
+
+            Log.Info("Cleanup a background tasks");
+        }
+
         internal static Task GetAction(IBackgourndTask task) => Actions[task.Name]();
 
         static bool ShouldRun(IBackgourndTask task)

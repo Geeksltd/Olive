@@ -6,6 +6,7 @@ using Olive.Entities;
 using Olive.Entities.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,6 +37,8 @@ namespace Olive.PassiveBackgroundTasks
                     .Info("Registering " + job.Name + " cron : " + job.ScheduleCron + " -> " + CronParser.Minutes(job.ScheduleCron) + " minutes");
                 await Engine.Register(job.Name, job.Action, CronParser.Minutes(job.ScheduleCron), job.TimeoutInMinutes).ConfigureAwait(false);
             }
+
+            await Engine.Cleanup(BackgroundJobsPlan.Jobs.Values.Select(a => a.Name).ToArray());
 
             app.Map(pathMatch, x => x.UseMiddleware<DistributedBackgroundTasksMiddleware>());
 
