@@ -38,7 +38,7 @@ namespace Olive.PassiveBackgroundTasks
                 await Engine.Register(job.Name, job.Action, CronParser.Minutes(job.ScheduleCron), job.TimeoutInMinutes).ConfigureAwait(false);
             }
 
-            await Engine.Cleanup(BackgroundJobsPlan.Jobs.Values.Select(a => a.Name).ToArray());
+            await Engine.CleanUp(BackgroundJobsPlan.Jobs.Values.Select(a => a.Name).ToArray());
 
             app.Map(pathMatch, x => x.UseMiddleware<DistributedBackgroundTasksMiddleware>());
 
