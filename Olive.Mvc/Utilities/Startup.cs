@@ -96,7 +96,7 @@ namespace Olive.Mvc
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            app.UseHandleExceptions();
+            app.UseLogUnhandledExceptionsMiddleware();
 
             Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices);
             Context.Current.GetService<IDatabaseProviderConfig>().Configure();

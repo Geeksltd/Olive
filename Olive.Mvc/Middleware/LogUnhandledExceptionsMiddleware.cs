@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Olive.Mvc
 {
-    class HandleExceptionsMiddleware : BaseMiddleware
+    class LogUnhandledExceptionsMiddleware : BaseMiddleware
     {
-        public HandleExceptionsMiddleware(RequestDelegate next) : base(next)
+        public LogUnhandledExceptionsMiddleware(RequestDelegate next) : base(next)
         {
         }
 
@@ -22,7 +22,7 @@ namespace Olive.Mvc
             {
                 if (context.Response.StatusCode >= 500)
                 {
-                    Log.For<HandleExceptionsMiddleware>().Error(e);
+                    Log.For<LogUnhandledExceptionsMiddleware>().Error(e);
                 }
                 throw;
             }
@@ -31,9 +31,9 @@ namespace Olive.Mvc
 
     public static class HandleExceptionsMiddlewareExtensions
     {
-        public static IApplicationBuilder UseHandleExceptions(this IApplicationBuilder app)
+        public static IApplicationBuilder UseLogUnhandledExceptionsMiddleware(this IApplicationBuilder app)
         {
-            app.UseMiddleware<HandleExceptionsMiddleware>();
+            app.UseMiddleware<LogUnhandledExceptionsMiddleware>();
             return app;
         }
     }
