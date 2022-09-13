@@ -9,9 +9,9 @@ namespace @Olive.PassiveBackgroundTasks
 {
     class DistributedBackgroundTasksMiddleware
     {
-        readonly RequestDelegate Next;
+        readonly RequestDelegate _next;
 
-        public DistributedBackgroundTasksMiddleware(RequestDelegate _next) => Next = _next;
+        public DistributedBackgroundTasksMiddleware(RequestDelegate next) => _next = next;
 
         public async Task Invoke(HttpContext httpContext)
         {
@@ -24,7 +24,8 @@ namespace @Olive.PassiveBackgroundTasks
 
                 var report = await Engine.Run(force, taskName).ConfigureAwait(false);
 
-                await httpContext.Response.WriteAsync(report);
+                httpContext.Response.ContentType = "text/html; charset=utf-8";
+                await httpContext.Response.WriteAsync(string.Join("<br/>", report));
             }
             catch (Exception ex)
             {
