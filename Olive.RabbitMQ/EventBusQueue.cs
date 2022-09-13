@@ -36,6 +36,7 @@ namespace Olive.RabbitMQ
 
             var connection = factory.CreateConnection();
             Client = connection.CreateModel();
+            Client.ConfirmSelect();
         }
 
         /// <summary>
