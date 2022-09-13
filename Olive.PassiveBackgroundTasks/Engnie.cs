@@ -64,11 +64,16 @@ namespace Olive.PassiveBackgroundTasks
             return true;
         }
 
-        internal static async Task<string> Run(bool force = false, string taskName = null)
+        internal static async Task<List<string>> Run(bool force = false, string taskName = null)
         {
             Log.Info("Checking background tasks... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
 
             var allTasks = await Db.GetList<IBackgourndTask>();
+
+            var messages = new List<string>
+            {
+                $"All available tasks : {string.Join(", ", allTasks.Select(a => a.Name))}"
+            };
 
             var toRun = force
                 ? allTasks.Where(a => string.IsNullOrWhiteSpace(taskName) || a.Name == taskName).ToArray()
@@ -76,15 +81,13 @@ namespace Olive.PassiveBackgroundTasks
 
             if (toRun.None())
             {
-                return "No task selected";
+                messages.Add("No task selected");
+                return messages;
             }
 
-            var batchTasks = Task.WhenAll(toRun.Select(t => Run(t)));
+            messages.Add($"Selected tasks : {string.Join(", ", toRun.Select(a => a.Name))}");
 
-            var messages = new List<string>
-            {
-                $"Selected tasks : {string.Join(", ",toRun.Select(a=>a.Name))}"
-            };
+            var batchTasks = Task.WhenAll(toRun.Select(t => Run(t)));
 
             try
             {
@@ -113,7 +116,7 @@ namespace Olive.PassiveBackgroundTasks
             Log.Info($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
             messages.Add($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
 
-            return string.Join("<br/>", messages);
+            return messages;
         }
 
         static async Task Run(this IBackgourndTask task)
