@@ -70,7 +70,7 @@ namespace Olive.PassiveBackgroundTasks
 
             var toRun = await Db.GetList<IBackgourndTask>().Where(ShouldRun).ToArray();
 
-            var batchTasks = Task.WhenAll(toRun.Select(Run));
+            var batchTasks = Task.WhenAll(toRun.Select(t => Run(t)));
             
             try
             {
