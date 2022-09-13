@@ -64,16 +64,56 @@ namespace Olive.PassiveBackgroundTasks
             return true;
         }
 
-        internal static async Task Run()
+        internal static async Task<string> Run(bool force = false, string taskName = null)
         {
             Log.Info("Checking background tasks... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
 
-            var toRun = await Db.GetList<IBackgourndTask>().Where(ShouldRun).ToArray();
+            var allTasks = await Db.GetList<IBackgourndTask>();
 
-            await Task.WhenAll(toRun.Select(t => Run(t)));
+            var toRun = force
+                ? allTasks.Where(a => string.IsNullOrWhiteSpace(taskName) || a.Name == taskName).ToArray()
+                : allTasks.Where(ShouldRun).ToArray();
 
-            if (toRun.Any())
-                Log.Info($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
+            if (toRun.None())
+            {
+                return "No task selected";
+            }
+
+            var batchTasks = Task.WhenAll(toRun.Select(t => Run(t)));
+
+            var messages = new List<string>
+            {
+                $"Selected tasks : {string.Join(", ",toRun.Select(a=>a.Name))}"
+            };
+
+            try
+            {
+                await batchTasks;
+            }
+            catch (OperationCanceledException exception)
+            {
+                Log.Error(exception);
+                messages.Add(exception.ToFullMessage());
+            }
+            catch (AggregateException exception)
+            {
+                Log.Error(exception);
+                messages.Add(exception.ToFullMessage());
+            }
+            catch (Exception exception)
+            {
+                messages.Add(exception.ToFullMessage());
+                if (batchTasks.Exception != null)
+                {
+                    Log.Error(batchTasks.Exception);
+                    messages.Add(batchTasks.Exception.ToFullMessage());
+                }
+            }
+
+            Log.Info($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
+            messages.Add($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
+
+            return string.Join("<br/>", messages);
         }
 
         static async Task Run(this IBackgourndTask task)

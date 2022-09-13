@@ -35,7 +35,7 @@ Olive projects have dependencies to each other. You might need to build other pr
 You may be  working on a project which has a NuGet dependency to Olive. You have a bug and suspect that the problem may be in Olive, or maybe you just want more diagnostics information. The following is a handy hack:
 
 1. Compile Olive locally, so the source code lines resolve correctly
-2. Copy the new DLL and PDB files to your local nuget cache (%UserProfile%\.nuget\packages)
+2. Copy the new DLL and PDB files to your local nuget cache (%UserProfile%\\.nuget\packages)
 3. Compile your project again. It will update the DLL from the nuget cache, which is overriden by your locally compiled dll.
 4. In Visual Studio, simply press F11 to step into any Olive calls.
 
