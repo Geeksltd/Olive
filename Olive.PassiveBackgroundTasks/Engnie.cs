@@ -70,7 +70,27 @@ namespace Olive.PassiveBackgroundTasks
 
             var toRun = await Db.GetList<IBackgourndTask>().Where(ShouldRun).ToArray();
 
-            await Task.WhenAll(toRun.Select(t => Run(t)));
+            var batchTasks = Task.WhenAll(toRun.Select(Run));
+            
+            try
+            {
+                await batchTasks;
+            }
+            catch (OperationCanceledException exception)
+            {
+                Log.Error(exception);
+            }
+            catch (AggregateException exception)
+            {
+                Log.Error(exception);
+            }
+            catch (Exception)
+            {
+                if (batchTasks.Exception != null)
+                {
+                    Log.Error(batchTasks.Exception);
+                }
+            }
 
             if (toRun.Any())
                 Log.Info($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
