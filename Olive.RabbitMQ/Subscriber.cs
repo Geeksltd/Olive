@@ -33,30 +33,30 @@ namespace Olive.RabbitMQ
         {
             var consumer = new EventingBasicConsumer(Queue.Client);
 
-            consumer.Received += async (model, ea) =>
-            {
-                try
-                {
-                    var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-                    Log.For(this)
-                        .Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
-                    await Handler(message);
-                    Queue.Client.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-                }
-                catch (Exception ex)
-                {
-                    var exception = new Exception("Failed to run queue event handler " +
-                        Handler.Method.DeclaringType.GetProgrammingName() + "." +
-                        Handler.Method.Name +
-                        "message: " + ea.DeliveryTag.ToString()?.ToJsonText(), ex);
+            consumer.Received += (model, ea) =>
+               {
+                   try
+                   {
+                       var body = ea.Body.ToArray();
+                       var message = Encoding.UTF8.GetString(body);
+                       Log.For(this)
+                           .Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
+                       Handler(message).WaitAndThrow();
+                       Queue.Client.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                   }
+                   catch (Exception ex)
+                   {
+                       var exception = new Exception("Failed to run queue event handler " +
+                           Handler.Method.DeclaringType.GetProgrammingName() + "." +
+                           Handler.Method.Name +
+                           "message: " + ea.DeliveryTag.ToString()?.ToJsonText(), ex);
 
-                    if (Queue.IsFifo)
-                        throw exception;
-                    else
-                        Log.For<Subscriber>().Error(exception);
-                }
-            };
+                       if (Queue.IsFifo)
+                           throw exception;
+                       else
+                           Log.For<Subscriber>().Error(exception);
+                   }
+               };
             Queue.Client.ExchangeDeclare(exchange: Queue.QueueUrl, type: ExchangeType.Fanout, durable: true);
             Queue.Client.QueueDeclare(Queue.QueueUrl, true, false, false, null);
             Queue.Client.QueueBind(queue: Queue.QueueUrl,

@@ -14,6 +14,7 @@ namespace Olive.RabbitMQ
     public class EventBusQueue : IEventBusQueue
     {
         const int MAX_RETRY = 4;
+        const int BATCH_SIZE = 100;
         internal string QueueUrl;
         public IModel Client { get; set; }
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
@@ -81,42 +82,72 @@ namespace Olive.RabbitMQ
 
         public async Task<IEnumerable<string>> PublishBatch(IEnumerable<string> messages, int retry = 0)
         {
-            var request = Client.CreateBasicPublishBatch();
-
-            messages.Do(message =>
-                request.Add(QueueUrl, QueueUrl, false, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(message))));
-
-            //if (IsFifo)
-            //{
-            //    request.Entries
-            //        .ForEach(message =>
-            //    {
-            //        message.MessageDeduplicationId =
-            //            JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
-
-            //        message.MessageGroupId = "Default";
-            //    });
-            //}
-
+            int outstandingMessageCount = 0;
             await Limiter.Add(messages.Count());
 
-            request.Publish();
+            foreach (var message in messages)
+            {
+                var body = Encoding.UTF8.GetBytes(message);
+                Client.QueueDeclare(QueueUrl, true, false, false, null);
+                Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Fanout, durable: true);
+                Client.QueueBind(queue: QueueUrl,
+                      exchange: QueueUrl,
+                      routingKey: QueueUrl);
+                var properties = Client.CreateBasicProperties();
+                properties.Persistent = true;
+                properties.ContentType = "application/json";
+                Client.BasicPublish("",
+                                     routingKey: QueueUrl,
+                                     basicProperties: properties,
+                                     body: body);
+                outstandingMessageCount++;
+                if (outstandingMessageCount == BATCH_SIZE)
+                {
+                    Client.WaitForConfirmsOrDie(5.Seconds());
+                    outstandingMessageCount = 0;
+                }
+            }
+            if (outstandingMessageCount > 0)
+            {
+                Client.WaitForConfirmsOrDie(5.Seconds());
+            }
 
-            //var successfuls = response.Successful.Select(m => m.MessageId).ToList();
+            //var request = Client.CreateBasicPublishBatch();
 
-            //if (response.Failed.Any())
-            //{
-            //    if (retry > MAX_RETRY)
-            //        throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
+            //messages.Do(message =>
+            //    request.Add(QueueUrl, QueueUrl, false, null, new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(message))));
 
-            //    Log.For(this)
-            //        .Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+            ////if (IsFifo)
+            ////{
+            ////    request.Entries
+            ////        .ForEach(message =>
+            ////    {
+            ////        message.MessageDeduplicationId =
+            ////            JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
 
-            //    var toSend = response.Failed.Select(f => f.Message);
-            //    successfuls.AddRange(await PublishBatch(toSend, retry++));
-            //}
+            ////        message.MessageGroupId = "Default";
+            ////    });
+            ////}
 
-            //return successfuls;
+            //await Limiter.Add(messages.Count());
+
+            //request.Publish();
+
+            ////var successfuls = response.Successful.Select(m => m.MessageId).ToList();
+
+            ////if (response.Failed.Any())
+            ////{
+            ////    if (retry > MAX_RETRY)
+            ////        throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
+
+            ////    Log.For(this)
+            ////        .Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+
+            ////    var toSend = response.Failed.Select(f => f.Message);
+            ////    successfuls.AddRange(await PublishBatch(toSend, retry++));
+            ////}
+
+            ////return successfuls;
 
             return new List<string>();
         }
