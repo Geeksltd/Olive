@@ -53,6 +53,8 @@ namespace Olive.Aws.Ses.AutoFetch
             result.Sender = message.Sender?.ToString();
             result.Subject = message.Subject;
             result.Bucket = bucket;
+            result.DateDownloaded = LocalTime.Now;
+            result.MessageId = message.MessageId;
             result.Attachments = JsonConvert.SerializeObject(message.Attachments.OrEmpty().Where(x => x.IsAttachment).Select(x => new Attachment(x)).ToArray());
 
             return result;

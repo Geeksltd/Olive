@@ -13,7 +13,9 @@ namespace Olive.Aws.Ses.AutoFetch
         string Body { get; set; }
         string Sender { get; set; }
         DateTime Date { get; set; }
+        DateTime DateDownloaded { get; set; }
         string Bucket { get; set; }
+        string MessageId { get; set; }
 
         /// <summary>
         /// Json array of Olive.Aws.Ses.AutoFetch.Attachment

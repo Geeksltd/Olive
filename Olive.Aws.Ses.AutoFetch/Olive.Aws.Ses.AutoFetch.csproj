@@ -1,49 +1,49 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Olive.Aws.Ses.AutoFetch</AssemblyName>
-    <RootNamespace>Olive.Aws.Ses.AutoFetch</RootNamespace>
-    <PackageId>Olive.Aws.Ses.AutoFetch</PackageId>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.8.0</Version>
-    <PackOnBuild>true</PackOnBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <LangVersion>latest</LangVersion>
-    <DebugType>portable</DebugType>
-    <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
-    <PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-    <PackageTags>olive</PackageTags>
-    <Title>Olive.Aws.Ses.AutoFetch</Title>
-    <Description>Olive Framework</Description>
-    <PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
-    <Owners>Geeks Ltd</Owners>
-    <Authors>Geeks Ltd</Authors>
-    <Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
-    <DisableExtraReferences>true</DisableExtraReferences>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.0.15" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.14" />
-    <PackageReference Include="MimeKit" Version="2.11.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="readme.txt" pack="true" PackagePath="." />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
-    <ProjectReference Include="..\Olive.Aws\Olive.Aws.csproj" />
-    <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<AssemblyName>Olive.Aws.Ses.AutoFetch</AssemblyName>
+		<RootNamespace>Olive.Aws.Ses.AutoFetch</RootNamespace>
+		<PackageId>Olive.Aws.Ses.AutoFetch</PackageId>
+		<Product>$(AssemblyName) ($(TargetFramework))</Product>
+		<Version>1.1.0.0</Version>
+		<PackOnBuild>true</PackOnBuild>
+		<NeutralLanguage>en</NeutralLanguage>
+		<LangVersion>default</LangVersion>
+		<UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+		<LangVersion>latest</LangVersion>
+		<DebugType>portable</DebugType>
+		<PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+		<PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+		<PackageTags>olive</PackageTags>
+		<Title>Olive.Aws.Ses.AutoFetch</Title>
+		<Description>Olive Framework</Description>
+		<PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+		<Owners>Geeks Ltd</Owners>
+		<Authors>Geeks Ltd</Authors>
+		<Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+		<DisableExtraReferences>true</DisableExtraReferences>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+		<DebugSymbols>true</DebugSymbols>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="AWSSDK.S3" Version="3.7.0.15" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.14" />
+		<PackageReference Include="MimeKit" Version="2.11.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="readme.txt" pack="true" PackagePath="." />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
+		<ProjectReference Include="..\Olive.Aws\Olive.Aws.csproj" />
+		<ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
+	</ItemGroup>
 </Project>
