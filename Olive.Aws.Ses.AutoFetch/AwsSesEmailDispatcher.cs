@@ -24,21 +24,19 @@ namespace Olive.Aws.Ses.AutoFetch
             Accounts.Add(new EmailAccount<TMailMessage>(emailS3Bucket));
         }
 
-        public static async Task FetchAll()
+        public static Task FetchAll<TMailMessage>(string emailS3Bucket, Func<TMailMessage, Task> save = null)
+            where TMailMessage : IMailMessage, new()
+            => FetchAll(i => save((TMailMessage)i), new EmailAccount<TMailMessage>(emailS3Bucket));
+
+        static async Task FetchAll(Func<IMailMessage, Task> save = null, params EmailAccount[] accounts)
         {
-            foreach (var account in Accounts)
+            foreach (var account in accounts)
             {
-                try
-                {
-                    Log.For(typeof(Mailbox)).Info("Fetching emails for " + account.S3Bucket);
-                    await FetchClient.Fetch(account);
-                    Log.For(typeof(Mailbox)).Info("Fetched emails for " + account.S3Bucket);
-                }
-                catch (Exception ex)
-                {
-                    Log.For(typeof(Mailbox)).Error(ex, "Failed to fetch emails because " + ex.ToFullMessage());
-                }
+                Log.For(typeof(Mailbox)).Info("Fetching emails for " + account.S3Bucket);
+                await FetchClient.Fetch(account, save);
+                Log.For(typeof(Mailbox)).Info("Fetched emails for " + account.S3Bucket);
             }
         }
+        public static Task FetchAll() => FetchAll(null, Accounts.ToArray());
     }
 }

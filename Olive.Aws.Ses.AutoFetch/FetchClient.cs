@@ -15,19 +15,22 @@ namespace Olive.Aws.Ses.AutoFetch
     {
         EmailAccount Account;
         Amazon.S3.AmazonS3Client S3Client;
-        IDatabase Database => Olive.Context.Current.Database();
-        FetchClient()
+        Func<IMailMessage, Task> Save;
+        FetchClient(Func<IMailMessage, Task> save = null)
         {
+            Save = save ?? DoSave;
             Log.For(this).Info("Creating the aws client ...");
             S3Client = new Amazon.S3.AmazonS3Client();
             Log.For(this).Info("Aws client created");
         }
 
-        internal static async Task Fetch(EmailAccount account)
+        internal static async Task Fetch(EmailAccount account, Func<IMailMessage, Task> save = null)
         {
-            using (var client = new FetchClient { Account = account })
+            using (var client = new FetchClient(save) { Account = account })
                 await client.Fetch();
         }
+
+        Task DoSave(IMailMessage message) => Context.Current.Database().Save(message);
 
         void LogInfo(string log) => Log.For(this).Info(log);
 
@@ -65,9 +68,9 @@ namespace Olive.Aws.Ses.AutoFetch
             var message = await GetObject(item);
             LogInfo("Downloaded object " + item.Key);
 
-            using (var scope = Database.CreateTransactionScope())
+            using (var scope = new DbTransactionScope())
             {
-                await Database.Save(message);
+                await Save(message);
 
                 LogInfo("Deleting object " + item.Key);
                 await Delete(item);
@@ -75,6 +78,7 @@ namespace Olive.Aws.Ses.AutoFetch
 
                 scope.Complete();
             }
+
         }
 
         async Task<IMailMessage> GetObject(Amazon.S3.Model.S3Object item)
