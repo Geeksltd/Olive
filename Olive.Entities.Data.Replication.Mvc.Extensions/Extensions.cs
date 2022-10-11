@@ -59,7 +59,7 @@ namespace Olive.Entities.Replication
         //}
         static List<string> ExposedEndpoints = new List<string>();
         static bool RegisteredExposedEndpionts;
-        const string EXPOSED_ENDPOINTS_ACTION_PREFIX = "/olive/entities/replication/dump/";
+        static string EXPOSED_ENDPOINTS_ACTION_PREFIX = Config.Get("DataReplication:DumpUrl", "/olive/entities/replication/dump/");
         /// <summary>
         /// Registers an endpoint. To view all registered endpoints you can call /olive/entities/replication/dump/all
         /// </summary>
@@ -70,6 +70,7 @@ namespace Olive.Entities.Replication
         {
             endpoint.Publish(false);
             var logger = Log.For(endpoint);
+            var hasDumpURL = Config.Get("DataReplication:AllowDumpUrl", defaultValue: true);
 
             void Register(string key, Func<HttpContext, Task> handler)
             {
@@ -84,7 +85,7 @@ namespace Olive.Entities.Replication
                 }));
             }
 
-            if (!RegisteredExposedEndpionts)
+            if (!RegisteredExposedEndpionts && hasDumpURL)
             {
                 RegisteredExposedEndpionts = true;
                 logger.Info("Registering the /all action");
