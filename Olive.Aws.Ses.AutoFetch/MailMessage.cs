@@ -14,6 +14,7 @@ namespace Olive.Aws.Ses.AutoFetch
         public string Body { get; set; }
         public string Sender { get; set; }
         public string Bucket { get; set; }
+        public string ReplyTo { get; set; }
         public DateTime Date { get; set; }
         public DateTime DateDownloaded { get; set; }
         public string MessageId { get; set; }
