@@ -25,6 +25,8 @@ namespace Olive.Mvc.Testing
             services.AddTransient<IDevCommand, DatabaseProfileSnapshotDevCommand>();
             services.AddTransient<IDevCommand, DatabaseProfileStopDevCommand>();
             services.AddTransient<IDevCommand, CsvImportDataDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseCreateDevCommand>();
+            services.AddTransient<IDevCommand, DatabaseSeedDevCommand>();
 
             return @this;
         }

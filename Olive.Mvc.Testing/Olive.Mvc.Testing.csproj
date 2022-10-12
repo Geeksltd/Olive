@@ -5,7 +5,7 @@
 		<RootNamespace>Olive.Mvc.Testing</RootNamespace>
 		<PackageId>Olive.Mvc.Testing</PackageId>
 		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<Version>3.1.110</Version>
+		<Version>3.1.111</Version>
 		<PackOnBuild>true</PackOnBuild>
 		<NeutralLanguage>en</NeutralLanguage>
 		<LangVersion>default</LangVersion>
@@ -21,7 +21,7 @@
 		<PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
 		<Owners>Geeks Ltd</Owners>
 		<Authors>Geeks Ltd</Authors>
-		<Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
+		<Copyright>Geeks Ltd 2022, All rights reserved.</Copyright>
 		<DisableExtraReferences>true</DisableExtraReferences>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">

@@ -6,5 +6,7 @@ namespace Olive.Mvc
     {
         Task Restart();
         Task AwaitReadiness();
+        Task ReCreateDb();
+        Task Seed();
     }
 }

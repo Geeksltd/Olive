@@ -51,12 +51,51 @@ namespace Olive.Mvc.Testing
             }
         }
 
+        public async Task ReCreate(bool dropExisting = false)
+        {
+            try
+            {
+                var generator = new TestDatabaseGenerator(DatabaseManager) { DropExisting = dropExisting };
+
+                generator.Process();
+                Status = TempDatabaseCreationStatus.Created;
+            }
+            catch
+            {
+                Status = TempDatabaseCreationStatus.Failed;
+                throw;
+            }
+            finally
+            {
+                DatabaseChangeWatcher.Restart();
+            }
+        }
+
+
         public async Task Restart()
         {
             using (await SyncLock.Lock())
             {
                 Status = TempDatabaseCreationStatus.Creating;
                 await Create(dropExisting: true);
+            }
+        }
+
+        public async Task ReCreateDb()
+        {
+            using (await SyncLock.Lock())
+            {
+                Status = TempDatabaseCreationStatus.Creating;
+                await ReCreate(dropExisting: true);
+            }
+        }
+
+        public async Task Seed()
+        {
+            try { await ReferenceData.Create(); }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to run the reference data.", ex);
             }
         }
 
@@ -80,5 +119,6 @@ namespace Olive.Mvc.Testing
                 }
             }
         }
+
     }
 }
