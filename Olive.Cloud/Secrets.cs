@@ -47,7 +47,7 @@ namespace Olive.Cloud
             }
             catch (AggregateException ex)
             {
-                Log.Error(ex.InnerException, "Failed to obtain the secret: " + SecretId);
+                Log.Error(ex, "Failed to obtain the secret with errors: " + SecretId);
                 throw;
             }
             catch (Exception ex)
