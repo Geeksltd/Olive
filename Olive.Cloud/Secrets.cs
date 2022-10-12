@@ -39,7 +39,10 @@ namespace Olive.Cloud
                 var secrets = DownloadSecrets();
 
                 if (secrets.IsEmpty())
+                {
+                    Log.Error("SecretString was empty: " + SecretId);
                     throw new Exception("SecretString was empty!");
+                }
 
                 SecretString = secrets;
 
@@ -48,6 +51,8 @@ namespace Olive.Cloud
             catch (AggregateException ex)
             {
                 Log.Error(ex, "Failed to obtain the secret with errors: " + SecretId);
+                Log.Error(ex.InnerException, "Failed to obtain the secret with error: " + SecretId);
+                ex.InnerExceptions.Do(e => Log.Error(e, "Failed to obtain the secret with error: " + SecretId));
                 throw;
             }
             catch (Exception ex)

@@ -9,10 +9,15 @@ namespace Olive.Aws.Providers
     {
         internal override async Task<string> Download(string secretId)
         {
-            if (secretId.IsEmpty()) throw new ArgumentNullException(nameof(secretId));
+            if (secretId.IsEmpty())
+            {
+                Log.For(this).Error("Secret Id Is Empty");
+                throw new ArgumentNullException(nameof(secretId));
+            }
 
             var request = new model.GetParameterRequest { Name = secretId };
             var response = await AwsClient.GetParameterAsync(request);
+            Log.For(this).Error($"Secret Id Response : {response.HttpStatusCode} - {response.Parameter.Name}");
             return response.Parameter.Value;
         }
     }
