@@ -20,8 +20,8 @@ namespace Olive.PassiveBackgroundTasks
 
         internal static async Task Register(string name, Expression<Func<Task>> action, int intervalInMinutes, int timeoutInMinutes = 5)
         {
-            var instance = await Db.FirstOrDefault<IBackgourndTask>(b => b.Name == name).ConfigureAwait(false);
-            if (instance is null) instance = Context.Current.GetService<IBackgourndTask>();
+            var instance = await Db.FirstOrDefault<IBackgourndTask>(b => b.Name == name);
+            if (instance is null) instance = (IBackgourndTask)Context.Current.GetService<IBackgourndTask>().Clone();
             else instance = (IBackgourndTask)instance.Clone();
 
             instance.Name = name;
