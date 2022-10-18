@@ -187,6 +187,8 @@ namespace Olive
 
                 if (targetType == typeof(double)) result = double.Parse(text);
 
+                if (targetType == typeof(float)) result = float.Parse(text);
+
                 if (targetType == typeof(decimal)) result = decimal.Parse(text);
 
                 if (targetType == typeof(bool)) result = bool.Parse(text);
