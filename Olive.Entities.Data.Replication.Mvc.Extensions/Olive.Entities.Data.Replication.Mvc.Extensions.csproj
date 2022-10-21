@@ -5,7 +5,7 @@
 		<RootNamespace>Olive.Entities.Data.Replication.Mvc.Extensions</RootNamespace>
 		<PackageId>Olive.Entities.Data.Replication.Mvc.Extensions</PackageId>
 		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<Version>2.1.182</Version>
+		<Version>2.1.183</Version>
 		<PackOnBuild>true</PackOnBuild>
 		<NeutralLanguage>en</NeutralLanguage>
 		<LangVersion>default</LangVersion>

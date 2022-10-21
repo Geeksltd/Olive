@@ -6,7 +6,7 @@
     <RootNamespace>Olive.ApiClient</RootNamespace>
     <PackageId>Olive.ApiClient</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.2.108</Version>
+    <Version>2.2.109</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

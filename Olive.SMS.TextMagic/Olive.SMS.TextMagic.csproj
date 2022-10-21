@@ -5,7 +5,7 @@
     <RootNamespace>Olive.SMS.TextMagic</RootNamespace>
     <PackageId>Olive.SMS.TextMagic</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
