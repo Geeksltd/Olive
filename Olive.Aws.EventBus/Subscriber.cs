@@ -24,7 +24,7 @@ namespace Olive.Aws
             (PollingThread = new Thread(async () => await KeepPolling())).Start();
         }
 
-        public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 0);
+        public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 10);
 
         async Task<List<KeyValuePair<string, Message>>> FetchEvents(int waitTimeSeconds)
         {

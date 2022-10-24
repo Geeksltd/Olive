@@ -17,6 +17,7 @@ namespace Olive.RabbitMQ
         const int BATCH_SIZE = 100;
         internal string QueueUrl;
         public IModel Client { get; set; }
+        public ConnectionFactory Factory { get; set; }
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
 
@@ -24,17 +25,17 @@ namespace Olive.RabbitMQ
         {
             QueueUrl = queueUrl;
 
-            var factory = new ConnectionFactory() { HostName = Host, UserName = UserName, Password = Password };
-            factory.Port = Port;
+            Factory = new ConnectionFactory() { HostName = Host, UserName = UserName, Password = Password };
+            Factory.Port = Port;
 
             if (EnableSSL)
             {
                 ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
-                factory.Ssl = new SslOption { Enabled = true, Version = System.Security.Authentication.SslProtocols.Tls11 | System.Security.Authentication.SslProtocols.Tls12 };
+                Factory.Ssl = new SslOption { Enabled = true, Version = System.Security.Authentication.SslProtocols.Tls11 | System.Security.Authentication.SslProtocols.Tls12 };
 
             }
 
-            var connection = factory.CreateConnection();
+            var connection = Factory.CreateConnection();
             Client = connection.CreateModel();
             Client.ConfirmSelect();
         }
@@ -85,22 +86,21 @@ namespace Olive.RabbitMQ
         {
             int outstandingMessageCount = 0;
             await Limiter.Add(messages.Count());
-
             foreach (var message in messages)
             {
                 var body = Encoding.UTF8.GetBytes(message);
                 Client.QueueDeclare(QueueUrl, true, false, false, null);
                 Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Fanout, durable: true);
                 Client.QueueBind(queue: QueueUrl,
-                      exchange: QueueUrl,
-                      routingKey: QueueUrl);
+                        exchange: QueueUrl,
+                        routingKey: QueueUrl);
                 var properties = Client.CreateBasicProperties();
                 properties.Persistent = true;
                 properties.ContentType = "application/json";
                 Client.BasicPublish("",
-                                     routingKey: QueueUrl,
-                                     basicProperties: properties,
-                                     body: body);
+                                        routingKey: QueueUrl,
+                                        basicProperties: properties,
+                                        body: body);
                 outstandingMessageCount++;
                 if (outstandingMessageCount == BATCH_SIZE)
                 {
@@ -112,6 +112,7 @@ namespace Olive.RabbitMQ
             {
                 Client.WaitForConfirmsOrDie(5.Seconds());
             }
+            
 
             //var request = Client.CreateBasicPublishBatch();
 
