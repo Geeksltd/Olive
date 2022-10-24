@@ -28,6 +28,15 @@ namespace Olive.RabbitMQ
 
         public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 0);
 
+        private void DeclareQueueExchange()
+        {
+            Queue.Client.ExchangeDeclare(exchange: Queue.QueueUrl, type: ExchangeType.Fanout, durable: true);
+            Queue.Client.QueueDeclare(Queue.QueueUrl, true, false, false, null);
+            Queue.Client.QueueBind(queue: Queue.QueueUrl,
+                  exchange: Queue.QueueUrl,
+                  routingKey: Queue.QueueUrl);
+        }
+
         BasicGetResult Fetch()
         {
             try
@@ -110,6 +119,7 @@ namespace Olive.RabbitMQ
 
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
         {
+            DeclareQueueExchange();
             var queueIsEmpty = false;
             do
             {
