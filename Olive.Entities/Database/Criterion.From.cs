@@ -129,7 +129,7 @@ namespace Olive.Entities
 
                 if (!(value is string) && value is IEnumerable asEnum)
                 {
-                    Func<object, string> escape = x => $"'{x}'";
+                    Func<object, string> escape = x => $"'{x.ToStringOrEmpty().Replace("'","''")}'";
 
                     if (asEnum.GetType().GetEnumerableItemType().IsBasicNumeric())
                         escape = x => x.ToString();
