@@ -114,7 +114,13 @@ namespace Olive.RabbitMQ
                            Handler.Method.Name +
                            "message: " + ea.DeliveryTag.ToString()?.ToJsonText(), ex);
 
-                        Log.For<Subscriber>().Error(exception);
+                       if (Queue.IsFifo)
+                       {
+                           Queue.Client.BasicCancel(ea.ConsumerTag);
+                           throw exception;
+                       }
+                       else
+                           Log.For<Subscriber>().Error(exception);
                    }
                };
 
