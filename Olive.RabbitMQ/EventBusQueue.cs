@@ -27,6 +27,8 @@ namespace Olive.RabbitMQ
 
             Factory = new ConnectionFactory() { HostName = Host, UserName = UserName, Password = Password };
             Factory.Port = Port;
+            Factory.AutomaticRecoveryEnabled = true;
+            Factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(10);
 
             if (EnableSSL)
             {
