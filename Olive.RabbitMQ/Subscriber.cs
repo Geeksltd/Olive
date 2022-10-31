@@ -44,7 +44,6 @@ namespace Olive.RabbitMQ
         {
             try
             {
-
                 lock (Queue.Client)
                 {
                     return Queue.Client.BasicGet(queue: Queue.QueueUrl,
@@ -60,42 +59,12 @@ namespace Olive.RabbitMQ
 
         async Task<bool> Poll(EventingBasicConsumer consumer)
         {
-            //var result = Fetch();
-
-            //if (result == null)
-            //    return false;
-
-            //try
-            //{
-            //    var body = result.Body.ToArray();
-            //    var message = Encoding.UTF8.GetString(body);
-            //    await Handler(message);
-            //    lock (Queue.Client)
-            //    {
-            //        Queue.Client.BasicAck(deliveryTag: result.DeliveryTag, multiple: false);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    var exception = new Exception("Failed to run queue event handler " +
-            //        Handler.Method.DeclaringType.GetProgrammingName() + "." +
-            //        Handler.Method.Name +
-            //        "message: " + result.DeliveryTag.ToString()?.ToJsonText(), ex);
-
-            //    if (Queue.IsFifo)
-            //        throw exception;
-            //    else
-            //        Log.For<Subscriber>().Error(exception);
-            //}
-
-            //return true;
-
             if (consumer.IsRunning)
             {
                 await Task.Yield();
                 return true;
             }
-
+            
             consumer.Received += (model, ea) =>
                {
                    try
@@ -117,6 +86,9 @@ namespace Olive.RabbitMQ
                        if (Queue.IsFifo)
                        {
                            Queue.Client.BasicCancel(ea.ConsumerTag);
+                           Queue.Client.QueueUnbind(queue: Queue.QueueUrl,
+                              exchange: Queue.QueueUrl,
+                              routingKey: Queue.QueueUrl);
                            throw exception;
                        }
                        else
@@ -142,23 +114,63 @@ namespace Olive.RabbitMQ
             return true;
         }
 
-
-        async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 60)
+        async Task<bool> Poll(int waitTimeSeconds)
         {
-            var consumer = new EventingBasicConsumer(Queue.Client);
+            var result = Fetch();
+
+            if (result == null)
+            {
+                Thread.Sleep(waitTimeSeconds.Seconds());
+                return false;
+            }
+
+            try
+            {
+                var body = result.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                await Handler(message);
+                lock (Queue.Client)
+                {
+                    Queue.Client.BasicAck(deliveryTag: result.DeliveryTag, multiple: false);
+                }
+            }
+            catch (Exception ex)
+            {
+                var exception = new Exception("Failed to run queue event handler " +
+                    Handler.Method.DeclaringType.GetProgrammingName() + "." +
+                    Handler.Method.Name +
+                    "message: " + result.DeliveryTag.ToString()?.ToJsonText(), ex);
+
+                if (Queue.IsFifo)
+                    throw exception;
+                else
+                    Log.For<Subscriber>().Error(exception);
+            }
+
+            return true;
+
+
+        }
+
+
+        async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
+        {
+            //var consumer = new EventingBasicConsumer(Queue.Client);
+
+            DeclareQueueExchange();
 
             var queueIsEmpty = false;
             do
             {
                 try
                 {
-                    queueIsEmpty = !await Poll(consumer);
+                    queueIsEmpty = !await Poll(waitTimeSeconds);
                 }
                 catch (Exception exception) 
                 { 
                     Log.For<Subscriber>().Error(exception);
                 }
-                Thread.Sleep(waitTimeSeconds.Seconds());
+                
             }
             while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
         }
