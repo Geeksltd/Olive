@@ -5,7 +5,7 @@
 		<RootNamespace>Olive.RabbitMQ</RootNamespace>
 		<PackageId>Olive.RabbitMQ</PackageId>
 		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<Version>1.0.0.12</Version>
+		<Version>1.0.0.13</Version>
 		<PackOnBuild>true</PackOnBuild>
 		<NeutralLanguage>en</NeutralLanguage>
 		<LangVersion>default</LangVersion>

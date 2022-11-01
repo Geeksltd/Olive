@@ -57,15 +57,10 @@ namespace Olive.RabbitMQ
         }
 
 
-        async Task<bool> Poll(EventingBasicConsumer consumer)
+        async Task Poll()
         {
-            if (consumer.IsRunning)
-            {
-                await Task.Yield();
-                return true;
-            }
-            
-            consumer.Received += (model, ea) =>
+            var consumer = new AsyncEventingBasicConsumer(Queue.Client);
+            consumer.Received += async (model, ea) =>
                {
                    try
                    {
@@ -73,7 +68,7 @@ namespace Olive.RabbitMQ
                        var message = Encoding.UTF8.GetString(body);
                        Log.For(this)
                            .Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
-                       Handler(message).WaitAndThrow();
+                       await Handler(message);
                        Queue.Client.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
                    }
                    catch (Exception ex)
@@ -83,15 +78,6 @@ namespace Olive.RabbitMQ
                            Handler.Method.Name +
                            "message: " + ea.DeliveryTag.ToString()?.ToJsonText(), ex);
 
-                       if (Queue.IsFifo)
-                       {
-                           Queue.Client.BasicCancel(ea.ConsumerTag);
-                           Queue.Client.QueueUnbind(queue: Queue.QueueUrl,
-                              exchange: Queue.QueueUrl,
-                              routingKey: Queue.QueueUrl);
-                           throw exception;
-                       }
-                       else
                            Log.For<Subscriber>().Error(exception);
                    }
                };
@@ -103,15 +89,14 @@ namespace Olive.RabbitMQ
                 Queue.Client.QueueBind(queue: Queue.QueueUrl,
                       exchange: Queue.QueueUrl,
                       routingKey: Queue.QueueUrl);
+                Queue.Client.BasicQos(0, 1, false);
                 Queue.Client.BasicConsume(queue: Queue.QueueUrl,
                                     autoAck: false,
                                     consumer: consumer);
             }
 
             Log.For<Subscriber>().Info(Queue.QueueUrl);
-            await Task.Yield();
 
-            return true;
         }
 
         async Task<bool> Poll(int waitTimeSeconds)
@@ -120,7 +105,7 @@ namespace Olive.RabbitMQ
 
             if (result == null)
             {
-                Thread.Sleep(waitTimeSeconds.Seconds());
+                await Task.Delay(waitTimeSeconds.Seconds());
                 return false;
             }
 
@@ -155,24 +140,23 @@ namespace Olive.RabbitMQ
 
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
         {
-            //var consumer = new EventingBasicConsumer(Queue.Client);
+            await Poll();
+            //DeclareQueueExchange();
 
-            DeclareQueueExchange();
+            //var queueIsEmpty = false;
+            //do
+            //{
+            //    try
+            //    {
+            //        queueIsEmpty = !await Poll(consumer);
+            //    }
+            //    catch (Exception exception) 
+            //    { 
+            //        Log.For<Subscriber>().Error(exception);
+            //    }
 
-            var queueIsEmpty = false;
-            do
-            {
-                try
-                {
-                    queueIsEmpty = !await Poll(waitTimeSeconds);
-                }
-                catch (Exception exception) 
-                { 
-                    Log.For<Subscriber>().Error(exception);
-                }
-                
-            }
-            while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
+            //}
+            //while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Olive.RabbitMQ
             Factory.Port = Port;
             Factory.AutomaticRecoveryEnabled = true;
             Factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(10);
-
+            Factory.DispatchConsumersAsync = true;
             if (EnableSSL)
             {
                 ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
