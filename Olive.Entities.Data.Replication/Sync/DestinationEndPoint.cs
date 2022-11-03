@@ -43,6 +43,14 @@ namespace Olive.Entities.Replication
             PublishQueue.Subscribe<ReplicateDataMessage>(Import);
         }
 
+        public async Task Subscribe(bool isRefreshMessageRequired = false)
+        {
+            if(isRefreshMessageRequired)
+                await EnsureRefreshData();
+
+            PublishQueue.Subscribe<ReplicateDataMessage>(Import);
+        }
+
         public async Task PullAll()
         {
             var start = LocalTime.Now;
