@@ -56,9 +56,16 @@ namespace Olive
         /// <summary>
         /// Posts the specified object as JSON data to this URL.
         /// </summary>
-        public static async Task<string> PostJson(this Uri @this, object data)
+        public static Task<string> PostJson(this Uri @this, object data)
+            => @this.PostJson(data, customiseClient: null);
+
+        /// <summary>
+        /// Posts the specified object as JSON data to this URL.
+        /// </summary>
+        public static async Task<string> PostJson(this Uri @this, object data, Action<HttpClient> customiseClient = null)
         {
             using var client = new HttpClient();
+            customiseClient?.Invoke(client);
 
             var @string = JsonSerializer.Serialize(data);
             var requestContent = new StringContent(@string, Encoding.UTF8, "application/json");
