@@ -30,8 +30,27 @@ namespace Olive
             if (!@this.IsCompleted)
                 throw new InvalidOperationException("This task is not completed yet. Do you need to await it?");
 
-            if (@this.Exception != null)
+            if (@this.Exception is not null)
                 throw @this.Exception.InnerException ?? @this.Exception;
+
+            return @this.Result;
+        }
+
+        /// <summary>
+        /// If the task is not completed already it throws an exception warning you to await the task.
+        /// If the task wraps an exception, a default value will be returned.
+        /// Otherwise the result will be returned.
+        /// Use this when you know that the task is already completed and you want to get the result or a default value in case of .
+        /// </summary>
+        [EscapeGCop("I AM the solution to the GCop warning itself!")]
+        public static TResult GetAlreadyCompletedResultOrDefault<TResult>(this Task<TResult> @this)
+        {
+            if (@this == null) return default;
+
+            if (!@this.IsCompleted)
+                throw new InvalidOperationException("This task is not completed yet. Do you need to await it?");
+
+            if (@this.Exception is not null) return default;
 
             return @this.Result;
         }
@@ -187,6 +206,35 @@ namespace Olive
                 // No logging is needed
                 return default;
             }
+        }
+
+        /// <summary>
+        /// Awaits all tasks (in parallel) and will return the result of the fastest one.
+        /// It will move on to the next one if the result is an empty string.
+        /// Also it will immediately return null if the specified timeout got exceeded.
+        /// </summary>
+        public static Task<string> FastestOrDefault(this IEnumerable<Task<string>> @this, TimeSpan timeout)
+            => @this.FastestOrDefault(result => result.HasValue(), timeout);
+
+        /// <summary>
+        /// Awaits all tasks (in parallel) and will return the result of the fastest one.
+        /// It will await for the second fastest task if the resultValidator returns false and so on.
+        /// Also it will immediately return a default if the specified timeout got exceeded.
+        /// </summary>
+        public static Task<T> FastestOrDefault<T>(this IEnumerable<Task<T>> @this, Func<T, bool> resultValidator, TimeSpan timeout)
+        {
+            var source = new TaskCompletionSource<T>();
+
+            // No need to wait on the tasks
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            @this.Select(t => t.ContinueWith(task =>
+            {
+                var result = task.GetAlreadyCompletedResultOrDefault();
+                if (resultValidator(result)) source.TrySetResult(result);
+            })).AwaitAll();
+#pragma warning restore CS4014
+
+            return source.Task.WithTimeout(timeout, timeoutAction: () => default);
         }
 
         public static TResult AwaitResultWithoutContext<TResult>(this Task<TResult> task)
