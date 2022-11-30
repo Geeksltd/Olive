@@ -17,12 +17,7 @@ namespace Olive.Aws.Ses.AutoFetch
         public string ReplyTo { get; set; }
         public DateTime Date { get; set; }
         public DateTime DateDownloaded { get; set; }
-        public string MessageId { get; set; }
-
-        /// <summary>
-        /// Json array of Olive.Aws.Ses.AutoFetch.Attachment
-        /// </summary>
-        public string Attachments { get; set; }
+        public string MessageId { get; set; }         
 
         protected override async Task ValidateProperties()
         {

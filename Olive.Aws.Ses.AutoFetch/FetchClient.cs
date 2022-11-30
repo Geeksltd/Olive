@@ -90,7 +90,7 @@ namespace Olive.Aws.Ses.AutoFetch
             {
                 var mailmessage = await SaveMessage(message.Message);
 
-                message.Attachments.Do(x => x.MailMessageId = ((GuidEntity)mailmessage).ID);
+                message.Attachments.Do(x => x.MailMessageId = mailmessage.GetId().ToString().TryParseAs<Guid>());
                 await SaveAttachments(message.Attachments);
 
                 LogInfo("Deleting object " + item.Key);
