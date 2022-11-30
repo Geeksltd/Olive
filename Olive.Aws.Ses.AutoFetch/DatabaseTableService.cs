@@ -23,7 +23,15 @@ CREATE TABLE [dbo].[MailMessages](
 	[Attachments] [nvarchar](max) NULL,
     [Bucket] [nvarchar](200) NULL,
 ) ON [PRIMARY]
+
+if not exists (select * from sysobjects where name='MailMessageAttachments' and xtype='U')
+/****** Object:  Table [dbo].[MailMessageAttachments]    ******/
+CREATE TABLE [dbo].[MailMessageAttachments](
+	[ID] [uniqueidentifier] NOT NULL,
+	[MailMessage] [uniqueidentifier] NOT NULL,
+	[Attachment_FileName] [nvarchar](1500) NULL
+) ON [PRIMARY]
 ";
-        internal static Task EnsureDatabaseTable<T>() => Entities.Data.DataAccess.Create().ExecuteNonQuery(CREATE_TABLE_COMMAND);
+        internal static Task EnsureDatabaseTable<T,A>() => Entities.Data.DataAccess.Create().ExecuteNonQuery(CREATE_TABLE_COMMAND);
     }
 }

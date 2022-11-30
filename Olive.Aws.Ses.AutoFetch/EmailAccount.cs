@@ -1,5 +1,6 @@
 ﻿using MimeKit;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,13 +53,37 @@ namespace Olive.Aws.Ses.AutoFetch
             result.Body = message.HtmlBody.Or(message.TextBody);
             result.Date = message.Date.DateTime;
             result.Sender = message.Sender?.ToString();
-            result.Subject = message.Subject;            
+            result.Subject = message.Subject;
             result.Bucket = bucket;
             result.DateDownloaded = LocalTime.Now;
             result.MessageId = message.MessageId;
-            result.Attachments = JsonConvert.SerializeObject(message.Attachments.OrEmpty().Where(x => x.IsAttachment).Select(x => new Attachment(x)).ToArray());
-
+ 
             return result;
+        }
+
+        protected abstract IMailMessageAttachment CreateMailMessageAttachmentInstance();
+
+        internal IMailMessageAttachment[] CreateMailMessageAttachments(MimeMessage message)
+        {
+            var result = new List<IMailMessageAttachment>();
+
+            var attachments = message.Attachments.OrEmpty()
+                .Where(x => x.IsAttachment).Select(x => new Attachment(x)).ToArray();
+
+            foreach (var item in attachments)
+            {
+                var attachment = CreateMailMessageAttachmentInstance();
+
+                var blob = Olive.Entities.Blob.Empty();
+                blob.FileName = item.FileName;
+                blob.SetData(item.Base64.ToBytesFromBase64());
+
+                attachment.Attachment = blob;
+
+                result.Add(attachment);
+            }
+
+            return result.ToArray();
         }
     }
 }

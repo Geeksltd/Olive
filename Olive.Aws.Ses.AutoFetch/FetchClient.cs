@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using MimeKit;
 using System.IO;
 using Olive.Entities;
+using System.Net.Mail;
 
 namespace Olive.Aws.Ses.AutoFetch
 {
@@ -15,22 +16,39 @@ namespace Olive.Aws.Ses.AutoFetch
     {
         EmailAccount Account;
         Amazon.S3.AmazonS3Client S3Client;
-        Func<IMailMessage, Task> Save;
-        FetchClient(Func<IMailMessage, Task> save = null)
+        Func<IMailMessage, Task<IMailMessage>> SaveMessage;
+        Func<IMailMessageAttachment[], Task> SaveAttachments;
+        FetchClient(Func<IMailMessage, Task<IMailMessage>> saveMessage = null, Func<IMailMessageAttachment[], Task> saveAttachments = null)
         {
-            Save = save ?? DoSave;
+            SaveMessage = saveMessage ?? DoSaveMessage;
+            SaveAttachments = saveAttachments ?? DoSaveAttachments;
+
             Log.For(this).Info("Creating the aws client ...");
             S3Client = new Amazon.S3.AmazonS3Client();
             Log.For(this).Info("Aws client created");
         }
 
-        internal static async Task Fetch(EmailAccount account, Func<IMailMessage, Task> save = null)
+        internal static async Task Fetch(EmailAccount account, Func<IMailMessage, Task<IMailMessage>> saveMessage = null, Func<IMailMessageAttachment[], Task> saveAttachments = null)
         {
-            using (var client = new FetchClient(save) { Account = account })
+            using (var client = new FetchClient(saveMessage, saveAttachments) { Account = account })
                 await client.Fetch();
         }
 
-        Task DoSave(IMailMessage message) => Context.Current.Database().Save(message);
+        Task<IMailMessage> DoSaveMessage(IMailMessage message) => Context.Current.Database().Save(message);
+        Task DoSaveAttachments(IMailMessageAttachment[] attachments)
+        {
+            foreach (var item in attachments)
+            {
+                var attachment = Task.Factory.RunSync(() => Context.Current.Database().Save(item));
+
+                item.Attachment.Attach((Entity)attachment, nameof(IMailMessageAttachment.Attachment));
+
+                Task.Factory.RunSync(() => item.Attachment.Save());
+            }
+
+            return Task.CompletedTask;
+        }
+
 
         void LogInfo(string log) => Log.For(this).Info(log);
 
@@ -70,7 +88,10 @@ namespace Olive.Aws.Ses.AutoFetch
 
             using (var scope = new DbTransactionScope())
             {
-                await Save(message);
+                var mailmessage = await SaveMessage(message.Message);
+
+                message.Attachments.Do(x => x.MailMessageId = ((GuidEntity)mailmessage).ID);
+                await SaveAttachments(message.Attachments);
 
                 LogInfo("Deleting object " + item.Key);
                 await Delete(item);
@@ -81,12 +102,17 @@ namespace Olive.Aws.Ses.AutoFetch
 
         }
 
-        async Task<IMailMessage> GetObject(Amazon.S3.Model.S3Object item)
+        async Task<MailMessageWithAttachments> GetObject(Amazon.S3.Model.S3Object item)
         {
             var request = new Amazon.S3.Model.GetObjectRequest { Key = item.Key, BucketName = item.BucketName };
             var response = await S3Client.GetObjectAsync(request);
             var sesMessage = MimeMessage.Load(response.ResponseStream);
-            return Account.CreateMailMessage(sesMessage, Account.S3Bucket);
+
+            return new MailMessageWithAttachments
+            {
+                Message = Account.CreateMailMessage(sesMessage, Account.S3Bucket),
+                Attachments = Account.CreateMailMessageAttachments(sesMessage)
+            };
         }
 
         Task Delete(Amazon.S3.Model.S3Object item)
