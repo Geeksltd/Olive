@@ -57,7 +57,7 @@ namespace Olive.Aws.Ses.AutoFetch
             result.Bucket = bucket;
             result.DateDownloaded = LocalTime.Now;
             result.MessageId = message.MessageId;
- 
+
             return result;
         }
 
@@ -74,11 +74,7 @@ namespace Olive.Aws.Ses.AutoFetch
             {
                 var attachment = CreateMailMessageAttachmentInstance();
 
-                var blob = Olive.Entities.Blob.Empty();
-                blob.FileName = item.FileName;
-                blob.SetData(item.Base64.ToBytesFromBase64());
-
-                attachment.Attachment = blob;
+                attachment.Attachment = new Olive.Entities.Blob(item.Base64.ToBytesFromBase64(), item.FileName);
 
                 result.Add(attachment);
             }
