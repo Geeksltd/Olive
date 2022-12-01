@@ -35,20 +35,7 @@ namespace Olive.Aws.Ses.AutoFetch
         }
 
         Task<IMailMessage> DoSaveMessage(IMailMessage message) => Context.Current.Database().Save(message);
-        Task DoSaveAttachments(IMailMessageAttachment[] attachments)
-        {
-            foreach (var item in attachments)
-            {
-                var attachment = Task.Factory.RunSync(() => Context.Current.Database().Save(item));
-
-                item.Attachment.Attach((Entity)attachment, nameof(IMailMessageAttachment.Attachment));
-
-                Task.Factory.RunSync(() => item.Attachment.Save());
-            }
-
-            return Task.CompletedTask;
-        }
-
+        Task DoSaveAttachments(IMailMessageAttachment[] attachments) => Context.Current.Database().Save(attachments);
 
         void LogInfo(string log) => Log.For(this).Info(log);
 
