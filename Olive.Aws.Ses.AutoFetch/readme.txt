@@ -47,7 +47,6 @@ If Option 2 is used, add these entities
             String("Bucket");
             String("MessageId");
             String("ReplyTo");
-            Bool("Processed").Mandatory();
 
             InverseAssociate<MailMessageAttachment>("Attachments", "MailMessage");
         }

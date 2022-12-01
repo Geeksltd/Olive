@@ -20,7 +20,6 @@ CREATE TABLE [dbo].[MailMessages] (
     Sender nvarchar(2000)  NULL,
     Body nvarchar(MAX)  NULL,
     [Date] datetime2  NOT NULL,
-    Processed bit  NOT NULL,
     Bucket nvarchar(200)  NULL,
     Attachments nvarchar(MAX)  NULL,
     DateDownloaded datetime2  NOT NULL,
