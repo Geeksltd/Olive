@@ -201,6 +201,61 @@
             // Get Embed token
             return await client.Reports.GenerateTokenInGroupAsync(workspaceId, reportId, tokenRequest);
         }
+
+        /// <summary>
+        /// Refreshes the datase
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="datasetId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> RefreshDatasetAsync(Guid workspaceId, string datasetId, DatasetRefreshRequest datasetRefreshRequest = null)
+        {
+            if (datasetRefreshRequest == null)
+            {
+                datasetRefreshRequest = new DatasetRefreshRequest()
+                {
+                    ApplyRefreshPolicy = false,
+                    CommitMode = DatasetCommitMode.Transactional,
+                    EffectiveDate = DateTime.UtcNow,
+                    MaxParallelism = 1,
+                    NotifyOption = NotifyOption.NoNotification,
+                    Objects = null,
+                    RetryCount = 3,
+                    Type = DatasetRefreshType.Full
+                };
+            }
+            try
+            {
+                await client.Datasets.RefreshDatasetInGroupAsync(workspaceId, datasetId, datasetRefreshRequest);
+                return true;
+            }
+            catch
+            {
+                throw new Exception("Error on refreshing dataset, please make sure workspaceId or datasetId is correct");
+            }
+        }
+
+        /// <summary>
+        /// Gets refresh history of dataset
+        /// </summary>
+        /// <param name="workspaceId"></param>
+        /// <param name="datasetId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<IList<Refresh>> GetDatasetRefreshHistoryAsync(Guid workspaceId, string datasetId)
+        {
+            Refreshes? refreshes = null;
+            try
+            {
+                refreshes = await client.Datasets.GetRefreshHistoryInGroupAsync(workspaceId, datasetId);
+            }
+            catch
+            {
+                throw new Exception("Error on getting history of dataset refresh, please make sure workspaceId or datasetId is set correctly");
+            }
+            return refreshes.Value;
+        }
         #endregion
 
         #region Dashbaord
