@@ -8,7 +8,7 @@
     <Title>Olive.Dashboards.PowerBI</Title>
     <Authors>Geeks Ltd</Authors>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-	<Version>7.0.0.2</Version>
+	<Version>7.0.0.3</Version>
 	<PackOnBuild>true</PackOnBuild>
     <Description>Olive Framework</Description>
     <Copyright>Geeks Ltd 2022, All rights reserved.</Copyright>
