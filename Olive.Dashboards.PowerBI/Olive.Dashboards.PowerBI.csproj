@@ -1,13 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFramework>net7.0-windows</TargetFramework>
+	<TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <Title>Olive.Dashboards.PowerBI</Title>
     <Authors>Geeks Ltd</Authors>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
+	<Version>7.0.0.2</Version>
+	<PackOnBuild>true</PackOnBuild>
     <Description>Olive Framework</Description>
     <Copyright>Geeks Ltd 2022, All rights reserved.</Copyright>
     <PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
@@ -16,6 +18,12 @@
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
     <AnalysisLevel>none</AnalysisLevel>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+	<PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
+	<PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
+	<Owners>Geeks Ltd</Owners>
+	<Authors>Geeks Ltd</Authors>
+	<DisableExtraReferences>true</DisableExtraReferences>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
