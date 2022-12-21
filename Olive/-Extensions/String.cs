@@ -268,14 +268,14 @@ namespace Olive
         /// Inserts a "s" in the end of this string if {count} greater than zero.
         /// </summary>        
         /// <param name="count">Determines the number of this object.</param>
-        public static string ToCountString(this string @this, int count)
+        public static string ToCountString(this string @this, int count, string format = null)
         {
             var zeroQualifier = "no";
 
             if (@this.HasValue() && char.IsUpper(@this[0]))
                 zeroQualifier = "No";
 
-            return ToCountString(@this, count, zeroQualifier);
+            return ToCountString(@this, count, zeroQualifier, format);
         }
 
         /// <summary>
@@ -283,18 +283,19 @@ namespace Olive
         /// </summary>        
         /// <param name="count">Determines the number of this object.</param>
         /// <param name="zeroQualifier">is a string that if the {count} is zero, it is added to the end of the output string.</param>
-        public static string ToCountString(this string @this, int count, string zeroQualifier)
+        public static string ToCountString(this string @this, int count, string zeroQualifier, string format = null)
         {
             @this = @this.Or("").Trim();
 
             if (@this.IsEmpty())
-                throw new("'name' cannot be empty for ToCountString().");
+                throw new ArgumentNullException(nameof(@this));
 
             if (count < 0)
                 throw new ArgumentException("count should be greater than or equal to 0.");
 
             if (count == 0) return zeroQualifier + " " + @this;
             else if (count == 1) return "1 " + @this;
+            else if (format.HasValue()) return $"{count:format} {@this.ToPlural()}";
             else return $"{count} {@this.ToPlural()}";
         }
 
