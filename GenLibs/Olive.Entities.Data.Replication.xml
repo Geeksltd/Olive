@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Olive.Entities.Data.Replication</name>
+    </assembly>
+    <members>
+        <member name="M:Olive.Entities.Replication.ExposedType`1.FilterAsync(`0)">
+            <summary>
+            If it returns false for any given record, it will not be published in the replication queue.
+            Warning: This will not unpublish or modify a record that was previously published, and which no longers meet the filter criteria.
+            </summary>
+        </member>
+        <member name="M:Olive.Entities.Replication.ExposedType`1.Filter(`0)">
+            <summary>
+            If it returns false for any given record, it will not be published in the replication queue.
+            Warning: This will not unpublish or modify a record that was previously published, and which no longers meet the filter criteria.
+            </summary>
+        </member>
+        <member name="M:Olive.Entities.Replication.ExposedType`1.AddDependency``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Marks this type as dependant directly to an associated master entity type.
+            Use this for many-to-one associations.
+            </summary>
+        </member>
+        <member name="M:Olive.Entities.Replication.ExposedType`1.AddChildDependency``1(System.Linq.Expressions.Expression{System.Func{``0,`0}})">
+            <summary>
+            Define the reverse side of a master-detail relationship, where the details' data is exposed via this master object.
+            Use this for exposed one-to-many associations to declare the child dependency.
+            </summary>
+        </member>
+        <member name="P:Olive.Entities.Replication.ExposedType.IsSoftDeleteEnabled">
+            <summary>
+            By default it's true. If you want the data to be hard-deleted on the target database, override this and return false.
+            </summary>
+        </member>
+        <member name="M:Olive.Entities.Replication.SourceEndpoint.Publish(System.Boolean)">
+            <summary>
+            Starts publishing an end point for the specified data types. 
+            It handles all save events on such objects, and publishes them on the event bus.
+            </summary>
+        </member>
+        <member name="M:Olive.Entities.Replication.DestinationEndpoint.Subscribe">
+            <summary> It will start listening to queue messages to keep the local database up to date
+            with the changes in the People. But before it starts that, if the local table
+            is empty, it will fetch the full data. </summary>
+        </member>
+        <member name="T:Olive.Entities.Replication.EventBusAttribute">
+            <summary>
+            When applied to a DataEndPoint sub-class, it specifies the queue url configurtion for it.
+            </summary>
+        </member>
+        <member name="M:Olive.Entities.Replication.EventBusAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Specifies the Queue url for the messages to send from this data end point.
+            </summary>
+            <param name="environment">One of the values from Microsoft.Extensions.Hosting.Environments.</param>
+            <param name="url">The url of the queue where the messages will be sent.
+            The approprite EventBus implementation will be automatically picked based on the URL pattern (e.g. AWS SQS or Microsoft Azure).</param>
+        </member>
+    </members>
+</doc>

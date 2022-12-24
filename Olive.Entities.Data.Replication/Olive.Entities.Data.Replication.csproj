@@ -43,4 +43,7 @@
 		<ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
 		<ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
 	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="copy /y $(TargetDir)Olive.Entities.Data.Replication.deps.json $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.Data.Replication.dll $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.Data.Replication.pdb $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.Data.Replication.xml $(SolutionDir)GenLibs\" />
+	</Target>
 </Project>
