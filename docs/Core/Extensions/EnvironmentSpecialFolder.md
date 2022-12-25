@@ -1,0 +1,1 @@
+# EnvironmentSpecialFolder Extension Methods
