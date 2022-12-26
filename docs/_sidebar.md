@@ -1,4 +1,4 @@
-<img src="https://github.com/Geeksltd/Olive/tree/master/docs/_media/Nuget.png"/>
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/25/NuGet_project_logo.svg" width="70" height="70"/>
 
 * Olive Core
     * [What is Olive?](README.md)
