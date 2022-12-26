@@ -75,13 +75,13 @@
     * [Email notifications](Services/Email.md)
     * [SMS notifications](Services/SMS.md)
     * [GeoLocation](Services/GeoLocation.md)
-    * [Globalization]()
-    * [Data Export]()
+    * [Globalization](Services/Globalization.md)
+    * [Data Export](Services/DataExport.md)
     * [Parsing CSV](Services/CSV.md)
-    * [PDF generation]()
+    * [PDF generation](Services/PDFgeneration.md)
     * [Push Notifications](Services/PushNotification.md)
-    * [Image optimization]()
-    * [Website IP Filter]()
+    * [Image optimization](Services/Imageoptimization.md)
+    * [Website IP Filter](Services/WebsiteIPFilter.md)
     * [AWS integration](Services/Aws.md)
     * [Captcha](Security/Captcha.md)
 
@@ -89,7 +89,7 @@
     * [Olive Security Overview](Security/Security.md)
     * [Captcha](Security/Captcha.md)
     * [Config](Security/Config.md)
-    * [Impersonation]()
+    * [Impersonation](Security/Impersonation.md)
     * [Encryption and Decryption](Security/Encryption%20and%20Decryption.md)
     
 * Logging & Audit
