@@ -65,7 +65,4 @@
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="update-local-nuget-cache&#xD;&#xA;&#xD;&#xA;copy /y $(TargetDir)Olive.deps.json $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.dll $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.pdb $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.xml $(SolutionDir)GenLibs\" />
-  </Target>
 </Project>

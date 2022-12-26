@@ -39,7 +39,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Olive\Olive.csproj" />
 	</ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="update-local-nuget-cache&#xD;&#xA;&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.deps.json $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.dll $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.pdb $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.xml $(SolutionDir)GenLibs\&#xD;&#xA;" />
-	</Target>
 </Project>

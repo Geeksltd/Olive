@@ -12,7 +12,4 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Olive\Olive.csproj" />
 	</ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="copy /y $(TargetDir)Olive.Entities.Data.Replication.QueueUrlProvider.deps.json $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.Data.Replication.QueueUrlProvider.dll $(SolutionDir)GenLibs\&#xD;&#xA;copy /y $(TargetDir)Olive.Entities.Data.Replication.QueueUrlProvider.pdb $(SolutionDir)GenLibs\" />
-	</Target>
 </Project>

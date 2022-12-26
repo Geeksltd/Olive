@@ -1,0 +1,1 @@
+# PascalCaseIdGenerator Utility Methods
