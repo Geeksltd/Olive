@@ -243,12 +243,13 @@ namespace Olive
         /// Returns the number of members of this value.
         /// </summary>        
         /// <param name="objectTitle">Determines the title of the object.</param>
-        public static string Count<T>(this IEnumerable<T> @this, string objectTitle)
+        /// <param name="format">Specifies the formatting of the number</param>
+        public static string Count<T>(this IEnumerable<T> @this, string objectTitle, string format = null)
         {
             if (objectTitle.IsEmpty())
                 objectTitle = SeparateAtUpperCases(typeof(T).Name);
 
-            return objectTitle.ToCountString(@this.Count());
+            return objectTitle.ToCountString(@this.Count(), format);
         }
 
         /// <summary>
@@ -256,18 +257,20 @@ namespace Olive
         /// </summary>        
         /// <param name="objectTitle">Determines the title of the object.</param>
         /// <param name="zeroQualifier">Determines the title when the number of items is zero.</param>
-        public static string Count<T>(this IEnumerable<T> @this, string objectTitle, string zeroQualifier)
+        /// <param name="format">Specifies the formatting of the number</param>
+        public static string Count<T>(this IEnumerable<T> @this, string objectTitle, string zeroQualifier, string format = null)
         {
             if (objectTitle.IsEmpty())
                 objectTitle = SeparateAtUpperCases(typeof(T).Name);
 
-            return objectTitle.ToCountString(@this.Count(), zeroQualifier);
+            return objectTitle.ToCountString(@this.Count(), zeroQualifier, format);
         }
 
         /// <summary>
         /// Inserts a "s" in the end of this string if {count} greater than zero.
         /// </summary>        
         /// <param name="count">Determines the number of this object.</param>
+        /// <param name="format">Specifies the formatting of the number</param>
         public static string ToCountString(this string @this, int count, string format = null)
         {
             var zeroQualifier = "no";
@@ -275,7 +278,7 @@ namespace Olive
             if (@this.HasValue() && char.IsUpper(@this[0]))
                 zeroQualifier = "No";
 
-            return ToCountString(@this, count, zeroQualifier, format);
+            return @this.ToCountString(count, zeroQualifier, format);
         }
 
         /// <summary>
@@ -283,6 +286,7 @@ namespace Olive
         /// </summary>        
         /// <param name="count">Determines the number of this object.</param>
         /// <param name="zeroQualifier">is a string that if the {count} is zero, it is added to the end of the output string.</param>
+        /// <param name="format">Specifies the formatting of the number</param>
         public static string ToCountString(this string @this, int count, string zeroQualifier, string format = null)
         {
             @this = @this.Or("").Trim();
@@ -294,9 +298,9 @@ namespace Olive
                 throw new ArgumentException("count should be greater than or equal to 0.");
 
             if (count == 0) return zeroQualifier + " " + @this;
-            else if (count == 1) return "1 " + @this;
-            else if (format.HasValue()) return $"{count:format} {@this.ToPlural()}";
-            else return $"{count} {@this.ToPlural()}";
+            if (count == 1) return "1 " + @this;
+            if (format.HasValue()) return $"{count.ToString(format)} {@this.ToPlural()}";
+            return $"{count} {@this.ToPlural()}";
         }
 
         /// <summary>
