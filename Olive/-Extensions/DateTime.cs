@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Olive
@@ -861,8 +862,8 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Adds the specified number of weeks and returns the result.
         /// </summary>
-        /// <param name="numberofWeeks">the specified number of weeks</param>
-        public static DateTime AddWeeks(this DateTime @this, int numberofWeeks) => @this.AddDays(WEEK_DAYS_COUNT * numberofWeeks);
+        /// <param name="numberOfWeeks">the specified number of weeks</param>
+        public static DateTime AddWeeks(this DateTime @this, int numberOfWeeks) => @this.AddDays(WEEK_DAYS_COUNT * numberOfWeeks);
 
         /// <summary>
         /// Gets the latest date with the specified day of week and time that is before (or same as) this date.
@@ -969,6 +970,37 @@ new DateTime(2099,04,13)};
         /// </summary>
         public static DateTime FromUnixTime(this long @this)
             => UnixEpoch.AddSeconds(@this).ToLocal();
+
+        public static int GetWeekOfYear(this DateTime time)
+            => time.GetWeekOfYear(CultureInfo.InvariantCulture.Calendar);
+
+        public static int GetWeekOfYear(this DateTime time, Calendar calendar)
+        {
+            var day = time.GetDayOfWeek(calendar);
+
+            if (day is >= DayOfWeek.Monday and <= DayOfWeek.Wednesday)
+                time = time.AddDays(3);
+
+            return calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        }
+
+        public static int GetDayOfYear(this DateTime time)
+            => time.GetDayOfYear(CultureInfo.InvariantCulture.Calendar);
+
+        public static int GetDayOfYear(this DateTime time, Calendar calendar)
+            => calendar.GetDayOfYear(time);
+
+        public static int GetDayOfMonth(this DateTime time)
+            => time.GetDayOfMonth(CultureInfo.InvariantCulture.Calendar);
+
+        public static int GetDayOfMonth(this DateTime time, Calendar calendar)
+            => calendar.GetDayOfMonth(time);
+
+        public static DayOfWeek GetDayOfWeek(this DateTime time)
+            => time.GetDayOfWeek(CultureInfo.InvariantCulture.Calendar);
+
+        public static DayOfWeek GetDayOfWeek(this DateTime time, Calendar calendar)
+            => calendar.GetDayOfWeek(time);
     }
 
     public enum CalendarMonth
