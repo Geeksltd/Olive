@@ -2,7 +2,7 @@
 
 namespace Olive
 {
-    class IOEventBusProvider : IEventBusQueueProvider
+    public class IOEventBusProvider : IEventBusQueueProvider
     {
         ConcurrentDictionary<string, IOEventBusQueue> Queues = new ConcurrentDictionary<string, IOEventBusQueue>();
 
