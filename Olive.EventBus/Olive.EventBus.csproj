@@ -6,7 +6,7 @@
 		<RootNamespace>Olive.EventBus</RootNamespace>
 		<PackageId>Olive.EventBus</PackageId>
 		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<Version>2.1.133</Version>
+		<Version>2.1.134</Version>
 		<PackOnBuild>true</PackOnBuild>
 		<NeutralLanguage>en</NeutralLanguage>
 		<LangVersion>default</LangVersion>
