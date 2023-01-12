@@ -75,6 +75,7 @@ namespace Olive.Aws
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToFullMessage());
                 throw new Exception("Failed to publish a message to queue: " + QueueUrl, ex);
             }
         }
