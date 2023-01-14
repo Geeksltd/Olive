@@ -16,7 +16,7 @@ namespace Olive.Aws.Providers
             }
 
             var request = new model.GetParameterRequest { Name = secretId };
-            var response = await AwsClient.GetParameterAsync(request);
+            var response = await AwsClient.GetParameterAsync(request).ConfigureAwait(false);
 
             if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                 Log.For(this).Error($"Secret Id Response : {response.HttpStatusCode} - {response.Parameter.Name}");
