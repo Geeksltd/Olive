@@ -35,12 +35,12 @@ namespace Olive.Cloud
         void Download()
         {
             try
-            { 
+            {
                 var secrets = DownloadSecrets();
 
                 if (secrets.IsEmpty())
                 {
-                    Log.Error("SecretString was empty: " + SecretId);
+                    Console.WriteLine("SecretString was empty: " + SecretId);
                     throw new Exception("SecretString was empty!");
                 }
 

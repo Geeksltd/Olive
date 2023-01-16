@@ -16,9 +16,8 @@ namespace Olive.Aws
         }
 
         protected override string DownloadSecrets()
-        {
-            var provider = AwsSecretProvider.GetProvider(SecretProviderType);
-            return Task.Factory.RunSyncOnNewThread(() => provider.Download(SecretId));
+        {            
+            return AwsSecretProvider.GetProvider(SecretProviderType).Download(SecretId);
         }
     }
 }

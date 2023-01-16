@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Olive.Aws.Providers
+﻿namespace Olive.Aws.Providers
 {
     abstract class AwsSecretProvider
     {
@@ -13,6 +11,6 @@ namespace Olive.Aws.Providers
             };
         }
 
-        internal abstract Task<string> Download(string secretId);
+        internal abstract string Download(string secretId);
     }
 }
