@@ -35,7 +35,7 @@ namespace Olive.Cloud
         void Download()
         {
             try
-            {
+            { 
                 var secrets = DownloadSecrets();
 
                 if (secrets.IsEmpty())
@@ -45,8 +45,6 @@ namespace Olive.Cloud
                 }
 
                 SecretString = secrets;
-
-                Log.Debug("Downloaded secrets successfully.");
             }
             catch (AggregateException ex)
             {

@@ -1,15 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Amazon.SecretsManager.Model;
 
 namespace Olive.Aws.Providers
 {
     class SecretsManager : AwsSecretProvider<Amazon.SecretsManager.AmazonSecretsManagerClient>
     {
-        internal override async Task<string> Download(string secretId)
+        internal override Task<string> Download(string secretId)
         {
             var request = new GetSecretValueRequest { SecretId = secretId };
-            var response = await AwsClient.GetSecretValueAsync(request).ConfigureAwait(false);
-            return response.SecretString;
+            return AwsClient.GetSecretValueAsync(request).Get(x => x.SecretString);
         }
     }
 }

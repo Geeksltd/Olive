@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Olive.Aws.Providers;
 
@@ -16,7 +17,8 @@ namespace Olive.Aws
 
         protected override string DownloadSecrets()
         {
-            return Task.Factory.RunSync(() => AwsSecretProvider.GetProvider(SecretProviderType).Download(SecretId));
+            var provider = AwsSecretProvider.GetProvider(SecretProviderType);
+            return Task.Factory.RunSyncOnNewThread(() => provider.Download(SecretId));
         }
     }
 }
