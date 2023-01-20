@@ -91,10 +91,9 @@ namespace Olive.Entities.Replication
                 logger.Info("Registering the /all action");
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
                 {
-                    var exposedEndpointUrls = Config.GetSection("DataReplication").GetChildren().Select(c => c["Url"]).ToArray();
-                    await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => exposedEndpointUrls.Contains(endpoint.UrlPattern)
-                        ? $"<a href='{e}'>{e}</a>"
-                        : $"{e} ( not configured )").ToHtmlLines());
+                    await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => endpoint.UrlPattern.StartsWith("FOR_DEVELOPMENT_ONLY")
+                        ? $"{e} ( not configured )"
+                        : $"<a href='{e}'>{e}</a>").ToHtmlLines());
                 }));
                 logger.Info("Registered the /all action");
             }
