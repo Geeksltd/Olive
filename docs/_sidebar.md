@@ -13,9 +13,7 @@
     * [Ado.NET & Raw data access](Entities/RawDataAccess.md)
     * [Olive ORM](Entities/ORM.md)
        * [Caching](Entities/Cache.md)
-    * [Database Api](Entities/Database.md)
-       * [IDatabaseQuery](Entities/IDatabaseQuery.md)
-    * [Provider model and DI](Entities/DI.md)
+    * [IDatabaseQuery](Entities/IDatabaseQuery.md)
     * [Files and Blobs](Entities/Blob.md)
     * [Custom data type](Entities/CustomDataType.md)
     * [Using C# Enums](Entities/CSharpEnumType.md)
@@ -42,8 +40,6 @@
  
 
 * DevOps
-    * [Introduction](DevOps/Introduction.md)
-    * [DevOps Automation Service](DevOps/Automation-Service.md)
     * [Docker support](DevOps/Docker.md)
     * [Jenkins](DevOps/Jenkins.md)
     * [Jenkinsfile template](DevOps/MSharp-Jenkinsfile.md)
@@ -57,7 +53,6 @@
     * [RESTful WebApi](Api/WebApi.md)
     * [ApiClient](Api/ApiClient.md)
     * [Api Proxy](Api/Proxy.md)
-    * [Api Versioning](Api/Versioning.md)
 
 * Async integration: EventBus, Queues
     * [EventBus](Api/EventBus.md)
@@ -75,13 +70,7 @@
     * [Email notifications](Services/Email.md)
     * [SMS notifications](Services/SMS.md)
     * [GeoLocation](Services/GeoLocation.md)
-    * [Globalization](Services/Globalization.md)
-    * [Data Export](Services/DataExport.md)
     * [Parsing CSV](Services/CSV.md)
-    * [PDF generation](Services/PDFgeneration.md)
-    * [Push Notifications](Services/PushNotification.md)
-    * [Image optimization](Services/Imageoptimization.md)
-    * [Website IP Filter](Services/WebsiteIPFilter.md)
     * [AWS integration](Services/Aws.md)
     * [Captcha](Security/Captcha.md)
 
@@ -89,7 +78,6 @@
     * [Olive Security Overview](Security/Security.md)
     * [Captcha](Security/Captcha.md)
     * [Config](Security/Config.md)
-    * [Impersonation](Security/Impersonation.md)
     * [Encryption and Decryption](Security/Encryption%20and%20Decryption.md)
     
 * Logging & Audit
