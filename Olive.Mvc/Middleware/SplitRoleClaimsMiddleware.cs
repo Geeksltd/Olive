@@ -12,10 +12,17 @@ namespace Olive.Mvc
 
         public override async Task Invoke(HttpContext context)
         {
-            if (context.User.Identity.IsAuthenticated)
-                SplitRoles(context.User);
-            else if (context.Request.IsLocal() && context.User.Identity is ClaimsIdentity identity)
-                ReplaceClaims(identity, new Claim(ClaimTypes.Role, "Local.Request"));
+            var identity = context.User.Identity;
+
+            if (identity.IsAuthenticated) SplitRoles(context.User);
+            else if (identity is ClaimsIdentity id)
+            {
+                if (context.Request.IsLocal())
+                    ReplaceClaims(id, new Claim(ClaimTypes.Role, "Local.Request"));
+
+                if (!id.IsAuthenticated && !context.User.IsInRole("Anonymouse"))
+                    id.AddClaim(new Claim(ClaimTypes.Role, "Anonymouse"));
+            }
 
             await Next.Invoke(context);
         }

@@ -51,8 +51,11 @@ namespace Olive.Mvc
 
             if (!user.Identity.IsAuthenticated)
             {
-                Log.Debug("OnAuthorization: user.Identity.IsAuthenticated is FALSE");
-                disallow();
+                if (Roles.Lacks("Anonymouse", caseSensitive: false))
+                {
+                    Log.Debug("OnAuthorization: user.Identity.IsAuthenticated is FALSE");
+                    disallow();
+                }
             }
             else if (Roles.Any() && Roles.None(x => user.IsInRole(x)))
             {
