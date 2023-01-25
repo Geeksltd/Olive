@@ -3,7 +3,11 @@
 
 ## 11 Jan 2022 (.NET 6.0 upgrade)
 1. Create the folder `M#\lib\net6.0` and inside it, create a text file named `MSharp.DSL.runtimeconfig.json` with the following content ```{ "runtimeOptions": { "tfm": "net6.0", "framework": { "name": "Microsoft.NETCore.App","version": "6.0.0" } } }```
-2. ..
+2. Open a command prompt in `M#\lib\net6.0` and run this command: ```git add MSharp.DSL.runtimeconfig.json -f```
+3. Edit all your `csproj` files and change the .NET version: ```<TargetFramework>net6.0</TargetFramework>```
+4. From all `bin` and `lib` folders, delete the `netcoreapp3.1` folders. 
+5. If the application is hosted on `AWS Lambda` then on the AWS Console, change the Lambda `Runtime` configuration to .NET 6.0. If using AutoCloud, apply the setting in your microservice edit page.
+
 
 ## 10 May 2021
 We have updated `Olive.PassiveBackgroundTasks` ,please change this part in the Startup.cs:
