@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Entities.Data.MySql</RootNamespace>
     <PackageId>Olive.Entities.Data.MySql</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.119</Version>
+    <Version>2.1.120</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

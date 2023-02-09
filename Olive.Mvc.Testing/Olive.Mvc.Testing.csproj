@@ -5,7 +5,7 @@
 		<RootNamespace>Olive.Mvc.Testing</RootNamespace>
 		<PackageId>Olive.Mvc.Testing</PackageId>
 		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<Version>3.1.112</Version>
+		<Version>3.1.113</Version>
 		<PackOnBuild>true</PackOnBuild>
 		<NeutralLanguage>en</NeutralLanguage>
 		<LangVersion>default</LangVersion>

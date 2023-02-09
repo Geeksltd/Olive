@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Mvc.Security</RootNamespace>
     <PackageId>Olive.Mvc.Security</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.109</Version>
+    <Version>3.1.110</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

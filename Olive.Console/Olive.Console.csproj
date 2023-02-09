@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Console</RootNamespace>
     <PackageId>Olive.Console</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.115</Version>
+    <Version>2.1.116</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

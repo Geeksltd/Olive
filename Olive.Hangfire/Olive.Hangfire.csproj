@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Hangfire</RootNamespace>
     <PackageId>Olive.Hangfire</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.107</Version>
+    <Version>3.1.108</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Mvc.Recaptcha</RootNamespace>
     <PackageId>Olive.Mvc.Recaptcha</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.105</Version>
+    <Version>3.1.106</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
