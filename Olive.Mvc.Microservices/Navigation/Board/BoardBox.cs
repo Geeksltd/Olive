@@ -26,12 +26,18 @@
         /// </summary>
         internal string Title { get; set; }
 
+        /// <summary>
+        /// The count of columns of the box
+        /// </summary>
+        internal int ColumnsCount { get; set; }
+
         public void Add(Action<BoardBox> action) => action(this);
 
         BoardBoxContent Add(BoardBoxContent content)
         {
             content.BoxColour = Colour;
             content.BoxTitle = Title;
+            content.BoxColumnsCount = ColumnsCount;
             Navigation.BoardContents.Add(content);
             return content;
         }
