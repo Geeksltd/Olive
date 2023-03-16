@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Entities.Cache.Redis</RootNamespace>
     <PackageId>Olive.Entities.Cache.Redis</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.105</Version>
+    <Version>2.1.106</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

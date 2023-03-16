@@ -5,7 +5,7 @@
 		<RootNamespace>Olive.Aws.Ses.AutoFetch</RootNamespace>
 		<PackageId>Olive.Aws.Ses.AutoFetch</PackageId>
 		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<Version>2.0.0.2</Version>
+		<Version>2.0.0.3</Version>
 		<PackOnBuild>true</PackOnBuild>
 		<NeutralLanguage>en</NeutralLanguage>
 		<LangVersion>default</LangVersion>

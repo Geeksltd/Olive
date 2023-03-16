@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Blob.Aws</RootNamespace>
     <PackageId>Olive.Blob.Aws</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.113.0</Version>
+    <Version>3.1.114.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

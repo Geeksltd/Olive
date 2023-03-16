@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Compression</RootNamespace>
     <PackageId>Olive.Compression</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.110</Version>
+    <Version>2.1.111</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

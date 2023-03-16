@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Audit</RootNamespace>
     <PackageId>Olive.Audit</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.117</Version>
+    <Version>2.1.118</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

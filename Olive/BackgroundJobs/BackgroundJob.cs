@@ -6,11 +6,12 @@ namespace Olive
 {
     public class BackgroundJob
     {
-        public BackgroundJob(string name, Expression<Func<Task>> action, string scheduleCron)
+        public BackgroundJob(string name, Expression<Func<Task>> action, string scheduleCron, int timeoutInMinutes=5)
         {
             Name = name;
             Action = action;
             ScheduleCron = scheduleCron;
+            TimeoutInMinutes= timeoutInMinutes;
         }
 
         /// <summary>
@@ -23,7 +24,7 @@ namespace Olive
         /// These fields, separated by white space, can contain any of the allowed values with various combinations of the allowed characters for that field.
         /// </summary>
         public string ScheduleCron { get; set; }
-        public int TimeoutInMinutes { get; set; } = 5;
+        public int TimeoutInMinutes { get; set; }
 
         /// <summary>
         /// The action to run in the schedule.

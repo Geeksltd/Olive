@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Mvc.CKEditorFileManager</RootNamespace>
     <PackageId>Olive.Mvc.CKEditorFileManager</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.104.0</Version>
+    <Version>3.1.105.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

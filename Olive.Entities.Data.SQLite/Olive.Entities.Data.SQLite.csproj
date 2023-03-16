@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Entities.Data.SQLite</RootNamespace>
     <PackageId>Olive.Entities.Data.SQLite</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.114</Version>
+    <Version>2.1.115</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

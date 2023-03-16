@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Audit.DatabaseLogger</RootNamespace>
     <PackageId>Olive.Audit.DatabaseLogger</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.1.108</Version>
+    <Version>2.1.109</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

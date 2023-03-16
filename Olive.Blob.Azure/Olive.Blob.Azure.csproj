@@ -5,7 +5,7 @@
     <RootNamespace>Olive.Blob.Azure</RootNamespace>
     <PackageId>Olive.Blob.Azure</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>3.1.107</Version>
+    <Version>3.1.115</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
