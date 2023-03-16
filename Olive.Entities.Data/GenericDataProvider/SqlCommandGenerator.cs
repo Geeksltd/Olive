@@ -41,7 +41,7 @@ namespace Olive.Entities.Data
         public virtual string GenerateUpdateCommand(IDataProviderMetaData metaData)
         {
             var properties = metaData.UserDefienedAndDeletedProperties
-                .Except(p => p.IsAutoNumber);
+                .Except(p => p.IsAutoNumber || p.IsComputed);
 
             if (properties.None()) return "";
 

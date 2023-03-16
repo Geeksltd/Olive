@@ -74,7 +74,7 @@ namespace Olive.Entities.Replication
             Property = property;
             type = property.PropertyType;
             IsAssociation = type.IsA<IEntity>();
-            IsInverseAssociation = type.IsA<IDatabaseQuery>() && property.Defines<CalculatedAttribute>();
+            IsInverseAssociation = type.IsA<IDatabaseQuery>() && (property.Defines<CalculatedAttribute>() || property.Defines<ComputedColumnAttribute>());
             name = property.Name;
 
             title = property.GetCustomAttribute<System.ComponentModel.DisplayNameAttribute>()?.DisplayName;

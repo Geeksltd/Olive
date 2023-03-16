@@ -51,7 +51,8 @@ namespace Olive.Entities.Data
                 PropertyInfo = info,
                 NonGenericType = info.PropertyType,
                 IsDefaultId = true,
-                IsAutoNumber = IdByDatabaseAttribute.IsIdAssignedByDatabase(type)
+                IsAutoNumber = IdByDatabaseAttribute.IsIdAssignedByDatabase(type),
+                IsComputed = ComputedColumnAttribute.IsComputedColumn(type)
             };
         }
 
@@ -63,7 +64,8 @@ namespace Olive.Entities.Data
                 ParameterName = "_Deleted",
                 PropertyInfo = type.GetProperty("IsMarkedSoftDeleted"),
                 NonGenericType = typeof(bool),
-                IsDeleted = true
+                IsDeleted = true,
+                IsComputed = ComputedColumnAttribute.IsComputedColumn(type)
             };
         }
 
@@ -75,7 +77,8 @@ namespace Olive.Entities.Data
                 ParameterName = PropertyData.ORIGINAL_ID,
                 PropertyInfo = type.GetProperty(PropertyData.ORIGINAL_ID),
                 NonGenericType = type.GetProperty(PropertyData.ORIGINAL_ID).PropertyType,
-                IsOriginalId = true
+                IsOriginalId = true,
+                IsComputed=ComputedColumnAttribute.IsComputedColumn(type)
             };
         }
 
@@ -94,7 +97,8 @@ namespace Olive.Entities.Data
                 PropertyInfo = targetProp,
                 NonGenericType = IsNullableType(targetProp) ? Nullable.GetUnderlyingType(targetProp.PropertyType) : targetProp.PropertyType,
                 AssociateType = dbProp != null ? info.GetAssociateType() : null,
-                CustomDataConverterClassName = CustomDataConverterAttribute.GetClassName(targetProp)
+                CustomDataConverterClassName = CustomDataConverterAttribute.GetClassName(targetProp),
+                IsComputed = ComputedColumnAttribute.IsComputedColumn(targetProp)
             };
         }
 
@@ -120,6 +124,7 @@ namespace Olive.Entities.Data
         static IEnumerable<(PropertyInfo MainInfo, PropertyInfo DatabaseProp)> FilterProperties(PropertyInfo[] infos)
         {
             var nonCalculated = infos.Except(p => CalculatedAttribute.IsCalculated(p) || p.GetSetMethod() == null);
+            //var nonComputed = nonCalculated.Except(p => ComputedColumnAttribute.IsComputedColumn(p));
             var nonOverriden = nonCalculated.Except(p => p.GetGetMethod() != p.GetGetMethod().GetBaseDefinition());
             var nonTransient = nonOverriden.Except(p => TransientEntityAttribute.IsTransient(p.PropertyType));
 

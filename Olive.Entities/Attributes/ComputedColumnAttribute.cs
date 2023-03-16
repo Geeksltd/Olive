@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace Olive.Entities
 {
@@ -19,6 +20,11 @@ namespace Olive.Entities
             if (Cache.TryGetValue(property, out var result)) return result;
 
             return DetectAndCache(property);
+        }
+
+        public static bool IsComputedColumn(Type type)
+        {
+            return type.GetCustomAttribute(typeof(ComputedColumnAttribute),false)!=null;
         }
 
         static bool DetectAndCache(PropertyInfo property)

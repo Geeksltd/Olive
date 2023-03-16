@@ -10,6 +10,7 @@ namespace Olive.Entities
         bool IsAutoNumber { get; }
         bool IsDeleted { get; }
         bool IsUserDefined { get; }
+        bool IsComputed { get;}
         Type AssociateType { get; }
         bool IsDefaultId { get; }
         IPropertyAccessor Accessor { get; }

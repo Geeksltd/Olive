@@ -49,7 +49,7 @@ namespace Olive.Audit
             .FirstOrDefault(p => p.Name == name);
 
             var dataProperties = propertyNames.Select(getProperty).ExceptNull()
-                                                            .Except(x => CalculatedAttribute.IsCalculated(x))
+                                                            .Except(x => CalculatedAttribute.IsCalculated(x) || ComputedColumnAttribute.IsComputedColumn(x))
                                                             .Where(x => LogEventsAttribute.ShouldLog(x))
                                                             .ToArray();
 

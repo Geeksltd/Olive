@@ -72,7 +72,7 @@ namespace Olive
                 // No logging is needed
             }
 
-            if (CalculatedAttribute.IsCalculated(property)) return empty;
+            if (CalculatedAttribute.IsCalculated(property) || ComputedColumnAttribute.IsComputedColumn(property)) return empty;
 
             if (@this.Expression.IsSimpleParameter()) return new[] { property };
 

@@ -27,6 +27,8 @@ namespace Olive.Entities.Data
 
         public bool IsDefaultId { get; internal set; }
 
+        public bool IsComputed { get; internal set; }
+
         public Type AssociateType { get; internal set; }
 
         public IPropertyAccessor Accessor { get; internal set; }

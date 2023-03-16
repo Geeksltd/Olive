@@ -146,6 +146,7 @@ namespace Olive.Entities
                 if (p.Name == nameof(IsNew)) continue;
                 if (p.PropertyType.Implements<IEntity>()) continue;
                 if (CalculatedAttribute.IsCalculated(p)) continue;
+                if (ComputedColumnAttribute.IsComputedColumn(p)) continue;
                 result.Add(p);
             }
 

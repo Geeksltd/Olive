@@ -44,7 +44,7 @@ namespace Olive.Entities.Data
 
         public static IEnumerable<IPropertyData> GetPropertiesForInsert(this IDataProviderMetaData @this)
         {
-            var result = @this.UserDefienedAndIdAndDeletedProperties.Except(p => p.IsAutoNumber);
+            var result = @this.UserDefienedAndIdAndDeletedProperties.Except(p => p.IsAutoNumber || p.IsComputed);
 
             return result;
         }

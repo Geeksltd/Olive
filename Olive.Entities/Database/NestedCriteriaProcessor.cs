@@ -49,7 +49,8 @@ namespace Olive.Entities
 
             if (entityProperty != null &&
                 entityProperty.PropertyType.IsA<IEntity>() &&
-                !entityProperty.Defines<CalculatedAttribute>())
+                !entityProperty.Defines<CalculatedAttribute>() &&
+                !entityProperty.Defines<ComputedColumnAttribute>())
                 Property = entityProperty;
         }
     }

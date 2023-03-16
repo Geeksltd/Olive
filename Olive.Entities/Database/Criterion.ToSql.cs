@@ -31,7 +31,7 @@ namespace Olive.Entities
             {
                 var association = context.Type.GetProperty(key.TrimEnd("Id"));
 
-                if (association != null && !association.Defines<CalculatedAttribute>() &&
+                if (association != null && !association.Defines<CalculatedAttribute>() && !association.Defines<ComputedColumnAttribute>() &&
                     association.PropertyType.IsA<IEntity>())
                     key = key.TrimEnd("Id");
             }

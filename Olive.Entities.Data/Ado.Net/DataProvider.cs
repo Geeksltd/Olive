@@ -102,7 +102,7 @@ namespace Olive.Entities.Data
             }
 
             var dataProperties = propertyNames.Select(getProperty).ExceptNull()
-                .Except(x => CalculatedAttribute.IsCalculated(x))
+                .Except(x => CalculatedAttribute.IsCalculated(x) || ComputedColumnAttribute.IsComputedColumn(x))
                 .Where(x => LogEventsAttribute.ShouldLog(x))
                 .ToArray();
 
