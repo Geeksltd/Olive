@@ -38,6 +38,8 @@ namespace Olive.Aws
 
         protected virtual void ConfigureLogging(WebHostBuilderContext context, ILoggingBuilder logging)
         {
+            logging.ClearProviders();
+
             logging.AddConfiguration(context.Configuration.GetSection("Logging"));
 
             if (context.HostingEnvironment.IsDevelopment()) logging.AddConsole();

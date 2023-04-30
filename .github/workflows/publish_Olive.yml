@@ -2,7 +2,7 @@ name: Publish Olive Packages
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, exp/update-deps ]
     
 jobs:
  build:
@@ -316,11 +316,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Mvc.Testing/Olive.Mvc.Testing.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    - name: Publish Olive Net4x Compatibility NuGet Package
-      uses: Geeksltd/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: Olive.Net4x.Compatibility/Olive.Net4x.Compatibility.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    # - name: Publish Olive Net4x Compatibility NuGet Package
+      # uses: Geeksltd/publish-nuget@v2
+      # with:
+        # PROJECT_FILE_PATH: Olive.Net4x.Compatibility/Olive.Net4x.Compatibility.csproj
+        # NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive PassiveBackgroundTasks NuGet Package
       uses: Geeksltd/publish-nuget@v2
@@ -382,11 +382,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Sms.Aws/Olive.Sms.Aws.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-    - name: Publish Olive SMS TextMagic NuGet Package
-      uses: Geeksltd/publish-nuget@v2
-      with:
-        PROJECT_FILE_PATH: Olive.SMS.TextMagic/Olive.SMS.TextMagic.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    # - name: Publish Olive SMS TextMagic NuGet Package
+      # uses: Geeksltd/publish-nuget@v2
+      # with:
+        # PROJECT_FILE_PATH: Olive.SMS.TextMagic/Olive.SMS.TextMagic.csproj
+        # NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Web NuGet Package
       uses: Geeksltd/publish-nuget@v2

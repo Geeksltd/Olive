@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
-		<Version>1.0.7</Version>
+		<Version>1.0.8</Version>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
 	</ItemGroup>
-
 </Project>

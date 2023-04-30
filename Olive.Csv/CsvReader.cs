@@ -37,8 +37,8 @@ namespace Olive.Csv
                 csvResult.Read();
                 csvResult.ReadHeader();
 
-                var fieldCount = Math.Max(csvResult.Context.HeaderRecord.Length, minimumFieldCount);
-                var headers = csvResult.Context.HeaderRecord;
+                var fieldCount = Math.Max(csvResult.HeaderRecord!.Length, minimumFieldCount);
+                var headers = csvResult.HeaderRecord;
 
                 if (!isFirstRowHeaders)
                     headers = Enumerable.Range(0, fieldCount).Select(i => "Column" + i).ToArray();
@@ -51,7 +51,7 @@ namespace Olive.Csv
                     var headerRow = output.NewRow();
 
                     foreach (var column in output.Columns.OfType<DataColumn>())
-                        headerRow[column.ColumnName] = csvResult.Context.HeaderRecord[column.Ordinal];
+                        headerRow[column.ColumnName] = csvResult.HeaderRecord[column.Ordinal];
 
                     output.Rows.Add(headerRow);
                 }
@@ -92,7 +92,7 @@ namespace Olive.Csv
             {
                 csvResult.Read();
                 csvResult.ReadHeader();
-                return csvResult.Context.HeaderRecord;
+                return csvResult.HeaderRecord;
             }
         }
     }

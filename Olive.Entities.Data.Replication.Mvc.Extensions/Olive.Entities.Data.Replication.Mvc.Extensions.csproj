@@ -1,43 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<AssemblyName>Olive.Entities.Data.Replication.Mvc.Extensions</AssemblyName>
-		<RootNamespace>Olive.Entities.Data.Replication.Mvc.Extensions</RootNamespace>
-		<PackageId>Olive.Entities.Data.Replication.Mvc.Extensions</PackageId>
-		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<Version>2.1.186</Version>
-		<PackOnBuild>true</PackOnBuild>
-		<NeutralLanguage>en</NeutralLanguage>
-		<LangVersion>default</LangVersion>
-		<UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-		<LangVersion>latest</LangVersion>
-		<DebugType>portable</DebugType>
-		<PackageProjectUrl>https://geeksltd.github.io/Olive</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
-		<PackageIconUrl>http://licensing.msharp.co.uk/Images/OliveComponent.png</PackageIconUrl>
-		<PackageTags>olive</PackageTags>
-		<Title>Olive.Entities.Data.Replication.Mvc.Extensions</Title>
-		<Description>Olive Framework</Description>
-		<PackageReleaseNotes>Minor fixes</PackageReleaseNotes>
-		<Owners>Geeks Ltd</Owners>
-		<Authors>Geeks Ltd</Authors>
-		<Copyright>Geeks Ltd 2021, All rights reserved.</Copyright>
-		<DisableExtraReferences>true</DisableExtraReferences>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-		<DebugSymbols>true</DebugSymbols>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.14" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Olive.Entities.Data.Replication\Olive.Entities.Data.Replication.csproj" />
-		<ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
-	</ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.1.187</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Olive.Entities.Data.Replication\Olive.Entities.Data.Replication.csproj" />
+    <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
+  </ItemGroup>
 </Project>
