@@ -397,6 +397,29 @@ namespace Olive
             }
         }
 
+        /// <summary>
+        /// Performs an action for all items within the list.
+        /// </summary>        
+        public static ValueTask DoAsync<T>(this IEnumerable<T> @this, Func<T, ValueTask> action)
+            => @this.DoAsync((x, i) => action(x));
+
+        /// <summary>
+        /// Performs an action for all items within the list.
+        /// It will provide the index of the item in the list to the action handler as well.
+        /// </summary>        
+        public static async ValueTask DoAsync<T>(this IEnumerable<T> @this, Func<T, int, ValueTask> action)
+        {
+            if (@this == null || action == null) return;
+
+            var index = 0;
+
+            foreach (var item in @this)
+            {
+                await action(item, index).ConfigureAwait(false);
+                index++;
+            }
+        }
+
         public delegate void ItemHandler<in T>(T arg);
         /// <summary>
         /// Adds the specified list to the beginning of this list.
