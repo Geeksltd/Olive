@@ -88,7 +88,7 @@ namespace Olive.Email
 
                 var ids = await folder.SearchAsync(SearchQuery.HeaderContains("Message-Id", message.MessageId));
 
-                await ids.DoAsync((id, _) => folder.SetFlagsAsync(id, MessageFlags.Seen, silent: true));
+                await ids.DoAsync(async (id, _) => await folder.SetFlagsAsync(id, MessageFlags.Seen, silent: true));
             }
         }
     }
