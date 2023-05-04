@@ -15,7 +15,7 @@ namespace Olive.Entities.Data
             return new DataProviderMetaData(type)
             {
                 BaseClassTypesInOrder = GetParents(type),
-                DrivedClassTypes = GetDrivedClasses(type),
+                DrivedClassTypes = GetDerivedClasses(type),
                 Properties = GetProperties(type).SetAccessors(type),
                 Schema = SchemaAttribute.GetSchema(type),
                 TableName = tableName,
@@ -147,7 +147,7 @@ namespace Olive.Entities.Data
                 yield return (prop, null);
         }
 
-        static Type[] GetDrivedClasses(Type type)
+        static Type[] GetDerivedClasses(Type type)
         {
             var result = type.Assembly.GetTypes().Where(t => t.IsA(type) && t != type && !TransientEntityAttribute.IsTransient(t)).ToArray();
 

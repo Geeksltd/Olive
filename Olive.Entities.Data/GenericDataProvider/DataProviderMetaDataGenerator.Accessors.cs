@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
@@ -82,10 +83,18 @@ namespace Olive.Entities.Data
 
                 var result = new Dictionary<string, IPropertyAccessor>();
 
-                foreach (var accessorType in assembly.GetTypes())
+                foreach (var accessorType in assembly.GetTypes().Where(IsValidAccessor))
                     result.Add(accessorType.Name, (IPropertyAccessor)Activator.CreateInstance(accessorType));
 
                 return result;
+            }
+
+            static bool IsValidAccessor(Type type)
+            {
+                if (type.IsAbstract) return false;
+                if (type.GetConstructors().None(c => c.GetParameters().None())) return false;
+                if (!typeof(IPropertyAccessor).IsAssignableFrom(type)) return false;
+                return true;
             }
         }
 
