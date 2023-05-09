@@ -204,6 +204,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Gpt", "Olive.Gpt\Olive.Gpt.csproj", "{72EE0ABC-9CB8-43FC-81AC-833417184AD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -521,6 +523,10 @@ Global
 		{9745FB43-FC54-4FC4-B4E2-33E05D1F94E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9745FB43-FC54-4FC4-B4E2-33E05D1F94E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9745FB43-FC54-4FC4-B4E2-33E05D1F94E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72EE0ABC-9CB8-43FC-81AC-833417184AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72EE0ABC-9CB8-43FC-81AC-833417184AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72EE0ABC-9CB8-43FC-81AC-833417184AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72EE0ABC-9CB8-43FC-81AC-833417184AD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -609,6 +615,7 @@ Global
 		{10E04117-919B-4AEE-B9F5-0DE612D96FBA} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
 		{C5BF44CC-3F85-4D9C-9C8E-65CCE87715D2} = {10E04117-919B-4AEE-B9F5-0DE612D96FBA}
 		{9745FB43-FC54-4FC4-B4E2-33E05D1F94E6} = {B99F5737-0E7D-440E-BE69-CF0D064B4BE5}
+		{72EE0ABC-9CB8-43FC-81AC-833417184AD5} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
