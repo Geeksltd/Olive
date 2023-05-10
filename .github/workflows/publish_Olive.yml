@@ -393,3 +393,9 @@ jobs:
       with:
         PROJECT_FILE_PATH: Olive.Web/Olive.Web.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Olive Aws Rekognition NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Aws.Rekognition/Olive.Aws.Rekognition.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
