@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Rekognition" Version="3.7.106.1" />
+    <PackageReference Include="AWSSDK.Textract" Version="3.7.105.30" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
