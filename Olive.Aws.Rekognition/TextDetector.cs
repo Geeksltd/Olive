@@ -42,7 +42,6 @@ namespace Olive.Aws.Rekognition
         /// </summary>
         public static async Task<List<TextDetection>> GetTextDetetionResult(string photo, string bucketName)
         {
-            AmazonRekognitionClient rekognitionClient = new AmazonRekognitionClient();
             DetectTextRequest detectTextRequest = new DetectTextRequest()
             {
                 Image = new Image()
@@ -56,7 +55,7 @@ namespace Olive.Aws.Rekognition
             };
             try
             {
-                DetectTextResponse detectTextResponse = await rekognitionClient.DetectTextAsync(detectTextRequest);
+                DetectTextResponse detectTextResponse = await Client.DetectTextAsync(detectTextRequest);
                 return detectTextResponse.TextDetections;
             }
             catch (Exception e)
@@ -71,12 +70,11 @@ namespace Olive.Aws.Rekognition
         /// </summary>
         public static async Task<List<TextDetection>> GetTextDetetionResult(MemoryStream photo)
         {
-            AmazonRekognitionClient rekognitionClient = new AmazonRekognitionClient();
             DetectTextRequest detectTextRequest = new DetectTextRequest(){Image = new Image(){Bytes= photo}};
 
             try
             {
-                DetectTextResponse detectTextResponse = await rekognitionClient.DetectTextAsync(detectTextRequest);
+                DetectTextResponse detectTextResponse = await Client.DetectTextAsync(detectTextRequest);
                 return detectTextResponse.TextDetections;
             }
             catch (Exception e)
