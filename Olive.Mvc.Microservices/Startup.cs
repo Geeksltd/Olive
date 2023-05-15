@@ -38,9 +38,6 @@ namespace Olive.Mvc.Microservices
             // get features data automatically
             app.Map("/olive/features", x => x.Run(NavigationApiMiddleWare.Navigate));
 
-            // get dynamic board data
-            app.Map("/olive/board/features", x => x.Run(NavigationApiMiddleWare.Search));
-
             // get board sources
             app.Map("/olive/board/sources", x => x.Run(NavigationApiMiddleWare.BoardSources));
 
@@ -51,6 +48,9 @@ namespace Olive.Mvc.Microservices
             Console.Title = Microservice.Me.Name;
             if (Context.Current.Environment().EnvironmentName == "Development" && !DevelopmentShareInfo.Shared && Microservice.Me.Name != "Hub")
                 app.Use(DevelopmentShareInfo.ShareMyData);
+
+            // get dynamic board data
+            app.Map("/olive/board/features", x => x.Run(NavigationApiMiddleWare.Search));
         }
     }
 }
