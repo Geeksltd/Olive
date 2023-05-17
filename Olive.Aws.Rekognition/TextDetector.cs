@@ -12,8 +12,10 @@ namespace Olive.Aws.Rekognition
     {
         private static IAmazonRekognition _client;
         static string BucketName => Config.Get<string>("AWS:Rekognition:S3Bucket");
+        private static string _region = Config.Get<string>("AWS:Rekognition:Region");
 
-        public static IAmazonRekognition Client => _client ?? Context.Current.GetOptionalService<IAmazonRekognition>() ?? new AmazonRekognitionClient(RegionEndpoint.EUWest1);
+        public static IAmazonRekognition Client =>
+            _client ?? Context.Current.GetOptionalService<IAmazonRekognition>() ?? new AmazonRekognitionClient(_region == null ? RegionEndpoint.EUWest1 : RegionEndpoint.GetBySystemName(_region));
 
         /// <summary>
         ///  Creates and uses a new Aws Client in the specified region.

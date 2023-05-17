@@ -12,8 +12,10 @@ namespace Olive.Aws.Rekognition
     {
         private static IAmazonTextract _client;
         static string BucketName => Config.Get<string>("AWS:Textract:S3Bucket");
+        private static string _region = Config.Get<string>("AWS:Textract:Region");
 
-        public static IAmazonTextract Client => _client ?? Context.Current.GetOptionalService<IAmazonTextract>() ?? new AmazonTextractClient(RegionEndpoint.EUWest1);
+
+        public static IAmazonTextract Client => _client ?? Context.Current.GetOptionalService<IAmazonTextract>() ?? new AmazonTextractClient(_region == null ? RegionEndpoint.EUWest1 : RegionEndpoint.GetBySystemName(_region));
 
         /// <summary>
         ///  Creates and uses a new Aws Client in the specified region.
