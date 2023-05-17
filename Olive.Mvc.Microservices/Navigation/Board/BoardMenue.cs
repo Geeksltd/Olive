@@ -30,8 +30,8 @@ namespace Olive.Mvc.Microservices
         public string Icon { get; set; }
 
         /// <summary>
-        /// Permissions for acceess management
+        /// Is it in the drop down list or a seperate button?
         /// </summary>
-        public string Permissions { get; set; }
+        public bool IsDropDown { get; set; }
     }
 }

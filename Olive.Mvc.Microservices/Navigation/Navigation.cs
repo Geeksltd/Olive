@@ -63,10 +63,9 @@
             });
         }
 
-        protected void AddMenu<TController>(string name, string icon = null, string url = null, string desc = null, string permissions = null) where TController : Controller
+        protected void AddMenu<TController>(string name, string icon = null, string url = null, string desc = null, bool isDropDown = false) where TController : Controller
         {
             if (url.IsEmpty()) url = Url.Index<TController>();
-            if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
             Add(new BoardMenu
             {
@@ -74,7 +73,7 @@
                 Icon = icon,
                 Url = url,
                 Body = desc,
-                Permissions = permissions
+                IsDropDown = isDropDown
             });
         }
 
