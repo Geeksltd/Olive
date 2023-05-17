@@ -11,7 +11,7 @@ namespace Olive.Aws.Rekognition
     public static class AmazonTextract
     {
         private static IAmazonTextract _client;
-        static string BucketName => Config.Get<string>("Rekognition:S3Bucket");
+        static string BucketName => Config.Get<string>("AWS:Textract:S3Bucket");
 
         public static IAmazonTextract Client => _client ?? Context.Current.GetOptionalService<IAmazonTextract>() ?? new AmazonTextractClient(RegionEndpoint.EUWest1);
 
@@ -25,14 +25,14 @@ namespace Olive.Aws.Rekognition
         }
 
         /// <summary>
-        ///  gets the document based on the location in the s3 bucket configured Rekognition:S3Bucket.
+        ///  gets the document based on the location in the s3 bucket configured AWS:Textract:S3Bucket.
         ///  And extract the text string from it.
         /// </summary>
         public static async Task<string> ExtractTextString(string documentKey)
         {
             if (BucketName == null)
             {
-                throw new KeyNotFoundException("Rekognition:S3Bucket missing from your configuration");
+                throw new KeyNotFoundException("AWS:Textract:S3Bucket missing from your configuration");
             }
             return await ExtractTextBlocks(documentKey, BucketName).Select(x=>x.Text).ToString("\n");
 
@@ -59,14 +59,14 @@ namespace Olive.Aws.Rekognition
 
 
         /// <summary>
-        ///  gets the document based on the location in the s3 bucket configured Rekognition:S3Bucket.
+        ///  gets the document based on the location in the s3 bucket configured AWS:Textract:S3Bucket.
         ///  And gives list of detailed blocks of text
         /// </summary>
         public static async Task<List<Block>> ExtractTextBlocks(string documentKey)
         {
             if (BucketName == null)
             {
-                throw new KeyNotFoundException("Rekognition:S3Bucket missing from your configuration");
+                throw new KeyNotFoundException("AWS:Textract:S3Bucket missing from your configuration");
             }
             return await ExtractTextBlocks(documentKey, BucketName);
 

@@ -11,7 +11,7 @@ namespace Olive.Aws.Rekognition
     public static class TextDetector
     {
         private static IAmazonRekognition _client;
-        static string BucketName => Config.Get<string>("Rekognition:S3Bucket");
+        static string BucketName => Config.Get<string>("AWS:Rekognition:S3Bucket");
 
         public static IAmazonRekognition Client => _client ?? Context.Current.GetOptionalService<IAmazonRekognition>() ?? new AmazonRekognitionClient(RegionEndpoint.EUWest1);
 
@@ -25,13 +25,13 @@ namespace Olive.Aws.Rekognition
         }
 
         /// <summary>
-        ///  gets the image based on the location in the s3 bucket configured Rekognition:S3Bucket.
+        ///  gets the image based on the location in the s3 bucket configured AWS:Rekognition:S3Bucket.
         /// </summary>
         public static async Task<List<TextDetection>> GetTextDetetionResult(string photo)
         {
             if (BucketName == null)
             {
-                throw new KeyNotFoundException("Rekognition:S3Bucket missing from your configuration");
+                throw new KeyNotFoundException("AWS:Rekognition:S3Bucket missing from your configuration");
             }
             return await GetTextDetetionResult(photo, BucketName);
 
