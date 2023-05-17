@@ -11,8 +11,8 @@ namespace Olive.Aws.Rekognition
     public static class TextDetector
     {
         private static IAmazonRekognition _client;
-        static string BucketName => Config.Get<string>("AWS:Rekognition:S3Bucket");
-        private static string _region = Config.Get<string>("AWS:Rekognition:Region");
+        static string BucketName => Config.Get<string>("AWS:Rekognition:S3Bucket").Or(Config.Get<string>("Blob:S3:Bucket"));
+        private static string _region = Config.Get<string>("AWS:Rekognition:Region").Or(Config.Get<string>("Aws:Region"));
 
         public static IAmazonRekognition Client =>
             _client ?? Context.Current.GetOptionalService<IAmazonRekognition>() ?? new AmazonRekognitionClient(_region == null ? RegionEndpoint.EUWest1 : RegionEndpoint.GetBySystemName(_region));

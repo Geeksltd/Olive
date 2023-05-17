@@ -6,13 +6,13 @@ using Amazon;
 using Amazon.Textract;
 using Amazon.Textract.Model;
 
-namespace Olive.Aws.Rekognition
+namespace Olive.Aws.Textract
 {
     public static class AmazonTextract
     {
         private static IAmazonTextract _client;
-        static string BucketName => Config.Get<string>("AWS:Textract:S3Bucket");
-        private static string _region = Config.Get<string>("AWS:Textract:Region");
+        static string BucketName => Config.Get<string>("AWS:Rekognition:S3Bucket").Or(Config.Get<string>("Blob:S3:Bucket"));
+        private static string _region = Config.Get<string>("AWS:Rekognition:Region").Or(Config.Get<string>("Aws:Region"));
 
 
         public static IAmazonTextract Client => _client ?? Context.Current.GetOptionalService<IAmazonTextract>() ?? new AmazonTextractClient(_region == null ? RegionEndpoint.EUWest1 : RegionEndpoint.GetBySystemName(_region));
