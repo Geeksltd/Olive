@@ -16,5 +16,10 @@
         /// Type of the item 
         /// </summary>
         public string BoxTitle { get; set; }
+
+        /// <summary>
+        /// The count of columns of the box
+        /// </summary>
+        internal int BoxColumnsCount { get; set; }
     }
 }
