@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.Textract;
 using Amazon.Textract.Model;
+using Olive.Aws.Comprehend;
 
 namespace Olive.Aws.Textract
 {
@@ -13,6 +15,7 @@ namespace Olive.Aws.Textract
         private static IAmazonTextract _client;
         static string BucketName => Config.Get<string>("AWS:Rekognition:S3Bucket").Or(Config.Get<string>("Blob:S3:Bucket"));
         private static string _region = Config.Get<string>("AWS:Rekognition:Region").Or(Config.Get<string>("Aws:Region"));
+        static string OutputBucketName => Config.Get<string>("AWS:Rekognition:S3OutputBucket").Or(Config.Get<string>("AWS:Rekognition:S3Bucket").Or(Config.Get<string>("Blob:S3:Bucket")));
 
 
         public static IAmazonTextract Client => _client ?? Context.Current.GetOptionalService<IAmazonTextract>() ?? new AmazonTextractClient(_region == null ? RegionEndpoint.EUWest1 : RegionEndpoint.GetBySystemName(_region));
@@ -115,6 +118,99 @@ namespace Olive.Aws.Textract
             {
                 var detectTextResponse = await Client.DetectDocumentTextAsync(detectTextRequest);
                 return detectTextResponse.Blocks;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+
+        /// <summary>
+        ///  Starts the text extraction job based on the location in the s3 bucket configured AWS:Textract:S3Bucket.
+        ///  Gives back the job id that you can use with GetJobResultBlocks() or GetJobResultText() to get the results of a job.
+        /// </summary>
+        public static async Task<string> StartExtraction(string documentKey, string prefix)
+        {
+            if (BucketName == null)
+            {
+                throw new KeyNotFoundException("AWS:Textract:S3Bucket missing from your configuration");
+            }
+            return await StartExtraction(documentKey, prefix, BucketName);
+
+        }
+
+        /// <summary>
+        ///  Starts the text extraction job. 
+        ///  Gives back the job id that you can use with GetJobResults() to get the results of a job.
+        /// </summary>
+        public static async Task<string> StartExtraction(string documentKey, string prefix, string bucketName)
+        {
+            var outputBucket = OutputBucketName.HasValue() ? OutputBucketName : bucketName;
+            var detectTextRequest = new StartDocumentTextDetectionRequest()
+            {
+                DocumentLocation = new DocumentLocation()
+                {
+
+                    S3Object = new S3Object()
+                    {
+                        Name = documentKey,
+                        Bucket = bucketName
+                    },
+                    
+                },
+                OutputConfig = new OutputConfig()
+                {
+                    S3Bucket = outputBucket,
+                    S3Prefix= prefix,
+                }
+            };
+            try
+            {
+                var detectTextResponse = await Client.StartDocumentTextDetectionAsync(detectTextRequest);
+                return detectTextResponse.JobId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+        /// <summary>
+        ///  Returns an Object containing the job status blocks and next token of the job.
+        /// </summary>
+        public static async Task<TextDetectionBlockResults> GetJobResultBlocks(string jobId, string nextToken ="")
+        {
+            var detectTextRequest = new GetDocumentTextDetectionRequest()
+            {
+                JobId= jobId,
+                NextToken = nextToken
+            };
+            try
+            {
+                var detectTextResponse = await Client.GetDocumentTextDetectionAsync(detectTextRequest);
+                return new TextDetectionBlockResults(detectTextResponse);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+        /// <summary>
+        ///  Returns an Object containing the job status, text and next token of the job.
+        /// </summary>
+        public static async Task<TextDetectionTextResults> GetJobResultText(string jobId, string nextToken = "")
+        {
+            var detectTextRequest = new GetDocumentTextDetectionRequest()
+            {
+                JobId = jobId,
+                NextToken = nextToken
+            };
+            try
+            {
+                var detectTextResponse = await Client.GetDocumentTextDetectionAsync(detectTextRequest);
+                return new TextDetectionTextResults(detectTextResponse); ;
             }
             catch (Exception e)
             {
