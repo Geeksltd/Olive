@@ -179,7 +179,7 @@ namespace Olive.Aws.Textract
         /// <summary>
         ///  Returns an Object containing the job status blocks and next token of the job.
         /// </summary>
-        public static async Task<TextDetectionBlockResults> GetJobResultBlocks(string jobId, string nextToken ="")
+        public static async Task<TextDetectionBlockResults> GetJobResultBlocks(string jobId, string nextToken = null)
         {
             var detectTextRequest = new GetDocumentTextDetectionRequest()
             {
@@ -200,7 +200,7 @@ namespace Olive.Aws.Textract
         /// <summary>
         ///  Returns an Object containing the job status, text and next token of the job.
         /// </summary>
-        public static async Task<TextDetectionTextResults> GetJobResultText(string jobId, string nextToken = "")
+        public static async Task<TextDetectionTextResults> GetJobResultText(string jobId, string nextToken = null)
         {
             var detectTextRequest = new GetDocumentTextDetectionRequest()
             {

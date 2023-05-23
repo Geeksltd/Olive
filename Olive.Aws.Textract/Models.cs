@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Olive.Aws.Comprehend
+namespace Olive.Aws.Textract
 {
     public class TextDetectionBlockResults
     {
