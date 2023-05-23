@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.Textract;
 using Amazon.Textract.Model;
-using Olive.Aws.Comprehend;
 
 namespace Olive.Aws.Textract
 {
