@@ -210,7 +210,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Gpt", "Olive.Gpt\Oliv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Textract", "Olive.Aws.Textract\Olive.Aws.Textract.csproj", "{61E86F2D-4693-4629-93A6-1A6D9EC59892}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Comprehend ", "Olive.Aws.Comprehend\Olive.Aws.Comprehend .csproj", "{588FD83B-91BF-460B-BDCC-FF84D7E6B417}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Comprehend", "Olive.Aws.Comprehend\Olive.Aws.Comprehend.csproj", "{588FD83B-91BF-460B-BDCC-FF84D7E6B417}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
