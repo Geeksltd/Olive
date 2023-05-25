@@ -210,6 +210,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Gpt", "Olive.Gpt\Oliv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Textract", "Olive.Aws.Textract\Olive.Aws.Textract.csproj", "{61E86F2D-4693-4629-93A6-1A6D9EC59892}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Comprehend ", "Olive.Aws.Comprehend\Olive.Aws.Comprehend .csproj", "{588FD83B-91BF-460B-BDCC-FF84D7E6B417}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -539,6 +541,10 @@ Global
 		{61E86F2D-4693-4629-93A6-1A6D9EC59892}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61E86F2D-4693-4629-93A6-1A6D9EC59892}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61E86F2D-4693-4629-93A6-1A6D9EC59892}.Release|Any CPU.Build.0 = Release|Any CPU
+		{588FD83B-91BF-460B-BDCC-FF84D7E6B417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{588FD83B-91BF-460B-BDCC-FF84D7E6B417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{588FD83B-91BF-460B-BDCC-FF84D7E6B417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{588FD83B-91BF-460B-BDCC-FF84D7E6B417}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -630,6 +636,7 @@ Global
 		{F7947D62-4399-458A-AF39-64C4AEEA8162} = {6A937A37-1CEC-4347-9594-C471645B43DA}
 		{72EE0ABC-9CB8-43FC-81AC-833417184AD5} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
 		{61E86F2D-4693-4629-93A6-1A6D9EC59892} = {6A937A37-1CEC-4347-9594-C471645B43DA}
+		{588FD83B-91BF-460B-BDCC-FF84D7E6B417} = {6A937A37-1CEC-4347-9594-C471645B43DA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
