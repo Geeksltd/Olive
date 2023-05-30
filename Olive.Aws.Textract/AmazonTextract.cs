@@ -234,7 +234,7 @@ namespace Olive.Aws.Textract
             }
 
 
-            return AnalyzeDocument(documentKey, BucketName, FeatureType.FORMS);
+            return AnalyzeDocument(documentKey, BucketName, new List<string> { FeatureType.FORMS });
         }
 
 
@@ -243,7 +243,7 @@ namespace Olive.Aws.Textract
         ///  Starts the text extraction job. 
         ///  Gives back the AnalyzeDocumentResponse to get the results of a job.
         /// </summary>
-        public static Task<AnalyzeDocumentResponse> AnalyzeDocument(string documentKey, string bucketName, params FeatureType[] featureType)
+        public static Task<AnalyzeDocumentResponse> AnalyzeDocument(string documentKey, string bucketName, List<string> featureTypes)
         {
             var outputBucket = OutputBucketName.HasValue() ? OutputBucketName : bucketName;
             var detectTextRequest = new AnalyzeDocumentRequest()
@@ -256,7 +256,7 @@ namespace Olive.Aws.Textract
                         Bucket = bucketName
                     },
                 },
-                FeatureTypes = featureType.Select(x => x.Value).ToList(),
+                FeatureTypes = featureTypes,
             };
             try
             {
