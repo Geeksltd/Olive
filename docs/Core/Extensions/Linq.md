@@ -487,7 +487,7 @@ Gets all items of `this` list except those meeting a specified criteria.
 if {alsoDistinct} is `true`, it returns distinct elements from a sequence. The default value is `false`.
 
 #### When to use it?
-When you want to get all items of `this` list except those meeting a specified criteria in your applications.
+When you want to get all items of `this` list except those meeting a specified criteria in your applications. 
 
 #### Example:
 ```csharp
