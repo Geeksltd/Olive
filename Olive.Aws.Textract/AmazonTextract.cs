@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.Textract;
@@ -150,19 +151,17 @@ namespace Olive.Aws.Textract
             {
                 DocumentLocation = new DocumentLocation()
                 {
-
                     S3Object = new S3Object()
                     {
                         Name = documentKey,
                         Bucket = bucketName
                     },
-                    
                 },
                 OutputConfig = new OutputConfig()
                 {
                     S3Bucket = outputBucket,
                     S3Prefix= prefix,
-                }
+                },
             };
             try
             {
@@ -175,6 +174,51 @@ namespace Olive.Aws.Textract
                 throw e;
             }
         }
+
+        /// <summary>
+        ///  Starts AnalyzeDocument based on the location in the s3 bucket configured AWS:Textract:S3Bucket.
+        ///  Gives back the AnalyzeDocumentResponse.
+        /// </summary>
+        public static Task<AnalyzeDocumentResponse> AnalyzeDocument(string documentKey)
+        {
+            if (BucketName == null)
+            {
+                throw new KeyNotFoundException("AWS:Textract:S3Bucket missing from your configuration");
+            }
+
+            return AnalyzeDocument(documentKey, BucketName, FeatureType.FORMS);
+        }
+
+        /// <summary>
+        ///  Starts the text extraction job. 
+        ///  Gives back the AnalyzeDocumentResponse to get the results of a job.
+        /// </summary>
+        public static Task<AnalyzeDocumentResponse> AnalyzeDocument(string documentKey, string bucketName, params FeatureType[] featureType)
+        {
+            var outputBucket = OutputBucketName.HasValue() ? OutputBucketName : bucketName;
+            var detectTextRequest = new AnalyzeDocumentRequest()
+            {
+                Document = new Document()
+                {
+                    S3Object = new S3Object()
+                    {
+                        Name = documentKey,
+                        Bucket = bucketName
+                    },
+                },
+                FeatureTypes = featureType.Select(x => x.Value).ToList(),
+            };
+            try
+            {
+                return Client.AnalyzeDocumentAsync(detectTextRequest);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+
         /// <summary>
         ///  Returns an Object containing the job status blocks and next token of the job.
         /// </summary>
