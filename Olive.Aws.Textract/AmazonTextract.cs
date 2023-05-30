@@ -223,10 +223,10 @@ namespace Olive.Aws.Textract
             }
         }
         /// <summary>
-        ///  Starts AnalyzeDocument based on the location in the s3 bucket configured AWS:Textract:S3Bucket.
-        ///  Gives back the AnalyzeDocumentResponse.
+        ///  Starts the text extraction job based on the location in the s3 bucket configured AWS:Textract:S3Bucket.
+        ///  Gives back the job id that you can use with GetJobResultBlocks() or GetJobResultText() to get the results of a job.
         /// </summary>
-        public static Task<AnalyzeDocumentResponse> AnalyzeDocument(string documentKey)
+        public static Task<StartDocumentAnalysisResponse> StartAnalyzeDocument(string documentKey, string prefix)
         {
             if (BucketName == null)
             {
@@ -234,33 +234,38 @@ namespace Olive.Aws.Textract
             }
 
 
-            return AnalyzeDocument(documentKey, BucketName, new List<string> { FeatureType.FORMS });
+            return StartAnalyzeDocument(documentKey, BucketName, prefix, new List<string> { FeatureType.FORMS });
         }
-
-
 
         /// <summary>
         ///  Starts the text extraction job. 
-        ///  Gives back the AnalyzeDocumentResponse to get the results of a job.
+        ///  Gives back the job id that you can use with GetJobResults() to get the results of a job.
         /// </summary>
-        public static Task<AnalyzeDocumentResponse> AnalyzeDocument(string documentKey, string bucketName, List<string> featureTypes)
+        public static Task<StartDocumentAnalysisResponse> StartAnalyzeDocument(string documentKey, string bucketName, string prefix, List<string> featureTypes)
         {
             var outputBucket = OutputBucketName.HasValue() ? OutputBucketName : bucketName;
-            var detectTextRequest = new AnalyzeDocumentRequest()
+            var detectTextRequest = new StartDocumentAnalysisRequest()
             {
-                Document = new Document()
+                DocumentLocation = new DocumentLocation()
                 {
+
                     S3Object = new S3Object()
                     {
                         Name = documentKey,
                         Bucket = bucketName
                     },
                 },
+                OutputConfig = new OutputConfig()
+                {
+                    S3Bucket = outputBucket,
+                    S3Prefix = prefix,
+
+                },
                 FeatureTypes = featureTypes,
             };
             try
             {
-                return Client.AnalyzeDocumentAsync(detectTextRequest);
+                return Client.StartDocumentAnalysisAsync(detectTextRequest);
             }
             catch (Exception e)
             {
