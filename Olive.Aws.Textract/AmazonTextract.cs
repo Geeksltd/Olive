@@ -226,7 +226,7 @@ namespace Olive.Aws.Textract
         ///  Starts the text extraction job based on the location in the s3 bucket configured AWS:Textract:S3Bucket.
         ///  Gives back the job id that you can use with GetJobResultBlocks() or GetJobResultText() to get the results of a job.
         /// </summary>
-        public static Task<StartDocumentAnalysisResponse> StartAnalyzeDocument(string documentKey, string prefix)
+        public static Task<string> StartAnalyzeDocument(string documentKey, string prefix)
         {
             if (BucketName == null)
             {
@@ -241,7 +241,7 @@ namespace Olive.Aws.Textract
         ///  Starts the text extraction job. 
         ///  Gives back the job id that you can use with GetJobResults() to get the results of a job.
         /// </summary>
-        public static Task<StartDocumentAnalysisResponse> StartAnalyzeDocument(string documentKey, string bucketName, string prefix, List<string> featureTypes)
+        public static async Task<string> StartAnalyzeDocument(string documentKey, string bucketName, string prefix, List<string> featureTypes)
         {
             var outputBucket = OutputBucketName.HasValue() ? OutputBucketName : bucketName;
             var detectTextRequest = new StartDocumentAnalysisRequest()
@@ -265,7 +265,8 @@ namespace Olive.Aws.Textract
             };
             try
             {
-                return Client.StartDocumentAnalysisAsync(detectTextRequest);
+                var detectTextResponse = await Client.StartDocumentAnalysisAsync(detectTextRequest);
+                return detectTextResponse.JobId;
             }
             catch (Exception e)
             {
