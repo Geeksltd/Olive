@@ -15,6 +15,12 @@ namespace Olive.Aws.Textract
             NextToken= response.NextToken;
             JobStatus= response.JobStatus;
         }
+        internal TextDetectionBlockResults(GetDocumentAnalysisResponse response)
+        {
+            Blocks = response.Blocks;
+            NextToken = response.NextToken;
+            JobStatus = response.JobStatus;
+        }
         public IEnumerable<Block> Blocks { get; set; }
         public string NextToken { get; set; }
         public JobStatus JobStatus { get; set; }
@@ -24,6 +30,13 @@ namespace Olive.Aws.Textract
         internal TextDetectionTextResults(GetDocumentTextDetectionResponse response)
         {
             Text = response.Blocks.Select(x=>x.Text).ToString("\n");
+            NextToken = response.NextToken;
+            JobStatus = response.JobStatus;
+        }
+
+        internal TextDetectionTextResults(GetDocumentAnalysisResponse response)
+        {
+            Text = response.Blocks.Select(x => x.Text).ExceptNull().ToString("\n");
             NextToken = response.NextToken;
             JobStatus = response.JobStatus;
         }

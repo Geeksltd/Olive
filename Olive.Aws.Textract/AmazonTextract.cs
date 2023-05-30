@@ -259,7 +259,6 @@ namespace Olive.Aws.Textract
                 {
                     S3Bucket = outputBucket,
                     S3Prefix = prefix,
-
                 },
                 FeatureTypes = featureTypes,
             };
@@ -267,6 +266,49 @@ namespace Olive.Aws.Textract
             {
                 var detectTextResponse = await Client.StartDocumentAnalysisAsync(detectTextRequest);
                 return detectTextResponse.JobId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+
+        /// <summary>
+        ///  Returns an Object containing the job status blocks and next token of the job.
+        /// </summary>
+        public static async Task<TextDetectionBlockResults> GetAnalyzeJobResultBlocks(string jobId, string nextToken = null)
+        {
+            var detectRequest = new GetDocumentAnalysisRequest()
+            {
+                JobId = jobId,
+                NextToken = nextToken
+            };
+            try
+            {
+                var detectTextResponse = await Client.GetDocumentAnalysisAsync(detectRequest);
+                return new TextDetectionBlockResults(detectTextResponse);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+        /// <summary>
+        ///  Returns an Object containing the job status, text and next token of the job.
+        /// </summary>
+        public static async Task<TextDetectionTextResults> GetAnalyzeJobResultText(string jobId, string nextToken = null)
+        {
+            var detectTextRequest = new GetDocumentAnalysisRequest()
+            {
+                JobId = jobId,
+                NextToken = nextToken
+            };
+            try
+            {
+                var detectTextResponse = await Client.GetDocumentAnalysisAsync(detectTextRequest);
+                return new TextDetectionTextResults(detectTextResponse); ;
             }
             catch (Exception e)
             {
