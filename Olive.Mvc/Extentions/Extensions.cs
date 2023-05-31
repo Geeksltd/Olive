@@ -121,6 +121,11 @@ namespace Olive.Mvc
         public static HtmlString Raw(this string @this) => new HtmlString(@this.OrEmpty());
 
         /// <summary>
+        /// Will convert this html string into a 
+        /// </summary>
+        public static Task<HtmlString> Raw(this Task<string> @this) => @this.Get(v => v.Raw());
+
+        /// <summary>
         /// Gets access to the current ViewBag.
         /// </summary>
         public static dynamic ViewBag(this HttpContext @this) => (dynamic)@this.Items["ViewBag"];
