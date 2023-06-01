@@ -139,7 +139,7 @@ x.Round(2).ToString();//returns "10.8"
 x.Round(3).ToString();//returns "10.796"
 x.Round(4).ToString();//returns "10.796"
 ```          
-
+ 
 
 
 ## RoundUpToNearest({roundIntervals})

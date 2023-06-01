@@ -26,6 +26,11 @@ using System.Threading.Tasks;
         }
         ";
     }
+
+    string GenerateParameterlessFor(string listType, string type, string resultType, string method)
+    {
+        return $"public static Task<{resultType}> {method}(this Task<{listType}> @this) => @this.Get(v=> v.{method}(x => x));";
+    }
 #>
 <# var types = new [] {"int", "long", "decimal", "double", "float"}; #>
 <# var methods = new [] {"Sum", "Average", "Max", "Min"}; #>
@@ -41,8 +46,9 @@ namespace Olive
 <# var resultType = method == "Average" && (type == "int" || type == "long") ? "double" : type; #>
         <#= GenerateFor(listType, type, resultType, method) #>
         <#= GenerateFor(listType, type + "?", resultType + "?", method) #>
-<# } #>
-<# } #>
-<# } #>
+                
+        <#= GenerateParameterlessFor(listType.Replace("T", type +"?"), type + "?", resultType + "?", method) #>
+        <#= GenerateParameterlessFor(listType.Replace("T", type), type, resultType, method) #>
+<# } } } #>
     }
 }

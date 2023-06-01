@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.1.338</Version>
+    <Version>2.1.339</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,22 +11,17 @@
 
   <ItemGroup>
     <None Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.tt">
-      <LastGenOutput>Linq.SpecialCollectionTypes.Async.cs</LastGenOutput>
+      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
     <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Linq.SpecialCollectionTypes.Async.cs</LastGenOutput>
+      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
     </None>
-    <Compile Update="-Extensions\Async\Linq - Copy.NumericIEnumerable.Async.cs">
+    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.SpecialCollectionTypes.Async.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 
