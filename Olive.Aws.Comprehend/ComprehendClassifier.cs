@@ -16,9 +16,9 @@ namespace Olive.Aws.Comprehend
     {
         private static IAmazonComprehend _client;
         private static IAmazonS3 _s3client;
-        static string BucketName => Config.Get<string>("AWS:Rekognition:S3Bucket").Or(Config.Get<string>("Blob:S3:Bucket"));
-        static string SourceBucketName => Config.Get<string>("AWS:Rekognition:S3SourceBucket").Or(Config.Get<string>("Blob:S3:Bucket"));
-        private static string _region = Config.Get<string>("AWS:Rekognition:Region").Or(Config.Get<string>("Aws:Region"));
+        static string BucketName => Config.Get<string>("AWS:Comprehend:S3Bucket").Or(Config.Get<string>("Blob:S3:Bucket"));
+        static string SourceBucketName => Config.Get<string>("AWS:Comprehend:S3SourceBucket").Or(Config.Get<string>("Blob:S3:Bucket"));
+        private static string _region = Config.Get<string>("AWS:Comprehend:Region").Or(Config.Get<string>("Aws:Region"));
         static string IamRole => Config.Get<string>("AWS:Comprehend:IAMRoleArn");
 
 
