@@ -122,7 +122,6 @@ namespace Olive
             => @this.ForLinq().SequentialSelectMany(x=>func(x).ForLinq());
                         
 
-
             #region TSource[]
         /// <summary>
         /// Projects each element of a sequence into a new form.
@@ -379,10 +378,15 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<TSource[]> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
+                    
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this Task<TSource[]> @this, Func<TSource, TKey> key, Func<TSource, Task<TValue>> value)        
+            => @this.Get(x => x.ToDictionary(key,value));
+
         #endregion
 
-       #region IOrderedEnumerable<TSource>
+        #region IOrderedEnumerable<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -638,10 +642,15 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
+                    
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TKey> key, Func<TSource, Task<TValue>> value)        
+            => @this.Get(x => x.ToDictionary(key,value));
+
         #endregion
 
-       #region List<TSource>
+        #region List<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -897,10 +906,15 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
+                    
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this Task<List<TSource>> @this, Func<TSource, TKey> key, Func<TSource, Task<TValue>> value)        
+            => @this.Get(x => x.ToDictionary(key,value));
+
         #endregion
 
-       #region IList<TSource>
+        #region IList<TSource>
         /// <summary>
         /// Projects each element of a sequence into a new form.
         /// </summary>
@@ -1156,8 +1170,13 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IList<TSource>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
+                    
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this Task<IList<TSource>> @this, Func<TSource, TKey> key, Func<TSource, Task<TValue>> value)        
+            => @this.Get(x => x.ToDictionary(key,value));
+
         #endregion
 
-       }
+        }
 }

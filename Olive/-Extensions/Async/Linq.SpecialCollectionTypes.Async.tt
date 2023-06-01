@@ -29,7 +29,6 @@ namespace Olive
             <# } #>
 
 
-
         <# foreach (var t in listTypes) { #>
     #region <#=t#>
         /// <summary>
@@ -287,9 +286,14 @@ namespace Olive
             => @this.Get(async x => x.Concat(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<<#=t#>> @this, Func<TSource, Task<bool>> predicate)
-          => @this.Get(x => x.Where(predicate));        
+          => @this.Get(x => x.Where(predicate));
+                    
+        public static Task<Dictionary<TKey, TValue>> ToDictionary<TSource, TKey, TValue>(
+            this Task<<#=t#>> @this, Func<TSource, TKey> key, Func<TSource, Task<TValue>> value)        
+            => @this.Get(x => x.ToDictionary(key,value));
+
         #endregion
 
-   <# } #>
+    <# } #>
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.1.339</Version>
+    <Version>2.1.340</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,18 +11,13 @@
 
   <ItemGroup>
     <None Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.tt">
-      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
+      <LastGenOutput>Linq.SpecialCollectionTypes.Async.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
     <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
     </None>
-    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -35,5 +30,18 @@
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
+    </Compile>
+    <Compile Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Linq.SpecialCollectionTypes.Async.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

@@ -153,6 +153,8 @@ namespace Olive
         public static Task<string> ToHtmlLines<TList>(this Task<TList> @this) where TList : IEnumerable
             => @this.Get(x => x.ToString("<br/>"));
 
+        public static Task<string> ToHtmlLines(this Task<string> @this) => @this.Get(v => v.ToHtmlLines());
+
         /// <summary>
         /// Gets the same string if it is not null or empty. Otherwise it returns the specified default value.
         /// </summary>

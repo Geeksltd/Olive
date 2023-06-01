@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace Olive
@@ -199,5 +201,7 @@ namespace Olive
 
             return result;
         }
+
+        public static ConcurrentDictionary<TKey, TValue> Concurrent<TKey, TValue>(this Dictionary<TKey, TValue> @this) => new ConcurrentDictionary<TKey, TValue>(@this);
     }
 }
