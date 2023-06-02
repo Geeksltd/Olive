@@ -218,17 +218,23 @@ namespace Olive.Aws.Comprehend
         /// </summary>
         public static async Task<string> StartClasifyingJob(string classifier_arn, string documetnKey, string outputfolder, string inputfolder, string bucketName)
         {
+            if (IamRole == null)
+            {
+                throw new KeyNotFoundException("AWS:Comprehend:IAMRoleArn missing from your configuration");
+            }
+
             var startJobRequest = new StartDocumentClassificationJobRequest()
             {
-               DocumentClassifierArn = classifier_arn,
-               InputDataConfig = new InputDataConfig
-               {
-                   S3Uri= $"s3://{bucketName}/{inputfolder}/{documetnKey}",
-               },
+                DocumentClassifierArn = classifier_arn,
+                InputDataConfig = new InputDataConfig
+                {
+                    S3Uri = $"s3://{bucketName}/{inputfolder}/{documetnKey}",
+                },
                 OutputDataConfig = new OutputDataConfig
                 {
                     S3Uri = $"s3://{bucketName}/{outputfolder}/{documetnKey}",
-                },  
+                },
+                DataAccessRoleArn = IamRole;
             };
             try
             {
