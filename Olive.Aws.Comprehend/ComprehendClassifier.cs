@@ -9,6 +9,7 @@ using Amazon.Comprehend.Model;
 using static System.Net.Mime.MediaTypeNames;
 using Amazon.S3.Model;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Olive.Aws.Comprehend
 {
@@ -17,7 +18,7 @@ namespace Olive.Aws.Comprehend
         private static IAmazonComprehend _client;
         private static IAmazonS3 _s3client;
         static string BucketName => Config.Get<string>("AWS:Comprehend:S3Bucket").Or(Config.Get<string>("Blob:S3:Bucket"));
-        static string SourceBucketName => Config.Get<string>("AWS:Comprehend:S3SourceBucket").Or(Config.Get<string>("Blob:S3:Bucket"));
+        static string ClassificationJobsBucket => Config.Get<string>("AWS:Comprehend:S3ClassificationJobsBucket").Or(Config.Get<string>("Blob:S3:Bucket"));
         private static string _region = Config.Get<string>("AWS:Comprehend:Region").Or(Config.Get<string>("Aws:Region"));
         static string IamRole => Config.Get<string>("AWS:Comprehend:IAMRoleArn");
 
@@ -71,9 +72,10 @@ namespace Olive.Aws.Comprehend
 
             var classifierRequest = new CreateDocumentClassifierRequest()
             {
+                VersionName = Version,
                 DocumentClassifierName = name + "-" + Version,
                 LanguageCode = languageCode,
-                InputDataConfig = new DocumentClassifierInputDataConfig() { S3Uri = $"s3://{bucketName}/{Version}"},
+                InputDataConfig = new DocumentClassifierInputDataConfig() { S3Uri = $"s3://{bucketName}/{name}/{Version}"},
                 Mode = mode,
                 DataAccessRoleArn = IamRole
             };
@@ -139,13 +141,13 @@ namespace Olive.Aws.Comprehend
         }
         /// <summary>
         ///  Describes the full details of the Classifier.
-        /// </summary>
-        public static async Task<DocumentClass> ClassifyDocument(string classifier_arn, string documentText)
+        ///  classifying by endpoint is really expensive use the StartClasifyingJob instead
+        public static async Task<DocumentClass> ClassifyByEndpoint(string endpoint_arn, string documentText)
         {
             var classifyRequest = new ClassifyDocumentRequest
             {
                 Text = documentText,
-                EndpointArn = classifier_arn,
+                EndpointArn = endpoint_arn,
             };
             try
             {
@@ -169,24 +171,7 @@ namespace Olive.Aws.Comprehend
             {
                 throw new KeyNotFoundException("AWS:Comprehend:S3Bucket missing from your configuration for the destination.");
             }
-            if (SourceBucketName == null)
-            {
-                throw new KeyNotFoundException("AWS:Comprehend:S3SourceBucket missing from your configuration for the destination.");
-            }
-            return await CopyFile(sourceKey, Destinationkey, SourceBucketName, BucketName);
-        }
-        /// <summary>
-        ///  Copies the file from specified source bucket to AWS:Comprehend:S3Bucket bucket that is the main comprehend bucket.
-        ///  Returns the Checksum SHA256 of the saved file for confirmation if needed.
-        ///  If destination Bucket is not specified will use Blob:S3:Bucket defualt bucket of the application.
-        /// </summary>
-        public static async Task<string> CopyFile(string sourceKey, string Destinationkey, string sourceBucket)
-        {
-            if (BucketName == null)
-            {
-                throw new KeyNotFoundException("AWS:Comprehend:S3Bucket missing from your configuration for the destination.");
-            }
-            return await CopyFile(sourceKey, Destinationkey, sourceBucket, BucketName);
+            return await CopyFile(sourceKey, Destinationkey, BucketName, BucketName);
         }
         /// <summary>
         ///  Copies the file from specified source bucket and destination bucket to copy a file.
@@ -206,6 +191,69 @@ namespace Olive.Aws.Comprehend
             {
                 var CopyResponse = await S3Client.CopyObjectAsync(request);
                 return CopyResponse.ChecksumSHA256;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+        /// <summary>
+        ///  Starts the Clasifying job based on the location in the s3 bucket configured AWS:Comprehend:S3ClassificationJobsBucket.
+        ///  Gives back the job id that you can use with GetClasifyingJobResults() to get the results of a job.
+        /// </summary>
+        public static async Task<string> StartClasifyingJob(string classifier_arn, string documetnKey, string outputfolder, string inputfolder)
+        {
+            if (ClassificationJobsBucket == null)
+            {
+                throw new KeyNotFoundException("AWS:Comprehend:S3ClassificationJobsBucket missing from your configuration");
+            }
+            return await StartClasifyingJob(classifier_arn, documetnKey, outputfolder, inputfolder, ClassificationJobsBucket);
+
+        }
+
+        /// <summary>
+        ///  Starts the Clasifying job. 
+        ///  Gives back the job id that you can use with GetClasifyingJobResults() to get the results of a job.
+        /// </summary>
+        public static async Task<string> StartClasifyingJob(string classifier_arn, string documetnKey, string outputfolder, string inputfolder, string bucketName)
+        {
+            var startJobRequest = new StartDocumentClassificationJobRequest()
+            {
+               DocumentClassifierArn = classifier_arn,
+               InputDataConfig = new InputDataConfig
+               {
+                   S3Uri= $"s3://{bucketName}/{inputfolder}/{documetnKey}",
+               },
+                OutputDataConfig = new OutputDataConfig
+                {
+                    S3Uri = $"s3://{bucketName}/{outputfolder}/{documetnKey}",
+                },  
+            };
+            try
+            {
+                var startJobResponse = await Client.StartDocumentClassificationJobAsync(startJobRequest);
+                return startJobResponse.JobId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
+        }
+        /// <summary>
+        ///  Returns an Object containing the status of the Clasifying Job and the Uri of the output File.
+        /// </summary>
+        public static async Task<DocumentClassificationJobProperties> GetClasifyingJobResults(string jobId, string nextToken = null)
+        {
+            var clasiifyingJobRequest = new DescribeDocumentClassificationJobRequest()
+            {
+                JobId = jobId,
+            };
+            try
+            {
+                var clasiifyingJobResponse = await Client.DescribeDocumentClassificationJobAsync(clasiifyingJobRequest);
+                return clasiifyingJobResponse.DocumentClassificationJobProperties;
             }
             catch (Exception e)
             {
