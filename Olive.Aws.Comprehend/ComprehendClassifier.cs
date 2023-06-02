@@ -234,7 +234,7 @@ namespace Olive.Aws.Comprehend
                 {
                     S3Uri = $"s3://{bucketName}/{outputfolder}/{documetnKey}",
                 },
-                DataAccessRoleArn = IamRole;
+                DataAccessRoleArn = IamRole,
             };
             try
             {
