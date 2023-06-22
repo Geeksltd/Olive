@@ -250,6 +250,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Hangfire/Olive.Hangfire.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive Hangfire Cron NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Hangfire.Cron/Olive.Hangfire.Cron.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Hangfire MySql NuGet Package
       uses: Geeksltd/publish-nuget@v2
       with:

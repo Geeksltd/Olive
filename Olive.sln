@@ -212,6 +212,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Textract", "Olive
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Comprehend", "Olive.Aws.Comprehend\Olive.Aws.Comprehend.csproj", "{588FD83B-91BF-460B-BDCC-FF84D7E6B417}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Hangfire.Cron", "Olive.Hangfire.Cron\Olive.Hangfire.Cron.csproj", "{17718CC2-C817-4E1C-8E6E-CBCFC698D995}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -545,6 +547,10 @@ Global
 		{588FD83B-91BF-460B-BDCC-FF84D7E6B417}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{588FD83B-91BF-460B-BDCC-FF84D7E6B417}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{588FD83B-91BF-460B-BDCC-FF84D7E6B417}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17718CC2-C817-4E1C-8E6E-CBCFC698D995}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17718CC2-C817-4E1C-8E6E-CBCFC698D995}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17718CC2-C817-4E1C-8E6E-CBCFC698D995}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17718CC2-C817-4E1C-8E6E-CBCFC698D995}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -637,6 +643,7 @@ Global
 		{72EE0ABC-9CB8-43FC-81AC-833417184AD5} = {50102A6B-6A9D-47FE-B21B-1968F24A4CCF}
 		{61E86F2D-4693-4629-93A6-1A6D9EC59892} = {6A937A37-1CEC-4347-9594-C471645B43DA}
 		{588FD83B-91BF-460B-BDCC-FF84D7E6B417} = {6A937A37-1CEC-4347-9594-C471645B43DA}
+		{17718CC2-C817-4E1C-8E6E-CBCFC698D995} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
