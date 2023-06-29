@@ -212,7 +212,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Textract", "Olive
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Aws.Comprehend", "Olive.Aws.Comprehend\Olive.Aws.Comprehend.csproj", "{588FD83B-91BF-460B-BDCC-FF84D7E6B417}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Hangfire.Cron", "Olive.Hangfire.Cron\Olive.Hangfire.Cron.csproj", "{17718CC2-C817-4E1C-8E6E-CBCFC698D995}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.Hangfire.Cron", "Olive.Hangfire.Cron\Olive.Hangfire.Cron.csproj", "{17718CC2-C817-4E1C-8E6E-CBCFC698D995}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
