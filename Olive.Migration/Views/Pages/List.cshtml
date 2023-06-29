@@ -1,0 +1,73 @@
+﻿@model MigrationsList
+@{
+	Layout = "~/Views/Layouts/MigrationDefault.cshtml";
+	ViewData["Title"] = "Database Migrations";
+}
+
+@if (Model.Errors.Any())
+{
+	<div class="alert alert-danger">
+		@Html.Raw(string.Join("<br/>",Model.Errors))
+		<br />
+		<br />
+		Please use '{year:0000}{month:00}{day:00}{hour(24 hours format):00}{minute:00} + description' format for migration file names with .sql extension
+		<br />
+		File name starts with 12 digits
+		<br />
+		<br />
+		Valid file name sample : 202312121212_add_new_field_to_person_table.sql
+	</div>
+}
+
+@if (Model.Items.None())
+{
+	<div class="alert alert-info">
+		There is no migration file
+	</div>
+}
+else
+{
+	<div class="table-responsive">
+		<table class="table table-hover text-nowrap">
+			<thead>
+				<tr>
+					<th class="w-100">Name</th>
+					<th>Create on</th>
+					<th>Status</th>
+					<th class="text-end">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model.Items)
+				{
+					<tr>
+						<td class="w-100">@item.Item.Name</td>
+						<td>
+							Create on: @item.Item.CreateOn<br />
+							Load on: @item.Item.LoadOn<br />
+							Migrate start on: @(item.Item.MigrateStartOn?.ToShortTimeString() ?? "Not started")<br />
+							Migrate end on: @(item.Item.MigrateEndOn?.ToShortTimeString() ?? "Not finished")
+						</td>
+						<td class="@(item.Item.Migrated?"text-success":"text-muted")">@(item.Item.Migrated ? "Done" : "Waiting")</td>
+						<td class="text-end">
+							@if (!item.Item.Migrated)
+							{
+								<a href="/olive/migration/migrate/@item.Item.GetId()" class="btn btn-primary">Migrate</a>
+							}
+
+							@if (item.Item.BeforeMigrationBackupPath.HasValue())
+							{
+								<a href="/olive/migration/restore/@item.Item.GetId()?mode=before" class="btn btn-warning">Restore before migration backup</a>
+							}
+
+							@if (item.Item.AfterMigrationBackupPath.HasValue())
+							{
+								<a href="/olive/migration/restore/@item.Item.GetId()?mode=after" class="btn btn-warning">Restore after migration backup</a>
+							}
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
