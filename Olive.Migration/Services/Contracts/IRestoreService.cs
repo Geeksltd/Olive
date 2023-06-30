@@ -4,6 +4,6 @@
 
     public interface IRestoreService
     {
-        Task<(bool success, string errorMessage)> Restore();
+        Task<(bool success, string errorMessage)> Restore(string path);
     }
 }

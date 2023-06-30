@@ -6,9 +6,9 @@
 
     public class RestoreService : IRestoreService
 	{
-		public Task<(bool success, string errorMessage)> Restore()
+		public async Task<(bool success, string errorMessage)> Restore(string path)
 		{
-			throw new NotImplementedException();
+			return (true,"");
 		}
 	}
 }
