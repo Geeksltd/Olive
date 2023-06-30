@@ -20,12 +20,28 @@
 			_pathService = pathService;
 		}
 
-		public async Task<(List<IMigrationTask> tasks, List<string> errorMessages)> Get()
+		public async Task<IMigrationTask[]> GetDatabaseList()
+		{
+			try
+			{
+				return await Db.GetList<IMigrationTask>();
+			}
+			catch (System.Exception e)
+			{
+				if(e.InnerException?.Message == "Invalid object name 'MigrationTasks'.")
+				{
+					await CreateTable();
+				}
+				return new IMigrationTask[0];
+			}
+		}
+
+		public async Task<(List<IMigrationTask> tasks, List<string> errorMessages)> GetFilesList()
 		{
 			var list = new List<IMigrationTask>();
 			var errors = new List<string>();
 
-			var oldMigrations = await Db.GetList<IMigrationTask>();
+			var oldMigrations = await GetDatabaseList();
 			var newMigrations = new List<IMigrationTask>();
 
 			var files = _pathService.MigrationFiles();
@@ -77,6 +93,32 @@
 		private string GetFileNameErrorMessage(string fileName)
 		{
 			return $"File name '{fileName}' is not valid";
+		}
+
+		private async Task CreateTable()
+		{
+			await Db.GetAccess().ExecuteNonQuery(@"
+CREATE TABLE [dbo].[MigrationTasks](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](200) NOT NULL,
+	[CreateOn] [datetime2](7) NOT NULL,
+	[LoadOn] [datetime2](7) NOT NULL,
+	[MigrateStartOn] [datetime2](7) NULL,
+	[MigrateEndOn] [datetime2](7) NULL,
+	[Migrated] [bit] NOT NULL,
+	[BeforeMigrationBackupPath] [nvarchar](200) NULL,
+	[BeforeMigrationBackupOn] [datetime2](7) NULL,
+	[BeforeMigrationRestoreOn] [datetime2](7) NULL,
+	[AfterMigrationBackupPath] [nvarchar](200) NULL,
+	[AfterMigrationBackupOn] [datetime2](7) NULL,
+	[AfterMigrationRestoreOn] [datetime2](7) NULL,
+	[LastError] [nvarchar](max) NULL,
+PRIMARY KEY NONCLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+");
 		}
 	}
 }

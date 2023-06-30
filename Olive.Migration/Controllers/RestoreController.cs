@@ -26,7 +26,7 @@
 		public async Task<IActionResult> RestoreResult([FromServices] IMigrationService migrationService, RestoreRequest request)
 		{
 			var item = await Database.Get<IMigrationTask>(request.Id);
-			var (task, errorMessage) = await migrationService.Restore(item,request.Witch == RestoreWhich.Before);
+			var (task, errorMessage) = await migrationService.Restore(item,request.Witch);
 
 			var vm = new Restore
 			{
@@ -51,12 +51,7 @@ namespace ViewModel
 		[FromRoute]
 		public Guid Id { get;set;}
 		[FromQuery]
-		public RestoreWhich Witch { get;set;}
-	}
-
-	public enum RestoreWhich
-	{
-		Before,After
+		public WhichBackup Witch { get;set;}
 	}
 
 	public class Restore : IViewModel

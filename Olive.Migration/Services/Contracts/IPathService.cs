@@ -7,5 +7,8 @@
         DirectoryInfo MigrationDirectory();
         FileInfo MigrationFile(string fileName);
         FileInfo[] MigrationFiles();
-    }
+		string GetBackupFileName(string taskName, WhichBackup whichBackup);
+		string GetDatabaseName();
+
+	}
 }

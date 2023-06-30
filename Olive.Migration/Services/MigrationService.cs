@@ -7,19 +7,22 @@
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Runtime.CompilerServices;
 	using System.Text;
 	using System.Threading.Tasks;
 
 	public class MigrationService : IMigrationService
 	{
+		private readonly IMigrationListService _migrationListService;
 		private readonly IBackupService _backupService;
 		private readonly IRestoreService _restoreService;
 		private readonly IPathService _pathService;
 
 		private IDatabase Db => Context.Current.Database();
 
-		public MigrationService(IBackupService backupService,IRestoreService restoreService, IPathService pathService)
+		public MigrationService(IMigrationListService migrationListService, IBackupService backupService, IRestoreService restoreService, IPathService pathService)
 		{
+			_migrationListService = migrationListService;
 			_backupService = backupService;
 			_restoreService = restoreService;
 			_pathService = pathService;
@@ -50,7 +53,7 @@
 				return (task, "Migration file is empty");
 			}
 
-			var (success, path, errorMessage) = await _backupService.Backup();
+			var (success, path, errorMessage) = await _backupService.Backup(task.Name, WhichBackup.Before);
 
 			if (!success)
 			{
@@ -65,12 +68,9 @@
 			{
 				item.BeforeMigrationBackupPath = path;
 				item.BeforeMigrationBackupOn = LocalTime.Now;
-			});
-
-			await Db.Update(task, item =>
-			{
 				item.MigrateStartOn = LocalTime.Now;
 			});
+			task = await Db.Reload(task);
 
 			(success, errorMessage) = await MigrateInternal(commands);
 
@@ -88,8 +88,9 @@
 				item.Migrated = true;
 				item.MigrateEndOn = LocalTime.Now;
 			});
+			task = await Db.Reload(task);
 
-			(success, path, errorMessage) = await _backupService.Backup();
+			(success, path, errorMessage) = await _backupService.Backup(task.Name, WhichBackup.After);
 
 			if (!success)
 			{
@@ -104,15 +105,8 @@
 			{
 				item.AfterMigrationBackupPath = path;
 				item.AfterMigrationBackupOn = LocalTime.Now;
+				item.LastError = "";
 			});
-
-			if (task.LastError.HasValue())
-			{
-				await Db.Update(task, item =>
-				{
-					item.LastError = "";
-				});
-			}
 
 			return (task, "");
 		}
@@ -169,7 +163,7 @@
 			var files = _pathService.MigrationFiles();
 			if (files.None()) return (false, "Migration file not exists");
 
-			var allDbMigrations = await Db.GetList<IMigrationTask>();
+			var allDbMigrations = await _migrationListService.GetDatabaseList();
 
 			var notMigratedFiles = new List<string>();
 
@@ -186,9 +180,9 @@
 			return (false, $"Please migrate these files first: [{string.Join(", ", notMigratedFiles)}]");
 		}
 
-		public Task<(IMigrationTask task, string errorMessage)> Restore(IMigrationTask task, bool before)
+		public Task<(IMigrationTask task, string errorMessage)> Restore(IMigrationTask task, WhichBackup whichBackup)
 		{
-			return before?RestoreBefore(task):RestoreAfter(task);
+			return whichBackup == WhichBackup.Before ? RestoreBefore(task) : RestoreAfter(task);
 		}
 
 		private async Task<(IMigrationTask task, string errorMessage)> RestoreBefore(IMigrationTask task)
@@ -202,7 +196,7 @@
 				return (task, "Before migration backup path is empty");
 			}
 
-			var (success,  errorMessage) = await _restoreService.Restore(task.BeforeMigrationBackupPath);
+			var (success, errorMessage) = await _restoreService.Restore(task.BeforeMigrationBackupPath);
 
 			if (!success)
 			{

@@ -5,6 +5,8 @@
 
     public interface IMigrationListService
     {
-        Task<(List<IMigrationTask> tasks, List<string> errorMessages)> Get();
+		Task<IMigrationTask[]> GetDatabaseList();
+
+		Task<(List<IMigrationTask> tasks, List<string> errorMessages)> GetFilesList();
     }
 }

@@ -12,7 +12,7 @@
 		[HttpGet("list")]
 		public async Task<IActionResult> Index([FromServices] IMigrationListService migrationListService)
 		{
-			var (migrations, errors) = await migrationListService.Get();
+			var (migrations, errors) = await migrationListService.GetFilesList();
 			
 			var vm = new MigrationsList
 			{

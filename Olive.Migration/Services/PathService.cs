@@ -41,5 +41,19 @@
 
 			return files;
 		}
+
+		public string GetBackupFileName(string taskName, WhichBackup whichBackup)
+		{
+			return $"{taskName}_{whichBackup.ToString().ToLower()}.bak";
+		}
+
+		public string GetDatabaseName()
+		{
+			var connectionString = Config.Get<string>("ConnectionStrings:Default");
+			System.Data.Common.DbConnectionStringBuilder builder = new System.Data.Common.DbConnectionStringBuilder();
+			builder.ConnectionString = connectionString;
+			var database = builder["Database"] as string;
+			return database;
+		}
 	}
 }

@@ -5,6 +5,6 @@
     public interface IMigrationService
     {
         Task<(IMigrationTask task, string errorMessage)> Migrate(IMigrationTask task);
-        Task<(IMigrationTask task, string errorMessage)> Restore(IMigrationTask task, bool before);
+        Task<(IMigrationTask task, string errorMessage)> Restore(IMigrationTask task, WhichBackup whichBackup);
     }
 }

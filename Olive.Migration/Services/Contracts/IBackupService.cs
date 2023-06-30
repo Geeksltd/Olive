@@ -4,6 +4,6 @@
 
     public interface IBackupService
     {
-        Task<(bool success, string path, string errorMessage)> Backup();
+        Task<(bool success, string path, string errorMessage)> Backup(string taskName, WhichBackup whichBackup);
     }
 }

@@ -19,4 +19,5 @@
 		public DateTime? AfterMigrationRestoreOn { get; set; }
 		public string LastError { get; set; }
 	}
+
 }
