@@ -9,8 +9,6 @@
 	[Route("olive/migration")]
 	public class MigrateController : Olive.Mvc.Controller
 	{
-		public MigrateController() { }
-
 		[HttpGet("migrate/{id}")]
 		public async Task<IActionResult> Index([FromRoute] string id)
 		{

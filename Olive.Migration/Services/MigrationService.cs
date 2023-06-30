@@ -13,13 +13,15 @@
 	public class MigrationService : IMigrationService
 	{
 		private readonly IBackupService _backupService;
+		private readonly IRestoreService _restoreService;
 		private readonly IPathService _pathService;
 
 		private IDatabase Db => Context.Current.Database();
 
-		public MigrationService(IBackupService backupService, IPathService pathService)
+		public MigrationService(IBackupService backupService,IRestoreService restoreService, IPathService pathService)
 		{
 			_backupService = backupService;
+			_restoreService = restoreService;
 			_pathService = pathService;
 		}
 
@@ -182,6 +184,71 @@
 			if (notMigratedFiles.None()) return (true, "");
 
 			return (false, $"Please migrate these files first: [{string.Join(", ", notMigratedFiles)}]");
+		}
+
+		public Task<(IMigrationTask task, string errorMessage)> Restore(IMigrationTask task, bool before)
+		{
+			return before?RestoreBefore(task):RestoreAfter(task);
+		}
+
+		private async Task<(IMigrationTask task, string errorMessage)> RestoreBefore(IMigrationTask task)
+		{
+			if (task.BeforeMigrationBackupPath.IsEmpty())
+			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = "Before migration backup path is empty";
+				});
+				return (task, "Before migration backup path is empty");
+			}
+
+			var (success,  errorMessage) = await _restoreService.Restore(task.BeforeMigrationBackupPath);
+
+			if (!success)
+			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = errorMessage;
+				});
+				return (task, errorMessage);
+			}
+
+			await Db.Update(task, item =>
+			{
+				item.BeforeMigrationRestoreOn = LocalTime.Now;
+			});
+
+			return (task, "");
+		}
+
+		private async Task<(IMigrationTask task, string errorMessage)> RestoreAfter(IMigrationTask task)
+		{
+			if (task.AfterMigrationBackupPath.IsEmpty())
+			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = "After migration backup path is empty";
+				});
+				return (task, "After migration backup path is empty");
+			}
+
+			var (success, errorMessage) = await _restoreService.Restore(task.AfterMigrationBackupPath);
+
+			if (!success)
+			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = errorMessage;
+				});
+				return (task, errorMessage);
+			}
+
+			await Db.Update(task, item =>
+			{
+				item.AfterMigrationRestoreOn = LocalTime.Now;
+			});
+
+			return (task, "");
 		}
 	}
 }

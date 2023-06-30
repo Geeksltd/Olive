@@ -1,17 +1,8 @@
-﻿@model Migrate
+﻿@model Restore
 @{
 	Layout = "~/Views/Layouts/MigrationDefault.cshtml";
-	ViewData["Title"] = "Migrate";
+	ViewData["Title"] = "Restore";
 }
-
-<div class="alert alert-info">
-	Steps:
-	<ol>
-		<li>Backup db to s3 storage</li>
-		<li>Run migrations</li>
-		<li>Backup db to s3 storage</li>
-	</ol>
-</div>
 
 @{
 	Html.RenderPartial("_MigrationTaskView", Model.Item);
@@ -21,3 +12,4 @@
 	<button type="submit" class="btn btn-primary">Start</button>
 	<a href="/olive/migration/list" class="btn btn-secondary">Back to list</a>
 </form>
+

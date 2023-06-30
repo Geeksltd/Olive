@@ -59,7 +59,7 @@ else
 						<td>
 							@if (item.Item.BeforeMigrationBackupPath.HasValue())
 							{
-								<a href="/olive/migration/restore/@item.Item.GetId()?mode=before" class="btn btn-outline-warning btn-sm">Restore before migration backup</a>
+								<a href="/olive/migration/restore/@item.Item.GetId()?witch=before" class="btn btn-outline-warning btn-sm">Restore before migration backup</a>
 								<br />
 							}
 							Path: @item.Item.BeforeMigrationBackupPath<br />
@@ -69,7 +69,7 @@ else
 						<td>
 							@if (item.Item.AfterMigrationBackupPath.HasValue())
 							{
-								<a href="/olive/migration/restore/@item.Item.GetId()?mode=after" class="btn btn-outline-warning btn-sm">Restore after migration backup</a>
+								<a href="/olive/migration/restore/@item.Item.GetId()?witch=after" class="btn btn-outline-warning btn-sm">Restore after migration backup</a>
 								<br />
 							}
 							Path: @item.Item.AfterMigrationBackupPath<br />
