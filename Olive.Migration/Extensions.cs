@@ -3,6 +3,7 @@
     using Microsoft.Extensions.DependencyInjection;
 	using Olive.Migration.Services.Contracts;
 	using Olive.Migration.Services;
+	using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 	public static class Extensions
 	{
@@ -13,8 +14,12 @@
 			services.AddScoped<IMigrationService, MigrationService>();
 			services.AddScoped<IBackupService, BackupService>();
 			services.AddScoped<IRestoreService, RestoreService>();
+			services.AddScoped<IPathService, PathService>();
 
 			services.AddTransient<IMigrationTask, TMigrationTask>();
+
+			services.AddControllers()
+				.PartManager.ApplicationParts.Add(new AssemblyPart(typeof(Extensions).Assembly));
 
 			return services;
 		}

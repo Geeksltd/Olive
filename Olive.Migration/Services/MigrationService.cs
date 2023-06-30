@@ -31,6 +31,19 @@
 				return (task, "Migration already done.");
 			}
 
+			var (can, error) = await CanApply(task);
+			if (!can)
+			{
+				return (task, error);
+			}
+
+			var commands = GetCommands(task);
+
+			if (commands.None())
+			{
+				return (task, "Migration file is empty");
+			}
+
 			var (success, path, errorMessage) = await _backupService.Backup();
 
 			if (!success)
@@ -38,10 +51,13 @@
 				return (task, errorMessage);
 			}
 
-			task.BeforeMigrationBackupPath = path;
-			await Context.Current.Database().Save(task);
+			await Db.Update(task, item =>
+			{
+				item.BeforeMigrationBackupPath = path;
+				item.BeforeMigrationBackupOn = LocalTime.Now;
+			});
 
-			(success, errorMessage) = await MigrateInternal(task);
+			(success, errorMessage) = await MigrateInternal(commands);
 
 			if (!success)
 			{
@@ -55,22 +71,20 @@
 				return (task, errorMessage);
 			}
 
-			task.AfterMigrationBackupPath = path;
-			await Context.Current.Database().Save(task);
+			await Db.Update(task, item =>
+			{
+				item.AfterMigrationBackupPath = path;
+				item.AfterMigrationBackupOn = LocalTime.Now;
+			});
 
 			return (task, "");
 		}
 
-		private async Task<(bool success, string errorMessage)> MigrateInternal(IMigrationTask task)
+		private string[] GetCommands(IMigrationTask task)
 		{
-			var (can, errorMessage) = await CanApply(task);
-			if (!can)
-			{
-				return (false, errorMessage);
-			}
 
 			var file = _pathService.MigrationFile(task.Name);
-			var sql = await File.ReadAllLinesAsync(file.FullName);
+			var sql = File.ReadAllLines(file.FullName);
 			var commands = new List<string>();
 			var currentCommand = new StringBuilder();
 			foreach (var cmd in sql)
@@ -84,13 +98,11 @@
 				currentCommand.AppendLine(cmd);
 			}
 			commands.Add(currentCommand.ToString());
-			commands = commands.Where(a => !a.Trim().IsEmpty()).ToList();
+			return commands.Where(a => !a.Trim().IsEmpty()).ToArray();
+		}
 
-			if (commands.None())
-			{
-				return (false, "Migration file is empty");
-			}
-
+		private async Task<(bool success, string errorMessage)> MigrateInternal(string[] commands)
+		{
 			using (var transaction = Db.CreateTransactionScope())
 			{
 				try
