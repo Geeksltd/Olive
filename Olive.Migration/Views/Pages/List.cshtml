@@ -33,8 +33,9 @@ else
 				<tr>
 					<th class="w-100">Name</th>
 					<th>Create on</th>
+					<th>Backup before migration</th>
+					<th>Backup after migration</th>
 					<th>Status</th>
-					<th class="text-end">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -43,28 +44,37 @@ else
 					<tr>
 						<td class="w-100">@item.Item.Name</td>
 						<td>
-							Create on: @item.Item.CreateOn<br />
+							Create on: @item.Item.CreateOn
 							Load on: @item.Item.LoadOn<br />
 							Migrate start on: @(item.Item.MigrateStartOn?.ToShortTimeString() ?? "Not started")<br />
-							Migrate end on: @(item.Item.MigrateEndOn?.ToShortTimeString() ?? "Not finished")
-						</td>
-						<td class="@(item.Item.Migrated?"text-success":"text-muted")">@(item.Item.Migrated ? "Done" : "Waiting")</td>
-						<td class="text-end">
-							@if (!item.Item.Migrated)
+							Migrate end on: @(item.Item.MigrateEndOn?.ToShortTimeString() ?? "Not finished")@if (!item.Item.Migrated)
 							{
+								<br />
 								<a href="/olive/migration/migrate/@item.Item.GetId()" class="btn btn-primary">Migrate</a>
 							}
-
+						</td>
+						<td class="w-100">
+							@item.Item.BeforeMigrationBackupPath<br />
+							@item.Item.BeforeMigrationBackupOn<br />
+							@item.Item.BeforeMigrationRestoreOn
 							@if (item.Item.BeforeMigrationBackupPath.HasValue())
 							{
+								<br />
 								<a href="/olive/migration/restore/@item.Item.GetId()?mode=before" class="btn btn-warning">Restore before migration backup</a>
 							}
 
+						</td>
+						<td class="w-100">
+							@item.Item.AfterMigrationBackupPath<br />
+							@item.Item.AfterMigrationBackupOn<br />
+							@item.Item.AfterMigrationRestoreOn
 							@if (item.Item.AfterMigrationBackupPath.HasValue())
 							{
+								<br />
 								<a href="/olive/migration/restore/@item.Item.GetId()?mode=after" class="btn btn-warning">Restore after migration backup</a>
 							}
 						</td>
+						<td class="@(item.Item.Migrated?"text-success":"text-muted")">@(item.Item.Migrated ? "Done" : "Waiting")</td>
 					</tr>
 				}
 			</tbody>
