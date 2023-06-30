@@ -31,7 +31,7 @@ else
 		<table class="table table-hover text-nowrap">
 			<thead>
 				<tr>
-					<th class="w-100">Name</th>
+					<th>Name</th>
 					<th>Migrate</th>
 					<th>Backup before migration</th>
 					<th>Backup after migration</th>
@@ -41,7 +41,7 @@ else
 				@foreach (var item in Model.Items)
 				{
 					<tr>
-						<td class="w-100">
+						<td>
 							<span class="me-2 @(item.Item.Migrated?"text-success":"text-warning")">@(item.Item.Migrated ? "Done" : "Waiting")</span>
 							@item.Item.Name<br />
 							Create on: @item.Item.CreateOn<br />
@@ -56,7 +56,7 @@ else
 							Migrate start on: @(item.Item.MigrateStartOn?.ToShortTimeString() ?? "Not started")<br />
 							Migrate end on: @(item.Item.MigrateEndOn?.ToShortTimeString() ?? "Not finished")
 						</td>
-						<td class="w-100">
+						<td>
 							@if (item.Item.BeforeMigrationBackupPath.HasValue())
 							{
 								<a href="/olive/migration/restore/@item.Item.GetId()?mode=before" class="btn btn-outline-warning btn-sm">Restore before migration backup</a>
@@ -66,7 +66,7 @@ else
 							Backup on: @item.Item.BeforeMigrationBackupOn<br />
 							Restore on: @item.Item.BeforeMigrationRestoreOn
 						</td>
-						<td class="w-100">
+						<td>
 							@if (item.Item.AfterMigrationBackupPath.HasValue())
 							{
 								<a href="/olive/migration/restore/@item.Item.GetId()?mode=after" class="btn btn-outline-warning btn-sm">Restore after migration backup</a>

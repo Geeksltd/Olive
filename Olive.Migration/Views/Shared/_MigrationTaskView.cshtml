@@ -1,0 +1,71 @@
+﻿@model IMigrationTask
+@{
+	Layout = null;
+}
+
+@if (Model == null)
+{
+	<div class="alert alert-danger">
+		Migration not found
+	</div>
+}
+else
+{
+	<table class="table table-hover">
+		<tbody>
+			<tr>
+				<td>Name</td>
+				<td>item.Item.Name</td>
+			</tr>
+			<tr>
+				<td>Migrated</td>
+				<td class="@(Model.Migrated ? "text-success" : "text-warning")">@(Model.Migrated ? "Done" : "Waiting")</td>
+			</tr>
+			<tr>
+				<td>Create On</td>
+				<td>@Model.CreateOn</td>
+			</tr>
+			<tr>
+				<td>Load On</td>
+				<td>@Model.LoadOn</td>
+			</tr>
+			<tr>
+				<td>Migrate Start On</td>
+				<td>@Model.MigrateStartOn</td>
+			</tr>
+			<tr>
+				<td>Migrate End On</td>
+				<td>@Model.MigrateEndOn</td>
+			</tr>
+			<tr>
+				<td>Before Migration Backup Path</td>
+				<td>@Model.BeforeMigrationBackupPath</td>
+			</tr>
+			<tr>
+				<td>Before Migration Backup On</td>
+				<td>@Model.BeforeMigrationBackupOn</td>
+			</tr>
+			<tr>
+				<td>Before Migration Restore On</td>
+				<td> @Model.BeforeMigrationRestoreOn</td>
+			</tr>
+			<tr>
+				<td>After Migration Backup Path</td>
+				<td>@Model.AfterMigrationBackupPath</td>
+			</tr>
+			<tr>
+				<td>After Migration Backup On</td>
+				<td>@Model.AfterMigrationBackupOn</td>
+			</tr>
+			<tr>
+				<td>After Migration Restore On</td>
+				<td>@Model.AfterMigrationRestoreOn</td>
+			</tr>
+			<tr>
+				<td>Last Error</td>
+				<td class="text-danger">@Model.LastError</td>
+			</tr>
+		</tbody>
+	</table>
+}
+

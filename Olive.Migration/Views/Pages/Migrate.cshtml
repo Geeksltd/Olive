@@ -20,8 +20,12 @@ else
 			<li>Backup db to s3 storage</li>
 		</ol>
 	</div>
+
+	Html.RenderPartial("_MigrationTaskView", Model.Item);
+
 	<form method="post">
 		<button type="submit" class="btn btn-primary">Start</button>
+		<a href="/olive/migration/list" class="btn btn-secondary">Back to list</a>
 	</form>
 }
 

@@ -12,16 +12,7 @@
 }
 else
 {
-	<div class="alert alert-info">
-		Steps:
-		<ol>
-			<li>Backup db to s3 storage</li>
-			<li>Run migrations</li>
-			<li>Backup db to s3 storage</li>
-		</ol>
-	</div>
-	<form method="post">
-		<button type="submit" class="btn btn-primary">Start</button>
-	</form>
+	Html.RenderPartial("_MigrationTaskView", Model.Item);
 }
+<a href="/olive/migration/list" class="btn btn-secondary">Back to list</a>
 
