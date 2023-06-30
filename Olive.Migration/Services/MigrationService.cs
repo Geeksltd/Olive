@@ -1,15 +1,15 @@
 ﻿namespace Olive.Migration.Services
 {
-    using Olive.Entities;
-    using Olive.Migration.Services.Contracts;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+	using Olive.Entities;
+	using Olive.Migration.Services.Contracts;
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+	using System.Text;
+	using System.Threading.Tasks;
 
-    public class MigrationService : IMigrationService
+	public class MigrationService : IMigrationService
 	{
 		private readonly IBackupService _backupService;
 		private readonly IPathService _pathService;
@@ -86,20 +86,27 @@
 			commands.Add(currentCommand.ToString());
 			commands = commands.Where(a => !a.Trim().IsEmpty()).ToList();
 
-			var transaction = Db.CreateTransactionScope();
-			try
+			if (commands.None())
 			{
-				foreach (var cmd in commands)
-				{
-					await Db.GetAccess().ExecuteNonQuery(cmd);
-					transaction.Complete();
-				}
-				return (true, "");
+				return (false, "Migration file is empty");
 			}
-			catch (Exception e)
+
+			using (var transaction = Db.CreateTransactionScope())
 			{
-				transaction.Dispose();
-				return (false, e.ToFullMessage());
+				try
+				{
+					foreach (var cmd in commands)
+					{
+						await Db.GetAccess().ExecuteNonQuery(cmd);
+					}
+
+					transaction.Complete();
+					return (true, "");
+				}
+				catch (Exception e)
+				{
+					return (false, e.ToFullMessage());
+				}
 			}
 		}
 
