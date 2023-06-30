@@ -53,8 +53,8 @@ else
 								<a href="/olive/migration/migrate/@item.Item.GetId()" class="btn btn-outline-primary btn-sm">Migrate</a>
 								<br />
 							}
-							Migrate start on: @(item.Item.MigrateStartOn?.ToShortTimeString() ?? "Not started")<br />
-							Migrate end on: @(item.Item.MigrateEndOn?.ToShortTimeString() ?? "Not finished")
+							Migrate start on: @item.Item.MigrateStartOn<br />
+							Migrate end on: @item.Item.MigrateEndOn
 						</td>
 						<td>
 							@if (item.Item.BeforeMigrationBackupPath.HasValue())

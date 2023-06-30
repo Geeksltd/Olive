@@ -23,7 +23,7 @@
 		}
 
 		[HttpPost("migrate/{id}")]
-		public async Task<IActionResult> Migrate([FromServices] IMigrationService migrationService, [FromRoute] string id)
+		public async Task<IActionResult> MigrateResult([FromServices] IMigrationService migrationService, [FromRoute] string id)
 		{
 			var item = await Database.Get<IMigrationTask>(id);
 			var (task, errorMessage) = await migrationService.Migrate(item);

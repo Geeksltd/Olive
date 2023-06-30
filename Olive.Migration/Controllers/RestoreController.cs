@@ -23,7 +23,7 @@
 		}
 
 		[HttpPost("restore/{Id}")]
-		public async Task<IActionResult> Restore([FromServices] IMigrationService migrationService, RestoreRequest request)
+		public async Task<IActionResult> RestoreResult([FromServices] IMigrationService migrationService, RestoreRequest request)
 		{
 			var item = await Database.Get<IMigrationTask>(request.Id);
 			var (task, errorMessage) = await migrationService.Restore(item,request.Witch == RestoreWhich.Before);
