@@ -2,6 +2,7 @@
 {
 	using Olive.Entities;
 	using Olive.Migration.Services.Contracts;
+	using Olive.Mvc;
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
@@ -26,14 +27,13 @@
 		{
 			if (task == null) throw new ArgumentNullException(nameof(task));
 
-			if (task.Migrated)
-			{
-				return (task, "Migration already done.");
-			}
-
 			var (can, error) = await CanApply(task);
 			if (!can)
 			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = error;
+				});
 				return (task, error);
 			}
 
@@ -41,6 +41,10 @@
 
 			if (commands.None())
 			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = "Migration file is empty";
+				});
 				return (task, "Migration file is empty");
 			}
 
@@ -48,6 +52,10 @@
 
 			if (!success)
 			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = errorMessage;
+				});
 				return (task, errorMessage);
 			}
 
@@ -57,17 +65,36 @@
 				item.BeforeMigrationBackupOn = LocalTime.Now;
 			});
 
+			await Db.Update(task, item =>
+			{
+				item.MigrateStartOn = LocalTime.Now;
+			});
+
 			(success, errorMessage) = await MigrateInternal(commands);
 
 			if (!success)
 			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = errorMessage;
+				});
 				return (task, errorMessage);
 			}
+
+			await Db.Update(task, item =>
+			{
+				item.Migrated = true;
+				item.MigrateEndOn = LocalTime.Now;
+			});
 
 			(success, path, errorMessage) = await _backupService.Backup();
 
 			if (!success)
 			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = errorMessage;
+				});
 				return (task, errorMessage);
 			}
 
@@ -76,6 +103,14 @@
 				item.AfterMigrationBackupPath = path;
 				item.AfterMigrationBackupOn = LocalTime.Now;
 			});
+
+			if (task.LastError.HasValue())
+			{
+				await Db.Update(task, item =>
+				{
+					item.LastError = "";
+				});
+			}
 
 			return (task, "");
 		}
@@ -124,6 +159,11 @@
 
 		private async Task<(bool can, string errorMessage)> CanApply(IMigrationTask task)
 		{
+			if (task.Migrated)
+			{
+				return (false, "Migration already done.");
+			}
+
 			var files = _pathService.MigrationFiles();
 			if (files.None()) return (false, "Migration file not exists");
 
