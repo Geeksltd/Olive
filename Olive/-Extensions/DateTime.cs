@@ -16,7 +16,7 @@ namespace Olive
         const int HOURS_IN_A_DAY = 24;
         static readonly DateTime UnixEpoch = new(1970, 1, 1);
 
-        static readonly UKHoliday ukHoliday=new UKHoliday();
+        static readonly UKHoliday ukHoliday = new UKHoliday();
 
         /// <summary>
         /// Determines if a specified date is an English national holiday or weekend.
@@ -24,7 +24,7 @@ namespace Olive
         public static bool IsEnglishHoliday(this DateTime @this)
         {
             @this = @this.Date; // drop time.
-            return (ukHoliday.IsWeekend(@this) || ukHoliday.IsUkHoliday(@this))?true:false;
+            return (ukHoliday.IsWeekend(@this) || ukHoliday.IsUkHoliday(@this)) ? true : false;
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace Olive
             // For each working day in the range, calculate relevant times
             for (var day = @this.Date; day < @this.Add(period); day = day.AddWorkingDays(1, considerEnglishBankHolidays))
             {
-                if (!day.IsWeekend() && !(day.IsEnglishHoliday() && considerEnglishBankHolidays))
+                if (!ukHoliday.IsWeekend(day) && !(ukHoliday.IsUkHoliday(day) && considerEnglishBankHolidays))
                 {
                     foreach (var range in workingTimesInday)
                     {
