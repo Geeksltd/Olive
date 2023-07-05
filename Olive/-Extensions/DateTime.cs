@@ -27,9 +27,6 @@ namespace Olive
             return (ukHoliday.IsWeekend(@this) || ukHoliday.IsUkHoliday(@this)) ? true : false;
         }
 
-
-
-
         /// <summary>
         /// Gets the first upcoming specified week day.
         /// </summary>
@@ -246,7 +243,9 @@ namespace Olive
 
             while (tempdate <= _to)
             {
-                result++;
+                if (ukHoliday.IsUkHoliday(tempdate) == false && ukHoliday.IsWeekend(tempdate) == false)
+                    result++;
+
                 tempdate = tempdate.AddDays(1);
             }
 
