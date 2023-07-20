@@ -209,7 +209,7 @@ namespace Olive
             if (days == 0) return @this;
 
             var result = @this;
-            
+
             if (days > 0)
             {
                 if (includestartdate) result = result.AddDays(-1);
@@ -683,7 +683,11 @@ namespace Olive
         /// Gets the total number of seconds elapsed since 1st Jan 1970.
         /// </summary>
         public static long ToUnixTime(this DateTime @this)
-            => (int)@this.ToUniversal().Subtract(UnixEpoch).TotalSeconds;
+        {
+            if (@this.Kind != DateTimeKind.Utc)
+                @this = @this.ToUniversal();
+            return (int)@this.Subtract(UnixEpoch).TotalSeconds;
+        }
 
         /// <summary>
         /// Gets the local date time based on the provided seconds elapsed since 1st Jan 1970.
