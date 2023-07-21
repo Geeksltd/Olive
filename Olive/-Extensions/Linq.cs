@@ -977,20 +977,22 @@ namespace Olive
         /// <param name="chopSize">The number of items of output lists.</param>
         public static IEnumerable<IEnumerable<T>> Chop<T>(this IEnumerable<T> @this, int chopSize)
         {
-            if (chopSize == 0 || @this.None())
+            if (@this is null || chopSize <= 0)
             {
-                yield return @this;
+                yield return Array.Empty<T>();
                 yield break;
             }
 
-            yield return @this.Take(chopSize);
+            var array = @this as T[] ?? @this.ToArray();
+            int arrayLength = array.Length;
 
-            if (@this.Skip(chopSize).Any())
+            for (int i = 0; i < arrayLength; i += chopSize)
             {
-                var rest = @this.Skip(chopSize);
+                int count = Math.Min(chopSize, arrayLength - i);
+                T[] result = new T[count];
+                Array.Copy(array, i, result, 0, count);
 
-                foreach (var item in Chop(rest, chopSize))
-                    yield return item;
+                yield return result;
             }
         }
 
