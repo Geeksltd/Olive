@@ -60,12 +60,12 @@ namespace Olive
             {
                 if (item.Key.StartsWith("ConnectionStrings"))
                 {
-                    ConfigurationManager.ConnectionStrings[item.Key.Split(':')[1]]
+                    System.Configuration.ConfigurationManager.ConnectionStrings[item.Key.Split(':')[1]]
                         .ConnectionString = item.Value;
                 }
                 else
                 {
-                    ConfigurationManager.AppSettings[item.Key] = item.Value;
+                    System.Configuration.ConfigurationManager.AppSettings[item.Key] = item.Value;
                 }
             }
         }
