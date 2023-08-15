@@ -11,7 +11,7 @@ namespace Olive.Email
     public interface IEmailRepository
     {
         /// <summary>Gets all emails ready to be sent.</summary>
-        Task<IEnumerable<IEmailMessage>> GetUnsentEmails();
+        Task<IEnumerable<T>> GetUnsentEmails<T>() where T : IEmailMessage;
 
         /// <summary>Gets all emails that have been sent</summary>
         Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage;

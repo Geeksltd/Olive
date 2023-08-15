@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
