@@ -17,6 +17,8 @@
         protected readonly List<BoardMenu> BoardMenus = new();
         protected readonly List<BoardIntro> BoardIntros = new();
         protected internal readonly List<BoardBoxContent> BoardContents = new();
+        protected internal int _boxOrder = -1;
+
         public IDatabase Database => Context.Current.Database();
         internal List<Feature> GetFeatures() => Features;
 
@@ -31,6 +33,8 @@
         internal IEnumerable<BoardMenu> GetBoardMenus() => BoardMenus;
 
         internal IEnumerable<BoardIntro> GetBoardIntros() => BoardIntros;
+
+        internal int GetBoardOrder() => _boxOrder;
 
         public abstract void Define();
 
@@ -88,12 +92,18 @@
             });
         }
 
-        protected BoardBox ForBox(string boxTitle, string colour,int order=-1) => new BoardBox(this) { Title = boxTitle, Colour = colour, Order=order };
+        protected BoardBox ForBox(string boxTitle, string colour) => new BoardBox(this) { Title = boxTitle, Colour = colour};
 
         protected void Add(Feature feature) => Features.Add(feature);
 
         protected void Add(BoardMenu boardMenu) => BoardMenus.Add(boardMenu);
 
         protected void Add(BoardIntro boardIntro) => BoardIntros.Add(boardIntro);
+
+        public void SetBoxOrder(int order)
+        {
+            _boxOrder = order;
+        }
+
     }
 }
