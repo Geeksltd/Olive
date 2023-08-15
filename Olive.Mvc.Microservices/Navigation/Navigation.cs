@@ -88,7 +88,7 @@
             });
         }
 
-        protected BoardBox ForBox(string boxTitle, string colour) => new BoardBox(this) { Title = boxTitle, Colour = colour };
+        protected BoardBox ForBox(string boxTitle, string colour,int order=-1) => new BoardBox(this) { Title = boxTitle, Colour = colour, Order=order };
 
         protected void Add(Feature feature) => Features.Add(feature);
 

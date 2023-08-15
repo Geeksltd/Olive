@@ -52,7 +52,7 @@ namespace Olive.Email
 
         async Task DoSendAll(TimeSpan? delayPerSend)
         {
-            var toSend = await Repository.GetUnsentEmails<IEmailMessage>();
+            var toSend = await Repository.GetUnsentEmails();
 
             Log.Info($"Loaded {toSend.Count()} emails to send ...");
 

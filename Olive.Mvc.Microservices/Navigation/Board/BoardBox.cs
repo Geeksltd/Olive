@@ -26,12 +26,18 @@
         /// </summary>
         internal string Title { get; set; }
 
+        /// <summary>
+        /// Order number in board
+        /// </summary>
+        internal int Order { get; set; }
+
         public void Add(Action<BoardBox> action) => action(this);
 
         BoardBoxContent Add(BoardBoxContent content)
         {
             content.BoxColour = Colour;
             content.BoxTitle = Title;
+            content.BoxOrder = Order;
             Navigation.BoardContents.Add(content);
             return content;
         }

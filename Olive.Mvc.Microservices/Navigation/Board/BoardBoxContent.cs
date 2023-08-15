@@ -16,5 +16,10 @@
         /// Type of the item 
         /// </summary>
         public string BoxTitle { get; set; }
+
+        /// <summary>
+        /// Order of the item 
+        /// </summary>
+        public int BoxOrder { get; set; }
     }
 }

@@ -18,12 +18,10 @@ namespace Olive.Email
             Config = config.GetSection("Email").Get<EmailConfiguration>();
         }
 
-        public async Task<IEnumerable<T>> GetUnsentEmails<T>() where T : IEmailMessage
+        public async Task<IEnumerable<IEmailMessage>> GetUnsentEmails()
         {
-            var records = await Database.GetList<T>();
+            var records = await Database.Of<IEmailMessage>().GetList();
             var result = records
-                .OfType<Entity>()
-                .Cast<T>()
                 .Where(x => x.Retries < Config.MaxRetries)
                 .OrderBy(x => x.SendableDate);
 
