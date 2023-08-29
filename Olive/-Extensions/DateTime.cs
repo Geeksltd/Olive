@@ -21,7 +21,7 @@ namespace Olive
         /// <summary>
         /// Determines if a specified date is an English national holiday or weekend.
         /// </summary>
-        public static bool IsEnglishHoliday(this DateTime @this, bool considerWeekends = false)
+        public static bool IsEnglishHoliday(this DateTime @this, bool considerWeekends = true)
         {
             @this = @this.Date; // drop time.
 
@@ -333,7 +333,7 @@ namespace Olive
         /// <param name="considerEnglishHolidays">determines whether English Bank Holidays are considered</param>
         /// <param name="considerWeekends">determines whether Weekends are considered</param>
         /// /// <param name="includestartdate">false by default</param>
-        public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays = false, bool considerWeekends = false)
+        public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays = true, bool considerWeekends = true)
         {
             DateTime result = @this.AddDays(1);
 
@@ -380,7 +380,7 @@ namespace Olive
         /// <param name="considerEnglishHolidays">determines whether English Bank Holidays are considered</param>
         /// <param name="considerWeekends">determines whether Weekends are considered</param>
         /// /// <param name="includestartdate">false by default</param>
-        public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays = false, bool considerWeekends = false)
+        public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays = true, bool considerWeekends = true)
         {
             DateTime result = @this.AddDays(-1);
 
