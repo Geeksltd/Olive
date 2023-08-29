@@ -16,18 +16,30 @@ namespace Olive._Extensions
 
         public bool IsUkHoliday(DateTime date)
         {
+            var _IsNewYearHoliday = IsNewYearHoliday(date);
+            var _IsGoodFriday = IsGoodFriday(date);
+            var _IsEasterSunday = IsEasterSunday(date);
+            var _IsEasterMonday = IsEasterMonday(date);
+            var _IsAugBankHoliday = IsAugBankHoliday(date);
+            var _IsMayBankHoliday = IsMayBankHoliday(date);
+            var _IsMayDayHoliday = IsMayDayHoliday(date);
+            var _IsChristmassHoliday = IsChristmassHoliday(date);
+            var _IsBoxingDayHoliday = IsBoxingDayHoliday(date);
+            var _IsInChristmassHolidays = IsInChristmassHolidays(date);
+            var _IsSpecialHoliday = IsSpecialHoliday(date);
+
             return
-                IsNewYearHoliday(date) ||
-                IsGoodFriday(date) ||
-                IsEasterSunday(date) ||
-                IsEasterMonday(date) ||
-                IsAugBankHoliday(date) ||
-                IsMayBankHoliday(date) ||
-                IsMayDayHoliday(date) ||
-                IsChristmassHoliday(date) ||
-                IsBoxingDayHoliday(date) ||
-                IsInChristmassHolidays(date)||
-                IsSpecialHoliday(date);
+                _IsNewYearHoliday ||
+                _IsGoodFriday ||
+                _IsEasterSunday ||
+                _IsEasterMonday ||
+                _IsAugBankHoliday ||
+                _IsMayBankHoliday ||
+                _IsMayDayHoliday ||
+                _IsChristmassHoliday ||
+                _IsBoxingDayHoliday ||
+                _IsInChristmassHolidays ||
+                _IsSpecialHoliday;
         }
 
 
@@ -206,8 +218,8 @@ namespace Olive._Extensions
 
         public bool IsSpecialHoliday(DateTime date)
         {
-            var specialholydays=GetSpecialHolidays(date.Year);
-            return specialholydays.Any(x=>x.Month== date.Month && x.Day== date.Day);
+            var specialholydays = GetSpecialHolidays(date.Year);
+            return specialholydays.Any(x => x.Month == date.Month && x.Day == date.Day);
         }
 
         public DateTime GetGoodFridayDate(int year)
@@ -277,17 +289,29 @@ namespace Olive._Extensions
         {
             var result = new List<DateTime>();
             var Christmassday = GetChristmassHolidayDate(year);
-            var LastdayofYear = new DateTime(year, 12, DateTime.DaysInMonth(year, 12));
-            while (Christmassday <= LastdayofYear)
+            var boxingDay = GetBoxingDayDate(year);
+            result.Add(Christmassday);
+            result.Add(boxingDay);
+            if (Christmassday.DayOfWeek == DayOfWeek.Saturday || Christmassday.DayOfWeek == DayOfWeek.Sunday || boxingDay.DayOfWeek == DayOfWeek.Saturday || boxingDay.DayOfWeek == DayOfWeek.Sunday)
             {
-                if (Christmassday.DayOfWeek != DayOfWeek.Saturday && Christmassday.DayOfWeek != DayOfWeek.Sunday)
-                {
-                    result.Add(Christmassday);
-                }
-                Christmassday = Christmassday.AddDays(1);
+                result.Add(boxingDay.AddDays(1));
             }
+
+            //var LastdayofYear = new DateTime(year, 12, DateTime.DaysInMonth(year, 12));
+            //while (Christmassday <= LastdayofYear)
+            //{
+            //    if (Christmassday.DayOfWeek != DayOfWeek.Saturday && Christmassday.DayOfWeek != DayOfWeek.Sunday)
+            //    {
+            //        result.Add(Christmassday);
+            //    }
+            //    Christmassday = Christmassday.AddDays(1);
+            //}
+
             return result;
         }
+
+
+
 
         public List<DateTime> GetSpecialHolidays(int year)
         {
@@ -298,7 +322,7 @@ namespace Olive._Extensions
             result.Add(new DateTime(2022, 06, 02)); // Based on the old data
             result.Add(new DateTime(2022, 06, 03)); // Platinum Jubilee
             result.Add(new DateTime(2022, 09, 19)); // Bank Holiday for the State Funeral of Queen Elizabeth II
-            return result.Where(x=>x.Year == year).ToList();
+            return result.Where(x => x.Year == year).ToList();
         }
 
         DateTime GetEsterdateOfYear(int year)

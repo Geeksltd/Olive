@@ -217,8 +217,8 @@ namespace Olive
         /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
         /// <param name="considerWeekends">determines whether Weekends are considered</param>
         /// /// <param name="includestartdate">false by default</param>
-       
-        public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true,  bool includeStartDate = false,bool considerWeekends = true)
+
+        public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true, bool includeStartDate = true, bool considerWeekends = true)
         {
             if (days == 0) return @this;
 
