@@ -21,12 +21,22 @@ namespace Olive
         /// <summary>
         /// Determines if a specified date is an English national holiday or weekend.
         /// </summary>
-        public static bool IsEnglishHoliday(this DateTime @this, bool considerWeekends)
+        public static bool IsEnglishHoliday(this DateTime @this, bool considerWeekends = false)
         {
             @this = @this.Date; // drop time.
-            return considerWeekends
-                ? (ukHoliday.IsWeekend(@this) || ukHoliday.IsUkHoliday(@this))
-                : ukHoliday.IsUkHoliday(@this);
+
+            bool isWeekend = ukHoliday.IsWeekend(@this);
+
+            bool isUkHoliday = ukHoliday.IsUkHoliday(@this);
+
+            if (considerWeekends)
+            {
+                return isWeekend || isUkHoliday;
+            }
+            else
+            {
+                return isUkHoliday;
+            }
         }
 
         /// <summary>
@@ -207,23 +217,21 @@ namespace Olive
         /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
         /// <param name="considerWeekends">determines whether Weekends are considered</param>
         /// /// <param name="includestartdate">false by default</param>
-        public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true, bool considerWeekends = true, bool includestartdate = false)
+       
+        public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true,  bool includeStartDate = false,bool considerWeekends = true)
         {
             if (days == 0) return @this;
 
             var result = @this;
+            int increment = days > 0 ? 1 : -1;
 
-            if (days > 0)
+            if (includeStartDate) result = result.AddDays(-increment);
+
+            for (var day = 0; day < Math.Abs(days); day++)
             {
-                if (includestartdate) result = result.AddDays(-1);
-                for (var day = 0; day < days; day++)
-                    result = result.NextWorkingDay(considerEnglishBankHolidays, considerWeekends);
-            }
-            else
-            {
-                if (includestartdate) result = result.AddDays(1);
-                for (var day = 0; day < -days; day++)
-                    result = result.PreviousWorkingDay(considerEnglishBankHolidays, considerWeekends);
+                result = days > 0 ?
+                    result.NextWorkingDay(considerEnglishBankHolidays, considerWeekends) :
+                    result.PreviousWorkingDay(considerEnglishBankHolidays, considerWeekends);
             }
 
             return result;
@@ -239,26 +247,24 @@ namespace Olive
         /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
         /// <param name="considerWeekends">determines whether Weekends are considered</param>
         /// <returns></returns>
-        public static int WorkingDaysTo(this DateTime @this, DateTime to, bool includestartdate = true, bool includeenddate = true, bool considerEnglishBankHolidays = true, bool considerWeekends = true)
+        public static int WorkingDaysTo(this DateTime @this, DateTime to, bool includeStartDate = true, bool includeEndDate = true, bool considerEnglishBankHolidays = true, bool considerWeekends = true)
         {
             int result = 0;
 
             var fromDate = @this.Date;
-
             var _to = to.Date;
 
-            if (!includestartdate) fromDate = fromDate.AddDays(1);
-
-            if (!includeenddate) _to = _to.AddDays(-1);
+            if (!includeStartDate) fromDate = fromDate.AddDays(1);
+            if (!includeEndDate) _to = _to.AddDays(-1);
 
             while (fromDate <= _to)
             {
-                //if (ukHoliday.IsUkHoliday(fromDate) == false && ukHoliday.IsWeekend(fromDate) == false)
-                var checkWeekends = considerWeekends ? ukHoliday.IsWeekend(fromDate) == false : true;
-                var checkEnglishBankHolidays = considerEnglishBankHolidays ? ukHoliday.IsUkHoliday(fromDate) == false : true;
+                bool isWorkingDay = true;
 
-                if (checkEnglishBankHolidays && checkWeekends)
-                    result++;
+                if (considerWeekends) isWorkingDay &= !ukHoliday.IsWeekend(fromDate);
+                if (considerEnglishBankHolidays) isWorkingDay &= !ukHoliday.IsUkHoliday(fromDate);
+
+                if (isWorkingDay) result++;
 
                 fromDate = fromDate.AddDays(1);
             }
@@ -327,16 +333,14 @@ namespace Olive
         /// <param name="considerEnglishHolidays">determines whether English Bank Holidays are considered</param>
         /// <param name="considerWeekends">determines whether Weekends are considered</param>
         /// /// <param name="includestartdate">false by default</param>
-        public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays, bool considerWeekends)
+        public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays = false, bool considerWeekends = false)
         {
             DateTime result = @this.AddDays(1);
 
-            if (considerEnglishHolidays)
-                while (result.IsEnglishHoliday(considerWeekends))
-                    result = result.AddDays(1);
-            else if (considerWeekends)
-                while (ukHoliday.IsWeekend(result))
-                    result = result.AddDays(1);
+            while ((considerEnglishHolidays && result.IsEnglishHoliday(considerWeekends)) || (considerWeekends && ukHoliday.IsWeekend(result)))
+            {
+                result = result.AddDays(1);
+            }
 
             return result;
         }
@@ -376,16 +380,14 @@ namespace Olive
         /// <param name="considerEnglishHolidays">determines whether English Bank Holidays are considered</param>
         /// <param name="considerWeekends">determines whether Weekends are considered</param>
         /// /// <param name="includestartdate">false by default</param>
-        public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays, bool considerWeekends)
+        public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays = false, bool considerWeekends = false)
         {
             DateTime result = @this.AddDays(-1);
 
-            if (considerEnglishHolidays)
-                while (result.IsEnglishHoliday(considerWeekends))
-                    result = result.AddDays(-1);
-            else if (considerWeekends)
-                while (ukHoliday.IsWeekend(result))
-                    result = result.AddDays(-1);
+            while ((considerEnglishHolidays && result.IsEnglishHoliday(considerWeekends)) || (considerWeekends && ukHoliday.IsWeekend(result)))
+            {
+                result = result.AddDays(-1);
+            }
 
             return result;
         }
