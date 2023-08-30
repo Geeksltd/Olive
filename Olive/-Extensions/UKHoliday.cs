@@ -297,16 +297,6 @@ namespace Olive._Extensions
                 result.Add(boxingDay.AddDays(1));
             }
 
-            //var LastdayofYear = new DateTime(year, 12, DateTime.DaysInMonth(year, 12));
-            //while (Christmassday <= LastdayofYear)
-            //{
-            //    if (Christmassday.DayOfWeek != DayOfWeek.Saturday && Christmassday.DayOfWeek != DayOfWeek.Sunday)
-            //    {
-            //        result.Add(Christmassday);
-            //    }
-            //    Christmassday = Christmassday.AddDays(1);
-            //}
-
             return result;
         }
 
