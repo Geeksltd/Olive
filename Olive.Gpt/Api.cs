@@ -38,7 +38,10 @@ namespace Olive.Gpt
             var response = await Client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent);
+                throw new HttpRequestException(
+                    "Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode +
+                    ". Request body: " + jsonContent +
+                    ". Response body: " + await response.Content.ReadAsStringAsync());
 
             var result = new StringBuilder();
 
