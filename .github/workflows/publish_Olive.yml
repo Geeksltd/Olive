@@ -423,3 +423,9 @@ jobs:
       with:
         PROJECT_FILE_PATH: Olive.Gpt/Olive.Gpt.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    
+    - name: Publish Olive Data replication generator UI NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.Replication.DataGenerator.UI/Olive.Entities.Data.Replication.DataGenerator.UI.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
