@@ -15,7 +15,18 @@ namespace Olive
             [CallerFilePath] string callerFile = null,
             [CallerLineNumber] int callerLine = 0)
         {
-            var key = callerFile + "|" + callerLine;
+            return Get(valueProvider, null, callerFile, callerLine);            
+        }
+
+        /// <summary>
+        /// Returns a durable unique nested Bindable whose value remains in sync with this instance.
+        /// </summary>
+        public Bindable<TTarget> Get<TTarget>(Func<TValue, TTarget> valueProvider,
+            string uniqueIdentifier,
+            [CallerFilePath] string callerFile = null,
+            [CallerLineNumber] int callerLine = 0)
+        {
+            var key = $"{callerFile}|{callerLine}|{uniqueIdentifier}";
 
             return (Bindable<TTarget>)Dependents.GetOrAdd(key, k =>
             {
