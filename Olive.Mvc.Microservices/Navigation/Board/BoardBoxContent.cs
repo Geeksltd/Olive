@@ -16,5 +16,6 @@
         /// Type of the item 
         /// </summary>
         public string BoxTitle { get; set; }
+
     }
 }

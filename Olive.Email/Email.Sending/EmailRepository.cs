@@ -20,11 +20,12 @@ namespace Olive.Email
 
         public async Task<IEnumerable<IEmailMessage>> GetUnsentEmails()
         {
-            var unsentEmails = await Database.Of<IEmailMessage>()
+            var records = await Database.Of<IEmailMessage>().GetList();
+            var result = records
                 .Where(x => x.Retries < Config.MaxRetries)
-                  .GetList();
+                .OrderBy(x => x.SendableDate);
 
-            return unsentEmails.OrderBy(x => x.SendableDate);
+            return result;
         }
 
         public async Task<IEnumerable<T>> GetSentEmails<T>() where T : IEmailMessage

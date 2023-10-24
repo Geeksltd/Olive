@@ -35,9 +35,11 @@ namespace Olive
         protected override void SetValue(object value)
         {
             this.value = (TValue)value;
-            foreach (var item in Bindings) item.Apply((TValue)value);
+            ApplyBindings();
             FireChanged();
         }
+
+        protected void ApplyBindings() => Bindings.Do(item => item.Apply(value));
 
         protected override object GetValue() => Value;
 
@@ -127,7 +129,7 @@ namespace Olive
             binding.Apply(value);
             return binding;
         }
-        
+
         static PropertyInfo FindProperty(object target, string propertyName)
         {
             if (target is null) throw new ArgumentNullException(nameof(target));

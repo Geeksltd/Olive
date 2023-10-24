@@ -1,3 +1,4 @@
+using Olive._Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,252 +16,27 @@ namespace Olive
         const int HOURS_IN_A_DAY = 24;
         static readonly DateTime UnixEpoch = new(1970, 1, 1);
 
-        #region EasterMondays
-
-        static readonly DateTime[] EasterMondays = new[]{
-new DateTime(1950,04,10),
-new DateTime(1951,03,26),
-new DateTime(1952,04,14),
-new DateTime(1953,04,06),
-new DateTime(1954,04,19),
-new DateTime(1955,04,11),
-new DateTime(1956,04,02),
-new DateTime(1957,04,22),
-new DateTime(1958,04,07),
-new DateTime(1959,03,30),
-new DateTime(1960,04,18),
-new DateTime(1961,04,03),
-new DateTime(1962,04,23),
-new DateTime(1963,04,15),
-new DateTime(1964,03,30),
-new DateTime(1965,04,19),
-new DateTime(1966,04,11),
-new DateTime(1967,03,27),
-new DateTime(1968,04,15),
-new DateTime(1969,04,07),
-new DateTime(1970,03,30),
-new DateTime(1971,04,12),
-new DateTime(1972,04,03),
-new DateTime(1973,04,23),
-new DateTime(1974,04,15),
-new DateTime(1975,03,31),
-new DateTime(1976,04,19),
-new DateTime(1977,04,11),
-new DateTime(1978,03,27),
-new DateTime(1979,04,16),
-new DateTime(1980,04,07),
-new DateTime(1981,04,20),
-new DateTime(1982,04,12),
-new DateTime(1983,04,04),
-new DateTime(1984,04,23),
-new DateTime(1985,04,08),
-new DateTime(1986,03,31),
-new DateTime(1987,04,20),
-new DateTime(1988,04,04),
-new DateTime(1989,03,27),
-new DateTime(1990,04,16),
-new DateTime(1991,04,01),
-new DateTime(1992,04,20),
-new DateTime(1993,04,12),
-new DateTime(1994,04,04),
-new DateTime(1995,04,17),
-new DateTime(1996,04,08),
-new DateTime(1997,03,31),
-new DateTime(1998,04,13),
-new DateTime(1999,04,05),
-new DateTime(2000,04,24),
-new DateTime(2001,04,16),
-new DateTime(2002,04,01),
-new DateTime(2003,04,21),
-new DateTime(2004,04,12),
-new DateTime(2005,03,28),
-new DateTime(2006,04,17),
-new DateTime(2007,04,09),
-new DateTime(2008,03,24),
-new DateTime(2009,04,13),
-new DateTime(2010,04,05),
-new DateTime(2011,04,25),
-new DateTime(2012,04,09),
-new DateTime(2013,04,01),
-new DateTime(2014,04,21),
-new DateTime(2015,04,06),
-new DateTime(2016,03,28),
-new DateTime(2017,04,17),
-new DateTime(2018,04,02),
-new DateTime(2019,04,22),
-new DateTime(2020,04,13),
-new DateTime(2021,04,05),
-new DateTime(2022,04,18),
-new DateTime(2023,04,10),
-new DateTime(2024,04,01),
-new DateTime(2025,04,21),
-new DateTime(2026,04,06),
-new DateTime(2027,03,29),
-new DateTime(2028,04,17),
-new DateTime(2029,04,02),
-new DateTime(2030,04,22),
-new DateTime(2031,04,14),
-new DateTime(2032,03,29),
-new DateTime(2033,04,18),
-new DateTime(2034,04,10),
-new DateTime(2035,03,26),
-new DateTime(2036,04,14),
-new DateTime(2037,04,06),
-new DateTime(2038,04,26),
-new DateTime(2039,04,11),
-new DateTime(2040,04,02),
-new DateTime(2041,04,22),
-new DateTime(2042,04,07),
-new DateTime(2043,03,30),
-new DateTime(2044,04,18),
-new DateTime(2045,04,10),
-new DateTime(2046,03,26),
-new DateTime(2047,04,15),
-new DateTime(2048,04,06),
-new DateTime(2049,04,19),
-new DateTime(2050,04,11),
-new DateTime(2051,04,03),
-new DateTime(2052,04,22),
-new DateTime(2053,04,07),
-new DateTime(2054,03,30),
-new DateTime(2055,04,19),
-new DateTime(2056,04,03),
-new DateTime(2057,04,23),
-new DateTime(2058,04,15),
-new DateTime(2059,03,31),
-new DateTime(2060,04,19),
-new DateTime(2061,04,11),
-new DateTime(2062,03,27),
-new DateTime(2063,04,16),
-new DateTime(2064,04,07),
-new DateTime(2065,03,30),
-new DateTime(2066,04,12),
-new DateTime(2067,04,04),
-new DateTime(2068,04,23),
-new DateTime(2069,04,15),
-new DateTime(2070,03,31),
-new DateTime(2071,04,20),
-new DateTime(2072,04,11),
-new DateTime(2073,03,27),
-new DateTime(2074,04,16),
-new DateTime(2075,04,08),
-new DateTime(2076,04,20),
-new DateTime(2077,04,12),
-new DateTime(2078,04,04),
-new DateTime(2079,04,24),
-new DateTime(2080,04,08),
-new DateTime(2081,03,31),
-new DateTime(2082,04,20),
-new DateTime(2083,04,05),
-new DateTime(2084,03,27),
-new DateTime(2085,04,16),
-new DateTime(2086,04,01),
-new DateTime(2087,04,21),
-new DateTime(2088,04,12),
-new DateTime(2089,04,04),
-new DateTime(2090,04,17),
-new DateTime(2091,04,09),
-new DateTime(2092,03,31),
-new DateTime(2093,04,13),
-new DateTime(2094,04,05),
-new DateTime(2095,04,25),
-new DateTime(2096,04,16),
-new DateTime(2097,04,01),
-new DateTime(2098,04,21),
-new DateTime(2099,04,13)};
-
-        #endregion EasterMondays
-
-        /// <summary>
-        /// Dictionary that contains exceptional dates for Early May Bank Holiday.
-        /// Key: Year, Value: Exceptional Date for that year.
-        /// </summary>
-        static readonly Dictionary<int, DateTime> EarlyMayExceptions = new() { { 2020, new DateTime(2020, 05, 08) } };
-
-        /// <summary>
-        /// Dictionary that contains exceptional dates for Spring Bank Holiday.
-        /// Key: Year, Value: Exceptional Date for that year.
-        /// </summary>
-        static readonly Dictionary<int, DateTime> SpringBankHolidayExceptions
-            = new() { { 2012, new DateTime(2012, 06, 04) }, { 2022, new DateTime(2022, 06, 02) } };
-
-        /// <summary>
-        /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
-        /// Key: Year, Value: Exceptional Date for that year.
-        /// </summary>
-        static readonly Dictionary<int, DateTime> LateSummerBankHolidayExceptions = new();
-
-        /// <summary>
-        /// Dictionary that contains exceptional dates for Last Summer Bank Holiday.
-        /// Key: Year, Value: Exceptional Date for that year.
-        /// </summary>
-        static readonly Dictionary<int, DateTime[]> AdditionalBankHolidays
-            = new() { { 2012, new[] { new DateTime(2012, 6, 5) } }, { 2022, new[] { new DateTime(2022, 06, 03) } } };
+        static readonly UKHoliday ukHoliday = new UKHoliday();
 
         /// <summary>
         /// Determines if a specified date is an English national holiday or weekend.
         /// </summary>
-        public static bool IsEnglishHoliday(this DateTime @this)
+        public static bool IsEnglishHoliday(this DateTime @this, bool considerWeekends = true)
         {
             @this = @this.Date; // drop time.
 
-            if (@this.IsWeekend()) return true;
+            bool isWeekend = ukHoliday.IsWeekend(@this);
 
-            // 1 January - New Year's Day
-            if (@this == GetActualHolidayDate(new DateTime(@this.Year, 1, 1)))
-                return true;
+            bool isUkHoliday = ukHoliday.IsUkHoliday(@this);
 
-            // 1st Monday in May	Early May Bank Holiday
-            if (@this == GetEarlyMayBankHoliday(@this.Year))
-                return true;
-
-            // Last Monday in May	Spring Bank Holiday
-            if (@this == GetSpringBankHoliday(@this.Year))
-                return true;
-
-            // Last Monday in August	Late Summer Bank Holiday
-            if (@this == GetLateSummerBankHoliday(@this.Year))
-                return true;
-
-            // December 25	Christmas Day
-            if (@this == GetActualHolidayDate(new DateTime(@this.Year, 12, CHRISTMAS_DAY)))
-                return true;
-
-            // December 26	Boxing Day
-            if (@this == GetBoxingDay(@this.Year))
-                return true;
-
-            try
+            if (considerWeekends)
             {
-                var easterMonday = GetEasterMonday(@this.Year);
-
-                // Easter Monday
-                if (@this == easterMonday)
-                    return true;
-
-                // Good Friday
-                if (@this == easterMonday.AddDays(MINUS_THREE))
-                    return true;
+                return isWeekend || isUkHoliday;
             }
-            catch { /* No logging needed. out of supported range*/ }
-
-            // Additional Holidays
-            if (IsAdditionalBankHoliday(@this))
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Check if Date it is Additional bank holiday in that year
-        /// </summary>
-        /// <param name="date">the date to check</param>
-        static bool IsAdditionalBankHoliday(DateTime date)
-        {
-            if (AdditionalBankHolidays.ContainsKey(date.Year))
-                return AdditionalBankHolidays[date.Year].Contains<DateTime>(date);
-
-            return false;
+            else
+            {
+                return isUkHoliday;
+            }
         }
 
         /// <summary>
@@ -276,7 +52,6 @@ new DateTime(2099,04,13)};
             while (true)
             {
                 if (@this.DayOfWeek == dayOfWeek) return @this;
-
                 @this = @this.AddDays(1);
             }
         }
@@ -298,93 +73,6 @@ new DateTime(2099,04,13)};
 
                 @this = @this.AddDays(-1);
             }
-        }
-
-        /// <summary>
-        /// Get Early May Bank Holiday Date for the required year
-        /// </summary>
-        /// <param name="year">the year to check if in that year there is an exception to the normal bank holiday rule</param>
-        static DateTime GetEarlyMayBankHoliday(int year)
-        {
-            if (EarlyMayExceptions.ContainsKey(year))
-            {
-                return EarlyMayExceptions[year];
-            }
-            else
-            {
-                return GetFirstWeekdayIn(year, 5 /* May */, DayOfWeek.Monday);
-            }
-        }
-
-        /// <summary>
-        /// Get Spring Bank Holiday Date for the required year
-        /// </summary>
-        /// <param name="year">the year to check if in that year there is an exception to the normal bank holiday rule</param>
-        static DateTime GetSpringBankHoliday(int year)
-        {
-            if (SpringBankHolidayExceptions.ContainsKey(year))
-                return SpringBankHolidayExceptions[year];
-            else
-                return GetLastWeekdayIn(year, 5, DayOfWeek.Monday);
-        }
-
-        /// <summary>
-        /// Get Late Summer Bank Holiday Date for the required year
-        /// </summary>
-        /// <param name="year">the year to check if in that year there is an exception to the normal bank holiday rule</param>
-        static DateTime GetLateSummerBankHoliday(int year)
-        {
-            if (LateSummerBankHolidayExceptions.ContainsKey(year))
-                return LateSummerBankHolidayExceptions[year];
-            else
-                return GetLastWeekdayIn(year, (int)CalendarMonth.August, DayOfWeek.Monday);
-        }
-
-        static DateTime GetEasterMonday(int year)
-        {
-            var result = EasterMondays.FirstOrDefault(d => d.Year == year);
-
-            if (result == DateTime.MinValue)
-                throw new ArgumentException("GetEasterMonday() is not supported for the year: " + year);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get Boxing Day Holiday Date for the required year
-        /// </summary>
-        /// <param name="year">the year to check if in that year there is an exception to the normal bank holiday rule</param>
-        static DateTime GetBoxingDay(int year)
-        {
-            var christmasDay = new DateTime(year, 12, CHRISTMAS_DAY);
-            var result = GetActualHolidayDate(new DateTime(year, 12, CHRISTMAS_DAY + 1));
-
-            if (christmasDay.IsWeekend())
-                result = result.AddDays(1);
-
-            return result;
-        }
-
-        static DateTime GetActualHolidayDate(DateTime originalDay)
-        {
-            var result = originalDay;
-
-            while (result.IsWeekend())
-                result = result.AddDays(1);
-
-            return result;
-        }
-
-        static DateTime GetFirstWeekdayIn(int year, int month, DayOfWeek weekday)
-        {
-            for (var day = new DateTime(year, month, 1); ; day = day.AddDays(1))
-                if (day.DayOfWeek == weekday) return day;
-        }
-
-        static DateTime GetLastWeekdayIn(int year, int month, DayOfWeek weekday)
-        {
-            for (var day = new DateTime(year, month, 1).AddMonths(1).AddDays(-1); ; day = day.AddDays(-1))
-                if (day.DayOfWeek == weekday) return day;
         }
 
         /// <summary>
@@ -527,18 +215,59 @@ new DateTime(2099,04,13)};
         /// </summary>
         /// <param name="days">Added the value of this parameter to this date</param>
         /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
-        public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true)
+        /// <param name="considerWeekends">determines whether Weekends are considered</param>
+        /// /// <param name="includestartdate">false by default</param>
+
+        public static DateTime AddWorkingDays(this DateTime @this, int days, bool considerEnglishBankHolidays = true, bool includeStartDate = false, bool considerWeekends = true)
         {
             if (days == 0) return @this;
 
             var result = @this;
+            int increment = days > 0 ? 1 : -1;
 
-            if (days > 0)
-                for (var day = 0; day < days; day++)
-                    result = result.NextWorkingDay(considerEnglishBankHolidays);
-            else
-                for (var day = 0; day < -days; day++)
-                    result = result.PreviousWorkingDay(considerEnglishBankHolidays);
+            if (includeStartDate) result = result.AddDays(-increment);
+
+            for (var day = 0; day < Math.Abs(days); day++)
+            {
+                result = days > 0 ?
+                    result.NextWorkingDay(considerEnglishBankHolidays, considerWeekends) :
+                    result.PreviousWorkingDay(considerEnglishBankHolidays, considerWeekends);
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="to">to date</param>
+        /// <param name="includestartdate">true by default</param>
+        /// <param name="includeenddate">true by default</param>
+        /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
+        /// <param name="considerWeekends">determines whether Weekends are considered</param>
+        /// <returns></returns>
+        public static int WorkingDaysTo(this DateTime @this, DateTime to, bool includeStartDate = true, bool includeEndDate = true, bool considerEnglishBankHolidays = true, bool considerWeekends = true)
+        {
+            int result = 0;
+
+            var fromDate = @this.Date;
+            var _to = to.Date;
+
+            if (!includeStartDate) fromDate = fromDate.AddDays(1);
+            if (!includeEndDate) _to = _to.AddDays(-1);
+
+            while (fromDate <= _to)
+            {
+                bool isWorkingDay = true;
+
+                if (considerWeekends) isWorkingDay &= !ukHoliday.IsWeekend(fromDate);
+                if (considerEnglishBankHolidays) isWorkingDay &= !ukHoliday.IsUkHoliday(fromDate);
+
+                if (isWorkingDay) result++;
+
+                fromDate = fromDate.AddDays(1);
+            }
 
             return result;
         }
@@ -601,17 +330,17 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the next working day.
         /// </summary>
-        /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
-        public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays = true)
+        /// <param name="considerEnglishHolidays">determines whether English Bank Holidays are considered</param>
+        /// <param name="considerWeekends">determines whether Weekends are considered</param>
+        /// /// <param name="includestartdate">false by default</param>
+        public static DateTime NextWorkingDay(this DateTime @this, bool considerEnglishHolidays = true, bool considerWeekends = true)
         {
-            var result = @this.AddDays(1);
+            DateTime result = @this.AddDays(1);
 
-            if (considerEnglishHolidays)
-                while (result.IsEnglishHoliday())
-                    result = result.AddDays(1);
-            else
-                while (result.IsWeekend())
-                    result = result.AddDays(1);
+            while ((considerEnglishHolidays && result.IsEnglishHoliday(considerWeekends)) || (considerWeekends && ukHoliday.IsWeekend(result)))
+            {
+                result = result.AddDays(1);
+            }
 
             return result;
         }
@@ -648,17 +377,17 @@ new DateTime(2099,04,13)};
         /// <summary>
         /// Gets the previous working day.
         /// </summary>
-        /// <param name="considerEnglishBankHolidays">determines whether English Bank Holidays are considered</param>
-        public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays = true)
+        /// <param name="considerEnglishHolidays">determines whether English Bank Holidays are considered</param>
+        /// <param name="considerWeekends">determines whether Weekends are considered</param>
+        /// /// <param name="includestartdate">false by default</param>
+        public static DateTime PreviousWorkingDay(this DateTime @this, bool considerEnglishHolidays = true, bool considerWeekends = true)
         {
-            var result = @this.AddDays(-1);
+            DateTime result = @this.AddDays(-1);
 
-            if (considerEnglishHolidays)
-                while (result.IsEnglishHoliday())
-                    result = result.AddDays(-1);
-            else
-                while (result.IsWeekend())
-                    result = result.AddDays(-1);
+            while ((considerEnglishHolidays && result.IsEnglishHoliday(considerWeekends)) || (considerWeekends && ukHoliday.IsWeekend(result)))
+            {
+                result = result.AddDays(-1);
+            }
 
             return result;
         }
@@ -745,7 +474,7 @@ new DateTime(2099,04,13)};
             // For each working day in the range, calculate relevant times
             for (var day = @this.Date; day < @this.Add(period); day = day.AddWorkingDays(1, considerEnglishBankHolidays))
             {
-                if (!day.IsWeekend() && !(day.IsEnglishHoliday() && considerEnglishBankHolidays))
+                if (!ukHoliday.IsWeekend(day) && !(ukHoliday.IsUkHoliday(day) && considerEnglishBankHolidays))
                 {
                     foreach (var range in workingTimesInday)
                     {
@@ -963,7 +692,11 @@ new DateTime(2099,04,13)};
         /// Gets the total number of seconds elapsed since 1st Jan 1970.
         /// </summary>
         public static long ToUnixTime(this DateTime @this)
-            => (int)@this.ToUniversal().Subtract(UnixEpoch).TotalSeconds;
+        {
+            if (@this.Kind != DateTimeKind.Utc)
+                @this = @this.ToUniversal();
+            return (int)@this.Subtract(UnixEpoch).TotalSeconds;
+        }
 
         /// <summary>
         /// Gets the local date time based on the provided seconds elapsed since 1st Jan 1970.

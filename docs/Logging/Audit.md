@@ -31,13 +31,26 @@ await Audit.Log(@event, data)
 ### Customize Audit Service
 To do so, you can simply extend the `Olive.Audit.DefaultAudit` or 
 implement the `Olive.Audit.IAudit`.
+
+For example, to use the simplest approach, in your Domain project, add the following class:
+```csharp
+namespace Domain
+{
+    public class Audit : Olive.Audit.DefaultAudit
+    {
+        public Audit(Microsoft.Extensions.Configuration.IConfiguration configuration) : base(configuration)
+        {
+        }
+    }
+}
+```
+
 Then you can inject the service to service collection in the `Startup.cs`
 like the following code.
 ```csharp
 public override void ConfigureServices(IServiceCollection services)
 {
     services.AddSingleton<Olive.Audit.IAudit, Audit>();
-
     base.ConfigureServices(services);
 }
 ```
@@ -50,3 +63,18 @@ public override void ConfigureServices(IServiceCollection services)
 ![image](https://user-images.githubusercontent.com/22152065/37540926-092b877c-296e-11e8-9ecf-944597be8300.png)
 
 >**Note:** We assume that you use *MSSQL Server* as your primary database. if you use any other RDBMS, go ahead and use related database management tools. The information is recorded on `AuditEvents` table.
+
+
+## Automatic Data Logs
+
+Olive allows you to enable automatic log creation for all data operations. This is a turnkey solution to have all user actions (insert, edit, delete) on all entities logged for audit trail purposes. To enable this, in your appSettings file set the following:
+```json
+   "Database": {
+        ...
+        "Audit": {
+            "Insert": { "Action": true, "Data": true },
+            "Update":  { "Action": true, "Data": true },
+            "Delete": { "Action": true, "Data": true },
+        }
+    },
+```

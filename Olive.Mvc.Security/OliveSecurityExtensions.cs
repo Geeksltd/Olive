@@ -32,13 +32,17 @@ namespace Olive
             return new ClaimsIdentity(claims, "Olive");
         }
 
-        public static string CreateJwtToken(this ILoginInfo @this)
+        public static string CreateJwtToken(this ILoginInfo @this, IEnumerable<Claim> additionalClaims = null, bool remember = false)
         {
             var securityKey = OAuth.GetJwtSecurityKey();
 
+            var identity = @this.ToClaimsIdentity();
+            identity.AddClaims(additionalClaims.OrEmpty());
+            identity.AddClaim(new Claim(ClaimTypes.IsPersistent, remember.ToString()));
+
             var descriptor = new SecurityTokenDescriptor
             {
-                Subject = @this.ToClaimsIdentity(),
+                Subject = identity,
                 Issuer = Context.Current.Request().RootUrl(),
                 Audience = Context.Current.Request().RootUrl(),
                 Expires = DateTime.UtcNow.Add(@this.Timeout ?? DistantFuture),

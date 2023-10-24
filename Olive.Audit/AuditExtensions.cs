@@ -84,7 +84,7 @@ namespace Olive
 
             var type = property.PropertyType;
 
-            return (property.GetValue(obj) is IEntity) || (type.IsClass
+            return (type.InhritsFrom(typeof(IEntity))) || (type.IsClass
                 && !type.Assembly.FullName.StartsWith("Olive.Entities")
                 && !type.Assembly.FullName.StartsWith("System"));
         }

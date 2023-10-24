@@ -250,6 +250,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Hangfire/Olive.Hangfire.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive Hangfire Cron NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Hangfire.Cron/Olive.Hangfire.Cron.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Hangfire MySql NuGet Package
       uses: Geeksltd/publish-nuget@v2
       with:
@@ -410,4 +416,16 @@ jobs:
       uses: Geeksltd/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Olive.Aws.Comprehend/Olive.Aws.Comprehend.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        
+    - name: Publish Olive Gpt NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Gpt/Olive.Gpt.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    
+    - name: Publish Olive Data replication generator UI NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.Replication.DataGenerator.UI/Olive.Entities.Data.Replication.DataGenerator.UI.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}

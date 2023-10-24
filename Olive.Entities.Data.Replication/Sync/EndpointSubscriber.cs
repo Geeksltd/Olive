@@ -49,7 +49,7 @@ namespace Olive.Entities.Replication
             await Database.Refresh();
         }
 
-        internal async Task Import(ReplicateDataMessage message)
+        public async Task Import(ReplicateDataMessage message, SaveBehaviour behaviour = SaveBehaviour.BypassAll)
         {
             if (message.CreationUtc < RefreshRequestUtc?.Subtract(TimeSyncTolerance))
             {

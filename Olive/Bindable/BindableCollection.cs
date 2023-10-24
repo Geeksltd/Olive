@@ -31,6 +31,7 @@ namespace Olive
             if (item is null) return;
             lock (Value) Value.Add(item);
             FireAdded(item);
+            ApplyBindings();
             FireChanged();
         }
 
@@ -42,6 +43,7 @@ namespace Olive
                 Value.AddRange(validItems);
 
             validItems.Do(FireAdded);
+            ApplyBindings();
             FireChanged();
         }
 
@@ -57,6 +59,7 @@ namespace Olive
             lock (Value)
                 Value.Remove(item);
 
+            ApplyBindings();
             FireChanged();
         }
 
@@ -67,6 +70,7 @@ namespace Olive
         public void Clear()
         {
             ClearCore();
+            ApplyBindings();
             FireChanged();
         }
 
