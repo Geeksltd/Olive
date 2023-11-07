@@ -15,11 +15,7 @@ namespace Olive
 
         public ConcurrentList() => List = new();
 
-        public ConcurrentList(int capacity)
-        {
-            Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-            List = new(capacity);
-        }
+        public ConcurrentList(int capacity) => List = new(capacity);
 
         public ConcurrentList(IEnumerable<T> items)
         {
