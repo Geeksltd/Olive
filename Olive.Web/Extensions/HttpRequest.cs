@@ -250,7 +250,7 @@ namespace Olive
             if (result.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
                 result.ToCharArray().ContainsAny('\'', '\"', '>', '<') ||
                 result.ContainsAny(new[] { "//", ":" }, caseSensitive: false))
-                throw new("Invalid ReturnUrl.");
+                return string.Empty;
 
             return result;
         }
