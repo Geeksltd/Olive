@@ -41,16 +41,16 @@
         public virtual async Task<GuidEntity> GetBoardObjectFromText(Type type, string id) => null;
         protected static IUrlHelper Url
             => new UrlHelper(new ActionContext(Context.Current.Http(), new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()));
-        protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null) where TController : Controller
+        protected void Add<TController>(string fullPath = null, string icon = null, string url = null, string desc = null, string @ref = null, string badgeUrl = null, bool showOnRight = false, bool iframe = false, string permissions = null, int? order = null, bool noNav = false) where TController : Controller
         {
             if (url.IsEmpty()) url = Url.Index<TController>();
             if (fullPath.IsEmpty()) fullPath = typeof(TController).Name.TrimEnd("Controller");
             if (permissions.IsEmpty()) permissions = typeof(TController).GetCustomAttribute<AuthorizeAttribute>()?.Roles;
 
-            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight, iframe, order);
+            Add(fullPath, url, permissions, icon, desc, @ref, badgeUrl, showOnRight, iframe, order, noNav);
         }
 
-        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRigh, bool iframe, int? order)
+        protected void Add(string fullPath, string url, string permissions, string icon, string desc, string @ref, string badgeUrl, bool showOnRight, bool iframe, int? order, bool noNav)
         {
             Add(new Feature
             {
@@ -61,9 +61,10 @@
                 Description = desc,
                 Refrance = @ref,
                 BadgeUrl = badgeUrl,
-                ShowOnRight = showOnRigh,
+                ShowOnRight = showOnRight,
                 Iframe = iframe,
-                Order = order
+                Order = order,
+                NoNav = noNav
             });
         }
 

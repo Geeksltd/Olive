@@ -69,5 +69,10 @@ namespace Olive.Mvc.Microservices
         /// default number for thisone is 100.
         /// </summary>
         public int? Order { get; set; }
+
+        /// <summary>
+        /// Hide navigation menu under hub.
+        /// </summary>
+        public bool NoNav { get; set; }
     }
 }
