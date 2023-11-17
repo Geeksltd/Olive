@@ -8,11 +8,11 @@ using Olive.Entities;
 
 namespace Olive.Mvc.Microservices
 {
-    internal static class NavigationApiMiddleWare
+    public static class NavigationApiMiddleWare
     {
         static Dictionary<string, Type> BoardTypeCache = new Dictionary<string, Type>();
 
-        internal static async Task Navigate(HttpContext context)
+        public static async Task Navigate(HttpContext context)
         {
             var navigations = GetNavigationsFromAssembly<Navigation>();
             navigations.Do(r => r.Define());
