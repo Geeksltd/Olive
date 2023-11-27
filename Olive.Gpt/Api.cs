@@ -62,6 +62,30 @@ namespace Olive.Gpt
             }
 
             return result.ToString();
-        }        
+        }
+
+        public async Task<string> GetThreadId()
+        {
+            var payload = new StringContent("", Encoding.UTF8, "application/json");
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/threads") { Content = payload };
+            Client.DefaultRequestHeaders.Add("OpenAI-Beta", "assistants=v1");
+            var response = await Client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(
+                    "Error calling OpenAi Thread API to get completion. HTTP status code: " + response.StatusCode +
+                    ". Response body: " + await response.Content.ReadAsStringAsync());
+
+            var result = await response.Content.ReadAsStringAsync();
+            var jObject = JsonConvert.DeserializeObject<OpenAiThread>(result);
+
+            return jObject.Id;
+        }
+
+        public class OpenAiThread
+        {
+            public string Id { get; set; }
+        }
     }
 }
