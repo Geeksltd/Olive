@@ -29,8 +29,11 @@ namespace Olive
         {
             lock (Lock)
             {
-                IsVirgin = false;
-                if (IsVirgin) FirstItem = item;
+                if (IsVirgin)
+                {
+                    FirstItem = item;
+                    IsVirgin = false;
+                }
                 List.Add(item);
             }
         }
@@ -43,8 +46,11 @@ namespace Olive
             lock (Lock)
             {
                 if (List.Contains(item)) return;
-                IsVirgin = false;
-                if (IsVirgin) FirstItem = item;
+                if (IsVirgin)
+                {
+                    FirstItem = item;
+                    IsVirgin = false;
+                }
                 List.Add(item);
             }
         }
@@ -53,8 +59,11 @@ namespace Olive
         {
             lock (Lock)
             {
-                IsVirgin = false;
-                if (index == 0) FirstItem = item;
+                if (index == 0)
+                {
+                    FirstItem = item;
+                    IsVirgin = false;
+                }
                 List.Insert(index, item);
             }
         }
@@ -65,6 +74,7 @@ namespace Olive
             {
                 var result = List.Remove(item);
                 FirstItem = List.FirstOrDefault();
+                if (None()) IsVirgin = true;
                 return result;
             }
         }
@@ -94,6 +104,7 @@ namespace Olive
                 if (IsVirgin) return;
                 List.Clear();
                 FirstItem = default;
+                IsVirgin = true;
             }
         }
 
