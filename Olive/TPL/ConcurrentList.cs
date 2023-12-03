@@ -74,7 +74,7 @@ namespace Olive
             {
                 var result = List.Remove(item);
                 FirstItem = List.FirstOrDefault();
-                if (None()) IsVirgin = true;
+                IsVirgin = None();
                 return result;
             }
         }
