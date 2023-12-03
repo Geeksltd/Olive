@@ -31,7 +31,7 @@ namespace Olive
         public Range(T from, T to)
         {
             if (from.CompareTo(to) > 0)
-                throw new ArgumentException($"nameof{from} should be smaller than or equal to {nameof(To)} value in a range.");
+                throw new ArgumentException($"'{nameof(from)}' should be smaller than or equal to {nameof(to)} value in a range.");
 
             From = from;
             To = to;
@@ -43,7 +43,7 @@ namespace Olive
         public T GetLength()
         {
             if (From.CompareTo(To) > 0)
-                throw new InvalidOperationException("'from' should be smaller than or equal to 'To' value in a range.");
+                throw new InvalidOperationException($"'{nameof(From)}' should be smaller than or equal to '{nameof(To)}' value in a range.");
 
             var fromValue = (object)From;
             var toValue = (object)To;
@@ -56,7 +56,7 @@ namespace Olive
             else if (typeof(T) == typeof(DateTime))
                 result = new DateTime(NINETEEN_HUNDRED, 1, 1).Add((DateTime)toValue - (DateTime)fromValue);
             else
-                throw new NotSupportedException("GetLength() is not supported on type: " + typeof(T).FullName);
+                throw new NotSupportedException($"{nameof(GetLength)} is not supported on type: " + typeof(T).FullName);
 
             return (T)result;
         }
