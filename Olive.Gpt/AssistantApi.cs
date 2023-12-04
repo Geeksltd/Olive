@@ -45,7 +45,7 @@ namespace Olive.Gpt
             return jObject.Id;
         }
 
-        private async Task<string> AddMessageToThread(ChatMessage[] messages, string threadId)
+        public async Task<string> AddMessageToThread(ChatMessage[] messages, string threadId)
         {
             var jsonContent = JsonConvert.SerializeObject(new ChatRequest(messages) { Model = Model }, Settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
