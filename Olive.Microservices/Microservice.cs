@@ -8,7 +8,7 @@ namespace Olive
     public class Microservice
     {
         public string Name { get; private set; }
-        string BaseUrl, AccessKey;
+        string BaseUrl, BaseResourceUrl, AccessKey;
 
         Microservice(string name) => Name = name;
 
@@ -17,6 +17,7 @@ namespace Olive
             return new Microservice(serviceName)
             {
                 BaseUrl = Config.GetOrThrow("Microservice:" + serviceName + ":Url").EnsureEndsWith("/"),
+                BaseResourceUrl = Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/")+serviceName.ToLower()+"/",
                 AccessKey = Config.Get("Microservice:" + serviceName + ":AccessKey")
             };
         }
@@ -39,6 +40,7 @@ namespace Olive
         /// concatinating the base url of this service with the specified relative url.
         /// </summary>
         public string Url(string relativeUrl = null) => BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
+        public string GetResourceUrl(string relativeUrl = null) => BaseResourceUrl + relativeUrl.OrEmpty().TrimStart("/");
 
         /// <summary>
         /// Creates an Api client for this service.
