@@ -11,11 +11,9 @@ namespace Olive.Gpt
     {
         readonly JsonSerializerSettings Settings = new() { NullValueHandling = NullValueHandling.Ignore };
         readonly HttpClient Client = new(CreateForgivingHandler()) { Timeout = 60.Seconds() };
-        string Model;
 
-        public AssistantApi(string apiKey, string model = "gpt-3.5-turbo")
+        public AssistantApi(string apiKey)
         {
-            Model = model;
             Client.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
             Client.DefaultRequestHeaders.Add("User-Agent", "olive/dotnet_openai_api");
             Client.DefaultRequestHeaders.Add("OpenAI-Beta", "assistants=v1");
@@ -45,9 +43,9 @@ namespace Olive.Gpt
             return jObject.Id;
         }
 
-        public async Task<string> AddMessageToThread(ChatMessage[] messages, string threadId)
+        public async Task<string> AddMessageToThread(ChatMessage message, string threadId)
         {
-            var jsonContent = JsonConvert.SerializeObject(new ChatRequest(messages) { Model = Model }, Settings);
+            var jsonContent = JsonConvert.SerializeObject(message, Settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             var url = $"https://api.openai.com/v1/threads/{threadId}/messages";
