@@ -23,6 +23,19 @@ namespace Olive
         }
 
         /// <summary>
+        /// Inserts a single item and then fires Changed, to update the UI. 
+        /// It's an expensive call. Avoid calling it multiple times to create a list.
+        /// </summary> 
+        public void Insert(int index, T item)
+        {
+            if (item is null) return;
+            lock (Value) Value.Insert(index, item);
+            FireAdded(item);
+            ApplyBindings();
+            FireChanged();
+        }
+
+        /// <summary>
         /// Adds a single item and then fires Changed, to update the UI. 
         /// It's an expensive call. Avoid calling it multiple times to create a list.
         /// </summary> 
