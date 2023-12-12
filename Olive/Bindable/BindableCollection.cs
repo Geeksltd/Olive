@@ -77,6 +77,12 @@ namespace Olive
         }
 
         /// <summary>
+        /// Removes a single item by its index and then fires Changed, to update the UI. 
+        /// It's an expensive call. Avoid calling it multiple times to clean a list.
+        /// </summary> 
+        public void RemoveAt(int index) => Remove(this[index]);
+
+        /// <summary>
         /// Removes all items and then fires Changed, to update the UI. 
         /// Consider using Replace() instead.
         /// </summary> 
