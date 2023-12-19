@@ -26,6 +26,42 @@ namespace Olive.Gpt
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
         };
 
+        public async Task<string> CreateNewAssistant(OpenAiCreateAssistantDto assistantDto)
+        {
+            var payload = new StringContent(JsonConvert.SerializeObject(assistantDto), Encoding.UTF8, "application/json");
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/assistants") { Content = payload };
+            var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(
+                    "Error calling OpenAi New Assistant API to get completion. HTTP status code: " + response.StatusCode +
+                    ". Response body: " + await response.Content.ReadAsStringAsync());
+
+            var result = await response.Content.ReadAsStringAsync();
+            var jObject = JsonConvert.DeserializeObject<OpenAiAssistantDto>(result);
+
+            return jObject.Id;
+        }
+        
+        public async Task<string> EditAssistant(string assistantId,OpenAiCreateAssistantDto assistantDto)
+        {
+            var payload = new StringContent(JsonConvert.SerializeObject(assistantDto), Encoding.UTF8, "application/json");
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"https://api.openai.com/v1/assistants/{assistantId}") { Content = payload };
+            var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(
+                    "Error calling OpenAi Edit Assistant API to get completion. HTTP status code: " + response.StatusCode +
+                    ". Response body: " + await response.Content.ReadAsStringAsync());
+
+            var result = await response.Content.ReadAsStringAsync();
+            var jObject = JsonConvert.DeserializeObject<OpenAiAssistantDto>(result);
+
+            return jObject.Id;
+        }
+
         public async Task<string> CreateNewThread()
         {
             var payload = new StringContent("", Encoding.UTF8, "application/json");
