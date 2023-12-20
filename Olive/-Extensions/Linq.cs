@@ -112,10 +112,9 @@ namespace Olive
         /// <param name="element">The item which is searched.</param>
         public static int IndexOf<T>(this IEnumerable<T> @this, T element)
         {
-            if (@this == null)
+            if (@this is null)
                 throw new NullReferenceException("No collection is given for the extension method IndexOf().");
 
-            if (@this.Contains(element) == false) return -1;
             var result = 0;
 
             foreach (var el in @this)
@@ -184,8 +183,17 @@ namespace Olive
         /// <param name="items">The list of  items which are not returned.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> list, params T[] items)
         {
-            if (items == null) return list;
+            if (items is null) return list;
+            return list.Except(new HashSet<T>(items));
+        }
 
+        /// <summary>
+        /// Gets all items of this list except those meeting a specified criteria.
+        /// </summary>
+        /// <param name="items">The list of  items which are not returned.</param>
+        public static IEnumerable<T> Except<T>(this IEnumerable<T> list, HashSet<T> items)
+        {
+            if (items is null) return list;
             return list.Where(x => !items.Contains(x));
         }
 
@@ -193,14 +201,14 @@ namespace Olive
         /// Gets all items of this list except those meeting a specified criteria.
         /// </summary>
         /// <param name="itemsToExclude">The list of  items which are not returned.</param>
-        public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, List<T> itemsToExclude) => @this.Except(itemsToExclude.ToArray());
+        public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, List<T> itemsToExclude) => @this.Except(new HashSet<T>(itemsToExclude));
 
         /// <summary>
         /// Gets all items of this list except those meeting a specified criteria.
         /// </summary>
         /// <param name="itemsToExclude">The list of  items which are not returned.</param>
         public static IEnumerable<char> Except(this IEnumerable<char> @this, IEnumerable<char> itemsToExclude) =>
-            @this.Except(itemsToExclude.ToArray());
+            @this.Except(new HashSet<char>(itemsToExclude));
 
         /// <summary>
         /// Gets all items of this list except those meeting a specified criteria.
@@ -209,7 +217,7 @@ namespace Olive
         /// <param name="alsoDistinct">if {alsoDistinct} is true, it returns distinct elements from a sequence. The default value is false.</param>
         public static IEnumerable<T> Except<T>(this IEnumerable<T> @this, IEnumerable<T> itemsToExclude, bool alsoDistinct = false)
         {
-            var result = @this.Except(itemsToExclude.ToArray());
+            var result = @this.Except(new HashSet<T>(itemsToExclude));
 
             if (alsoDistinct) result = result.Distinct();
 
@@ -221,7 +229,7 @@ namespace Olive
         /// </summary>
         /// <param name="itemsToExclude">The list of  items which are not returned.</param>
         public static IEnumerable<string> Except(this IEnumerable<string> @this, IEnumerable<string> itemsToExclude) =>
-            @this.Except(itemsToExclude.ToArray());
+            @this.Except(new HashSet<string>(itemsToExclude));
 
         /// <summary>
         /// Gets all non-default items of this list.
@@ -231,7 +239,7 @@ namespace Olive
         /// <summary>
         /// Gets all Non-NULL items of this list.
         /// </summary>
-        public static IEnumerable<T> ExceptNull<T>(this IEnumerable<T> @this) => @this.Where(i => i != null);
+        public static IEnumerable<T> ExceptNull<T>(this IEnumerable<T> @this) => @this.Except(i => i is null);
 
         /// <summary>
         /// Gets all Non-NULL items of this list.
@@ -485,8 +493,10 @@ namespace Olive
 
             if (@this.Count() != other.Count()) return false;
 
+            var set = new HashSet<T>(other);
+
             foreach (var item in @this)
-                if (!other.Contains(item)) return false;
+                if (!set.Contains(item)) return false;
 
             return true;
         }
@@ -595,8 +605,11 @@ namespace Olive
         /// Determines of this list contains all items of another given list.
         /// </summary>        
         /// <param name="items">Determines the list of items which checked with the main list.</param>
-        public static bool ContainsAll<T>(this IEnumerable<T> @this, IEnumerable<T> items) =>
-            items.All(i => @this.Contains(i));
+        public static bool ContainsAll<T>(this IEnumerable<T> @this, IEnumerable<T> items)
+        {
+            var set = new HashSet<T>(@this);
+            return items.All(i => set.Contains(i));
+        }
 
         /// <summary>
         /// Determines if this list contains any of the specified items.
@@ -631,18 +644,16 @@ namespace Olive
             var countList = (@this as ICollection)?.Count;
             var countOther = (otherList as ICollection)?.Count;
 
-            if (countList == null || countOther == null || countOther < countList)
+            if (countList is null || countOther is null || countOther < countList)
             {
-                foreach (var item in otherList)
-                    if (@this.Contains(item)) return true;
+                var set = new HashSet<T>(@this);
+                return otherList.Any(set.Contains);
             }
             else
             {
-                foreach (var item in @this)
-                    if (otherList.Contains(item)) return true;
+                var set = new HashSet<T>(otherList);
+                return @this.Any(set.Contains);
             }
-
-            return false;
         }
 
         /// <summary>
