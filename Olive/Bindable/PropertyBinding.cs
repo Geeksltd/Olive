@@ -5,10 +5,15 @@
 
     internal struct PropertyBinding<TValue> : IBinding<TValue>
     {
+        Bindable<TValue> Owner;
+        
         public WeakReference<object> Target;
         public PropertyInfo Property;
         public Func<TValue, object> Expression;
-        public bool IsRemoved;
+        
+        bool IsRemoved;
+
+        public PropertyBinding(Bindable<TValue> owner) => Owner = owner;
 
         public void Apply(TValue value)
         {
@@ -38,6 +43,7 @@
 
         public void Remove()
         {
+            Owner.RemoveBinding(this);
             IsRemoved = true; // How about clean up?
         }
 
@@ -51,7 +57,7 @@
 
         public override bool Equals(object obj)
         {
-            if (!(obj is PropertyBinding<TValue> binding)) return false;
+            if (obj is not PropertyBinding<TValue> binding) return false;
 
             if (binding.IsRemoved != IsRemoved) return false;
             if (binding.Property != Property) return false;

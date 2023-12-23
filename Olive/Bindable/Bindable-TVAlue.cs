@@ -83,7 +83,11 @@ namespace Olive
         {
             var property = FindProperty(target, propertyName);
 
-            var binding = new PropertyBinding<TValue> { Target = target.GetWeakReference(), Property = property };
+            var binding = new PropertyBinding<TValue>(this)
+            {
+                Target = target.GetWeakReference(),
+                Property = property
+            };
 
             if (target is IBindableInput input)
             {
@@ -105,7 +109,7 @@ namespace Olive
         {
             var property = FindProperty(target, propertyName);
 
-            var binding = new PropertyBinding<TValue>
+            var binding = new PropertyBinding<TValue>(this)
             {
                 Target = target.GetWeakReference(),
                 Property = property,
@@ -117,18 +121,18 @@ namespace Olive
 
         IBinding<TValue> Add(PropertyBinding<TValue> binding)
         {
-            var old = Bindings.FirstOrDefault(x => x.Equals(binding));
-
-            if (old is not null)
-            {
-                old.Remove();
-                Bindings.Remove(old);
-            }
+            Bindings
+                .FirstOrDefault(x => x.Equals(binding))?
+                .Remove();
 
             Bindings.Add(binding);
             binding.Apply(value);
+
             return binding;
         }
+
+        internal void RemoveBinding(PropertyBinding<TValue> binding)
+            => Bindings.Remove(binding);
 
         static PropertyInfo FindProperty(object target, string propertyName)
         {
