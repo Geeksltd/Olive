@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +31,21 @@ namespace Olive.Gpt
         public Task<string> GetResponse(Command command) => GetResponse(command.ToString());
 
         public Task<string> GetResponse(string command) => GetResponse(new[] { new ChatMessage("user", command) });
+      
+        public async Task<string> GetResponse(string command, IEnumerable<string> steps)
+        {
+            var enumerable = steps as string[] ?? steps.ToArray();
+            if (!enumerable.Any()) return await GetResponse(command);
+
+            var result = await GetResponse(new[] { new ChatMessage("user", command) });
+            foreach (var step in enumerable)
+            {
+                var stepCommand = step.Replace("#CURRENT_RESULT#", result);
+                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) });
+            }
+
+            return result;
+        }
 
         public async Task<string> GetResponse(ChatMessage[] messages)
         {
