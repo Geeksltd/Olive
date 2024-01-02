@@ -61,6 +61,22 @@ namespace Olive.Gpt
 
             return jObject.Id;
         }
+        
+        public async Task<string> DeleteAssistant(string assistantId)
+        {
+            var httpRequest = new HttpRequestMessage(HttpMethod.Delete, $"https://api.openai.com/v1/assistants/{assistantId}") ;
+            var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(
+                    "Error calling OpenAi Delete Assistant API to get completion. HTTP status code: " + response.StatusCode +
+                    ". Response body: " + await response.Content.ReadAsStringAsync());
+
+            var result = await response.Content.ReadAsStringAsync();
+            var jObject = JsonConvert.DeserializeObject<OpenAiAssistantDeleteResult>(result);
+
+            return jObject.Id;
+        }
 
         public async Task<string> CreateNewThread()
         {
