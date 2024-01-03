@@ -13,6 +13,7 @@ namespace Olive.Gpt
 {
     public class Api
     {
+        public const string CurrentResultPlaceholder = "#CURRENT_RESULT#";
         static readonly JsonSerializerSettings Settings = new() { NullValueHandling = NullValueHandling.Ignore };
         static readonly HttpClient Client = new(CreateForgivingHandler()) { Timeout = 5.Minutes() };
         readonly string _model;
@@ -37,13 +38,13 @@ namespace Olive.Gpt
         public async Task<string> GetTransformationResponse(IEnumerable<string> steps)
         {
             var enumerable = steps as string[] ?? steps.ToArray();
-            if (!enumerable.Any()) 
-            throw new Exception("Transformation steps is empty");
+            if (!enumerable.Any())
+                throw new Exception("Transformation steps is empty");
 
             var result = "";
             foreach (var step in enumerable)
             {
-                var stepCommand = step.Replace("#CURRENT_RESULT#", result);
+                var stepCommand = step.Replace(CurrentResultPlaceholder, result);
                 result = await GetResponse(new[] { new ChatMessage("user", stepCommand) });
             }
 
