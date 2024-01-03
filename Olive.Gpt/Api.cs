@@ -34,12 +34,13 @@ namespace Olive.Gpt
 
         public Task<string> GetResponse(string command) => GetResponse(new[] { new ChatMessage("user", command) });
 
-        public async Task<string> GetResponse(string command, IEnumerable<string> steps)
+        public async Task<string> GetTransformationResponse(IEnumerable<string> steps)
         {
             var enumerable = steps as string[] ?? steps.ToArray();
-            if (!enumerable.Any()) return await GetResponse(command);
+            if (!enumerable.Any()) 
+            throw new Exception("Transformation steps is empty");
 
-            var result = await GetResponse(new[] { new ChatMessage("user", command) });
+            var result = "";
             foreach (var step in enumerable)
             {
                 var stepCommand = step.Replace("#CURRENT_RESULT#", result);
