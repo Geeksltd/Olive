@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Newtonsoft.Json;
+using Olive;
 
-namespace Olive.Gpt
+namespace Olive.Gpt.ApiDto
 {
     class ChatResponse
     {
@@ -11,17 +11,5 @@ namespace Olive.Gpt
         public Choice[] Choices { get; set; }
 
         public override string ToString() => Choices.FirstOrDefault()?.Delta?.Content;
-    }
-
-    public class Choice
-    {
-        [JsonProperty("delta")]
-        public Delta Delta { get; set; }
-    }
-
-    public class Delta
-    {
-        [JsonProperty("content")]
-        public string Content { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Olive.Gpt
+namespace Olive.Gpt.ApiDto
 {
     class ChatRequest
     {
