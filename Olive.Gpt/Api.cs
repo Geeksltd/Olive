@@ -31,9 +31,9 @@ namespace Olive.Gpt
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
         };
 
-        public Task<string> GetResponse(Command command) => GetResponse(command.ToString());
+        public Task<string> GetResponse(Command command, string model = null) => GetResponse(command.ToString(), model);
 
-        public Task<string> GetResponse(string command) => GetResponse(new[] { new ChatMessage("user", command) });
+        public Task<string> GetResponse(string command, string model = null) => GetResponse(new[] { new ChatMessage("user", command) }, model);
 
         public async Task<string> GetTransformationResponse(IEnumerable<string> steps)
         {
@@ -45,15 +45,38 @@ namespace Olive.Gpt
             foreach (var step in enumerable)
             {
                 var stepCommand = step.Replace(CurrentResultPlaceholder, result);
-                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) });
+                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) }, null);
             }
 
             return result;
         }
 
-        public async Task<string> GetResponse(ChatMessage[] messages)
+        public async Task<string> GetTransformationResponse(IEnumerable<(string prompt, string model)> steps)
         {
-            var jsonContent = JsonConvert.SerializeObject(new ChatRequest(messages) { Model = _model }, Settings);
+            var enumerable = steps as (string prompt, string model)[] ?? steps.ToArray();
+            if (!enumerable.Any())
+                throw new Exception("Transformation steps is empty");
+
+            var result = "";
+            foreach (var (prompt, model) in enumerable)
+            {
+                var stepCommand = prompt.Replace(CurrentResultPlaceholder, result);
+                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) }, model);
+            }
+
+            return result;
+        }
+
+        public async Task<string> GetResponse(ChatMessage[] messages, string model = null)
+        {
+            if (!messages.Any())
+            {
+                return "";
+            }
+
+            if (model?.StartsWith("dall-e-") == true) return await GenerateDalleImage(messages[0].Content, model);
+
+            var jsonContent = JsonConvert.SerializeObject(new ChatRequest(messages) { Model =model.Or(_model) }, Settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions") { Content = payload };
@@ -94,22 +117,16 @@ namespace Olive.Gpt
             return result.Length > 0 ? result.ToString() : null;
         }
 
-        public async Task<string> GenerateDalleImage(string prompt,
-            string model = "dall-e-3",
-            string size = "1024x1024",
-            string quality = "standard",
-            int n = 1)
+        public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null)
         {
             const string api = "https://api.openai.com/v1/images/generations";
 
-            var requestPayload = new
-            {
-                prompt,
-                model,
-                size,
-                quality,
-                n
-            };
+            var requestPayload = parameters ?? new Dictionary<string, object>();
+            if (!requestPayload.ContainsKey("prompt")) requestPayload.Add("prompt", prompt);
+            if (!requestPayload.ContainsKey("model")) requestPayload.Add("model", model);
+            if (!requestPayload.ContainsKey("size")) requestPayload.Add("size", "1024x1024");
+            if (!requestPayload.ContainsKey("quality")) requestPayload.Add("quality", "standard");
+            if (!requestPayload.ContainsKey("n")) requestPayload.Add("n", 1);
 
             var jsonContent = JsonConvert.SerializeObject(requestPayload, Settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
