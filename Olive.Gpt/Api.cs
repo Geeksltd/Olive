@@ -80,7 +80,7 @@ namespace Olive.Gpt
             if (model.Or(_model).StartsWith("dall-e-")) return await GenerateDalleImage(messages[0].Content, model);
 
             var request = new ChatRequest(messages) { Model = model.Or(_model) };
-            if (responseFormat != ResponseFormats.NotSet)
+            if (responseFormat == ResponseFormats.JsonObject && messages.Any(a=>a.Content.Contains("json",false)))
             {
                 request.ResponseFormat = new ResponseFormat { Type = responseFormat };
             }
