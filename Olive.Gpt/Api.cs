@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Olive.Gpt.ApiDto;
 using Olive.Gpt.DalleDto;
 
@@ -14,12 +16,13 @@ namespace Olive.Gpt
     public class Api
     {
         public const string CurrentResultPlaceholder = "#CURRENT_RESULT#";
-        static readonly JsonSerializerSettings Settings = new() { NullValueHandling = NullValueHandling.Ignore };
+        static readonly JsonSerializerSettings Settings = new() { NullValueHandling = NullValueHandling.Ignore, };
         static readonly HttpClient Client = new(CreateForgivingHandler()) { Timeout = 5.Minutes() };
         readonly string _model;
 
         public Api(string apiKey, string model = "gpt-3.5-turbo")
         {
+            if (apiKey.IsEmpty()) throw new ArgumentNullException(nameof(apiKey));
             _model = model;
             Client.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
             Client.DefaultRequestHeaders.Add("User-Agent", "olive/dotnet_openai_api");
@@ -31,11 +34,11 @@ namespace Olive.Gpt
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
         };
 
-        public Task<string> GetResponse(Command command, string model = null) => GetResponse(command.ToString(), model);
+        public Task<string> GetResponse(Command command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponse(command.ToString(), model, responseFormat);
 
-        public Task<string> GetResponse(string command, string model = null) => GetResponse(new[] { new ChatMessage("user", command) }, model);
+        public Task<string> GetResponse(string command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponse(new[] { new ChatMessage("user", command) }, model, responseFormat);
 
-        public async Task<string> GetTransformationResponse(IEnumerable<string> steps)
+        public async Task<string> GetTransformationResponse(IEnumerable<string> steps, ResponseFormats responseFormat = ResponseFormats.JsonObject)
         {
             var enumerable = steps as string[] ?? steps.ToArray();
             if (!enumerable.Any())
@@ -45,13 +48,13 @@ namespace Olive.Gpt
             foreach (var step in enumerable)
             {
                 var stepCommand = step.Replace(CurrentResultPlaceholder, result);
-                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) }, null);
+                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) }, null, responseFormat);
             }
 
             return result;
         }
 
-        public async Task<string> GetTransformationResponse(IEnumerable<(string prompt, string model)> steps)
+        public async Task<string> GetTransformationResponse(IEnumerable<(string prompt, string model)> steps, ResponseFormats responseFormat = ResponseFormats.JsonObject)
         {
             var enumerable = steps as (string prompt, string model)[] ?? steps.ToArray();
             if (!enumerable.Any())
@@ -61,22 +64,27 @@ namespace Olive.Gpt
             foreach (var (prompt, model) in enumerable)
             {
                 var stepCommand = prompt.Replace(CurrentResultPlaceholder, result);
-                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) }, model);
+                result = await GetResponse(new[] { new ChatMessage("user", stepCommand) }, model, responseFormat);
             }
 
             return result;
         }
 
-        public async Task<string> GetResponse(ChatMessage[] messages, string model = null)
+        public async Task<string> GetResponse(ChatMessage[] messages, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet)
         {
-            if (!messages.Any())
+            if (!messages.Any() || messages.All(m => m.Content.IsEmpty()))
             {
-                return "";
+                throw new ArgumentNullException(nameof(messages));
             }
 
-            if (model?.StartsWith("dall-e-") == true) return await GenerateDalleImage(messages[0].Content, model);
+            if (model.Or(_model).StartsWith("dall-e-")) return await GenerateDalleImage(messages[0].Content, model);
 
-            var jsonContent = JsonConvert.SerializeObject(new ChatRequest(messages) { Model =model.Or(_model) }, Settings);
+            var request = new ChatRequest(messages) { Model = model.Or(_model) };
+            if (responseFormat != ResponseFormats.NotSet)
+            {
+                request.ResponseFormat = new ResponseFormat { Type = responseFormat };
+            }
+            var jsonContent = JsonConvert.SerializeObject(request, Settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions") { Content = payload };

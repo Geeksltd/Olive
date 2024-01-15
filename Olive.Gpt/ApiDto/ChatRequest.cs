@@ -14,5 +14,6 @@ namespace Olive.Gpt.ApiDto
         public ChatMessage[] Messages { get; set; }
 
         [JsonProperty("stream")] public bool Stream { get; set; } = true;
+        [JsonProperty("response_format")] public ResponseFormat ResponseFormat { get; set; }
     }
 }
