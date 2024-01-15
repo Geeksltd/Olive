@@ -60,15 +60,22 @@ namespace Olive
             => @this.PostJson(data, customiseClient: null);
 
         /// <summary>
-        /// Posts the specified object as JSON data to this URL.
+        /// Posts the specified object as JSON data to this URL. Your server-side web api should take one parameter, with [FromBody] attribute.
         /// </summary>
-        public static async Task<string> PostJson(this Uri @this, object data, Action<HttpClient> customiseClient = null)
+        public static Task<string> PostJson(this Uri @this, object data, Action<HttpClient> customiseClient = null)
+        {
+            return PostJson(@this, JsonSerializer.Serialize(data), customiseClient);
+        }
+
+        /// <summary>
+        /// Posts the specified JSON text to this URL. Your server-side web api should take one parameter, with [FromBody] attribute.
+        /// </summary>
+        public static async Task<string> PostJson(this Uri @this, string json, Action<HttpClient> customiseClient = null)
         {
             using var client = new HttpClient();
             customiseClient?.Invoke(client);
 
-            var @string = JsonSerializer.Serialize(data);
-            var requestContent = new StringContent(@string, Encoding.UTF8, "application/json");
+            var requestContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync(@this, requestContent);
 
