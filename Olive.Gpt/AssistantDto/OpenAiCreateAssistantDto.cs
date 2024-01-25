@@ -10,7 +10,5 @@ public class OpenAiCreateAssistantDto
     public string Description { get; set; }
     public string Instructions { get; set; }
     public OpenAiAssistantTools[] Tools{ get; set; }
-    [JsonProperty("file_ids")]
-    public string[] FileIds { get; set; }
     public Dictionary<string,string> Metadata { get; set; }
 }
