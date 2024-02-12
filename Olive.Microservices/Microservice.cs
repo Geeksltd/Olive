@@ -39,8 +39,8 @@ namespace Olive
         /// Returns the full url to a specified resource in this microservice by
         /// concatinating the base url of this service with the specified relative url.
         /// </summary>
-        public string Url(string relativeUrl = null) => BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
-        public string GetResourceUrl(string relativeUrl = null) => BaseResourceUrl + relativeUrl.OrEmpty().TrimStart("/");
+        public string Url(string relativeUrl = null) => relativeUrl?.Contains("://")==true ? relativeUrl : BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
+        public string GetResourceUrl(string relativeUrl = null) => relativeUrl?.Contains("://")==true ? relativeUrl : BaseResourceUrl + relativeUrl.OrEmpty().TrimStart("/");
 
         /// <summary>
         /// Creates an Api client for this service.
