@@ -7,7 +7,6 @@ namespace Olive.Entities.EF.Replication
         public string TypeName { get; set; }
 
         public string DeduplicationId => TypeName;
-        public string MessageGroupId => "Default";
 
         public DateTime RequestUtc { get; set; }
     }

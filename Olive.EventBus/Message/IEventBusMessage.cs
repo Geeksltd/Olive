@@ -12,6 +12,5 @@ namespace Olive
         /// The ID used by queue systems to deduplicate a message in a FIFO (first-in-first-out) queue. (in cases of double delivery).
         /// </summary>
         string DeduplicationId { get; }
-        string MessageGroupId { get; }
     }
 }
