@@ -64,8 +64,9 @@ namespace Olive.Aws
 
             if (IsFifo)
             {
-                request.MessageDeduplicationId = JsonConvert.DeserializeObject<JObject>(message)["DeduplicationId"]?.ToString();
-                request.MessageGroupId = "Default";
+                var eventBusMessage = JsonConvert.DeserializeObject<IEventBusMessage>(message);
+                request.MessageDeduplicationId =eventBusMessage.DeduplicationId.Or(Guid.NewGuid().ToString("N"));
+                request.MessageGroupId = eventBusMessage.MessageGroupId.Or("Default");
             }
 
             try
@@ -102,10 +103,9 @@ namespace Olive.Aws
                 request.Entries
                     .ForEach(message =>
                 {
-                    message.MessageDeduplicationId =
-                        JsonConvert.DeserializeObject<JObject>(message.MessageBody)["DeduplicationId"]?.ToString();
-
-                    message.MessageGroupId = "Default";
+                    var eventBusMessage = JsonConvert.DeserializeObject<IEventBusMessage>(message.MessageBody);
+                    message.MessageDeduplicationId =eventBusMessage.DeduplicationId.Or(Guid.NewGuid().ToString("N"));
+                    message.MessageGroupId = eventBusMessage.MessageGroupId.Or("Default");
                 });
             }
 
