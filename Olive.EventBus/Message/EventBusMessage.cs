@@ -11,8 +11,8 @@ namespace Olive
         /// <summary>
         /// By default it's a new Guid.
         /// </summary>
-        public string DeduplicationId { get; } = Guid.NewGuid().ToString().Remove("-");
+        public string DeduplicationId { get; set; } = Guid.NewGuid().ToString().Remove("-");
 
-        public string MessageGroupId { get; } = "Default";
+        public string MessageGroupId { get; set; } = "Default";
     }
 }
