@@ -9,7 +9,7 @@ namespace Olive
         /// <summary>
         /// Returns a queue for a specified queue url.
         /// </summary>
-        public static IEventBusQueue Queue(string queueUrl) => Provider.Provide(queueUrl);
+        public static IEventBusQueue Queue(string queueUrl) => Provider.Provide(queueUrl.Trim());
         public static string QueueUrl(Type messageType)
         {
             var url = Config.Get($"EventBus:Queues:{messageType.FullName.Replace(".", "_")}:Url");

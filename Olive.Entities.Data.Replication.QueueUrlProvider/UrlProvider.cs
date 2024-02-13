@@ -14,7 +14,7 @@ namespace Olive.Entities.Data.Replication.QueueUrlProvider
             if (url.IsEmpty())
                 url = $"FOR_DEVELOPMENT_ONLY_DataReplication_{type.FullName}";
 
-            return url;
+            return url.Trim();
         }
     }
 }
