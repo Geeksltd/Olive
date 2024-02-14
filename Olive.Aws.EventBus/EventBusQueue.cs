@@ -64,9 +64,9 @@ namespace Olive.Aws
 
             if (IsFifo)
             {
-                var eventBusMessage = JsonConvert.DeserializeObject<EventBusMessage>(message);
-                request.MessageDeduplicationId =eventBusMessage.DeduplicationId.Or(Guid.NewGuid().ToString("N"));
-                request.MessageGroupId = eventBusMessage.MessageGroupId.Or("Default");
+                var eventBusMessage = JsonConvert.DeserializeObject<JObject>(message);
+                request.MessageDeduplicationId = eventBusMessage["DeduplicationId"]?.ToString().Or(Guid.NewGuid().ToString("N"));
+                request.MessageGroupId = eventBusMessage["MessageGroupId"]?.ToString().Or("Default");
             }
 
             try
@@ -102,11 +102,11 @@ namespace Olive.Aws
             {
                 request.Entries
                     .ForEach(message =>
-                {
-                    var eventBusMessage = JsonConvert.DeserializeObject<EventBusMessage>(message.MessageBody);
-                    message.MessageDeduplicationId =eventBusMessage.DeduplicationId.Or(Guid.NewGuid().ToString("N"));
-                    message.MessageGroupId = eventBusMessage.MessageGroupId.Or("Default");
-                });
+                    {
+                        var eventBusMessage = JsonConvert.DeserializeObject<JObject>(message.MessageBody);
+                        message.MessageDeduplicationId = eventBusMessage["DeduplicationId"]?.ToString().Or(Guid.NewGuid().ToString("N"));
+                        message.MessageGroupId = eventBusMessage["MessageGroupId"]?.ToString().Or("Default");
+                    });
             }
 
             await Limiter.Add(request.Entries.Count);
