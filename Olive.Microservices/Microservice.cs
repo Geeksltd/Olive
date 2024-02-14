@@ -27,11 +27,15 @@ namespace Olive
             get
             {
                 var url = Config.Get("Microservice:Me:Url");
+                url = url.IsEmpty() ? "Config value not specified for 'Microservice:Me:Url'" : url.EnsureEndsWith("/");
 
-                if (url.IsEmpty()) url = "Config value not specified for 'Microservice:Me:Url'";
-                else url = url.EnsureEndsWith("/");
+                var name = Config.GetOrThrow("Microservice:Me:Name");
 
-                return new Microservice(Config.GetOrThrow("Microservice:Me:Name")) { BaseUrl = url };
+                return new Microservice(name)
+                {
+                    BaseUrl = url,
+                    BaseResourceUrl = Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/")+name.ToLower()+"/"
+                };
             }
         }
 
