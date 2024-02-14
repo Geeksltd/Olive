@@ -4,7 +4,7 @@
 		<Version>2.1.361.0</Version>
 		<OutputType>Library</OutputType>
 		<LangVersion>latest</LangVersion>
-		<PackageId>Olive</PackageId>
+		<!--<PackageId>Olive</PackageId>-->
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
@@ -42,7 +42,7 @@
 			<DependentUpon>Linq.SpecialCollectionTypes.Async.tt</DependentUpon>
 		</Compile>
 	</ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="update-local-nuget-cache $(TargetDir)" />
-	</Target>
+	</Target>-->
 </Project>
