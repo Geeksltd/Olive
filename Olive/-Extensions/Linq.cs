@@ -816,7 +816,7 @@ namespace Olive
             if (itemsToRemove != null)
             {
                 foreach (var item in itemsToRemove)
-                    if (@this.Contains(item)) @this.Remove(item);
+                    @this.Remove(item);
             }
         }
 

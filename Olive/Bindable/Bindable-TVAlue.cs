@@ -1,6 +1,7 @@
 namespace Olive
 {
     using System;
+    using System.Linq;
     using System.Reflection;
 
     /// <summary>
@@ -121,9 +122,7 @@ namespace Olive
 
         IBinding<TValue> Add(PropertyBinding<TValue> binding)
         {
-            Bindings
-                .FirstOrDefault(x => x.Equals(binding))?
-                .Remove();
+            Bindings.RemoveWhere(x => x is PropertyBinding<TValue> b && (b.IsDead() || b.SameTarget(binding)));
 
             Bindings.Add(binding);
             binding.Apply(value);
@@ -131,8 +130,7 @@ namespace Olive
             return binding;
         }
 
-        internal void RemoveBinding(PropertyBinding<TValue> binding)
-            => Bindings.Remove(binding);
+        internal void RemoveBinding(PropertyBinding<TValue> binding) => Bindings.Remove(binding);
 
         static PropertyInfo FindProperty(object target, string propertyName)
         {

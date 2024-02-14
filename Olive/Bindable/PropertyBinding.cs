@@ -3,14 +3,19 @@
     using System;
     using System.Reflection;
 
+    public interface IMortal
+    {
+        bool IsDead();
+    }
+
     internal struct PropertyBinding<TValue> : IBinding<TValue>
     {
         Bindable<TValue> Owner;
-        
+
         public WeakReference<object> Target;
         public PropertyInfo Property;
         public Func<TValue, object> Expression;
-        
+
         bool IsRemoved;
 
         public PropertyBinding(Bindable<TValue> owner) => Owner = owner;
@@ -44,7 +49,15 @@
         public void Remove()
         {
             Owner.RemoveBinding(this);
-            IsRemoved = true; // How about clean up?
+            IsRemoved = true;
+        }
+
+        public bool IsDead()
+        {
+            if (IsRemoved) return true;
+            if (!Target.TryGetTarget(out var target)) return true;
+            if (target is IMortal m && m.IsDead()) return true;
+            return false;
         }
 
         object GetSettableValue(TValue rawValue)
@@ -55,25 +68,13 @@
             return rawValue;
         }
 
-        public override bool Equals(object obj)
+        internal bool SameTarget(PropertyBinding<TValue> binding)
         {
-            if (obj is not PropertyBinding<TValue> binding) return false;
-
-            if (binding.IsRemoved != IsRemoved) return false;
             if (binding.Property != Property) return false;
             if (!binding.Target.TryGetTarget(out var target)) return false;
-            if (target is null) return false;
+            if (!Target.TryGetTarget(out var myTarget)) return false;
 
-            if (Target.TryGetTarget(out var myTarget))
-                return ReferenceEquals(myTarget, target);
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return (Target.TryGetTarget(out var myTarget) ? myTarget?.GetHashCode() : -1)
-                ?? base.GetHashCode();
+            return ReferenceEquals(myTarget, target);
         }
     }
 }
