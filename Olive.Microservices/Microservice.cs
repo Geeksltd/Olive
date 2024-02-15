@@ -1,4 +1,6 @@
 ﻿using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Olive
 {
@@ -8,18 +10,27 @@ namespace Olive
     public class Microservice
     {
         public string Name { get; private set; }
-        string BaseUrl, BaseResourceUrl, AccessKey;
+        string BaseUrl, BaseResourceUrl, BaseS3BucketUrl, AccessKey;
 
-        Microservice(string name) => Name = name;
+        Microservice(string name)
+        {
+            Name = name;
+
+            BaseUrl = Config.GetOrThrow("Microservice:" + name + ":Url").EnsureEndsWith("/");
+            
+            var isDevelopment = Context.Current.ServiceProvider.GetRequiredService<IHostEnvironment>().IsDevelopment();
+            BaseResourceUrl = isDevelopment
+                ? BaseUrl
+                : Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/") + name.ToLower() + "/";
+
+            BaseS3BucketUrl =$"https://{Config.Get("Blob:S3:Bucket")}.s3.{Config.Get("Blob:S3:Region")}.amazonaws.com/"; ;
+
+            AccessKey = Config.Get("Microservice:" + name + ":AccessKey");
+        }
 
         public static Microservice Of(string serviceName)
         {
-            return new Microservice(serviceName)
-            {
-                BaseUrl = Config.GetOrThrow("Microservice:" + serviceName + ":Url").EnsureEndsWith("/"),
-                BaseResourceUrl = Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/")+serviceName.ToLower()+"/",
-                AccessKey = Config.Get("Microservice:" + serviceName + ":AccessKey")
-            };
+            return new Microservice(serviceName);
         }
 
         public static Microservice Me
@@ -31,11 +42,7 @@ namespace Olive
 
                 var name = Config.GetOrThrow("Microservice:Me:Name");
 
-                return new Microservice(name)
-                {
-                    BaseUrl = url,
-                    BaseResourceUrl = Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/")+name.ToLower()+"/"
-                };
+                return new Microservice(name);
             }
         }
 
@@ -43,8 +50,9 @@ namespace Olive
         /// Returns the full url to a specified resource in this microservice by
         /// concatinating the base url of this service with the specified relative url.
         /// </summary>
-        public string Url(string relativeUrl = null) => relativeUrl?.Contains("://")==true ? relativeUrl : BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
-        public string GetResourceUrl(string relativeUrl = null) => relativeUrl?.Contains("://")==true ? relativeUrl : BaseResourceUrl + relativeUrl.OrEmpty().TrimStart("/");
+        public string Url(string relativeUrl = null) => relativeUrl?.Contains("://") == true ? relativeUrl : BaseUrl + relativeUrl.OrEmpty().TrimStart("/");
+        public string GetResourceUrl(string relativeUrl = null) => relativeUrl?.Contains("://") == true ? relativeUrl : BaseResourceUrl + relativeUrl.OrEmpty().TrimStart("/");
+        public string GetS3BucketUrl(string relativeUrl = null) => relativeUrl?.Contains("://") == true ? relativeUrl : BaseS3BucketUrl + relativeUrl.OrEmpty().TrimStart("/");
 
         /// <summary>
         /// Creates an Api client for this service.
