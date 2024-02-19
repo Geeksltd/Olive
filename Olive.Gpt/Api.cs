@@ -104,25 +104,25 @@ namespace Olive.Gpt
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
 
-            var result = new StringBuilder();
+            return await response.Content.ReadAsStringAsync();
 
-            using (var stream = await response.Content.ReadAsStreamAsync())
-            using (var reader = new StreamReader(stream))
-            {
-                while (await reader.ReadLineAsync() is { } line)
-                {
-                    if (line.StartsWith("data: ")) line = line.Substring("data: ".Length);
-                    if (line == "[DONE]") break;
+            //using (var stream = await response.Content.ReadAsStreamAsync())
+            //using (var reader = new StreamReader(stream))
+            //{
+            //    while (await reader.ReadLineAsync() is { } line)
+            //    {
+            //        if (line.StartsWith("data: ")) line = line.Substring("data: ".Length);
+            //        if (line == "[DONE]") break;
 
-                    if (line.HasValue())
-                    {
-                        var token = JsonConvert.DeserializeObject<ChatResponse>(line)?.ToString();
-                        if (token.HasValue()) result.Append(token);
-                    }
-                }
-            }
+            //        if (line.HasValue())
+            //        {
+            //            var token = JsonConvert.DeserializeObject<ChatResponse>(line)?.ToString();
+            //            if (token.HasValue()) result.Append(token);
+            //        }
+            //    }
+            //}
 
-            return result.Length > 0 ? result.ToString() : null;
+            //return result.Length > 0 ? result.ToString() : null;
         }
 
         public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null)
