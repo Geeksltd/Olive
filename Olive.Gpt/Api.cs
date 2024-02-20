@@ -12,6 +12,8 @@ using ImageMagick;
 using Newtonsoft.Json;
 using Olive.Gpt.ApiDto;
 using Olive.Gpt.DalleDto;
+using SkiaSharp;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Olive.Gpt
 {
@@ -191,17 +193,11 @@ namespace Olive.Gpt
                     using var fileTransferUtility = new TransferUtility(client);
 
                     var data = await url.AsUri().DownloadData();
-                    using var ms = new MemoryStream();
-                    using (var image = new MagickImage(data))
-                    {
-                        image.Quality = 100;
-                        image.Settings.SetDefine(MagickFormat.WebP, "lossless", true);
-                        image.Settings.SetDefine(MagickFormat.WebP, "method", "6");
-                        await image.WriteAsync(ms);
-                    }
+                    data= SKImage.FromEncodedData(data).Encode(SKEncodedImageFormat.Webp, 100).ToArray();
+
                     await fileTransferUtility.UploadAsync(new TransferUtilityUploadRequest
                     {
-                        InputStream = ms,
+                        InputStream = data.AsStream(),
                         Key = name,
                         BucketName = BucketName
                     });
