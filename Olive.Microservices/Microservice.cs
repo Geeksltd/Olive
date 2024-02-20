@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Xml.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -10,22 +11,32 @@ namespace Olive
     public class Microservice
     {
         public string Name { get; private set; }
-        string BaseUrl, BaseResourceUrl, BaseS3BucketUrl, AccessKey;
+        string _baseUrl, _baseResourceUrl, _baseS3BucketUrl, _accessKey;
 
-        Microservice(string name)
+        string BaseUrl =>
+            _baseUrl ??= Config.GetOrThrow("Microservice:" + Name + ":Url").EnsureEndsWith("/");
+
+        string BaseResourceUrl
+        {
+            get {if(_baseResourceUrl.HasValue()) return _baseResourceUrl;
+                var isDevelopment = Context.Current.ServiceProvider.GetRequiredService<IHostEnvironment>().IsDevelopment();
+                _baseResourceUrl = isDevelopment
+                    ? BaseUrl
+                    : Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/") + Name.ToLower() + "/";
+                return _baseResourceUrl;
+            }
+        }
+
+        string BaseS3BucketUrl =>
+            _baseS3BucketUrl ??= $"https://{Config.Get("Blob:S3:Bucket")}.s3.{Config.Get("Blob:S3:Region")}.amazonaws.com/";
+      
+        string AccessKey =>
+            _accessKey ??= Config.Get("Microservice:" + Name + ":AccessKey");
+
+        Microservice(string name, string url=null)
         {
             Name = name;
-
-            BaseUrl = Config.GetOrThrow("Microservice:" + name + ":Url").EnsureEndsWith("/");
-            
-            var isDevelopment = Context.Current.ServiceProvider.GetRequiredService<IHostEnvironment>().IsDevelopment();
-            BaseResourceUrl = isDevelopment
-                ? BaseUrl
-                : Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/") + name.ToLower() + "/";
-
-            BaseS3BucketUrl =$"https://{Config.Get("Blob:S3:Bucket")}.s3.{Config.Get("Blob:S3:Region")}.amazonaws.com/"; ;
-
-            AccessKey = Config.Get("Microservice:" + name + ":AccessKey");
+            _baseUrl = url;
         }
 
         public static Microservice Of(string serviceName)
@@ -42,7 +53,7 @@ namespace Olive
 
                 var name = Config.GetOrThrow("Microservice:Me:Name");
 
-                return new Microservice(name);
+                return new Microservice(name, url);
             }
         }
 
