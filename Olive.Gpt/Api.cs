@@ -8,12 +8,10 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Transfer;
-using ImageMagick;
 using Newtonsoft.Json;
 using Olive.Gpt.ApiDto;
 using Olive.Gpt.DalleDto;
 using SkiaSharp;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Olive.Gpt
 {
