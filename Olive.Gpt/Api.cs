@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using ImageMagick;
 using Newtonsoft.Json;
 using Olive.Gpt.ApiDto;
 using Olive.Gpt.DalleDto;
@@ -190,9 +191,17 @@ namespace Olive.Gpt
                     using var fileTransferUtility = new TransferUtility(client);
 
                     var data = await url.AsUri().DownloadData();
+                    using var ms = new MemoryStream();
+                    using (var image = new MagickImage(data))
+                    {
+                        image.Quality = 100;
+                        image.Settings.SetDefine(MagickFormat.WebP, "lossless", true);
+                        image.Settings.SetDefine(MagickFormat.WebP, "method", "6");
+                        await image.WriteAsync(ms);
+                    }
                     await fileTransferUtility.UploadAsync(new TransferUtilityUploadRequest
                     {
-                        InputStream = data.AsStream(),
+                        InputStream = ms,
                         Key = name,
                         BucketName = BucketName
                     });
