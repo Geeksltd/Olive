@@ -80,7 +80,7 @@ namespace Olive.Gpt
             if (model.Or(_model).StartsWith("dall-e-")) return await GenerateDalleImage(messages[0].Content, model);
 
             var request = new ChatRequest(messages) { Model = model.Or(_model) };
-            if (responseFormat == ResponseFormats.JsonObject && messages.Any(a=>a.Content.Contains("json",false)))
+            if (responseFormat == ResponseFormats.JsonObject && messages.Any(a => a.Content.Contains("json", false)))
             {
                 request.ResponseFormat = new ResponseFormat { Type = responseFormat };
             }
@@ -104,7 +104,7 @@ namespace Olive.Gpt
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
 
-            return await response.Content.ReadAsStringAsync();
+            return GetContent(await response.Content.ReadAsStringAsync());
 
             //using (var stream = await response.Content.ReadAsStreamAsync())
             //using (var reader = new StreamReader(stream))
@@ -123,6 +123,11 @@ namespace Olive.Gpt
             //}
 
             //return result.Length > 0 ? result.ToString() : null;
+        }
+
+        private string GetContent(string result)
+        {
+            return JsonConvert.DeserializeObject<ChatResponse>(result)?.Choices.FirstOrDefault()?.Message.Content ?? "";
         }
 
         public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null)
