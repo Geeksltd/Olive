@@ -173,7 +173,7 @@ namespace Olive.Gpt
             if (temporaryUrl == null) return "";
 
             var s3File = await S3.UploadToS3($"dalle/{Guid.NewGuid()}.webp", temporaryUrl);
-            return s3File.Or(temporaryUrl);
+            return s3File.Or("");
         }
 
         private static class S3
@@ -183,15 +183,26 @@ namespace Olive.Gpt
 
             internal static async Task<string> UploadToS3(string name, string url)
             {
+                byte[] data=null;
+                try
+                {
+                    data = await url.AsUri().DownloadData();
+                    data= SKImage.FromEncodedData(data).Encode(SKEncodedImageFormat.Webp, 100).ToArray();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    Log.For<Api>().Error(e);
+                }
+
+                if (data == null) return null;
+
                 try
                 {
                     var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
 
                     using var client = new AmazonS3Client(regionEndpoint);
                     using var fileTransferUtility = new TransferUtility(client);
-
-                    var data = await url.AsUri().DownloadData();
-                    data= SKImage.FromEncodedData(data).Encode(SKEncodedImageFormat.Webp, 100).ToArray();
 
                     await fileTransferUtility.UploadAsync(new TransferUtilityUploadRequest
                     {
@@ -205,6 +216,7 @@ namespace Olive.Gpt
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                    Log.For<Api>().Error(e);
                     return null;
                 }
             }
