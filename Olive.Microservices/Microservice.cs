@@ -28,7 +28,9 @@ namespace Olive
         }
 
         string BaseS3BucketUrl =>
-            _baseS3BucketUrl ??= $"https://{Config.Get("Blob:S3:Bucket")}.s3.{Config.Get("Blob:S3:Region")}.amazonaws.com/";
+            _baseS3BucketUrl ??= Config.Get("Microservice:" + Name + ":S3BucketUrl")
+                .Or($"https://{Config.Get("Blob:S3:Bucket")}.s3.{Config.Get("Blob:S3:Region").Or("Aws:Region")}.amazonaws.com/")
+                .EnsureEndsWith("/");
       
         string AccessKey =>
             _accessKey ??= Config.Get("Microservice:" + Name + ":AccessKey");
