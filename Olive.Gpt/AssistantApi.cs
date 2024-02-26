@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Olive.Gpt.ApiDto;
 using Olive.Gpt.AssistantDto;
 
@@ -10,7 +11,7 @@ namespace Olive.Gpt
 {
     public class AssistantApi
     {
-        readonly JsonSerializerSettings _settings = new() { NullValueHandling = NullValueHandling.Ignore };
+        readonly JsonSerializerSettings _settings = new() { NullValueHandling = NullValueHandling.Ignore};
         readonly HttpClient _client = new(CreateForgivingHandler()) { Timeout = 60.Seconds() };
 
         public AssistantApi(string apiKey)
@@ -18,6 +19,8 @@ namespace Olive.Gpt
             _client.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
             _client.DefaultRequestHeaders.Add("User-Agent", "olive/dotnet_openai_api");
             _client.DefaultRequestHeaders.Add("OpenAI-Beta", "assistants=v1");
+
+            _settings.Converters.Add(new StringEnumConverter());
         }
 
         static HttpClientHandler CreateForgivingHandler() => new()
@@ -28,7 +31,8 @@ namespace Olive.Gpt
 
         public async Task<string> CreateNewAssistant(OpenAiCreateAssistantDto assistantDto)
         {
-            var payload = new StringContent(JsonConvert.SerializeObject(assistantDto), Encoding.UTF8, "application/json");
+            var data = JsonConvert.SerializeObject(assistantDto, _settings);
+            var payload = new StringContent(data, Encoding.UTF8, "application/json");
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/assistants") { Content = payload };
             var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
@@ -46,7 +50,8 @@ namespace Olive.Gpt
         
         public async Task<string> EditAssistant(string assistantId,OpenAiCreateAssistantDto assistantDto)
         {
-            var payload = new StringContent(JsonConvert.SerializeObject(assistantDto), Encoding.UTF8, "application/json");
+            var data = JsonConvert.SerializeObject(assistantDto, _settings);
+            var payload = new StringContent(data, Encoding.UTF8, "application/json");
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"https://api.openai.com/v1/assistants/{assistantId}") { Content = payload };
             var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
