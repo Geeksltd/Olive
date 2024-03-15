@@ -4,7 +4,7 @@
     {
         public static DataAccessOptions SqlServer(this DataAccessOptions @this)
         {
-            return @this.Add<System.Data.SqlClient.SqlConnection, SqlServerSqlCommandGenerator>();
+            return @this.Add<Microsoft.Data.SqlClient.SqlConnection, SqlServerSqlCommandGenerator>();
         }
     }
 }
