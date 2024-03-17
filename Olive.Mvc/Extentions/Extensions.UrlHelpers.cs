@@ -38,14 +38,16 @@ namespace Olive.Mvc
         /// <summary>
         /// Gets the current url but encrypted as a gzipped base64 and then adapted to be url safe.
         /// </summary>
-        public static string AsSafeReturnUrl(this IUrlHelper @this)
-        {
-            return "..." + @this.Current().ToGZippedBase64()
+        public static string AsSafeReturnUrl(this IUrlHelper @this) => @this.Current().AsSafeZippedUrl();
+
+        /// <summary>
+        /// Gets the url encrypted as a gzipped base64 and then adapted to be url safe.
+        /// </summary>
+        public static string AsSafeZippedUrl(this string url) => "..." + url.OrEmpty().ToGZippedBase64()
                 // 3 charactesr in Base64 should be replaced with Url safe alternatives
                 .Replace("+", "~")
                 .Replace("/", "_")
                 .Replace("=", "-");
-        }
 
         public static string Current(this IUrlHelper @this, object queryParameters)
         {
