@@ -322,16 +322,23 @@ namespace Olive
                     @this.Name.Remove(@this.Name.IndexOf('`')),
                     @this.GetGenericArguments().Select(t => t.GetProgrammingName(useGlobalForParams, useNamespaceForParams, useNamespaceForParams, useGlobalForParams, useCSharpAlias)).ToString(", "));
             }
-            else
-            {
-                if (@this.FullName == null)
-                {
-                    // Generic parameter name:
-                    return @this.Name.TrimEnd("&");
-                }
 
-                return "global::".OnlyWhen(useGlobal) + @this.Namespace.OnlyWhen(useNamespace).WithSuffix(".") + @this.Name.Replace("+", ".").TrimEnd("&");
+            if (@this.FullName == null)
+            {
+                // Generic parameter name:
+                return @this.Name.TrimEnd("&");
             }
+
+            var name = @this.Name.Replace("+", ".").TrimEnd("&");
+
+            var decType = @this.DeclaringType;
+            while (decType!=null)
+            {
+                name = name.WithPrefix($"{decType.Name.Replace("+", ".").TrimEnd("&")}.");
+                decType = decType.DeclaringType;
+            }
+
+            return "global::".OnlyWhen(useGlobal) + @this.Namespace.OnlyWhen(useNamespace).WithSuffix(".") + name;
         }
 
         /// <summary>
