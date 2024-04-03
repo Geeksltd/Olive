@@ -22,7 +22,8 @@ namespace Olive.Mvc
             {
                 if (context.Response.StatusCode >= 500)
                 {
-                    Log.For<LogUnhandledExceptionsMiddleware>().Error(e);
+                    var message = "[Unhandled exception] " + context.Request.ToRawUrl();
+                    Log.For<LogUnhandledExceptionsMiddleware>().Error(e, message);
                 }
                 throw;
             }
