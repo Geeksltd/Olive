@@ -111,7 +111,13 @@ namespace Olive
                     continue;
                 }
 
-                // NSErrorException.Message may result in a null reference exception!
+                // NSErrorException.Message may result in a native crash!
+                if (err.GetType().Name == "NSErrorException")
+                {
+                    resultBuilder.AppendLine("Skipped NSErrorException");
+                    break;
+                }
+                    
                 try { resultBuilder.AppendLineIf(err.Message); }
                 catch { }
 
