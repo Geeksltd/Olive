@@ -19,7 +19,7 @@
 Olive is a framework built on top of .NET for more productive cross-platform software development in .NET solutions. It provides a set of productivity tools to make .NET development easier, cleaner and more expressive. It is created, maintained and supported by Geeks Ltd.
 
 - **Compatibility**: As a .NET Standard 2.0 library it's compatible with almost any .NET stack. 
-- **License**: Available under the GPL v3 license. See [License.md](License.md) for more information.
+- **License**: Available under the MIT license. See [License.md](License.md) for more information.
 - **Contributions welcome**: Just fork the repo, do your changes then make a merge request.
 - **Found an issue?** [report here](https://github.com/Geeksltd/Olive/issues).
 
