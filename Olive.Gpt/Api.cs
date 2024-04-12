@@ -187,7 +187,7 @@ namespace Olive.Gpt
                 try
                 {
                     data = await url.AsUri().DownloadData();
-                    data= SKImage.FromEncodedData(data).Encode(SKEncodedImageFormat.Webp, 100).ToArray();
+                    data = SKImage.FromEncodedData(data).Encode(SKEncodedImageFormat.Webp, 80).ToArray();
                 }
                 catch (Exception e)
                 {
