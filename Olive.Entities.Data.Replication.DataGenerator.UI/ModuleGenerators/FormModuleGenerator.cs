@@ -37,7 +37,11 @@
             builder.AppendLine(" <div class=\"form-group row\" style={margin:20px}>");
             builder.AppendLine($"<label for='{prop.Name}' class='col-sm-2 col-form-label'>{prop.Name}</label>");
             builder.AppendLine("<div class=\"col-sm-10\">");
-            builder.AppendLine($"<input type='{GetFieldType(prop)}' value='{GetDefaultValue(prop, item)}' name='{prop.Name}' class='{GetFieldClass(prop)}' placeholder='{prop.Name}'>");
+            var fieldType = GetFieldType(prop);
+            if (fieldType == "checkbox")
+                builder.AppendLine($"<input type='{fieldType}' name='{prop.Name}' class='{GetFieldClass(prop)}' placeholder='{prop.Name}'>");
+            else
+                builder.AppendLine($"<input type='{fieldType}' value='{GetDefaultValue(prop, item)}' name='{prop.Name}' class='{GetFieldClass(prop)}' placeholder='{prop.Name}'>");
             builder.AppendLine("</div>");
             builder.AppendLine("</div>");
             return builder.ToString();

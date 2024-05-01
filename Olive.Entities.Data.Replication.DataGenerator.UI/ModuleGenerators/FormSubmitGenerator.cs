@@ -25,8 +25,8 @@
                 if (item == null) item = _type.CreateInstance<IEntity>();
                 foreach (var column in GetColumns())
                 {
-                    var val = form.FirstOrDefault(x => x.Key == column.Name).Value.ToString() ?? string.Empty;
-                    column.SetValue(item, ConvertValue(column, val));
+                    var val = form.FirstOrDefault(x => x.Key == column.Name).Value.ToStringOrEmpty() ?? string.Empty;
+                    column.SetValue(item, ConvertValue(column, val == "on" ? "true" : val));
                 }
                 try
                 {

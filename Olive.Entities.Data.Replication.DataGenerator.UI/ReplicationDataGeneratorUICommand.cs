@@ -45,7 +45,9 @@
                 content =  await new FormModuleGenerator(domainType, _Endpoint).Render(_NameSpace, _TypeName);
             else
                 content =  await new ListModuleGenerator(domainType, _Endpoint).Render(_NameSpace, _TypeName);
-           await Response.WriteAsync(content);
+            
+            await Task.Delay(1000);
+            //await Response.WriteAsync(content);
 
             return content;
 
