@@ -49,6 +49,13 @@ namespace Olive.Mvc
                 .Replace("/", "_")
                 .Replace("=", "-");
 
+        /// <summary>
+        /// Gets the url decrypted from gzipped and safe base64.
+        /// </summary>
+        public static string FromSafeZippedUrl(this string url) => url.StartsWith("...")
+            ? url.Substring(3).Replace("~", "+").Replace("_", "/").Replace("-", "=").FromGZippedBase64()
+            : url;
+
         public static string Current(this IUrlHelper @this, object queryParameters)
         {
             if (queryParameters == null) return Current(@this);
@@ -87,7 +94,7 @@ namespace Olive.Mvc
 
             // Using Safe Encode?
             if (url.StartsWith("..."))
-                url = url.Substring(3).Replace("~", "+").Replace("_", "/").Replace("-", "=").FromGZippedBase64();
+                url = url.FromSafeZippedUrl();
 
             if (!@this.IsLocalUrl(url))
                 throw new Exception(url + " is not a valid ReturnUrl as it's external and so unsafe.");
