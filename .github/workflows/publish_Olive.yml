@@ -208,6 +208,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.Mvc.Extensions/Olive.Entities.Data.Replication.Mvc.Extensions.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive Entities Data Replication QueueUrlProvider NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.Replication.QueueUrlProvider/Olive.Entities.Data.Replication.QueueUrlProvider.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Entities Data SQLite NuGet Package
       uses: Geeksltd/publish-nuget@v2
       with:
