@@ -33,10 +33,16 @@
 
                 if (settableValue == null)
                     settableValue = Property.PropertyType.GetDefaultValue();
-                else if (Property.PropertyType == typeof(string) && !(settableValue is string))
+                else if (Property.PropertyType == typeof(string) && settableValue is not string)
                     settableValue = settableValue.ToStringOrEmpty();
                 else if (!Property.PropertyType.IsAssignableFrom(settableValue.GetType()))
                     settableValue = Convert.ChangeType(settableValue, Property.PropertyType);
+
+                if (Property.CanRead)
+                {
+                    var currentValue = Property.GetValue(target);
+                    if (currentValue == settableValue) return;
+                }
 
                 Property.SetValue(target, settableValue);
             }

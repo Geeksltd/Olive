@@ -35,7 +35,9 @@ namespace Olive
 
         protected override void SetValue(object value)
         {
-            this.value = (TValue)value;
+            var newValue = (TValue)value;
+            if (this.value?.Equals(newValue) == true) return;
+            this.value = newValue;
             ApplyBindings();
             FireChanged();
         }
