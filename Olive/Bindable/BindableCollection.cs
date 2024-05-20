@@ -99,8 +99,22 @@ namespace Olive
         /// </summary>
         public void Replace(IEnumerable<T> items)
         {
-            ClearCore();
-            Add(items);
+            var additions = items.Except(Value).ToList();
+            var deletions = Value.Except(items).ToList();
+
+            lock (Value)
+            {
+                if (deletions.HasAny())
+                    Value.RemoveWhere(x => deletions.Contains(x));
+                
+                Value.AddRange(additions);
+            }
+
+            if (additions.HasAny() || deletions.HasAny())
+            {
+                ApplyBindings();
+                FireChanged();
+            }
         }
 
         /// <summary>
