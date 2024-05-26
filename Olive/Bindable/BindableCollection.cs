@@ -102,44 +102,44 @@ namespace Olive
             var additions = items.Except(Value);
             var deletions = Value.Except(items);
 
+            void ReplaceCompletely(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
+            {
+                if (additions.None() && deletions.None())
+                    return;
+
+                ClearCore();
+                Add(items);
+            }
+
+            void ReplacePartially(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
+            {
+                bool HasChanged() => additions.HasAny() || deletions.HasAny();
+
+                if (!HasChanged())
+                    return;
+
+                lock (Value)
+                {
+                    if (deletions.HasAny())
+                        Value.RemoveWhere(x => deletions.Contains(x));
+
+                    Value.AddRange(additions);
+
+                    if (HasChanged())
+                        Value = Value.OrderBy(x => items.IndexOf(x)).ToList();
+                }
+
+                if (HasChanged())
+                {
+                    ApplyBindings();
+                    FireChanged();
+                }
+            }
+
             if (items.Count() > 500)
                 ReplaceCompletely(items, additions, deletions);
             else
                 ReplacePartially(items, additions, deletions);
-        }
-
-        void ReplaceCompletely(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
-        {
-            if (additions.None() && deletions.None())
-                return;
-
-            ClearCore();
-            Add(items);
-        }
-
-        void ReplacePartially(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
-        {
-            bool HasChanged() => additions.HasAny() || deletions.HasAny();
-
-            if (!HasChanged())
-                return;
-
-            lock (Value)
-            {
-                if (deletions.HasAny())
-                    Value.RemoveWhere(x => deletions.Contains(x));
-
-                Value.AddRange(additions);
-
-                if (HasChanged())
-                    Value = Value.OrderBy(x => items.IndexOf(x)).ToList();
-            }
-
-            if (HasChanged())
-            {
-                ApplyBindings();
-                FireChanged();
-            }
         }
 
         /// <summary>
