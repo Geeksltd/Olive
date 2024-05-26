@@ -99,27 +99,47 @@ namespace Olive
         /// </summary>
         public void Replace(IEnumerable<T> items)
         {
-            var additions = items.Except(Value).ToList();
-            var deletions = Value.Except(items).ToList();
+            var additions = items.Except(Value);
+            var deletions = Value.Except(items);
 
-            bool HasChanged() => additions.HasAny() || deletions.HasAny();
-
-            lock (Value)
+            void ReplaceCompletely(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
             {
-                if (deletions.HasAny())
-                    Value.RemoveWhere(x => deletions.Contains(x));
-                
-                Value.AddRange(additions);
-                
+                if (additions.None() && deletions.None())
+                    return;
+
+                ClearCore();
+                Add(items);
+            }
+
+            void ReplacePartially(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
+            {
+                bool HasChanged() => additions.HasAny() || deletions.HasAny();
+
+                if (!HasChanged())
+                    return;
+
+                lock (Value)
+                {
+                    if (deletions.HasAny())
+                        Value.RemoveWhere(x => deletions.Contains(x));
+
+                    Value.AddRange(additions);
+
+                    if (HasChanged())
+                        Value = Value.OrderBy(x => items.IndexOf(x)).ToList();
+                }
+
                 if (HasChanged())
-                    Value = Value.OrderBy(x => items.IndexOf(x)).ToList();
+                {
+                    ApplyBindings();
+                    FireChanged();
+                }
             }
 
-            if (HasChanged())
-            {
-                ApplyBindings();
-                FireChanged();
-            }
+            if (items.Count() > 500)
+                ReplaceCompletely(items, additions, deletions);
+            else
+                ReplacePartially(items, additions, deletions);
         }
 
         /// <summary>
