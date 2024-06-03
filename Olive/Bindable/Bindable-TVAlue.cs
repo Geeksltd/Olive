@@ -1,6 +1,7 @@
 namespace Olive
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Linq;
     using System.Reflection;
 
@@ -9,8 +10,10 @@ namespace Olive
     /// </summary>
     public partial class Bindable<TValue> : Bindable
     {
+        static readonly ConcurrentDictionary<(object, string), PropertyInfo> Properties = [];
+        readonly ConcurrentList<IBinding<TValue>> Bindings = [];
+
         TValue value;
-        readonly ConcurrentList<IBinding<TValue>> Bindings = new();
 
         /// <summary>
         /// Fired when the value is changed by either source (API) or user input.
@@ -137,15 +140,18 @@ namespace Olive
             if (target is null) throw new ArgumentNullException(nameof(target));
             if (propertyName.IsEmpty()) throw new ArgumentNullException(nameof(propertyName));
 
-            var property = target.GetType().GetProperty(propertyName);
+            return Properties.GetOrAdd((target, propertyName), key =>
+            {
+                var property = key.Item1.GetType().GetProperty(key.Item2);
 
             if (property is null)
-                throw new Exception($"{target.GetType().FullName} does not have a public instance property named {propertyName}.");
+                    throw new Exception($"{key.Item1.GetType().FullName} does not have a public instance property named {key.Item2}.");
 
             if (!property.CanWrite)
-                throw new Exception($"The {propertyName} property of {target.GetType().FullName} is read-only.");
+                    throw new Exception($"The {key.Item2} property of {key.Item1.GetType().FullName} is read-only.");
 
             return property;
+            });
         }
 
         public override void ClearBindings() => Changed = null;
