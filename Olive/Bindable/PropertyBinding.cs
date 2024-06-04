@@ -38,12 +38,6 @@
                 else if (!Property.PropertyType.IsAssignableFrom(settableValue.GetType()))
                     settableValue = Convert.ChangeType(settableValue, Property.PropertyType);
 
-                if (Property.CanRead)
-                {
-                    var currentValue = Property.GetValue(target);
-                    if (currentValue == settableValue) return;
-                }
-
                 Property.SetValue(target, settableValue);
             }
             catch (Exception ex)
