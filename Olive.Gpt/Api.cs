@@ -135,7 +135,7 @@ namespace Olive.Gpt
             return JsonConvert.DeserializeObject<ChatResponse>(result)?.Choices.FirstOrDefault()?.Message.Content ?? "";
         }
 
-        public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null)
+        public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null, bool saveToS3 = true)
         {
             const string api = "https://api.openai.com/v1/images/generations";
 
@@ -164,7 +164,7 @@ namespace Olive.Gpt
             }
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException("Error calling OpenAi API for Dall-E image generation. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent+ ". Response body: " + await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException("Error calling OpenAi API for Dall-E image generation. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
 
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<DalleResponse>(responseContent);
@@ -172,8 +172,13 @@ namespace Olive.Gpt
             var temporaryUrl = responseObject?.Data?[0]?.Url;
             if (temporaryUrl == null) return "";
 
-            var s3File = await S3.UploadToS3($"dalle/{Guid.NewGuid()}.webp", temporaryUrl);
-            return s3File.Or("");
+            if (saveToS3)
+            {
+                var s3File = await S3.UploadToS3($"dalle/{Guid.NewGuid()}.webp", temporaryUrl);
+                return s3File.Or("");
+            }
+
+            return temporaryUrl;
         }
 
         private static class S3
@@ -183,7 +188,7 @@ namespace Olive.Gpt
 
             internal static async Task<string> UploadToS3(string name, string url)
             {
-                byte[] data=null;
+                byte[] data = null;
                 try
                 {
                     data = await url.AsUri().DownloadData();
