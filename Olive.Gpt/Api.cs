@@ -137,6 +137,7 @@ namespace Olive.Gpt
 
         public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null)
         {
+            string saveToS3Key = "save-s3";
             const string api = "https://api.openai.com/v1/images/generations";
 
             var requestPayload = parameters ?? new Dictionary<string, object>();
@@ -145,6 +146,7 @@ namespace Olive.Gpt
             if (!requestPayload.ContainsKey("size")) requestPayload.Add("size", "1024x1024");
             if (!requestPayload.ContainsKey("quality")) requestPayload.Add("quality", "standard");
             if (!requestPayload.ContainsKey("n")) requestPayload.Add("n", 1);
+            if (!requestPayload.ContainsKey(saveToS3Key)) requestPayload.Add(saveToS3Key, true);
 
             var jsonContent = JsonConvert.SerializeObject(requestPayload, Settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -164,7 +166,7 @@ namespace Olive.Gpt
             }
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException("Error calling OpenAi API for Dall-E image generation. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent+ ". Response body: " + await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException("Error calling OpenAi API for Dall-E image generation. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
 
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<DalleResponse>(responseContent);
@@ -172,8 +174,16 @@ namespace Olive.Gpt
             var temporaryUrl = responseObject?.Data?[0]?.Url;
             if (temporaryUrl == null) return "";
 
-            var s3File = await S3.UploadToS3($"dalle/{Guid.NewGuid()}.webp", temporaryUrl);
-            return s3File.Or("");
+            if (requestPayload[saveToS3Key] is bool saveToS3)
+            {
+                if (saveToS3)
+                {
+                    var s3File = await S3.UploadToS3($"dalle/{Guid.NewGuid()}.webp", temporaryUrl);
+                    return s3File.Or("");
+                }
+            }
+
+            return temporaryUrl;
         }
 
         private static class S3
@@ -183,7 +193,7 @@ namespace Olive.Gpt
 
             internal static async Task<string> UploadToS3(string name, string url)
             {
-                byte[] data=null;
+                byte[] data = null;
                 try
                 {
                     data = await url.AsUri().DownloadData();
