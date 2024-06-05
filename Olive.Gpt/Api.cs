@@ -135,9 +135,8 @@ namespace Olive.Gpt
             return JsonConvert.DeserializeObject<ChatResponse>(result)?.Choices.FirstOrDefault()?.Message.Content ?? "";
         }
 
-        public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null)
+        public async Task<string> GenerateDalleImage(string prompt, string model = "dall-e-3", Dictionary<string, object> parameters = null, bool saveToS3 = true)
         {
-            string saveToS3Key = "save-s3";
             const string api = "https://api.openai.com/v1/images/generations";
 
             var requestPayload = parameters ?? new Dictionary<string, object>();
@@ -146,7 +145,6 @@ namespace Olive.Gpt
             if (!requestPayload.ContainsKey("size")) requestPayload.Add("size", "1024x1024");
             if (!requestPayload.ContainsKey("quality")) requestPayload.Add("quality", "standard");
             if (!requestPayload.ContainsKey("n")) requestPayload.Add("n", 1);
-            if (!requestPayload.ContainsKey(saveToS3Key)) requestPayload.Add(saveToS3Key, true);
 
             var jsonContent = JsonConvert.SerializeObject(requestPayload, Settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -174,13 +172,10 @@ namespace Olive.Gpt
             var temporaryUrl = responseObject?.Data?[0]?.Url;
             if (temporaryUrl == null) return "";
 
-            if (requestPayload[saveToS3Key] is bool saveToS3)
+            if (saveToS3)
             {
-                if (saveToS3)
-                {
-                    var s3File = await S3.UploadToS3($"dalle/{Guid.NewGuid()}.webp", temporaryUrl);
-                    return s3File.Or("");
-                }
+                var s3File = await S3.UploadToS3($"dalle/{Guid.NewGuid()}.webp", temporaryUrl);
+                return s3File.Or("");
             }
 
             return temporaryUrl;
