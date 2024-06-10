@@ -113,10 +113,7 @@ namespace Olive
 
             void ReplacePartially(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
             {
-                bool HasChanged() => additions.HasAny() || deletions.HasAny();
-
-                if (!HasChanged())
-                    return;
+                var hasChanged = deletions.HasAny() || additions.HasAny();
 
                 lock (Value)
                 {
@@ -125,15 +122,12 @@ namespace Olive
 
                     Value.AddRange(additions);
 
-                    if (HasChanged())
+                    if (hasChanged)
                         Value = Value.OrderBy(x => items.IndexOf(x)).ToList();
                 }
 
-                if (HasChanged())
-                {
-                    ApplyBindings();
-                    FireChanged();
-                }
+                ApplyBindings();
+                FireChanged();
             }
 
             if (items.Count() > 500)
