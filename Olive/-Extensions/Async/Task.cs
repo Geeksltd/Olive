@@ -243,10 +243,12 @@ namespace Olive
         }
 
         public static Task OrCompleted(this Task task) => task ?? Task.CompletedTask;
+        
+        public static Task<TResult> OrCompleted<TResult>(this Task<TResult> task, TResult result = default) => task ?? Task.FromResult(result);
 
-        public static Task<TResult> OrCompleted<TResult>(this Task<TResult> task, TResult result = default)
-        {
-            return task ?? Task.FromResult(result);
-        }
+        public static Task OrEmpty(this Task @this) => @this ?? Task.CompletedTask;
+
+        public static Task<TResult> OrEmpty<TResult>(this Task<TResult> @this, TResult result = default) => @this ?? Task.FromResult(result);
+
     }
 }

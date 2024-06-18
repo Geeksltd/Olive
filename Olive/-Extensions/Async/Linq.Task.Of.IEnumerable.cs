@@ -336,8 +336,9 @@ namespace Olive
         /// Returns an empty List if this collection is null.
         /// </summary>
         [EscapeGCop("I am the GCop solution")]
-        public static async Task<IEnumerable<T>> OrEmpty<T>(this Task<IEnumerable<T>> @this)
+        public static async Task<IEnumerable<T>> OrEmpty<T>(this Task<IEnumerable<T>>? @this)
         {
+            if(@this is null) return Enumerable.Empty<T>();
             return (await @this.ConfigureAwait(false)) ?? Enumerable.Empty<T>();
         }
 
