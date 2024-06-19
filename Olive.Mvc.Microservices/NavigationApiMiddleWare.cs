@@ -66,7 +66,7 @@ namespace Olive.Mvc.Microservices
                     Infos = navigations.SelectMany(x => x.GetBoardInfos()),
                     Menus = navigations.SelectMany(x => x.GetBoardMenus()),
                     Intros = navigations.SelectMany(x => x.GetBoardIntros()),
-                    BoxOrder= navigations.Select(x=>x.GetBoardOrder())
+                    BoxOrder = navigations.Select(x => x.GetBoardOrder())
                 });
             await context.Response.WriteAsync(response);
         }
@@ -87,6 +87,10 @@ namespace Olive.Mvc.Microservices
             var result = Newtonsoft.Json.JsonConvert.SerializeObject(boardSources);
             await context.Response.WriteAsync(result);
         }
-        static Type[] AllLoadedTypes() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToArray();
+        static Type[] AllLoadedTypes() => AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Where(x => new string[] { "domain", "website" }.Contains(x.GetName().Name.ToLower()))
+            .SelectMany(x => x.GetTypes())
+            .ToArray();
     }
 }
