@@ -11,6 +11,8 @@ namespace Olive
 
         public TwoWayBindable(TValue defaultValue) : base(defaultValue) { }
 
+        public TwoWayBindable(TValue defaultValue, TimeSpan timeout) : base(defaultValue, timeout) { }
+
         /// <summary>
         /// Fired when the value is changed by input (user action) rather than source (API).
         /// </summary>

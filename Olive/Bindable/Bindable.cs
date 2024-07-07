@@ -1,8 +1,13 @@
 namespace Olive
 {
+    using DebounceThrottle;
+    using System;
+
     public abstract partial class Bindable : IBindable
     {
         object IBindable.Value { get => GetValue(); set => SetValue(value); }
+
+        protected ThrottleDispatcher dispatcher = new(TimeSpan.FromSeconds(0));
 
         public abstract IBinding AddBinding(object target, string propertyName);
 

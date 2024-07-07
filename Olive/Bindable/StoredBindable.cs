@@ -1,5 +1,6 @@
 ﻿namespace Olive
 {
+    using System;
     using System.IO;
     using Newtonsoft.Json;
 
@@ -11,9 +12,13 @@
     {
         static readonly object SyncLock = new();
         static readonly JsonSerializerSettings Settings = new() { TypeNameHandling = TypeNameHandling.Auto };
-        readonly FileInfo File;
+        FileInfo File;
 
-        public StoredBindable(FileInfo jsonFile, T defaultValue = default)
+        public StoredBindable(FileInfo jsonFile, T defaultValue = default) => InitializeStoredBindable(jsonFile, defaultValue);
+
+        public StoredBindable(FileInfo jsonFile, TimeSpan timeout, T defaultValue = default) : base(timeout) => InitializeStoredBindable(jsonFile, defaultValue);
+
+        void InitializeStoredBindable(FileInfo jsonFile, T defaultValue)
         {
             File = jsonFile;
             Value = TryLoad(defaultValue);

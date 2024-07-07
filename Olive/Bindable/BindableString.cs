@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using Olive;
+﻿using Olive;
+using System;
+using System.Linq;
 
 namespace Olive
 {
@@ -7,6 +8,8 @@ namespace Olive
     {
         public readonly Bindable<string> State = new();
 
-        public BindableString() => State.Bind(this, x => "skeleton".OnlyWhen(x.HasValue() && x.All(c => c.IsAnyOf(' ', '▅'))));
+        public BindableString(TimeSpan timeout) : base(timeout) => State.Bind(this, x => "skeleton".OnlyWhen(x.HasValue() && x.All(c => c.IsAnyOf(' ', '▅'))));
+
+        public BindableString() : base() => State.Bind(this, x => "skeleton".OnlyWhen(x.HasValue() && x.All(c => c.IsAnyOf(' ', '▅'))));
     }
 }

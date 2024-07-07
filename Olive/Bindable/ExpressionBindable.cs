@@ -13,6 +13,12 @@ namespace Olive
             Expression = expression;
         }
 
+        public ExpressionBindable(Bindable<TParam1> source, Func<TParam1, TOut> expression, TimeSpan timeout) : base(timeout)
+        {
+            Source = source;
+            Expression = expression;
+        }
+
         protected override object GetValue() => Expression(Source.Value);
     }
 }

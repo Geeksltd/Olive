@@ -9,7 +9,8 @@ namespace Olive
     {
         public event Action<T> Added;
 
-        public BindableCollection() : base(new List<T>()) { }
+        public BindableCollection() : base([]) { }
+        public BindableCollection(TimeSpan timeout) : base([], timeout) { }
         protected void FireAdded(T item) => Added?.Invoke(item);
 
         public event Action<T> Removing;

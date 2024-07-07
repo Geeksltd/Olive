@@ -1,7 +1,7 @@
 namespace Olive
 {
+    using DebounceThrottle;
     using System;
-    using System.Linq;
     using System.Reflection;
 
     /// <summary>
@@ -10,14 +10,23 @@ namespace Olive
     public partial class Bindable<TValue> : Bindable
     {
         TValue value;
-        readonly ConcurrentList<IBinding<TValue>> Bindings = new();
+        readonly ConcurrentList<IBinding<TValue>> Bindings = [];
 
         /// <summary>
         /// Fired when the value is changed by either source (API) or user input.
         /// </summary>
         public event Action Changed;
 
+        public Bindable(TValue value, TimeSpan timeout)
+        {
+            this.value = value;
+            dispatcher = new ThrottleDispatcher(timeout);
+        }
+
         public Bindable(TValue value) => this.value = value;
+
+        public Bindable(TimeSpan timeout) => dispatcher = new ThrottleDispatcher(timeout);
+
         public Bindable() { }
 
         protected void FireChanged() => Changed?.Invoke();
@@ -36,15 +45,18 @@ namespace Olive
         protected override void SetValue(object value)
         {
             this.value = (TValue)value;
-            ApplyBindings();
-            FireChanged();
+            dispatcher.Throttle(() =>
+            {
+                ApplyBindings();
+                FireChanged();
+            });
         }
 
         protected void ApplyBindings() => Bindings.Do(item => item.Apply(value));
 
         protected override object GetValue() => Value;
 
-        public static implicit operator Bindable<TValue>(TValue value) => new Bindable<TValue>(value);
+        public static implicit operator Bindable<TValue>(TValue value) => new(value);
 
         public static implicit operator TValue(Bindable<TValue> item) => item.value;
 
