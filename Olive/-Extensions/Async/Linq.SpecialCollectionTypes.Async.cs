@@ -342,11 +342,8 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<TSource[]> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<TSource[]> @this)
-        { 
-            if(@this is null) return Task.FromResult(Enumerable.Empty<TSource>());
-            return @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-        }
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<TSource[]> @this) 
+        => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
  
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
@@ -609,11 +606,8 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IOrderedEnumerable<TSource>> @this)
-        {
-            if(@this is null) return Task.FromResult(Enumerable.Empty<TSource>());
-            return @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-        }
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IOrderedEnumerable<TSource>> @this) 
+        => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
  
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
@@ -876,11 +870,8 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<List<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<List<TSource>> @this)
-        { 
-            if(@this is null) return Task.FromResult(Enumerable.Empty<TSource>());
-            return @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-        }
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<List<TSource>> @this) 
+        => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
  
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
@@ -1143,11 +1134,8 @@ namespace Olive
         public static Task<TResult> Min<TSource, TResult>(
         this Task<IList<TSource>> @this, Func<TSource, TResult> func) => @this.ForLinq().Min(func);
 
-        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IList<TSource>> @this)
-        {
-            if(@this is null) return Task.FromResult(Enumerable.Empty<TSource>());
-            return @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
-        }
+        public static Task<IEnumerable<TSource>> OrEmpty<TSource>(this Task<IList<TSource>> @this) 
+        => @this.ForLinq().OrEmpty() ?? Task.FromResult(Enumerable.Empty<TSource>());
  
         /// <summary>
         /// If a specified condition is true, then the filter predicate will be executed.
