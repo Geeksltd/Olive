@@ -130,7 +130,7 @@ namespace Olive
                 FireChanged();
             }
 
-            if (items.Count() > 500)
+            if (items.Count() > 99 || Value.Count > 99 || deletions.Count() > 50)
                 ReplaceCompletely(items, additions, deletions);
             else
                 ReplacePartially(items, additions, deletions);
