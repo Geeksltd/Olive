@@ -98,11 +98,18 @@ namespace Olive
         /// Because it clears the items, and adds the newly provided items all in one go, and then fires the Changed event once to update the UI.        
         /// </summary>
         public void Replace(IEnumerable<T> items)
-        {
-            var additions = items.Except(Value);
-            var deletions = Value.Except(items);
+            => Replace(items.ToArray());
 
-            void ReplaceCompletely(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
+        /// <summary>
+        /// It's similar to calling Clear() and then Add() but it's faster.
+        /// Because it clears the items, and adds the newly provided items all in one go, and then fires the Changed event once to update the UI.        
+        /// </summary>
+        public void Replace(T[] items)
+        {
+            var additions = items.Except(Value).ToArray();
+            var deletions = Value.Except(items).ToArray();
+
+            void ReplaceCompletely(T[] items, T[] additions, T[] deletions)
             {
                 if (additions.None() && deletions.None())
                     return;
@@ -111,23 +118,25 @@ namespace Olive
                 Add(items);
             }
 
-            void ReplacePartially(IEnumerable<T> items, IEnumerable<T> additions, IEnumerable<T> deletions)
+            void ReplacePartially(T[] items, T[] additions, T[] deletions)
             {
                 var hasChanged = deletions.HasAny() || additions.HasAny();
 
                 lock (Value)
                 {
                     if (deletions.HasAny())
-                        Value.RemoveWhere(x => deletions.Contains(x));
+                        Value.RemoveWhere(deletions.Contains);
 
                     Value.AddRange(additions);
 
                     if (hasChanged)
-                        Value = Value.OrderBy(x => items.IndexOf(x)).ToList();
+                        Value = Value.OrderBy(items.IndexOf).ToList();
+                    else
+                    {
+                        ApplyBindings();
+                        FireChanged();
+                    }
                 }
-
-                ApplyBindings();
-                FireChanged();
             }
 
             if (items.Count() > 99 || Value.Count > 99 || deletions.Count() > 50)
