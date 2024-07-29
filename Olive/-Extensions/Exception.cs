@@ -177,7 +177,7 @@ namespace Olive
 
                 void AppendStackTrace()
                 {
-                    var stack = err.GetUsefulStack().TrimOrEmpty();
+                    var stack = @this.GetUsefulStack().TrimOrEmpty();
 
                     if (stack.HasValue())
                     {
