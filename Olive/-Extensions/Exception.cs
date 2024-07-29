@@ -98,7 +98,8 @@ namespace Olive
         /// </summary>
         public static string ToFullMessage(this Exception @this, string additionalMessage, bool includeStackTrace, bool includeData)
         {
-            var err = @this ?? throw new NullReferenceException("This exception object is null");
+            if (@this is null) return "This exception object is null";
+            var err = @this;
 
             var resultBuilder = new StringBuilder();
             resultBuilder.AppendLineIf(additionalMessage);
@@ -112,30 +113,50 @@ namespace Olive
                 }
 
                 // NSErrorException.Message may result in a native crash!
-                if (err.GetType().Name == "NSErrorException")
+                if (IsNSErrorException())
                 {
                     resultBuilder.AppendLine("Skipped NSErrorException");
                     break;
                 }
-                    
-                try { resultBuilder.AppendLineIf(err.Message); }
-                catch { }
 
-                if (includeData && err.Data?.Count > 0)
+                bool IsNSErrorException() => err.GetType().Name == "NSErrorException";
+
+                AppendMessage();
+
+                void AppendMessage()
                 {
-                    resultBuilder.AppendLine("\r\nException Data:\r\n{");
+                    try { resultBuilder.AppendLineIf(err.Message); }
+                    catch { }
+                }
 
-                    foreach (var i in err.Data)
-                        resultBuilder.AppendLine(ToLogText(i).WithPrefix("    "));
+                if (includeData)
+                {
+                    AppendData();
 
-                    resultBuilder.AppendLine("}");
+                    void AppendData()
+                    {
+                        if (err.Data?.Count > 0) return;
+
+                        resultBuilder.AppendLine("\r\nException Data:\r\n{");
+
+                        foreach (var i in err.Data)
+                            resultBuilder.AppendLine(ToLogText(i).WithPrefix("    "));
+
+                        resultBuilder.AppendLine("}");
+                    }
                 }
 
                 if (err is ReflectionTypeLoadException refErr)
                 {
-                    foreach (var loaderEx in refErr.LoaderExceptions)
-                        resultBuilder.AppendLine("Type load exception: " + loaderEx.ToFullMessage());
+                    AppendLoaderExceptions();
+
+                    void AppendLoaderExceptions()
+                    {
+                        foreach (var loaderEx in refErr.LoaderExceptions.OrEmpty().ExceptNull())
+                            resultBuilder.AppendLine("Type load exception: " + loaderEx.ToFullMessage());
+                    }
                 }
+
 
                 err = err.InnerException;
 
@@ -152,13 +173,18 @@ namespace Olive
 
             if (includeStackTrace)
             {
-                var stack = @this.GetUsefulStack().TrimOrEmpty();
+                AppendStackTrace();
 
-                if (stack.HasValue())
+                void AppendStackTrace()
                 {
-                    var stackLines = stack.ToLines();
-                    stackLines = stackLines.Except(l => l.Trim().StartsWith("at System.Data.")).ToArray();
-                    resultBuilder.AppendLine(stackLines.ToString("\r\n\r\n").WithPrefix("\r\n--------------------------------------\r\nSTACK TRACE:\r\n\r\n"));
+                    var stack = err.GetUsefulStack().TrimOrEmpty();
+
+                    if (stack.HasValue())
+                    {
+                        var stackLines = stack.ToLines();
+                        stackLines = stackLines.Except(l => l.Trim().StartsWith("at System.Data.")).ToArray();
+                        resultBuilder.AppendLine(stackLines.ToString("\r\n\r\n").WithPrefix("\r\n--------------------------------------\r\nSTACK TRACE:\r\n\r\n"));
+                    }
                 }
             }
 
