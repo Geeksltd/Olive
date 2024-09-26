@@ -31,15 +31,19 @@ namespace Olive
         /// <param name="roundIntervals">The interval value for rounding to the nearest number.</param>
         public static int RoundUpToNearest(this int value, int roundIntervals)
         {
-            var difference = roundIntervals - (value % roundIntervals);
-            return value + difference;
+            if (roundIntervals == 0) return value;
+            return (int)(Math.Ceiling(value / (double)roundIntervals) * roundIntervals);
         }
 
         /// <summary>
         /// Rounds down to nearest value with the intervals specified.
         /// </summary>
         /// <param name="roundIntervals">The interval value for rounding to the nearest number.</param>
-        public static int RoundDownToNearest(this int value, int roundIntervals) => value - (value % roundIntervals);
+        public static int RoundDownToNearest(this int value, int roundIntervals)
+        {
+            if (roundIntervals == 0) return value;
+            return (int)(Math.Floor(value / (double)roundIntervals) * roundIntervals);
+        }
 
         /// <summary>
         /// Converts this number to a short textual representation.

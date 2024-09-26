@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace Olive
 {
@@ -167,10 +168,8 @@ namespace Olive
         /// <param name="roundIntervals">Determines the number of rounds which can multiply to.</param>
         public static double RoundUpToNearest(this double @this, double roundIntervals)
         {
-            var remainder = @this % roundIntervals;
-            if (remainder == 0) return @this;
-
-            return @this + (roundIntervals - remainder);
+            if (roundIntervals == 0) return @this;
+            return Math.Ceiling(@this / roundIntervals) * roundIntervals;
         }
 
         /// <summary>
@@ -179,23 +178,29 @@ namespace Olive
         /// <param name="roundIntervals">Determines the number of rounds which can multiply to.</param>
         public static decimal RoundUpToNearest(this decimal @this, decimal roundIntervals)
         {
-            var remainder = @this % roundIntervals;
-            if (remainder == 0) return @this;
-
-            return @this + (roundIntervals - remainder);
+            if (roundIntervals == 0) return @this;
+            return  Math.Ceiling(@this /  roundIntervals) * roundIntervals;
         }
 
         /// <summary>
         /// Rounds down to nearest value with the intervals specified.
         /// </summary>
         /// <param name="roundIntervals">Determines the number of rounds which can multiply to.</param>
-        public static double RoundDownToNearest(this double @this, double roundIntervals) => @this - (@this % roundIntervals);
+        public static double RoundDownToNearest(this double @this, double roundIntervals)
+        {
+            if (roundIntervals == 0) return @this;
+            return Math.Floor(@this / roundIntervals) * roundIntervals;
+        }
 
         /// <summary>
         /// Rounds down to nearest value with the intervals specified.
         /// </summary>
         /// <param name="roundIntervals">Determines the number of rounds which can multiply to.</param>
-        public static decimal RoundDownToNearest(this decimal @this, decimal roundIntervals) => @this - (@this % roundIntervals);
+        public static decimal RoundDownToNearest(this decimal @this, decimal roundIntervals)
+        {
+            if (roundIntervals == 0) return @this;
+            return Math.Floor(@this / roundIntervals) * roundIntervals;
+        }
 
         /// <summary>
         /// Determines if this double value is almost equal to the specified other value.
