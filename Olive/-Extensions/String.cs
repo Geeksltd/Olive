@@ -328,6 +328,7 @@ namespace Olive
         /// </summary>        
         public static string ToPlural(this string @this)
         {
+            @this = @this.TrimOrEmpty();
             if (@this.IsEmpty()) return string.Empty;
 
             // Only change the last word:
