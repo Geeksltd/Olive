@@ -40,6 +40,10 @@ namespace Olive.Gpt
 
         public Task<string> GetResponse(string command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet, Action<string> streamHandler = null) => GetResponse(new[] { new ChatMessage("user", command) }, model, responseFormat, streamHandler);
 
+        public Task<Stream> GetResponseStream(Command command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponseStream(command.ToString(), model, responseFormat);
+
+        public Task<Stream> GetResponseStream(string command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponseStream(new[] { new ChatMessage("user", command) }, model, responseFormat);
+
         public async Task<string> GetTransformationResponse(IEnumerable<string> steps, ResponseFormats responseFormat = ResponseFormats.JsonObject)
         {
             var enumerable = steps as string[] ?? steps.ToArray();
@@ -128,6 +132,63 @@ namespace Olive.Gpt
             }
 
             return result.Length > 0 ? result.ToString() : null;
+        }
+
+        public async Task<Stream> GetResponseStream(ChatMessage[] messages, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet)
+        {
+            if (!messages.Any() || messages.All(m => m.Content.IsEmpty()))
+            {
+                throw new ArgumentNullException(nameof(messages));
+            }
+
+            var request = new ChatRequest(messages) { Model = model.Or(_model) };
+            if (responseFormat == ResponseFormats.JsonObject && messages.Any(a => a.Content.Contains("json", false)))
+            {
+                request.ResponseFormat = new ResponseFormat { Type = responseFormat };
+            }
+            var jsonContent = JsonConvert.SerializeObject(request, Settings);
+            var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions") { Content = payload };
+
+            HttpResponseMessage response;
+
+            try
+            {
+                bool streamheaderadded = false;
+                bool stopheaderadded = false;
+                if (Client.DefaultRequestHeaders.Any(header => header.Key == "stream") == false)
+                {
+                    streamheaderadded = true;
+                    Client.DefaultRequestHeaders.Add("stream", "true");
+                }
+                if (Client.DefaultRequestHeaders.Any(header => header.Key == "stop") == false)
+                {
+                    stopheaderadded = true;
+                    Client.DefaultRequestHeaders.Add("stop", ["\n\n"]);
+                }
+                response = await Client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+
+                if (streamheaderadded)
+                {
+                    Client.DefaultRequestHeaders.Remove("stream");
+                }
+
+                if (stopheaderadded)
+                {
+                    Client.DefaultRequestHeaders.Remove("stop");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.For<Api>().Error(e, "Gpt Query FAILED, Request body: " + jsonContent);
+                return null;
+            }
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
+
+            return await response.Content.ReadAsStreamAsync();
         }
 
         private string GetContent(string result)
