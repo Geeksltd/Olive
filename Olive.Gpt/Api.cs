@@ -156,17 +156,17 @@ namespace Olive.Gpt
             try
             {
                 bool streamheaderadded = false;
-                bool stopheaderadded = false;
+                //bool stopheaderadded = false;
                 if (Client.DefaultRequestHeaders.Any(header => header.Key == "stream") == false)
                 {
                     streamheaderadded = true;
                     Client.DefaultRequestHeaders.Add("stream", "true");
                 }
-                if (Client.DefaultRequestHeaders.Any(header => header.Key == "stop") == false)
-                {
-                    stopheaderadded = true;
-                    Client.DefaultRequestHeaders.Add("stop", ["\n\n"]);
-                }
+                //if (Client.DefaultRequestHeaders.Any(header => header.Key == "stop") == false)
+                //{
+                //    stopheaderadded = true;
+                //    Client.DefaultRequestHeaders.Add("stop", ["\n\n"]);
+                //}
                 response = await Client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
 
                 if (streamheaderadded)
@@ -174,10 +174,10 @@ namespace Olive.Gpt
                     Client.DefaultRequestHeaders.Remove("stream");
                 }
 
-                if (stopheaderadded)
-                {
-                    Client.DefaultRequestHeaders.Remove("stop");
-                }
+                //if (stopheaderadded)
+                //{
+                //    Client.DefaultRequestHeaders.Remove("stop");
+                //}
             }
             catch (Exception e)
             {
