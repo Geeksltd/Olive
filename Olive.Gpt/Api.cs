@@ -40,9 +40,9 @@ namespace Olive.Gpt
 
         public Task<string> GetResponse(string command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet, Action<string> streamHandler = null) => GetResponse(new[] { new ChatMessage("user", command) }, model, responseFormat, streamHandler);
 
-        public Task<Stream> GetResponseStream(Command command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponseStream(command.ToString(), model, responseFormat);
+        public IAsyncEnumerable<string> GetResponseStream(Command command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponseStream(command.ToString(), model, responseFormat);
 
-        public Task<Stream> GetResponseStream(string command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponseStream(new[] { new ChatMessage("user", command) }, model, responseFormat);
+        public IAsyncEnumerable<string> GetResponseStream(string command, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet) => GetResponseStream(new[] { new ChatMessage("user", command) }, model, responseFormat);
 
         public async Task<string> GetTransformationResponse(IEnumerable<string> steps, ResponseFormats responseFormat = ResponseFormats.JsonObject)
         {
@@ -134,7 +134,7 @@ namespace Olive.Gpt
             return result.Length > 0 ? result.ToString() : null;
         }
 
-        public async Task<Stream> GetResponseStream(ChatMessage[] messages, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet)
+        public async IAsyncEnumerable<string> GetResponseStream(ChatMessage[] messages, string model = null, ResponseFormats responseFormat = ResponseFormats.NotSet)
         {
             if (!messages.Any() || messages.All(m => m.Content.IsEmpty()))
             {
@@ -182,13 +182,27 @@ namespace Olive.Gpt
             catch (Exception e)
             {
                 Log.For<Api>().Error(e, "Gpt Query FAILED, Request body: " + jsonContent);
-                return null;
+                throw;
             }
 
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
 
-            return await response.Content.ReadAsStreamAsync();
+            using (var stream = await response.Content.ReadAsStreamAsync())
+            using (var reader = new StreamReader(stream))
+            {
+                while (await reader.ReadLineAsync() is { } line)
+                {
+                    if (line.StartsWith("data: ")) line = line.Substring("data: ".Length);
+                    if (line == "[DONE]") break;
+                    if (!line.HasValue()) continue;
+
+                    var token = JsonConvert.DeserializeObject<ChatResponse>(line)?.ToString();
+                    if (!token.HasValue()) continue;
+
+                    yield return token;
+                }
+            }
         }
 
         private string GetContent(string result)
