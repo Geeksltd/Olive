@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Olive.Gpt.ApiDto;
 using Olive.Gpt.AssistantDto;
+using V2 = Olive.Gpt.AssistantDto.V2;
 
 namespace Olive.Gpt
 {
@@ -14,11 +15,14 @@ namespace Olive.Gpt
         readonly JsonSerializerSettings _settings = new() { NullValueHandling = NullValueHandling.Ignore};
         readonly HttpClient _client = new(CreateForgivingHandler()) { Timeout = 60.Seconds() };
 
-        public AssistantApi(string apiKey)
+        public AssistantApi(string apiKey,bool isV2 = false)
         {
             _client.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
             _client.DefaultRequestHeaders.Add("User-Agent", "olive/dotnet_openai_api");
-            _client.DefaultRequestHeaders.Add("OpenAI-Beta", "assistants=v1");
+            if (isV2)
+                _client.DefaultRequestHeaders.Add("OpenAI-Beta", "assistants=v2");
+            else
+                _client.DefaultRequestHeaders.Add("OpenAI-Beta", "assistants=v1");
 
             _settings.Converters.Add(new StringEnumConverter());
         }
@@ -29,9 +33,25 @@ namespace Olive.Gpt
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true
         };
 
-        public async Task<string> CreateNewAssistant(OpenAiCreateAssistantDto assistantDto)
+        /// <summary>
+        /// create v1 assistant based on your model
+        /// </summary>
+        /// <param name="assistantDto"></param>
+        /// <returns></returns>
+        public Task<string> CreateNewAssistant(OpenAiCreateAssistantDto assistantDto)
+             => CreateNewAssistant<OpenAiAssistantDto>(JsonConvert.SerializeObject(assistantDto, _settings));
+
+        /// <summary>
+        /// create v2 assistant based on your model
+        /// </summary>
+        /// <param name="assistantDto"></param>
+        /// <returns></returns>
+        public Task<string> CreateNewAssistant(V2.OpenAiCreateAssistantDto assistantDto)
+             => CreateNewAssistant<V2.OpenAiAssistantDto>(JsonConvert.SerializeObject(assistantDto, _settings));
+
+        private async Task<string> CreateNewAssistant<T>(string data)
+            where T : IOpenAiAssistantDto
         {
-            var data = JsonConvert.SerializeObject(assistantDto, _settings);
             var payload = new StringContent(data, Encoding.UTF8, "application/json");
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/assistants") { Content = payload };
@@ -43,11 +63,11 @@ namespace Olive.Gpt
                     ". Response body: " + await response.Content.ReadAsStringAsync());
 
             var result = await response.Content.ReadAsStringAsync();
-            var jObject = JsonConvert.DeserializeObject<OpenAiAssistantDto>(result);
+            var jObject = JsonConvert.DeserializeObject<T>(result);
 
             return jObject.Id;
         }
-        
+
         public async Task<string> EditAssistant(string assistantId,OpenAiCreateAssistantDto assistantDto)
         {
             var data = JsonConvert.SerializeObject(assistantDto, _settings);
