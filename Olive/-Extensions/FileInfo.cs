@@ -168,6 +168,7 @@ namespace Olive
                 "f4v" => "video/x-f4v",
                 "ogv" => "video/ogg",
                 "3gp" => "video/3gpp",
+                "webp"=> "image/webp",
                 _ => "application/octet-stream",
             };
         }
