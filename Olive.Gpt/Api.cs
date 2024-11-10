@@ -196,11 +196,7 @@ namespace Olive.Gpt
                     if (line.StartsWith("data: ")) line = line.Substring("data: ".Length);
                     if (line == "[DONE]") break;
                     if (!line.HasValue()) continue;
-
-                    var token = JsonConvert.DeserializeObject<ChatResponse>(line)?.ToString();
-                    if (!token.HasValue()) continue;
-
-                    yield return token;
+                    yield return line;
                 }
             }
         }
