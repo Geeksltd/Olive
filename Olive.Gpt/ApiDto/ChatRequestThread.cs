@@ -9,6 +9,8 @@ namespace Olive.Gpt.ApiDto
     {
         public ChatRequestThread(ChatMessage[] messages)
         {
+            Messages = new Dictionary<string, object>();
+
             foreach (var item in messages)
             {
                 Messages.Add(item.Role, item.Content);
