@@ -7,9 +7,15 @@ namespace Olive.Gpt.ApiDto
 {
     class ChatRequestThread
     {
-        public ChatRequestThread(ChatMessage[] messages) => Messages = messages;
+        public ChatRequestThread(ChatMessage[] messages)
+        {
+            foreach (var item in messages)
+            {
+                Messages.Add(item.Role, item.Content);
+            }
+        }
 
         [JsonProperty("messages")]
-        public ChatMessage[] Messages { get; set; }
+        public Dictionary<string, object> Messages { get; set; }
     }
 }
