@@ -153,34 +153,27 @@ namespace Olive.Gpt
 
             HttpResponseMessage response;
 
+            bool streamheaderadded = false;
+
             try
-            {
-                bool streamheaderadded = false;
-                //bool stopheaderadded = false;
+            { 
+
                 if (Client.DefaultRequestHeaders.Any(header => header.Key == "stream") == false)
                 {
                     streamheaderadded = true;
                     Client.DefaultRequestHeaders.Add("stream", "true");
                 }
-                //if (Client.DefaultRequestHeaders.Any(header => header.Key == "stop") == false)
-                //{
-                //    stopheaderadded = true;
-                //    Client.DefaultRequestHeaders.Add("stop", ["\n\n"]);
-                //}
+
                 response = await Client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
 
+            }
+            catch (Exception e)
+            {
                 if (streamheaderadded)
                 {
                     Client.DefaultRequestHeaders.Remove("stream");
                 }
 
-                //if (stopheaderadded)
-                //{
-                //    Client.DefaultRequestHeaders.Remove("stop");
-                //}
-            }
-            catch (Exception e)
-            {
                 Log.For<Api>().Error(e, "Gpt Query FAILED, Request body: " + jsonContent);
                 throw;
             }
@@ -189,15 +182,22 @@ namespace Olive.Gpt
                 throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
 
             using (var stream = await response.Content.ReadAsStreamAsync())
-            using (var reader = new StreamReader(stream))
             {
-                while (await reader.ReadLineAsync() is { } line)
+                using (var reader = new StreamReader(stream))
                 {
-                    if (line.StartsWith("data: ")) line = line.Substring("data: ".Length);
-                    if (line == "[DONE]") break;
-                    if (!line.HasValue()) continue;
-                    yield return line;
+                    while (await reader.ReadLineAsync() is { } line)
+                    {
+                        if (line.StartsWith("data: ")) line = line.Substring("data: ".Length);
+                        if (line == "[DONE]") break;
+                        if (!line.HasValue()) continue;
+                        yield return line;
+                    }
                 }
+            }
+
+            if (streamheaderadded)
+            {
+                Client.DefaultRequestHeaders.Remove("stream");
             }
         }
 
