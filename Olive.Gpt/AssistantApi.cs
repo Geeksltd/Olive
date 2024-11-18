@@ -176,12 +176,16 @@ namespace Olive.Gpt
                 throw new Exception("Message is empty");
             }
 
-            var jsonContent = JsonConvert.SerializeObject(messages, _settings);
+            ChatRequestThread chatRequestThread = new ChatRequestThread(messages.ToArray());
+
+            var jsonContent = JsonConvert.SerializeObject(chatRequestThread, _settings);
+
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             var url = $"https://api.openai.com/v1/threads/{threadId}/messages";
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, url) { Content = payload };
+
             var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
 
             if (!response.IsSuccessStatusCode)
@@ -192,6 +196,7 @@ namespace Olive.Gpt
                     $"Response body: {await response.Content.ReadAsStringAsync()}");
 
             var result = await response.Content.ReadAsStringAsync();
+
             var jObject = JsonConvert.DeserializeObject<OpenAiMessageDto>(result);
 
             return jObject.Id;
