@@ -105,11 +105,29 @@ namespace Olive.Gpt
             return jObject.Id;
         }
 
-        public async Task<string> CreateNewThread()
+        public async Task<string> CreateNewThread(List<ChatMessage> messages=null)
         {
             var payload = new StringContent("", Encoding.UTF8, "application/json");
 
+            if (messages != null && messages.HasAny())
+            {
+                for (int i = 0; i < messages.Count; ++i)
+                {
+                    if (messages[i].Role.IsEmpty())
+                    {
+                        messages[i].Role = "user";
+                    }
+                }
+
+                ChatRequestThread chatRequestThread = new ChatRequestThread(messages.ToArray());
+
+                var jsonContent = JsonConvert.SerializeObject(chatRequestThread, _settings);
+
+                payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            }
+
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/threads") { Content = payload };
+
             var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
 
             if (!response.IsSuccessStatusCode)
