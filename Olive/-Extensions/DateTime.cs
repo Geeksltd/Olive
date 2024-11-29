@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Olive
 {
@@ -74,6 +75,9 @@ namespace Olive
                 @this = @this.AddDays(-1);
             }
         }
+
+        public static async Task< string> ToString(this Task<DateTime> @this, string format)
+            => (await @this).ToString(format);
 
         /// <summary>
         /// Determines whether this value is before than TimeSpan parameter

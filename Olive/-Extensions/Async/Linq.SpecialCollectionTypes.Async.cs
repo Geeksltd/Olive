@@ -377,6 +377,12 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<TSource[]> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
             => @this.Get(async x => x.Concat(await other));
 
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<TSource[]> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Prepend(other));
+        
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<TSource[]> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Prepend(await other));
+
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<TSource[]> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
                     
@@ -640,6 +646,12 @@ namespace Olive
 
         public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<IOrderedEnumerable<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
             => @this.Get(async x => x.Concat(await other));
+
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<IOrderedEnumerable<TSource>> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Prepend(other));
+        
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<IOrderedEnumerable<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Prepend(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IOrderedEnumerable<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
@@ -905,6 +917,12 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<List<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
             => @this.Get(async x => x.Concat(await other));
 
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<List<TSource>> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Prepend(other));
+        
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<List<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Prepend(await other));
+
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<List<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
                     
@@ -1168,6 +1186,12 @@ namespace Olive
 
         public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<IList<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
             => @this.Get(async x => x.Concat(await other));
+
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<IList<TSource>> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Prepend(other));
+        
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<IList<TSource>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Prepend(await other));
 
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<IList<TSource>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
