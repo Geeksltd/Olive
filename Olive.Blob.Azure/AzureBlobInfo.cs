@@ -8,5 +8,6 @@ namespace Olive.BlobAzure
     {
         internal static string StorageConnectionString => Config.Get<string>("AzureStorage:ConnectionString");
         internal static string StorageContainer => Config.Get<string>("AzureStorage:Container");
+        internal static string StorageAccountName => Config.Get<string>("AzureStorage:AccountName");
     }
 }
