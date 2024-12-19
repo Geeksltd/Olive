@@ -9,7 +9,7 @@
     {
         string  storageAccountName = AzureBlobInfo.StorageAccountName;
         string  storageContainer = AzureBlobInfo.StorageContainer;
-        tring storageAccountKey = AzureBlobInfo.StorageAccountKey;
+        string storageAccountKey = AzureBlobInfo.StorageAccountKey;
 
         public  Uri GenerateContainerSasUri(string storageContainerName = null)
         {
