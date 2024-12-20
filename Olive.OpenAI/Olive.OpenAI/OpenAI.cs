@@ -16,12 +16,12 @@ namespace Olive.OpenAI
         public OpenAI(string? key = null)
         {
             // Get the keys from Config
-            var model = Olive.Config.Get("OpenAI:Voice:Model").Or("gpt-4o");
-            var apiKey = key.Or(Olive.Config.Get("OpenAI:Voice:APIKey"));
+            var model = Olive.Config.Get("OpenAI:Model").Or("gpt-4o");
+            var apiKey = key.Or(Olive.Config.Get("OpenAI:APIKey"));
 
             if (key.IsEmpty())
             {
-                throw new ArgumentException("The api key was not provided. Please set it in the AppSettings or webConfig in the OpenAI:Voice:APIKey entry");
+                throw new ArgumentException("The api key was not provided. Please set it in the AppSettings or webConfig in the OpenAI:APIKey entry");
             }
             ChatClient client = new(model, apiKey);
         }
