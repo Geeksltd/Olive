@@ -11,12 +11,12 @@ namespace Olive.OpenAI.Voice
         AudioClient _client = null;
         public OpenAI()
         {
-            var model = Olive.Config.Get("OpenAI:Voice:Model").Or("whisper-1");
-            var key = Olive.Config.Get("OpenAI:Voice:APIKey");
+            var model = Olive.Config.Get("OpenAI:Models:SpeechToTextModel").Or("whisper-1");
+            var key = Olive.Config.Get("OpenAI:Key");
 
             if (key.IsEmpty())
             {
-                throw new ArgumentException("The api key was not provided. Please set it in the AppSettings or webConfig in the OpenAI:Voice:APIKey entry");
+                throw new ArgumentException("The api key was not provided. Please set it in the AppSettings or webConfig in the OpenAI:Key entry");
             }
             _client = new AudioClient(model, key);
         }

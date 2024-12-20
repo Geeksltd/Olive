@@ -16,8 +16,8 @@ namespace Olive.OpenAI
         public OpenAI(string? key = null)
         {
             // Get the keys from Config
-            var model = Olive.Config.Get("OpenAI:Model").Or("gpt-4o");
-            var apiKey = key.Or(Olive.Config.Get("OpenAI:APIKey"));
+            var model = Olive.Config.Get("OpenAI:Models:ChatModel").Or("gpt-4o");
+            var apiKey = key.Or(Olive.Config.Get("OpenAI:Key"));
 
             if (key.IsEmpty())
             {
