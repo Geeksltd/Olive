@@ -80,9 +80,9 @@ public class DocumentAnalyze
         }
     }
 
-    public async Task<DocumentAnalyzeModelResponse> ListDocumentAnalyzeModelsAsync(bool skipPrebuilt = true)
+    public async Task<DocumentAnalyzeModelResponse> ListDocumentAnalyzeModelsAsync(bool skipPrebuilt = true, bool useFormRecognizer)
     {
-        var requestUrl = $"{endpoint}/formrecognizer/documentModels?api-version={apiVersion}";
+        var requestUrl = $"{endpoint}/{(useFormRecognizer ? "formrecognizer" : "documentintelligence")}/documentModels?api-version={apiVersion}";
         var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
         request.Headers.Add("Ocp-Apim-Subscription-Key", apiKey);
 
@@ -128,9 +128,9 @@ public class DocumentAnalyze
 
     }
 
-    public async Task<DocumentAnalyzeResult> AnalyzeDocumentAsync(byte[] fileData, string modelId)
+    public async Task<DocumentAnalyzeResult> AnalyzeDocumentAsync(byte[] fileData, string modelId, bool useFormRecognizer = false)
     {
-        var requestUrl = $"{endpoint}/formrecognizer/documentModels/{modelId}:analyze?api-version={apiVersion}";
+        var requestUrl = $"{endpoint}/{(useFormRecognizer ? "formrecognizer" : "documentintelligence")}/documentModels/{modelId}:analyze?api-version={apiVersion}";
         var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
         httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
 
