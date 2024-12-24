@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Version>2.1.191</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="OpenAI" Version="2.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Olive\Olive.csproj" />
+	</ItemGroup>
+
+</Project>
