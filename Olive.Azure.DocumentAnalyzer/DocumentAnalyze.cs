@@ -165,7 +165,7 @@ public class DocumentAnalyze
             else
             {
                 var message = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to analyze document. Error Message: {message}", );
+                throw new Exception($"Failed to analyze document. Error Message: {message}");
             }
         }
         catch (Exception ex)
