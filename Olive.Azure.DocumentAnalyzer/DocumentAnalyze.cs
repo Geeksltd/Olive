@@ -80,7 +80,7 @@ public class DocumentAnalyze
         }
     }
 
-    public async Task<DocumentAnalyzeModelResponse> ListDocumentAnalyzeModelsAsync(bool skipPrebuilt = true, bool useFormRecognizer)
+    public async Task<DocumentAnalyzeModelResponse> ListDocumentAnalyzeModelsAsync(bool skipPrebuilt = true, bool useFormRecognizer = false)
     {
         var requestUrl = $"{endpoint}/{(useFormRecognizer ? "formrecognizer" : "documentintelligence")}/documentModels?api-version={apiVersion}";
         var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
