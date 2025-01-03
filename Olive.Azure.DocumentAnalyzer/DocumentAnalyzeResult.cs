@@ -38,6 +38,7 @@ public class Fields
     public string? Type { get; set; }
     public string? ValueString { get; set; }
     public string? Content { get; set; }
+    public ValueCurrency? ValueCurrency { get; set; }
     public List<BoundingRegions>? BoundingRegions { get; set; }
     public decimal? Confidence { get; set; }
     public List<ValueArray>? ValueArray { get; set; }
@@ -53,4 +54,10 @@ public class ValueArray
 {
     public string? Type { get; set; }
     public Dictionary<string, Fields>? ValueObject { get; set; }
+}
+public class ValueCurrency
+{
+    public string? CurrencySymbol { get; set; }
+    public string? CurrencyCode { get; set; }
+    public decimal? Amount { get; set; }
 }
