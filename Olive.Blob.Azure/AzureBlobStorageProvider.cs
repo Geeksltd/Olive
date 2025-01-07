@@ -15,8 +15,27 @@ namespace Olive.BlobAzure
 {
     public class AzureBlobStorageProvider : IBlobStorageProvider
     {
-        BlobServiceClient BlobServiceClient => new BlobServiceClient(AzureBlobInfo.StorageConnectionString);
+        BlobServiceClient BlobServiceClient;
         BlobContainerClient BlobContainerClient;
+
+        string ContainerName = AzureBlobInfo.StorageContainer;
+
+        public AzureBlobStorageProvider()
+        {
+            BlobServiceClient = new BlobServiceClient(AzureBlobInfo.StorageConnectionString);
+        }
+
+        public AzureBlobStorageProvider(BlobServiceClient blobServiceClient)
+        {
+            BlobServiceClient = blobServiceClient;
+        }
+
+        public AzureBlobStorageProvider(BlobServiceClient blobServiceClient, string containerName)
+        {
+            BlobServiceClient = blobServiceClient;
+            ContainerName = containerName;
+        }
+
 
         static ILogger Log => Olive.Log.For(typeof(AzureBlobStorageProvider));
 
@@ -25,7 +44,7 @@ namespace Olive.BlobAzure
         async Task<BlobContainerClient> GetBlobContainer()
         {
             if (BlobContainerClient == null)
-                return BlobContainerClient = BlobServiceClient.GetBlobContainerClient(AzureBlobInfo.StorageContainer);
+                return BlobContainerClient = BlobServiceClient.GetBlobContainerClient(ContainerName);
 
             return BlobContainerClient;
         }
