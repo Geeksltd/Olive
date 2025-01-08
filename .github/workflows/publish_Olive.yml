@@ -39,7 +39,7 @@ jobs:
         PROJECT_FILE_PATH: Olive.Azure.DocumentAnalyzer/Olive.Azure.DocumentAnalyzer.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
-     - name: Publish Olive Azure Document Classification NuGet Package
+    - name: Publish Olive Azure Document Classification NuGet Package
       uses: Geeksltd/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Olive.Azure.DocumentClassification/Olive.Azure.DocumentClassification.csproj
