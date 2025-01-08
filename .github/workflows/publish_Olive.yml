@@ -10,7 +10,6 @@ jobs:
       matrix:
         configuration: [Release]
 
-
     runs-on: windows-2019
 
     steps:

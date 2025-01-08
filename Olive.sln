@@ -226,6 +226,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.OpenAI.Voice", "Olive
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Azure.DocumentAnalyzer", "Olive.Azure.DocumentAnalyzer\Olive.Azure.DocumentAnalyzer.csproj", "{1621EA95-F031-4FA2-BAA1-8CEDFA84D987}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Azure.DocumentClassification", "Olive.Azure.DocumentClassification\Olive.Azure.DocumentClassification.csproj", "{4CE3F810-F35F-40A2-83C5-529419ACEAD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -583,6 +585,10 @@ Global
 		{1621EA95-F031-4FA2-BAA1-8CEDFA84D987}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1621EA95-F031-4FA2-BAA1-8CEDFA84D987}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1621EA95-F031-4FA2-BAA1-8CEDFA84D987}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CE3F810-F35F-40A2-83C5-529419ACEAD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CE3F810-F35F-40A2-83C5-529419ACEAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CE3F810-F35F-40A2-83C5-529419ACEAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CE3F810-F35F-40A2-83C5-529419ACEAD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -682,6 +688,7 @@ Global
 		{F7D375B0-4C0E-43F3-AE01-C35A0B01ED2C} = {EA662106-3384-4A6F-83C4-83859789A6DD}
 		{F96D0F3C-2F36-4897-A60B-B9F37793751D} = {EA662106-3384-4A6F-83C4-83859789A6DD}
 		{1621EA95-F031-4FA2-BAA1-8CEDFA84D987} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
+		{4CE3F810-F35F-40A2-83C5-529419ACEAD4} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
