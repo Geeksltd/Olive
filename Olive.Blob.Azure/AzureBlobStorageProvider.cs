@@ -70,10 +70,48 @@ namespace Olive.BlobAzure
             }
         }
 
+        public async Task SaveAsync(Blob document, string key)
+        {
+            var containerClient = await GetBlobContainer();
+
+            try
+            {
+                Log.Debug("Blob create upload object");
+                var blobClient = containerClient.GetBlobClient(key.Or(document.GetKey()));
+
+                Log.Debug("Upload Blob to Azure");
+
+                using (var dataStream = new MemoryStream(await document.GetFileDataAsync()))
+                    await blobClient.UploadAsync(dataStream, true);
+            }
+            catch (Exception ex)
+            {
+                Log.Debug("Save blob to azure ex: " + ex.Message);
+                throw;
+            }
+        }
+
         public async Task<bool> FileExistsAsync(Blob document)
         {
             var blobContainer = await GetBlobContainer();
             var key = document.GetKey();
+            var blobClient = blobContainer.GetBlobClient(key);
+
+            try
+            {
+                return await blobClient.ExistsAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to check azure blob exist {key} key");
+                throw;
+            }
+        }
+
+        public async Task<bool> FileExistsAsync(Blob document, string key)
+        {
+            var blobContainer = await GetBlobContainer();
+            key = key.Or(document.GetKey());
             var blobClient = blobContainer.GetBlobClient(key);
 
             try
