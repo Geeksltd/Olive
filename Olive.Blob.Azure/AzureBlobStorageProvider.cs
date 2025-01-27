@@ -161,6 +161,24 @@ namespace Olive.BlobAzure
             }
         }
 
+        public async Task DeleteAsync(Blob document, string key)
+        {
+            if (document.IsEmpty()) return;
+
+            var blobContainer = await GetBlobContainer();
+            key = key.Or(document.GetKey());
+
+            try
+            {
+                await blobContainer.DeleteBlobAsync(document.GetKey());
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to delete document with {key} key on Azure");
+                throw;
+            }
+        }
+
         public byte[] ToByte(Stream input)
         {
             using (MemoryStream ms = new MemoryStream())
