@@ -128,7 +128,53 @@ public class DocumentAnalyze
 
     }
 
-    public async Task<DocumentAnalyzeResult> AnalyzeDocumentAsync(byte[] fileData, string modelId, bool useFormRecognizer = false)
+    public async Task<string> AnalyzeDocumentAsync(byte[] fileData, string modelId, bool useFormRecognizer = false)
+    {
+        var requestUrl = $"{endpoint}/{(useFormRecognizer ? "formrecognizer" : "documentintelligence")}/documentModels/{modelId}:analyze?api-version={apiVersion}";
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
+
+        // Convert the file to a Base64 string
+        string base64String = Convert.ToBase64String(fileData);
+
+        // Create the JSON payload
+        var payload = new
+        {
+            base64Source = base64String
+        };
+
+        request.Content = new StringContent(JsonConvert.SerializeObject(payload));
+        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        try
+        {
+            var response = await httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resultUrl = response.Headers.GetValues("Operation-Location").FirstOrDefault();
+                if (resultUrl is not null)
+                {
+                    return resultUrl;
+                }
+                else
+                {
+                    throw new Exception("No operation location header found in response.");
+                }
+            }
+            else
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Failed to analyze document. Error Message: {message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public async Task<DocumentAnalyzeResult> AnalyzeDocumentAsyncWithPoll(byte[] fileData, string modelId, bool useFormRecognizer = false)
     {
         var requestUrl = $"{endpoint}/{(useFormRecognizer ? "formrecognizer" : "documentintelligence")}/documentModels/{modelId}:analyze?api-version={apiVersion}";
         var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
@@ -175,7 +221,7 @@ public class DocumentAnalyze
 
     }
 
-    async Task<DocumentAnalyzeResult> PollForResults(string resultUrl)
+    private async Task<DocumentAnalyzeResult> PollForResults(string resultUrl)
     {
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
@@ -205,6 +251,24 @@ public class DocumentAnalyze
             }
             // Wait before the next poll
             await Task.Delay(3000);
+        }
+    }
+
+    public async Task<DocumentAnalyzeResult> GetPollResults(string resultUrl)
+    {
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
+
+        HttpResponseMessage response = await httpClient.GetAsync(resultUrl);
+        string jsonResponse = await response.Content.ReadAsStringAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            return JsonConvert.DeserializeObject<DocumentAnalyzeResult>(jsonResponse);
+        }
+        else
+        {
+            throw new Exception("Failed to poll for results.");
         }
     }
 
