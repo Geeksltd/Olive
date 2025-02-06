@@ -6,6 +6,7 @@ public class DocumentAnalyzeResult
 {
     public string Status { get; set; }
     public AnalyzeResult? AnalyzeResult { get; set; }
+    public object? error { get; set; }
 }
 
 public class AnalyzeResult
