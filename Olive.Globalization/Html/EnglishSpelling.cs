@@ -23,6 +23,7 @@ namespace Olive.Globalization
 
         public string Convert()
         {
+            if (Original.IsEmpty()) return string.Empty;
             if (ToReplace.None() || Original.Lacks("<")) return Replace(Original);
 
             var htmlDoc = new HtmlDocument();
@@ -40,6 +41,7 @@ namespace Olive.Globalization
             if (node.NodeType == HtmlNodeType.Text)
             {
                 var to = node.InnerHtml;
+                if (to.IsEmpty()) return;
                 if (to.ContainsAny(ToReplace))
                     node.InnerHtml = Replace(to);
             }
@@ -69,8 +71,7 @@ namespace Olive.Globalization
             .Split(',').SelectMany(x => new[] { x, x[0].ToUpper() + x.Substring(1) })
             .ToDictionary(x => x, x => x.Replace("z", "s"));
 
-        static Dictionary<string, string> Others() => "aging:ageing|aluminum:aluminium|catalog:catalogue|cataloged:catalogued|cataloging:cataloguing|catalogs:catalogues|center:centre|centered:centred|centering:centring|centers:centres|check:cheque|checked:chequed|checking:chequing|checks:cheques|color:colour|colored:coloured|coloring:colouring|colors:colours|curb:kerb|curbed:kerbed|curbing:kerbing|curbs:kerbs|defense:defence|defenses:defences|draft:draught|drafted:draughted|drafting:draughting|drafts:draughts|dreamed:dreamt|enroll:enrol|enrolls:enrols|favorite:favourite|favorites:favourites|fiber:fibre|fibers:fibres|fulfill:fulfil|fulfills:fulfils|gray:grey|grayed:greyed|graying:greying|grays:greys|jewelry:jewellery|labor:labour|labored:laboured|laboring:labouring|labors:labours|license:licence|licensed:licenced|licenses:licences|licensing:licencing|maneuver:manoeuvre|maneuvered:manoeuvred|maneuvering:manoeuvring|maneuvers:manoeuvres|meter:metre|metered:metred|metering:metring|meters:metres|mold:mould|molded:moulded|molding:moulding|molds:moulds|neighbor:neighbour|neighbored:neighboured|neighboring:neighbouring|neighbors:neighbours|offense:offence|offenses:offences|pajamas:pyjamas|plow:plough|plowed:ploughed|plowing:ploughing|plows:ploughs|practice:practise|practiced:practised|practices:practises|practicing:practising|program:programme|programs:programmes|skillful:skilful|spelled:spelt|sulfur:sulphur|sulfured:sulphured|sulfuring:sulphuring|sulfurs:sulphurs|theater:theatre|theaters:theatres|toward:towards|traveler:traveller|travelers:travellers"
+        static Dictionary<string, string> Others() => "aluminum:aluminium|catalog:catalogue|cataloged:catalogued|cataloging:cataloguing|catalogs:catalogues|center:centre|centered:centred|centering:centring|centers:centres|color:colour|colored:coloured|coloring:colouring|colors:colours|defense:defence|defenses:defences|dreamed:dreamt|enroll:enrol|enrolls:enrols|favorite:favourite|favorites:favourites|fiber:fibre|fibers:fibres|fulfill:fulfil|fulfills:fulfils|gray:grey|grayed:greyed|graying:greying|grays:greys|jewelry:jewellery|labor:labour|labored:laboured|laboring:labouring|labors:labours|maneuver:manoeuvre|maneuvered:manoeuvred|maneuvering:manoeuvring|maneuvers:manoeuvres|meter:metre|metered:metred|metering:metring|meters:metres|mold:mould|molded:moulded|molding:moulding|molds:moulds|neighbor:neighbour|neighbored:neighboured|neighboring:neighbouring|neighbors:neighbours|offense:offence|offenses:offences|pajamas:pyjamas|plow:plough|plowed:ploughed|plowing:ploughing|plows:ploughs|skillful:skilful|spelled:spelt|sulfur:sulphur|sulfured:sulphured|sulfuring:sulphuring|sulfurs:sulphurs|theater:theatre|theaters:theatres|toward:towards|traveler:traveller|travelers:travellers"
         .Split('|').Distinct().Select(c => c.Split(':')).ToDictionary(x => x[0], x => x[1]);
     }
-
 }
