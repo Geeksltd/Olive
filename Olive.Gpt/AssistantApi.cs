@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -103,11 +105,29 @@ namespace Olive.Gpt
             return jObject.Id;
         }
 
-        public async Task<string> CreateNewThread()
+        public async Task<string> CreateNewThread(List<ChatMessage> messages=null)
         {
             var payload = new StringContent("", Encoding.UTF8, "application/json");
 
+            if (messages != null && messages.HasAny())
+            {
+                for (int i = 0; i < messages.Count; ++i)
+                {
+                    if (messages[i].Role.IsEmpty())
+                    {
+                        messages[i].Role = "user";
+                    }
+                }
+
+                ChatRequestThread chatRequestThread = new ChatRequestThread(messages.ToArray());
+
+                var jsonContent = JsonConvert.SerializeObject(chatRequestThread, _settings);
+
+                payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            }
+
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/threads") { Content = payload };
+
             var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
 
             if (!response.IsSuccessStatusCode)
@@ -130,7 +150,7 @@ namespace Olive.Gpt
             {
                 message.Role = "user";
             }
-
+            
             var jsonContent = JsonConvert.SerializeObject(message, _settings);
             var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -147,6 +167,54 @@ namespace Olive.Gpt
                     $"Response body: {await response.Content.ReadAsStringAsync()}");
 
             var result = await response.Content.ReadAsStringAsync();
+            var jObject = JsonConvert.DeserializeObject<OpenAiMessageDto>(result);
+
+            return jObject.Id;
+        }
+
+        public async Task<string> AddMessagesToThread(List<ChatMessage> messages, string threadId)
+        { 
+            if (threadId.IsEmpty()) throw new Exception("Thread Id is empty");
+
+            if (messages == null)
+            {
+                messages = new List<ChatMessage>();
+            }
+
+            for (int i = 0; i < messages.Count; ++i)
+            {
+                if (messages[i].Role.IsEmpty())
+                {
+                    messages[i].Role = "user";
+                }
+            }
+
+            if (messages.Any(message => message.Role == "user" || message.Role.IsEmpty() == false) == false)
+            {
+                throw new Exception("Message is empty");
+            }
+
+            ChatRequestThread chatRequestThread = new ChatRequestThread(messages.ToArray());
+
+            var jsonContent = JsonConvert.SerializeObject(chatRequestThread, _settings);
+
+            var payload = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            var url = $"https://api.openai.com/v1/threads/{threadId}/messages";
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, url) { Content = payload };
+
+            var response = await _client.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(
+                    $"Error calling OpenAi Add Message to {threadId} API to get completion. " +
+                    $"HTTP status code: {response.StatusCode}. " +
+                    $"Request body: {jsonContent}. " +
+                    $"Response body: {await response.Content.ReadAsStringAsync()}");
+
+            var result = await response.Content.ReadAsStringAsync();
+
             var jObject = JsonConvert.DeserializeObject<OpenAiMessageDto>(result);
 
             return jObject.Id;

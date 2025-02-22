@@ -10,7 +10,6 @@ jobs:
       matrix:
         configuration: [Release]
 
-
     runs-on: windows-2019
 
     steps:
@@ -33,7 +32,19 @@ jobs:
       with:
         PROJECT_FILE_PATH: Olive.Audit/Olive.Audit.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-
+        
+    - name: Publish Olive Azure Document Analyzer NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Azure.DocumentAnalyzer/Olive.Azure.DocumentAnalyzer.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        
+    - name: Publish Olive Azure Document Classification NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.Azure.DocumentClassification/Olive.Azure.DocumentClassification.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        
 #     - name: Publish Olive Audit DatabaseLogger NuGet Package
 #       uses: Geeksltd/publish-nuget@v2
 #       with:
@@ -434,4 +445,16 @@ jobs:
       uses: Geeksltd/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.DataGenerator.UI/Olive.Entities.Data.Replication.DataGenerator.UI.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    
+    - name: Publish Olive OpenAI NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.OpenAI/Olive.OpenAI/Olive.OpenAI.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      
+    - name: Publish Olive OpenAI voice NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.OpenAI.Voice/Olive.OpenAI.Voice/Olive.OpenAI.Voice.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}

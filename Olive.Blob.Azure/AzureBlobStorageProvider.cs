@@ -15,8 +15,27 @@ namespace Olive.BlobAzure
 {
     public class AzureBlobStorageProvider : IBlobStorageProvider
     {
-        BlobServiceClient BlobServiceClient => new BlobServiceClient(AzureBlobInfo.StorageConnectionString);
+        BlobServiceClient BlobServiceClient;
         BlobContainerClient BlobContainerClient;
+
+        string ContainerName = AzureBlobInfo.StorageContainer;
+
+        public AzureBlobStorageProvider()
+        {
+            BlobServiceClient = new BlobServiceClient(AzureBlobInfo.StorageConnectionString);
+        }
+
+        public AzureBlobStorageProvider(BlobServiceClient blobServiceClient)
+        {
+            BlobServiceClient = blobServiceClient;
+        }
+
+        public AzureBlobStorageProvider(BlobServiceClient blobServiceClient, string containerName)
+        {
+            BlobServiceClient = blobServiceClient;
+            ContainerName = containerName;
+        }
+
 
         static ILogger Log => Olive.Log.For(typeof(AzureBlobStorageProvider));
 
@@ -25,7 +44,7 @@ namespace Olive.BlobAzure
         async Task<BlobContainerClient> GetBlobContainer()
         {
             if (BlobContainerClient == null)
-                return BlobContainerClient = BlobServiceClient.GetBlobContainerClient(AzureBlobInfo.StorageContainer);
+                return BlobContainerClient = BlobServiceClient.GetBlobContainerClient(ContainerName);
 
             return BlobContainerClient;
         }
@@ -51,10 +70,48 @@ namespace Olive.BlobAzure
             }
         }
 
+        public async Task SaveAsync(Blob document, string key)
+        {
+            var containerClient = await GetBlobContainer();
+
+            try
+            {
+                Log.Debug("Blob create upload object");
+                var blobClient = containerClient.GetBlobClient(key.Or(document.GetKey()));
+
+                Log.Debug("Upload Blob to Azure");
+
+                using (var dataStream = new MemoryStream(await document.GetFileDataAsync()))
+                    await blobClient.UploadAsync(dataStream, true);
+            }
+            catch (Exception ex)
+            {
+                Log.Debug("Save blob to azure ex: " + ex.Message);
+                throw;
+            }
+        }
+
         public async Task<bool> FileExistsAsync(Blob document)
         {
             var blobContainer = await GetBlobContainer();
             var key = document.GetKey();
+            var blobClient = blobContainer.GetBlobClient(key);
+
+            try
+            {
+                return await blobClient.ExistsAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to check azure blob exist {key} key");
+                throw;
+            }
+        }
+
+        public async Task<bool> FileExistsAsync(Blob document, string key)
+        {
+            var blobContainer = await GetBlobContainer();
+            key = key.Or(document.GetKey());
             var blobClient = blobContainer.GetBlobClient(key);
 
             try
@@ -92,6 +149,24 @@ namespace Olive.BlobAzure
 
             var blobContainer = await GetBlobContainer();
             var key = document.GetKey();
+
+            try
+            {
+                await blobContainer.DeleteBlobAsync(document.GetKey());
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to delete document with {key} key on Azure");
+                throw;
+            }
+        }
+
+        public async Task DeleteAsync(Blob document, string key)
+        {
+            if (document.IsEmpty()) return;
+
+            var blobContainer = await GetBlobContainer();
+            key = key.Or(document.GetKey());
 
             try
             {

@@ -86,6 +86,10 @@ namespace Olive
           this Task<IEnumerable<TSource>> @this, TSource item)
             => @this.Get(x => x.OrEmpty().Concat(item));
 
+        public static Task<IEnumerable<TSource>> Prepend<TSource>(
+          this Task<IEnumerable<TSource>> @this, TSource item)
+            => @this.Get(x => x.OrEmpty().Prepend(item));
+
         public static Task<IEnumerable<TSource>> Distinct<TSource>(
           this Task<IEnumerable<TSource>> @this) => @this.Get(x => x.OrEmpty().Distinct());
 

@@ -285,6 +285,12 @@ namespace Olive
         public static Task<IEnumerable<TSource>> Concat<TSource, TOther>(this Task<<#=t#>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
             => @this.Get(async x => x.Concat(await other));
 
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<<#=t#>> @this, TOther other) where TOther : IEnumerable<TSource>
+            => @this.Get(x => x.Prepend(other));
+        
+        public static Task<IEnumerable<TSource>> Prepend<TSource, TOther>(this Task<<#=t#>> @this, Task<TOther> other) where TOther : IEnumerable<TSource>
+            => @this.Get(async x => x.Prepend(await other));
+
         public static Task<IEnumerable<TSource>> Where<TSource>(this Task<<#=t#>> @this, Func<TSource, Task<bool>> predicate)
           => @this.Get(x => x.Where(predicate));
                     
