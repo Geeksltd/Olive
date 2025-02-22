@@ -1549,6 +1549,29 @@ new(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray
         }
 
         /// <summary>
+        /// Returns a kebab-case converted string, the stndard naming convention for CSS, html attributes, urls, slugs, command-line arguments, etc.
+        /// </summary>
+        public static string ToKebabCase(this string str)
+        {
+            if (str.IsEmpty()) return str;
+
+            var r = new StringBuilder();
+            var wasPreviousUpper = false;
+
+            foreach (var c in str.Trim())
+            {
+                var isUpper = c.IsUpper();
+
+                if (isUpper && !wasPreviousUpper) r.Append('-');
+                if (c.IsLetterOrDigit()) r.Append(c.ToLower());
+                else r.Append('-');
+                wasPreviousUpper = isUpper;
+            }
+
+            return r.ToString().KeepReplacing("--", "-").Trim('-');
+        }
+
+        /// <summary>
         /// Converts [hello world] to [Hello World].
         /// </summary>
         public static string CapitaliseFirstLetters(this string @this)

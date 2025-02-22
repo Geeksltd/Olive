@@ -1,48 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.1.382.0</Version>
-    <OutputType>Library</OutputType>
-    <LangVersion>latest</LangVersion>
-    <!--<PackageId>Olive</PackageId>-->
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
-    <DefineConstants>TRACE;ProfileGCop</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.tt">
-      <LastGenOutput>Linq.SpecialCollectionTypes.Async.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
-    </Compile>
-    <Compile Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Linq.SpecialCollectionTypes.Async.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Version>2.1.384.0</Version>
+		<OutputType>Library</OutputType>
+		<LangVersion>latest</LangVersion>
+		<Authors>Geeks Ltd, UK</Authors>
+		<RepositoryUrl>https://github.com/Geeksltd/Olive</RepositoryUrl>
+		<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DocumentationFile>$(TargetDir)\Olive.xml</DocumentationFile>
+		<DefineConstants>TRACE;ProfileGCop</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.tt">
+			<LastGenOutput>Linq.SpecialCollectionTypes.Async.cs</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
+		</None>
+		<None Update="-Extensions\Async\Linq.NumericIEnumerable.Async.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>Linq.NumericIEnumerable.Async.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+	<ItemGroup>
+		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="-Extensions\Async\Linq.NumericIEnumerable.Async.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Linq.NumericIEnumerable.Async.tt</DependentUpon>
+		</Compile>
+		<Compile Update="-Extensions\Async\Linq.SpecialCollectionTypes.Async.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Linq.SpecialCollectionTypes.Async.tt</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="update-local-nuget-cache $(TargetDir)" />
 	</Target>-->
 </Project>

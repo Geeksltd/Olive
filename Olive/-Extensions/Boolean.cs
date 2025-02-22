@@ -21,7 +21,7 @@
         /// <param name="yes">The output string if this value is True. the default value is Yes.</param>
         /// <param name="no">The output string if this value is False.. the default value is No.</param>
         public static string ToYesNoString(this bool? value, string yes = "Yes", string no = "No") =>
-            value.HasValue ? ToYesNoString(value.Value) : string.Empty;
+            value.HasValue ? ToYesNoString(value.Value, yes, no) : string.Empty;
 
         /// <summary>
         /// Compares two Boolean object and returns 0 if both are equal.
