@@ -458,3 +458,9 @@ jobs:
       with:
         PROJECT_FILE_PATH: Olive.OpenAI.Voice/Olive.OpenAI.Voice/Olive.OpenAI.Voice.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Olive MFA NuGet Package
+      uses: Geeksltd/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Olive.MFA/Olive.MFA.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
