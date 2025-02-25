@@ -231,7 +231,7 @@ namespace Olive
         /// <summary>
         /// Determines if this is a GET http request.
         /// </summary>
-        public static bool IsGet(this HttpRequest @this) => @this.Method == System.Net.WebRequestMethods.Http.Get;
+        public static bool IsGet(this HttpRequest @this) => @this.Method == System.Net.WebRequestMethods.Http.Get || @this.Method == System.Net.WebRequestMethods.Http.Head;
 
         /// <summary>
         /// Determines if this is a POST http request.
