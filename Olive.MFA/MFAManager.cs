@@ -19,7 +19,7 @@
             return Database.Save(emailMessage);
         }
 
-        public Task<bool> SendOtpViaSms(string otp, string phoneNumber)
+        public Task<bool> SendOtpViaSms(string smsMessage, string phoneNumber)
         {
             var accountId = Config.Get("TwilioAccountId");
             var authKey = Config.Get("TwilioAuthKey");
@@ -34,7 +34,7 @@
             var message = MessageResource.Create(
                 to: new PhoneNumber(phoneNumber),
                 from: new PhoneNumber(sender),
-                body: $"Your OTP code is: {otp}");
+                body: smsMessage);
 
             return Task.FromResult(message != null);
         }
