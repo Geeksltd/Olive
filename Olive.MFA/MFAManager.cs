@@ -21,9 +21,9 @@
 
         public Task<bool> SendOtpViaSms(string smsMessage, string phoneNumber)
         {
-            var accountId = Config.Get("TwilioAccountId");
-            var authKey = Config.Get("TwilioAuthKey");
-            var sender = Config.Get("TwilioSenderNumber");
+            var accountId = Config.Get("MFA:Twilio:TwilioAccountId");
+            var authKey = Config.Get("MFA:Twilio:TwilioAuthKey");
+            var sender = Config.Get("MFA:Twilio:TwilioSenderNumber");
 
             if (accountId.IsEmpty() || authKey.IsEmpty() || sender.IsEmpty())
                 throw new Exception("TwilioAccountId | TwilioAuthKey | TwilioSenderNumber configuration not set");
