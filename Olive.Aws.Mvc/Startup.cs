@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Olive.Aws
 {
     public abstract class Startup : Mvc.Startup
     {
-        protected Startup(IWebHostEnvironment env, IConfiguration config) : base(env, config, null)
+        protected Startup(IWebHostEnvironment env, IConfiguration config) : base(env, config)
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture =
                    CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = GetRequestCulture();
@@ -16,9 +17,9 @@ namespace Olive.Aws
 
         protected override CultureInfo GetRequestCulture() => new("en-GB");
 
-        public override void ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services, ILoggerFactory loggerFactory)
         {
-            base.ConfigureServices(services);
+            base.ConfigureServices(services, loggerFactory);
 
             services.AddCors(c => c.AddPolicy("AllowOrigin",
                 options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
