@@ -38,9 +38,8 @@ namespace Olive.Mvc
             Config.SetConfiguration(Configuration = config);
         }
 
-        public virtual void ConfigureServices(IServiceCollection services, ILoggerFactory loggerFactory)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
-            Log.Init(loggerFactory);
             Configuration.MergeEnvironmentVariables();
 
             Services = services;

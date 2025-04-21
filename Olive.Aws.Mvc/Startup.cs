@@ -17,9 +17,9 @@ namespace Olive.Aws
 
         protected override CultureInfo GetRequestCulture() => new("en-GB");
 
-        public override void ConfigureServices(IServiceCollection services, ILoggerFactory loggerFactory)
+        public override void ConfigureServices(IServiceCollection services)
         {
-            base.ConfigureServices(services, loggerFactory);
+            base.ConfigureServices(services);
 
             services.AddCors(c => c.AddPolicy("AllowOrigin",
                 options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()

@@ -16,7 +16,7 @@ namespace Olive.Mvc.Microservices
         protected Startup(IWebHostEnvironment env, IConfiguration config)
             : base(env, config) { }
 
-        public override void ConfigureServices(IServiceCollection services, ILoggerFactory loggerFactory)
+        public override void ConfigureServices(IServiceCollection services)
         {
             var permittedUrls = Config.Get("PermittedDomains").Split(",").Union(Microservice.Of("Hub").Url()).Select(d => d.TrimEnd("/")).Union(HubDevUrl).ToArray();
             Configuration.MergeEnvironmentVariables();
@@ -26,7 +26,7 @@ namespace Olive.Mvc.Microservices
                 .SetIsOriginAllowed(x => true)
                 .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
-            base.ConfigureServices(services, loggerFactory);
+            base.ConfigureServices(services);
         }
 
         public override void Configure(IApplicationBuilder app)
