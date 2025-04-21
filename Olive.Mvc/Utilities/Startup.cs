@@ -32,15 +32,15 @@ namespace Olive.Mvc
 
         protected IServiceCollection Services { get; private set; }
 
-        protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
+        protected Startup(IWebHostEnvironment env, IConfiguration config)
         {
             Environment = env;
             Config.SetConfiguration(Configuration = config);
-            Log.Init(loggerFactory);
         }
 
-        public virtual void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services, ILoggerFactory loggerFactory)
         {
+            Log.Init(loggerFactory);
             Configuration.MergeEnvironmentVariables();
 
             Services = services;

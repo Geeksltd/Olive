@@ -13,10 +13,10 @@ namespace Olive.Mvc.Microservices
     {
         const string HubDevUrl = "http://localhost:9011";
 
-        protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory factory)
-            : base(env, config, factory) { }
+        protected Startup(IWebHostEnvironment env, IConfiguration config)
+            : base(env, config) { }
 
-        public override void ConfigureServices(IServiceCollection services)
+        public override void ConfigureServices(IServiceCollection services, ILoggerFactory loggerFactory)
         {
             var permittedUrls = Config.Get("PermittedDomains").Split(",").Union(Microservice.Of("Hub").Url()).Select(d => d.TrimEnd("/")).Union(HubDevUrl).ToArray();
             Configuration.MergeEnvironmentVariables();
@@ -26,7 +26,7 @@ namespace Olive.Mvc.Microservices
                 .SetIsOriginAllowed(x => true)
                 .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
-            base.ConfigureServices(services);
+            base.ConfigureServices(services, loggerFactory);
         }
 
         public override void Configure(IApplicationBuilder app)
