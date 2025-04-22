@@ -16,451 +16,451 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Publish Olive NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive/Olive.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive ApiClient NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.ApiClient/Olive.ApiClient.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Audit NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Audit/Olive.Audit.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
     - name: Publish Olive Azure Document Analyzer NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Azure.DocumentAnalyzer/Olive.Azure.DocumentAnalyzer.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
     - name: Publish Olive Azure Document Classification NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Azure.DocumentClassification/Olive.Azure.DocumentClassification.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
 #     - name: Publish Olive Audit DatabaseLogger NuGet Package
-#       uses: Geeksltd/publish-nuget@v2
+#       uses: Geeksltd/publish-nuget@v3
 #       with:
 #         PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
 #         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws/Olive.Aws.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
       
     - name: Publish Olive Aws EventBus NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.EventBus/Olive.Aws.EventBus.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws LambdaFunction NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.LambdaFunction/Olive.Aws.LambdaFunction.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws Mvc NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.Mvc/Olive.Aws.Mvc.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws Ses NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.Ses/Olive.Aws.Ses.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws Ses AutoFetch NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch/Olive.Aws.Ses.AutoFetch.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
    # - name: Publish Olive Aws Ses AutoFetch TestConsole NuGet Package
-   #   uses: Geeksltd/publish-nuget@v2
+   #   uses: Geeksltd/publish-nuget@v3
    #   with: 
    #     PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch.TestConsole/Olive.Aws.Ses.AutoFetch.TestConsole.csproj
    #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
    # - name: Publish Olive Aws Ses AutoFetch Tests NuGet Package
-   #   uses: Geeksltd/publish-nuget@v2
+   #   uses: Geeksltd/publish-nuget@v3
    #   with:
    #     PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch.Tests/Olive.Aws.Ses.AutoFetch.Tests.csproj
    #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Azure NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Azure/Olive.Azure.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
     
     - name: Publish Olive Azure EventBus NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Azure.EventBus/Olive.Azure.EventBus.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
 #     - name: Publish Olive Blob Aws NuGet Package
-#       uses: Geeksltd/publish-nuget@v2
+#       uses: Geeksltd/publish-nuget@v3
 #       with:
 #         PROJECT_FILE_PATH: Olive.Blob.Aws/Olive.Blob.Aws.csproj
 #         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Blob Azure NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Blob.Azure/Olive.Blob.Azure.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Cloud NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Cloud/Olive.Cloud.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Compression NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Compression/Olive.Compression.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Console NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Console/Olive.Console.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive CSV NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.CSV/Olive.CSV.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Drawing NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Drawing/Olive.Drawing.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Email NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Email/Olive.Email.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Email Imap NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Email.Imap/Olive.Email.Imap.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Encryption NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Encryption/Olive.Encryption.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Cache Redis NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Cache.Redis/Olive.Entities.Cache.Redis.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data/Olive.Entities.Data.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data MySql NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.MySql/Olive.Entities.Data.MySql.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data PostgreSQL NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.PostgreSQL/Olive.Entities.Data.PostgreSQL.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data DynamoDB NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.DynamoDB/Olive.Entities.Data.DynamoDB.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data Replication NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication/Olive.Entities.Data.Replication.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data Replication Mvc Extensions NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.Mvc.Extensions/Olive.Entities.Data.Replication.Mvc.Extensions.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data Replication QueueUrlProvider NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.QueueUrlProvider/Olive.Entities.Data.Replication.QueueUrlProvider.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data SQLite NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.SQLite/Olive.Entities.Data.SQLite.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities Data SqlServer NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.SqlServer/Olive.Entities.Data.SqlServer.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive EventBus NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.EventBus/Olive.EventBus.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Export NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Export/Olive.Export.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive GeoLocation NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.GeoLocation/Olive.GeoLocation.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Globalization NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Globalization/Olive.Globalization.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Hangfire NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Hangfire/Olive.Hangfire.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Hangfire Cron NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Hangfire.Cron/Olive.Hangfire.Cron.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Hangfire MySql NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Hangfire.MySql/Olive.Hangfire.MySql.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Log EventBus NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Log.EventBus/Olive.Log.EventBus.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Microservices NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Microservices/Olive.Microservices.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc CKEditorFileManager NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc.CKEditorFileManager/Olive.Mvc.CKEditorFileManager.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc IpFilter NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc.IpFilter/Olive.Mvc.IpFilter.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc Microservices NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Microservices/Olive.Mvc.Microservices.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc Paging NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Paging/Olive.Mvc.Paging.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc Recaptcha NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Recaptcha/Olive.Mvc.Recaptcha.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc Security NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Security/Olive.Mvc.Security.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Mvc Testing NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Testing/Olive.Mvc.Testing.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     # - name: Publish Olive Net4x Compatibility NuGet Package
-      # uses: Geeksltd/publish-nuget@v2
+      # uses: Geeksltd/publish-nuget@v3
       # with:
         # PROJECT_FILE_PATH: Olive.Net4x.Compatibility/Olive.Net4x.Compatibility.csproj
         # NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive PassiveBackgroundTasks NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.PassiveBackgroundTasks/Olive.PassiveBackgroundTasks.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive PDF NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.PDF/Olive.PDF.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive PushNotification NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.PushNotification/Olive.PushNotification.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Security Auth0 NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Security.Auth0/Olive.Security.Auth0.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Security Aws NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Security.Aws/Olive.Security.Aws.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Security Azure NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Security.Azure/Olive.Security.Azure.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Security Cloud NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Security.Cloud/Olive.Security.Cloud.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Security Impersonation NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Security.Impersonation/Olive.Security.Impersonation.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive SMS NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.SMS/Olive.SMS.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Sms Aws NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Sms.Aws/Olive.Sms.Aws.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     # - name: Publish Olive SMS TextMagic NuGet Package
-      # uses: Geeksltd/publish-nuget@v2
+      # uses: Geeksltd/publish-nuget@v3
       # with:
         # PROJECT_FILE_PATH: Olive.SMS.TextMagic/Olive.SMS.TextMagic.csproj
         # NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Web NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Web/Olive.Web.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws Rekognition NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.Rekognition/Olive.Aws.Rekognition.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws Textract NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.Textract/Olive.Aws.Textract.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
     - name: Publish Olive Aws Comprehend NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Aws.Comprehend/Olive.Aws.Comprehend.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
     - name: Publish Olive Gpt NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Gpt/Olive.Gpt.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
     
     - name: Publish Olive Data replication generator UI NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.DataGenerator.UI/Olive.Entities.Data.Replication.DataGenerator.UI.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
     
     - name: Publish Olive OpenAI NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.OpenAI/Olive.OpenAI/Olive.OpenAI.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
       
     - name: Publish Olive OpenAI voice NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.OpenAI.Voice/Olive.OpenAI.Voice/Olive.OpenAI.Voice.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive MFA NuGet Package
-      uses: Geeksltd/publish-nuget@v2
+      uses: Geeksltd/publish-nuget@v3
       with:
         PROJECT_FILE_PATH: Olive.MFA/Olive.MFA.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
