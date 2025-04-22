@@ -27,6 +27,8 @@ namespace Olive.Mvc
     {
         const int DEFAULT_SESSION_TIMEOUT = 20;
 
+        private ILoggerFactory loggerFactory;
+
         protected readonly IWebHostEnvironment Environment;
         protected readonly IConfiguration Configuration;
 
@@ -36,6 +38,11 @@ namespace Olive.Mvc
         {
             Environment = env;
             Config.SetConfiguration(Configuration = config);
+            loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConfiguration(config.GetSection("Logging"));
+            });
+            Log.Init(loggerFactory);
         }
 
         public virtual void ConfigureServices(IServiceCollection services)
@@ -43,6 +50,9 @@ namespace Olive.Mvc
             Configuration.MergeEnvironmentVariables();
 
             Services = services;
+
+            services.AddSingleton<ILoggerFactory>(loggerFactory);
+
             services.AddHttpContextAccessor();
             services.AddCors(opt => opt.FromConfig(Configuration));
 
