@@ -41,6 +41,7 @@ namespace Olive.Mvc
             loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConfiguration(config.GetSection("Logging"));
+                builder.AddConsole();
             });
             Log.Init(loggerFactory);
         }
