@@ -53,6 +53,7 @@ namespace Olive.Mvc
             Services = services;
 
             services.AddSingleton<ILoggerFactory>(loggerFactory);
+            services.AddLogging();
 
             services.AddHttpContextAccessor();
             services.AddCors(opt => opt.FromConfig(Configuration));
