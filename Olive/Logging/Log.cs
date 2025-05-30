@@ -64,20 +64,29 @@ namespace Olive
             return r.ToString();
         }
     }
-
+    
     public static class Log
     {
-        static ILoggerFactory factory;
-
+        public static ILoggerFactory Factory { get; private set; }
+       
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void Init(ILoggerFactory factory) => Log.factory = factory;
-
-        static ILoggerFactory Factory => factory ?? (factory = Context.Current.GetService<ILoggerFactory>());
+        public static void Init(Action<ILoggingBuilder> configure)
+        {
+            if(Factory != null)return;
+            Factory = Microsoft.Extensions.Logging.LoggerFactory.Create(configure);
+        }
+       
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void Init(ILoggerFactory factory)
+        {
+            if (Factory != null)return;
+            Factory = factory;
+        }
 
         /// <summary>
         /// A shortcut to Context.Current.GetService«ILogger»().
         /// </summary>
-        public static ILogger For(Type type) => Factory.CreateLogger(type);
+        public static ILogger For(Type type) => (Factory ?? (Factory = Context.Current.GetService<ILoggerFactory>())).CreateLogger(type);
 
         public static ILogger For<TType>() => For(typeof(TType));
 
