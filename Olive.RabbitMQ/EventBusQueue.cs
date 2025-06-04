@@ -16,30 +16,38 @@ namespace Olive.RabbitMQ
         const int MAX_RETRY = 4;
         const int BATCH_SIZE = 100;
         internal string QueueUrl;
-        public IModel Client { get; set; }
+        public IChannel Client { get; set; }
         public ConnectionFactory Factory { get; set; }
         internal bool IsFifo => QueueUrl.EndsWith(".fifo");
         readonly Limiter Limiter = new Limiter(3000);
+        IConnection Connection;
 
         public EventBusQueue(string queueUrl)
         {
             QueueUrl = queueUrl;
 
-            Factory = new ConnectionFactory() { HostName = Host, UserName = UserName, Password = Password };
-            Factory.Port = Port;
-            Factory.AutomaticRecoveryEnabled = true;
-            Factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(10);
-            Factory.DispatchConsumersAsync = true;
+            Factory = new ConnectionFactory()
+            {
+                HostName = Host,
+                UserName = UserName,
+                Password = Password,
+                Port = Port,
+                AutomaticRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(10),
+            };
+
             if (EnableSSL)
             {
                 ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
-                Factory.Ssl = new SslOption { Enabled = true, Version = System.Security.Authentication.SslProtocols.Tls11 | System.Security.Authentication.SslProtocols.Tls12 };
-
+                Factory.Ssl = new SslOption
+                {
+                    Enabled = true,
+                    Version = System.Security.Authentication.SslProtocols.Tls12 // or Tls13 if supported
+                };
             }
 
-            var connection = Factory.CreateConnection();
-            Client = connection.CreateModel();
-            Client.ConfirmSelect();
+            Connection = Task.Factory.RunSync(() => Factory.CreateConnectionAsync());
+            Client = Task.Factory.RunSync(() => Connection.CreateChannelAsync());
         }
 
         /// <summary>
@@ -62,23 +70,25 @@ namespace Olive.RabbitMQ
         /// </summary>
         public int VisibilityTimeout { get; set; } = Config.Get("RabbitMQ:EventBusQueue:VisibilityTimeout", 300);
 
+        async Task EnsureQueueBindings()
+        {
+            await Client.QueueDeclareAsync(queue: QueueUrl, durable: true, exclusive: false, autoDelete: false, arguments: null);
+            await Client.ExchangeDeclareAsync(exchange: QueueUrl, type: ExchangeType.Fanout, durable: true);
+            await Client.QueueBindAsync(queue: QueueUrl, exchange: QueueUrl, routingKey: QueueUrl);
+        }
+
         public async Task<string> Publish(string message)
         {
             await Limiter.Add(1);
+            await EnsureQueueBindings();
 
             var body = Encoding.UTF8.GetBytes(message);
-            Client.QueueDeclare(QueueUrl, true, false, false, null);
-            Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Fanout, durable: true);
-            Client.QueueBind(queue: QueueUrl,
-                  exchange: QueueUrl,
-                  routingKey: QueueUrl);
-            var properties = Client.CreateBasicProperties();
+            var properties = new BasicProperties();
             properties.Persistent = true;
             properties.ContentType = "application/json";
-            Client.BasicPublish("",
-                                 routingKey: QueueUrl,
-                                 basicProperties: properties,
-                                 body: body);
+
+            await Client.BasicPublishAsync(exchange: "", routingKey: QueueUrl, mandatory: true, basicProperties: properties, body: body);
+
             return "";
         }
 
@@ -88,33 +98,29 @@ namespace Olive.RabbitMQ
         {
             int outstandingMessageCount = 0;
             await Limiter.Add(messages.Count());
+            await EnsureQueueBindings();
+
             foreach (var message in messages)
             {
                 var body = Encoding.UTF8.GetBytes(message);
-                Client.QueueDeclare(QueueUrl, true, false, false, null);
-                Client.ExchangeDeclare(exchange: QueueUrl, type: ExchangeType.Fanout, durable: true);
-                Client.QueueBind(queue: QueueUrl,
-                        exchange: QueueUrl,
-                        routingKey: QueueUrl);
-                var properties = Client.CreateBasicProperties();
+                var properties = new BasicProperties();
                 properties.Persistent = true;
                 properties.ContentType = "application/json";
-                Client.BasicPublish("",
-                                        routingKey: QueueUrl,
-                                        basicProperties: properties,
-                                        body: body);
-                outstandingMessageCount++;
-                if (outstandingMessageCount == BATCH_SIZE)
+
+                await Client.BasicPublishAsync(exchange: "", routingKey: QueueUrl, mandatory: true, basicProperties: properties, body: body);
+
+                if (++outstandingMessageCount == BATCH_SIZE)
                 {
-                    Client.WaitForConfirmsOrDie(5.Seconds());
+                    // https://www.rabbitmq.com/tutorials/tutorial-seven-dotnet
+                    //Client.WaitForConfirmsOrDie(5.Seconds());
                     outstandingMessageCount = 0;
                 }
             }
-            if (outstandingMessageCount > 0)
-            {
-                Client.WaitForConfirmsOrDie(5.Seconds());
-            }
-            
+
+            //if (outstandingMessageCount > 0)
+                // https://www.rabbitmq.com/tutorials/tutorial-seven-dotnet
+                //Client.WaitForConfirmsOrDie(5.Seconds());
+
 
             //var request = Client.CreateBasicPublishBatch();
 
@@ -153,6 +159,7 @@ namespace Olive.RabbitMQ
 
             ////return successfuls;
 
+
             return new List<string>();
         }
 
@@ -175,31 +182,43 @@ namespace Olive.RabbitMQ
             }
         }
 
-        public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10, int? maxNumerOfMessages = null)
+        public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10,
+            int? maxNumerOfMessages = null)
         {
-            await Task.Run(() => { });
+            await Task.Run(() => { }); // placeholder to keep async context
             var result = new List<QueueMessageHandle>();
 
-            var consumer = new EventingBasicConsumer(Client);
+            var consumer = new AsyncEventingBasicConsumer(Client);
 
-            consumer.Received += (model, ea) =>
+            consumer.ReceivedAsync += async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                Log.For(this)
-                    .Info($"RabbitMQ recieved message: Queue " + QueueUrl);
-                result.Add(new QueueMessageHandle(message, ea.DeliveryTag.ToString(), () => Task.Run(() => Client.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false))));
+
+                Log.For(this).Info($"RabbitMQ received message: Queue {QueueUrl}");
+
+                result.Add(new QueueMessageHandle(
+                    message,
+                    ea.DeliveryTag.ToString(),
+                    () => Task.Run(() => Client.BasicAckAsync(ea.DeliveryTag, false))
+                ));
             };
 
-            Client.BasicConsume(queue: QueueUrl,
-                                autoAck: false,
-                                consumer: consumer);
+            await Client.BasicConsumeAsync(
+                 queue: QueueUrl,
+                 autoAck: false,
+                 consumer: consumer
+             );
+
+            // NOTE: RabbitMQ does not "batch" by default — this simulates a short poll delay
+            await Task.Delay(timeoutSeconds * 1000);
 
             return result;
         }
 
-        public Task<QueueMessageHandle> Pull(int timeoutSeconds = 10) => PullBatch(timeoutSeconds, 1).FirstOrDefault();
+        public Task<QueueMessageHandle> Pull(int timeoutSeconds = 10) =>
+            PullBatch(timeoutSeconds, 1).FirstOrDefault();
 
-        public Task Purge() => Task.Run(() => Client.QueuePurge(QueueUrl));
+        public Task Purge() => Client.QueuePurgeAsync(QueueUrl);
     }
 }

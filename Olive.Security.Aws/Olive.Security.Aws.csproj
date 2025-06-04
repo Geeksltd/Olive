@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>3.1.124</Version>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>8.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.KeyManagementService" Version="3.7.101.90" />
+    <PackageReference Include="AWSSDK.KeyManagementService" Version="4.0.0.4" />
   </ItemGroup>
 
   <ItemGroup>

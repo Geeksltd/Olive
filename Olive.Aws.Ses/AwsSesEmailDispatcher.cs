@@ -26,7 +26,7 @@ namespace Olive.Aws.Ses
         MimeMessage GetMessage(MailMessage mail, IEmailMessage iEmailMessage = null)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(mail.From?.DisplayName, mail.From.Address));
+            message.From.Add(new MailboxAddress(mail.From?.DisplayName, mail.From?.Address));
             mail.To.Do(t => message.To.Add(new MailboxAddress(t.DisplayName, t.Address)));
             mail.Bcc.Do(b => message.Bcc.Add(new MailboxAddress(b.DisplayName, b.Address)));
             mail.CC.Do(c => message.Cc.Add(new MailboxAddress(c.DisplayName, c.Address)));

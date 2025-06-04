@@ -149,26 +149,26 @@ namespace Olive.Aws
             }
         }
 
-        public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10, int? maxNumerOfMessages = null)
+        public async Task<IEnumerable<QueueMessageHandle>> PullBatch(int timeoutSeconds = 10, int? maxNumberOfMessages = null)
         {
             var result = new List<QueueMessageHandle>();
-
+           
             var request = new ReceiveMessageRequest
             {
                 QueueUrl = QueueUrl,
                 WaitTimeSeconds = timeoutSeconds,
-                MaxNumberOfMessages = maxNumerOfMessages ?? MaxNumberOfMessages,
+                MaxNumberOfMessages = maxNumberOfMessages ?? MaxNumberOfMessages,
                 VisibilityTimeout = VisibilityTimeout,
             };
-
+            
             var response = await Client.ReceiveMessageAsync(request);
-
+            
             foreach (var item in response.Messages)
             {
                 var receipt = new DeleteMessageRequest { QueueUrl = QueueUrl, ReceiptHandle = item.ReceiptHandle };
                 result.Add(new QueueMessageHandle(item.Body, item.MessageId, () => Client.DeleteMessageAsync(receipt)));
             }
-
+           
             return result;
         }
 

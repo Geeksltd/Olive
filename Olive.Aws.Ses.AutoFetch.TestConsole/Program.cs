@@ -30,14 +30,14 @@ namespace Olive.Aws.Ses.AutoFetch.TestConsole
         static void Init()
         {
             var configuration = new ConfigurationBuilder()
-          .AddJsonFile("appsettings.json", true, true)
-          .Build();
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
             var services = new ServiceCollection()
                 .AddLogging(c => c.AddConsole())
                 .AddSingleton<IConfiguration>(configuration);
 
             services.AddDataAccess(x => x.SqlServer());
-            services.AddDatabase();
+            services.AddDatabase(configuration);
             services.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
             services.AddSingleton<ICache, Cache>();
             services.AddSingleton<IAudit, Olive.Audit.DefaultAudit>();

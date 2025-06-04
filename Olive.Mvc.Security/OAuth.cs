@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,7 +43,8 @@ namespace Olive.Security
         public async Task NotifyExternalLoginAuthenticated(ExternalLoginInfo info)
         {
             if (ExternalLoginAuthenticated is null)
-                throw new InvalidOperationException("ExternalLogin requested but no handler found for ExternalLoginAuthenticated event");
+                throw new InvalidOperationException(
+                    "ExternalLogin requested but no handler found for ExternalLoginAuthenticated event");
 
             await ExternalLoginAuthenticated.Raise(info);
         }
@@ -59,7 +60,17 @@ namespace Olive.Security
                 ValidateIssuer = false
             };
 
-            return new JwtSecurityTokenHandler().ValidateToken(jwt, validationParams, out var token);
+            var handler = new JsonWebTokenHandler();
+            var result = handler.ValidateToken(jwt, validationParams);
+
+            if (!result.IsValid)
+            {
+                throw new SecurityTokenValidationException(result.Exception?.Message ?? "Token validation failed");
+            }
+
+            return result.ClaimsIdentity != null
+                ? new ClaimsPrincipal(result.ClaimsIdentity)
+                : throw new SecurityTokenValidationException("Invalid token identity");
         }
 
         internal static SymmetricSecurityKey GetJwtSecurityKey()
@@ -67,7 +78,8 @@ namespace Olive.Security
             var configKey = Config.GetOrThrow("Authentication:JWT:Secret");
 
             if (configKey.Length != JWT_SECRET_LENGTH)
-                throw new ArgumentException($"Your config setting of 'Authentication:JWT:Secret' needs to be {JWT_SECRET_LENGTH} characters.");
+                throw new ArgumentException(
+                    $"Your config setting of 'Authentication:JWT:Secret' needs to be {JWT_SECRET_LENGTH} characters.");
 
             var securityKey = configKey.ToBytes(encoding: Encoding.UTF8);
             return new SymmetricSecurityKey(securityKey);
