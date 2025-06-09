@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>8.0.0</Version>
+    <Version>8.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,9 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.5.1" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.6.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.2.4" />
-    <PackageReference Include="AWSSDK.Core" Version="4.0.0.6" />
+    <PackageReference Include="AWSSDK.Core" Version="4.0.0.7" />
   </ItemGroup>
 
   <ItemGroup>
