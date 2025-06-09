@@ -45,11 +45,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Azure.DocumentClassification/Olive.Azure.DocumentClassification.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
-#     - name: Publish Olive Audit DatabaseLogger NuGet Package
-#       uses: Geeksltd/publish-nuget@v3.8.5
-#       with:
-#         PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Audit DatabaseLogger NuGet Package
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Aws NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
@@ -111,11 +111,11 @@ jobs:
         PROJECT_FILE_PATH: Olive.Azure.EventBus/Olive.Azure.EventBus.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
-#     - name: Publish Olive Blob Aws NuGet Package
-#       uses: Geeksltd/publish-nuget@v3.8.5
-#       with:
-#         PROJECT_FILE_PATH: Olive.Blob.Aws/Olive.Blob.Aws.csproj
-#         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    - name: Publish Olive Blob Aws NuGet Package
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.Blob.Aws/Olive.Blob.Aws.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Blob Azure NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
