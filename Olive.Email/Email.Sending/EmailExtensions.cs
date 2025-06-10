@@ -79,31 +79,23 @@ namespace Olive.Email
         /// <summary>
         /// Creates a VCalendar text with the specified parameters.
         /// </summary>
-        /// <param name="meetingUniqueIdentifier">This uniquely identifies the meeting and is used for changes / cancellations. It is recommended to use the ID of the owner object.</param>
+        /// <param name="meetingUniqueIdentifier">This uniquely identifies the meeting and is used for changes / cancellations. It is recommended to use the ID of the owner object.</param>         
         public static string AddVCalendarView(this IEmailMessage @this, string meetingUniqueIdentifier, DateTime start, DateTime end, string subject, string description, string location)
         {
-            var dateFormat = "yyyyMMddTHHmmssZ";
+            return @this.AddVCalendarView(new VCalendarEvent
+            {
+                UniqueIdentifier = meetingUniqueIdentifier,
+                Start = start,
+                End = end,
+                Subject = subject,
+                Description = description,
+                Location = location
+            });
+        }
 
-            Func<string, string> cleanUp = s => s.Or("").Remove("\r").Replace("\n", "\\n");
-
-            var r = new StringBuilder();
-            r.AppendLine(@"BEGIN:VCALENDAR");
-            r.AppendLine(@"PRODID:-//Microsoft Corporation//Outlook 12.0 MIMEDIR//EN");
-            r.AppendLine(@"VERSION:1.0");
-            r.AppendLine(@"BEGIN:VEVENT");
-
-            r.AddFormattedLine(@"DTSTART:{0}", start.ToString(dateFormat));
-            r.AddFormattedLine(@"DTEND:{0}", end.ToString(dateFormat));
-            r.AddFormattedLine(@"UID:{0}", meetingUniqueIdentifier);
-            r.AddFormattedLine(@"SUMMARY:{0}", cleanUp(subject));
-            r.AppendLine("LOCATION:" + cleanUp(location));
-            r.AppendLine("DESCRIPTION:" + cleanUp(description));
-
-            // bodyCalendar.AppendLine(@"PRIORITY:3");
-            r.AppendLine(@"END:VEVENT");
-            r.AppendLine(@"END:VCALENDAR");
-
-            return @this.VCalendarView = r.ToString();
+        public static string AddVCalendarView(this IEmailMessage @this, VCalendarEvent vCalEvent)
+        {
+            return @this.VCalendarView = vCalEvent.ToString();
         }
 
         /// <summary>
