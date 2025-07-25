@@ -101,6 +101,7 @@ namespace Olive.Entities.Replication
             logger.Info("Registering refresh messages for All ...");
             Register("All", async context =>
             {
+                await context.Response.WriteHtmlAsync("Endpoints: " + endpoint.ExposedTypes.ToString(" | "));
                 await endpoint.UploadAll();
                 await context.Response.WriteHtmlAsync("All done!");
             });
