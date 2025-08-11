@@ -232,6 +232,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olive.MFA", "Olive.MFA\Oliv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Aws.S3Backup.SqlServer", "Olive.Aws.S3Backup.SqlServer\Olive.Aws.S3Backup.SqlServer.csproj", "{F89CE3AE-8429-440B-BC3A-0B0787DAFC95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.EventBus.Mvc.Extensions", "Olive.EventBus.Mvc.Extensions\Olive.EventBus.Mvc.Extensions.csproj", "{3A8ECDB3-216E-4F58-AD6A-B4A154279BF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -601,6 +603,10 @@ Global
 		{F89CE3AE-8429-440B-BC3A-0B0787DAFC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F89CE3AE-8429-440B-BC3A-0B0787DAFC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F89CE3AE-8429-440B-BC3A-0B0787DAFC95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A8ECDB3-216E-4F58-AD6A-B4A154279BF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A8ECDB3-216E-4F58-AD6A-B4A154279BF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A8ECDB3-216E-4F58-AD6A-B4A154279BF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A8ECDB3-216E-4F58-AD6A-B4A154279BF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -703,6 +709,7 @@ Global
 		{4CE3F810-F35F-40A2-83C5-529419ACEAD4} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
 		{4D98F2B4-3B67-4A4D-8F90-7D4009F06EE3} = {B08CEA40-4865-41AF-94CA-AC59E2513A11}
 		{F89CE3AE-8429-440B-BC3A-0B0787DAFC95} = {6A937A37-1CEC-4347-9594-C471645B43DA}
+		{3A8ECDB3-216E-4F58-AD6A-B4A154279BF3} = {F9E4B82C-F72E-4D58-A31B-1E971182A29A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
