@@ -30,6 +30,17 @@ namespace Olive
         }
 
         /// <summary>
+        /// Returns a URL that, when called, ensures all messages in the queue are pulled and processed.
+        /// </summary>
+        public static string ProcessCommandUrl<TMessage>() where TMessage : IEventBusMessage
+        {
+            var commandName = typeof(TMessage).FullName;
+            var consumer = Config.GetOrThrow($"EventBus:Queues:{commandName}:Consumer");
+            var consumerUrl = Config.GetOrThrow($"Microservice:{consumer}:Url");
+            return $"{consumerUrl.TrimEnd("/")}/olive/process-command/{commandName}";
+        }
+
+        /// <summary>
         /// Returns a queue for a specified queue url.
         /// </summary>
         public static EventBusQueue<TMessage> Queue<TMessage>(string url) where TMessage : IEventBusMessage
