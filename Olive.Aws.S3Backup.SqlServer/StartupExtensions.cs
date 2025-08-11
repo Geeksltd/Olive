@@ -1,13 +1,12 @@
 ﻿namespace Olive.Aws.S3Backup.SqlServer
 {
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Olive.Aws.S3Backup.SqlServer.Services;
 
     public static class StartupExtensions
     {
-        public static void AddS3BackupSqlServer(this IServiceCollection services, IConfiguration configuration)
+        public static void AddS3BackupSqlServer(this IServiceCollection services)
         {
             services.AddScoped<IS3BackupService, S3BackupService>();
         }

@@ -57,9 +57,10 @@
             if (httpContextAccessor.HttpContext is null || !IsInDevRole)
                 throw new UnauthorizedAccessException("You do not have permission to access backup status.");
 
+            var bucket = Config.GetOrThrow("Blob:S3:BackupBucket");
             var backup = httpContextAccessor.HttpContext?.Request.Query["backup"].ToString() ?? throw new ArgumentException("Backup name is required in the query string.");
             var database = GetDatabaseName();
-            var taskId = await RawS3.ReadTextFile($"{database}/{backup}.json");
+            var taskId = await RawS3.ReadTextFile(bucket, $"{database}/{backup}.json");
 
             var commandStatus = "exec msdb.dbo.rds_task_status @task_id=" + taskId;
             var statusDataTable = await Db.GetAccess().ExecuteQuery(commandStatus);
