@@ -6,12 +6,13 @@
 
     public static class StartupExtensions
     {
-        public static void AddS3BackupSqlServer(this IServiceCollection services)
+        public static IServiceCollection AddS3BackupSqlServer(this IServiceCollection services)
         {
             services.AddScoped<IS3BackupService, S3BackupService>();
+            return services;
         }
 
-        public static void UseS3BackupSqlServer(this IApplicationBuilder app)
+        public static IApplicationBuilder UseS3BackupSqlServer(this IApplicationBuilder app)
         {
             app.Map("/olive/s3backup", builder =>
             {
@@ -48,6 +49,8 @@
             //        await backupService.GetRestoreStatus();
             //    });
             //});
+
+            return app;
         }
     }
 }
