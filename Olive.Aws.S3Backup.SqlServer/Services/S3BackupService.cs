@@ -66,9 +66,17 @@
             var statusDataTable = await Db.GetAccess().ExecuteQuery(commandStatus);
             var status = statusDataTable.Rows[0]["lifecycle"].ToString();
 
-            httpContextAccessor.HttpContext.Response.ContentType = "text/plain";
+            var message = $"Status for backup {backup}.bak is '{status}'";
+
+            if ("SUCCESS".Equals(status, StringComparison.OrdinalIgnoreCase))
+            {
+                var preSignedURL = await RawS3.GeneratePreSignedURL(bucket, $"{database}/{backup}.bak", TimeSpan.FromMinutes(30));
+                message += $" and the backup file is available <a href='{preSignedURL}'>HERE</a>";
+            }
+
+            httpContextAccessor.HttpContext.Response.ContentType = "text/html";
             httpContextAccessor.HttpContext.Response.StatusCode = 200;
-            await httpContextAccessor.HttpContext.Response.WriteAsync($"Status for backup {backup}.bak is '{status}'");
+            await httpContextAccessor.HttpContext.Response.WriteAsync(message);
         }
 
         //public Task StartRestore()

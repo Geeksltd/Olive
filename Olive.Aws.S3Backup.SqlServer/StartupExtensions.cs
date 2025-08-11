@@ -13,28 +13,40 @@
 
         public static void UseS3BackupSqlServer(this IApplicationBuilder app)
         {
-            app.Map("/olive/s3backup", async (context) =>
+            app.Map("/olive/s3backup", builder =>
             {
-                var backupService = context.ApplicationServices.GetRequiredService<IS3BackupService>();
-                await backupService.StartNewBackup();
+                builder.Run(async x =>
+                {
+                    var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
+                    await backupService.StartNewBackup();
+                });
             });
 
-            app.Map("/olive/s3backup-status", async (context) =>
+            app.Map("/olive/s3backup-status", builder =>
             {
-                var backupService = context.ApplicationServices.GetRequiredService<IS3BackupService>();
-                await backupService.GetBackupStatus();
+                builder.Run(async x =>
+                {
+                    var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
+                    await backupService.GetBackupStatus();
+                });
             });
 
-            //app.Map("/olive/s3restore", async (context) =>
+            //app.Map("/olive/s3restore", builder =>
             //{
-            //    var backupService = context.ApplicationServices.GetRequiredService<IS3BackupService>();
-            //    await backupService.StartRestore();
+            //    builder.Run(async x =>
+            //    {
+            //        var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
+            //        await backupService.StartRestore();
+            //    });
             //});
 
-            //app.Map("/olive/s3restore-status", async (context) =>
+            //app.Map("/olive/s3restore-status", builder =>
             //{
-            //    var backupService = context.ApplicationServices.GetRequiredService<IS3BackupService>();
-            //    await backupService.GetRestoreStatus();
+            //    builder.Run(async x =>
+            //    {
+            //        var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
+            //        await backupService.GetRestoreStatus();
+            //    });
             //});
         }
     }
