@@ -249,6 +249,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.EventBus/Olive.EventBus.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive EventBus Mvc Extensions NuGet Package
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.EventBus.Mvc.Extensions/Olive.EventBus.Mvc.Extensions.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Export NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
