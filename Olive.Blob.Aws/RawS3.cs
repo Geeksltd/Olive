@@ -173,5 +173,24 @@ namespace Olive.BlobAws
             set(request);
             await client.PutObjectAsync(request);
         }
+
+        public static Task<string> GeneratePreSignedURL(string key, TimeSpan duration) => GeneratePreSignedURL(BucketName, key, duration);
+
+        public static async Task<string> GeneratePreSignedURL(string bucket, string key, TimeSpan duration)
+        {
+            var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
+            using var client = new AmazonS3Client(regionEndpoint);
+
+            var request = new GetPreSignedUrlRequest
+            {
+                BucketName = bucket,
+                Key = key,
+                Expires = DateTime.UtcNow.Add(duration),
+                Verb = HttpVerb.GET
+            };
+
+            string url = await client.GetPreSignedURLAsync(request);
+            return url;
+        }
     }
 }
