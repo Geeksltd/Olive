@@ -27,9 +27,9 @@ namespace Olive
         {
             RunHandler();
 
-            var watcher = new FileSystemWatcher(Folder.FullName) { IncludeSubdirectories = false };
-            watcher.Created += OnFoundNewFile;
-            watcher.EnableRaisingEvents = true;
+            //var watcher = new FileSystemWatcher(Folder.FullName) { IncludeSubdirectories = false };
+            //watcher.Created += OnFoundNewFile;
+            //watcher.EnableRaisingEvents = true;
         }
 
         static async Task<string> ReadFile(FileInfo item)
@@ -54,11 +54,11 @@ namespace Olive
             return new KeyValuePair<FileInfo, string>(item, content);
         }
 
-        async void OnFoundNewFile(object sender, FileSystemEventArgs e)
-        {
-            using (await SyncLock.Lock())
-                await HandleNext();
-        }
+        //async void OnFoundNewFile(object sender, FileSystemEventArgs e)
+        //{
+        //    using (await SyncLock.Lock())
+        //        await HandleNext();
+        //}
 
         async Task<bool> HandleNext()
         {
