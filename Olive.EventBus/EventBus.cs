@@ -17,6 +17,9 @@ namespace Olive
             if (url.IsEmpty())
                 url = Config.GetOrThrow($"EventBus:Queues:{messageType.FullName}:Url");
 
+            if (url == "#")
+                return $"FOR_DEVELOPMENT_ONLY_EventBus_{messageType.FullName}";
+
             return url;
         }
 
