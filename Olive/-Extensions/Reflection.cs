@@ -179,7 +179,7 @@ namespace Olive
             if (ctors.HasMany()) throw new("Multiple constructors found for: " + @this.FullName);
 
             var parameters = ctors.Single().GetParameters()
-                .Select(x => Context.Current.ServiceProvider.GetService(x.ParameterType))
+                .Select(x => Context.Current.GetService(x.ParameterType))
                 .ToArray();
 
             return @this.CreateInstance(parameters);
