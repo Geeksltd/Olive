@@ -7,11 +7,11 @@
     {
         public static IApplicationBuilder RegisterCommandConsumerProcessUrl(this IApplicationBuilder app)
         {
-            app.Map("/olive/process-command/{CommandName}", builder =>
+            app.Map("/olive/process-command", builder =>
             {
                 builder.Run(async x =>
                 {
-                    var commandTypeFullName = x.Request.RouteValues["CommandName"]?.ToString();
+                    var commandTypeFullName = x.Request.Path.Value?.TrimStart('/');
 
                     if (commandTypeFullName.IsEmpty())
                         throw new ArgumentException("CommandName is required in the URL.");
@@ -29,6 +29,8 @@
                         var message = JsonConvert.DeserializeObject(x, type) as EventBusCommandMessage;
                         return message?.Process() ?? Task.CompletedTask;
                     });
+
+                    x.Response.Write("Done");
                 });
             });
 
