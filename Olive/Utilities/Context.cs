@@ -14,7 +14,7 @@ namespace Olive
         static Context current = new();
         internal static Func<Context> ContextProvider = () => new Context();
 
-        Context.ScopedServiceProvider ScopeServiceProvider;
+        Context.OliveServiceProvider serviceProvider;
 
         /// <summary>
         /// Occurs when the StartUp.OnInitializedAsync is completed.
@@ -30,25 +30,25 @@ namespace Olive
         {
             return current = new()
             {
-                ScopeServiceProvider = new Context.ScopedServiceProvider(applicationServices, scopeServiceProvider)
+                serviceProvider = new Context.OliveServiceProvider(applicationServices, scopeServiceProvider)
             };
         }
 
         /// <summary>
         /// Gets a required service of the specified contract type.
         /// </summary>
-        public TService GetService<TService>() => (TService)ScopeServiceProvider.GetRequiredService(typeof(TService));
+        public TService GetService<TService>() => (TService)serviceProvider.GetRequiredService(typeof(TService));
 
         /// <summary>
         /// Gets a required service of the specified contract type.
         /// </summary>
-        public object GetService(Type serviceType) => ScopeServiceProvider.GetRequiredService(serviceType);
+        public object GetService(Type serviceType) => serviceProvider.GetRequiredService(serviceType);
 
         public IConfiguration Config => GetService<IConfiguration>();
 
         public TService GetOptionalService<TService>() where TService : class
         {
-            var result = (TService)ScopeServiceProvider.GetService(typeof(TService));
+            var result = (TService)serviceProvider.GetService(typeof(TService));
 
             if (result == null)
                 Debug.WriteLine(typeof(TService).FullName + " service is not configured.");
@@ -58,7 +58,7 @@ namespace Olive
 
         public object GetOptionalService(Type serviceType)
         {
-            var result = ScopeServiceProvider.GetService(serviceType);
+            var result = serviceProvider.GetService(serviceType);
 
             if (result == null)
                 Debug.WriteLine(serviceType.FullName + " service is not configured.");
@@ -66,15 +66,15 @@ namespace Olive
             return result;
         }
 
-        public IEnumerable<TService> GetServices<TService>() => ScopeServiceProvider.GetServices(typeof(TService)).Cast<TService>();
-        public IEnumerable<object> GetServices(Type serviceType) => ScopeServiceProvider.GetServices(serviceType);
+        public IEnumerable<TService> GetServices<TService>() => serviceProvider.GetServices(typeof(TService)).Cast<TService>();
+        public IEnumerable<object> GetServices(Type serviceType) => serviceProvider.GetServices(serviceType);
 
-        public sealed class ScopedServiceProvider
+        public sealed class OliveServiceProvider
         {
             public IServiceProvider ApplicationServices { get; }
             public Func<IServiceProvider> ScopeServiceProvider { get; }
 
-            public ScopedServiceProvider(IServiceProvider applicationServices, Func<IServiceProvider> scopeServiceProvider)
+            public OliveServiceProvider(IServiceProvider applicationServices, Func<IServiceProvider> scopeServiceProvider)
             {
                 ApplicationServices = applicationServices ?? throw new ArgumentNullException(nameof(applicationServices));
                 ScopeServiceProvider = scopeServiceProvider;
