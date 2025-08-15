@@ -14,6 +14,15 @@
 
         public static IApplicationBuilder UseS3BackupSqlServer(this IApplicationBuilder app)
         {
+            app.Map("/olive/s3backup-files", builder =>
+            {
+                builder.Run(async x =>
+                {
+                    var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
+                    await backupService.GetBackupFiles();
+                });
+            });
+
             app.Map("/olive/s3backup", builder =>
             {
                 builder.Run(async x =>
@@ -32,23 +41,23 @@
                 });
             });
 
-            //app.Map("/olive/s3restore", builder =>
-            //{
-            //    builder.Run(async x =>
-            //    {
-            //        var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
-            //        await backupService.StartRestore();
-            //    });
-            //});
+            app.Map("/olive/s3restore", builder =>
+            {
+                builder.Run(async x =>
+                {
+                    var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
+                    await backupService.StartRestore();
+                });
+            });
 
-            //app.Map("/olive/s3restore-status", builder =>
-            //{
-            //    builder.Run(async x =>
-            //    {
-            //        var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
-            //        await backupService.GetRestoreStatus();
-            //    });
-            //});
+            app.Map("/olive/s3restore-status", builder =>
+            {
+                builder.Run(async x =>
+                {
+                    var backupService = x.RequestServices.GetRequiredService<IS3BackupService>();
+                    await backupService.GetRestoreStatus();
+                });
+            });
 
             return app;
         }
