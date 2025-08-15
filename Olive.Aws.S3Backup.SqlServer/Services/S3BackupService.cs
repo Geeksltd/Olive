@@ -20,6 +20,7 @@
         IDatabase Db => Context.Current.Database();
         bool IsInDevRole => httpContextAccessor.HttpContext?.User.IsInRole("Dev") ?? false;
         bool IsInDevOpsRole => httpContextAccessor.HttpContext?.User.IsInRole("DevOps") ?? false;
+        bool IsInDevOpsOrDevRole => IsInDevOpsRole || IsInDevRole;
         string GetDatabaseName()
         {
             var connectionString = Config.Get<string>("ConnectionStrings:Default");
@@ -67,7 +68,7 @@
 
         public async Task StartNewBackup()
         {
-            if (!IsInDevRole)
+            if (!IsInDevOpsOrDevRole)
                 throw new UnauthorizedAccessException("You do not have permission to start new backup.");
 
             var bucket = Config.GetOrThrow("Blob:S3:BackupBucket");
@@ -87,7 +88,7 @@
 
         public async Task GetBackupStatus()
         {
-            if (httpContextAccessor.HttpContext is null || !IsInDevRole)
+            if (httpContextAccessor.HttpContext is null || !IsInDevOpsOrDevRole)
                 throw new UnauthorizedAccessException("You do not have permission to access backup status.");
 
             var bucket = Config.GetOrThrow("Blob:S3:BackupBucket");
