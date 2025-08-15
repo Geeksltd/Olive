@@ -2,6 +2,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,9 @@ namespace Olive.BlobAws
         public static string BucketName => Config.Get<string>("Blob:S3:Bucket");
         public static string Region => Config.Get<string>("Blob:S3:Region").Or(Config.Get<string>("Aws:Region"));
 
-        public static async Task<List<string>> GetFiles(string prefix = null, string extension = null)
+
+        public static Task<List<string>> GetFiles(string prefix = null, string extension = null) => GetFiles(BucketName, prefix, extension);
+        public static async Task<List<string>> GetFiles(string bucket, string prefix = null, string extension = null)
         {
             var result = new List<string>();
             string continuationToken = null;
@@ -27,7 +30,7 @@ namespace Olive.BlobAws
             {
                 var request = new ListObjectsV2Request
                 {
-                    BucketName = BucketName,
+                    BucketName = bucket,
                     Prefix = prefix?.TrimStart('/'), // S3 keys don't start with /
                     ContinuationToken = continuationToken
                 };
@@ -55,11 +58,7 @@ namespace Olive.BlobAws
         }
 
 
-        public static Task UploadToS3(string name, Stream file, string contentType = null)
-        {
-            return UploadToS3(BucketName, name, file, contentType);
-        }
-
+        public static Task UploadToS3(string name, Stream file, string contentType = null) => UploadToS3(BucketName, name, file, contentType);
         public static async Task UploadToS3(string bucket, string name, Stream file, string contentType = null)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
@@ -77,7 +76,8 @@ namespace Olive.BlobAws
         }
 
 
-        public static async Task Remove(string? objectPublicUrlOrKey)
+        public static Task Remove(string? objectPublicUrlOrKey) => Remove(BucketName, objectPublicUrlOrKey);
+        public static async Task Remove(string bucket, string? objectPublicUrlOrKey)
         {
             if (objectPublicUrlOrKey.IsEmpty()) return;
             var name = objectPublicUrlOrKey.RemoveBeforeAndIncluding("amazonaws.com/");
@@ -89,10 +89,13 @@ namespace Olive.BlobAws
             var response = await client.DeleteObjectAsync(new DeleteObjectRequest
             {
                 Key = name,
-                BucketName = BucketName
+                BucketName = bucket
             });
         }
-        public static async Task Remove(List<string> objectPublicUrlsOrKeys)
+
+
+        public static Task Remove(List<string> objectPublicUrlsOrKeys) => Remove(BucketName, objectPublicUrlsOrKeys);
+        public static async Task Remove(string bucket, List<string> objectPublicUrlsOrKeys)
         {
             var names = objectPublicUrlsOrKeys
                 .Select(a => new KeyVersion { Key = a.RemoveBeforeAndIncluding("amazonaws.com/"), VersionId = null })
@@ -105,16 +108,12 @@ namespace Olive.BlobAws
             await client.DeleteObjectsAsync(new DeleteObjectsRequest
             {
                 Objects = names,
-                BucketName = BucketName
+                BucketName = bucket
             });
         }
 
 
-        public static Task<bool> Exists(string key)
-        {
-            return Exists(BucketName, key);
-        }
-
+        public static Task<bool> Exists(string key) => Exists(BucketName, key);
         public static async Task<bool> Exists(string bucket, string key)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
@@ -138,8 +137,8 @@ namespace Olive.BlobAws
             }
         }
 
-        public static Task<string> ReadTextFile(string key) => ReadTextFile(BucketName, key);
 
+        public static Task<string> ReadTextFile(string key) => ReadTextFile(BucketName, key);
         public static async Task<string> ReadTextFile(string bucket, string key)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
@@ -149,21 +148,30 @@ namespace Olive.BlobAws
             return await reader.ReadToEndAsync();
         }
 
+
+        public static Task<T> ReadJsonFile<T>(string key) => ReadJsonFile<T>(BucketName, key);
+        public static async Task<T> ReadJsonFile<T>(string bucket, string key)
+        {
+            var text = await ReadTextFile(bucket, key);
+            return text.IsEmpty() ? default : JsonConvert.DeserializeObject<T>(text);
+        }
+
+
+        public static Task WriteTextFile(string key, string text) => WriteTextFile(BucketName, key, text);
         public static Task WriteTextFile(string bucket, string key, string text)
         {
             return WriteFile(bucket, key, x => x.ContentBody = text);
         }
 
-        public static Task WriteTextFile(string key, string text)
+
+        public static Task WriteJsonFile(string key, object data) => WriteJsonFile(BucketName, key, data);
+        public static Task WriteJsonFile(string bucket, string key, object data)
         {
-            return WriteTextFile(BucketName, key, text);
+            return WriteFile(bucket, key, x => x.ContentBody = JsonConvert.SerializeObject(data));
         }
 
-        public static Task WriteFile(string key, Action<PutObjectRequest> set)
-        {
-            return WriteFile(BucketName, key, set);
-        }
 
+        public static Task WriteFile(string key, Action<PutObjectRequest> set) => WriteFile(BucketName, key, set);
         public static async Task WriteFile(string bucket, string key, Action<PutObjectRequest> set)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
@@ -174,8 +182,8 @@ namespace Olive.BlobAws
             await client.PutObjectAsync(request);
         }
 
-        public static Task<string> GeneratePreSignedURL(string key, TimeSpan duration) => GeneratePreSignedURL(BucketName, key, duration);
 
+        public static Task<string> GeneratePreSignedURL(string key, TimeSpan duration) => GeneratePreSignedURL(BucketName, key, duration);
         public static async Task<string> GeneratePreSignedURL(string bucket, string key, TimeSpan duration)
         {
             var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
