@@ -3,6 +3,7 @@
     using Microsoft.AspNetCore.Http;
     using Olive.BlobAws;
     using Olive.Entities;
+    using Olive.Entities.Data;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -78,7 +79,9 @@
             var s3InfoPath = $"{database}/{backup}.json";
 
             var commandBackup = $"exec msdb.dbo.rds_backup_database @source_db_name='{database}', @s3_arn_to_backup_to='{s3BackupPath}', @overwrite_S3_backup_file=1;";
-            var backupDataTable = await Db.GetAccess(GetConnectionString(database)).ExecuteQuery(commandBackup);
+
+            using var dc = new DatabaseContext(GetConnectionString(database));
+            var backupDataTable = await Db.GetAccess().ExecuteQuery(commandBackup);
             var taskId = backupDataTable.Rows[0]["task_id"] as string;
 
             await RawS3.WriteJsonFile(s3InfoPath, new InfoData { Database = database, BackupTask = taskId });
@@ -101,7 +104,8 @@
             var taskId = info.BackupTask ?? throw new Exception("Invalid backup task id");
 
             var commandStatus = "exec msdb.dbo.rds_task_status @task_id=" + taskId;
-            var statusDataTable = await Db.GetAccess(GetConnectionString(database)).ExecuteQuery(commandStatus);
+            using var dc = new DatabaseContext(GetConnectionString(database));
+            var statusDataTable = await Db.GetAccess().ExecuteQuery(commandStatus);
             var status = statusDataTable.Rows[0]["lifecycle"].ToString();
 
             var message = $"Status for backup {backup}.bak is '{status}'";
@@ -137,7 +141,8 @@
             var s3BackupArn = $"arn:aws:s3:::{bucket}/{s3BackupPath}";
 
             var commandRestore = $"exec msdb.dbo.rds_restore_database @restore_db_name='{database}', @s3_arn_to_restore_from='{s3BackupArn}';";
-            var restoreDataTable = await Db.GetAccess(GetConnectionString(database)).ExecuteQuery(commandRestore);
+            using var dc = new DatabaseContext(GetConnectionString(database));
+            var restoreDataTable = await Db.GetAccess().ExecuteQuery(commandRestore);
             var taskId = restoreDataTable.Rows[0]["task_id"];
             info.RestoreTask = taskId as string;
             await RawS3.WriteJsonFile(s3InfoPath, info);
@@ -161,7 +166,8 @@
             var taskId = info.RestoreTask ?? throw new Exception("Invalid backup task id");
 
             var commandStatus = "exec msdb.dbo.rds_task_status @task_id=" + taskId;
-            var statusDataTable = await Db.GetAccess(GetConnectionString(database)).ExecuteQuery(commandStatus);
+            using var dc = new DatabaseContext(GetConnectionString(database));
+            var statusDataTable = await Db.GetAccess().ExecuteQuery(commandStatus);
             var status = statusDataTable.Rows[0]["lifecycle"].ToString();
 
             var message = $"Status for restoration of {backup}.bak is '{status}'";
