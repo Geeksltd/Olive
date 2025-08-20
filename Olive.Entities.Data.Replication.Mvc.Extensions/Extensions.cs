@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -92,7 +90,7 @@ namespace Olive.Entities.Replication
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
                 {
                     await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => endpoint.UrlPattern.StartsWith("FOR_DEVELOPMENT_ONLY")
-                        ? $"{e} ( not configured )"
+                        ? $"<a href='{e}'>{e}</a> ( DEVELOPMENT ONLY )"
                         : $"<a href='{e}'>{e}</a>").ToHtmlLines());
                 }));
                 logger.Info("Registered the /all action");
