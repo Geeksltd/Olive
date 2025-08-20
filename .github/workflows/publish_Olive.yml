@@ -20,6 +20,12 @@ jobs:
       with:
         PROJECT_FILE_PATH: Olive/Olive.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        
+    - name: Publish Olive EF Core IRepository
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.IRepository/Olive.Entities.Data.IRepository.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}    
 
     - name: Publish Olive ApiClient NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
