@@ -1,77 +1,191 @@
 ﻿namespace Olive.Security
 {
     using System;
+    using System.Linq;
     using System.Security.Cryptography;
+    using System.Text;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// Provides secure password hashing service based on PBKDF2. 
+    /// Password hashing/verification with PBKDF2 (SHA-256) and backward-compat support.
+    /// New hashes are emitted as PHC-style strings:
+    ///   $pbkdf2-sha256$<iterations>$<base64(salt)>$<base64(hash)>
     /// </summary>
-    public class SecurePassword
+    public static class SecurePassword
     {
-        // The following constants may be changed without breaking existing hashes.
-        const int SALT_BYTE_SIZE = 64, HASH_BYTE_SIZE = 64;
+        // --- Tunables for NEW hashes ---
+        private const int SALT_BYTE_SIZE = 16;     // 128-bit salt (sufficient; larger is fine)
+        private const int HASH_BYTE_SIZE = 64;     // 512-bit derived key (OK with SHA-256)
+        private static int TARGET_ITERATIONS =>
+            Context.Current.Config.GetValue("Authentication:SecurePassword:Pbkdf2Iterations", defaultValue: 600_000);
 
-        static int PBKDF2_ITERATIONS
-            => Context.Current.Config.GetValue("Authentication:SecurePassword:Pbkdf2Iterations",
-                defaultValue: 10000);
-
-        public string Password { get; set; }
-        public string Salt { get; set; }
-
-        /// <summary>
-        /// Creates a salted PBKDF2 hash of the password.
-        /// </summary>
-        public static SecurePassword Create(string password)
+        // --- Legacy compatibility ---
+        // Your legacy DB stores separate fields: Password (base64 hash) + Salt (base64 salt)
+        // and used a configurable iteration count that was historically 10,000 (and may have used SHA-1).
+        // Configure the candidates you want to try for legacy verification (order matters).
+        private static (HashAlgorithmName algo, int iterations)[] LegacyCandidates()
         {
-            // Generate a random salt
-            using (var csprng = RandomNumberGenerator.Create())
+            // You can override via config if desired (e.g., CSV "sha1:10000;sha256:10000;sha256:200000")
+            var fromConfig = Context.Current.Config.GetValue("Authentication:SecurePassword:LegacyCandidates", defaultValue: "")
+                ?.Trim();
+
+            if (!string.IsNullOrEmpty(fromConfig))
             {
-                var salt = new byte[SALT_BYTE_SIZE];
-                csprng.GetBytes(salt);
-                // Hash the password and encode the parameters
-                var hashBytes = GetBytes(password, salt, PBKDF2_ITERATIONS, HASH_BYTE_SIZE);
-
-                return new SecurePassword
+                try
                 {
-                    Password = Convert.ToBase64String(hashBytes),
-                    Salt = Convert.ToBase64String(salt)
-                };
+                    return fromConfig.Split(';', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(item =>
+                        {
+                            var parts = item.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                            var algoName = parts[0].Trim().ToLowerInvariant();
+                            var iters = int.Parse(parts[1].Trim());
+                            var algo = algoName switch
+                            {
+                                "sha1" => HashAlgorithmName.SHA1,
+                                "sha256" => HashAlgorithmName.SHA256,
+                                "sha512" => HashAlgorithmName.SHA512,
+                                _ => throw new NotSupportedException($"Unsupported legacy algo '{algoName}'")
+                            };
+                            return (algo, iters);
+                        })
+                        .ToArray();
+                }
+                catch
+                {
+                    // Fall through to defaults on parsing problems
+                }
             }
+
+            // Reasonable defaults to cover common past setups in your codebase.
+            return new[]
+            {
+                (HashAlgorithmName.SHA256, 10_000), // if you switched to SHA-256 but kept 10k
+                (HashAlgorithmName.SHA1,   10_000), // earliest code likely used SHA-1 at 10k
+            };
         }
+
+        // --- Create / Hash ---
 
         /// <summary>
-        /// Validates a password given a hash of the correct one.
+        /// Creates a salted PBKDF2 (SHA-256) hash and returns a PHC-style encoded string.
+        /// Store this single string going forward (you can ignore the old "Salt" column).
         /// </summary>
-        public static bool Verify(string clearTextPassword, string hashedPassword, string salt)
+        public static string Create(string password)
         {
-            if (clearTextPassword.IsEmpty()) return false;
-            if (hashedPassword.IsEmpty()) return false;
-            if (salt.IsEmpty()) return false;
+            if (password == null) throw new ArgumentNullException(nameof(password));
 
-            var pass = new SecurePassword { Password = hashedPassword, Salt = salt };
+            // Allocate salt buffer
+            var salt = new byte[SALT_BYTE_SIZE];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(salt);
+            }
 
-            var hashedBytes = pass.GetHashBytes();
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET5_0_OR_GREATER
+            // Modern constructor: accepts string + HashAlgorithmName
+            using var kdf = new Rfc2898DeriveBytes(
+                password,                // string
+                salt,                    // byte[]
+                TARGET_ITERATIONS,
+                HashAlgorithmName.SHA256 // force SHA256
+            );
+#else
+    // Old constructor: only supports SHA1 internally
+    var pwdBytes = System.Text.Encoding.UTF8.GetBytes(password);
+    using var kdf = new Rfc2898DeriveBytes(
+        pwdBytes,                // byte[] password
+        salt,                    // byte[] salt
+        TARGET_ITERATIONS
+    );
+#endif
 
-            var testHash = GetBytes(clearTextPassword, pass.GetSaltBytes(), PBKDF2_ITERATIONS, hashedBytes.Length);
-            return SlowEquals(hashedBytes, testHash);
+            var hash = kdf.GetBytes(HASH_BYTE_SIZE);
+
+            // Format: $pbkdf2-sha256$<iters>$<saltB64>$<hashB64>
+            return $"$pbkdf2-sha256${TARGET_ITERATIONS}${Convert.ToBase64String(salt)}${Convert.ToBase64String(hash)}";
         }
 
-        static bool SlowEquals(byte[] leftBytes, byte[] rightBytes)
+        // --- Verify (new + legacy) ---
+
+        /// <summary>
+        /// Verifies a password against either:
+        ///   1) a PHC-style encoded hash in 'storedPassword' (preferred new format), OR
+        ///   2) a legacy pair (storedPassword=base64 hash, storedSalt=base64 salt).
+        /// Returns true/false and sets needsUpgrade when rehash is advisable.
+        /// </summary>
+        public static bool Verify(string clearTextPassword, string storedPassword, string storedSalt, out bool needsUpgrade)
         {
-            var diff = (uint)leftBytes.Length ^ (uint)rightBytes.Length;
+            needsUpgrade = false;
 
-            for (var i = 0; i < leftBytes.Length && i < rightBytes.Length; i++)
-                diff |= (uint)(leftBytes[i] ^ rightBytes[i]);
+            if (string.IsNullOrEmpty(clearTextPassword)) return false;
+            if (string.IsNullOrEmpty(storedPassword)) return false;
 
-            return diff == 0;
+            // Path A: New format (PHC string) has no separate salt column and starts with '$'
+            if (storedPassword.StartsWith("$", StringComparison.Ordinal))
+            {
+                return VerifyPhc(clearTextPassword, storedPassword, out needsUpgrade);
+            }
+
+            // Path B: Legacy format requires both fields present
+            if (string.IsNullOrEmpty(storedSalt)) return false;
+
+            return VerifyLegacy(clearTextPassword, storedPassword, storedSalt, out needsUpgrade);
         }
 
-        static byte[] GetBytes(string password, byte[] salt, int iterations, int outputBytes) =>
-            new Rfc2898DeriveBytes(password, salt, iterations).GetBytes(outputBytes);
+        // --- Helpers ---
 
-        byte[] GetHashBytes() => Convert.FromBase64String(Password);
+        private static bool VerifyPhc(string password, string phc, out bool needsUpgrade)
+        {
+            needsUpgrade = false;
 
-        byte[] GetSaltBytes() => Convert.FromBase64String(Salt);
+            // Expect: $pbkdf2-sha256$<iters>$<saltB64>$<hashB64>
+            var parts = phc.Split('$', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 4 || parts[0] != "pbkdf2-sha256") return false;
+
+            var iters = int.Parse(parts[1]);
+            var salt = Convert.FromBase64String(parts[2]);
+            var expected = Convert.FromBase64String(parts[3]);
+
+            using var kdf = new Rfc2898DeriveBytes(password, salt, iters, HashAlgorithmName.SHA256);
+            var actual = kdf.GetBytes(expected.Length);
+
+            var ok = CryptographicOperations.FixedTimeEquals(actual, expected);
+
+            // Suggest upgrade if params are below current target
+            if (ok && iters < TARGET_ITERATIONS) needsUpgrade = true;
+
+            return ok;
+        }
+
+        private static bool VerifyLegacy(string password, string legacyHashBase64, string legacySaltBase64, out bool needsUpgrade)
+        {
+            needsUpgrade = false;
+
+            byte[] expected, salt;
+            try
+            {
+                expected = Convert.FromBase64String(legacyHashBase64);
+                salt = Convert.FromBase64String(legacySaltBase64);
+            }
+            catch
+            {
+                return false;
+            }
+
+            foreach (var (algo, iters) in LegacyCandidates())
+            {
+                using var kdf = new Rfc2898DeriveBytes(password, salt, iters, algo);
+                var actual = kdf.GetBytes(expected.Length);
+
+                if (CryptographicOperations.FixedTimeEquals(actual, expected))
+                {
+                    // Verified using legacy parameters -> prompt rehash
+                    needsUpgrade = true;
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
