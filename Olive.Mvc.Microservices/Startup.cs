@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 
 namespace Olive.Mvc.Microservices
 {
@@ -13,8 +10,8 @@ namespace Olive.Mvc.Microservices
     {
         const string HubDevUrl = "http://localhost:9011";
 
-        protected Startup(IWebHostEnvironment env, IConfiguration config)
-            : base(env, config) { }
+        protected Startup(IWebHostEnvironment env)
+            : base(env) { }
 
         public override void ConfigureServices(IServiceCollection services)
         {
