@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +16,10 @@ using Microsoft.Extensions.Logging;
 using Olive.Entities;
 using Olive.Entities.Data;
 using Olive.Security;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
@@ -32,13 +32,12 @@ namespace Olive.Mvc
 
         protected IServiceCollection Services { get; private set; }
 
-        protected Startup(IWebHostEnvironment env, IConfiguration config)
+        protected Startup(IWebHostEnvironment env)
         {
             Environment = env;
-            Config.SetConfiguration(Configuration = config);
+            Configuration = Config.Build();
             Log.Init(builder =>
             {
-                builder.AddConfiguration(config.GetSection("Logging"));
                 builder.AddConsole();
             });
         }
@@ -48,9 +47,9 @@ namespace Olive.Mvc
             Configuration.MergeEnvironmentVariables();
 
             Services = services;
-            
+
+            services.AddSingleton<IConfiguration>((IConfigurationRoot)Configuration);
             services.AddSingleton<ILoggerFactory>(Log.Factory);
-            services.AddLogging();
 
             services.AddHttpContextAccessor();
             services.AddCors(opt => opt.FromConfig(Configuration));
@@ -76,7 +75,7 @@ namespace Olive.Mvc
             ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
 
             services.AddControllersWithViews().AddJsonOptions(ConfigureJsonOptions);
-            // Caused "Urecognized SameSiteMode value -1
+            // Caused "Unrecognized SameSiteMode value -1
             //services.ConfigureNonBreakingSameSiteCookies();
         }
 
