@@ -153,7 +153,7 @@ namespace Olive.Mvc.Testing
 
             if (!TempDatabaseName.ToLower().EndsWith(".temp"))
             {
-                Debug.WriteLine($"Temp databae creation aborted as '{TempDatabaseName}' does not end in '.Temp'.");
+                Debug.WriteLine($"Temp database creation aborted as '{TempDatabaseName}' does not end in '.Temp'.");
                 return false;
             }
 
