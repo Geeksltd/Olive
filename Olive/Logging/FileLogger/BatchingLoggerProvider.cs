@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Olive.Logging
 {
@@ -109,6 +109,6 @@ namespace Olive.Logging
             catch (AggregateException ex) when (ex.InnerExceptions.IsSingle() && ex.InnerExceptions[0] is TaskCanceledException) { }
         }
 
-        ILogger ILoggerProvider.CreateLogger(string categoryName) => new BatchingLogger(this, categoryName);
+        public ILogger CreateLogger(string categoryName) => new BatchingLogger(this, categoryName);
     }
 }

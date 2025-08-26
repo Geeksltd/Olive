@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 
 namespace Olive
 {
@@ -115,6 +115,25 @@ namespace Olive
                 Environment.GetEnvironmentVariable(key),
                 (v, t) => v.Replace(t, Environment.NewLine)
             );
+        }
+
+        public static IConfiguration Build(Action<IConfigurationBuilder> configurator = null)
+        {
+            if (configuration != null) return configuration;
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+                .AddJsonFile($"appsettings.Local.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            if (configurator != null)
+                configurator(builder);
+
+            configuration = builder.Build();
+
+            return configuration;
         }
     }
 }
