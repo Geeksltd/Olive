@@ -182,6 +182,12 @@ jobs:
       with:
         PROJECT_FILE_PATH: Olive.Encryption/Olive.Encryption.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        
+    - name: Publish Olive Encryption .NET Core NuGet Package
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.Encryption.NETCore/Olive.Encryption.NETCore.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
     - name: Publish Olive Entities NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
