@@ -1,8 +1,9 @@
-﻿using System;
-using System.ComponentModel;
-using System.Text;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.ComponentModel;
+using System.Text;
 
 namespace Olive
 {
@@ -64,29 +65,58 @@ namespace Olive
             return r.ToString();
         }
     }
-    
+
     public static class Log
     {
         public static ILoggerFactory Factory { get; private set; }
-       
+
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void Init(Action<ILoggingBuilder> configure)
+        public static void Init(Action<ILoggingBuilder> configure = null)
         {
-            if(Factory != null)return;
-            Factory = Microsoft.Extensions.Logging.LoggerFactory.Create(configure);
+            if (Factory != null) return;
+
+            var configuration = Config.Build();
+
+            var services = new ServiceCollection();
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(configuration.GetSection("Logging"));
+                if (configure != null)
+                    configure(builder);
+            });
+
+            var serviceProvider = services.BuildServiceProvider();
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+            Log.Init(loggerFactory);
         }
-       
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Init(ILoggerFactory factory)
         {
-            if (Factory != null)return;
+            if (Factory != null) return;
             Factory = factory;
+        }
+        public static bool AddProvider<TProvider>() where TProvider : ILoggerProvider
+        {
+            if (Factory == null)
+                throw new InvalidOperationException("LoggerFactory is not initialized. Call Log.Init() first.");
+            var registeredProvider = Context.Current.GetOptionalService<TProvider>();
+            if (registeredProvider == null) return false;
+            Factory.AddProvider(registeredProvider);
+            return true;
         }
 
         /// <summary>
         /// A shortcut to Context.Current.GetService«ILogger»().
         /// </summary>
-        public static ILogger For(Type type) => (Factory ?? (Factory = Context.Current.GetService<ILoggerFactory>())).CreateLogger(type);
+        public static ILogger For(Type type)
+        {
+            if (Factory == null)
+                throw new InvalidOperationException("LoggerFactory is not initialized. Call Log.Init() first.");
+            return Factory.CreateLogger(type);
+        }
 
         public static ILogger For<TType>() => For(typeof(TType));
 

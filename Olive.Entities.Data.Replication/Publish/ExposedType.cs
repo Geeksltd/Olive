@@ -105,14 +105,16 @@ namespace Olive.Entities.Replication
 
         internal async Task UploadAll()
         {
-            await SingalClear();
+            await SignalClear();
 
             await DoUploadAll();
         }
 
+        public abstract IAsyncEnumerable<IEnumerable<IEventBusMessage>> GetUploadMessages();
+
         protected abstract Task DoUploadAll();
 
-        protected abstract Task SingalClear();
+        protected abstract Task SignalClear();
 
         public abstract void Define();
     }
