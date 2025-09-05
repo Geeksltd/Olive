@@ -1,4 +1,4 @@
-﻿namespace Olive.Security
+﻿namespace Olive.Security.NETCore
 {
     using System;
     using System.Linq;
