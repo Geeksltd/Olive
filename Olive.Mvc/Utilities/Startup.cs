@@ -87,7 +87,7 @@ namespace Olive.Mvc
                         var cookieOptions = context.RequestServices.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>();
                         var cookieName = cookieOptions.Get(CookieAuthenticationDefaults.AuthenticationScheme).Cookie.Name;
 
-                        if (!cookieName.IsEmpty() &&!authHeader.IsEmpty() && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        if (!cookieName.IsEmpty() && !authHeader.IsEmpty() && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                         {
                             var token = authHeader.Substring("Bearer ".Length).Trim();
                             context.Request.Headers.Append("Cookie", $"{cookieName}={token}");
@@ -216,6 +216,39 @@ namespace Olive.Mvc
             var expireTime = Config.Get("Authentication:Cookie:Timeout", DEFAULT_SESSION_TIMEOUT).Minutes();
             options.ExpireTimeSpan = expireTime;
             options.Cookie.MaxAge = expireTime;
+
+            options.Events = new CookieAuthenticationEvents
+            {
+                OnRedirectToLogin = ctx =>
+                {
+                    if (IsApiRequest(ctx.Request))
+                        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    else
+                        ctx.Response.Redirect(ctx.RedirectUri);
+                    return Task.CompletedTask;
+                },
+                OnRedirectToAccessDenied = ctx =>
+                {
+                    if (IsApiRequest(ctx.Request))
+                        ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    else
+                        ctx.Response.Redirect(ctx.RedirectUri);
+                    return Task.CompletedTask;
+                }
+            };
+        }
+
+        static bool IsApiRequest(HttpRequest request)
+        {
+            if (request.Path.StartsWithSegments("/api/")) return true;
+
+            var accept = request.Headers["Accept"].ToString();
+            if (accept.Contains("application/json", StringComparison.OrdinalIgnoreCase)) return true;
+
+            if (request.Headers["X-Requested-With"] == "XMLHttpRequest") return true;
+            if (request.Headers["X-Api-Request"] == "true") return true;
+
+            return false;
         }
     }
 }
