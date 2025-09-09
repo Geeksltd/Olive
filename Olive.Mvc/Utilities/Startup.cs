@@ -13,12 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Olive.Entities;
 using Olive.Entities.Data;
 using Olive.Security;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc
@@ -72,7 +74,29 @@ namespace Olive.Mvc
             services.TryAddTransient<IFileRequestService, DiskFileRequestService>();
             services.TryAddTransient<IFileUploadMarkupGenerator, DefaultFileUploadMarkupGenerator>();
 
-            ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
+            ConfigureAuthentication(services
+                .AddAuthentication(config =>
+                {
+                    config.DefaultScheme = "SmartScheme";
+                })
+                .AddPolicyScheme("SmartScheme", "Bearer-to-Cookie Proxy", options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        var authHeader = context.Request.Headers["Authorization"].ToString();
+                        var cookieOptions = context.RequestServices.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>();
+                        var cookieName = cookieOptions.Get(CookieAuthenticationDefaults.AuthenticationScheme).Cookie.Name;
+
+                        if (!cookieName.IsEmpty() &&!authHeader.IsEmpty() && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var token = authHeader.Substring("Bearer ".Length).Trim();
+                            context.Request.Headers.Append("Cookie", $"{cookieName}={token}");
+                        }
+
+                        return CookieAuthenticationDefaults.AuthenticationScheme;
+                    };
+                })
+            );
 
             services.AddControllersWithViews().AddJsonOptions(ConfigureJsonOptions);
             // Caused "Unrecognized SameSiteMode value -1
