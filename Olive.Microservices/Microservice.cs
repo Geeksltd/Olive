@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using System.Linq;
 
 namespace Olive
 {
@@ -38,6 +40,25 @@ namespace Olive
         {
             Name = name;
             _baseUrl = url;
+        }
+
+        public static string[] AllNames()
+        {
+            return Config
+                .GetSection("Microservice")
+                .GetChildren()
+                .Select(x => x.GetValue<string>("Name"))
+                .ExceptNull()
+                .Distinct()
+                .Cast<string>()
+                .ToArray();
+        }
+
+        public static Microservice[] All()
+        {
+            return AllNames()
+                .Select(x => Of(x))
+                .ToArray();
         }
 
         public static Microservice Of(string serviceName)
