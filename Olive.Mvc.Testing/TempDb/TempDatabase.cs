@@ -2,8 +2,10 @@
 using Olive.Entities.Data;
 using Olive.Entities.Replication;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc.Testing
@@ -190,8 +192,26 @@ namespace Olive.Mvc.Testing
 
         async Task ReadEndpointsDataFiles()
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var domainAssembly = assemblies.FirstOrDefault(a => a.GetName().Name.ToLower() == "domain");
+            var binFolder = AppDomain.CurrentDomain.BaseDirectory;
+            var dllFiles = Directory.GetFiles(binFolder, "*Service.*Endpoint*.dll", SearchOption.AllDirectories);
+            var assemblies = new List<Assembly>();
+
+            foreach (var dll in dllFiles)
+            {
+                try
+                {
+                    var assembly = Assembly.LoadFrom(dll);
+                    assemblies.Add(assembly);
+                }
+                catch (BadImageFormatException)
+                {
+                }
+                catch (FileLoadException)
+                {
+                }
+            }
+
+            var domainAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.ToLower() == "domain");
             var destinationEndpoints = assemblies
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsA<DestinationEndpoint>() && !t.IsAbstract)
