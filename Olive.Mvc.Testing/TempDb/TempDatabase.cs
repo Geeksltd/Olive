@@ -161,6 +161,8 @@ namespace Olive.Mvc.Testing
             var rootDataDirectory = AppDomain.CurrentDomain.WebsiteRoot().Parent.GetSubDirectory("ReferenceData");
             if (!rootDataDirectory.Exists) rootDataDirectory.Create();
 
+            var creationUtc = new DateTime(2025, 01, 01);
+
             await exposedEndpoints.Do(async endpoint =>
             {
                 endpoint.Publish(false);
@@ -168,7 +170,7 @@ namespace Olive.Mvc.Testing
                 var dataEndpointDirectory = rootDataDirectory.GetSubDirectory(endpoint.GetType().Name);
                 if (!dataEndpointDirectory.Exists) dataEndpointDirectory.Create();
 
-                var allTypeMessages = endpoint.GetUploadMessages();
+                var allTypeMessages = endpoint.GetUploadMessages(true);
 
                 foreach (var (typeFullName, perTypeMessages) in allTypeMessages)
                 {
@@ -180,10 +182,11 @@ namespace Olive.Mvc.Testing
 
                     await foreach (var page in perTypeMessages)
                     {
-                        foreach (var entity in page)
+                        foreach (ReplicateDataMessage entity in page.Cast<ReplicateDataMessage>())
                         {
+                            entity.CreationUtc = creationUtc;
                             var message = JsonConvert.SerializeObject(entity);
-                            File.WriteAllText(Path.Combine(dataDirectory.FullName, ((ReplicateDataMessage)entity).Entity.ToIOSafeHash() + ".json"), message);
+                            File.WriteAllText(Path.Combine(dataDirectory.FullName, entity.Entity.ToIOSafeHash() + ".json"), message);
                         }
                     }
                 }

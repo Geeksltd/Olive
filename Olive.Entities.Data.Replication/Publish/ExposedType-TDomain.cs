@@ -185,7 +185,7 @@ namespace Olive.Entities.Replication
             }
         }
 
-        public override async IAsyncEnumerable<IEnumerable<IEventBusMessage>> GetUploadMessages()
+        public override async IAsyncEnumerable<IEnumerable<IEventBusMessage>> GetUploadMessages(bool contentBaseDeduplicationId = false)
         {
             var database = Context.Current.Database();
             var totalCount = await database.Of(typeof(TDomain)).Count();
@@ -206,7 +206,7 @@ namespace Olive.Entities.Replication
                 query.PageStartIndex = pageIndex * pageSize;
 
                 var data = await (await query.GetList()).Where(async e => Filter(e as TDomain) && (await FilterAsync(e as TDomain)));
-                yield return await data.SequentialSelect(GetMessage).ExceptNull();
+                yield return await data.SequentialSelect(x => GetMessage(x, contentBaseDeduplicationId)).ExceptNull();
             }
 
             log.Warning($"Finished uploading {totalCount} records of {typeof(TDomain).FullName} to the queue.");
@@ -227,11 +227,11 @@ namespace Olive.Entities.Replication
             });
         }
 
-        async Task<IEventBusMessage> GetMessage(IEntity item)
+        async Task<IEventBusMessage> GetMessage(IEntity item, bool contentBaseDeduplicationId = false)
         {
             IEventBusMessage result = null;
 
-            try { result = await ToMessage(item); }
+            try { result = await ToMessage(item, contentBaseDeduplicationId); }
             catch (Exception ex)
             {
                 Log.For(this)

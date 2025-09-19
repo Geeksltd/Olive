@@ -73,8 +73,8 @@ namespace Olive.Entities.Replication
 
         public Task UploadAll() => Agents.Do(i => HandleRefreshMessage(i.Key));
 
-        public Dictionary<string, IAsyncEnumerable<IEnumerable<IEventBusMessage>>> GetUploadMessages()
-            => Agents.ToDictionary(agent => agent.Key, agent => agent.Value.GetUploadMessages());
+        public Dictionary<string, IAsyncEnumerable<IEnumerable<IEventBusMessage>>> GetUploadMessages(bool contentBaseDeduplicationId)
+            => Agents.ToDictionary(agent => agent.Key, agent => agent.Value.GetUploadMessages(contentBaseDeduplicationId));
 
         void HandleRefreshRequests()
         {

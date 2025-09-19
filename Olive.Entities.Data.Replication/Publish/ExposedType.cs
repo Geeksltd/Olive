@@ -24,7 +24,7 @@ namespace Olive.Entities.Replication
         /// </summary>
         public virtual bool IsSoftDeleteEnabled => true;
 
-        public async Task<ReplicateDataMessage> ToMessage(IEntity entity)
+        public async Task<ReplicateDataMessage> ToMessage(IEntity entity, bool contentBaseDeduplicationId = false)
         {
             var properties = new Dictionary<string, object>();
 
@@ -56,7 +56,7 @@ namespace Olive.Entities.Replication
                 }
             }
 
-            return ToReplicateDataMessage(properties);
+            return ToReplicateDataMessage(properties, contentBaseDeduplicationId);
         }
 
         string Stringify(object value)
@@ -82,12 +82,15 @@ namespace Olive.Entities.Replication
 
         public virtual string ToStringExpression { get => string.Empty; }
 
-        ReplicateDataMessage ToReplicateDataMessage(Dictionary<string, object> properties)
+        ReplicateDataMessage ToReplicateDataMessage(Dictionary<string, object> properties, bool contentBaseDeduplicationId = false)
         {
             var serialized = JsonConvert.SerializeObject(properties);
 
             return new ReplicateDataMessage
             {
+                DeduplicationId = contentBaseDeduplicationId
+                    ? serialized.ToIOSafeHash()
+                    : Guid.NewGuid().ToString().Remove("-"),
                 TypeFullName = GetTypeFullName(),
                 Entity = serialized,
                 CreationUtc = DateTime.UtcNow
@@ -110,7 +113,7 @@ namespace Olive.Entities.Replication
             await DoUploadAll();
         }
 
-        public abstract IAsyncEnumerable<IEnumerable<IEventBusMessage>> GetUploadMessages();
+        public abstract IAsyncEnumerable<IEnumerable<IEventBusMessage>> GetUploadMessages(bool contentBaseDeduplicationId);
 
         protected abstract Task DoUploadAll();
 
