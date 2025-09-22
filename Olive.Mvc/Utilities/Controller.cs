@@ -142,6 +142,12 @@ namespace Olive.Mvc
         }
 
         [NonAction]
+        protected JsonResult Modal(string message)
+        {
+            return AddAction(new NotificationAction { Notify = message.ToStringOrEmpty(), AsModal = true });
+        }
+
+        [NonAction]
         public ActionResult AjaxRedirect(string url, string target = null)
         {
             JavascriptActions.Redirect(url, withAjax: true, target: target);
