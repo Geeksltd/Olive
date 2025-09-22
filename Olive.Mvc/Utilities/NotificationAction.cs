@@ -19,7 +19,7 @@ namespace Olive.Mvc
         internal static void ScheduleForNextRequest()
         {
             var js = Context.Current.Http().JavascriptActions();
-            var notificationActions = js.OfType<NotificationAction>().ToList();
+            var notificationActions = js.OfType<NotificationAction>().Where(x => !x.AsModal).ToList();
             notificationActions.Do(a => js.Remove(a));
 
             if (notificationActions.None()) return;
@@ -28,7 +28,6 @@ namespace Olive.Mvc
             {
                 Notify = notificationActions.Select(x => x.Notify).ToLinesString(),
                 Obstruct = notificationActions.First().Obstruct,
-                AsModal = notificationActions.Any(a => a.AsModal),
                 Style = notificationActions.First().Style
             });
 
