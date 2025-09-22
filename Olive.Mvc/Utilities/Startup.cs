@@ -20,7 +20,6 @@ using Olive.Security;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Olive.Mvc
@@ -241,6 +240,9 @@ namespace Olive.Mvc
         static bool IsApiRequest(HttpRequest request)
         {
             if (request.Path.StartsWithSegments("/api/")) return true;
+
+            var authHeader = request.Headers["Authorization"].ToString();
+            if (authHeader.HasValue() && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return true;
 
             var accept = request.Headers["Accept"].ToString();
             if (accept.Contains("application/json", StringComparison.OrdinalIgnoreCase)) return true;
