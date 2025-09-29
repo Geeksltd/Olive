@@ -23,7 +23,7 @@ namespace Olive.Drawing
             if (data.Length < 100) return;
 
             var optimizer = new ImageOptimizer(maxWidth, maxHeight, quality);
-            blob.SetData(optimizer.Optimize(data, toJpeg));
+            blob.SetData(optimizer.Optimize(data,blob.FileExtension.TrimStart('.'), toJpeg));
         }
     }
 }

@@ -81,14 +81,14 @@ namespace Olive.Drawing
         /// <summary>
         /// Optimizes the specified source image and returns the binary data of the output image.
         /// </summary>
-        public byte[] Optimize(byte[] sourceData, bool toJpeg = true)
+        public byte[] Optimize(byte[] sourceData,string imageExtension, bool toJpeg = true)
         {
             try
             {
                 using var source = SKBitmap.Decode(sourceData);
                 using var resultBitmap = Optimize(source);
                 using var image = SKImage.FromBitmap(resultBitmap);
-                return image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, Quality).ToArray();
+                return image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : ((SKEncodedImageFormat)Enum.Parse(typeof(SKEncodedImageFormat),imageExtension.Or("png"),true)), Quality).ToArray();
             }
             catch
             {
