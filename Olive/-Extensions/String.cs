@@ -36,6 +36,16 @@ namespace Olive
         static readonly ConcurrentDictionary<string, string> LiteralFromPascalCaseCache = new();
 
         /// <summary>
+        /// Generates a deterministic Guid from a string by hashing it (MD) and mapping to 16 bytes. 
+        /// </summary>
+	    public static Guid AsGuidRef(this string @this)
+        {
+            using var md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(@this));
+            return new Guid(hash);
+        }
+
+        /// <summary>
         /// Removes the specified text from the start of this string instance.
         /// </summary>
         /// <param name="textToTrim">Determines the string which removed if it is occured in start of this string.</param>

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,11 +23,11 @@ namespace Olive
         /// <returns>The unique id of the queue item.</returns>
         public static Task<IEnumerable<string>> PublishBatch(this IEventBusQueue queue, IEnumerable<IEventBusMessage> messages)
         {
-            var stringMessegas = new List<string>();
+            var stringMessages = new List<string>();
 
-            messages.Do(message => stringMessegas.Add(JsonConvert.SerializeObject(message)));
+            messages.Do(message => stringMessages.Add(JsonConvert.SerializeObject(message)));
 
-            return queue.PublishBatch(stringMessegas);
+            return queue.PublishBatch(stringMessages);
         }
 
         /// <summary>

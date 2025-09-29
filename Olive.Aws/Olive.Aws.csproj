@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.2.141</Version>
+    <Version>8.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.102.27" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.101.50" />
-    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.104.18" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="4.0.0.5" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="4.0.0.5" />
+    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="4.0.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 

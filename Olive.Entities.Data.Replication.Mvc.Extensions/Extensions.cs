@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -58,7 +56,7 @@ namespace Olive.Entities.Replication
         //    return app;
         //}
         static List<string> ExposedEndpoints = new List<string>();
-        static bool RegisteredExposedEndpionts;
+        static bool RegisteredExposedEndpoints;
         static string EXPOSED_ENDPOINTS_ACTION_PREFIX = Config.Get("DataReplication:DumpUrl", "/olive/entities/replication/dump/");
         /// <summary>
         /// Registers an endpoint. To view all registered endpoints you can call /olive/entities/replication/dump/all
@@ -85,14 +83,14 @@ namespace Olive.Entities.Replication
                 }));
             }
 
-            if (!RegisteredExposedEndpionts && hasDumpURL)
+            if (!RegisteredExposedEndpoints && hasDumpURL)
             {
-                RegisteredExposedEndpionts = true;
+                RegisteredExposedEndpoints = true;
                 logger.Info("Registering the /all action");
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
                 {
-                    await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => endpoint.UrlPattern.StartsWith("FOR_DEVELOPMENT_ONLY")
-                        ? $"{e} ( not configured )"
+                    await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => endpoint.HasDevelopmentQueueUrl()
+                        ? $"<a href='{e}'>{e}</a> ( DEVELOPMENT ONLY )"
                         : $"<a href='{e}'>{e}</a>").ToHtmlLines());
                 }));
                 logger.Info("Registered the /all action");
@@ -101,6 +99,7 @@ namespace Olive.Entities.Replication
             logger.Info("Registering refresh messages for All ...");
             Register("All", async context =>
             {
+                await context.Response.WriteHtmlAsync("Endpoints: " + endpoint.ExposedTypes.ToString(" | "));
                 await endpoint.UploadAll();
                 await context.Response.WriteHtmlAsync("All done!");
             });

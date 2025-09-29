@@ -79,9 +79,46 @@ namespace Olive
 
             var response = await client.PostAsync(@this, requestContent);
 
-            response.EnsureSuccessStatusCode();
+            return await response.ReadStringOrThrow();
+        }
 
-            return await response.Content.ReadAsStringAsync();
+        /// <summary>
+        /// Returns the string content response if status code is OK. Otherwise throws an exception with the text.
+        /// </summary>
+        public static async Task<string> ReadStringOrThrow(this HttpResponseMessage @this)
+        {
+            var result = await @this.Content.ReadAsStringAsync();
+            if (@this.StatusCode != HttpStatusCode.OK)
+                throw new Exception("Status: " + @this.StatusCode + " - " + result);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the string content and parses it as JSON if status code is OK. Otherwise throws an exception with the text.
+        /// </summary>
+        public static async Task<JsonDocument> ReadJson(this HttpResponseMessage @this)
+        {
+            return JsonDocument.Parse(await @this.ReadStringOrThrow());
+        }
+
+        /// <summary>
+        /// Posts the specified JSON text to this URL.
+        /// Your server-side web api should take one parameter, with [FromBody] attribute.
+        /// </summary>
+        public static Task<JsonDocument> PostJson(this HttpClient @this, Uri url, object objectToSerialize)
+        {
+            return @this.PostJson(url, JsonSerializer.Serialize(objectToSerialize));
+        }
+
+        /// <summary>
+        /// Posts the specified JSON text to this URL.
+        /// Your server-side web api should take one parameter, with [FromBody] attribute.
+        /// </summary>
+        public static async Task<JsonDocument> PostJson(this HttpClient @this, Uri url, string json)
+        {
+            var requestContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await @this.PostAsync(url, requestContent);
+            return await response.ReadJson();
         }
 
         /// <summary>

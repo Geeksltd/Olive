@@ -32,7 +32,8 @@ namespace Olive.BlobAws
                 {
                     case System.Net.HttpStatusCode.OK:
                     case System.Net.HttpStatusCode.Accepted: return;
-                    default: throw new Exception($"AWS Upload for key {request.Key} returned: " + response.HttpStatusCode);
+                    default:
+                        throw new Exception($"AWS Upload for key {request.Key} returned: " + response.HttpStatusCode);
                 }
             }
         }
@@ -66,7 +67,7 @@ namespace Olive.BlobAws
 
                 using (var memoryStream = new MemoryStream())
                 {
-                    responseStream.CopyTo(memoryStream);
+                    await responseStream.CopyToAsync(memoryStream);
 
                     return await memoryStream.ReadAllBytesAsync();
                 }
@@ -120,7 +121,9 @@ namespace Olive.BlobAws
                     case System.Net.HttpStatusCode.OK:
                     case System.Net.HttpStatusCode.NoContent:
                     case System.Net.HttpStatusCode.Accepted: return;
-                    default: throw new Exception("AWS DeleteObject for key " + key + " returned: " + response.HttpStatusCode);
+                    default:
+                        throw new Exception("AWS DeleteObject for key " + key + " returned: " +
+                                            response.HttpStatusCode);
                 }
             }
         }

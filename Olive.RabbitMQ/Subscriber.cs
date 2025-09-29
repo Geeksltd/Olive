@@ -31,22 +31,22 @@ namespace Olive.RabbitMQ
 
         public Task PullAll() => KeepPolling(PullStrategy.UntilEmpty, waitTimeSeconds: 10);
 
-        private void DeclareQueueExchange()
+        private async Task DeclareQueueExchange()
         {
-            Queue.Client.ExchangeDeclare(exchange: Queue.QueueUrl, type: ExchangeType.Fanout, durable: true);
-            Queue.Client.QueueDeclare(Queue.QueueUrl, true, false, false, null);
-            Queue.Client.QueueBind(queue: Queue.QueueUrl,
+            await Queue.Client.ExchangeDeclareAsync(exchange: Queue.QueueUrl, type: ExchangeType.Fanout, durable: true);
+            await Queue.Client.QueueDeclareAsync(Queue.QueueUrl, true, false, false, null);
+            await Queue.Client.QueueBindAsync(queue: Queue.QueueUrl,
                   exchange: Queue.QueueUrl,
                   routingKey: Queue.QueueUrl);
         }
 
-        BasicGetResult Fetch()
+        async Task<BasicGetResult> Fetch()
         {
             try
             {
-                lock (Queue.Client)
+                //lock (Queue.Client)
                 {
-                    return Queue.Client.BasicGet(queue: Queue.QueueUrl,
+                    return await Queue.Client.BasicGetAsync(queue: Queue.QueueUrl,
                                 autoAck: false);
                 }
             }
@@ -60,7 +60,7 @@ namespace Olive.RabbitMQ
         async Task Poll()
         {
             var consumer = new AsyncEventingBasicConsumer(Queue.Client);
-            consumer.Received += async (model, ea) =>
+            consumer.ReceivedAsync += async (model, ea) =>
                {
                    try
                    {
@@ -69,7 +69,7 @@ namespace Olive.RabbitMQ
                        Log.For(this)
                            .Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
                        await Handler(message);
-                       Queue.Client.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                       await Queue.Client.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
                    }
                    catch (Exception ex)
                    {
@@ -82,18 +82,18 @@ namespace Olive.RabbitMQ
                    }
                };
 
-            lock (Queue.Client)
-            {
-                Queue.Client.ExchangeDeclare(exchange: Queue.QueueUrl, type: ExchangeType.Fanout, durable: true);
-                Queue.Client.QueueDeclare(Queue.QueueUrl, true, false, false, null);
-                Queue.Client.QueueBind(queue: Queue.QueueUrl,
+            //lock (Queue.Client)
+            //{
+                await Queue.Client.ExchangeDeclareAsync(exchange: Queue.QueueUrl, type: ExchangeType.Fanout, durable: true);
+                await Queue.Client.QueueDeclareAsync(Queue.QueueUrl, true, false, false, null);
+                await Queue.Client.QueueBindAsync(queue: Queue.QueueUrl,
                       exchange: Queue.QueueUrl,
                       routingKey: Queue.QueueUrl);
-                Queue.Client.BasicQos(0, 1, false);
-                Queue.Client.BasicConsume(queue: Queue.QueueUrl,
+                await Queue.Client.BasicQosAsync(0, 1, false);
+                await Queue.Client.BasicConsumeAsync(queue: Queue.QueueUrl,
                                     autoAck: false,
                                     consumer: consumer);
-            }
+            //}
 
             Log.For<Subscriber>().Info(Queue.QueueUrl);
 
@@ -101,7 +101,7 @@ namespace Olive.RabbitMQ
 
         async Task<bool> Poll(int waitTimeSeconds)
         {
-            var result = Fetch();
+            var result = await Fetch();
 
             if (result == null)
             {
@@ -114,9 +114,9 @@ namespace Olive.RabbitMQ
                 var body = result.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 await Handler(message);
-                lock (Queue.Client)
+                //lock (Queue.Client)
                 {
-                    Queue.Client.BasicAck(deliveryTag: result.DeliveryTag, multiple: false);
+                   await Queue.Client.BasicAckAsync(deliveryTag: result.DeliveryTag, multiple: false);
                 }
             }
             catch (Exception ex)

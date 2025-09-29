@@ -1,13 +1,7 @@
-﻿using System.Net.Http;
-using System.Xml.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 
 namespace Olive
 {
-    /// <summary>
-    /// Provides helper services for implementing microservices using Olive.
-    /// </summary>
     public class Microservice
     {
         public string Name { get; private set; }
@@ -18,8 +12,10 @@ namespace Olive
 
         string BaseResourceUrl
         {
-            get {if(_baseResourceUrl.HasValue()) return _baseResourceUrl;
-                var isDevelopment = Context.Current.ServiceProvider.GetRequiredService<IHostEnvironment>().IsDevelopment();
+            get
+            {
+                if (_baseResourceUrl.HasValue()) return _baseResourceUrl;
+                var isDevelopment = Context.Current.GetService<IHostEnvironment>().IsDevelopment();
                 _baseResourceUrl = isDevelopment
                     ? BaseUrl
                     : Config.Get("Authentication:Cookie:Domain").EnsureStartsWith("https://").EnsureEndsWith("/") + Name.ToLower() + "/";
@@ -31,11 +27,11 @@ namespace Olive
             _baseS3BucketUrl ??= Config.Get("Microservice:" + Name + ":S3BucketUrl")
                 .Or($"https://{Config.Get("Blob:S3:Bucket")}.s3.{Config.Get("Blob:S3:Region").Or(Config.Get("Aws:Region"))}.amazonaws.com/")
                 .EnsureEndsWith("/");
-      
+
         string AccessKey =>
             _accessKey ??= Config.Get("Microservice:" + Name + ":AccessKey");
 
-        Microservice(string name, string url=null)
+        Microservice(string name, string url = null)
         {
             Name = name;
             _baseUrl = url;

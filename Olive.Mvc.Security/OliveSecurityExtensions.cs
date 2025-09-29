@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using Olive.Security;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace Olive
 {
@@ -49,9 +49,9 @@ namespace Olive
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256),
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(descriptor);
-            return tokenHandler.WriteToken(token);
+            var tokenHandler = new JsonWebTokenHandler();
+            string token = tokenHandler.CreateToken(descriptor);
+            return token;
         }
 
         public static async Task LogOn(this ILoginInfo @this, IEnumerable<Claim> additionalClaims = null, bool remember = false)

@@ -2,6 +2,7 @@ using SkiaSharp;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+
 // using System.Drawing.Imaging;
 
 namespace Olive.Drawing
@@ -12,10 +13,13 @@ namespace Olive.Drawing
     public class ImageOptimizer
     {
         const int DEFAULT_MAX_WIDTH = 900, DEFAULT_MAX_HEIGHT = 700, DEFAULT_QUALITY = 80;
+
         /// <summary>
         /// Creates a new instance of ImageOptimizer class with default settings.
         /// </summary>
-        public ImageOptimizer() : this(DEFAULT_MAX_WIDTH, DEFAULT_MAX_HEIGHT, DEFAULT_QUALITY) { }
+        public ImageOptimizer() : this(DEFAULT_MAX_WIDTH, DEFAULT_MAX_HEIGHT, DEFAULT_QUALITY)
+        {
+        }
 
         /// <summary>
         /// Creates a new instance of ImageOptimizer class.
@@ -36,7 +40,13 @@ namespace Olive.Drawing
         /// <summary>
         /// Gets the available output image formats.
         /// </summary>
-        public enum ImageFormat { Bmp = 0, Jpeg = 1, Gif = 2, Png = 4 }
+        public enum ImageFormat
+        {
+            Bmp = 0,
+            Jpeg = 1,
+            Gif = 2,
+            Png = 4
+        }
 
         /// <summary>
         /// Applies the settings of this instance on a specified source image, and provides an output optimized/resized image.
@@ -62,11 +72,8 @@ namespace Olive.Drawing
             if (width == source.Width && height == source.Height)
                 return source;
 
-            //var result = new SKBitmap(width, height);
-            //SKBitmap.Resize(result, source, SKBitmapResizeMethod.Lanczos3);
-
-          
-            var result = source.Resize(new SKImageInfo(width, height), SKFilterQuality.Medium);
+            var result = source.Resize(new SKSizeI(width, height),
+                new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear));
 
             return result;
         }

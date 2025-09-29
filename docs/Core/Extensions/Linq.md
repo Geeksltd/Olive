@@ -212,7 +212,7 @@ When you want to run all tasks as `await` in your applications.
 #### Example:
 ```csharp
 public static Task Log(IAuditEvent auditEvent)
-            => Context.Current.ServiceProvider.GetServices<IAuditLogger>().AwaitAll(x => x.Log(auditEvent));
+            => Context.Current.GetServices<IAuditLogger>().AwaitAll(x => x.Log(auditEvent));
 ```
 
 ## Cast({type})

@@ -1,26 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
-		<Version>1.0.21</Version>
+		<TargetFramework>net8.0</TargetFramework>
+		<Version>8.0.2</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
-		<PackageReference Include="AWSSDK.Core" Version="3.7.106.22" />
-		<PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="8.1.0" />
-		<PackageReference Include="Amazon.AspNetCore.DataProtection.SSM" Version="3.1.0" />
-		<PackageReference Include="AWS.Logger.AspNetCore" Version="3.3.0" />
-		<PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.5" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.2.4" />
+		<PackageReference Include="AWSSDK.Core" Version="4.0.0.7" />
+		<PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="9.1.2" />
+		<PackageReference Include="Amazon.AspNetCore.DataProtection.SSM" Version="4.0.0" />
+		<PackageReference Include="AWS.Logger.AspNetCore" Version="4.0.0" />
+		<PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>

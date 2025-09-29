@@ -14,6 +14,7 @@ namespace Olive.Entities.Replication
 
         public string UrlPattern => Data.Replication.QueueUrlProvider.UrlProvider.GetUrl(GetType());
 
+        public bool HasDevelopmentQueueUrl() => EventBus.IsDevelopmentQueueUrl(UrlPattern);
 
         public virtual IEnumerable<Type> GetTypes()
         {
@@ -71,6 +72,9 @@ namespace Olive.Entities.Replication
         public Task UploadAll(string typeName) => HandleRefreshMessage(typeName);
 
         public Task UploadAll() => Agents.Do(i => HandleRefreshMessage(i.Key));
+
+        public Dictionary<string, IAsyncEnumerable<IEnumerable<IEventBusMessage>>> GetUploadMessages(bool contentBaseDeduplicationId)
+            => Agents.ToDictionary(agent => agent.Key, agent => agent.Value.GetUploadMessages(contentBaseDeduplicationId));
 
         void HandleRefreshRequests()
         {

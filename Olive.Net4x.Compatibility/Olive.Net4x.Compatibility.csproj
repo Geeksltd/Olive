@@ -6,7 +6,7 @@
     <RootNamespace>Olive.Net4x.Compatibility</RootNamespace>
     <PackageId>Olive.Net4x.Compatibility</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.0.138</Version>
+    <Version>8.0.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.14" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Olive\Olive.csproj" />

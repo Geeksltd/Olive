@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,9 +13,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Olive.Entities;
 using Olive.Entities.Data;
 using Olive.Security;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Olive.Mvc
 {
@@ -32,11 +33,14 @@ namespace Olive.Mvc
 
         protected IServiceCollection Services { get; private set; }
 
-        protected Startup(IWebHostEnvironment env, IConfiguration config, ILoggerFactory loggerFactory)
+        protected Startup(IWebHostEnvironment env)
         {
             Environment = env;
-            Config.SetConfiguration(Configuration = config);
-            Log.Init(loggerFactory);
+            Configuration = Config.Build();
+            Log.Init(builder =>
+            {
+                builder.AddConsole();
+            });
         }
 
         public virtual void ConfigureServices(IServiceCollection services)
@@ -44,6 +48,10 @@ namespace Olive.Mvc
             Configuration.MergeEnvironmentVariables();
 
             Services = services;
+
+            services.AddSingleton<IConfiguration>((IConfigurationRoot)Configuration);
+            services.AddSingleton<ILoggerFactory>(Log.Factory);
+
             services.AddHttpContextAccessor();
             services.AddCors(opt => opt.FromConfig(Configuration));
 
@@ -65,10 +73,32 @@ namespace Olive.Mvc
             services.TryAddTransient<IFileRequestService, DiskFileRequestService>();
             services.TryAddTransient<IFileUploadMarkupGenerator, DefaultFileUploadMarkupGenerator>();
 
-            ConfigureAuthentication(services.AddAuthentication(config => config.DefaultScheme = "Cookies"));
+            ConfigureAuthentication(services
+                .AddAuthentication(config =>
+                {
+                    config.DefaultScheme = "SmartScheme";
+                })
+                .AddPolicyScheme("SmartScheme", "Bearer-to-Cookie Proxy", options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        var authHeader = context.Request.Headers["Authorization"].ToString();
+                        var cookieOptions = context.RequestServices.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>();
+                        var cookieName = cookieOptions.Get(CookieAuthenticationDefaults.AuthenticationScheme).Cookie.Name;
+
+                        if (!cookieName.IsEmpty() && !authHeader.IsEmpty() && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var token = authHeader.Substring("Bearer ".Length).Trim();
+                            context.Request.Headers.Append("Cookie", $"{cookieName}={token}");
+                        }
+
+                        return CookieAuthenticationDefaults.AuthenticationScheme;
+                    };
+                })
+            );
 
             services.AddControllersWithViews().AddJsonOptions(ConfigureJsonOptions);
-            // Caused "Urecognized SameSiteMode value -1
+            // Caused "Unrecognized SameSiteMode value -1
             //services.ConfigureNonBreakingSameSiteCookies();
         }
 
@@ -185,6 +215,42 @@ namespace Olive.Mvc
             var expireTime = Config.Get("Authentication:Cookie:Timeout", DEFAULT_SESSION_TIMEOUT).Minutes();
             options.ExpireTimeSpan = expireTime;
             options.Cookie.MaxAge = expireTime;
+
+            options.Events = new CookieAuthenticationEvents
+            {
+                OnRedirectToLogin = ctx =>
+                {
+                    if (IsApiRequest(ctx.Request))
+                        ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    else
+                        ctx.Response.Redirect(ctx.RedirectUri);
+                    return Task.CompletedTask;
+                },
+                OnRedirectToAccessDenied = ctx =>
+                {
+                    if (IsApiRequest(ctx.Request))
+                        ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    else
+                        ctx.Response.Redirect(ctx.RedirectUri);
+                    return Task.CompletedTask;
+                }
+            };
+        }
+
+        static bool IsApiRequest(HttpRequest request)
+        {
+            if (request.Path.StartsWithSegments("/api/")) return true;
+
+            var authHeader = request.Headers["Authorization"].ToString();
+            if (authHeader.HasValue() && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return true;
+
+            var accept = request.Headers["Accept"].ToString();
+            if (accept.Contains("application/json", StringComparison.OrdinalIgnoreCase)) return true;
+
+            if (request.Headers["X-Requested-With"] == "XMLHttpRequest") return true;
+            if (request.Headers["X-Api-Request"] == "true") return true;
+
+            return false;
         }
     }
 }

@@ -125,9 +125,14 @@ namespace Olive.Entities.Data
 
         public IDataProvider GetProvider(Type type)
         {
-            return TryGetProvider(type)
-                ?? throw new InvalidOperationException("There is no registered 'data provider' for the assembly: " +
-                    type.GetTypeInfo().Assembly.FullName);
+            var result = TryGetProvider(type);
+
+            if (result != null) return result;
+
+            if (type.IsInterface) return new InterfaceDataProvider(type);
+
+            throw new InvalidOperationException("There is no registered 'data provider' for the assembly: " +
+              type.GetTypeInfo().Assembly.FullName);
         }
 
         public IDataProvider TryGetProvider(Type type)

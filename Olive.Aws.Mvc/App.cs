@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Amazon.Lambda.AspNetCoreServer;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
@@ -47,7 +48,7 @@ namespace Olive.Aws
             {
                 logging.AddLambdaLogger(new LambdaLoggerOptions
                 {
-					IncludeCategory = true,
+                    IncludeCategory = true,
                     IncludeLogLevel = true,
                     IncludeNewline = true,
                     IncludeEventId = true,

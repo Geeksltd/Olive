@@ -8,6 +8,7 @@ namespace Olive.Mvc
     {
         public string Notify { get; set; }
         public bool Obstruct { get; set; }
+        public bool AsModal { get; set; }
         public string Style { get; set; }
 
         const string COOKIE_KEY = "M#.Scheduled.Notifications";
@@ -18,7 +19,7 @@ namespace Olive.Mvc
         internal static void ScheduleForNextRequest()
         {
             var js = Context.Current.Http().JavascriptActions();
-            var notificationActions = js.OfType<NotificationAction>().ToList();
+            var notificationActions = js.OfType<NotificationAction>().Where(x => !x.AsModal).ToList();
             notificationActions.Do(a => js.Remove(a));
 
             if (notificationActions.None()) return;

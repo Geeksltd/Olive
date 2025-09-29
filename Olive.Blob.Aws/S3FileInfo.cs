@@ -62,9 +62,10 @@ namespace Olive.BlobAws
         /// A http url to the file, including the file name.
         /// </summary>
         public string PhysicalPath
-            => $"s3-{AmazonS3.Config.RegionEndpoint.SystemName}.amazonaws.com/{GetFileObject().BucketName}/{GetFileObject().Key}";
+            =>
+                $"s3-{AmazonS3.Config.RegionEndpoint.SystemName}.amazonaws.com/{GetFileObject().BucketName}/{GetFileObject().Key}";
 
-        public DateTimeOffset LastModified => GetFileObject().LastModified;
+        public DateTimeOffset LastModified => GetFileObject().LastModified ?? DateTime.MinValue;
 
         public bool IsDirectory => GetFileObject().Key.EndsWith("/");
 

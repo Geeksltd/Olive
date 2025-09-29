@@ -18,7 +18,13 @@ namespace Olive.Entities.Data
 
         public override Type EntityType => InterfaceType;
 
-        Type[] GetImplementers() => ImplementationsCache.GetOrAdd(InterfaceType, x => AppDomain.CurrentDomain.FindImplementers(x));
+        Type[] GetImplementers()
+        {
+            return ImplementationsCache.GetOrAdd(InterfaceType,
+            x => AppDomain.CurrentDomain.FindImplementers(x)
+            .Except(t => t.Defines<TransientEntityAttribute>())
+            .ToArray());
+        }
 
         List<IDataProvider> FindProviders()
         {
