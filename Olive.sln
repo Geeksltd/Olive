@@ -236,8 +236,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.EventBus.Mvc.Extensio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Entities.Data.IRepository", "Olive.Entities.Data.IRepository\Olive.Entities.Data.IRepository.csproj", "{F53C12EC-F23C-4BB7-8706-1A4494516D2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Olive.Drawing.Test", "Tests\Olive.Drawing.Test\Olive.Drawing.Test.csproj", "{5660B9AD-D6D4-A1A4-13EF-0A4ED356DAC1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -615,10 +613,6 @@ Global
 		{F53C12EC-F23C-4BB7-8706-1A4494516D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F53C12EC-F23C-4BB7-8706-1A4494516D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F53C12EC-F23C-4BB7-8706-1A4494516D2F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5660B9AD-D6D4-A1A4-13EF-0A4ED356DAC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5660B9AD-D6D4-A1A4-13EF-0A4ED356DAC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5660B9AD-D6D4-A1A4-13EF-0A4ED356DAC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5660B9AD-D6D4-A1A4-13EF-0A4ED356DAC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -723,7 +717,6 @@ Global
 		{F89CE3AE-8429-440B-BC3A-0B0787DAFC95} = {6A937A37-1CEC-4347-9594-C471645B43DA}
 		{3A8ECDB3-216E-4F58-AD6A-B4A154279BF3} = {F9E4B82C-F72E-4D58-A31B-1E971182A29A}
 		{F53C12EC-F23C-4BB7-8706-1A4494516D2F} = {4F5D9D95-8E6C-40CE-84EE-3D2157EB8928}
-		{5660B9AD-D6D4-A1A4-13EF-0A4ED356DAC1} = {7104C604-DB4B-4766-A61D-17FA1A57EFDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B8459027-6FAF-42E6-B8A8-4887D7730704}
