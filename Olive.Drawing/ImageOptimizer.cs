@@ -88,7 +88,9 @@ namespace Olive.Drawing
                 using var source = SKBitmap.Decode(sourceData);
                 using var resultBitmap = Optimize(source);
                 using var image = SKImage.FromBitmap(resultBitmap);
-                return image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : ((SKEncodedImageFormat)Enum.Parse(typeof(SKEncodedImageFormat),imageExtension.Or("png"),true)), Quality).ToArray();
+                var optimizedData = image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : ((SKEncodedImageFormat)Enum.Parse(typeof(SKEncodedImageFormat), imageExtension.Or("png"), true)), Quality).ToArray();
+                Log.For<ImageOptimizer>().Error($"file with extionsion {imageExtension} and size {sourceData.Length} optimized and the result size is {optimizedData.Length}.");
+                return optimizedData;
             }
             catch
             {
