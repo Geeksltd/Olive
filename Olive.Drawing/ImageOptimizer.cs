@@ -90,7 +90,6 @@ namespace Olive.Drawing
                 using var resultBitmap = Optimize(source);
                 using var image = SKImage.FromBitmap(resultBitmap);
                 var optimizedData = image.Encode(imageFormat, Quality).ToArray();
-                Log.For<ImageOptimizer>().Error($"[SUCCESS] file with extionsion {imageExtension} and size {sourceData.Length} optimized and the result size is {optimizedData.Length}.");
                 return optimizedData;
             }
             catch (Exception ex)
