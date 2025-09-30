@@ -81,20 +81,21 @@ namespace Olive.Drawing
         /// <summary>
         /// Optimizes the specified source image and returns the binary data of the output image.
         /// </summary>
-        public byte[] Optimize(byte[] sourceData,string imageExtension, bool toJpeg = true)
+        public byte[] Optimize(byte[] sourceData, string imageExtension, bool toJpeg = true)
         {
+            var imageFormat = toJpeg ? SKEncodedImageFormat.Jpeg : Enum.TryParse<SKEncodedImageFormat>(imageExtension.Or("png"), true, out var f) ? f : SKEncodedImageFormat.Wbmp;
             try
             {
                 using var source = SKBitmap.Decode(sourceData);
                 using var resultBitmap = Optimize(source);
                 using var image = SKImage.FromBitmap(resultBitmap);
-                var optimizedData = image.Encode(toJpeg ? SKEncodedImageFormat.Jpeg : ((SKEncodedImageFormat)Enum.Parse(typeof(SKEncodedImageFormat), imageExtension.Or("png"), true)), Quality).ToArray();
-                Log.For<ImageOptimizer>().Error($"file with extionsion {imageExtension} and size {sourceData.Length} optimized and the result size is {optimizedData.Length}.");
+                var optimizedData = image.Encode(imageFormat, Quality).ToArray();
+                Log.For<ImageOptimizer>().Error($"[SUCCESS] file with extionsion {imageExtension} and size {sourceData.Length} optimized and the result size is {optimizedData.Length}.");
                 return optimizedData;
             }
-            catch
+            catch (Exception ex)
             {
-                // No Logging Needed
+                Log.For<ImageOptimizer>().Error(ex, $"[ERROR] optimizing image with extionsion {imageExtension} and size {sourceData.Length}.");
                 return sourceData;
             }
         }
