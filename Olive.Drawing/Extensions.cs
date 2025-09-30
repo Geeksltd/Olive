@@ -20,7 +20,7 @@ namespace Olive.Drawing
         {
             if (!Blob.HasFileDataInMemory(blob)) return;
             var data = await blob.GetFileDataAsync();
-            if (data.Length < 100) return;
+            if (data.Length < 80) return;
 
             var optimizer = new ImageOptimizer(maxWidth, maxHeight, quality);
             blob.SetData(optimizer.Optimize(data,blob.FileExtension.TrimStart('.'), toJpeg));
