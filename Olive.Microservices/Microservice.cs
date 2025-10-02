@@ -4,7 +4,6 @@ namespace Olive
 {
     public class Microservice
     {
-        public string Name { get; private set; }
         string _baseUrl, _baseResourceUrl, _baseS3BucketUrl, _accessKey;
 
         string BaseUrl =>
@@ -36,6 +35,11 @@ namespace Olive
             Name = name;
             _baseUrl = url;
         }
+
+        public string Name { get; private set; }
+        public string Icon => Config.Get("Microservice:" + Name + ":icon").Or(Config.Get("Microservice:" + Name + ":Icon"));
+        public bool Sso => Config.Get("Microservice:" + Name + ":Sso")?.ToLower() == "true";
+        public bool Iframe => Config.Get("Microservice:" + Name + ":Iframe")?.ToLower() == "true";
 
         public static Microservice Of(string serviceName)
         {
