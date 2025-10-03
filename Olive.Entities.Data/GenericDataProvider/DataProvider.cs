@@ -1,9 +1,9 @@
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
@@ -36,7 +36,7 @@ namespace Olive.Entities.Data
 
             MetaData = DataProviderMetaDataGenerator.Generate(type);
 
-            
+
             DeleteCommand = SqlCommandGenerator.GenerateDeleteCommand(MetaData);
             UpdateCommand = SqlCommandGenerator.GenerateUpdateCommand(MetaData);
             InsertCommand = SqlCommandGenerator.GenerateInsertCommand(MetaData);
@@ -209,10 +209,21 @@ namespace Olive.Entities.Data
 
         void FillData(IDataReader reader, IEntity entity)
         {
-            foreach (var property in MetaData.GetPropertiesForFillData())
+            var schema = reader.GetSchemaTable();
+            var columns = schema.Rows.Cast<DataRow>()
+                                     .Select(r => r["ColumnName"].ToString())
+                                     .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var props = MetaData.GetPropertiesForFillData().ToArray();
+
+            foreach (var property in props)
             {
-                var columnOrder = reader.GetOrdinal(GetSqlCommandColumnAlias(MetaData, property));
-                property.Accessor.Set(entity, reader, columnOrder);
+                var alias = GetSqlCommandColumnAlias(MetaData, property);
+                if (columns.Contains(alias))
+                {
+                    var columnOrder = reader.GetOrdinal(alias);
+                    property.Accessor.Set(entity, reader, columnOrder);
+                }
             }
         }
 
