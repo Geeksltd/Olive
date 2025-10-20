@@ -141,10 +141,7 @@ namespace Olive.BlobAws
         public static Task<string> ReadTextFile(string key) => ReadTextFile(BucketName, key);
         public static async Task<string> ReadTextFile(string bucket, string key)
         {
-            var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
-            using var client = new AmazonS3Client(regionEndpoint);
-            var response = await client.GetObjectAsync(bucket, key);
-            using var reader = new StreamReader(response.ResponseStream);
+            using var reader = new StreamReader(await ReadFile(bucket, key));
             return await reader.ReadToEndAsync();
         }
 
@@ -169,6 +166,17 @@ namespace Olive.BlobAws
         {
             return WriteFile(bucket, key, x => x.ContentBody = JsonConvert.SerializeObject(data));
         }
+
+
+        public static Task<Stream> ReadFile(string key) => ReadFile(BucketName, key);
+        public static async Task<Stream> ReadFile(string bucket, string key)
+        {
+            var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
+            using var client = new AmazonS3Client(regionEndpoint);
+            var response = await client.GetObjectAsync(bucket, key);
+            return response.ResponseStream;
+        }
+
 
 
         public static Task WriteFile(string key, Action<PutObjectRequest> set) => WriteFile(BucketName, key, set);
