@@ -76,6 +76,32 @@ namespace Olive.BlobAws
         }
 
 
+        public static Task Copy(string sourceKey, string destinationKey) => Copy(BucketName, sourceKey, destinationKey);
+        public static Task Copy(string bucketName, string sourceKey, string destinationKey) => Copy(bucketName, bucketName, sourceKey, destinationKey);
+        public static async Task Copy(string sourceBucketName, string destinationBucketName, string sourceKey, string destinationKey)
+        {
+            var regionEndpoint = RegionEndpoint.GetBySystemName(Region);
+            using var client = new AmazonS3Client(regionEndpoint);
+            await client.CopyObjectAsync(new CopyObjectRequest
+            {
+                SourceBucket = sourceBucketName,
+                SourceKey = sourceKey,
+                DestinationBucket = destinationBucketName,
+                DestinationKey = destinationKey
+            });
+        }
+
+
+
+        public static Task Move(string sourceKey, string destinationKey) => Move(BucketName, sourceKey, destinationKey);
+        public static Task Move(string bucketName, string sourceKey, string destinationKey) => Move(bucketName, bucketName, sourceKey, destinationKey);
+        public static async Task Move(string sourceBucketName, string destinationBucketName, string sourceKey, string destinationKey)
+        {
+            await Copy(sourceBucketName, destinationBucketName, sourceKey, destinationKey);
+            await Remove(sourceBucketName, sourceKey);
+        }
+
+
         public static Task Remove(string? objectPublicUrlOrKey) => Remove(BucketName, objectPublicUrlOrKey);
         public static async Task Remove(string bucket, string? objectPublicUrlOrKey)
         {
