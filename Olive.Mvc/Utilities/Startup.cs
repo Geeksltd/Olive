@@ -169,7 +169,22 @@ namespace Olive.Mvc
         protected virtual void UseStaticFiles(IApplicationBuilder app)
         {
             if (Environment.IsDevelopment()) app.UseStaticFilesCaseSensitive();
-            else app.UseStaticFiles();
+            else app.UseStaticFiles(GetStaticFileOptions());
+        }
+
+        protected virtual StaticFileOptions GetStaticFileOptions()
+        {
+            const int OneDay = 60 * 60 * 24;
+            const int OneYear = OneDay * 365;
+
+            return new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    var cacheDuration = ctx.Context.Request.Query.ContainsKey("v") ? OneYear : OneDay;
+                    ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=" + cacheDuration + ",immutable";
+                }
+            };
         }
 
         protected virtual void ConfigureExceptionPage(IApplicationBuilder app)
