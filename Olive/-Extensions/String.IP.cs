@@ -26,7 +26,7 @@ namespace Olive
             var bytes = IPAddress.Parse(address).GetAddressBytes();
 
             if (BitConverter.IsLittleEndian)
-                bytes = bytes.Reverse().ToArray();
+                Array.Reverse(bytes);
 
             var ip = BitConverter.ToUInt32(bytes, 0);
 
