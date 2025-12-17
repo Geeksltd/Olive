@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1839,7 +1840,18 @@ new(@this.CreateSHA1Hash().ToCharArray().Where(c => c.IsLetterOrDigit()).ToArray
 
         public static bool IsEmailAddress(this string @this)
         {
-            return new Regex(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$").IsMatch(@this);
+            //return new Regex(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$").IsMatch(@this);
+            if (string.IsNullOrWhiteSpace(@this)) return false;
+
+            try
+            {
+                _ = new MailAddress(@this);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
