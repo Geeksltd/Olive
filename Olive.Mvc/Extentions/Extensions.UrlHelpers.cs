@@ -96,10 +96,14 @@ namespace Olive.Mvc
             if (url.StartsWith("..."))
                 url = url.FromSafeZippedUrl();
 
-            if (!@this.IsLocalUrl(url))
+            if (!@this.IsLocalUrl(url) && !@this.IsMicroserviceUrl(url))
                 throw new Exception(url + " is not a valid ReturnUrl as it's external and so unsafe.");
 
             return url;
+        }
+        public static bool IsMicroserviceUrl(this IUrlHelper @this, string url)
+        {
+            return AllMicroservices.GetServices().Any(s => url.StartsWith(s.BaseUrl, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

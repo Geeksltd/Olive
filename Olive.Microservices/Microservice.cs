@@ -6,9 +6,6 @@ namespace Olive
     {
         string _baseUrl, _baseResourceUrl, _baseS3BucketUrl, _accessKey;
 
-        string BaseUrl =>
-            _baseUrl ??= Config.GetOrThrow("Microservice:" + Name + ":Url").EnsureEndsWith("/");
-
         string BaseResourceUrl
         {
             get
@@ -35,6 +32,9 @@ namespace Olive
             Name = name;
             _baseUrl = url;
         }
+
+        public string BaseUrl =>
+            _baseUrl ??= Config.GetOrThrow("Microservice:" + Name + ":Url").EnsureEndsWith("/");
 
         public string Name { get; private set; }
         public string Icon => Config.Get("Microservice:" + Name + ":icon").Or(Config.Get("Microservice:" + Name + ":Icon"));

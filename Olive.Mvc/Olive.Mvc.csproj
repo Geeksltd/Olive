@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>8.1.5</Version>
+    <Version>8.1.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
     <ProjectReference Include="..\Olive.Entities.Data\Olive.Entities.Data.csproj" />
+    <ProjectReference Include="..\Olive.Microservices\Olive.Microservices.csproj" />
     <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
