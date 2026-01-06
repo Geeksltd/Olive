@@ -179,6 +179,9 @@ namespace Olive.Entities.Data
             }
             catch (Exception ex)
             {
+                // Close connection on error when not in a transaction
+                CloseConnection(dbCommand.Connection);
+
                 throw new Exception("Error in running SQL Query.", ex).AddData("Command", command)
                     .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
                     .AddData("ConnectionString", dbCommand.Connection.ConnectionString);

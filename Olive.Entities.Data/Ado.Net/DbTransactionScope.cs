@@ -90,7 +90,18 @@ namespace Olive.Entities.Data
             {
                 var access = Context.Current.Database().GetAccess(connectionString);
                 var connection = (DbConnection)await access.CreateConnection();
-                var transaction = connection.BeginTransaction(IsolationLevel);
+
+                DbTransaction transaction;
+                try
+                {
+                    transaction = connection.BeginTransaction(IsolationLevel);
+                }
+                catch
+                {
+                    connection.Close();
+                    connection.Dispose();
+                    throw;
+                }
 
                 Connections.Add(connectionString, (connection, transaction));
             }
@@ -109,10 +120,15 @@ namespace Olive.Entities.Data
                     // Root is not completed.
                     IsAborted = true;
                     Connections.Do(x => x.Value.Transaction.Rollback());
-                    Connections.Do(x => x.Value.Transaction.Dispose());
                 }
 
-                Connections.Do(x => x.Value.Connection.Close());
+                // Always dispose transactions and connections
+                Connections.Do(x => x.Value.Transaction.Dispose());
+                Connections.Do(x =>
+                {
+                    x.Value.Connection.Close();
+                    x.Value.Connection.Dispose();
+                });
             }
             else
             {
