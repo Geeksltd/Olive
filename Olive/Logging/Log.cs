@@ -109,7 +109,7 @@ namespace Olive
         static void InitDefaultContextProvider()
         {
             var httpContextAccessorType = Type.GetType(
-                "Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http");
+                "Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.Abstractions");
 
             if (httpContextAccessorType == null) return;
 
