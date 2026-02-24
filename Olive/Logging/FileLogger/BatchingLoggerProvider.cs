@@ -67,7 +67,7 @@ namespace Olive.Logging
             }
         }
 
-        public void AddMessage(DateTimeOffset timestamp, string message, string stack = null, int severity = 0)
+        public void AddMessage(DateTimeOffset timestamp, string message, string stack = null, int severity = 0, string contextInfo = null)
         {
             if (!MessageQueue.IsAddingCompleted)
             {
@@ -76,6 +76,7 @@ namespace Olive.Logging
                     MessageQueue.Add(new()
                     {
                         Message = message,
+                        ContextInfo = contextInfo,
                         Timestamp = timestamp,
                         Severity = severity,
                         Stack = stack

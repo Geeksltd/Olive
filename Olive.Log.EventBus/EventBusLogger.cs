@@ -19,9 +19,8 @@ namespace Olive.Logging
             if (exception != null) r.AppendLine(exception.ToLogString());
 
             var contextInfo = Olive.Log.ContextProvider?.Invoke();
-            if (contextInfo.HasValue()) r.AppendLine(contextInfo);
 
-            Provider.AddMessage(timestamp, r.ToString(), exception?.GetUsefulStack(), (int)logLevel);
+            Provider.AddMessage(timestamp, r.ToString(), exception?.GetUsefulStack(), (int)logLevel, contextInfo);
         }
     }
 }
