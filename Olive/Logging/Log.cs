@@ -130,11 +130,11 @@ namespace Olive
                     // User info
                     var user = contextType.GetProperty("User")?.GetValue(httpContext) as ClaimsPrincipal;
                     var userId = user?.GetId();
-                    var userEmail = user?.GetEmail();
+                    var userEmail = TryGet(() => user?.GetEmail());
 
                     // Request info
                     var request = contextType.GetProperty("Request")?.GetValue(httpContext);
-                    string requestUrl = null, httpMethod = null, userAgent = null, traceId = null;
+                    string requestUrl = null, httpMethod = null, userAgent = null;
                     if (request != null)
                     {
                         var reqType = request.GetType();
@@ -142,14 +142,14 @@ namespace Olive
                         var path = reqType.GetProperty("Path")?.GetValue(request)?.ToString();
                         var queryString = reqType.GetProperty("QueryString")?.GetValue(request)?.ToString();
                         requestUrl = $"{pathBase}{path}{queryString}";
-                        httpMethod = reqType.GetProperty("Method")?.GetValue(request)?.ToString();
-
-                        var headers = reqType.GetProperty("Headers")?.GetValue(request);
-                        if (headers != null)
+                        httpMethod = TryGet(() => reqType.GetProperty("Method")?.GetValue(request)?.ToString());
+                        userAgent = TryGet(() =>
                         {
+                            var headers = reqType.GetProperty("Headers")?.GetValue(request);
+                            if (headers == null) return null;
                             var indexer = headers.GetType().GetProperty("Item", new[] { typeof(string) });
-                            userAgent = indexer?.GetValue(headers, new object[] { "User-Agent" })?.ToString();
-                        }
+                            return indexer?.GetValue(headers, new object[] { "User-Agent" })?.ToString();
+                        });
                     }
 
                     // Connection info
@@ -157,7 +157,7 @@ namespace Olive
                     var userIp = connection?.GetType().GetProperty("RemoteIpAddress")?.GetValue(connection)?.ToString();
 
                     // Trace identifier
-                    traceId = contextType.GetProperty("TraceIdentifier")?.GetValue(httpContext)?.ToString();
+                    var traceId = TryGet(() => contextType.GetProperty("TraceIdentifier")?.GetValue(httpContext)?.ToString());
 
                     if (userId.IsEmpty() && requestUrl.IsEmpty() && userIp.IsEmpty()) return null;
 
@@ -174,6 +174,12 @@ namespace Olive
                 catch { return null; }
             };
         }
+        static string TryGet(Func<string> getter)
+        {
+            try { return getter(); }
+            catch { return null; }
+        }
+
         public static bool AddProvider<TProvider>() where TProvider : ILoggerProvider
         {
             if (Factory == null)
