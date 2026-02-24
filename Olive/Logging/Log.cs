@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel;
+using System.Security.Claims;
 using System.Text;
 
 namespace Olive
@@ -70,6 +71,11 @@ namespace Olive
     {
         public static ILoggerFactory Factory { get; private set; }
 
+        /// <summary>
+        /// When set, provides contextual information (e.g. UserId, RequestUrl, UserIP) to append to log entries.
+        /// </summary>
+        public static Func<string> ContextProvider { get; set; }
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void Init(Action<ILoggingBuilder> configure = null)
         {
@@ -97,6 +103,57 @@ namespace Olive
         {
             if (Factory != null) return;
             Factory = factory;
+            InitDefaultContextProvider();
+        }
+
+        static void InitDefaultContextProvider()
+        {
+            var httpContextAccessorType = Type.GetType(
+                "Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.Abstractions");
+
+            if (httpContextAccessorType == null) return;
+
+            var httpContextProp = httpContextAccessorType.GetProperty("HttpContext");
+
+            ContextProvider = () =>
+            {
+                try
+                {
+                    var accessor = Context.Current.GetOptionalService(httpContextAccessorType);
+                    if (accessor == null) return null;
+
+                    var httpContext = httpContextProp?.GetValue(accessor);
+                    if (httpContext == null) return null;
+
+                    var contextType = httpContext.GetType();
+
+                    var user = contextType.GetProperty("User")?.GetValue(httpContext) as ClaimsPrincipal;
+                    var userId = user?.GetId();
+
+                    var request = contextType.GetProperty("Request")?.GetValue(httpContext);
+                    string requestUrl = null;
+                    if (request != null)
+                    {
+                        var reqType = request.GetType();
+                        var pathBase = reqType.GetProperty("PathBase")?.GetValue(request)?.ToString();
+                        var path = reqType.GetProperty("Path")?.GetValue(request)?.ToString();
+                        var queryString = reqType.GetProperty("QueryString")?.GetValue(request)?.ToString();
+                        requestUrl = $"{pathBase}{path}{queryString}";
+                    }
+
+                    var connection = contextType.GetProperty("Connection")?.GetValue(httpContext);
+                    var userIp = connection?.GetType().GetProperty("RemoteIpAddress")?.GetValue(connection)?.ToString();
+
+                    if (userId.IsEmpty() && requestUrl.IsEmpty() && userIp.IsEmpty()) return null;
+
+                    var r = new StringBuilder();
+                    if (userId.HasValue()) r.AppendLine($"  UserId: {userId}");
+                    if (requestUrl.HasValue()) r.AppendLine($"  RequestUrl: {requestUrl}");
+                    if (userIp.HasValue()) r.AppendLine($"  UserIP: {userIp}");
+                    return r.ToString().TrimEnd();
+                }
+                catch { return null; }
+            };
         }
         public static bool AddProvider<TProvider>() where TProvider : ILoggerProvider
         {
