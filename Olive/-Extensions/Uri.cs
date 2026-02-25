@@ -12,6 +12,7 @@ namespace Olive
     partial class OliveExtensions
     {
         const int HTTP_PORT_NUMBER = 80, HTTPS_PORT_NUMBER = 443, MINUTE = 60;
+        static HttpClient Client = new HttpClient();
 
         /// <summary>
         /// Downloads the text in this URL.
@@ -70,16 +71,51 @@ namespace Olive
         /// <summary>
         /// Posts the specified JSON text to this URL. Your server-side web api should take one parameter, with [FromBody] attribute.
         /// </summary>
-        public static async Task<string> PostJson(this Uri @this, string json, Action<HttpClient> customiseClient = null)
+        public static Task<string> PostJson(this Uri @this, string json, Action<HttpClient> customiseClient = null)
         {
-            using var client = new HttpClient();
-            customiseClient?.Invoke(client);
+            var client = Client;
 
-            var requestContent = new StringContent(json, Encoding.UTF8, "application/json");
+            if (customiseClient != null)
+            {
+                client = new HttpClient();
+                customiseClient?.Invoke(client);
+            }
 
-            var response = await client.PostAsync(@this, requestContent);
+            return client.PostJson(@this.ToString(), json);
+        }
 
-            return await response.ReadStringOrThrow();
+        /// <summary>
+        /// Posts the specified data to this url and returns the response as string.
+        /// All items in the postData object will be sent as individual FORM parameters to the destination.
+        /// </summary>
+        public static Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
+        {
+            var client = Client;
+
+            if (customiseClient != null)
+            {
+                client = new HttpClient();
+                customiseClient?.Invoke(client);
+            }
+
+            return client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
+        }
+
+        /// <summary>
+        /// Posts the specified data to this url and returns the response as string.
+        /// All items in the postData object will be sent as individual FORM parameters to the destination.
+        /// </summary>
+        public static Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
+        {
+            var client = Client;
+
+            if (customiseClient != null)
+            {
+                client = new HttpClient();
+                customiseClient?.Invoke(client);
+            }
+
+            return client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
         }
 
         /// <summary>
@@ -102,46 +138,11 @@ namespace Olive
         }
 
         /// <summary>
-        /// Posts the specified JSON text to this URL.
-        /// Your server-side web api should take one parameter, with [FromBody] attribute.
+        /// Gets the string content and parses it as JSON if status code is OK. Otherwise throws an exception with the text.
         /// </summary>
-        public static Task<JsonDocument> PostJson(this HttpClient @this, Uri url, object objectToSerialize)
+        public static async Task<TDeserialize> ReadJson<TDeserialize>(this HttpResponseMessage @this)
         {
-            return @this.PostJson(url, JsonSerializer.Serialize(objectToSerialize));
-        }
-
-        /// <summary>
-        /// Posts the specified JSON text to this URL.
-        /// Your server-side web api should take one parameter, with [FromBody] attribute.
-        /// </summary>
-        public static async Task<JsonDocument> PostJson(this HttpClient @this, Uri url, string json)
-        {
-            var requestContent = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await @this.PostAsync(url, requestContent);
-            return await response.ReadJson();
-        }
-
-        /// <summary>
-        /// Posts the specified data to this url and returns the response as string.
-        /// All items in the postData object will be sent as individual FORM parameters to the destination.
-        /// </summary>
-        public static Task<HttpResponseMessage> Post(this Uri url, object data, Action<HttpClient> customiseClient = null)
-        {
-            using var client = new HttpClient();
-            customiseClient?.Invoke(client);
-
-            return client.PostAsync(url.ToString(), new FormUrlEncodedContent(new Dictionary<string, string>().AddFromProperties(data)));
-        }
-
-        /// <summary>
-        /// Posts the specified data to this url and returns the response as string.
-        /// All items in the postData object will be sent as individual FORM parameters to the destination.
-        /// </summary>
-        public static Task<HttpResponseMessage> Post(this Uri url, Dictionary<string, string> postData, Action<HttpClient> customiseClient = null)
-        {
-            using var client = new HttpClient();
-            customiseClient?.Invoke(client);
-            return client.PostAsync(url.ToString(), new FormUrlEncodedContent(postData));
+            return JsonSerializer.Deserialize<TDeserialize>(await @this.ReadStringOrThrow());
         }
 
         /// <summary>
