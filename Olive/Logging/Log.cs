@@ -77,19 +77,18 @@ namespace Olive
         public static Func<string> ContextProvider { get; set; }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void Init(Action<ILoggingBuilder> configure = null)
+        public static void Init(Action<IConfigurationBuilder> configurationConfigurator = null, Action<ILoggingBuilder> loggingConfigurator = null)
         {
             if (Factory != null) return;
 
-            var configuration = Config.Build();
+            var configuration = Config.Build(configurationConfigurator);
 
             var services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(configuration);
             services.AddLogging(builder =>
             {
                 builder.AddConfiguration(configuration.GetSection("Logging"));
-                if (configure != null)
-                    configure(builder);
+                loggingConfigurator?.Invoke(builder);
             });
 
             var serviceProvider = services.BuildServiceProvider();
