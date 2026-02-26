@@ -99,32 +99,24 @@ namespace Olive
 
         /// <summary>
         /// Posts the specified JSON text to this URL.
+        /// Your server-side web api should take one parameter, with [FromBody] attribute.        
+        /// </summary>
+        public static Task<JsonElement> PostJsonGetJson(this HttpClient @this, string url, object data)
+        {
+            return @this.PostJsonGet<JsonElement>(url, data);
+        }
+
+        /// <summary>
+        /// Posts the specified JSON text to this URL.
         /// Your server-side web api should take one parameter, with [FromBody] attribute.
         /// </summary>
-        public static async Task<TDeserialize> PostJson<TDeserialize>(this HttpClient @this, string url, string json)
+        public static async Task<TDeserialize> PostJsonGet<TDeserialize>(this HttpClient @this, string url, object data)
         {
-            var requestContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var requestContent = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
             var response = await @this.PostAsync(url, requestContent);
             return await response.ReadJson<TDeserialize>();
         }
 
-        /// <summary>
-        /// Posts the specified object as JSON data to this URL. Your server-side web api should take one parameter, with [FromBody] attribute.
-        /// </summary>
-        public static Task<string> PostJson(this HttpClient @this, string url, object data)
-        {
-            return @this.PostJson(url, JsonSerializer.Serialize(data));
-        }
-
-        /// <summary>
-        /// Posts the specified JSON text to this URL. Your server-side web api should take one parameter, with [FromBody] attribute.
-        /// </summary>
-        public static async Task<string> PostJson(this HttpClient @this, string url, string json)
-        {
-            var requestContent = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await @this.PostAsync(url, requestContent);
-            return await response.ReadStringOrThrow();
-        }
 
         /// <summary>
         /// Posts the specified data to this url and returns the response as string.

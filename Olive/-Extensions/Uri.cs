@@ -71,7 +71,7 @@ namespace Olive
         /// <summary>
         /// Posts the specified JSON text to this URL. Your server-side web api should take one parameter, with [FromBody] attribute.
         /// </summary>
-        public static Task<string> PostJson(this Uri @this, string json, Action<HttpClient> customiseClient = null)
+        public static async Task<string> PostJson(this Uri @this, string json, Action<HttpClient> customiseClient = null)
         {
             var client = Client;
 
@@ -81,7 +81,9 @@ namespace Olive
                 customiseClient?.Invoke(client);
             }
 
-            return client.PostJson(@this.ToString(), json);
+            var requestContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(@this.ToString(), requestContent);
+            return await response.ReadStringOrThrow();
         }
 
         /// <summary>
