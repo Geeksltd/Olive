@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Globalization;
 
 namespace Olive.Aws
 {
     public abstract class Startup : Mvc.Startup
     {
-        protected Startup(IWebHostEnvironment env) : base(env)
+        protected Startup(IWebHostEnvironment env) : this(env, null) { }
+
+        protected Startup(IWebHostEnvironment env, Action<IConfigurationBuilder> configurationConfigurator = null) : base(env, configurationConfigurator)
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture =
                    CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = GetRequestCulture();
