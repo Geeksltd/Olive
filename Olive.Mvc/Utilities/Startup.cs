@@ -33,14 +33,13 @@ namespace Olive.Mvc
 
         protected IServiceCollection Services { get; private set; }
 
-        protected Startup(IWebHostEnvironment env)
+        protected Startup(IWebHostEnvironment env) : this(env, null) { }
+
+        protected Startup(IWebHostEnvironment env, Action<IConfigurationBuilder> configurationConfigurator = null)
         {
             Environment = env;
-            Configuration = Config.Build();
-            Log.Init(builder =>
-            {
-                builder.AddConsole();
-            });
+            Configuration = Config.Build(configurationConfigurator);
+            Log.Init(configurationConfigurator, loggingConfigurator => loggingConfigurator.AddConsole());
         }
 
         public virtual void ConfigureServices(IServiceCollection services)
