@@ -267,3 +267,5 @@ bin
 /Olive.MvcJs
 nuget.exe
 /Utils/MSharp.Build/Properties/launchSettings.json
+/.claude/settings.local.json
+/CLAUDE.md

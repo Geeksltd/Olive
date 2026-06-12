@@ -1,9 +1,6 @@
-﻿using SharpCompress.Archives;
-using SharpCompress.Archives.GZip;
-using SharpCompress.Archives.Tar;
-using SharpCompress.Archives.Zip;
-using SharpCompress.Common;
+﻿using SharpCompress.Common;
 using SharpCompress.Readers;
+using SharpCompress.Writers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,29 +63,36 @@ namespace Olive
             if (destination.Exists() && !overwrite)
                 throw new Exception("Destination file already exists: " + destination.FullName);
 
-            IWritableArchive archive;
-            var type = CompressionType.Deflate;
+            ArchiveType archiveType;
+            WriterOptions options;
 
             switch (format)
             {
                 case CompressionFormat.Zip:
-                    archive = ZipArchive.Create();
+                    archiveType = ArchiveType.Zip;
+                    options = new WriterOptions(CompressionType.Deflate);
                     break;
                 case CompressionFormat.Gzip:
-                    archive = GZipArchive.Create();
+                    archiveType = ArchiveType.GZip;
+                    options = WriterOptions.ForGZip();
                     break;
                 case CompressionFormat.Tar:
-                    archive = TarArchive.Create();
-                    type = CompressionType.None;
+                    archiveType = ArchiveType.Tar;
+                    options = new WriterOptions(CompressionType.None);
                     break;
                 default: throw new NotSupportedException();
             }
 
-            using (archive)
-            {
-                archive.AddAllFromDirectory(@this.FullName);
-                archive.SaveTo(destination.FullName, type);
-            }
+            using (var stream = File.OpenWrite(destination.FullName))
+            using (var writer = WriterFactory.OpenWriter(stream, archiveType, options))
+                foreach (var file in @this.GetFiles("*", SearchOption.AllDirectories))
+                {
+                    var key = file.FullName.Substring(@this.FullName.Length)
+                        .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+                    using (var source = file.OpenRead())
+                        writer.Write(key, source, file.LastWriteTime);
+                }
         }
 
         /// <summary>
@@ -112,7 +116,7 @@ namespace Olive
             };
 
             using (var stream = File.OpenRead(@this.FullName))
-            using (var reader = ReaderFactory.Open(stream))
+            using (var reader = ReaderFactory.OpenReader(stream, new ReaderOptions()))
                 while (reader.MoveToNextEntry())
                     if (!reader.Entry.IsDirectory)
                         reader.WriteEntryToDirectory(destination.FullName, options);

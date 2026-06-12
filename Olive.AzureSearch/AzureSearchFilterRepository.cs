@@ -36,7 +36,7 @@
             {
                 if (_client.GetIndex(_defaultIndex) != null)
                 {
-                    _client.DeleteIndex(_defaultIndex);
+                    _client.DeleteIndex(_defaultIndex, System.Threading.CancellationToken.None);
                 }
                 Initiate();
             }
