@@ -16,6 +16,10 @@
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="HtmlSanitizer" Version="9.0.892" />
+	</ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
     <Exec Command="update-local-nuget-cache" />
   </Target>
