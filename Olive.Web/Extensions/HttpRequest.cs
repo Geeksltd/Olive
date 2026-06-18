@@ -225,6 +225,8 @@ namespace Olive
 
             if (@this.IsGet()) return false;
 
+            if (!@this.HasFormContentType) return false;
+
             return @this.Form[".Olive-Requested-With"] == "XMLHttpRequest";
         }
 
