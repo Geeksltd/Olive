@@ -89,6 +89,21 @@ namespace Olive.Entities
         }
 
         /// <summary>
+        /// eg: /EntityName.PropertyName/OwnerId(.extension)
+        /// </summary>
+        public string FullName
+        {
+            get
+            {
+                if (OwnerEntity == null) return null;
+                var result = "/" + FolderName + "/" + OwnerId();
+                if (Config.Get("Blob:UrlWithExtension", defaultValue: true)) result += FileExtension;
+                return result;
+            }
+        }
+
+
+        /// <summary>
         /// Gets the data of this blob.
         /// </summary>
         public virtual async Task<byte[]> GetFileDataAsync()
@@ -166,9 +181,7 @@ namespace Olive.Entities
         public string Url()
         {
             if (OwnerEntity == null) return null;
-            var result = Config.Get("Blob:BaseUrl") + FolderName + "/" + OwnerId();
-            if (Config.Get("Blob:UrlWithExtension", defaultValue: true)) result += FileExtension;
-            return result;
+            return Config.Get("Blob:BaseUrl") + FullName.TrimStart('/');
         }
 
         /// <summary>

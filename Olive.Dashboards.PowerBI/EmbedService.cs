@@ -1,7 +1,6 @@
 ﻿namespace Olive.Dashboards.PowerBI
 {
     using Microsoft.PowerBI.Api;
-    using Microsoft.Rest;
     using Olive.Dashboards.PowerBI.Models;
     using System;
     using System.Collections.Generic;
@@ -44,12 +43,12 @@
                 throw new Exception("Error on generating access token on Azure, please check the Azure service configuration");
             }
 
-            TokenCredentials tokenCredentials = new TokenCredentials(token, "Bearer");
+            
 
             PowerBIClient? client = null;
             try
             {
-                client = new PowerBIClient(new Uri(uri), tokenCredentials);
+                client = new PowerBIClient(token, new Uri(uri));
             }
             catch
             {
@@ -177,11 +176,12 @@
                 datasetIds = new List<Guid>() { Guid.Parse(report.DatasetId) };
             }
 
-            var tokenRequest = new GenerateTokenRequestV2(
-                reports: new List<GenerateTokenRequestV2Report> { new GenerateTokenRequestV2Report(reportId) },
-                datasets: datasetIds.Select(datasetId => new GenerateTokenRequestV2Dataset(datasetId.ToString())).ToList(),
-                targetWorkspaces: workspaceId != Guid.Empty ? new List<GenerateTokenRequestV2TargetWorkspace>() { new GenerateTokenRequestV2TargetWorkspace(workspaceId) } : null
-                );
+            var tokenRequest = new GenerateTokenRequestV2();
+            tokenRequest.Reports.Add(new GenerateTokenRequestV2Report(reportId));
+            foreach (var datasetId in datasetIds)
+                tokenRequest.Datasets.Add(new GenerateTokenRequestV2Dataset(datasetId.ToString()));
+            if (workspaceId != Guid.Empty)
+                tokenRequest.TargetWorkspaces.Add(new GenerateTokenRequestV2TargetWorkspace(workspaceId));
 
             return await client.EmbedToken.GenerateTokenAsync(tokenRequest);
         }
@@ -196,7 +196,7 @@
         public async Task<EmbedToken> GetEmbedTokenForRDLReport(Guid workspaceId, Guid reportId, string accessLevel = "view")
         {
             // Generate token request for RDL Report
-            var tokenRequest = new GenerateTokenRequest(accessLevel: accessLevel);
+            var tokenRequest = new GenerateTokenRequest { AccessLevel = Enum.Parse<TokenAccessLevel>(accessLevel, ignoreCase: true) };
 
             // Get Embed token
             return await client.Reports.GenerateTokenInGroupAsync(workspaceId, reportId, tokenRequest);
@@ -213,14 +213,12 @@
         {
             if (datasetRefreshRequest == null)
             {
-                datasetRefreshRequest = new DatasetRefreshRequest()
+                datasetRefreshRequest = new DatasetRefreshRequest(NotifyOption.NoNotification)
                 {
                     ApplyRefreshPolicy = false,
                     CommitMode = DatasetCommitMode.Transactional,
                     EffectiveDate = DateTime.UtcNow,
                     MaxParallelism = 1,
-                    NotifyOption = NotifyOption.NoNotification,
-                    Objects = null,
                     RetryCount = 3,
                     Type = DatasetRefreshType.Full
                 };
@@ -254,7 +252,7 @@
             {
                 throw new Exception("Error on getting history of dataset refresh, please make sure workspaceId or datasetId is set correctly");
             }
-            return refreshes.Value;
+            return refreshes.Value.ToList();
         }
         #endregion
 

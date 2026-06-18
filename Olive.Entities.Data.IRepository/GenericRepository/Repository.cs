@@ -290,7 +290,7 @@ where TEntity : class
 
 
     public async Task<int> ExecuteUpdateAsync<TEntity>(
-                Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls,
+                Action<UpdateSettersBuilder<TEntity>> setPropertyCalls,
                 CancellationToken cancellationToken = default)
                 where TEntity : class
     {
@@ -300,7 +300,7 @@ where TEntity : class
 
     public async Task<int> ExecuteUpdateAsync<TEntity>(
                 Expression<Func<TEntity, bool>> condition,
-                Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls,
+                Action<UpdateSettersBuilder<TEntity>> setPropertyCalls,
                 CancellationToken cancellationToken = default)
                 where TEntity : class
     {

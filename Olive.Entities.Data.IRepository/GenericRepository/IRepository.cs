@@ -237,7 +237,7 @@ public interface IRepository : IQueryRepository
     /// and aren't updated to reflect the changes.
     /// </remarks>
     Task<int> ExecuteUpdateAsync<TEntity>(
-        Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls,
+        Action<UpdateSettersBuilder<TEntity>> setPropertyCalls,
         CancellationToken cancellationToken = default)
         where TEntity : class;
 
@@ -259,7 +259,7 @@ public interface IRepository : IQueryRepository
     /// </remarks>
     Task<int> ExecuteUpdateAsync<TEntity>(
         Expression<Func<TEntity, bool>> condition,
-        Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls,
+        Action<UpdateSettersBuilder<TEntity>> setPropertyCalls,
         CancellationToken cancellationToken = default)
         where TEntity : class;
 

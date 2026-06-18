@@ -1,5 +1,5 @@
-﻿using Amazon.S3.Model;
-using Amazon.S3;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Olive.BlobAws;
 using Olive.Entities;
@@ -46,7 +46,7 @@ new S3PresignedUrlGenerator(PresignedUrlTimeout));
                     ResponseHeaderOverrides = new ResponseHeaderOverrides
                     {
                         ContentType = document.GetMimeType(),
-                        ContentDisposition = $"attachment; filename=\"{document.FileName.Remove("\"", ",")}\"",
+                        ContentDisposition = $"attachment; filename=\"{document.FileName.Remove("\"", ",").UrlEncode()}\"",
                     }
                 };
 
