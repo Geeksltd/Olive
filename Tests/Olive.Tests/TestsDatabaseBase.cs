@@ -26,15 +26,15 @@ namespace Olive.Tests
 
             services.AddSingleton<ICacheProvider, InMemoryCacheProvider>();
             services.AddSingleton<ICache, Cache>();
+            services.AddSingleton<IDatabaseProviderConfig, DatabaseProviderConfig>();
             services.AddSingleton<IDatabase, Database>();
 
-            Context.Initialize(services);
-
-            Context.Current.Set(services.BuildServiceProvider());
+            var provider = services.BuildServiceProvider();
+            Context.Initialize(provider, () => provider);
 
             database = Context.Current.GetService<IDatabase>();
 
-            database.Configure();
+            provider.GetRequiredService<IDatabaseProviderConfig>().Configure();
 
             #endregion
         }

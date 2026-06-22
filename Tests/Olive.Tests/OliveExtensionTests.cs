@@ -1,8 +1,13 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.AspNetCore.Html;
+using NUnit.Framework;
+using Olive.Mvc;
 using System.Collections.Generic;
 using Olive;
 using System.Linq;
 using System;
+using System.IO;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace Olive.Tests
 {
@@ -169,6 +174,114 @@ namespace Olive.Tests
             stringList1.LacksAll(stringList2, true).ShouldBeTrue();
 
             stringList1.LacksAll(stringList2, false).ShouldBeFalse();
+        }
+
+        static string GetHtml(HtmlString html)
+        {
+            using var writer = new StringWriter();
+            html.WriteTo(writer, HtmlEncoder.Default);
+            return writer.ToString();
+        }
+
+        [Test]
+        public void Raw_DefaultSanitize_RemovesScriptTags()
+        {
+            var input = "<p>Hello</p><script>alert('xss')</script>";
+
+            var result = GetHtml(input.Raw());
+
+            Assert.That(result, Does.Not.Contain("<script"));
+            Assert.That(result, Does.Contain("<p>Hello</p>"));
+        }
+
+        [Test]
+        public void Raw_WithSanitizeTrue_RemovesEventHandlers()
+        {
+            var input = "<p id=\"p1\" class=\"text\" onclick=\"evil()\">Click</p>";
+
+            var result = GetHtml(input.Raw(sanitize: true));
+
+            result.ShouldEqual("<p id=\"p1\" class=\"text\">Click</p>");
+        }
+
+        [Test]
+        public void Raw_WithSanitizeTrue_RemovesJavascriptUrls()
+        {
+            var input = "<a href=\"javascript:alert(1)\">link</a>";
+
+            var result = GetHtml(input.Raw(sanitize: true));
+
+            result.ShouldEqual("<a>link</a>");
+        }
+
+        [Test]
+        public void Raw_WithSanitizeTrue_KeepsAllowedLinkSchemes()
+        {
+            var mailto = GetHtml("<a href=\"mailto:test@example.com\">email</a>".Raw());
+            var tel = GetHtml("<a href=\"tel:+1234567890\">phone</a>".Raw());
+            var http = GetHtml("<a href=\"http://example.com\">http</a>".Raw());
+            var https = GetHtml("<a href=\"https://example.com\">https</a>".Raw());
+
+            mailto.ShouldEqual("<a href=\"mailto:test@example.com\">email</a>");
+            tel.ShouldEqual("<a href=\"tel:+1234567890\">phone</a>");
+            http.ShouldEqual("<a href=\"http://example.com\">http</a>");
+            https.ShouldEqual("<a href=\"https://example.com\">https</a>");
+        }
+
+        [Test]
+        public void Raw_WithSanitizeTrue_KeepsStyleAttribute()
+        {
+            var input = "<span style=\"color:red\">styled</span>";
+
+            var result = GetHtml(input.Raw(sanitize: true));
+
+            Assert.That(result, Does.Contain("style="));
+            Assert.That(result, Does.Contain("styled"));
+            Assert.That(result, Does.Not.Contain("javascript:"));
+        }
+
+        [Test]
+        public void Raw_WithSanitizeTrue_RemovesScriptElementButKeepsChildText()
+        {
+            var result = GetHtml("<p>Hi</p><script>removed()</script>".Raw());
+
+            result.ShouldEqual("<p>Hi</p>removed()");
+        }
+
+        [Test]
+        public void Raw_WithSanitizeFalse_PreservesUnsafeHtml()
+        {
+            var input = "<p onclick=\"evil()\">unsafe</p><script>alert(1)</script>";
+
+            var result = GetHtml(input.Raw(sanitize: false));
+
+            result.ShouldEqual(input);
+        }
+
+        [Test]
+        public void Raw_NullOrEmpty_ReturnsEmptyHtmlString()
+        {
+            GetHtml(((string)null).Raw()).ShouldEqual(string.Empty);
+            GetHtml(string.Empty.Raw()).ShouldEqual(string.Empty);
+        }
+
+        [Test]
+        public async Task Raw_Task_DefaultSanitize_RemovesScriptTags()
+        {
+            var result = GetHtml(await Task.FromResult("<b>ok</b><script>x</script>").Raw());
+
+            Assert.That(result, Does.Not.Contain("<script"));
+            Assert.That(result, Does.Contain("<b>ok</b>"));
+        }
+
+        [Test]
+        public async Task Raw_Task_WithSanitizeFalse_PreservesUnsafeHtml()
+        {
+            var input = "<img onerror=\"evil()\" src=\"x\">";
+
+            var result = GetHtml(await Task.FromResult(input).Raw(sanitize: false));
+
+            result.ShouldEqual(input);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Version>10.0.0</Version>
+    <Version>10.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +15,10 @@
     <ProjectReference Include="..\Olive.Mvc.Security\Olive.Mvc.Security.csproj" />
     <ProjectReference Include="..\Olive\Olive.csproj" />
   </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="HtmlSanitizer" Version="9.0.892" />
+	</ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Running)'=='local'">
     <Exec Command="update-local-nuget-cache" />

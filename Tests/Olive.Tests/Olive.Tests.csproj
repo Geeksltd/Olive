@@ -4,6 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath></OutputPath>
     <DocumentationFile></DocumentationFile>
@@ -16,6 +20,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NUnit" Version="4.6.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
@@ -30,6 +35,9 @@
     </Reference>
     <Reference Include="Olive.Entities.Data">
       <HintPath>..\..\bin\netstandard2.0\Olive.Entities.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Olive.Mvc">
+      <HintPath>..\..\Olive.Mvc\bin\Debug\net10.0\Olive.Mvc.dll</HintPath>
     </Reference>
   </ItemGroup>
 
