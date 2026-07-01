@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<Version>10.0.0</Version>
+		<Version>10.0.1</Version>
 		<OutputType>Library</OutputType>
 		<LangVersion>latest</LangVersion>
 		<Authors>Geeks Ltd, UK</Authors>

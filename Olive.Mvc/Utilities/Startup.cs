@@ -39,8 +39,17 @@ namespace Olive.Mvc
         {
             Environment = env;
             Configuration = Config.Build(configurationConfigurator);
-            Log.Init(configurationConfigurator, loggingConfigurator => loggingConfigurator.AddConsole());
+            Log.Init(configurationConfigurator, ConfigureLogging);
         }
+
+        /// <summary>
+        /// Configures the logging providers used by <see cref="Log.Factory"/>.
+        /// The default adds the console provider. Override to add or replace providers,
+        /// e.g. <c>base.ConfigureLogging(logging); logging.AddFile(o => o.LogDirectory = "Logs");</c>.
+        /// Note: this runs from the base constructor, so derived instance fields are not yet
+        /// initialised. <see cref="Environment"/> and <see cref="Configuration"/> are available.
+        /// </summary>
+        protected virtual void ConfigureLogging(ILoggingBuilder logging) => logging.AddConsole();
 
         public virtual void ConfigureServices(IServiceCollection services)
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using System;
 using System.ComponentModel;
 using System.Security.Claims;
@@ -12,7 +13,13 @@ namespace Olive
     {
         public static ILoggingBuilder AddFile(this ILoggingBuilder @this, Action<FileLoggerOptions> configure = null)
         {
+            @this.AddConfiguration();
             @this.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
+
+            // Bind the "Logging:File" configuration section (matched via [ProviderAlias("File")])
+            // to FileLoggerOptions, so settings can be supplied from appsettings.json.
+            LoggerProviderOptions.RegisterProviderOptions<FileLoggerOptions, FileLoggerProvider>(@this.Services);
+
             if (configure != null) @this.Services.Configure(configure);
             return @this;
         }
