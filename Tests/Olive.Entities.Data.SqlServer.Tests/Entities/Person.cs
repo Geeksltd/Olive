@@ -17,7 +17,9 @@ namespace Olive.Entities.Data.SqlServer.Tests
         public DateTime Birthdate { get; set; }
 
         [Calculated]
-        [XmlIgnore, Newtonsoft.Json.JsonIgnore]
+        [XmlIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public IDatabaseQuery<GroupMember> GroupMembers
         {
             get => Database.Of<GroupMember>().Where(g => g.GroupId == ID);

@@ -10,8 +10,6 @@
     using System.Linq;
     using System.Reflection;
     using System.Text;
-    using System.Text.Json.Serialization;
-    using System.Threading.Tasks;
 
     public abstract class BaseModuleGenerator
     {
@@ -22,7 +20,7 @@
         protected HttpResponse Response => Context.Current.Response();
         protected IDatabase Database => Context.Current.Database();
         protected Type _type { get; set; }
-        public BaseModuleGenerator(Type type , DestinationEndpoint endpoint)
+        public BaseModuleGenerator(Type type, DestinationEndpoint endpoint)
 
         {
             _endpoint = endpoint;
@@ -51,9 +49,10 @@
         }
         protected IEnumerable<PropertyInfo> GetColumns()
         {
-
             var props = _type.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
-                .Where(e => e.CanWrite && e.CustomAttributes.None(w => w.AttributeType  == typeof(Newtonsoft.Json.JsonIgnoreAttribute)));
+                .Where(e => e.CanWrite)
+                .Where(e => e.CustomAttributes.None(w => w.AttributeType == typeof(Newtonsoft.Json.JsonIgnoreAttribute)))
+                .Where(e => e.CustomAttributes.None(w => w.AttributeType == typeof(System.Text.Json.Serialization.JsonIgnoreAttribute)));
 
             var idProp = props.First(x => x.Name == "ID");
             var sorted = new List<PropertyInfo>() { idProp };

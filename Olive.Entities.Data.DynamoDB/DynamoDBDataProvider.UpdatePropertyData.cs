@@ -1,7 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +12,9 @@ namespace Olive.Entities.Data
         struct UpdatePropertyData
         {
             readonly static Type[] Ignores = new[]{
-                typeof(JsonIgnoreAttribute),
+
+                typeof(System.Text.Json.Serialization.JsonIgnoreAttribute),
+                typeof(Newtonsoft.Json.JsonIgnoreAttribute),
                 typeof(DynamoDBHashKeyAttribute),
                 typeof(DynamoDBIgnoreAttribute),
             };

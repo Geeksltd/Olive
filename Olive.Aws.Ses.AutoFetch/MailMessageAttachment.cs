@@ -16,6 +16,7 @@ namespace Olive.Aws.Ses.AutoFetch
 
         /// <summary>Gets or sets the value of Attachment on this Mail message attachment instance.</summary>
         [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public Blob Attachment
         {
             get

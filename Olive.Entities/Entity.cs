@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,7 +22,9 @@ namespace Olive.Entities
         internal List<ICachedReference> CachedCopies;
         internal bool IsImmutable;
 
-        [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [NonSerialized, XmlIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public Entity _ClonedFrom;
 
         public static readonly EntityServices Services = new EntityServices();
@@ -78,13 +79,17 @@ namespace Olive.Entities
         /// <summary>
         /// Determines whether this is a newly created instace. This value will be True for new objects, and False for anything loaded from the database.
         /// </summary>
-        [XmlIgnore, JsonIgnore]
+        [XmlIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual bool IsNew { get; internal set; }
 
         /// <summary>
         /// Determines whether this instance is "soft-deleted".
         /// </summary>
-        [XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [XmlIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual bool IsMarkedSoftDeleted { get; internal set; }
 
         /// <summary>
@@ -95,7 +100,9 @@ namespace Olive.Entities
         /// <summary>
         /// Gets or sets the clone of this object which was updated in the database.
         /// </summary>
-        [NonSerialized, XmlIgnore, JsonIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [NonSerialized, XmlIgnore, EditorBrowsable(EditorBrowsableState.Never)]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         [EscapeGCop("Defined as a field on purpose for performance reasons.")]
         public Entity UpdatedClone;
 

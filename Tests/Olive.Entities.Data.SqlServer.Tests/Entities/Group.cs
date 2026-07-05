@@ -30,7 +30,9 @@
         
         /// <summary>Gets the Group members of this Group.</summary>
         [Calculated]
-        [XmlIgnore, Newtonsoft.Json.JsonIgnore]
+        [XmlIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public IDatabaseQuery<GroupMember> GroupMembers
         {
             get => Database.Of<GroupMember>().Where(g => g.GroupId == ID);

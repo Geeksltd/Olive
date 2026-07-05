@@ -1,6 +1,5 @@
 ﻿namespace Olive.Entities
 {
-    using Newtonsoft.Json;
     using System;
     using System.Xml.Serialization;
 
@@ -15,7 +14,9 @@
         /// Gets the original id of this type as it was in the database.
         /// </summary>
         [EscapeGCop("It is the base class")]
-        [XmlIgnore, JsonIgnore, System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [XmlIgnore, System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual T OriginalId { get; internal set; }
 
         void IOriginalIdHolder.SetOriginalId() => OriginalId = ID;
