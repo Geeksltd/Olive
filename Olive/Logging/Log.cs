@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Security.Claims;
 using System.Text;
@@ -88,6 +90,8 @@ namespace Olive
 
         /// <summary>
         /// When set, provides contextual information (e.g. UserId, RequestUrl, UserIP) to append to log entries.
+        /// The default provider returns it as a JSON object, so that consumers such as the audit log
+        /// can read the individual properties rather than having to pick them out of free text.
         /// </summary>
         public static Func<string> ContextProvider { get; set; }
 
@@ -185,17 +189,18 @@ namespace Olive
 
                     if (userId.IsEmpty() && requestUrl.IsEmpty() && userIp.IsEmpty()) return null;
 
-                    var r = new StringBuilder();
-                    if (userId.HasValue()) r.AppendLine($"  UserId: {userId}");
-                    if (userEmail.HasValue()) r.AppendLine($"  UserEmail: {userEmail}");
-                    if (userRoles.HasValue()) r.AppendLine($"  UserRoles: {userRoles}");
-                    if (httpMethod.HasValue()) r.AppendLine($"  HttpMethod: {httpMethod}");
-                    if (requestUrl.HasValue()) r.AppendLine($"  RequestUrl: {requestUrl}");
-                    if (userIp.HasValue()) r.AppendLine($"  UserIP: {userIp}");
-                    if (userAgent.HasValue()) r.AppendLine($"  UserAgent: {userAgent}");
-                    if (traceId.HasValue()) r.AppendLine($"  TraceId: {traceId}");
-                    if (reference.HasValue()) r.AppendLine($"  Reference: {reference}");
-                    return r.ToString().TrimEnd();
+                    var context = new Dictionary<string, string>();
+                    if (userId.HasValue()) context["UserId"] = userId;
+                    if (userEmail.HasValue()) context["UserEmail"] = userEmail;
+                    if (userRoles.HasValue()) context["UserRoles"] = userRoles;
+                    if (httpMethod.HasValue()) context["HttpMethod"] = httpMethod;
+                    if (requestUrl.HasValue()) context["RequestUrl"] = requestUrl;
+                    if (userIp.HasValue()) context["UserIP"] = userIp;
+                    if (userAgent.HasValue()) context["UserAgent"] = userAgent;
+                    if (traceId.HasValue()) context["TraceId"] = traceId;
+                    if (reference.HasValue()) context["Reference"] = reference;
+
+                    return JsonConvert.SerializeObject(context, Formatting.Indented);
                 }
                 catch { return null; }
             };
