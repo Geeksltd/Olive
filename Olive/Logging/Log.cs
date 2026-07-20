@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Security.Claims;
 using System.Text;
@@ -79,7 +81,17 @@ namespace Olive
         public static ILoggerFactory Factory { get; private set; }
 
         /// <summary>
+        /// The HttpContext.Items key under which the current request's reference code is stored.
+        /// It is set by the reference code middleware, and included in the context of every log
+        /// entry written during the request, so that support can find them from the code that the
+        /// end user was shown.
+        /// </summary>
+        public const string ReferenceCodeKey = "Olive.ReferenceCode";
+
+        /// <summary>
         /// When set, provides contextual information (e.g. UserId, RequestUrl, UserIP) to append to log entries.
+        /// The default provider returns it as a JSON object, so that consumers such as the audit log
+        /// can read the individual properties rather than having to pick them out of free text.
         /// </summary>
         public static Func<string> ContextProvider { get; set; }
 
@@ -137,6 +149,7 @@ namespace Olive
                     var user = contextType.GetProperty("User")?.GetValue(httpContext) as ClaimsPrincipal;
                     var userId = user?.GetId();
                     var userEmail = TryGet(() => user?.GetEmail());
+                    var userRoles = TryGet(() => user?.GetRoles().ToString(", "));
 
                     // Request info
                     var request = contextType.GetProperty("Request")?.GetValue(httpContext);
@@ -165,17 +178,29 @@ namespace Olive
                     // Trace identifier
                     var traceId = TryGet(() => contextType.GetProperty("TraceIdentifier")?.GetValue(httpContext)?.ToString());
 
+                    // The reference code shown to the end user, so support can find this entry from it.
+                    var reference = TryGet(() =>
+                    {
+                        var items = contextType.GetProperty("Items")?.GetValue(httpContext);
+                        if (items == null) return null;
+                        var indexer = items.GetType().GetProperty("Item", new[] { typeof(object) });
+                        return indexer?.GetValue(items, new object[] { ReferenceCodeKey })?.ToString();
+                    });
+
                     if (userId.IsEmpty() && requestUrl.IsEmpty() && userIp.IsEmpty()) return null;
 
-                    var r = new StringBuilder();
-                    if (userId.HasValue()) r.AppendLine($"  UserId: {userId}");
-                    if (userEmail.HasValue()) r.AppendLine($"  UserEmail: {userEmail}");
-                    if (httpMethod.HasValue()) r.AppendLine($"  HttpMethod: {httpMethod}");
-                    if (requestUrl.HasValue()) r.AppendLine($"  RequestUrl: {requestUrl}");
-                    if (userIp.HasValue()) r.AppendLine($"  UserIP: {userIp}");
-                    if (userAgent.HasValue()) r.AppendLine($"  UserAgent: {userAgent}");
-                    if (traceId.HasValue()) r.AppendLine($"  TraceId: {traceId}");
-                    return r.ToString().TrimEnd();
+                    var context = new Dictionary<string, string>();
+                    if (userId.HasValue()) context["UserId"] = userId;
+                    if (userEmail.HasValue()) context["UserEmail"] = userEmail;
+                    if (userRoles.HasValue()) context["UserRoles"] = userRoles;
+                    if (httpMethod.HasValue()) context["HttpMethod"] = httpMethod;
+                    if (requestUrl.HasValue()) context["RequestUrl"] = requestUrl;
+                    if (userIp.HasValue()) context["UserIP"] = userIp;
+                    if (userAgent.HasValue()) context["UserAgent"] = userAgent;
+                    if (traceId.HasValue()) context["TraceId"] = traceId;
+                    if (reference.HasValue()) context["Reference"] = reference;
+
+                    return JsonConvert.SerializeObject(context, Formatting.Indented);
                 }
                 catch { return null; }
             };

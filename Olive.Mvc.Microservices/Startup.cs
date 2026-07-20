@@ -21,7 +21,8 @@ namespace Olive.Mvc.Microservices
             services.AddCors(x => x.AddPolicy("AllowHubOrigin",
                 f => f.WithOrigins(permittedUrls)
                 .SetIsOriginAllowed(x => true)
-                .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
+                .AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+                .WithExposedHeaders(ReferenceCodeMiddleware.HeaderName)));
 
             base.ConfigureServices(services);
         }
@@ -40,6 +41,9 @@ namespace Olive.Mvc.Microservices
 
             // fix CORS issue
             app.UseMiddleware<MaintainCorsHeader>();
+
+            // give every request a reference code, for logs and for the end user
+            app.UseMiddleware<ReferenceCodeMiddleware>();
 
             base.Configure(app);
             Console.Title = Microservice.Me.Name;
