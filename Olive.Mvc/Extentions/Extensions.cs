@@ -1,5 +1,4 @@
-﻿using Ganss.Xss;
-using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -116,34 +115,15 @@ namespace Olive.Mvc
                 }
         }
 
-        static readonly HtmlSanitizer HtmlSanitizer = CreateSanitizer();
-
-        private static HtmlSanitizer CreateSanitizer()
-        {
-            var sanitizer = new HtmlSanitizer();
-            
-            sanitizer.AllowedSchemes.Add("mailto");
-            sanitizer.AllowedSchemes.Add("tel");
-            sanitizer.AllowedSchemes.Add("http");
-            sanitizer.AllowedSchemes.Add("https");
-
-          
-            sanitizer.AllowedAttributes.Add("style");
-            sanitizer.AllowedAttributes.Add("id");
-            sanitizer.AllowedAttributes.Add("class");
-
-            sanitizer.KeepChildNodes = true;
-
-            return sanitizer;
-        }
         /// <summary>
         /// Will convert this html string into a HtmlString for rendering.
-        /// When sanitize is true (default), HTML is cleaned with HtmlSanitizer before display.
+        /// When sanitize is true (default), HTML is cleaned with the shared policy
+        /// (see <see cref="HtmlSanitizerFactory"/>) before display.
         /// </summary>
         public static HtmlString Raw(this string @this, bool sanitize = true)
         {
             var html = @this.OrEmpty();
-            if (sanitize) html = HtmlSanitizer.Sanitize(html);
+            if (sanitize) html = HtmlSanitizerFactory.Sanitize(html);
             return new HtmlString(html);
         }
 
