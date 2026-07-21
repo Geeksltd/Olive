@@ -119,6 +119,11 @@ namespace Olive.Mvc
         /// Will convert this html string into a HtmlString for rendering.
         /// When sanitize is true (default), HTML is cleaned with the shared policy
         /// (see <see cref="HtmlSanitizerFactory"/>) before display.
+        /// <para>
+        /// If you want to ignore the sanitizer, do not pass false here. Call
+        /// <see cref="TrustedRaw(string)"/> instead: it does the same thing, but the name says
+        /// at the call site that the HTML is trusted, which makes a security review much easier.
+        /// </para>
         /// </summary>
         public static HtmlString Raw(this string @this, bool sanitize = true)
         {
@@ -130,9 +135,29 @@ namespace Olive.Mvc
         /// <summary>
         /// Will convert this html string into a HtmlString for rendering.
         /// When sanitize is true (default), HTML is cleaned with HtmlSanitizer before display.
+        /// <para>
+        /// If you want to ignore the sanitizer, do not pass false here. Call
+        /// <see cref="TrustedRaw(Task{string})"/> instead, so the call site says that the
+        /// HTML is trusted.
+        /// </para>
         /// </summary>
         public static Task<HtmlString> Raw(this Task<string> @this, bool sanitize = true) =>
             @this.Get(v => v.Raw(sanitize));
+
+        /// <summary>
+        /// Will convert this html string into a HtmlString for rendering, WITHOUT sanitizing it.
+        /// Only use this for HTML you trust, for example something an admin wrote, or markup your
+        /// own code built. Never use it for text that came from a user or from another system:
+        /// that would open the page to XSS.
+        /// </summary>
+        public static HtmlString TrustedRaw(this string @this) => @this.Raw(sanitize: false);
+
+        /// <summary>
+        /// Will convert this html string into a HtmlString for rendering, WITHOUT sanitizing it.
+        /// Only use this for HTML you trust. See <see cref="TrustedRaw(string)"/>.
+        /// </summary>
+        public static Task<HtmlString> TrustedRaw(this Task<string> @this) =>
+            @this.Get(v => v.TrustedRaw());
 
         /// <summary>
         /// Gets access to the current ViewBag.

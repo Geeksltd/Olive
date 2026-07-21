@@ -335,6 +335,31 @@ namespace Olive.Tests
             result.ShouldEqual(input);
         }
 
+        // ---- TrustedRaw: the named way to say "this HTML is trusted, do not clean it" ----
+
+        [Test]
+        public void TrustedRaw_PreservesUnsafeHtml()
+        {
+            var input = "<p onclick=\"evil()\">unsafe</p><script>alert(1)</script>";
+
+            GetHtml(input.TrustedRaw()).ShouldEqual(input);
+        }
+
+        [Test]
+        public void TrustedRaw_NullOrEmpty_ReturnsEmptyHtmlString()
+        {
+            GetHtml(((string)null).TrustedRaw()).ShouldEqual(string.Empty);
+            GetHtml(string.Empty.TrustedRaw()).ShouldEqual(string.Empty);
+        }
+
+        [Test]
+        public async Task TrustedRaw_Task_PreservesUnsafeHtml()
+        {
+            var input = "<img onerror=\"evil()\" src=\"x\">";
+
+            GetHtml(await Task.FromResult(input).TrustedRaw()).ShouldEqual(input);
+        }
+
         // ---- HtmlSanitizerFactory: config-driven policy + ShowRemoved markers ----
         // These build a sanitizer directly (Create) so they test the policy mapping without
         // touching the cached shared instance or needing an initialized Context.
