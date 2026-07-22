@@ -152,7 +152,7 @@ namespace Olive.BlobAzure
 
             try
             {
-                await blobContainer.DeleteBlobAsync(document.GetKey());
+                await blobContainer.DeleteBlobIfExistsAsync(key, DeleteSnapshotsOption.IncludeSnapshots);
             }
             catch (Exception ex)
             {
@@ -170,7 +170,7 @@ namespace Olive.BlobAzure
 
             try
             {
-                await blobContainer.DeleteBlobAsync(document.GetKey());
+                await blobContainer.DeleteBlobIfExistsAsync(key, DeleteSnapshotsOption.IncludeSnapshots);
             }
             catch (Exception ex)
             {
