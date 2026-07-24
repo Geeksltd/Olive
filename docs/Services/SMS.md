@@ -66,6 +66,38 @@ public override void ConfigureServices(IServiceCollection services)
 }
 ```
 > **Notice** Always register your custom implementation after calling `services.AddSms();` otherwise, It will be overrided with olive's default `NullSmsDispatcher`
+
+### MessageBird
+
+To send SMS via MessageBird (Bird Channels API), add the [Olive.SMS.MessageBird](https://www.nuget.org/packages/Olive.SMS.MessageBird/) NuGet package: `Install-Package Olive.SMS.MessageBird`.
+
+Add the MessageBird configuration:
+
+```json
+"Sms": {
+  "MessageBird": {
+    "AccessKey": "...",
+    "WorkspaceId": "...",
+    "ChannelId": "..."
+  }
+}
+```
+
+In `ConfigureServices`, register the provider **after** `AddSms()`:
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    services.AddSms();
+    services.AddMessageBird();
+}
+```
+
+> **Notice** Always call `services.AddMessageBird();` after `services.AddSms();` otherwise it will be overridden by Olive's default `NullSmsDispatcher`.
+
+Sending remains unchanged: inject `ISmsService` and call `.Send(...)` as usual.
+
 ### Sending SMS 
 
 To send a SMS you should simply populate `SmsMessage` class and inject `ISmsService` in your class constructor or use `Context.Current.GetService<Olive.SMS.ISmsService>();` if you want to have property injection and call `.Send(...)` method as show below:
