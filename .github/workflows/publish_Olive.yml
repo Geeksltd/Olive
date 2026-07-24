@@ -177,6 +177,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Email.Imap/Olive.Email.Imap.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive Email Microsoft365 NuGet Package
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.Email.Microsoft365/Olive.Email.Microsoft365.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Encryption NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:

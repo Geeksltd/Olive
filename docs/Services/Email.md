@@ -215,6 +215,46 @@ public override void ConfigureServices(IServiceCollection services)
 ```
 > **Notice** Always register your custom implementation after calling `services.AddEmail();` otherwise, It will be overrided with olive's default `EmailDispatcher`
 
+### Microsoft 365
+
+To send emails via Microsoft 365 (Microsoft Graph / client credentials), add the [Olive.Email.Microsoft365](https://www.nuget.org/packages/Olive.Email.Microsoft365/) NuGet package: `Install-Package Olive.Email.Microsoft365`.
+
+Keep your existing `Email` configuration (`From`, `Permitted`, `MaxRetries`, etc.). SMTP host settings are unused with this provider. Add the Microsoft 365 section:
+
+```json
+"Email": {
+  "From": {
+    "Name": "My Company",
+    "Address": "noreply@mycompany.com"
+  },
+  "Permitted": {
+    "Domains": "mycompany.com"
+  },
+  "MaxRetries": "4",
+  "Microsoft365": {
+    "TenantId": "...",
+    "ClientId": "...",
+    "ClientSecret": "...",
+    "SenderAddress": "noreply@mycompany.com"
+  }
+}
+```
+
+In `ConfigureServices`, register the provider **after** `AddEmail()`:
+
+```csharp
+public override void ConfigureServices(IServiceCollection services)
+{
+    base.ConfigureServices(services);
+    services.AddEmail();
+    services.AddMicrosoft365();
+}
+```
+
+> **Notice** Always call `services.AddMicrosoft365();` after `services.AddEmail();` otherwise it will be overridden by Olive's default `EmailDispatcher`.
+
+Sending remains unchanged: inject `IEmailOutbox` and call `.Send(...)` as usual.
+
 ## Recieve emails and check the email sending failures
 
 To read the new emails you need to add `Olive.Email.Imap` NuGet Package. Then in you `Startup` add the IMAP service to your service collection like the following example. And you will have access to `IImapService` in your project.
