@@ -435,6 +435,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Sms.Aws/Olive.Sms.Aws.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive SMS MessageBird NuGet Package
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.SMS.MessageBird/Olive.SMS.MessageBird.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     # - name: Publish Olive SMS TextMagic NuGet Package
       # uses: Geeksltd/publish-nuget@v3.8.5
       # with:
