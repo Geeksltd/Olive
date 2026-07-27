@@ -15,6 +15,27 @@ namespace Olive.Security
 
         const string IMPERSONATOR_ROLE = "Olive-IMPERSONATOR";
 
+        static string[] AllowedImpersonators
+            => Config.Get("Authentication:Impersonation:Allowed").OrEmpty().Split(',').Trim().ToArray();
+
+        /// <summary>
+        /// Determines whether the specified user is permitted to impersonate others, per the comma separated
+        /// Authentication:Impersonation:Allowed setting.
+        /// </summary>
+        /// <remarks>
+        /// Denies when that setting is absent. Impersonation is a complete identity takeover, so a missing or
+        /// undeployed configuration must not read as "anyone may".
+        /// </remarks>
+        public static bool CanImpersonate(string email)
+            => email.HasValue() &&
+               AllowedImpersonators.Any(x => x.Equals(email, StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>
+        /// Determines whether the current user is permitted to impersonate others. Use this to decide whether
+        /// to offer impersonation in the UI; <see cref="Impersonate(ILoginInfo)"/> enforces it regardless.
+        /// </summary>
+        public static bool CanCurrentUserImpersonate() => CanImpersonate(Context.User?.GetEmail());
+
         /// <summary>
         /// Determines if the current user is impersonated.
         /// </summary>
@@ -28,10 +49,18 @@ namespace Olive.Security
 
         /// <summary>
         /// Impersonates the specified user by the current admin user.
-        /// </summary> 
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// The current user is not listed in Authentication:Impersonation:Allowed.
+        /// </exception>
         public static async Task Impersonate(ILoginInfo user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (!CanCurrentUserImpersonate())
+                throw new InvalidOperationException(
+                    $"'{Context.User?.GetEmail()}' is not permitted to impersonate. " +
+                    "Add them to the Authentication:Impersonation:Allowed setting.");
 
             user = new GenericLoginInfo
             {
@@ -43,6 +72,9 @@ namespace Olive.Security
             };
 
             await user.LogOn(Context.User.ToImpersonatorClaims());
+
+            // Otherwise the impersonator's own JWT lingers and the two cookies name two different people.
+            user.SetJwtCookie();
         }
 
         public static async Task EndImpersonation()

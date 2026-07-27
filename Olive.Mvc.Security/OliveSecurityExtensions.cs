@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Olive.Security;
@@ -67,6 +68,45 @@ namespace Olive
             identity.AddClaim(new Claim(ClaimTypes.IsPersistent, remember.ToString()));
 
             await Context.Current.Http().SignInAsync(new ClaimsPrincipal(identity), prop);
+        }
+
+        /// <summary>
+        /// Writes this login's JWT into the configured cookie, so javascript and API clients identify the
+        /// same user as the auth cookie does. Does nothing unless Authentication:JWT:Cookie:Name and a
+        /// cookie domain are configured.
+        /// </summary>
+        /// <remarks>
+        /// If the token cannot be issued, any existing cookie is removed rather than left alone: a stale JWT
+        /// naming the previous user is worse than no JWT at all.
+        /// </remarks>
+        public static void SetJwtCookie(this ILoginInfo @this, bool remember = false)
+        {
+            var cookieName = Config.Get("Authentication:JWT:Cookie:Name");
+            if (cookieName.IsEmpty()) return;
+
+            var domain = Config.Get("Authentication:JWT:Cookie:Domain").Or(Config.Get("Authentication:Cookie:Domain"));
+            if (domain.IsEmpty()) return;
+
+            var response = Context.Current.Http().Response;
+
+            try
+            {
+                response.Cookies.Append(cookieName, @this.CreateJwtToken(remember: remember), new CookieOptions
+                {
+                    Domain = domain,
+                    MaxAge = @this.Timeout,
+                    Secure = Context.Current.Request().IsHttps,
+                    HttpOnly = false,
+                    SameSite = SameSiteMode.Lax
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.For(typeof(OliveSecurityExtensions))
+                    .Error(ex, $"Failed to issue a JWT for {@this.Email}; removing the existing one.");
+
+                response.Cookies.Delete(cookieName, new CookieOptions { Domain = domain });
+            }
         }
 
         public static bool IsPersistent(this ClaimsPrincipal @this)

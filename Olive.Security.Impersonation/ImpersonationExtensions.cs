@@ -50,11 +50,20 @@ namespace Olive.Security
         public static bool IsImpersonated(this ClaimsPrincipal @this)
             => @this?.Claims.Any(x => x.Type.StartsWith(IMPERSONATOR_CLAIMS_PREFIX)) == true;
 
+        /// <summary>Gets the display name of the user who started this impersonation, or empty.</summary>
         public static string GetImpersonatorName(this ClaimsPrincipal @this)
-        {
-            return @this?.Claims
-                .FirstOrDefault(x => x.Type == ClaimTypes.Name.WithPrefix(IMPERSONATOR_CLAIMS_PREFIX))
+            => @this.GetImpersonatorClaim(ClaimTypes.Name);
+
+        /// <summary>Gets the ID of the user who started this impersonation, or empty.</summary>
+        public static string GetImpersonatorId(this ClaimsPrincipal @this)
+            => @this.GetImpersonatorClaim(ClaimTypes.NameIdentifier);
+
+        /// <summary>Gets the email of the user who started this impersonation, or empty.</summary>
+        public static string GetImpersonatorEmail(this ClaimsPrincipal @this)
+            => @this.GetImpersonatorClaim(ClaimTypes.Email);
+
+        static string GetImpersonatorClaim(this ClaimsPrincipal @this, string claimType)
+            => @this?.Claims.FirstOrDefault(x => x.Type == claimType.WithPrefix(IMPERSONATOR_CLAIMS_PREFIX))
                 ?.Value ?? "";
-        }
     }
 }
