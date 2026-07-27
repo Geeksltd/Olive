@@ -39,6 +39,17 @@ namespace Olive.Security
                 ClaimTypes.IsPersistent);
         }
 
+        /// <summary>
+        /// Determines whether this principal is an impersonated one.
+        /// </summary>
+        /// <remarks>
+        /// Detected from the preserved impersonator claims rather than the IMPERSONATOR role. Middleware
+        /// that rewrites role claims - for example a distributed role store that re-fetches them on every
+        /// request - discards that role marker, but leaves the prefixed claims alone.
+        /// </remarks>
+        public static bool IsImpersonated(this ClaimsPrincipal @this)
+            => @this?.Claims.Any(x => x.Type.StartsWith(IMPERSONATOR_CLAIMS_PREFIX)) == true;
+
         public static string GetImpersonatorName(this ClaimsPrincipal @this)
         {
             return @this?.Claims

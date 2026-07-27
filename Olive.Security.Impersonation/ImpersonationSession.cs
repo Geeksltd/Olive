@@ -18,8 +18,13 @@ namespace Olive.Security
         /// <summary>
         /// Determines if the current user is impersonated.
         /// </summary>
+        /// <remarks>
+        /// Keyed on the preserved impersonator claims, not on <see cref="IMPERSONATOR_ROLE"/>. The role is
+        /// still added by <see cref="Impersonate(ILoginInfo)"/> for apps that read it directly, but it
+        /// cannot be relied on: any middleware that rewrites role claims will drop it.
+        /// </remarks>
         public static Task<bool> IsImpersonated()
-            => Task.FromResult(Context.User.IsInRole(IMPERSONATOR_ROLE));
+            => Task.FromResult(Context.User.IsImpersonated());
 
         /// <summary>
         /// Impersonates the specified user by the current admin user.
