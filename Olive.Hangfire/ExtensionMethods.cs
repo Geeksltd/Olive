@@ -22,6 +22,8 @@ namespace Olive.Hangfire
                 c.UseSqlServerStorage(Context.Current.GetService<IConnectionStringProvider>()
                     .GetConnectionString("Default"));
 
+                c.UseFilter(new ReferenceCodeFilter());
+
                 config?.Invoke(c);
             });
 

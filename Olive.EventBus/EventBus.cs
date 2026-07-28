@@ -6,10 +6,21 @@ namespace Olive
     {
         static IEventBusQueueProvider Provider => Context.Current.GetService<IEventBusQueueProvider>();
 
+        const string DevelopmentQueueUrl = "FOR_DEVELOPMENT_ONLY_EventBus";
+
         /// <summary>
         /// Returns a queue for a specified queue url.
         /// </summary>
-        public static IEventBusQueue Queue(string queueUrl) => Provider.Provide(queueUrl.Trim());
+        public static IEventBusQueue Queue(string queueUrl)
+        {
+            queueUrl = queueUrl.Trim();
+
+            // Callers holding only a url string need the "#" development sentinel honoured too, or they
+            // land in a folder literally named "#".
+            if (queueUrl == "#") queueUrl = DevelopmentQueueUrl;
+
+            return Provider.Provide(queueUrl);
+        }
 
         public static string QueueUrl(Type messageType)
         {
@@ -19,7 +30,7 @@ namespace Olive
                 url = Config.GetOrThrow($"EventBus:Queues:{messageType.FullName}:Url");
 
             if (url == "#")
-                return $"FOR_DEVELOPMENT_ONLY_EventBus_{messageType.FullName}";
+                return $"{DevelopmentQueueUrl}_{messageType.FullName}";
 
             return url;
         }

@@ -62,23 +62,24 @@ namespace Olive.RabbitMQ
             var consumer = new AsyncEventingBasicConsumer(Queue.Client);
             consumer.ReceivedAsync += async (model, ea) =>
                {
-                   try
-                   {
-                       var body = ea.Body.ToArray();
-                       var message = Encoding.UTF8.GetString(body);
-                       Log.For(this)
-                           .Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
-                       await Handler(message);
-                       await Queue.Client.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
-                   }
-                   catch (Exception ex)
-                   {
-                       var exception = new Exception("Failed to run queue event handler " +
-                           Handler.Method.DeclaringType.GetProgrammingName() + "." +
-                           Handler.Method.Name +
-                           "message: " + ea.DeliveryTag.ToString()?.ToJsonText(), ex);
+                   var message = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-                           Log.For<Subscriber>().Error(exception);
+                   // The scope covers the catch, not just the handler — see the AWS subscriber.
+                   using (Log.UseReference(EventBusExtensions.ReadReferenceCode(message)))
+                   {
+                       try
+                       {
+                           Log.For(this).Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
+                           await Handler(message);
+                           await Queue.Client.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
+                       }
+                       catch (Exception ex)
+                       {
+                           // The message is left unacked either way. Reported with the message rather
+                           // than the delivery tag, which is a counter scoped to the live channel and so
+                           // identifies nothing once the connection is gone.
+                           Log.For<Subscriber>().ReportFailure(ex, Handler.Method, message);
+                       }
                    }
                };
 
@@ -109,27 +110,27 @@ namespace Olive.RabbitMQ
                 return false;
             }
 
-            try
-            {
-                var body = result.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                await Handler(message);
-                //lock (Queue.Client)
-                {
-                   await Queue.Client.BasicAckAsync(deliveryTag: result.DeliveryTag, multiple: false);
-                }
-            }
-            catch (Exception ex)
-            {
-                var exception = new Exception("Failed to run queue event handler " +
-                    Handler.Method.DeclaringType.GetProgrammingName() + "." +
-                    Handler.Method.Name +
-                    "message: " + result.DeliveryTag.ToString()?.ToJsonText(), ex);
+            var message = Encoding.UTF8.GetString(result.Body.ToArray());
 
-                if (Queue.IsFifo)
-                    throw exception;
-                else
-                    Log.For<Subscriber>().Error(exception);
+            // See the note on the consumer above, and on the AWS subscriber.
+            using (Log.UseReference(EventBusExtensions.ReadReferenceCode(message)))
+            {
+                try
+                {
+                    await Handler(message);
+                    //lock (Queue.Client)
+                    {
+                        await Queue.Client.BasicAckAsync(deliveryTag: result.DeliveryTag, multiple: false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var reportable = Log.For<Subscriber>().ReportFailure(ex, Handler.Method, message);
+
+                    // A FIFO queue must not move on past a message it could not process, so the loop
+                    // stops. The throw is only that signal, never a way of reporting.
+                    if (Queue.IsFifo) throw reportable;
+                }
             }
 
             return true;

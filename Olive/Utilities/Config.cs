@@ -124,9 +124,15 @@ namespace Olive
             var builder = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
-                .AddJsonFile($"appsettings.Local.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true);
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                builder.AddJsonFile($"/appsettings/default.json", optional: true, reloadOnChange: true);
+                builder.AddJsonFile($"appsettings.Local.json", optional: true, reloadOnChange: true);
+            }
+
+            builder.AddEnvironmentVariables();
 
             if (configurator != null)
                 configurator(builder);

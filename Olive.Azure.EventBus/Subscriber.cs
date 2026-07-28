@@ -60,27 +60,29 @@ namespace Olive.Azure
             var messages = await FetchEvents(waitTimeSeconds);
             foreach (var item in messages)
             {
-                try
+                // The scope covers the catch, not just the handler — see the AWS subscriber.
+                using (Log.UseReference(EventBusExtensions.ReadReferenceCode(item.Key)))
                 {
-                    Log.For(this).Info("Fetched message : " + item.Value.Body);
-                    await Handler(item.Key);
-
-                    await using (var context = CreateMessagingContext())
+                    try
                     {
-                        await context.Receiver.CompleteMessageAsync(item.Value);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var exception = new Exception("Failed to run queue event handler " +
-                        Handler.Method.DeclaringType.FullName + "." +
-                        Handler.Method.GetDisplayName() +
-                        "message: " + item.Key?.ToJsonText(), ex);
+                        Log.For(this).Info("Fetched message : " + item.Value.Body);
+                        await Handler(item.Key);
 
-                    if (Queue.IsFifo)
-                        throw exception;
-                    else
-                        Log.For<Subscriber>().Error(exception);
+                        await using (var context = CreateMessagingContext())
+                        {
+                            await context.Receiver.CompleteMessageAsync(item.Value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var reportable = Log.For<Subscriber>().ReportFailure(ex,
+                            "Failed to run queue event handler " + Handler.Method.DeclaringType.FullName +
+                            "." + Handler.Method.GetDisplayName(), item.Key);
+
+                        // A FIFO queue must not move on past a message it could not process, so the
+                        // loop stops. The throw is only that signal, never a way of reporting.
+                        if (Queue.IsFifo) throw reportable;
+                    }
                 }
             }
 
@@ -92,15 +94,30 @@ namespace Olive.Azure
             return new AzureMessagingContext(QueueUrl);
         }
 
+        /// <summary>
+        /// Polls the queue, either for ever or until it is empty. A drain that fails stops and tells its
+        /// caller: swallowing it would spin for ever on the undeleted message at the head of a FIFO
+        /// queue, and /olive/process-command would answer "Done" over a queue it never drained.
+        /// A long-polling subscriber is meant to keep going — the next Fetch waits, so it is no spin.
+        /// </summary>
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int? waitTimeSeconds = 10)
         {
+            var draining = strategy == PullStrategy.UntilEmpty;
             var queueIsEmpty = false;
+
             do
             {
                 try { queueIsEmpty = !await Poll(waitTimeSeconds); }
-                catch (Exception exception) { Log.For<Subscriber>().Error(exception); }
+                catch (LoggedException) { if (draining) throw; }
+                catch (Exception exception)
+                {
+                    Log.For<Subscriber>().Error(exception);
+
+                    // Wrapped, so the caller is told the drain did not finish without reporting it again.
+                    if (draining) throw new LoggedException(exception);
+                }
             }
-            while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
+            while (!draining || !queueIsEmpty);
         }
     }
 }

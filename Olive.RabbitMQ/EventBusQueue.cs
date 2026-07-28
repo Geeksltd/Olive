@@ -176,7 +176,10 @@ namespace Olive.RabbitMQ
 
                 foreach (var item in batch)
                 {
-                    await handler(item.RawMessage);
+                    // This loop bypasses Subscriber, so it must open the reference scope itself — see
+                    // the AWS queue.
+                    await EventBusExtensions.RunUnderReference(item.RawMessage, handler);
+
                     await item.Complete();
                 }
             }

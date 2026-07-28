@@ -40,7 +40,7 @@ namespace Olive.Entities.Replication
         {
             await EnsureRefreshData();
 
-            PublishQueue.Subscribe<ReplicateDataMessage>(Import);
+            PublishQueue.Subscribe<ReplicateDataMessage>(ImportUnderOwnReference);
         }
 
         public async Task Subscribe(bool isRefreshMessageRequired = false)
@@ -48,17 +48,30 @@ namespace Olive.Entities.Replication
             if(isRefreshMessageRequired)
                 await EnsureRefreshData();
 
-            PublishQueue.Subscribe<ReplicateDataMessage>(Import);
+            PublishQueue.Subscribe<ReplicateDataMessage>(ImportUnderOwnReference);
         }
 
         public async Task PullAll()
         {
             var start = LocalTime.Now;
-            await PublishQueue.PullAll<ReplicateDataMessage>(Import);
+            await PublishQueue.PullAll<ReplicateDataMessage>(ImportUnderOwnReference);
             Log.For(this).Info("Pulled from queue in " + LocalTime.Now.Subtract(start).ToNaturalTime());
         }
 
-        public virtual Task Handle(string message) => Import(Newtonsoft.Json.JsonConvert.DeserializeObject<ReplicateDataMessage>(message));
+        public virtual Task Handle(string message)
+            => ImportUnderOwnReference(Newtonsoft.Json.JsonConvert.DeserializeObject<ReplicateDataMessage>(message));
+
+        /// <summary>
+        /// Imports under a reference code of its own rather than adopting the one the message carries.
+        /// An import is caused by the saving request but is not part of it, and adopting its code would
+        /// spread it: importing republishes to the next service, which would adopt it in turn. Recording
+        /// the publisher's code as the *cause* instead is an edge, so it travels one hop and no further.
+        /// </summary>
+        async Task ImportUnderOwnReference(ReplicateDataMessage message)
+        {
+            using (Log.UseReference(null, causedBy: message?.ReferenceCode))
+                await Import(message);
+        }
 
         async Task EnsureRefreshData()
         {
@@ -79,8 +92,10 @@ namespace Olive.Entities.Replication
             }
             catch (Exception ex)
             {
+                // Reported here, under the import's own code. Rethrown as LoggedException so the queue
+                // subscriber stops the FIFO loop without filing it again under the publisher's code.
                 Log.For(this).Error(ex, $"Failed to import ReplicateDataMessage {message.Entity}|TypeFullName : {message.TypeFullName}");
-                throw;
+                throw new LoggedException(ex);
             }
         }
     }

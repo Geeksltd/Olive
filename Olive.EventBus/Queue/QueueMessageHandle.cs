@@ -19,6 +19,16 @@ namespace Olive
         public string RawMessage { get; private set; }
         public string MessageId { get; private set; }
 
+        /// <summary>The reference code this message was published under, or null if it carries none.</summary>
+        public string ReferenceCode => EventBusExtensions.ReadReferenceCode(RawMessage);
+
+        /// <summary>
+        /// Runs the handling of this message under the reference code it was published with. Subscribe
+        /// and PullAll do this for you; a message obtained from Pull is handled by the caller, so the
+        /// caller must open the scope.
+        /// </summary>
+        public IDisposable UseReference() => Log.UseReference(ReferenceCode);
+
         public QueueMessageHandle<TMessage> As<TMessage>() where TMessage : IEventBusMessage
         {
             if (RawMessage.IsEmpty()) return null;

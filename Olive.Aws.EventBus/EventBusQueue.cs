@@ -143,7 +143,11 @@ namespace Olive.Aws
 
                 foreach (var item in batch)
                 {
-                    await handler(item.RawMessage);
+                    // This loop bypasses Subscriber, so it must open the reference scope itself. A throw
+                    // is left to escape: Complete is skipped, so the message stays for another attempt,
+                    // and a drain that could not drain must say so.
+                    await EventBusExtensions.RunUnderReference(item.RawMessage, handler);
+
                     await item.Complete();
                 }
             }

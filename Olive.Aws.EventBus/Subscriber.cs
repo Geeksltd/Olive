@@ -68,41 +68,57 @@ namespace Olive.Aws
             var messages = await FetchEvents(waitTimeSeconds);
             foreach (var item in messages)
             {
-                try
+                // The scope covers the catch, not just the handler: the handler's own scope has unwound
+                // by the time we log its failure, and that entry is usually the only record of it.
+                using (Log.UseReference(EventBusExtensions.ReadReferenceCode(item.Key)))
                 {
-                    var receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
-                    Log.For(this).Info("Fetched message : " + item.Value.Body);
-                    await Handler(item.Key);
+                    try
+                    {
+                        var receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
+                        Log.For(this).Info("Fetched message : " + item.Value.Body);
+                        await Handler(item.Key);
 
-                    receipt.ReceiptHandle = item.Value.ReceiptHandle;
-                    await Queue.Client.DeleteMessageAsync(receipt);
-                }
-                catch (Exception ex)
-                {
-                    var exception = new Exception("Failed to run queue event handler " +
-                        Handler.Method.DeclaringType.GetProgrammingName() + "." +
-                        Handler.Method.Name +
-                        "message: " + item.Key?.ToJsonText(), ex);
+                        receipt.ReceiptHandle = item.Value.ReceiptHandle;
+                        await Queue.Client.DeleteMessageAsync(receipt);
+                    }
+                    catch (Exception ex)
+                    {
+                        var reportable = Log.For<Subscriber>().ReportFailure(ex, Handler.Method, item.Key);
 
-                    if (Queue.IsFifo)
-                        throw exception;
-                    else
-                        Log.For<Subscriber>().Error(exception);
+                        // A FIFO queue must not move on past a message it could not process, so the
+                        // loop stops. The throw is only that signal, never a way of reporting.
+                        if (Queue.IsFifo) throw reportable;
+                    }
                 }
             }
 
             return messages.Any();
         }
 
+        /// <summary>
+        /// Polls the queue, either for ever or until it is empty. A drain that fails stops and tells its
+        /// caller: swallowing it would spin for ever on the undeleted message at the head of a FIFO
+        /// queue, and would report success to the request that asked for the queue to be emptied.
+        /// A long-polling subscriber is meant to keep going — the next Fetch waits, so it is no spin.
+        /// </summary>
         async Task KeepPolling(PullStrategy strategy = PullStrategy.KeepPulling, int waitTimeSeconds = 10)
         {
+            var draining = strategy == PullStrategy.UntilEmpty;
             var queueIsEmpty = false;
+
             do
             {
                 try { queueIsEmpty = !await Poll(waitTimeSeconds); }
-                catch (Exception exception) { Log.For<Subscriber>().Error(exception); }
+                catch (LoggedException) { if (draining) throw; }
+                catch (Exception exception)
+                {
+                    Log.For<Subscriber>().Error(exception);
+
+                    // Wrapped, so the caller is told the drain did not finish without reporting it again.
+                    if (draining) throw new LoggedException(exception);
+                }
             }
-            while (strategy == PullStrategy.KeepPulling || !queueIsEmpty);
+            while (!draining || !queueIsEmpty);
         }
     }
 }

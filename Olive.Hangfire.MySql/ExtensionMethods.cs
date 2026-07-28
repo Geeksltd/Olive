@@ -22,6 +22,9 @@ namespace Olive.Hangfire.MySql
                         Context.Current.GetService<IConnectionStringProvider>().GetConnectionString(),
                         new MySqlStorageOptions { TablesPrefix = "Hangfire" })
                     );
+
+                c.UseFilter(new ReferenceCodeFilter());
+
                 config?.Invoke(c);
             });
 

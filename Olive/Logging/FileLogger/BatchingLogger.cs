@@ -32,11 +32,13 @@ namespace Olive.Logging
             r.Append(": ");
             r.AppendLine(formatter(state, exception));
 
-            if (exception != null) r.AppendLine(exception.ToFullMessage());
+            // ToLogString, not ToFullMessage: it carries the stack and Exception.Data, which nothing
+            // else now writes.
+            if (exception != null) r.AppendLine(exception.ToLogString());
 
             var contextInfo = Olive.Log.ContextProvider?.Invoke();
 
-            Provider.AddMessage(timestamp, r.ToString(), exception?.GetUsefulStack(), (int)logLevel, contextInfo);
+            Provider.AddMessage(timestamp, r.ToString(), (int)logLevel, contextInfo);
         }
 
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)

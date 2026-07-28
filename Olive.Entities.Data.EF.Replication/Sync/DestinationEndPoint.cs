@@ -54,7 +54,7 @@ namespace Olive.Entities.EF.Replication
         {
             await EnsureRefreshData();
 
-            PublishQueue.Subscribe<ReplicateDataMessage>(Import);
+            PublishQueue.Subscribe<ReplicateDataMessage>(ImportUnderOwnReference);
         }
 
         public async Task Subscribe(bool isRefreshMessageRequired = false)
@@ -62,17 +62,25 @@ namespace Olive.Entities.EF.Replication
             if(isRefreshMessageRequired)
                 await EnsureRefreshData();
 
-            PublishQueue.Subscribe<ReplicateDataMessage>(Import);
+            PublishQueue.Subscribe<ReplicateDataMessage>(ImportUnderOwnReference);
         }
 
         public async Task PullAll()
         {
             var start = LocalTime.Now;
-            await PublishQueue.PullAll<ReplicateDataMessage>(Import);
+            await PublishQueue.PullAll<ReplicateDataMessage>(ImportUnderOwnReference);
             Log.For(this).Info("Pulled from queue in " + LocalTime.Now.Subtract(start).ToNaturalTime());
         }
 
-        public virtual Task Handle(string message) => Import(Newtonsoft.Json.JsonConvert.DeserializeObject<ReplicateDataMessage>(message));
+        public virtual Task Handle(string message)
+            => ImportUnderOwnReference(Newtonsoft.Json.JsonConvert.DeserializeObject<ReplicateDataMessage>(message));
+
+        /// <summary>See the same method in Olive.Entities.Data.Replication.</summary>
+        async Task ImportUnderOwnReference(ReplicateDataMessage message)
+        {
+            using (Log.UseReference(null, causedBy: message?.ReferenceCode))
+                await Import(message);
+        }
 
         async Task EnsureRefreshData()
         {
@@ -97,8 +105,10 @@ namespace Olive.Entities.EF.Replication
             }
             catch (Exception ex)
             {
-                Log.For(this).Error(ex, "Failed to import ReplicateDataMessage " + message.Entity);
-                throw;
+                // Reported here, under the import's own code. Rethrown as LoggedException so the queue
+                // subscriber stops the FIFO loop without filing it again under the publisher's code.
+                Log.For(this).Error(ex, $"Failed to import ReplicateDataMessage {message.Entity}|TypeFullName : {message.TypeFullName}");
+                throw new LoggedException(ex);
             }
         }
 

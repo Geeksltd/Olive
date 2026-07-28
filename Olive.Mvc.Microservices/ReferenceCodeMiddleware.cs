@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Olive.Mvc.Microservices
@@ -14,18 +12,17 @@ namespace Olive.Mvc.Microservices
     {
         public const string HeaderName = "X-Reference-Code";
 
-        // No 0/O/1/I: users read these codes out to support.
-        const string Alphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
-        const int Length = 8;
-
         readonly RequestDelegate Next;
 
         public ReferenceCodeMiddleware(RequestDelegate next) => Next = next;
 
-        public Task Invoke(HttpContext httpContext)
+        public async Task Invoke(HttpContext httpContext)
         {
-            var code = Generate();
+            // Log owns the shape of a code: work with no HTTP request mints one too, and cannot
+            // reference this assembly.
+            var code = Log.NewReferenceCode();
 
+            // Items is what the friendly error page reads to show the code to the user.
             httpContext.Items[Log.ReferenceCodeKey] = code;
 
             // Setting the header here rather than after Next() so that it survives the exception
@@ -40,21 +37,10 @@ namespace Olive.Mvc.Microservices
                 return Task.CompletedTask;
             }, httpContext);
 
-            return Next(httpContext);
-        }
-
-        static string Generate()
-        {
-            var bytes = new byte[Length];
-            using (var random = RandomNumberGenerator.Create())
-                random.GetBytes(bytes);
-
-            var result = new StringBuilder("REF-", 4 + Length);
-
-            foreach (var item in bytes)
-                result.Append(Alphabet[item % Alphabet.Length]);
-
-            return result.ToString();
+            // The scope, not Items, is what the logger reads — the same mechanism that carries a code
+            // through a queue handler. Work that is really someone else's opens a nested scope and wins.
+            using (Log.UseReference(code))
+                await Next(httpContext);
         }
     }
 }

@@ -12,9 +12,10 @@ namespace Olive.Logging
         public TimeSpan FlushPeriod { get; set; } = 1.Seconds();
 
         /// <summary>
-        /// Gets or sets the maximum size of the background log message queue or null for no limit.
-        /// After maximum queue size is reached log event sink would start blocking.
-        /// Defaults to <c>null</c>.
+        /// The maximum number of log entries held in memory while waiting to be written. Defaults to
+        /// <c>null</c>, meaning a built-in cap of 100,000; the queue is never unbounded.
+        /// Reaching the cap does not block the thread that is logging: the newest entry is dropped and
+        /// counted, and the count is reported into the log stream on the next flush.
         /// </summary>
         public int? BackgroundQueueSize { get; set; }
 

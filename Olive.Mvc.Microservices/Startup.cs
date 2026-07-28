@@ -30,6 +30,11 @@ namespace Olive.Mvc.Microservices
         public override void Configure(IApplicationBuilder app)
         {
             app.UseCors("AllowHubOrigin");
+
+            // Give every request a reference code, for logs and for the end user. Before the Map calls
+            // below: a Map branch only inherits what was registered ahead of it.
+            app.UseMiddleware<ReferenceCodeMiddleware>();
+
             // add menu route
             app.Map("/api/menu", x => x.Run(MenuApiMiddleWare.Menu));
 
@@ -41,9 +46,6 @@ namespace Olive.Mvc.Microservices
 
             // fix CORS issue
             app.UseMiddleware<MaintainCorsHeader>();
-
-            // give every request a reference code, for logs and for the end user
-            app.UseMiddleware<ReferenceCodeMiddleware>();
 
             base.Configure(app);
             Console.Title = Microservice.Me.Name;

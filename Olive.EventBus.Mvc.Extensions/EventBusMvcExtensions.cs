@@ -1,7 +1,6 @@
 ﻿namespace Olive
 {
     using Microsoft.AspNetCore.Builder;
-    using Newtonsoft.Json;
 
     public static class EventBusMvcExtensions
     {
@@ -24,11 +23,10 @@
                     if (type is null)
                         throw new ArgumentException($"Command with type '{commandTypeFullName}' not found.");
 
-                    await Olive.EventBus.Queue(type).PullAll(x =>
-                    {
-                        var message = JsonConvert.DeserializeObject(x, type) as EventBusCommandMessage;
-                        return message?.Process() ?? Task.CompletedTask;
-                    });
+                    // Through the static, not a hand-rolled deserialize-and-invoke: that is the one place
+                    // that opens the reference scope and reports a failure inside it. Dispatching here
+                    // instead, the command would log under the code of the request draining the queue.
+                    await Olive.EventBus.Queue(type).PullAll(body => EventBusCommandMessage.Process(body, type));
 
                     x.Response.Write("Done");
                 });

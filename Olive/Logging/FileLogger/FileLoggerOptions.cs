@@ -6,7 +6,7 @@ namespace Olive
     public class FileLoggerOptions : BatchingLoggerOptions
     {
         int? maxFileSize = 50 * 1024 * 1024;
-        int? retainedFiles = 10;
+        int? retainedFiles;
 
         /// <summary>
         /// Gets or sets the filename prefix to use for log files.
@@ -36,7 +36,12 @@ namespace Olive
         }
 
         /// <summary>
-        /// The maximum number of files to retaine (default: 10).
+        /// The maximum number of log files to keep, or null — the default — to keep every one. Null by
+        /// default because deletion is destructive, so opting into it is the caller's decision.
+        /// <para>
+        /// This counts FILES, not days: with <see cref="MaxFileSize"/> set, one busy day produces as
+        /// many as it needs (Log-yyyyMMdd.txt, Log-yyyyMMdd-1.txt, …) and each counts against the cap.
+        /// </para>
         /// </summary>
         public int? RetainedFiles
         {

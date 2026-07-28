@@ -135,7 +135,7 @@ namespace Olive
 
                     void AppendData()
                     {
-                        if (err.Data?.Count > 0) return;
+                        if (!(err.Data?.Count > 0)) return;
 
                         resultBuilder.AppendLine("\r\nException Data:\r\n{");
 
