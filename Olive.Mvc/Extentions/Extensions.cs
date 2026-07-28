@@ -205,7 +205,7 @@ namespace Olive.Mvc
         {
             if (errorMessage.IsEmpty()) errorMessage = @this.Message;
 
-            return ($"<error title=\"{errorMessage.HtmlEncode()}\" class=\"soft-error-icon\" />").Raw();
+            return ($"<error title=\"{errorMessage.HtmlEncode()}\" class=\"soft-error-icon\" />").TrustedRaw();
         }
 
         internal static JavascriptActions JavascriptActions(this HttpContext context)

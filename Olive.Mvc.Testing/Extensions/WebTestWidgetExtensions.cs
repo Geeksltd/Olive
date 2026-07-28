@@ -54,7 +54,7 @@
 
             r.AppendLine("</div>");
 
-            return r.ToString().Raw();
+            return r.ToString().TrustedRaw();
         }
     }
 }
