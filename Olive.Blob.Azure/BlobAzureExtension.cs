@@ -2,8 +2,6 @@
 using Olive.BlobAzure;
 using Olive.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Olive
 {
@@ -12,7 +10,15 @@ namespace Olive
         public static IServiceCollection AddAzureBlobStorageProvider(this IServiceCollection @this)
         {
             return @this
-                .AddSingleton<IBlobStorageProvider, AzureBlobStorageProvider>();
+                .AddSingleton<IBlobStorageProvider, AzureBlobStorageProvider>()
+                .AddTransient<IAzureSasUrlGenerator, AzureSasUrlGenerator>();
+        }
+
+        public static IServiceCollection AddAzureBlobStorageProvider(this IServiceCollection @this, TimeSpan sasUrlTimeout)
+        {
+            return @this
+                .AddSingleton<IBlobStorageProvider, AzureBlobStorageProvider>()
+                .AddTransient<IAzureSasUrlGenerator>(_ => new AzureSasUrlGenerator(sasUrlTimeout));
         }
     }
 }
