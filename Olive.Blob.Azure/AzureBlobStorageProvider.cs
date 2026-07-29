@@ -61,7 +61,7 @@ namespace Olive.BlobAzure
                 Log.Debug("Upload Blob to Azure");
 
                 using (var dataStream = new MemoryStream(await document.GetFileDataAsync()))
-                    await UploadWithContentTypeAsync(blobClient, dataStream, document);
+                    await blobClient.UploadAsync(dataStream, true);
             }
             catch (Exception ex)
             {
@@ -82,7 +82,7 @@ namespace Olive.BlobAzure
                 Log.Debug("Upload Blob to Azure");
 
                 using (var dataStream = new MemoryStream(await document.GetFileDataAsync()))
-                    await UploadWithContentTypeAsync(blobClient, dataStream, document);
+                    await blobClient.UploadAsync(dataStream, true);
             }
             catch (Exception ex)
             {
@@ -187,14 +187,5 @@ namespace Olive.BlobAzure
                 return ms.ToArray();
             }
         }
-
-        static Task UploadWithContentTypeAsync(BlobClient blobClient, Stream dataStream, Blob document) =>
-            blobClient.UploadAsync(dataStream, new BlobUploadOptions
-            {
-                HttpHeaders = new BlobHttpHeaders
-                {
-                    ContentType = document.GetMimeType()
-                }
-            });
     }
 }
