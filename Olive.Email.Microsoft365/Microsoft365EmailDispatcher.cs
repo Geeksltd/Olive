@@ -26,23 +26,25 @@ namespace Olive.Email.Microsoft365
             var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
             using var graphClient = new GraphServiceClient(credential);
 
-            var requestBody = new SendMailPostRequestBody
+            var graphMessage = new Message
             {
-                Message = new Message
+                Subject = mail.Subject,
+                Body = new ItemBody
                 {
-                    Subject = mail.Subject,
-                    Body = new ItemBody
-                    {
-                        ContentType = message.Html ? BodyType.Html : BodyType.Text,
-                        Content = mail.Body
-                    },
-                    ToRecipients = ToRecipients(mail.To),
-                    CcRecipients = ToRecipients(mail.CC),
-                    BccRecipients = ToRecipients(mail.Bcc),
-                    ReplyTo = ToRecipients(mail.ReplyToList),
-                    Attachments = CreateAttachments(mail, message)
-                }
+                    ContentType = message.Html ? BodyType.Html : BodyType.Text,
+                    Content = mail.Body
+                },
+                ToRecipients = ToRecipients(mail.To),
+                CcRecipients = ToRecipients(mail.CC),
+                BccRecipients = ToRecipients(mail.Bcc),
+                ReplyTo = ToRecipients(mail.ReplyToList)
             };
+
+            var attachments = CreateAttachments(mail, message);
+            if (attachments.Any())
+                graphMessage.Attachments = attachments;
+
+            var requestBody = new SendMailPostRequestBody { Message = graphMessage };
 
             await graphClient.Users[senderAddress].SendMail.PostAsync(requestBody);
         }
@@ -79,7 +81,7 @@ namespace Olive.Email.Microsoft365
                 });
             }
 
-            return result.None() ? null : result;
+            return result;
         }
 
         static byte[] ReadBytes(Stream stream)
