@@ -133,7 +133,10 @@ namespace Olive.Logging
             });
         }
 
-        public void AddMessage(DateTimeOffset timestamp, string message, int severity = 0, string contextInfo = null)
+        /// <summary>Queues one entry. <paramref name="stack"/> is defaulted, so a logger with no use for
+        /// the distinction — one writing to a file — carries on passing the message alone.</summary>
+        public void AddMessage(DateTimeOffset timestamp, string message, int severity = 0,
+            string contextInfo = null, string stack = null)
         {
             if (MessageQueue.IsAddingCompleted) return;
 
@@ -142,7 +145,8 @@ namespace Olive.Logging
                 Message = message,
                 ContextInfo = contextInfo,
                 Timestamp = timestamp,
-                Severity = severity
+                Severity = severity,
+                Stack = stack
             };
 
             try

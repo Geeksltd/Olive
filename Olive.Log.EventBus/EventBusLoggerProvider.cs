@@ -56,8 +56,10 @@ namespace Olive.Logging
                         " after repeated attempts. Giving up on this batch; its entries follow.");
                     Console.WriteLine(ex.ToFullMessage());
 
+                    // With the stack: this is the last the batch is ever seen, so it goes out whole.
                     foreach (var msg in messages)
-                        Console.WriteLine(msg.Message + "\n----------\n");
+                        Console.WriteLine(msg.Message + msg.Stack.WithPrefix(OliveExtensions.StackTracePrefix) +
+                            "\n----------\n");
                 }
                 else Console.WriteLine("Failed to publish the logs to the event bus at " + QueueUrl +
                     ". Keeping the batch and retrying.");
@@ -75,10 +77,13 @@ namespace Olive.Logging
         {
             var identity = new StringBuilder(Source);
 
+            // Stack included: it is no longer part of Message, so two entries alike but thrown from
+            // different places would otherwise hash to one batch identity.
             foreach (var item in messages)
                 identity.Append('\n').Append(item.Timestamp.UtcTicks)
                     .Append('|').Append(item.Severity)
                     .Append('|').Append(item.Message)
+                    .Append('|').Append(item.Stack)
                     .Append('|').Append(item.ContextInfo);
 
             // Hex of SHA256: 64 characters, which is inside the 128 SQS allows for a

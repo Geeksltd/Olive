@@ -173,22 +173,27 @@ namespace Olive
 
             if (includeStackTrace)
             {
-                AppendStackTrace();
+                var stack = @this.GetStackTraceText();
 
-                void AppendStackTrace()
-                {
-                    var stack = @this.GetUsefulStack().TrimOrEmpty();
-
-                    if (stack.HasValue())
-                    {
-                        var stackLines = stack.ToLines();
-                        stackLines = stackLines.Except(l => l.Trim().StartsWith("at System.Data.")).ToArray();
-                        resultBuilder.AppendLine(stackLines.ToString("\r\n\r\n").WithPrefix("\r\n--------------------------------------\r\nSTACK TRACE:\r\n\r\n"));
-                    }
-                }
+                if (stack.HasValue()) resultBuilder.AppendLine(stack.WithPrefix(StackTracePrefix));
             }
 
             return resultBuilder.ToString();
+        }
+
+        /// <summary>What the stack is written under when appended to a message. Public because it is the
+        /// only thing that tells the two apart once joined.</summary>
+        public const string StackTracePrefix = "\r\n--------------------------------------\r\nSTACK TRACE:\r\n\r\n";
+
+        /// <summary>This exception's stack as it is logged: the useful stack, without the frames inside
+        /// System.Data, a blank line between each of the rest. Empty where there is none.</summary>
+        public static string GetStackTraceText(this Exception @this)
+        {
+            var stack = @this?.GetUsefulStack().TrimOrEmpty();
+
+            if (stack.IsEmpty()) return string.Empty;
+
+            return stack.ToLines().Except(l => l.Trim().StartsWith("at System.Data.")).ToString("\r\n\r\n");
         }
 
         public static string GetUsefulStack(this Exception @this)
