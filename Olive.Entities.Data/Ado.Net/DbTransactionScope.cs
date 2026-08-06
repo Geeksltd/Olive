@@ -107,6 +107,15 @@ namespace Olive.Entities.Data
             }
         }
 
+        /// <summary>
+        /// Rolls back the transaction unless it was completed, then releases every connection in this scope.
+        /// <para>
+        /// This never throws. It usually runs while an exception is already unwinding, so each clean-up step
+        /// is isolated and its failure logged rather than propagated — otherwise the original exception would
+        /// be replaced and the remaining connections orphaned. Callers that need to know a roll-back failed
+        /// should watch the error log; they will not see an exception from here.
+        /// </para>
+        /// </summary>
         public void Dispose()
         {
             if (IsAborted) return;
@@ -119,16 +128,23 @@ namespace Olive.Entities.Data
                 {
                     // Root is not completed.
                     IsAborted = true;
-                    Connections.Do(x => x.Value.Transaction.Rollback());
+
+                    Connections.Do(x => Release("roll back the transaction", () => x.Value.Transaction.Rollback()));
                 }
 
-                // Always dispose transactions and connections
-                Connections.Do(x => x.Value.Transaction.Dispose());
+                // Always dispose transactions and connections.
+                // Each step is isolated, because a failure in any one of them (a doomed transaction,
+                // a connection already broken by a timeout or a server failover) must not prevent the
+                // remaining connections from being returned to the pool. Otherwise they are orphaned
+                // until the GC gets to them, which is how a slow database turns into pool exhaustion.
                 Connections.Do(x =>
                 {
-                    x.Value.Connection.Close();
-                    x.Value.Connection.Dispose();
+                    Release("dispose the transaction", () => x.Value.Transaction.Dispose());
+                    Release("close the connection", () => x.Value.Connection.Close());
+                    Release("dispose the connection", () => x.Value.Connection.Dispose());
                 });
+
+                Connections.Clear();
             }
             else
             {
@@ -144,6 +160,20 @@ namespace Olive.Entities.Data
                     // A sub transaction is not completed.
                     Root?.Dispose();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Runs a clean-up step, logging rather than throwing on failure.
+        /// Dispose() usually runs while an exception is already unwinding, so throwing from here
+        /// would both replace the original exception and skip the remaining clean-up steps.
+        /// </summary>
+        void Release(string action, Action step)
+        {
+            try { step(); }
+            catch (Exception ex)
+            {
+                Log.For(this).Error(ex, $"Failed to {action} of transaction scope {ID}.");
             }
         }
 

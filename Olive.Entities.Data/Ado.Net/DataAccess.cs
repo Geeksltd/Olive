@@ -85,32 +85,62 @@ namespace Olive.Entities.Data
 
         async Task<DbCommand> CreateCommand(CommandType type, string commandText, IDbConnection connection, params IDataParameter[] @params)
         {
-            if (connection == null) connection = await GetOrCreateConnection();
+            // When the connection is opened here rather than supplied by the caller, this method owns it
+            // until it hands back a command. Anything that throws in between (an unsupported parameter type,
+            // a transaction or config failure) would otherwise leave the connection open with nothing
+            // referencing it, leaking it from the pool.
+            var ownsConnection = connection == null;
 
-            var command = (DbCommand)connection.CreateCommand();
-            command.CommandText = commandText;
-            command.CommandType = type;
+            if (ownsConnection) connection = await GetOrCreateConnection();
 
-            command.Transaction = await (DbTransactionScope.Root?.GetDbTransaction()
-                ?? Task.FromResult(command.Transaction));
-
-            command.CommandTimeout = DatabaseContext.Current?.CommandTimeout ??
-                Config.Get("Sql.Command.TimeOut", defaultValue: command.CommandTimeout);
-
-            foreach (var param in @params)
+            try
             {
-                var parameter = command.CreateParameter();
+                var command = (DbCommand)connection.CreateCommand();
+                command.CommandText = commandText;
+                command.CommandType = type;
 
-                parameter.ParameterName = param.ParameterName;
-                parameter.Value = param.Value;
+                command.Transaction = await (DbTransactionScope.Root?.GetDbTransaction()
+                    ?? Task.FromResult(command.Transaction));
 
-                if (parameter.DbType != param.DbType)
-                    parameter.DbType = param.DbType;
+                command.CommandTimeout = DatabaseContext.Current?.CommandTimeout ??
+                    Config.Get("Sql.Command.TimeOut", defaultValue: command.CommandTimeout);
 
-                command.Parameters.Add(parameter);
+                foreach (var param in @params)
+                {
+                    var parameter = command.CreateParameter();
+
+                    parameter.ParameterName = param.ParameterName;
+                    parameter.Value = param.Value;
+
+                    if (parameter.DbType != param.DbType)
+                        parameter.DbType = param.DbType;
+
+                    command.Parameters.Add(parameter);
+                }
+
+                return command;
             }
+            catch
+            {
+                // CloseConnection() correctly does nothing inside a transaction scope,
+                // where the connection is owned by the scope and not by this command.
+                if (ownsConnection) ReleaseConnection(connection);
+                throw;
+            }
+        }
 
-            return command;
+        /// <summary>
+        /// Closes a connection that this class opened but never handed to a caller.
+        /// Failure is logged rather than thrown: this runs while an exception is already on its way
+        /// out, and a broken connection failing to close must not replace the fault that broke it.
+        /// </summary>
+        void ReleaseConnection(IDbConnection connection)
+        {
+            try { CloseConnection(connection); }
+            catch (Exception ex)
+            {
+                Log.For(this).Error(ex, "Failed to close the connection of a command that could not be created.");
+            }
         }
 
         DataAccessProfiler.Watch StartWatch(string command)
