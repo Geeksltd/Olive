@@ -8,10 +8,13 @@ namespace Olive.Entities.Data
     /// <summary>
     /// Provides a cache of objects retrieved from the database.
     /// </summary>
-    public partial class InMemoryCacheProvider : ICacheProvider
+    public partial class InMemoryCacheProvider : ICacheProvider, IQueryCacheProvider
     {
         ConcurrentDictionary<Type, Dictionary<string, IEntity>> Types = new ConcurrentDictionary<Type, Dictionary<string, IEntity>>();
         ConcurrentDictionary<Type, IEnumerable> Lists = new ConcurrentDictionary<Type, IEnumerable>();
+        ConcurrentDictionary<Type, ConcurrentDictionary<string, object>> Queries = new ConcurrentDictionary<Type, ConcurrentDictionary<string, object>>();
+        int? maxCachedQueriesPerType;
+        int MaxCachedQueriesPerType => maxCachedQueriesPerType ??= Config.Get("Database:Cache:MaxCachedQueriesPerType", 200);
 
         Dictionary<string, IEntity> GetEntities(Type type) =>
             Types.GetOrAdd(type, t => new Dictionary<string, IEntity>());
@@ -77,11 +80,27 @@ namespace Olive.Entities.Data
 
         public void AddList(Type type, IEnumerable list) => Lists[type] = list;
 
+        public object GetQueryResult(Type type, string key) => Queries.GetOrDefault(type)?.GetOrDefault(key);
+
+        public void SetQueryResult(Type type, string key, object result)
+        {
+            var queries = Queries.GetOrAdd(type, t => new ConcurrentDictionary<string, object>());
+
+            // ponytail: crude cap, clears the whole type's query cache at the threshold instead of
+            // evicting individual entries by age. Upgrade to real LRU if a hot type keeps churning past the cap.
+            if (queries.Count >= MaxCachedQueriesPerType) queries.Clear();
+
+            queries[key] = result;
+        }
+
+        public void RemoveQueryResults(Type type) => Queries.TryRemove(type, out _);
+
         public void ClearAll()
         {
             RowVersionCache = new ConcurrentDictionary<Type, ConcurrentDictionary<string, long>>();
             Types.Clear();
             Lists.Clear();
+            Queries.Clear();
         }
     }
 }

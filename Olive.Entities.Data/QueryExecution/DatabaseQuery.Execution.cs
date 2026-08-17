@@ -9,7 +9,12 @@
     {
         bool IsCacheable()
         {
-            if (TakeTop.HasValue || PageSize.HasValue || Columns.Any()) return false;
+            if ((TakeTop.HasValue && TakeTop != 1) || PageSize.HasValue || Columns.Any()) return false;
+
+            // A cached result array bakes in whatever Include() shape was requested at cache-write
+            // time; a different Include() set on a later identical-criteria call would silently get
+            // the wrong (missing or superfluous) eager-loaded associations. Keep these uncached for now.
+            if (Include.Any()) return false;
 
             if (Criteria.Except(typeof(DirectDatabaseCriterion)).Any(c => c.PropertyName.Contains(".")))
                 return false; // This doesn't work with cache expiration rules.
@@ -23,12 +28,33 @@
             return true;
         }
 
+        string GetQueryCacheKey(string prefix = null) =>
+            prefix + Criteria.Select(c => c.ToString()).OrderBy(x => x).ToString("|") +
+            "##" + OrderByParts.Select(o => o.ToString()).ToString(",") +
+            "##top:" + TakeTop;
+
         public async Task<IEntity[]> GetList()
         {
             if (!IsCacheable()) return await LoadFromDatabase().ToArray();
 
-            if (Criteria.Any() || Context.Current.Database().AnyOpenTransaction())
+            if (Context.Current.Database().AnyOpenTransaction())
                 return await LoadFromDatabaseAndCache().ToArray();
+
+            if (Criteria.Any())
+            {
+                var cacheKey = GetQueryCacheKey();
+                var queryCache = Cache as Cache;
+
+                if (queryCache?.GetQueryResult(EntityType, cacheKey) is IEntity[] cached)
+                {
+                    await LoadIncludedAssociations(cached);
+                    return cached;
+                }
+
+                var queried = await LoadFromDatabaseAndCache().ToArray();
+                queryCache?.AddQueryResult(EntityType, cacheKey, queried);
+                return queried;
+            }
 
             var result = Cache.GetList(EntityType)?.Cast<IEntity>().ToArray();
             if (result != null)
@@ -101,7 +127,20 @@
             return result;
         }
 
-        public Task<int> Count() => Provider.Count(this);
+        public async Task<int> Count()
+        {
+            if (!IsCacheable() || Context.Current.Database().AnyOpenTransaction())
+                return await Provider.Count(this);
+
+            var cacheKey = GetQueryCacheKey("count:");
+            var queryCache = Cache as Cache;
+
+            if (queryCache?.GetQueryResult(EntityType, cacheKey) is int cached) return cached;
+
+            var count = await Provider.Count(this);
+            queryCache?.AddQueryResult(EntityType, cacheKey, count);
+            return count;
+        }
 
         public async Task<bool> Any() => await Count() > 0;
 
