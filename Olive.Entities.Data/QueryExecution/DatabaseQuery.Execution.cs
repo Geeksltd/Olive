@@ -7,19 +7,35 @@
 
     partial class DatabaseQuery
     {
+        static IEnumerable<ICriterion> Flatten(IEnumerable<ICriterion> criteria)
+        {
+            foreach (var criterion in criteria)
+            {
+                if (criterion is BinaryCriterion binary)
+                {
+                    foreach (var inner in Flatten(new ICriterion[] { binary.Left, binary.Right }.ExceptNull()))
+                        yield return inner;
+                }
+                else yield return criterion;
+            }
+        }
+
         bool IsCacheable()
         {
             if ((TakeTop.HasValue && TakeTop != 1) || PageSize.HasValue || Columns.Any()) return false;
 
-            // A cached result array bakes in whatever Include() shape was requested at cache-write
-            // time; a different Include() set on a later identical-criteria call would silently get
-            // the wrong (missing or superfluous) eager-loaded associations. Keep these uncached for now.
+            // The soft-delete bypass context changes the generated SQL but is invisible to cache keys.
+            if (SoftDeleteAttribute.Context.ShouldByPassSoftDelete()) return false;
+
+            // We don't cache queries that include associations, because the included associations may change without changing the main entity.
             if (Include.Any()) return false;
 
-            if (Criteria.Except(typeof(DirectDatabaseCriterion)).Any(c => c.PropertyName.Contains(".")))
+            var criteria = Flatten(Criteria).ToArray();
+
+            if (criteria.Except(typeof(DirectDatabaseCriterion)).Any(c => c.PropertyName.Contains(".")))
                 return false; // This doesn't work with cache expiration rules.
 
-            if (Criteria.OfType<DirectDatabaseCriterion>().Any(x => !x.IsCacheSafe))
+            if (criteria.OfType<DirectDatabaseCriterion>().Any(x => !x.IsCacheSafe))
                 return false;
 
             // Do not cache a polymorphic call:
@@ -28,9 +44,11 @@
             return true;
         }
 
-        string GetQueryCacheKey(string prefix = null) =>
-            prefix + Criteria.Select(c => c.ToString()).OrderBy(x => x).ToString("|") +
-            "##" + OrderByParts.Select(o => o.ToString()).ToString(",") +
+        string GetCriteriaCacheKey(string prefix = null) =>
+            prefix + Criteria.Select(c => c.ToString()).OrderBy(x => x).ToString("|");
+
+        string GetQueryCacheKey() =>
+            GetCriteriaCacheKey() + "##" + OrderByParts.Select(o => o.ToString()).ToString(",") +
             "##top:" + TakeTop;
 
         public async Task<IEntity[]> GetList()
@@ -40,28 +58,22 @@
             if (Context.Current.Database().AnyOpenTransaction())
                 return await LoadFromDatabaseAndCache().ToArray();
 
-            if (Criteria.Any())
+            if (Criteria.Any() || TakeTop.HasValue)
             {
                 var cacheKey = GetQueryCacheKey();
                 var queryCache = Cache as Cache;
 
                 if (queryCache?.GetQueryResult(EntityType, cacheKey) is IEntity[] cached)
-                {
-                    await LoadIncludedAssociations(cached);
-                    return cached;
-                }
+                    return cached.ToArray();
 
+                var timestamp = Cache.GetQueryTimestamp();
                 var queried = await LoadFromDatabaseAndCache().ToArray();
-                queryCache?.AddQueryResult(EntityType, cacheKey, queried);
+                queryCache?.AddQueryResult(EntityType, cacheKey, queried, timestamp);
                 return queried;
             }
 
             var result = Cache.GetList(EntityType)?.Cast<IEntity>().ToArray();
-            if (result != null)
-            {
-                await LoadIncludedAssociations(result);
-                return result;
-            }
+            if (result != null) return result;
 
             result = await LoadFromDatabaseAndCache().ToArray();
 
@@ -132,13 +144,14 @@
             if (!IsCacheable() || Context.Current.Database().AnyOpenTransaction())
                 return await Provider.Count(this);
 
-            var cacheKey = GetQueryCacheKey("count:");
+            var cacheKey = GetCriteriaCacheKey("count:");
             var queryCache = Cache as Cache;
 
             if (queryCache?.GetQueryResult(EntityType, cacheKey) is int cached) return cached;
 
+            var timestamp = Cache.GetQueryTimestamp();
             var count = await Provider.Count(this);
-            queryCache?.AddQueryResult(EntityType, cacheKey, count);
+            queryCache?.AddQueryResult(EntityType, cacheKey, count, timestamp);
             return count;
         }
 

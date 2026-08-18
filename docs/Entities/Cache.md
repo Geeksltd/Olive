@@ -17,6 +17,7 @@ A filtered query is **not** cached when it:
 - Uses `.Include(...)` to eager-load associations (a cached result would bake in whichever `Include` shape was requested first, so these always hit the database).
 - Filters on a dotted/association-traversing property (e.g. `x.Customer.Country == "UK"`) — only direct properties of the queried type are safe to cache.
 - Needs polymorphic type resolution.
+- Runs under an active soft-delete bypass context (`SoftDeleteAttribute.Context`).
 
 ## Enabling caching for a type
 
@@ -82,3 +83,9 @@ await Context.Current.Database().Refresh();
 ```
 
 This clears the entire cache (all types) and raises `IDatabase.CacheRefreshed`.
+
+## Known limitations
+
+- Raw SQL writes (e.g. `ExecuteNonQuery`) bypass `Save`/`Delete` and therefore never invalidate cached query results — after raw writes, call `Database.Refresh()` or expect staleness until the next normal write to the type.
+- Query-result caching requires the registered `ICache` to be Olive's `Cache` class itself; a custom `ICache` decorator silently disables it (deliberate for now).
+- `DirectDatabaseCriterion.IsCacheSafe` also opts the criterion into result-set caching, not just entity-level caching — set it only when the SQL's result depends solely on data of the queried type.

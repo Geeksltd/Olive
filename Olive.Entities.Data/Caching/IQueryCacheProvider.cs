@@ -10,7 +10,7 @@ namespace Olive.Entities.Data
     public interface IQueryCacheProvider : ICacheProvider
     {
         object GetQueryResult(Type type, string key);
-        void SetQueryResult(Type type, string key, object result);
+        void SetQueryResult(Type type, string key, object result, DateTime? queryTime = null);
         void RemoveQueryResults(Type type);
     }
 }
