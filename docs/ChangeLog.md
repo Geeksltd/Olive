@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 17 Aug 2026
+- Filtered `GetList()`/`Count()`/`FirstOrDefault()` queries (i.e. with `Where(...)` criteria) are now cached, the same way unfiltered lists and single-entity lookups already were. This is automatic for any type that already has caching enabled (via `[CacheObjects]` or the global `Database:Cache` setting) — no code changes required. See [Caching](Entities/Cache.md) for what is/isn't cached, the new `Database:Cache:MaxCachedQueriesPerType` setting, and the Redis-provider caveat (filtered-query caching is in-process-provider only for now).
+
 ## 11 Jan 2022 (.NET 6.0 upgrade)
 1. Create the folder `M#\lib\net6.0` and inside it, create a text file named `MSharp.DSL.runtimeconfig.json` with the following content ```{ "runtimeOptions": { "tfm": "net6.0", "framework": { "name": "Microsoft.NETCore.App","version": "6.0.0" } } }```
 2. Open a command prompt in `M#\lib\net6.0` and run this command: ```git add MSharp.DSL.runtimeconfig.json -f```

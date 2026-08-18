@@ -110,6 +110,11 @@ namespace Olive.Entities
             {
                 return asEnum.ToString("|");
             }
+            else if (Value is DateTime dateTime)
+            {
+                // Round-trip format: culture-invariant and keeps sub-second precision.
+                return dateTime.ToString("O");
+            }
             else
             {
                 return Value?.ToStringOrEmpty();

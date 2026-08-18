@@ -57,7 +57,10 @@ namespace Olive.Entities.Data
             CacheProvider.Remove(type, invalidateCachedReferences);
 
             foreach (var inherited in type.Assembly.GetSubTypes(type, withDescendants: true))
+            {
                 CacheProvider.Remove(inherited, invalidateCachedReferences);
+                (CacheProvider as IQueryCacheProvider)?.RemoveQueryResults(inherited);
+            }
         }
 
         public virtual void RemoveList(Type type)
@@ -65,7 +68,29 @@ namespace Olive.Entities.Data
             if (!IsCacheable(type)) return;
 
             for (var parentType = type; parentType != typeof(Entity); parentType = parentType.BaseType)
+            {
                 CacheProvider.RemoveList(parentType);
+                (CacheProvider as IQueryCacheProvider)?.RemoveQueryResults(parentType);
+            }
+        }
+
+        /// <summary>
+        /// Gets a previously cached result for a filtered query (keyed by the query's own signature).
+        /// Returns null if not cached, the type isn't cacheable, or the provider doesn't support query caching.
+        /// </summary>
+        public object GetQueryResult(Type type, string key)
+        {
+            if (!IsCacheable(type)) return null;
+            return (CacheProvider as IQueryCacheProvider)?.GetQueryResult(type, key);
+        }
+
+        /// <summary>
+        /// Caches the result of a filtered query under its own signature.
+        /// No-op if the type isn't cacheable or the provider doesn't support query caching.
+        /// </summary>
+        public void AddQueryResult(Type type, string key, object result, DateTime? queryTime = null)
+        {
+            if (IsCacheable(type)) (CacheProvider as IQueryCacheProvider)?.SetQueryResult(type, key, result, queryTime);
         }
 
         public virtual IEnumerable GetList(Type type)
