@@ -1,7 +1,9 @@
 # What is Olive
 
-Olive is a framework built top of .NET for more productive cross platform software development in .NET solutions. It provides a whole set of productivity tools to make .NET development easier, cleaner and more expressive. It's available under the GPLv3 license.
+Olive is a mature, modular .NET framework designed to make building sophisticated software faster, cleaner and more expressive.
 
-Olive is a .NET Standard 2.0 library and so compatible with .NET Framework, .NET Core, Mono, Xamarin.iOS, Xamarin.Mac, Xamarin.Android and UWP and ....
+Built and actively maintained by Geeks Ltd, Olive extends the .NET ecosystem with a comprehensive collection of reusable libraries for common application concerns, including data access and caching, web applications and APIs, microservices, cloud services, security, messaging, background processing, document handling and AI integration.
 
-> Follow the [change log](ChangeLog.md) to keep your existing Olive apps up to date.
+Rather than repeatedly solving the same infrastructure problems, developers can use Olive's well-designed abstractions and utilities to write less boilerplate, keep application code focused on business logic, and build complex systems more consistently.
+
+The latest version of Olive targets .NET 10, giving it broad compatibility across the .NET ecosystem, and is available as open-source software under the GPLv3 licence.
