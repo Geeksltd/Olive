@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 25 Aug 2026 (2)
+- Fixed `Select(columns)` on `Database.Of<T>()`/`GetList<T>()` queries: it now always fetches the ID column(s) needed for identity and polymorphic type resolution (previously omitting `ID` broke it), and an unknown column name now throws immediately instead of generating invalid SQL. Added a new `Select(x => x.Property)` / `Select(x => new { x.A, x.B })` overload so columns can be referenced via a lambda instead of hard-coded strings. See [IDatabaseQuery](Entities/IDatabaseQuery.md#selectcolumns). No code changes required unless you were already relying on the old broken behaviour. `Olive.Entities` bumped to `10.2.1`, `Olive.Entities.Data` bumped to `10.4.2`.
+
 ## 25 Aug 2026
 - `Count()` queries (SQL Server, MySQL, PostgreSQL, SQLite) now generate `SELECT Count(ID)` instead of `SELECT Count(*)`, for a cheaper index-only count on wide tables. Result is unchanged; no code changes required. `Olive.Entities.Data` bumped to `10.4.1`.
 

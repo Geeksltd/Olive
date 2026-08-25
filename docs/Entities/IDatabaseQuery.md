@@ -62,3 +62,22 @@ async Task<IEnumerable<TaskItem>> GetPage(int pageIndex, int pageSize, DateTime?
 ## Count()
 
 `query.Count()` (and `Database.Count<T>(...)`) generate `SELECT Count(ID) FROM ...` rather than `SELECT Count(*) FROM ...`. Counting the primary key column lets SQL Server satisfy the query from the narrower primary key index instead of scanning/materializing every column of every matching row, which is cheaper on wide tables. The result is identical to `Count(*)`, since `ID` is a mandatory, non-null column on every entity.
+
+## Select(columns)
+
+When you only need a few columns of a large entity, `Select(...)` narrows the SQL field list to just those columns, instead of fetching every column. The ID column (and, for polymorphic types, the base/derived class ID columns) is always fetched regardless, so the returned entities keep a working identity - properties that were not selected are simply left at their default value.
+
+You can specify the columns either by name, or with a lambda referencing the property(s):
+
+```csharp
+// By column name(s):
+var people = await Database.Of<Person>().Select("FirstName", "LastName").GetList();
+
+// By a single property:
+var people = await Database.Of<Person>().Select(x => x.FirstName).GetList();
+
+// By multiple properties, using an anonymous type:
+var people = await Database.Of<Person>().Select(x => new { x.FirstName, x.LastName }).GetList();
+```
+
+An unknown column name, or an expression that isn't a direct property of the entity (e.g. an association path like `x.Product.Type.Rate`, or a method call like `x.FirstName.ToUpper()`), will throw immediately rather than generating invalid SQL. Selecting fields from association chains, returned as a custom/anonymous projection type, is not supported yet.

@@ -15,6 +15,9 @@ namespace Olive.Entities.Data
         readonly Dictionary<string, string> ColumnMapping = new();
         readonly Dictionary<string, string> SubqueryMapping = new();
 
+        // Always fetched even when Select() narrows columns: needed for identity and polymorphic type resolution.
+        HashSet<string> MandatoryFields;
+
         public ISqlCommandGenerator SqlCommandGenerator { get; }
 
         public IDataProviderMetaData MetaData { get; }
@@ -100,7 +103,14 @@ namespace Olive.Entities.Data
         string GetFields(IDatabaseQuery query)
         {
             if (query is DatabaseQuery q && q.Columns.Any())
-                return AllFields.Where(v => q.Columns.Contains(v.Name)).ToString(", ");
+            {
+                var invalid = q.Columns.Except(AllFields.Select(v => v.Name)).ToArray();
+                if (invalid.Any())
+                    throw new ArgumentException(
+                        $"'{invalid.ToString(", ")}' is not a valid property of '{EntityType.Name}' to use in Select().");
+
+                return AllFields.Where(v => MandatoryFields.Contains(v.Name) || q.Columns.Contains(v.Name)).ToString(", ");
+            }
             else
                 return GetFields();
         }
@@ -267,6 +277,9 @@ namespace Olive.Entities.Data
             AllFields = MetaData.BaseClassesInOrder.Concat(MetaData).Concat(MetaData.DrivedClasses)
                 .SelectMany(parent => parent.UserDefienedAndIdAndDeletedProperties.Select(prop => GetField(parent, prop)))
                 .ToArray();
+
+            MandatoryFields = new HashSet<string>(
+                MetaData.BaseClassesInOrder.Concat(MetaData).Concat(MetaData.DrivedClasses).Select(m => m.IdColumnName));
         }
 
         void PrepareColumnMappingDictonary()
