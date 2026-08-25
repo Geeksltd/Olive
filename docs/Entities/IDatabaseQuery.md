@@ -58,3 +58,7 @@ async Task<IEnumerable<TaskItem>> GetPage(int pageIndex, int pageSize, DateTime?
     return await query.GetList();
 }
 ```
+
+## Count()
+
+`query.Count()` (and `Database.Count<T>(...)`) generate `SELECT Count(ID) FROM ...` rather than `SELECT Count(*) FROM ...`. Counting the primary key column lets SQL Server satisfy the query from the narrower primary key index instead of scanning/materializing every column of every matching row, which is cheaper on wide tables. The result is identical to `Count(*)`, since `ID` is a mandatory, non-null column on every entity.

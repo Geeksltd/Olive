@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 25 Aug 2026
+- `Count()` queries (SQL Server, MySQL, PostgreSQL, SQLite) now generate `SELECT Count(ID)` instead of `SELECT Count(*)`, for a cheaper index-only count on wide tables. Result is unchanged; no code changes required. `Olive.Entities.Data` bumped to `10.4.1`.
+
 ## 17 Aug 2026
 - Filtered `GetList()`/`Count()`/`FirstOrDefault()` queries (i.e. with `Where(...)` criteria) are now cached, the same way unfiltered lists and single-entity lookups already were. This is automatic for any type that already has caching enabled (via `[CacheObjects]` or the global `Database:Cache` setting) — no code changes required. See [Caching](Entities/Cache.md) for what is/isn't cached, the new `Database:Cache:MaxCachedQueriesPerType` setting, and the Redis-provider caveat (filtered-query caching is in-process-provider only for now).
 

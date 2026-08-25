@@ -337,7 +337,7 @@ namespace Olive.Entities.Data
             if (query.TakeTop.HasValue)
                 throw new ArgumentException("TakeTop cannot be used for Count().");
 
-            return $"SELECT Count(*) FROM {GetTables()} {GenerateWhere(query)}";
+            return $"SELECT Count({MapColumn("ID")}) FROM {GetTables()} {GenerateWhere(query)}";
         }
 
         public virtual string GenerateSort(DatabaseQuery query)
