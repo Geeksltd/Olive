@@ -58,6 +58,7 @@ namespace Olive.Entities
         new IDatabaseQuery<TEntity> Top(int rows);
         new IDatabaseQuery<TEntity> Where(params ICriterion[] criteria);
         new IDatabaseQuery<TEntity> Select(params string[] columns);
+        IDatabaseQuery<TEntity> Select(Expression<Func<TEntity, object>> columns);
 
         IDatabaseQuery<TEntity> ThenBy(Expression<Func<TEntity, object>> property, bool descending = false);
         IDatabaseQuery<TEntity> OrderByDescending(Expression<Func<TEntity, object>> property);

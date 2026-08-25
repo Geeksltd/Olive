@@ -1,6 +1,7 @@
 ﻿namespace Olive.Entities.Data
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
@@ -27,6 +28,23 @@
         {
             ((IDatabaseQuery)this).Select(colunms);
             return this;
+        }
+
+        IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Select(Expression<Func<TEntity, object>> columns)
+        {
+            var names = ExtractSelectColumnNames(columns.Body).ToArray();
+            return ((IDatabaseQuery<TEntity>)this).Select(names);
+        }
+
+        static IEnumerable<string> ExtractSelectColumnNames(Expression expression)
+        {
+            if (expression is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
+                return ExtractSelectColumnNames(unary.Operand);
+
+            if (expression is NewExpression @new)
+                return @new.Arguments.Select(a => a.GetPropertyPath());
+
+            return new[] { expression.GetPropertyPath() };
         }
 
         IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Top(int rows)
