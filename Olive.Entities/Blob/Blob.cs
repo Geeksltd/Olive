@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,8 @@ namespace Olive.Entities
             "cpl","crt","csc","dll","drv","exe","hta","htm","html", "ini", "ins","js","jse","lnk","mdb","mde","mht","mhtm","mhtml","msc", "msi","msp", "mdb", "ldb","resources", "resx",
             "mst","obj", "config","ocx","pgm","pif","scr","sct","shb","shs", "smm", "sys","url","vb","vbe","vbs","vxd","wsc","wsf","wsh" , "php", "asmx", "cs", "jsl", "asax","mdf",
             "cdx","idc", "shtm", "shtml", "stm", "browser"};
+
+        static readonly ConcurrentDictionary<(Type, string), bool> SecurePropertiesCache = new();
 
         internal Entity OwnerEntity;
         bool IsEmptyBlob;
@@ -181,7 +184,38 @@ namespace Olive.Entities
         public string Url()
         {
             if (OwnerEntity == null) return null;
-            return Config.Get("Blob:BaseUrl") + FullName.TrimStart('/');
+            return GetBaseUrl() + FullName.TrimStart('/');
+        }
+
+        /// <summary>
+        /// Gets the base url to use for this blob.
+        /// Open (non-secure) files use "Blob:OpenBaseUrl" if it's defined, otherwise "Blob:BaseUrl" is used.
+        /// Both settings are concatenated with the file path as-is, so they should be specified in the
+        /// same format, normally ending in a slash.
+        /// </summary>
+        string GetBaseUrl()
+        {
+            var result = Config.Get("Blob:BaseUrl");
+
+            if (!IsSecure) result = Config.Get("Blob:OpenBaseUrl").Or(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Determines whether the owner property of this blob is marked with [SecureFile].
+        /// If the owner property cannot be found, it's treated as secure, so that files are never
+        /// exposed on the open url by accident.
+        /// </summary>
+        public bool IsSecure
+        {
+            get
+            {
+                if (OwnerEntity == null || OwnerProperty.IsEmpty()) return false;
+
+                return SecurePropertiesCache.GetOrAdd((OwnerEntity.GetType(), OwnerProperty),
+                    key => key.Item1.GetProperty(key.Item2)?.Defines<SecureFileAttribute>() ?? true);
+            }
         }
 
         /// <summary>
