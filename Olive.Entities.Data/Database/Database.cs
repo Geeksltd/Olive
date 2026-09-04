@@ -112,13 +112,13 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Determines if there is any object in the database of the specified type.
         /// </summary>
-        public async Task<bool> Any<T>() where T : IEntity => await Of<T>().Count() > 0;
+        public async Task<bool> Any<T>() where T : IEntity => await Of<T>().Any();
 
         /// <summary>
         /// Determines if there is any object in the database of the specified type matching a given criteria.
         /// </summary>
         public async Task<bool> Any<T>(Expression<Func<T, bool>> criteria) where T : IEntity =>
-            await Of<T>().Where(criteria).Count() > 0;
+            await Of<T>().Where(criteria).Any();
 
         /// <summary>
         /// Determines whether there is no object of the specified type in the database.
