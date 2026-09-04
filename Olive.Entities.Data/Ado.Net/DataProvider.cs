@@ -41,6 +41,31 @@ namespace Olive.Entities.Data
             return Convert.ToInt32(await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters)));
         }
 
+        /// <summary>
+        /// Checks whether at least one matching row exists, stopping at the first match instead of
+        /// counting every matching row (which is what a Count() > 0 check would otherwise require).
+        /// </summary>
+        public async Task<bool> Any(IDatabaseQuery iquery)
+        {
+            var query = (DatabaseQuery)iquery;
+
+            // TakeTop/PageSize don't combine meaningfully with a plain existence probe.
+            // Count() already defines (and throws for) that case, so just defer to it.
+            if (query.PageSize.HasValue || query.TakeTop.HasValue)
+                return await Count(query) > 0;
+
+            query.TakeTop = 1;
+            try
+            {
+                var command = GenerateSelectCommand(query, "1");
+                return await ExecuteScalar(command, CommandType.Text, GenerateParameters(query.Parameters)) != null;
+            }
+            finally
+            {
+                query.TakeTop = null;
+            }
+        }
+
         public static List<string> ExtractIds(string idsXml) =>
             idsXml.Split(ExtractIdsSeparator, StringSplitOptions.RemoveEmptyEntries).ToList();
 

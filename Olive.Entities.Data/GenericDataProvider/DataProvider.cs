@@ -1,9 +1,9 @@
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
@@ -217,12 +217,23 @@ namespace Olive.Entities.Data
             Entity.Services.SetOriginalId(record);
         }
 
+        static readonly ConditionalWeakTable<IDataReader, HashSet<string>> ReaderColumnsCache = new();
+
+        static HashSet<string> GetReaderColumns(IDataReader reader)
+        {
+            if (ReaderColumnsCache.TryGetValue(reader, out var cached)) return cached;
+
+            var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < reader.FieldCount; i++)
+                columns.Add(reader.GetName(i));
+
+            ReaderColumnsCache.Add(reader, columns);
+            return columns;
+        }
+
         void FillData(IDataReader reader, IEntity entity)
         {
-            var schema = reader.GetSchemaTable();
-            var columns = schema.Rows.Cast<DataRow>()
-                                     .Select(r => r["ColumnName"].ToString())
-                                     .ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
+            var columns = GetReaderColumns(reader);
 
             var props = MetaData.GetPropertiesForFillData().ToArray();
 
