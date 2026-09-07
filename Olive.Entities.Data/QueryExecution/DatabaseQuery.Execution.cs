@@ -155,7 +155,24 @@
             return count;
         }
 
-        public async Task<bool> Any() => await Count() > 0;
+        public async Task<bool> Any()
+        {
+            if (!IsCacheable() || Context.Current.Database().AnyOpenTransaction())
+                return await ExecuteAny();
+
+            var cacheKey = GetCriteriaCacheKey("any:");
+            var queryCache = Cache as Cache;
+
+            if (queryCache?.GetQueryResult(EntityType, cacheKey) is bool cached) return cached;
+
+            var timestamp = Cache.GetQueryTimestamp();
+            var result = await ExecuteAny();
+            queryCache?.AddQueryResult(EntityType, cacheKey, result, timestamp);
+            return result;
+        }
+
+        async Task<bool> ExecuteAny() =>
+            Provider is DataProvider adoProvider ? await adoProvider.Any(this) : await Provider.Count(this) > 0;
 
         public async Task<bool> None() => !await Any();
 
