@@ -2,6 +2,7 @@ using AngleSharp.Dom;
 using Ganss.Xss;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -31,6 +32,24 @@ namespace Olive.Mvc
 
         /// <summary>Attributes whose value is treated as a URL and scheme-checked (e.g. poster).</summary>
         public string[] UriAttributes { get; set; }
+
+        /// <summary>
+        /// Regular expressions whose matches are HTML-encoded BEFORE the HTML is parsed and
+        /// sanitized. The whole match is encoded.
+        /// <para>Use this for text that only looks like markup, e.g. the C# generic
+        /// <c>Task&lt;string&gt;</c>. Without it the parser reads <c>&lt;string&gt;</c> as an unknown
+        /// element, drops it, and — because it is never closed — swallows the rest of the text with
+        /// it. A pattern such as <c>&lt;(?!/?(a|b|p|br|...)\b)</c> encodes only a <c>&lt;</c> that
+        /// does not start a real HTML tag, so genuine markup still reaches the sanitizer and is
+        /// still stripped or marked by the normal rules.</para>
+        /// <para>Applied by <see cref="HtmlSanitizerFactory.Sanitize(string)"/>, so it affects
+        /// <c>string.Raw()</c> only; <c>TrustedRaw()</c> skips sanitizing altogether and is
+        /// therefore unaffected. Each pattern is compiled once and cached for the life of the
+        /// process. An invalid pattern is skipped rather than throwing.</para>
+        /// <para>A pattern does not have to be about <c>&lt;</c>. Every pattern is run against
+        /// every string, so one that encodes some other character works the same way.</para>
+        /// </summary>
+        public string[] EncodePatterns { get; set; }
 
         /// <summary>The only hosts an iframe may load (~ the CSP "frame-src" directive). Subdomains included.</summary>
         public string[] AllowedFrameDomains { get; set; }
@@ -78,6 +97,21 @@ namespace Olive.Mvc
 
         const string MarkerPrefix = "⚠ removed: ";
 
+        // One Regex per distinct pattern, built once and kept for the life of the process.
+        // The static Regex.Replace(input, pattern, ...) helpers re-parse the pattern on every
+        // call, and this runs on every Raw() of every request, so that is the wrong tool here.
+        // RegexOptions.Compiled emits IL that the process never releases, so an unbounded cache
+        // would matter if the keys were arbitrary. They are not: the patterns come only from the
+        // "Html:Sanitizer" config section, which is a short, fixed list read once at startup.
+        // That is why EncodeMatches() is internal.
+        static readonly ConcurrentDictionary<string, Regex> CompiledPatterns = new();
+
+        // A single shared delegate. An inline lambda would allocate a closure per Replace call.
+        static readonly MatchEvaluator EncodeMatch = match => match.Value.HtmlEncode();
+
+        // A badly written pattern in config must not be able to hang a request.
+        static readonly TimeSpan PatternTimeout = TimeSpan.FromMilliseconds(200);
+
         // Created at type-load with NO config access, so Startup (ConfigureServices) can safely
         // assign delegates onto it before Context is ready.
         static readonly HtmlSanitizerSettings SettingsInstance = new();
@@ -105,8 +139,70 @@ namespace Olive.Mvc
             KeepChildNodes = true
         };
 
-        /// <summary>Sanitizes the given HTML with the shared, cached sanitizer.</summary>
-        public static string Sanitize(string html) => Shared.Value.Sanitize(html);
+        /// <summary>Sanitizes the given HTML with the shared, cached sanitizer, after encoding
+        /// anything that matches <see cref="HtmlSanitizerSettings.EncodePatterns"/>.</summary>
+        public static string Sanitize(string html)
+        {
+            // Read Shared.Value first: building it is what binds SettingsInstance from config,
+            // so EncodePatterns is empty until this has run at least once.
+            var sanitizer = Shared.Value;
+
+            return sanitizer.Sanitize(EncodeMatches(html, SettingsInstance.EncodePatterns));
+        }
+
+        /// <summary>
+        /// HTML-encodes every match of the given patterns, so the sanitizer's parser sees plain
+        /// text instead of markup. The whole match is encoded.
+        /// <para>This is how text that only looks like a tag survives, e.g. the C# generic
+        /// <c>Task&lt;string&gt;</c>, which the parser would otherwise read as an unknown, never
+        /// closed <c>&lt;string&gt;</c> element and drop together with the rest of the text.</para>
+        /// <para>Patterns are compiled once and cached. An invalid pattern is skipped rather than
+        /// throwing, so one bad config line cannot break every page.</para>
+        /// <para>Internal on purpose: the patterns are a policy, and the only place to set that
+        /// policy is the "Html:Sanitizer" config section. Keeping it out of the public API is also
+        /// what makes the unbounded pattern cache safe.</para>
+        /// </summary>
+        internal static string EncodeMatches(string html, string[] patterns)
+        {
+            if (html.IsEmpty() || patterns.None()) return html;
+
+            foreach (var pattern in patterns)
+            {
+                var regex = GetPattern(pattern);
+                if (regex == null) continue; // Invalid pattern: already reported once, below.
+
+                // Replace() returns the same instance when nothing matches, so a pattern that
+                // does not hit costs one scan and no allocation. That is the common case, and it
+                // is why there is no "does the text even contain a '<'?" shortcut here: it would
+                // save almost nothing, and it would silently disable any pattern about some other
+                // character.
+                try { html = regex.Replace(html, EncodeMatch); }
+                catch (RegexMatchTimeoutException)
+                {
+                    // Pathological input for this pattern. Leave the text as it is and carry on:
+                    // the sanitizer below is still what keeps the output safe.
+                }
+            }
+
+            return html;
+        }
+
+        /// <summary>Compiles a pattern once and keeps it. Returns null for an invalid pattern,
+        /// and caches that null so a bad config line is parsed once, not once per request.</summary>
+        static Regex GetPattern(string pattern) => CompiledPatterns.GetOrAdd(pattern, text =>
+        {
+            try
+            {
+                return new Regex(text, RegexOptions.Compiled | RegexOptions.CultureInvariant, PatternTimeout);
+            }
+            catch (ArgumentException ex)
+            {
+                try { Log.For(typeof(HtmlSanitizerFactory)).Error($"[HtmlSanitizer] Invalid EncodePatterns entry, ignored: {text}\n{ex.Message}"); }
+                catch { /* Never let logging failure affect sanitizing. */ }
+
+                return null;
+            }
+        });
 
         // Runs on the first Sanitize() call, when Context is ready. The config values are copied
         // INTO the existing SettingsInstance, so delegates already assigned in Startup survive.
@@ -124,6 +220,7 @@ namespace Olive.Mvc
             onto.AllowAttributes = source.AllowAttributes;
             onto.RemoveAttributes = source.RemoveAttributes;
             onto.UriAttributes = source.UriAttributes;
+            onto.EncodePatterns = source.EncodePatterns;
             onto.AllowedFrameDomains = source.AllowedFrameDomains;
             onto.AllowDataAttributes = source.AllowDataAttributes;
             onto.AllowAriaAttributes = source.AllowAriaAttributes;
