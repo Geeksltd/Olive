@@ -255,15 +255,14 @@ namespace Olive.Mvc
             if (settings.LogRemoved)
                 LogRemoval("tag", e.Tag.TagName, e.Reason, e.Tag);
 
-            if (ShouldShow(settings))
-            {
-                // Show the markup itself instead of a "[REMOVED: X]" label: the whole tag, with its
-                // children, is HTML-encoded in place. Nothing can run, and the reader sees exactly
-                // what was rejected.
-                e.Tag.OuterHtml = e.Tag.OuterHtml.HtmlEncode();
-                e.Cancel = true;                // safe here: the node is already swapped out
-            }
-            // else: LogRemoved-only -> let the normal removal proceed (respects KeepChildNodes).
+            // The whole tag, with its children, is HTML-encoded in place. Nothing can run, and the
+            // reader sees exactly what was written.
+            // This is NOT gated by ShowRemoved/ShowRemovedWhen, unlike the attribute markers below.
+            // Those are a tester aid, but dropping a tag loses the author's own text: an unknown
+            // tag such as <risk label> simply vanishes from the page, and a stored answer then
+            // reads as if the writer never typed it.
+            e.Tag.OuterHtml = e.Tag.OuterHtml.HtmlEncode();
+            e.Cancel = true;                    // safe here: the node is already swapped out
         }
 
         /// <summary>Adds a value to an attribute, keeping whatever is already there, and returns the
