@@ -292,11 +292,13 @@ namespace Olive.Tests
         }
 
         [Test]
-        public void Raw_WithSanitizeTrue_RemovesScriptElementButKeepsChildText()
+        public void Raw_WithSanitizeTrue_ShowsTheScriptElementAsText()
         {
+            // KeepChildNodes used to leave the bare script body ("removed()") on the page. The
+            // whole tag is shown instead now, encoded, so the reader can see what it was.
             var result = GetHtml("<p>Hi</p><script>removed()</script>".Raw());
 
-            result.ShouldEqual("<p>Hi</p>removed()");
+            result.ShouldEqual("<p>Hi</p>&lt;script&gt;removed()&lt;/script&gt;");
         }
 
         [Test]
@@ -618,6 +620,22 @@ namespace Olive.Tests
                 .Sanitize("<img src=\"a.webp\" data-removed-style=\"old\" style=\"new\">");
 
             Assert.That(result, Does.Contain("data-removed-style=\"old | new\""));
+        }
+
+        [Test]
+        public void RemovedTag_IsShownEncoded_EvenWhenMarkersAreOff()
+        {
+            // Real stored answer: <risk label> is not a known tag. Dropping it took the writer's
+            // own text off the page, which is why this does not depend on ShowRemoved.
+            var input = "<p>Risk Assessment:</p><p><risk label></p><p>Follow-up Questions:</p>";
+
+            var result = GetHtml(input.Raw());
+
+            // AngleSharp writes the parsed element back in its normal form, so the attribute
+            // gains ="" and the tag is closed. The text is on the page either way.
+            Assert.That(result, Does.Contain("&lt;risk label=\"\"&gt;&lt;/risk&gt;"));
+            Assert.That(result, Does.Contain("Risk Assessment:"));
+            Assert.That(result, Does.Contain("Follow-up Questions:"));
         }
 
         // ---- IsSafe: validating user input before it is saved ----
