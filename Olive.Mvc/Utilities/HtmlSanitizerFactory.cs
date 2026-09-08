@@ -151,6 +151,17 @@ namespace Olive.Mvc
         }
 
         /// <summary>
+        /// True when <see cref="Sanitize(string)"/> gives back exactly this HTML, i.e. saving it
+        /// means the reader sees what the writer typed. Use it to reject input that the sanitizer
+        /// would change, instead of letting it be changed silently at render time.
+        /// <para>The test is an exact comparison, so a rewrite counts as well as a removal:
+        /// Sanitize() re-serializes the document, so <c>&lt;BR/&gt;</c> becomes <c>&lt;br&gt;</c>,
+        /// single quotes become double quotes, and an unclosed tag gets closed. Text matching
+        /// <see cref="HtmlSanitizerSettings.EncodePatterns"/> is encoded and counts too.</para>
+        /// </summary>
+        public static bool IsSafe(string html) => html.IsEmpty() || Sanitize(html) == html;
+
+        /// <summary>
         /// HTML-encodes every match of the given patterns, so the sanitizer's parser sees plain
         /// text instead of markup. The whole match is encoded.
         /// <para>This is how text that only looks like a tag survives, e.g. the C# generic
@@ -354,10 +365,10 @@ namespace Olive.Mvc
 
             if (ShouldShow(settings))
             {
-                var span = e.Tag.Owner.CreateElement("span");
-                span.ClassName = "removed-tag"; // styled red by the app's CSS (no inline style: it would be stripped)
-                span.TextContent = $"[REMOVED: {e.Tag.TagName}]";
-                e.Tag.Replace(span);            // replaces the whole node -> inner content dropped
+                // Show the markup itself instead of a "[REMOVED: X]" label: the whole tag, with its
+                // children, is HTML-encoded in place. Nothing can run, and the reader sees exactly
+                // what was rejected.
+                e.Tag.OuterHtml = e.Tag.OuterHtml.HtmlEncode();
                 e.Cancel = true;                // safe here: the node is already swapped out
             }
             // else: LogRemoved-only -> let the normal removal proceed (respects KeepChildNodes).
