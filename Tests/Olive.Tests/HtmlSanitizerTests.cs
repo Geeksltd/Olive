@@ -388,17 +388,21 @@ namespace Olive.Tests
         }
 
         [Test]
-        public void HtmlSanitizerFactory_ShowRemoved_ReplacesRemovedTagWithRedSpan()
+        public void HtmlSanitizerFactory_ShowRemoved_ShowsTheRemovedTagAsEncodedText()
         {
             var settings = HtmlSanitizerFactory.Default;
             settings.ShowRemoved = true;
             settings.ShowRemovedWhen = () => true; // markers are off unless this allows them
             var sanitizer = HtmlSanitizerFactory.Create(settings);
 
-            var result = sanitizer.Sanitize("<div>Hi <script>alert(1)</script> Bye</div>");
+            var result = sanitizer.Sanitize("<div>Hi <script src=\"e.js\">alert(1)</script> Bye</div>");
 
-            Assert.That(result, Does.Contain("<span class=\"removed-tag\">[REMOVED: SCRIPT]</span>"));
-            Assert.That(result, Does.Not.Contain("alert(1)")); // inner content dropped
+            // The whole tag is shown, encoded, so the reader sees what was rejected...
+            // Quotes need no escaping in text, so they read normally; the angle brackets are gone.
+            result.ShouldEqual("<div>Hi &lt;script src=\"e.js\"&gt;alert(1)&lt;/script&gt; Bye</div>");
+
+            // ...and there is no live script tag left.
+            Assert.That(result, Does.Not.Contain("<script"));
         }
 
         [Test]
@@ -615,5 +619,33 @@ namespace Olive.Tests
 
             Assert.That(result, Does.Contain("data-removed-style=\"old | new\""));
         }
+
+        // ---- IsSafe: validating user input before it is saved ----
+        // No config section in the tests, so these run on the permissive Default policy.
+
+        [Test]
+        public void IsSafe_PlainContent_IsAccepted()
+        {
+            Assert.That(HtmlSanitizerFactory.IsSafe("<p>Hello <b>world</b>, 2 &lt; 3.</p>"), Is.True);
+            Assert.That(HtmlSanitizerFactory.IsSafe(""), Is.True);
+            Assert.That(HtmlSanitizerFactory.IsSafe(null), Is.True);
+        }
+
+        [Test]
+        public void IsSafe_UnsafeContent_IsRejected()
+        {
+            Assert.That(HtmlSanitizerFactory.IsSafe("<div>Hi <script>alert(1)</script></div>"), Is.False);
+            Assert.That(HtmlSanitizerFactory.IsSafe("<img src=\"a.jpg\" onerror=\"alert(1)\">"), Is.False);
+            Assert.That(HtmlSanitizerFactory.IsSafe("<a href=\"javascript:alert(1)\">click</a>"), Is.False);
+        }
+
+        [Test]
+        public void IsSafe_RewrittenButHarmlessMarkup_IsAlsoRejected()
+        {
+            // Nothing here is dangerous, but Sanitize() writes it back differently, so the exact
+            // comparison says no. Keep it in mind when choosing which fields to guard.
+            Assert.That(HtmlSanitizerFactory.IsSafe("<P CLASS='intro'>a<BR/>b</P>"), Is.False);
+        }
+
     }
 }
