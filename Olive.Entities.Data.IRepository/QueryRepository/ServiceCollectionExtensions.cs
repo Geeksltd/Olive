@@ -67,24 +67,24 @@ public static class ServiceCollectionExtensions
 			throw new ArgumentNullException(nameof(services));
 		}
 
-		services.Add(new ServiceDescriptor(
-			typeof(IRepository),
-			serviceProvider =>
-			{
-				TDbContext dbContext = ActivatorUtilities.CreateInstance<TDbContext>(serviceProvider);
-				return new Repository<TDbContext>(dbContext);
-			},
-			lifetime));
+        services.Add(new ServiceDescriptor(
+                typeof(IRepository),
+                serviceProvider =>
+                {
+                    TDbContext dbContext = serviceProvider.GetRequiredService<TDbContext>();
+                    return new Repository<TDbContext>(dbContext);
+                },
+                lifetime));
 
-		services.Add(new ServiceDescriptor(
-		   typeof(IRepository<TDbContext>),
-		   serviceProvider =>
-		   {
-			   TDbContext dbContext = ActivatorUtilities.CreateInstance<TDbContext>(serviceProvider);
-			   return new Repository<TDbContext>(dbContext);
-		   },
-		   lifetime));
+        services.Add(new ServiceDescriptor(
+           typeof(IRepository<TDbContext>),
+           serviceProvider =>
+           {
+               TDbContext dbContext = serviceProvider.GetRequiredService<TDbContext>();
+               return new Repository<TDbContext>(dbContext);
+           },
+           lifetime));
 
-		return services;
+        return services;
 	}
 }

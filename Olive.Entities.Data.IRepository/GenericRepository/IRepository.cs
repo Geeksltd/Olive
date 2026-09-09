@@ -175,8 +175,9 @@ public interface IRepository : IQueryRepository
     /// </summary>
     /// <typeparam name="TEntity">The type of the <paramref name="entity"/> to be marked as modified.</typeparam>
     /// <param name="entity">The <typeparamref name="TEntity"/> object to be updated to the database on <see cref="SaveChangesAsync(CancellationToken)"/>.</param>
-    void Update<TEntity>(TEntity entity)
-        where TEntity : class;
+    void Update<TEntity>(TEntity entity, bool includeChildren = true)
+            where TEntity : class;
+
 
     /// <summary>
     /// This method takes <see cref="IEnumerable{TEntity}"/> objects, mark the objects as <see cref="EntityState.Modified"/> to the <see cref="ChangeTracker"/> of the <see cref="DbContext"/>.

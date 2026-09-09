@@ -209,7 +209,7 @@ where TEntity : class
         await _dbContext.Set<TEntity>().AddRangeAsync(entities, cancellationToken).ConfigureAwait(false);
     }
 
-    public void Update<TEntity>(TEntity entity)
+    public void Update<TEntity>(TEntity entity, bool includeChildren = true)
         where TEntity : class
     {
         if (entity == null)
@@ -217,35 +217,66 @@ where TEntity : class
             throw new ArgumentNullException(nameof(entity));
         }
 
+        // Check if entity is already tracked by reference
         EntityEntry<TEntity> trackedEntity = _dbContext.ChangeTracker
-            .Entries<TEntity>().FirstOrDefault(x => x.Entity == entity);
+            .Entries<TEntity>()
+            .FirstOrDefault(x => x.Entity == entity);
 
-        if (trackedEntity == null)
+        if (trackedEntity != null)
         {
-            IEntityType entityType = _dbContext.Model.FindEntityType(typeof(TEntity));
+            // Already tracked by reference  safe to skip Update
+            return;
+        }
 
-            if (entityType == null)
+        // Get entity metadata
+        IEntityType entityType = _dbContext.Model.FindEntityType(typeof(TEntity))
+            ?? throw new InvalidOperationException($"{typeof(TEntity).Name} is not part of EF Core DbContext model");
+
+        var primaryKey = entityType.FindPrimaryKey();
+        string primaryKeyName = primaryKey?.Properties.FirstOrDefault()?.Name;
+        if (primaryKeyName == null)
+        {
+            throw new InvalidOperationException("Primary key not found for entity type.");
+        }
+
+        // Get key value
+        object primaryValue = typeof(TEntity).GetProperty(primaryKeyName).GetValue(entity, null);
+        Type primaryKeyType = primaryKey.Properties.FirstOrDefault()?.ClrType;
+        object primaryKeyDefaultValue = primaryKeyType.IsValueType ? Activator.CreateInstance(primaryKeyType) : null;
+
+        if (Equals(primaryValue, primaryKeyDefaultValue))
+        {
+            throw new InvalidOperationException("The primary key value of the entity to be updated is not valid.");
+        }
+
+        // Check if another entity with the same key is already tracked
+        var existingTracked = _dbContext.ChangeTracker
+            .Entries<TEntity>()
+            .FirstOrDefault(e => Equals(e.Property(primaryKeyName).CurrentValue, primaryValue));
+
+        if (existingTracked != null)
+        {
+            // Instead of attaching the new instance, copy values into the tracked one
+            var trackedInstance = existingTracked.Entity;
+            _dbContext.Entry(trackedInstance).CurrentValues.SetValues(entity);
+            return;
+        }
+
+        // Entity not tracked  attach it
+
+        if (!includeChildren)
+        {
+            foreach (var navigation in _dbContext.Entry(entity).Navigations)
             {
-                throw new InvalidOperationException($"{typeof(TEntity).Name} is not part of EF Core DbContext model");
+                navigation.CurrentValue = null;
             }
 
-            string primaryKeyName = entityType.FindPrimaryKey().Properties.Select(p => p.Name).FirstOrDefault();
-
-            if (primaryKeyName != null)
-            {
-                Type primaryKeyType = entityType.FindPrimaryKey().Properties.Select(p => p.ClrType).FirstOrDefault();
-
-                object primaryKeyDefaultValue = primaryKeyType.IsValueType ? Activator.CreateInstance(primaryKeyType) : null;
-
-                object primaryValue = entity.GetType().GetProperty(primaryKeyName).GetValue(entity, null);
-
-                if (primaryKeyDefaultValue.Equals(primaryValue))
-                {
-                    throw new InvalidOperationException("The primary key value of the entity to be updated is not valid.");
-                }
-            }
-
-            _dbContext.Set<TEntity>().Update(entity);
+            var entry = _dbContext.Set<TEntity>().Attach(entity);
+            entry.State = EntityState.Modified;
+        }
+        else
+        {
+            _dbContext.Set<TEntity>().Update(entity); // only happens when no tracked entity exists
         }
     }
 
