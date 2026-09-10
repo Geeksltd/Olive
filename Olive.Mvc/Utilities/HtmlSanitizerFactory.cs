@@ -109,14 +109,42 @@ namespace Olive.Mvc
         public static string Sanitize(string html) => Shared.Value.Sanitize(html);
 
         /// <summary>
-        /// True when <see cref="Sanitize(string)"/> gives back exactly this HTML, i.e. saving it
-        /// means the reader sees what the writer typed. Use it to reject input that the sanitizer
-        /// would change, instead of letting it be changed silently at render time.
-        /// <para>The test is an exact comparison, so a rewrite counts as well as a removal:
-        /// Sanitize() re-serializes the document, so <c>&lt;BR/&gt;</c> becomes <c>&lt;br&gt;</c>,
-        /// single quotes become double quotes, and an unclosed tag gets closed.</para>
+        /// True when <see cref="Sanitize(string)"/> would take nothing out of this HTML, i.e.
+        /// saving it means the reader sees what the writer typed. Use it to reject unsafe input at
+        /// save time, instead of letting the page drop it silently.
         /// </summary>
-        public static bool IsSafe(string html) => html.IsEmpty() || Sanitize(html) == html;
+        public static bool IsSafe(string html) => SanitizeReport(html) == 0;
+
+        /// <summary>
+        /// How many tags and attributes <see cref="Sanitize(string)"/> would remove from this HTML.
+        /// Zero means nothing would be taken out.
+        /// <para>It counts removals only, so markup that the sanitizer merely writes back in another
+        /// form does not count. Sanitize() re-serializes the document, so <c>&lt;BR/&gt;</c> becomes
+        /// <c>&lt;br&gt;</c> and single quotes become double quotes. Comparing the two strings would
+        /// report those as a problem; this does not.</para>
+        /// <para>It uses its own sanitizer, built from the same settings, because the counting
+        /// handlers belong to this one call while the shared instance serves every request.</para>
+        /// </summary>
+        public static int SanitizeReport(string html)
+        {
+            if (html.IsEmpty()) return 0;
+
+            // Reading Shared.Value is what binds the settings from config, so it must come first.
+            // It also means this check uses exactly the policy that Raw() will apply.
+            _ = Shared.Value;
+
+            var removed = 0;
+            var sanitizer = Create(SettingsInstance);
+
+            sanitizer.RemovingTag += (_, _) => removed++;
+
+            // Create() attached its own handler first, which cancels (keeps) an allowed aria-*.
+            sanitizer.RemovingAttribute += (_, e) => { if (!e.Cancel) removed++; };
+
+            sanitizer.Sanitize(html);
+
+            return removed;
+        }
 
         // Runs on the first Sanitize() call, when Context is ready. The config values are copied
         // INTO the existing SettingsInstance, so delegates already assigned in Startup survive.

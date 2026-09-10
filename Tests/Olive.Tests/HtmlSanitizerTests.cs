@@ -658,11 +658,23 @@ namespace Olive.Tests
         }
 
         [Test]
-        public void IsSafe_RewrittenButHarmlessMarkup_IsAlsoRejected()
+        public void IsSafe_RewrittenButHarmlessMarkup_IsAccepted()
         {
-            // Nothing here is dangerous, but Sanitize() writes it back differently, so the exact
-            // comparison says no. Keep it in mind when choosing which fields to guard.
-            Assert.That(HtmlSanitizerFactory.IsSafe("<P CLASS='intro'>a<BR/>b</P>"), Is.False);
+            // Sanitize() writes this back differently (lower case tag, double quotes, <br>), but it
+            // takes nothing out. The count is what decides, so the save is allowed.
+            const string html = "<P CLASS='intro'>a<BR/>b</P>";
+
+            Assert.That(HtmlSanitizerFactory.Sanitize(html), Is.Not.EqualTo(html));
+            Assert.That(HtmlSanitizerFactory.SanitizeReport(html), Is.EqualTo(0));
+            Assert.That(HtmlSanitizerFactory.IsSafe(html), Is.True);
+        }
+
+        [Test]
+        public void SanitizeReport_CountsEachRemoval()
+        {
+            HtmlSanitizerFactory.SanitizeReport("<p>clean</p>").ShouldEqual(0);
+            HtmlSanitizerFactory.SanitizeReport("<p><risk label></p>").ShouldEqual(1);
+            HtmlSanitizerFactory.SanitizeReport("<img src=\"a.jpg\" onerror=\"x()\" onclick=\"y()\">").ShouldEqual(2);
         }
 
     }
