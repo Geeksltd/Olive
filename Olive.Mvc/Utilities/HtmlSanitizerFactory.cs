@@ -1,4 +1,4 @@
-using AngleSharp.Dom;
+﻿using AngleSharp.Dom;
 using Ganss.Xss;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -35,6 +35,20 @@ namespace Olive.Mvc
         /// <summary>The only hosts an iframe may load (~ the CSP "frame-src" directive). Subdomains included.</summary>
         public string[] AllowedFrameDomains { get; set; }
 
+        /// <summary>
+        /// Exceptions to the attribute rules. An attribute that the sanitizer is about to remove is
+        /// kept when one of these matches it, so a new case can be allowed from config instead of
+        /// from code.
+        /// <para>The case it was written for: a CKEditor upload puts the picture straight into the
+        /// markup as <c>&lt;img src="data:image/png;base64,..."&gt;</c>. "data" is not an allowed
+        /// scheme, so the src was dropped and the picture disappeared. One entry with tag "img",
+        /// attribute "src" and value "data:image/" brings it back.</para>
+        /// <para>Whatever is configured, an exception can never keep an <c>on*</c> handler, nor a
+        /// value holding <c>javascript:</c> or <c>vbscript:</c>, however it is spelled. See
+        /// <see cref="HtmlSanitizerFactory.IsKept"/>.</para>
+        /// </summary>
+        public KeptAttribute[] KeepAttributes { get; set; }
+
         /// <summary>Allow inert data-* attributes.</summary>
         public bool AllowDataAttributes { get; set; }
 
@@ -58,6 +72,21 @@ namespace Olive.Mvc
         /// in Startup. A marker is shown only when ShowRemoved is true AND this returns true;
         /// null (not set, or no signed-in user) hides the markers.</summary>
         public Func<bool?> ShowRemovedWhen { get; set; }
+    }
+
+    /// <summary>One entry of <see cref="HtmlSanitizerSettings.KeepAttributes"/>: an attribute the
+    /// sanitizer must keep even though its own rules would remove it.</summary>
+    public sealed class KeptAttribute
+    {
+        /// <summary>The element this applies to, e.g. "img". Empty or "*" means any element.</summary>
+        public string Tag { get; set; }
+
+        /// <summary>The attribute name, e.g. "src". Required; an entry without it is ignored.</summary>
+        public string Attribute { get; set; }
+
+        /// <summary>The value must start with this, e.g. "data:image/". Empty means any value,
+        /// so the attribute is always kept on that element.</summary>
+        public string ValueStartsWith { get; set; }
     }
 
     /// <summary>
@@ -163,6 +192,7 @@ namespace Olive.Mvc
             onto.RemoveAttributes = source.RemoveAttributes;
             onto.UriAttributes = source.UriAttributes;
             onto.AllowedFrameDomains = source.AllowedFrameDomains;
+            onto.KeepAttributes = source.KeepAttributes;
             onto.AllowDataAttributes = source.AllowDataAttributes;
             onto.AllowAriaAttributes = source.AllowAriaAttributes;
             onto.KeepChildNodes = source.KeepChildNodes;
@@ -254,6 +284,14 @@ namespace Olive.Mvc
                 return;
             }
 
+            // A configured exception, e.g. the data:image/... src of a picture pasted into CKEditor.
+            // Cancel keeps the attribute with its original value, so nothing is logged or marked.
+            if (IsKept(e, settings.KeepAttributes))
+            {
+                e.Cancel = true;
+                return;
+            }
+
             if (settings.LogRemoved)
                 LogRemoval("attribute", $"{name}=\"{e.Attribute.Value}\"", e.Reason, e.Tag);
 
@@ -339,6 +377,49 @@ namespace Olive.Mvc
             domains.Any(domain =>
                 host.Equals(domain, StringComparison.OrdinalIgnoreCase) ||
                 host.EndsWith("." + domain, StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>
+        /// Whether a configured exception says to keep this attribute
+        /// (see <see cref="HtmlSanitizerSettings.KeepAttributes"/>).
+        /// <para>Two things are refused whatever the config says, because keeping them would be a
+        /// live XSS hole and no picture or layout needs them: an <c>on*</c> handler, and a value
+        /// containing <c>javascript:</c> or <c>vbscript:</c>, including the spellings that hide a
+        /// control character inside the scheme. So a wrong config entry can make the page uglier,
+        /// never unsafe.</para>
+        /// <para>It cannot undo everything, though: an entry naming a URL attribute such as
+        /// <c>iframe</c>/<c>src</c> also switches off the
+        /// <see cref="HtmlSanitizerSettings.AllowedFrameDomains"/> check for it, and
+        /// <c>data:image/</c> is only inert on an <c>img</c>, not on an <c>object</c> or
+        /// <c>embed</c>, where an SVG can run script. Name the tag, and keep the list short.</para>
+        /// </summary>
+        internal static bool IsKept(RemovingAttributeEventArgs e, KeptAttribute[] exceptions)
+        {
+            if (exceptions.None()) return false;
+
+            var name = e.Attribute.Name;
+            if (name.StartsWith("on", StringComparison.OrdinalIgnoreCase)) return false;
+
+            var value = e.Attribute.Value.OrEmpty();
+
+            // A browser ignores TAB, CR, LF and the other control characters that sit inside a URL
+            // scheme, so "java&#9;script:alert(1)" still runs. Searching the raw value would miss
+            // that, so the scheme check runs on a copy with those characters taken out.
+            var scannable = new string(value.Where(c => c > 31 && c != 127).ToArray());
+            if (scannable.Contains("javascript:", StringComparison.OrdinalIgnoreCase)) return false;
+            if (scannable.Contains("vbscript:", StringComparison.OrdinalIgnoreCase)) return false;
+
+            var tag = e.Tag?.NodeName.OrEmpty();
+
+            // ValueStartsWith is matched on the RAW value on purpose. A value that only matches
+            // after cleaning is not the plain case these exceptions are for, so it stays removed.
+            return exceptions.Any(x =>
+                x != null &&
+                x.Attribute.HasValue() &&
+                x.Attribute.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+                (x.Tag.IsEmpty() || x.Tag == "*" || x.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase)) &&
+                (x.ValueStartsWith.IsEmpty() ||
+                 value.StartsWith(x.ValueStartsWith, StringComparison.OrdinalIgnoreCase)));
+        }
 
         /// <summary>An attribute name safe to embed into a data-removed-{name} attribute.</summary>
         static bool IsSafeAttrName(string name) =>

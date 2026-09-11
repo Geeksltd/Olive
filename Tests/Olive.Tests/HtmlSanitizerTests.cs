@@ -1,4 +1,4 @@
-using Ganss.Xss;
+﻿using Ganss.Xss;
 using Microsoft.AspNetCore.Html;
 using NUnit.Framework;
 using Olive.Mvc;
@@ -636,6 +636,149 @@ namespace Olive.Tests
             Assert.That(result, Does.Contain("&lt;risk label=\"\"&gt;&lt;/risk&gt;"));
             Assert.That(result, Does.Contain("Risk Assessment:"));
             Assert.That(result, Does.Contain("Follow-up Questions:"));
+        }
+
+        // ---- KeepAttributes: config exceptions to the attribute rules ----
+
+        static HtmlSanitizer BuildWithKeptDataImages() =>
+            HtmlSanitizerFactory.Create(new HtmlSanitizerSettings
+            {
+                AllowedSchemes = new[] { "http", "https", "mailto", "tel" },
+                AllowAttributes = new[] { "id", "class" },
+                KeepChildNodes = true,
+                KeepAttributes = new[]
+                {
+                    new KeptAttribute { Tag = "img", Attribute = "src", ValueStartsWith = "data:image/" }
+                }
+            });
+
+        [Test]
+        public void KeepAttributes_KeepsAPictureUploadedInTheEditor()
+        {
+            // CKEditor puts an uploaded picture straight into the markup as a data URI.
+            var result = BuildWithKeptDataImages()
+                .Sanitize("<p><img src=\"data:image/png;base64,iVBORw0KGgo=\" alt=\"chart\"></p>");
+
+            Assert.That(result, Does.Contain("src=\"data:image/png;base64,iVBORw0KGgo=\""));
+            Assert.That(result, Does.Contain("alt=\"chart\""));
+        }
+
+        [Test]
+        public void KeepAttributes_SavingSuchAnAnswerIsAllowed()
+        {
+            // The same rule decides IsSafe, so the student can save the answer that holds the picture.
+            var sanitizer = BuildWithKeptDataImages();
+            const string html = "<p><img src=\"data:image/png;base64,iVBORw0KGgo=\"></p>";
+
+            sanitizer.Sanitize(html).ShouldEqual(html);
+        }
+
+        [Test]
+        public void KeepAttributes_KeepsAPicturePastedFromOffice()
+        {
+            // Office 365 pastes a picture as a blob: URL, which is another scheme the sanitizer
+            // does not allow. A second entry covers it, with no code change.
+            var sanitizer = HtmlSanitizerFactory.Create(new HtmlSanitizerSettings
+            {
+                AllowedSchemes = new[] { "http", "https" },
+                KeepAttributes = new[]
+                {
+                    new KeptAttribute { Tag = "img", Attribute = "src", ValueStartsWith = "blob:" }
+                }
+            });
+
+            var result = sanitizer.Sanitize(
+                "<img alt=\"training data workflow\" src=\"blob:https://m365.cloud.microsoft/e4ae3e22\">");
+
+            Assert.That(result, Does.Contain("src=\"blob:https://m365.cloud.microsoft/e4ae3e22\""));
+            Assert.That(result, Does.Contain("alt=\"training data workflow\""));
+        }
+
+        [Test]
+        public void KeepAttributes_DoesNotApplyToAnotherTagOrAnotherValue()
+        {
+            var sanitizer = BuildWithKeptDataImages();
+
+            // The rule names img, so an anchor does not get it.
+            Assert.That(sanitizer.Sanitize("<a href=\"data:image/png;base64,AAA\">x</a>"),
+                Does.Not.Contain("data:"));
+
+            // ...and a data URI that is not a picture does not match "data:image/".
+            Assert.That(sanitizer.Sanitize("<img src=\"data:text/html;base64,AAA\">"),
+                Does.Not.Contain("data:"));
+        }
+
+        [Test]
+        public void KeepAttributes_CanNeverKeepAScriptHook()
+        {
+            // A wrong entry tries to allow onerror and a javascript: link. Both are refused.
+            var sanitizer = HtmlSanitizerFactory.Create(new HtmlSanitizerSettings
+            {
+                AllowedSchemes = new[] { "http", "https" },
+                KeepAttributes = new[]
+                {
+                    new KeptAttribute { Attribute = "onerror" },
+                    new KeptAttribute { Tag = "a", Attribute = "href" }
+                }
+            });
+
+            var result = sanitizer.Sanitize("<img src=\"a.jpg\" onerror=\"alert(1)\">" +
+                                            "<a href=\"javascript:alert(1)\">x</a>");
+
+            Assert.That(result, Does.Not.Contain("onerror"));
+            Assert.That(result, Does.Not.Contain("javascript:"));
+        }
+
+        [Test]
+        public void KeepAttributes_CanNeverKeepAScriptHookHiddenInTheScheme()
+        {
+            // A browser ignores a TAB or a line break sitting inside the scheme, so
+            // "java&#9;script:alert(1)" still runs. A plain search for "javascript:" misses it.
+            var sanitizer = HtmlSanitizerFactory.Create(new HtmlSanitizerSettings
+            {
+                AllowedSchemes = new[] { "http", "https" },
+                KeepAttributes = new[] { new KeptAttribute { Tag = "a", Attribute = "href" } }
+            });
+
+            var attacks = new[]
+            {
+                "java&#9;script:alert(1)",      // tab
+                "java&#10;script:alert(1)",     // line feed
+                "java&#13;script:alert(1)",     // carriage return
+                "j&#9;a&#10;v&#13;ascript:alert(1)",
+                "vb&#9;script:alert(1)",
+                "&#1;javascript:alert(1)"       // a control character in front
+            };
+
+            foreach (var attack in attacks)
+            {
+                var result = sanitizer.Sanitize($"<a href=\"{attack}\">x</a>");
+
+                Assert.That(result, Does.Not.Contain("href"), attack);
+                Assert.That(result, Does.Not.Contain("alert"), attack);
+            }
+        }
+
+        [Test]
+        public void KeepAttributes_BindsFromTheConfigSection()
+        {
+            // The shape an app writes in appsettings.json, bound the same way the factory binds it.
+            const string json = @"{ ""Html"": { ""Sanitizer"": {
+                ""KeepAttributes"": [ { ""Tag"": ""img"", ""Attribute"": ""src"", ""ValueStartsWith"": ""data:image/"" } ]
+            } } }";
+
+            var config = Microsoft.Extensions.Configuration.JsonConfigurationExtensions
+                .AddJsonStream(new Microsoft.Extensions.Configuration.ConfigurationBuilder(),
+                               new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
+                .Build();
+
+            var settings = Microsoft.Extensions.Configuration.ConfigurationBinder
+                .Get<HtmlSanitizerSettings>(config.GetSection("Html:Sanitizer"));
+
+            settings.KeepAttributes.Length.ShouldEqual(1);
+            settings.KeepAttributes[0].Tag.ShouldEqual("img");
+            settings.KeepAttributes[0].Attribute.ShouldEqual("src");
+            settings.KeepAttributes[0].ValueStartsWith.ShouldEqual("data:image/");
         }
 
         // ---- IsSafe: validating user input before it is saved ----
