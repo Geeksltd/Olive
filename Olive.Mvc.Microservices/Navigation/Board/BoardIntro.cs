@@ -29,5 +29,11 @@ namespace Olive.Mvc.Microservices
         /// Name of the search result. This is mandatory.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Title for the browser window of the board this intro opens, for a board whose window
+        /// should be named something other than Name. Optional: the hub falls back to Name.
+        /// </summary>
+        public string WindowTitle { get; set; }
     }
 }

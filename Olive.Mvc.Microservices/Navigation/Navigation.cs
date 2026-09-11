@@ -82,14 +82,15 @@
             });
         }
 
-        protected void AddIntro(string name, string url, string imageUrl = null, string desc = null)
+        protected void AddIntro(string name, string url, string imageUrl = null, string desc = null, string windowTitle = null)
         {
             Add(new BoardIntro
             {
                 Name = name,
                 Url = url,
                 ImageUrl = imageUrl,
-                Description = desc
+                Description = desc,
+                WindowTitle = windowTitle
             });
         }
 
