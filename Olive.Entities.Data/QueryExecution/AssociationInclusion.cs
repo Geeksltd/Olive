@@ -22,31 +22,30 @@ namespace Olive.Entities.Data
 
         public async Task LoadAssociations(DatabaseQuery query, IEnumerable<IEntity> mainObjects)
         {
-            var associatedObjects = LoadTheAssociatedObjects(query);
-
-            var groupedObjects = GroupTheMainObjects(mainObjects);
-
             var cachedField = query.EntityType.GetField("cached" + Association.Name,
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
-            if (cachedField != null)
-                foreach (var associatedObject in await associatedObjects)
-                {
-                    var group = groupedObjects.GetOrDefault(associatedObject.GetId());
-                    if (group == null)
-                    {
-                        if (query.PageSize.HasValue) continue;
+            if (cachedField == null) return;
 
-                        throw new Exception($@"Database include binding failed.
+            var groupedObjects = GroupTheMainObjects(mainObjects);
+
+            foreach (var associatedObject in await LoadTheAssociatedObjects(query, groupedObjects.Keys))
+            {
+                var group = groupedObjects.GetOrDefault(associatedObject.GetId());
+                if (group == null)
+                {
+                    if (query.PageSize.HasValue) continue;
+
+                    throw new Exception($@"Database include binding failed.
 The loaded associated {associatedObject.GetType().Name} with the id {associatedObject.GetId()},
 is not referenced by any {Association.DeclaringType.Name} object!
 Hint: All associated {Association.Name} Ids are:
 {groupedObjects.Select(x => x.Key).ToLinesString()}");
-                    }
-
-                    foreach (var mainEntity in group)
-                        BindToCachedField(cachedField, associatedObject, mainEntity);
                 }
+
+                foreach (var mainEntity in group)
+                    BindToCachedField(cachedField, associatedObject, mainEntity);
+            }
         }
 
         void BindToCachedField(FieldInfo cachedField, IEntity associatedObject, IEntity mainEntity)
@@ -69,15 +68,45 @@ Hint: All associated {Association.Name} Ids are:
                 .ToDictionary(i => i.Key, i => i.ToArray());
         }
 
-        Task<IEntity[]> LoadTheAssociatedObjects(DatabaseQuery query)
+        Task<IEntity[]> LoadTheAssociatedObjects(DatabaseQuery query, ICollection<object> associatedIds)
         {
             var nestedQuery = Context.Current.Database().Of(Association.PropertyType);
             var provider = ((DatabaseQuery)nestedQuery).Provider;
 
+            ICriterion criterion = null;
+
+            if (query.TakeTop.HasValue || query.PageSize.HasValue)
+            {
+                // The main query returned only a window of its matching rows (Top(), FirstOrDefault() or paging).
+                // Running it again as a sub-query can return a different window, because without a fully
+                // deterministic sort the database is free to pick any rows for TOP / OFFSET.
+                // That would load the associated objects of the wrong rows, so filter on the loaded ids instead.
+                if (associatedIds.None()) return Task.FromResult(new IEntity[0]);
+
+                criterion = CreateIdsCriterion(associatedIds);
+            }
+
+            criterion ??= provider.GetAssociationInclusionCriteria(query, Association);
+
             return nestedQuery
-                       .Where(provider.GetAssociationInclusionCriteria(query, Association))
+                       .Where(criterion)
                        .Include(IncludedNestedAssociations)
                        .GetList();
+        }
+
+        /// <summary>
+        /// Creates an "ID IN (...)" criterion for the specified ids.
+        /// It returns null for an unsupported ID type, in which case the caller should fall back to a sub-query.
+        /// </summary>
+        static ICriterion CreateIdsCriterion(IEnumerable<object> ids)
+        {
+            var items = ids.ExceptNull().ToArray();
+
+            if (items.All(x => x is Guid)) return new Criterion("ID", FilterFunction.In, items.Cast<Guid>());
+            if (items.All(x => x is int)) return new Criterion("ID", FilterFunction.In, items.Cast<int>());
+            if (items.All(x => x is string)) return new Criterion("ID", FilterFunction.In, items.Cast<string>());
+
+            return null;
         }
     }
 }
