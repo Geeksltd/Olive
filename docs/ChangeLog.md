@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 11 Sep 2026
+- Fixed eager loading (`Include(...)`) on queries that return only part of their matching rows: `FirstOrDefault()`, `Top(n)` and paging. The associated objects were loaded by running the main query again as a sub-query, and since `TOP` / `OFFSET` without a fully deterministic sort may return a different set of rows each time, the wrong associations were loaded. The association was then left unbound (so each one was lazy-loaded one by one on first access), or the load threw "Database include binding failed". Such queries now filter the associated objects on the ids of the rows actually loaded. No code changes required. `Olive.Entities.Data` bumped to `10.4.4`.
+
 ## 4 Sep 2026
 - `Any()`/`None()` on `IDatabaseQuery` (and the `Database.Any<T>()`/`Any<T>(criteria)`/`None<T>(...)` convenience methods) now generate a `SELECT TOP 1 ...` existence probe instead of `SELECT Count(...) > 0`, so SQL Server/MySQL/PostgreSQL/SQLite can stop at the first matching row instead of aggregating over every match. Also fixed row parsing (`GetList()`/`Get()`) to stop calling `IDataReader.GetSchemaTable()` once per row (and once per base/derived table of that row) — the reader's column set is now read once per query execution and reused, which was a real cost on large result sets, especially combined with `Select(columns)` narrowing. Both are internal/behavioural improvements; no code changes required. `Olive.Entities.Data` bumped to `10.4.3`.
 
