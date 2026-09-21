@@ -12,7 +12,7 @@ namespace Olive.Mvc
     /// <summary>
     /// The policy values for <see cref="HtmlSanitizerFactory"/>, bound from the
     /// "Html:Sanitizer" configuration section. All lists are optional.
-    /// <para>Semantics: <see cref="AllowedSchemes"/> and <see cref="AllowedCssProperties"/> REPLACE
+    /// <para>Semantics: <see cref="AllowedSchemes"/> and <see cref="OverrideAllowedCssProperties"/> REPLACE
     /// the whole list. <see cref="AllowTags"/> / <see cref="AllowAttributes"/> / <see cref="UriAttributes"/>
     /// / <see cref="AllowCssProperties"/> are ADDED to the library defaults.
     /// <see cref="RemoveAttributes"/> / <see cref="RemoveCssProperties"/> are REMOVED from them.</para>
@@ -41,7 +41,7 @@ namespace Olive.Mvc
         /// and adjust that with <see cref="AllowCssProperties"/> / <see cref="RemoveCssProperties"/>.
         /// <para>Only reached when "style" itself is allowed: an attribute dropped through
         /// <see cref="RemoveAttributes"/> never gets as far as its declarations.</para></summary>
-        public string[] AllowedCssProperties { get; set; }
+        public string[] OverrideAllowedCssProperties { get; set; }
 
         /// <summary>CSS properties added to the allowed list — either one the library does not have
         /// (e.g. aspect-ratio) or one from <see cref="HtmlSanitizerFactory.UnsafeCssProperties"/>
@@ -249,7 +249,7 @@ namespace Olive.Mvc
             onto.AllowAttributes = source.AllowAttributes;
             onto.RemoveAttributes = source.RemoveAttributes;
             onto.UriAttributes = source.UriAttributes;
-            onto.AllowedCssProperties = source.AllowedCssProperties;
+            onto.OverrideAllowedCssProperties = source.OverrideAllowedCssProperties;
             onto.AllowCssProperties = source.AllowCssProperties;
             onto.RemoveCssProperties = source.RemoveCssProperties;
             onto.AllowedFrameDomains = source.AllowedFrameDomains;
@@ -309,11 +309,11 @@ namespace Olive.Mvc
 
             // The declarations inside style="..." are filtered by their own list: allowing the
             // "style" attribute only gets you the properties named here (~ style-src).
-            if (settings.AllowedCssProperties?.Any() == true)
+            if (settings.OverrideAllowedCssProperties?.Any() == true)
             {
                 // The app has enumerated the whole list, so it owns it: no baseline subtraction.
                 sanitizer.AllowedCssProperties.Clear();
-                foreach (var property in settings.AllowedCssProperties) sanitizer.AllowedCssProperties.Add(property);
+                foreach (var property in settings.OverrideAllowedCssProperties) sanitizer.AllowedCssProperties.Add(property);
             }
             else
             {

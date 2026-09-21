@@ -839,10 +839,10 @@ namespace Olive.Tests
         }
 
         [Test]
-        public void Create_AllowedCssProperties_ReplacesTheWholeList()
+        public void Create_OverrideAllowedCssProperties_ReplacesTheWholeList()
         {
             // A style-src style allow-list: only these declarations may survive, everything else goes.
-            var sanitizer = BuildCssSanitizer(x => x.AllowedCssProperties = new[] { "text-align", "color" });
+            var sanitizer = BuildCssSanitizer(x => x.OverrideAllowedCssProperties = new[] { "text-align", "color" });
 
             var result = sanitizer.Sanitize("<p style=\"text-align:center;color:red;position:fixed;top:0\">x</p>");
 
@@ -901,7 +901,7 @@ namespace Olive.Tests
             var sanitizer = HtmlSanitizerFactory.Create(new HtmlSanitizerSettings
             {
                 RemoveAttributes = new[] { "style" },
-                AllowedCssProperties = new[] { "text-align" }
+                OverrideAllowedCssProperties = new[] { "text-align" }
             });
 
             Assert.That(sanitizer.Sanitize("<p style=\"text-align:center\">x</p>"), Does.Not.Contain("style"));
@@ -990,8 +990,8 @@ namespace Olive.Tests
         [Test]
         public void UnsafeCssProperties_NotAppliedWhenTheAppEnumeratesTheWholeList()
         {
-            // AllowedCssProperties is an explicit, exhaustive act: the app owns the list.
-            var sanitizer = BuildCssSanitizer(x => x.AllowedCssProperties = new[] { "position", "color" });
+            // OverrideAllowedCssProperties is an explicit, exhaustive act: the app owns the list.
+            var sanitizer = BuildCssSanitizer(x => x.OverrideAllowedCssProperties = new[] { "position", "color" });
 
             var result = sanitizer.Sanitize("<div style=\"position:absolute;color:red;margin:1px\">x</div>");
 
@@ -1003,7 +1003,7 @@ namespace Olive.Tests
         public void Create_CssFiltering_StillBlocksScriptUrlsInAllowedProperties()
         {
             // Allowing background-image must not become a javascript: hole.
-            var sanitizer = BuildCssSanitizer(x => x.AllowedCssProperties = new[] { "background-image" });
+            var sanitizer = BuildCssSanitizer(x => x.OverrideAllowedCssProperties = new[] { "background-image" });
 
             var result = sanitizer.Sanitize("<div style=\"background-image:url(javascript:alert(1))\">x</div>");
 
