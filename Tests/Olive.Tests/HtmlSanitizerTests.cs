@@ -820,5 +820,194 @@ namespace Olive.Tests
             HtmlSanitizerFactory.SanitizeReport("<img src=\"a.jpg\" onerror=\"x()\" onclick=\"y()\">").ShouldEqual(2);
         }
 
+        // ---- CSS properties: the second gate, applied to the declarations inside a kept style="..." ----
+
+        static HtmlSanitizer BuildCssSanitizer(Action<HtmlSanitizerSettings> configure)
+        {
+            var settings = HtmlSanitizerFactory.Default; // keeps the style attribute itself
+            configure(settings);
+            return HtmlSanitizerFactory.Create(settings);
+        }
+
+        [Test]
+        public void Default_KeepsCommonEditorCssProperties()
+        {
+            // What a CKEditor author actually writes. All of these are in the library's CSS list.
+            var result = GetHtml("<p style=\"text-align:justify\">Fees</p>".Raw());
+
+            Assert.That(result, Does.Contain("text-align: justify"));
+        }
+
+        [Test]
+        public void Create_AllowedCssProperties_ReplacesTheWholeList()
+        {
+            // A style-src style allow-list: only these declarations may survive, everything else goes.
+            var sanitizer = BuildCssSanitizer(x => x.AllowedCssProperties = new[] { "text-align", "color" });
+
+            var result = sanitizer.Sanitize("<p style=\"text-align:center;color:red;position:fixed;top:0\">x</p>");
+
+            Assert.That(result, Does.Contain("text-align: center"));
+            Assert.That(result, Does.Contain("color: rgba(255, 0, 0, 1)")); // AngleSharp normalises the value
+            Assert.That(result, Does.Not.Contain("position"));              // not listed -> dropped
+            Assert.That(result, Does.Not.Contain("top"));
+        }
+
+        [Test]
+        public void Create_RemoveCssProperties_DropsThemFromTheDefaults()
+        {
+            // On top of the UnsafeCssProperties baseline: hiding content is an integrity concern,
+            // so an app may want display/visibility gone too.
+            var sanitizer = BuildCssSanitizer(x => x.RemoveCssProperties = new[] { "display", "visibility" });
+
+            var result = sanitizer.Sanitize("<div style=\"display:none;visibility:hidden;color:red\">x</div>");
+
+            Assert.That(result, Does.Not.Contain("display"));
+            Assert.That(result, Does.Not.Contain("visibility"));
+            Assert.That(result, Does.Contain("color"));
+        }
+
+        [Test]
+        public void Create_AllowCssProperties_AddsToTheDefaults()
+        {
+            // aspect-ratio is not in the library's list, so it needs allowing explicitly.
+            var withoutIt = BuildCssSanitizer(_ => { })
+                .Sanitize("<div style=\"aspect-ratio:16/9\">x</div>");
+
+            var withIt = BuildCssSanitizer(x => x.AllowCssProperties = new[] { "aspect-ratio" })
+                .Sanitize("<div style=\"aspect-ratio:16/9\">x</div>");
+
+            Assert.That(withoutIt, Does.Not.Contain("aspect-ratio"));
+            Assert.That(withIt, Does.Contain("aspect-ratio"));
+        }
+
+        [Test]
+        public void Create_AllowCssProperties_WinsOverRemoveCssProperties()
+        {
+            // Same precedence as the attribute lists: remove runs first, so an explicit allow wins.
+            var sanitizer = BuildCssSanitizer(x =>
+            {
+                x.RemoveCssProperties = new[] { "color" };
+                x.AllowCssProperties = new[] { "color" };
+            });
+
+            Assert.That(sanitizer.Sanitize("<p style=\"color:red\">x</p>"), Does.Contain("color"));
+        }
+
+        [Test]
+        public void Create_CssPropertiesAreNotReachedWhenStyleItselfIsRemoved()
+        {
+            // The two gates are independent: allowing a property cannot bring back an attribute
+            // that RemoveAttributes has already dropped.
+            var sanitizer = HtmlSanitizerFactory.Create(new HtmlSanitizerSettings
+            {
+                RemoveAttributes = new[] { "style" },
+                AllowedCssProperties = new[] { "text-align" }
+            });
+
+            Assert.That(sanitizer.Sanitize("<p style=\"text-align:center\">x</p>"), Does.Not.Contain("style"));
+        }
+
+        // ---- The UnsafeCssProperties baseline: off the list for every policy, not just Default ----
+
+        [Test]
+        public void UnsafeCssProperties_ClickjackingOverlayCannotBeBuilt()
+        {
+            // The one that matters: an invisible full-page click target over the real UI.
+            var result = GetHtml(("<div style=\"position:fixed;top:0;left:0;width:100%;height:100%;" +
+                "z-index:9999;opacity:0;pointer-events:auto\">x</div>").Raw());
+
+            Assert.That(result, Does.Not.Contain("position"));
+            Assert.That(result, Does.Not.Contain("top"));
+            Assert.That(result, Does.Not.Contain("left"));
+            Assert.That(result, Does.Not.Contain("z-index"));
+            Assert.That(result, Does.Not.Contain("opacity"));
+            Assert.That(result, Does.Not.Contain("pointer-events"));
+            Assert.That(result, Does.Contain("width"));  // harmless without position: kept
+            Assert.That(result, Does.Contain("height"));
+        }
+
+        [Test]
+        public void UnsafeCssProperties_BlocksBeaconAndPixelStealingProperties()
+        {
+            var beacon = GetHtml("<p style=\"background-image:url(https://evil.com/b.png)\">x</p>".Raw());
+            var shorthand = GetHtml("<p style=\"background:url(https://evil.com/b.png) red\">x</p>".Raw());
+            var blend = GetHtml("<p style=\"mix-blend-mode:difference;filter:blur(2px)\">x</p>".Raw());
+            var timing = GetHtml("<p style=\"animation:spin 1s infinite;transition:all 1s\">x</p>".Raw());
+
+            Assert.That(beacon, Does.Not.Contain("evil.com"));
+            Assert.That(shorthand, Does.Not.Contain("evil.com"));
+            Assert.That(blend, Does.Not.Contain("mix-blend-mode"));
+            Assert.That(blend, Does.Not.Contain("filter"));
+            Assert.That(timing, Does.Not.Contain("animation"));
+            Assert.That(timing, Does.Not.Contain("transition"));
+        }
+
+        [Test]
+        public void UnsafeCssProperties_KeepsEverythingAnEditorActuallyUses()
+        {
+            // The whole point of the baseline: it must cost a CKEditor author nothing.
+            var input = "<p style=\"text-align:justify;color:#333;background-color:yellow;font-size:14px;" +
+                        "font-weight:bold;margin:10px;padding:5px;border:1px solid #ccc;" +
+                        "width:300px;float:left;line-height:1.5;text-decoration:underline\">Fees</p>";
+
+            var result = GetHtml(input.Raw());
+
+            foreach (var property in new[] { "text-align", "color", "background-color", "font-size",
+                "font-weight", "margin", "padding", "border", "width", "float", "line-height",
+                "text-decoration" })
+                Assert.That(result, Does.Contain(property), property + " must survive");
+        }
+
+        [Test]
+        public void UnsafeCssProperties_AppliesToAConfiguredPolicyToo()
+        {
+            // An app supplying its own "Html:Sanitizer" section replaces Default, so the baseline
+            // has to live in Create() — otherwise every configured app silently opts out of it.
+            var sanitizer = HtmlSanitizerFactory.Create(new HtmlSanitizerSettings
+            {
+                AllowedSchemes = new[] { "http", "https" },
+                AllowAttributes = new[] { "style", "id", "class" }
+            });
+
+            var result = sanitizer.Sanitize("<div style=\"position:absolute;color:red\">x</div>");
+
+            Assert.That(result, Does.Not.Contain("position"));
+            Assert.That(result, Does.Contain("color"));
+        }
+
+        [Test]
+        public void UnsafeCssProperties_CanBeReEnabledOneAtATime()
+        {
+            // The escape hatch: AllowCssProperties runs after the baseline removal.
+            var sanitizer = BuildCssSanitizer(x => x.AllowCssProperties = new[] { "background-image" });
+
+            var result = sanitizer.Sanitize("<p style=\"background-image:url(https://ex.com/b.png);position:fixed\">x</p>");
+
+            Assert.That(result, Does.Contain("background-image"));
+            Assert.That(result, Does.Not.Contain("position")); // the rest of the baseline still holds
+        }
+
+        [Test]
+        public void UnsafeCssProperties_NotAppliedWhenTheAppEnumeratesTheWholeList()
+        {
+            // AllowedCssProperties is an explicit, exhaustive act: the app owns the list.
+            var sanitizer = BuildCssSanitizer(x => x.AllowedCssProperties = new[] { "position", "color" });
+
+            var result = sanitizer.Sanitize("<div style=\"position:absolute;color:red;margin:1px\">x</div>");
+
+            Assert.That(result, Does.Contain("position"));
+            Assert.That(result, Does.Not.Contain("margin")); // not listed -> still dropped
+        }
+
+        [Test]
+        public void Create_CssFiltering_StillBlocksScriptUrlsInAllowedProperties()
+        {
+            // Allowing background-image must not become a javascript: hole.
+            var sanitizer = BuildCssSanitizer(x => x.AllowedCssProperties = new[] { "background-image" });
+
+            var result = sanitizer.Sanitize("<div style=\"background-image:url(javascript:alert(1))\">x</div>");
+
+            Assert.That(result, Does.Not.Contain("javascript:"));
+        }
     }
 }
