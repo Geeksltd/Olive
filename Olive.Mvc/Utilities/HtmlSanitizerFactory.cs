@@ -2,6 +2,7 @@
 using Ganss.Xss;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,9 +12,10 @@ namespace Olive.Mvc
     /// <summary>
     /// The policy values for <see cref="HtmlSanitizerFactory"/>, bound from the
     /// "Html:Sanitizer" configuration section. All lists are optional.
-    /// <para>Semantics: <see cref="AllowedSchemes"/> REPLACES the whole scheme list.
-    /// <see cref="AllowTags"/> / <see cref="AllowAttributes"/> / <see cref="UriAttributes"/>
-    /// are ADDED to the library defaults. <see cref="RemoveAttributes"/> is REMOVED from them.</para>
+    /// <para>Semantics: <see cref="AllowedSchemes"/> and <see cref="OverrideAllowedCssProperties"/> REPLACE
+    /// the whole list. <see cref="AllowTags"/> / <see cref="AllowAttributes"/> / <see cref="UriAttributes"/>
+    /// / <see cref="AllowCssProperties"/> are ADDED to the library defaults.
+    /// <see cref="RemoveAttributes"/> / <see cref="RemoveCssProperties"/> are REMOVED from them.</para>
     /// </summary>
     public sealed class HtmlSanitizerSettings
     {
@@ -31,6 +33,25 @@ namespace Olive.Mvc
 
         /// <summary>Attributes whose value is treated as a URL and scheme-checked (e.g. poster).</summary>
         public string[] UriAttributes { get; set; }
+
+        /// <summary>Replaces the whole allowed CSS property list, so a style="..." keeps ONLY these
+        /// declarations (e.g. text-align, color, background-color). Setting it also takes the app
+        /// out of the <see cref="HtmlSanitizerFactory.UnsafeCssProperties"/> baseline: an explicit,
+        /// exhaustive list is taken at its word. Leave it unset to keep the hardened library list
+        /// and adjust that with <see cref="AllowCssProperties"/> / <see cref="RemoveCssProperties"/>.
+        /// <para>Only reached when "style" itself is allowed: an attribute dropped through
+        /// <see cref="RemoveAttributes"/> never gets as far as its declarations.</para></summary>
+        public string[] OverrideAllowedCssProperties { get; set; }
+
+        /// <summary>CSS properties added to the allowed list — either one the library does not have
+        /// (e.g. aspect-ratio) or one from <see cref="HtmlSanitizerFactory.UnsafeCssProperties"/>
+        /// that the app has decided it needs back.</summary>
+        public string[] AllowCssProperties { get; set; }
+
+        /// <summary>CSS properties removed from the allowed list, on top of the ones
+        /// <see cref="HtmlSanitizerFactory.UnsafeCssProperties"/> already takes off it
+        /// (e.g. display and visibility, to stop an author hiding content).</summary>
+        public string[] RemoveCssProperties { get; set; }
 
         /// <summary>The only hosts an iframe may load (~ the CSP "frame-src" directive). Subdomains included.</summary>
         public string[] AllowedFrameDomains { get; set; }
@@ -107,6 +128,40 @@ namespace Olive.Mvc
 
         const string MarkerPrefix = "⚠ removed: ";
 
+        /// <summary>
+        /// The CSS properties taken OFF the library's list for every policy, because an inline
+        /// style="..." carrying one of them is an attack rather than formatting. An app that
+        /// genuinely needs one back names it in <see cref="HtmlSanitizerSettings.AllowCssProperties"/>,
+        /// which is applied after this.
+        /// <para>The groups, in order below: laying an invisible clickable layer over the page
+        /// (clickjacking); the blend/filter timing attacks that read cross-origin pixels; loading a
+        /// URL of the author's choosing when the element renders, which beacons every visitor's IP
+        /// to that host; and the animation/transition pair, which is both a resource sink and the
+        /// clock those timing attacks need. A few (inset, clip-path, backdrop-filter, will-change,
+        /// translate/rotate/scale) are not on the library's list today — removing them is free, and
+        /// they cannot slip in the day the package adds them.</para>
+        /// <para>Deliberately NOT here: width/height/margin/float/display/text-align/colours/fonts.
+        /// A CKEditor author uses those constantly, and without `position` they cannot overlay
+        /// anything — the worst they do is push the layout around.</para>
+        /// </summary>
+        public static readonly IReadOnlyList<string> UnsafeCssProperties = new[]
+        {
+            "position", "top", "right", "bottom", "left", "inset", "z-index", "opacity",
+            "pointer-events", "transform", "translate", "rotate", "scale", "clip", "clip-path",
+            "perspective", "will-change",
+
+            "mix-blend-mode", "isolation", "filter", "backdrop-filter",
+
+            "background", "background-image", "border-image", "border-image-source",
+            "list-style-image", "mask", "mask-image", "cursor", "content",
+
+            "animation", "animation-name", "animation-duration", "animation-delay",
+            "animation-iteration-count", "animation-direction", "animation-fill-mode",
+            "animation-play-state", "animation-timing-function",
+            "transition", "transition-property", "transition-duration", "transition-delay",
+            "transition-timing-function"
+        };
+
         // Created at type-load with NO config access, so Startup (ConfigureServices) can safely
         // assign delegates onto it before Context is ready.
         static readonly HtmlSanitizerSettings SettingsInstance = new();
@@ -126,6 +181,9 @@ namespace Olive.Mvc
         /// mailto/tel/http/https schemes, keep inline "style" and id/class, and unwrap disallowed
         /// tags (KeepChildNodes). Apps tighten this — e.g. drop style, allow video/iframe, show or
         /// log removals — through the "Html:Sanitizer" config section.
+        /// <para>Note that keeping "style" does not mean keeping every declaration in it: the
+        /// <see cref="UnsafeCssProperties"/> baseline applies to this policy as it does to a
+        /// configured one.</para>
         /// </summary>
         public static HtmlSanitizerSettings Default => new()
         {
@@ -191,6 +249,9 @@ namespace Olive.Mvc
             onto.AllowAttributes = source.AllowAttributes;
             onto.RemoveAttributes = source.RemoveAttributes;
             onto.UriAttributes = source.UriAttributes;
+            onto.OverrideAllowedCssProperties = source.OverrideAllowedCssProperties;
+            onto.AllowCssProperties = source.AllowCssProperties;
+            onto.RemoveCssProperties = source.RemoveCssProperties;
             onto.AllowedFrameDomains = source.AllowedFrameDomains;
             onto.KeepAttributes = source.KeepAttributes;
             onto.AllowDataAttributes = source.AllowDataAttributes;
@@ -246,6 +307,27 @@ namespace Olive.Mvc
             foreach (var attr in settings.UriAttributes.OrEmpty())
                 sanitizer.UriAttributes.Add(attr);
 
+            // The declarations inside style="..." are filtered by their own list: allowing the
+            // "style" attribute only gets you the properties named here (~ style-src).
+            if (settings.OverrideAllowedCssProperties?.Any() == true)
+            {
+                // The app has enumerated the whole list, so it owns it: no baseline subtraction.
+                sanitizer.AllowedCssProperties.Clear();
+                foreach (var property in settings.OverrideAllowedCssProperties) sanitizer.AllowedCssProperties.Add(property);
+            }
+            else
+            {
+                // Start from the library's list minus the properties no formatting needs.
+                foreach (var property in UnsafeCssProperties) sanitizer.AllowedCssProperties.Remove(property);
+            }
+
+            // Remove first, then add, so listing a property in both keeps it (same as attributes).
+            foreach (var property in settings.RemoveCssProperties.OrEmpty())
+                sanitizer.AllowedCssProperties.Remove(property);
+
+            foreach (var property in settings.AllowCssProperties.OrEmpty())
+                sanitizer.AllowedCssProperties.Add(property);
+
             sanitizer.AllowDataAttributes = settings.AllowDataAttributes;
             sanitizer.KeepChildNodes = settings.KeepChildNodes;
 
@@ -254,6 +336,7 @@ namespace Olive.Mvc
             // They only run when something is actually being removed, so clean HTML pays nothing.
             sanitizer.RemovingAttribute += (_, e) => OnRemovingAttribute(e, settings);
             sanitizer.RemovingTag += (_, e) => OnRemovingTag(e, settings);
+            sanitizer.RemovingStyle += (_, e) => OnRemovingStyle(e, settings);
 
             // frame-src allow-list: an iframe may only point at an https URL on a trusted domain.
             var frameDomains = settings.AllowedFrameDomains ?? Array.Empty<string>();
@@ -314,6 +397,16 @@ namespace Olive.Mvc
 
                 e.Tag.ClassList.Add("removed-attr");
             }
+        }
+
+        /// <summary>A single declaration dropped out of a style="..." that is otherwise kept.
+        /// Logged only: the element and its remaining declarations survive, so there is nothing to
+        /// mark. Without this, an author whose text-align quietly disappeared would find no trace of
+        /// it in the log, even with LogRemoved on.</summary>
+        static void OnRemovingStyle(RemovingStyleEventArgs e, HtmlSanitizerSettings settings)
+        {
+            if (settings.LogRemoved)
+                LogRemoval("style", $"{e.Style.Name}: {e.Style.Value}", e.Reason, e.Tag);
         }
 
         static void OnRemovingTag(RemovingTagEventArgs e, HtmlSanitizerSettings settings)
