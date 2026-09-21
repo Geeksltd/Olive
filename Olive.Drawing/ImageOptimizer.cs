@@ -80,10 +80,12 @@ namespace Olive.Drawing
 
         /// <summary>
         /// Optimizes the specified source image and returns the binary data of the output image.
+        /// When toWebp is true the output is WebP, whatever toJpeg says.
+        /// If the image cannot be optimized, the same sourceData array is returned.
         /// </summary>
-        public byte[] Optimize(byte[] sourceData, string imageExtension, bool toJpeg = true)
+        public byte[] Optimize(byte[] sourceData, string imageExtension, bool toJpeg = true, bool toWebp = false)
         {
-            var imageFormat = toJpeg ? SKEncodedImageFormat.Jpeg : Enum.TryParse<SKEncodedImageFormat>(imageExtension.Or("png"), true, out var f) ? f : SKEncodedImageFormat.Wbmp;
+            var imageFormat = toWebp ? SKEncodedImageFormat.Webp : toJpeg ? SKEncodedImageFormat.Jpeg : Enum.TryParse<SKEncodedImageFormat>(imageExtension.Or("png"), true, out var f) ? f : SKEncodedImageFormat.Wbmp;
             try
             {
                 using var source = SKBitmap.Decode(sourceData);
