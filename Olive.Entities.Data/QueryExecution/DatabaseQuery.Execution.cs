@@ -1,5 +1,6 @@
 ﻿namespace Olive.Entities.Data
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -56,7 +57,7 @@
             if (!IsCacheable()) return await LoadFromDatabase().ToArray();
 
             if (Context.Current.Database().AnyOpenTransaction())
-                return await LoadFromDatabaseAndCache().ToArray();
+                return (await LoadFromDatabaseAndCache()).Items.ToArray();
 
             if (Criteria.Any() || TakeTop.HasValue)
             {
@@ -67,7 +68,7 @@
                     return cached.ToArray();
 
                 var timestamp = Cache.GetQueryTimestamp();
-                var queried = await LoadFromDatabaseAndCache().ToArray();
+                var queried = (await LoadFromDatabaseAndCache()).Items.ToArray();
                 queryCache?.AddQueryResult(EntityType, cacheKey, queried, timestamp);
                 return queried;
             }
@@ -75,9 +76,13 @@
             var result = Cache.GetList(EntityType)?.Cast<IEntity>().ToArray();
             if (result != null) return result;
 
-            result = await LoadFromDatabaseAndCache().ToArray();
+            var loaded = await LoadFromDatabaseAndCache();
+            result = loaded.Items.ToArray();
 
-            Cache.AddList(EntityType, result);
+            // A record that changed while being loaded is not cached, so the list containing it isn't either.
+            // Checked again here, for a record saved or deleted after it was cached but before the list is.
+            if (loaded.AllCached && !IsAnyUpdatedSince(result, loaded.QueryTime))
+                Cache.AddList(EntityType, result);
 
             return result;
         }
@@ -119,11 +124,15 @@
             // await new AssociationEagerLoadService(mainResult, associationHeirarchy.Association, associationHeirarchy.SubAssociations, this).Run();
         }
 
-        async Task<List<IEntity>> LoadFromDatabaseAndCache()
+        bool IsAnyUpdatedSince(IEnumerable<IEntity> items, DateTime? queryTime) =>
+            queryTime.HasValue && items.Any(x => Cache.IsUpdatedSince(x, queryTime.Value));
+
+        async Task<(List<IEntity> Items, bool AllCached, DateTime? QueryTime)> LoadFromDatabaseAndCache()
         {
             var timestamp = Cache.GetQueryTimestamp();
 
             var result = new List<IEntity>();
+            var allCached = true;
 
             foreach (var item in await LoadFromDatabase())
             {
@@ -131,12 +140,14 @@
                 if (inCache != null) result.Add(inCache);
                 else
                 {
-                    (Context.Current.Database() as Database)?.TryCache(item, timestamp);
+                    if ((Context.Current.Database() as Database)?.TryCache(item, timestamp) == false)
+                        allCached = false;
+
                     result.Add(item);
                 }
             }
 
-            return result;
+            return (result, allCached, timestamp);
         }
 
         public async Task<int> Count()

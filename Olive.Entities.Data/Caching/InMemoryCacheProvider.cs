@@ -10,60 +10,46 @@ namespace Olive.Entities.Data
     /// </summary>
     public partial class InMemoryCacheProvider : ICacheProvider, IQueryCacheProvider
     {
-        ConcurrentDictionary<Type, Dictionary<string, IEntity>> Types = new ConcurrentDictionary<Type, Dictionary<string, IEntity>>();
+        // Concurrent at both levels: in the single-server cache mode one provider is shared by every request.
+        ConcurrentDictionary<Type, ConcurrentDictionary<string, IEntity>> Types = new ConcurrentDictionary<Type, ConcurrentDictionary<string, IEntity>>();
         ConcurrentDictionary<Type, IEnumerable> Lists = new ConcurrentDictionary<Type, IEnumerable>();
         ConcurrentDictionary<Type, ConcurrentDictionary<string, object>> Queries = new ConcurrentDictionary<Type, ConcurrentDictionary<string, object>>();
         ConcurrentDictionary<Type, long> QueryResultsInvalidatedAt = new ConcurrentDictionary<Type, long>();
         int? maxCachedQueriesPerType;
         int MaxCachedQueriesPerType => maxCachedQueriesPerType ??= Config.Get("Database:Cache:MaxCachedQueriesPerType", 200);
 
-        Dictionary<string, IEntity> GetEntities(Type type) =>
-            Types.GetOrAdd(type, t => new Dictionary<string, IEntity>());
+        ConcurrentDictionary<string, IEntity> GetEntities(Type type) =>
+            Types.GetOrAdd(type, t => new ConcurrentDictionary<string, IEntity>());
 
         public IEntity Get(Type entityType, string id)
         {
-            var entities = GetEntities(entityType);
+            // A read creates no map for a type that has never been cached.
+            if (!Types.TryGetValue(entityType, out var entities)) return null;
 
-            if (entities == null) return null;
-
-            try
-            {
-                if (entities.TryGetValue(id, out var result))
-                    return result;
-            }
-            catch
-            {
-                // A threading issue. No logging is needed.
-                return Get(entityType, id);
-            }
-
-            return null;
+            return entities.TryGetValue(id, out var result) ? result : null;
         }
 
         public void Add(IEntity entity)
         {
             var entities = GetEntities(entity.GetType());
+            var id = entity.GetId().ToString();
 
+            // Writes are locked, as TryUpdate() can't detect a concurrent replacement: it compares the instances
+            // with Entity.Equals(), which matches any instance with the same ID. Reads remain lock-free.
             lock (entities)
             {
-                var id = entity.GetId().ToString();
+                entities.TryGetValue(id, out var existing);
+                entities[id] = entity;
 
-                if (entities.ContainsKey(id))
-                {
-                    entities.GetOrDefault(id)?.InvalidateCachedReferences();
-                    entities.Remove(id);
-                }
-
-                entities.Add(id, entity);
+                // Invalidated once replaced, so that a reference reloading it finds the new instance.
+                existing?.InvalidateCachedReferences();
             }
         }
 
         public void Remove(IEntity entity)
         {
-            var entities = GetEntities(entity.GetType());
-
-            lock (entities)
-                entities.Remove(entity.GetId().ToString());
+            if (Types.TryGetValue(entity.GetType(), out var entities))
+                entities.TryRemove(entity.GetId().ToString(), out _);
         }
 
         public void Remove(Type type, bool invalidateCachedReferences = false)

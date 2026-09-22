@@ -32,6 +32,15 @@ namespace Olive.Entities.Data
         }
 
         /// <summary>
+        /// Adds a given entity to the cache without discarding the cached list of its type.
+        /// Only for an entity that is known not to belong in that list, such as a soft deleted record.
+        /// </summary>
+        internal void AddKeepingList(IEntity entity)
+        {
+            if (IsCacheable(entity.GetType())) CacheProvider.Add(entity);
+        }
+
+        /// <summary>
         /// Removes a given entity from the cache.
         /// </summary>
         public virtual void Remove(IEntity entity)
@@ -99,7 +108,13 @@ namespace Olive.Entities.Data
             return CacheProvider.GetList(type);
         }
 
-        public void ClearAll() => CacheProvider.ClearAll();
+        public void ClearAll()
+        {
+            CacheProvider.ClearAll();
+
+            // The instances that cached references hold are no longer the cached ones, whichever provider kept them.
+            CachedReferences.InvalidateAll();
+        }
 
         public void AddList(Type type, IEnumerable list)
         {

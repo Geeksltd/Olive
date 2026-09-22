@@ -55,6 +55,8 @@ namespace Olive.Entities.Data
 
             await EnlistOrCreateTransaction(async () => await DoDelete(entity, behaviour));
 
+            // Like a save, so that a list loaded while this record was being deleted is not cached with it.
+            Cache.UpdateRowVersion(entity);
             Cache.Remove(entity);
 
             if (Transaction.Current != null)

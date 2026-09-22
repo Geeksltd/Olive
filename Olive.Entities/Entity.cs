@@ -16,10 +16,8 @@ namespace Olive.Entities
         static Dictionary<Type, PropertyInfo[]> PrimitiveProperties = new Dictionary<Type, PropertyInfo[]>();
         static object PrimitivePropertiesSyncLock = new object();
 
-        object CachedCopiesLock = new object();
-
         [NonSerialized]
-        internal List<ICachedReference> CachedCopies;
+        int cachedReferencesVersion;
         internal bool IsImmutable;
 
         [NonSerialized, XmlIgnore, EditorBrowsable(EditorBrowsableState.Never)]
@@ -46,18 +44,14 @@ namespace Olive.Entities
 
         public override int GetHashCode() => GetId().GetHashCode();
 
-        #region CachedCopies
+        #region Cached references
 
-        internal void RegisterCachedCopy(ICachedReference cachedCopy)
-        {
-            if (cachedCopy == null) return;
-
-            lock (CachedCopiesLock)
-            {
-                if (CachedCopies == null) CachedCopies = new List<ICachedReference>();
-                CachedCopies.Add(cachedCopy);
-            }
-        }
+        /// <summary>
+        /// Incremented each time this instance's cached references are invalidated. A cached reference records it when
+        /// it loads this instance and treats a change as a miss, so this instance keeps no list of the references to it.
+        /// A number rather than a flag: a reference that reloads this same instance afterwards is current again.
+        /// </summary>
+        internal int CachedReferencesVersion => System.Threading.Volatile.Read(ref cachedReferencesVersion);
 
         /// <summary>
         /// Invalidates its cached references.
@@ -65,11 +59,7 @@ namespace Olive.Entities
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual void InvalidateCachedReferences()
         {
-            lock (CachedCopiesLock)
-            {
-                if (CachedCopies == null) CachedCopies = new List<ICachedReference>();
-                else foreach (var c in CachedCopies) c.Invalidate();
-            }
+            System.Threading.Interlocked.Increment(ref cachedReferencesVersion);
 
             _ClonedFrom?.InvalidateCachedReferences();
         }

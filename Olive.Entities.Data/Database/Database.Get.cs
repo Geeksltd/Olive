@@ -1,36 +1,153 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Olive.Entities.Data
 {
     partial class Database
     {
-        internal async Task<IEntity> GetConcrete(object entityID, Type concreteType)
+        static readonly AsyncLocal<Type[]> TypesLoadingAllRecords = new AsyncLocal<Type[]>();
+
+        readonly ConcurrentDictionary<Type, Lazy<Task<IEntity[]>>> AllRecordsLoads =
+            new ConcurrentDictionary<Type, Lazy<Task<IEntity[]>>>();
+
+        internal Task<IEntity> GetConcrete(object entityID, Type concreteType) =>
+            GetConcrete(entityID, concreteType, nullIfMissing: false);
+
+        async Task<IEntity> GetConcrete(object entityID, Type concreteType, bool nullIfMissing)
         {
             var result = Cache.Get(concreteType, entityID.ToString());
             if (result != null) return result;
 
+            var loadsAllRecords = CanLoadAllRecords(concreteType);
+
+            if (loadsAllRecords)
+            {
+                var id = entityID.ToString();
+
+                result = (await LoadAllRecords(concreteType)).FirstOrDefault(x => x.GetId().ToString() == id);
+                if (result != null) return result;
+
+                // Not in the loaded list: the record may be soft deleted, added since the list was loaded,
+                // or the ID may be in a different text form. So it is still loaded by its ID, as before.
+            }
+
             var timestamp = Cache.GetQueryTimestamp();
 
-            result = await FromDatabase(entityID, concreteType);
+            result = await FromDatabase(entityID, concreteType, nullIfMissing);
+            if (result == null) return null;
+
+            // Looked up by a different text form of its ID (e.g. "gb" for "GB"), the record may already be cached.
+            // Replacing it would invalidate the references to it, and discard the loaded list of its type.
+            var cached = Cache.Get(result.GetType(), result.GetId().ToString());
+            if (cached != null) return cached;
+
+            // A soft deleted record is legitimately missing from the loaded list, so that list remains valid.
+            var keepList = loadsAllRecords && result is Entity entity && SoftDeleteAttribute.IsMarked(entity);
 
             // Don't cache the result if it is fetched in a transaction.
-            if (result != null) TryCache(result, timestamp);
+            TryCache(result, timestamp, keepList);
 
             return result;
         }
 
-        internal void TryCache(IEntity item, DateTime? queryTime)
+        /// <summary>
+        /// Determines whether all records of a [CacheAllRecords] type can be loaded into the cache in one query now.
+        /// Not inside a transaction or when the type isn't cacheable, as the loaded list would not be kept, nor while
+        /// the records of that type are already being loaded (e.g. a record's ToString() reading another record).
+        /// Nor within a DatabaseContext, whose connection may not be the one the loaded list was queried from.
+        /// </summary>
+        internal bool CanLoadAllRecords(Type type)
         {
-            if (AnyOpenTransaction()) return;
-            if (queryTime.HasValue && Cache.IsUpdatedSince(item, queryTime.Value)) return;
-            Cache.Add(item);
+            if (type.IsAbstract || !CacheAllRecordsAttribute.IsEnabled(type)) return false;
+            if (!Cache.IsCacheable(type)) return false;
+            if (SoftDeleteAttribute.Context.ShouldByPassSoftDelete()) return false;
+            if (TypesLoadingAllRecords.Value?.Contains(type) == true) return false;
+            if (DatabaseContext.Current != null) return false;
+            if (AnyOpenTransaction()) return false;
+
+            // The records are loaded through Context.Current.Database(), so they are only kept in the cache of this
+            // instance if that is this instance. It is not, for example, outside a request in the multi-server cache
+            // mode, where every call gets a new Database with an empty cache: loading all records would then be
+            // repeated for every lookup, so each record is loaded by its ID instead.
+            return ReferenceEquals(Context.Current.Database(), this);
+        }
+
+        /// <summary>
+        /// Loads all records of a [CacheAllRecords] type, from the cache if already loaded.
+        /// Concurrent callers share a single load of the same type.
+        /// </summary>
+        internal async Task<IEntity[]> LoadAllRecords(Type type)
+        {
+            // While loading another type, never wait for a load started elsewhere: that load could be waiting for
+            // this one (e.g. two types whose ToString() read each other), so load it independently instead.
+            if (TypesLoadingAllRecords.Value?.Any() == true) return await LoadAllRecordsNow(type);
+
+            var load = AllRecordsLoads.GetOrAdd(type, t => new Lazy<Task<IEntity[]>>(() => LoadAllRecordsNow(t)));
+
+            try { return await load.Value; }
+            finally
+            {
+                ((ICollection<KeyValuePair<Type, Lazy<Task<IEntity[]>>>>)AllRecordsLoads)
+                    .Remove(new KeyValuePair<Type, Lazy<Task<IEntity[]>>>(type, load));
+            }
+        }
+
+        async Task<IEntity[]> LoadAllRecordsNow(Type type)
+        {
+            var loading = TypesLoadingAllRecords.Value ?? new Type[0];
+            TypesLoadingAllRecords.Value = loading.Concat(type).ToArray();
+
+            try { return await Of(type).GetList(); }
+            finally { TypesLoadingAllRecords.Value = loading; }
+        }
+
+        /// <summary>
+        /// Gets the record with the specified ID, or null if there is no such record.
+        /// Unlike GetOrDefault(), errors other than the record not being found are not swallowed, when the data
+        /// provider reports a missing record with a DataException (as the ADO.NET providers do) or with null.
+        /// For an interface type, where the implementing types are tried in turn, it behaves like GetOrDefault().
+        /// </summary>
+        internal async Task<IEntity> FindById(object entityID, Type type)
+        {
+            if (entityID.ToStringOrEmpty().IsEmpty()) return null;
+
+            if (NeedsTypeResolution(type)) return await GetOrDefault(entityID, type);
+
+            return await GetConcrete(entityID, type, nullIfMissing: true);
+        }
+
+        /// <summary>
+        /// Adds an item to the cache, unless it is loaded in a transaction or has changed since it was queried.
+        /// Returns whether it was added.
+        /// </summary>
+        internal bool TryCache(IEntity item, DateTime? queryTime, bool keepList = false)
+        {
+            if (AnyOpenTransaction()) return false;
+            if (queryTime.HasValue && Cache.IsUpdatedSince(item, queryTime.Value)) return false;
+
+            // Keeping the loaded list needs the built-in Cache. Other ICache implementations discard it, which is safe.
+            if (keepList && Cache is Cache cache) cache.AddKeepingList(item);
+            else Cache.Add(item);
+
+            return true;
         }
 
         [EscapeGCop("I am the solution to this GCop warning")]
-        async Task<IEntity> FromDatabase(object entityID, Type concreteType)
+        async Task<IEntity> FromDatabase(object entityID, Type concreteType, bool nullIfMissing = false)
         {
-            var result = await GetProvider(concreteType).Get(entityID);
+            IEntity result;
+
+            try { result = await GetProvider(concreteType).Get(entityID); }
+            catch (DataException) when (nullIfMissing)
+            {
+                // This is how the data provider reports that no record has this ID.
+                return null;
+            }
 
             if (result != null) await Entity.Services.RaiseOnLoaded(result as Entity);
 
