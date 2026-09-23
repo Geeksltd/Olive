@@ -213,13 +213,20 @@ namespace Olive.Entities
         }
 
         protected TEntity GetEntity(TKey id) =>
-            GetCached(id) ?? Task.Factory.RunSync(() => GetEntityAsync(id));
+            GetCached(id) ?? LoadSync(id, () => GetEntityAsync(id));
 
         protected TEntity GetEntityOrDefault(TKey id) =>
-            GetCached(id) ?? Task.Factory.RunSync(() => GetEntityOrDefaultAsync(id));
+            GetCached(id) ?? LoadSync(id, () => GetEntityOrDefaultAsync(id));
 
-        protected TEntity GetEntity(TKey id, Func<Task<TEntity>> loader) =>
-            GetCached(id) ?? Task.Factory.RunSync(() => GetEntityAsync(id, loader));
+        protected TEntity GetEntity(TKey id, Func<Task<TEntity>> loader)
+        {
+            if (loader == null) throw new ArgumentNullException(nameof(loader));
+
+            return GetCached(id) ?? LoadSync(id, () => GetEntityAsync(id, loader));
+        }
+
+        // An empty ID has no record, so there is nothing to load, and no thread to block for it.
+        TEntity LoadSync(TKey id, Func<Task<TEntity>> load) => IsEmpty(id) ? null : Task.Factory.RunSync(load);
 
         protected async Task<TEntity> GetEntityAsync(TKey id)
         {
@@ -272,7 +279,19 @@ namespace Olive.Entities
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-            Id = GetId(entity);
+            BindTo(GetId(entity), entity);
+        }
+
+        /// <summary>
+        /// Binds a loaded record to the ID it is read by, which may differ from its own ID, e.g. "gb" for the record
+        /// "GB" under a case-insensitive collation, so that reading it by that ID is served without loading it again.
+        /// Invoked via reflection by DatabaseIncludeExtensions (Including).
+        /// </summary>
+        protected void BindTo(TKey id, TEntity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            Id = id;
 
             // By design, a record bound inside a transaction is not tied to the invalidation of its record.
             Loaded = new Snapshot(entity, tracksRecord: !Database.AnyOpenTransaction());

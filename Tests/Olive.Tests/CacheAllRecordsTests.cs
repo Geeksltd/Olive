@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -116,6 +117,15 @@ namespace Olive.Tests
             public string PlainId { get; set; }
 
             public Plain Plain => cachedPlain.GetOrDefault(PlainId);
+        }
+
+        public class Holder : GuidEntity
+        {
+            CachedReference<PlainOwner> cachedOwner = new CachedReference<PlainOwner>();
+
+            public Guid? OwnerId { get; set; }
+
+            public PlainOwner Owner => cachedOwner.GetOrDefault(OwnerId);
         }
 
         Dictionary<Type, Mock<IDataProvider>> providers;
@@ -660,6 +670,187 @@ namespace Olive.Tests
             VerifyLoads<Status>(lists: 1, singles: 0);
             GetProvider(typeof(Status)).Verify(x => x.GetAssociationInclusionCriteria(It.IsAny<IDatabaseQuery>(),
                 It.IsAny<System.Reflection.PropertyInfo>()), Times.Never);
+        }
+
+        /// <summary>
+        /// Counts the tasks started on it. A read run on it that loads synchronously (RunSync) starts another one.
+        /// </summary>
+        class CountingScheduler : TaskScheduler
+        {
+            public int Started;
+
+            protected override void QueueTask(Task task)
+            {
+                Interlocked.Increment(ref Started);
+                ThreadPool.QueueUserWorkItem(_ => TryExecuteTask(task));
+            }
+
+            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued) => false;
+
+            protected override IEnumerable<Task> GetScheduledTasks() => null;
+        }
+
+        static async Task<(T Result, bool RanSync)> Read<T>(Func<T> read)
+        {
+            var scheduler = new CountingScheduler();
+            var result = await Task.Factory.StartNew(read, CancellationToken.None, TaskCreationOptions.None, scheduler);
+            return (result, scheduler.Started > 1);
+        }
+
+        [Test]
+        public async Task Reading_an_association_that_is_not_included_runs_synchronously()
+        {
+            var one = Add(new Plain { ID = "one" });
+            var owner = Add(new PlainOwner { PlainId = "one" });
+
+            var read = await Read(() => owner.Plain);
+
+            Assert.That(read.Result, Is.SameAs(one));
+            Assert.That(read.RanSync, Is.True); // What Including() prevents, and this detects.
+        }
+
+        [Test]
+        public async Task Including_binds_the_association_so_reading_it_does_not_load_it_again()
+        {
+            config.Cache.Enabled = false; // So any load on reading the association reaches the provider.
+            var one = Add(new Plain { ID = "one" });
+            var owner = Add(new PlainOwner { PlainId = "one" });
+
+            var loaded = await database.Get<PlainOwner>(owner.ID).Including(x => x.Plain);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+
+            var read = await Read(() => loaded.Plain);
+            Assert.That(read.Result, Is.SameAs(one));
+            Assert.That(read.RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_binds_nested_associations()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            var owner = Add(new PlainOwner { PlainId = "one" });
+            var holder = Add(new Holder { OwnerId = owner.ID });
+
+            var loaded = await database.Get<Holder>(holder.ID).Including(x => x.Owner.Plain);
+
+            var read = await Read(() => loaded.Owner.Plain);
+            Assert.That(read.Result, Is.SameAs(one));
+            Assert.That(read.RanSync, Is.False);
+            Assert.That(loaded.Owner, Is.SameAs(owner));
+            VerifyLoads<PlainOwner>(lists: 0, singles: 1);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_binds_a_string_id_that_differs_in_case_from_the_record()
+        {
+            var gb = Add(new Plain { ID = "GB" });
+            var owner = Add(new PlainOwner { PlainId = "gb" });
+
+            // Like a case-insensitive database collation.
+            GetProvider(typeof(Plain)).Setup(x => x.Get(It.IsAny<object>())).Returns((object id) =>
+                Task.FromResult<IEntity>(rows[typeof(Plain)].Single(r => r.GetId().ToString().Equals(id.ToString(),
+                    StringComparison.OrdinalIgnoreCase))));
+
+            var loaded = await database.Get<PlainOwner>(owner.ID).Including(x => x.Plain);
+
+            var read = await Read(() => loaded.Plain);
+            Assert.That(read.Result, Is.SameAs(gb));
+            Assert.That(read.RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_is_served_from_the_cache()
+        {
+            var one = Add(new Plain { ID = "one" });
+            var owner = Add(new PlainOwner { PlainId = "one" });
+
+            await database.Get<PlainOwner>(owner.ID).Including(x => x.Plain);
+            var loaded = await database.Get<PlainOwner>(owner.ID).Including(x => x.Plain);
+
+            Assert.That((await Read(() => loaded.Plain)).RanSync, Is.False);
+            Assert.That(loaded.Plain, Is.SameAs(one));
+            VerifyLoads<PlainOwner>(lists: 0, singles: 1);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_binds_inside_a_transaction()
+        {
+            var one = Add(new Plain { ID = "one" });
+            var owner = Add(new PlainOwner { PlainId = "one" });
+
+            using (new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var loaded = await database.Get<PlainOwner>(owner.ID).Including(x => x.Plain);
+
+                var read = await Read(() => loaded.Plain);
+                Assert.That(read.Result, Is.SameAs(one));
+                Assert.That(read.RanSync, Is.False);
+            }
+        }
+
+        [Test]
+        public async Task Reading_an_association_with_no_id_does_not_run_synchronously()
+        {
+            var owner = Add(new PlainOwner());
+
+            var loaded = await database.Get<PlainOwner>(owner.ID).Including(x => x.Plain);
+
+            var read = await Read(() => loaded.Plain);
+            Assert.That(read.Result, Is.Null);
+            Assert.That(read.RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 0);
+        }
+
+        [Test]
+        public void Including_a_property_that_is_not_an_association_throws()
+        {
+            var owner = Add(new PlainOwner { PlainId = "one" });
+
+            Assert.ThrowsAsync<ArgumentException>(() => database.Get<PlainOwner>(owner.ID).Including(x => x.PlainId));
+        }
+
+        [Test]
+        public async Task Including_returns_null_for_a_missing_record()
+        {
+            GetProvider(typeof(PlainOwner));
+
+            Assert.That(await database.FindById<PlainOwner>(Guid.NewGuid()).Including(x => x.Plain), Is.Null);
+            VerifyLoads<Plain>(lists: 0, singles: 0);
+        }
+
+        [Test]
+        public async Task Including_binds_the_association_of_a_record_found_by_criteria()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            Add(new PlainOwner { PlainId = "one" });
+
+            var loaded = await database.FirstOrDefault<PlainOwner>(x => x.PlainId == "one").Including(x => x.Plain);
+
+            var read = await Read(() => loaded.Plain);
+            Assert.That(read.Result, Is.SameAs(one));
+            Assert.That(read.RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task IncludeAssociations_binds_the_association_of_a_record_in_hand()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            var owner = new PlainOwner { PlainId = "one" };
+
+            await database.IncludeAssociations(owner, x => x.Plain);
+
+            var read = await Read(() => owner.Plain);
+            Assert.That(read.Result, Is.SameAs(one));
+            Assert.That(read.RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
         }
     }
 }
