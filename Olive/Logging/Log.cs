@@ -39,9 +39,24 @@ namespace Olive
         public static void Error(this ILogger @this, Exception ex, string message = null)
             => @this.LogError(ex, message.Or(() => ex?.Message));
 
+        public static void Critical(this ILogger @this, string message)
+            => @this.LogCritical(message);
+
+        /// <summary>
+        /// Logs a failure that stops the application doing its job at all, falling back to the
+        /// exception's own message, as <see cref="Error(ILogger, Exception, string)"/> does.
+        /// </summary>
+        public static void Critical(this ILogger @this, Exception ex, string message = null)
+            => @this.LogCritical(ex, message.Or(() => ex?.Message));
+
         public static void Warning(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
         {
             @this.LogWarning(ToYaml(message, relatedObject, userId, userIp));
+        }
+
+        public static void Trace(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
+        {
+            @this.LogTrace(ToYaml(message, relatedObject, userId, userIp));
         }
 
         public static void Debug(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
