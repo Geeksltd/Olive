@@ -85,19 +85,50 @@ namespace Olive.Drawing
         /// </summary>
         public byte[] Optimize(byte[] sourceData, string imageExtension, bool toJpeg = true, bool toWebp = false)
         {
-            var imageFormat = toWebp ? SKEncodedImageFormat.Webp : toJpeg ? SKEncodedImageFormat.Jpeg : Enum.TryParse<SKEncodedImageFormat>(imageExtension.Or("png"), true, out var f) ? f : SKEncodedImageFormat.Wbmp;
+            var imageFormat = toWebp ? SKEncodedImageFormat.Webp : toJpeg ? SKEncodedImageFormat.Jpeg : GetEncodedFormat(imageExtension);
             try
             {
                 using var source = SKBitmap.Decode(sourceData);
+                if (source is null)
+                {
+                    Log.For<ImageOptimizer>().Warning($"Could not decode image with extension {imageExtension} and size {sourceData.Length}. Returning the original data.");
+                    return sourceData;
+                }
+
                 using var resultBitmap = Optimize(source);
                 using var image = SKImage.FromBitmap(resultBitmap);
-                var optimizedData = image.Encode(imageFormat, Quality).ToArray();
-                return optimizedData;
+                using var encoded = image?.Encode(imageFormat, Quality);
+                if (encoded is null)
+                {
+                    Log.For<ImageOptimizer>().Warning($"Could not encode image with extension {imageExtension} to {imageFormat}. Returning the original data.");
+                    return sourceData;
+                }
+
+                return encoded.ToArray();
             }
             catch (Exception ex)
             {
                 Log.For<ImageOptimizer>().Error(ex, $"[ERROR] optimizing image with extionsion {imageExtension} and size {sourceData.Length}.");
                 return sourceData;
+            }
+        }
+
+        /// <summary>
+        /// Maps a file extension to a format that Skia can encode. Falls back to Png.
+        /// </summary>
+        static SKEncodedImageFormat GetEncodedFormat(string imageExtension)
+        {
+            switch (imageExtension.Or("png").TrimStart('.').ToLowerInvariant())
+            {
+                case "jpg":
+                case "jpeg":
+                case "jfif":
+                    return SKEncodedImageFormat.Jpeg;
+                case "webp":
+                    return SKEncodedImageFormat.Webp;
+                default:
+                    // Skia can only encode Jpeg, Png and Webp.
+                    return SKEncodedImageFormat.Png;
             }
         }
 
@@ -119,6 +150,9 @@ namespace Olive.Drawing
             {
                 throw new Exception("Could not obtain bitmap data from the file: {0}.".FormatWith(souceImagePath), ex);
             }
+
+            if (source is null)
+                throw new Exception("Could not obtain bitmap data from the file: {0}.".FormatWith(souceImagePath));
 
             using (source)
             using (var optimizedImage = SKImage.FromBitmap(Optimize(source)))
