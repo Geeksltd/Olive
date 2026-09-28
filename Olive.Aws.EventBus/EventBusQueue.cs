@@ -117,14 +117,19 @@ namespace Olive.Aws
 
             if (response.Failed.Any())
             {
-                if (retry > MAX_RETRY)
-                    throw new Exception("Failed to send all requests because : " + response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
+                if (retry >= MAX_RETRY)
+                    throw new Exception($"Failed to send {response.Failed.Count} messages to {QueueUrl} after {MAX_RETRY} retries because : " +
+                        response.Failed.Select(f => f.Code).ToString(Environment.NewLine));
 
                 Log.For(this)
-                    .Warning($"Failed to send {response.Failed.Select(c => c.Message).ToLinesString()} because : {response.Failed.Select(c => c.Code).ToLinesString()}. Retrying for {retry}/{MAX_RETRY}.");
+                    .Warning($"Failed to send {response.Failed.Count} of {request.Entries.Count} messages to {QueueUrl}: " +
+                    response.Failed.Select(f => $"{f.Id}: {f.Code} {f.Message}").ToString("; ") +
+                    $". Retrying for {retry + 1}/{MAX_RETRY}.");
 
-                var toSend = response.Failed.Select(f => f.Message);
-                successfuls.AddRange(await PublishBatch(toSend, retry++));
+                // A failed entry's Message is SQS's error text, not what was sent, so the original body is
+                // found again by the entry's Id.
+                var toSend = response.Failed.Select(f => request.Entries.First(e => e.Id == f.Id).MessageBody).ToList();
+                successfuls.AddRange(await PublishBatch(toSend, retry + 1));
             }
 
             return successfuls;
