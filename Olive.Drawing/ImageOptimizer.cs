@@ -108,7 +108,7 @@ namespace Olive.Drawing
             }
             catch (Exception ex)
             {
-                Log.For<ImageOptimizer>().Error(ex, $"[ERROR] optimizing image with extionsion {imageExtension} and size {sourceData.Length}.");
+                Log.For<ImageOptimizer>().Warning(ex, $"Failed optimizing image with extension {imageExtension} and size {sourceData.Length}. The original is used instead.");
                 return sourceData;
             }
         }

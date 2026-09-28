@@ -198,7 +198,7 @@ namespace Olive.RabbitMQ
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
 
-                Log.For(this).Info($"RabbitMQ received message: Queue {QueueUrl}");
+                Log.For(this).Debug($"RabbitMQ received message: Queue {QueueUrl}");
 
                 result.Add(new QueueMessageHandle(
                     message,

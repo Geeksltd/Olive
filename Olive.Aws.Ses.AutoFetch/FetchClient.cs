@@ -23,9 +23,9 @@ namespace Olive.Aws.Ses.AutoFetch
             SaveMessage = saveMessage ?? DoSaveMessage;
             SaveAttachments = saveAttachments ?? DoSaveAttachments;
 
-            Log.For(this).Info("Creating the aws client ...");
+            Log.For(this).Debug("Creating the aws client ...");
             S3Client = new Amazon.S3.AmazonS3Client();
-            Log.For(this).Info("Aws client created");
+            Log.For(this).Debug("Aws client created");
         }
 
         internal static async Task Fetch(EmailAccount account, Func<IMailMessage, Task<IMailMessage>> saveMessage = null, Func<IMailMessageAttachment[], Task> saveAttachments = null)
@@ -37,7 +37,7 @@ namespace Olive.Aws.Ses.AutoFetch
         Task<IMailMessage> DoSaveMessage(IMailMessage message) => Context.Current.Database().Save(message);
         Task DoSaveAttachments(IMailMessageAttachment[] attachments) => Context.Current.Database().Save(attachments);
 
-        void LogInfo(string log) => Log.For(this).Info(log);
+        void LogDebug(string log) => Log.For(this).Debug(log);
 
         async Task Fetch()
         {
@@ -45,23 +45,23 @@ namespace Olive.Aws.Ses.AutoFetch
 
             while (!isEmpty)
             {
-                LogInfo("Downloading from " + Account.S3Bucket);
+                LogDebug("Downloading from " + Account.S3Bucket);
                 var request = new Amazon.S3.Model.ListObjectsV2Request { BucketName = Account.S3Bucket };
                 var response = await S3Client.ListObjectsV2Async(request);
 
-                LogInfo($"Downloaded {response.S3Objects.Count} items from " + Account.S3Bucket);
+                LogDebug($"Downloaded {response.S3Objects.Count} items from " + Account.S3Bucket);
 
                 foreach (var item in response.S3Objects)
                     await Fetch(item);
 
 
-                Log.For(this).Info($"Downloaded {response.S3Objects.Count} items from " + Account.S3Bucket);
+                Log.For(this).Info($"Processed {response.S3Objects.Count} items from " + Account.S3Bucket);
 
                 isEmpty = response.NextContinuationToken.IsEmpty();
 
                 if (isEmpty)
                 {
-                    Log.For("Downloaded all the objects from " + Account.S3Bucket);
+                    Log.For(this).Info("Downloaded all the objects from " + Account.S3Bucket);
                     break;
                 }
             }
@@ -69,9 +69,9 @@ namespace Olive.Aws.Ses.AutoFetch
 
         async Task Fetch(Amazon.S3.Model.S3Object item)
         {
-            LogInfo("Downloading object " + item.Key);
+            LogDebug("Downloading object " + item.Key);
             var message = await GetObject(item);
-            LogInfo("Downloaded object " + item.Key);
+            LogDebug("Downloaded object " + item.Key);
 
             using (var scope = new DbTransactionScope())
             {
@@ -80,9 +80,9 @@ namespace Olive.Aws.Ses.AutoFetch
                 message.Attachments.Do(x => x.MailMessageId = mailmessage.GetId().ToString().TryParseAs<Guid>());
                 await SaveAttachments(message.Attachments);
 
-                LogInfo("Deleting object " + item.Key);
+                LogDebug("Deleting object " + item.Key);
                 await Delete(item);
-                LogInfo("Deleted object " + item.Key);
+                LogDebug("Deleted object " + item.Key);
 
                 scope.Complete();
             }

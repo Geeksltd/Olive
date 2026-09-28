@@ -31,11 +31,11 @@ namespace Olive.BlobAws
             {
                 try
                 {
-                    Log.Debug("Blob create upload request");
+                    Log.Trace("Blob create upload request");
                     var request = await CreateUploadRequest(document);
-                    Log.Debug("Blob create upload object");
+                    Log.Trace("Blob create upload object");
                     var response = await client.PutObjectAsync(request);
-                    Log.Debug("Blob response code: " + response.HttpStatusCode);
+                    Log.Trace("Blob response code: " + response.HttpStatusCode);
 
                     switch (response.HttpStatusCode)
                     {
@@ -46,7 +46,7 @@ namespace Olive.BlobAws
                 }
                 catch (Exception ex)
                 {
-                    Log.Debug("Create request ex: " + ex.Message);
+                    Log.Error(ex, "Failed to upload the blob to S3.");
                     throw ex;
                 }
             }

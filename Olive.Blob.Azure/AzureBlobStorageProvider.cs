@@ -55,17 +55,17 @@ namespace Olive.BlobAzure
 
             try
             {
-                Log.Debug("Blob create upload object");
+                Log.Trace("Blob create upload object");
                 var blobClient = containerClient.GetBlobClient(document.GetKey());
 
-                Log.Debug("Upload Blob to Azure");
+                Log.Trace("Upload Blob to Azure");
 
                 using (var dataStream = new MemoryStream(await document.GetFileDataAsync()))
                     await blobClient.UploadAsync(dataStream, true);
             }
             catch (Exception ex)
             {
-                Log.Debug("Save blob to azure ex: " + ex.Message);
+                Log.Error(ex, "Failed to save the blob to Azure.");
                 throw;
             }
         }
@@ -76,17 +76,17 @@ namespace Olive.BlobAzure
 
             try
             {
-                Log.Debug("Blob create upload object");
+                Log.Trace("Blob create upload object");
                 var blobClient = containerClient.GetBlobClient(key.Or(document.GetKey()));
 
-                Log.Debug("Upload Blob to Azure");
+                Log.Trace("Upload Blob to Azure");
 
                 using (var dataStream = new MemoryStream(await document.GetFileDataAsync()))
                     await blobClient.UploadAsync(dataStream, true);
             }
             catch (Exception ex)
             {
-                Log.Debug("Save blob to azure ex: " + ex.Message);
+                Log.Error(ex, "Failed to save the blob to Azure.");
                 throw;
             }
         }

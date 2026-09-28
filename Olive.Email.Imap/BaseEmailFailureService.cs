@@ -32,7 +32,7 @@ namespace Olive.Email
             {
                 if (IsFailure(email))
                 {
-                    Logger.LogInformation($"Recieved a failure email with id '{email.MessageId}' and subject '{email.Subject}'");
+                    Logger.Info($"Recieved a failure email with id '{email.MessageId}' and subject '{email.Subject}'");
 
                     using (var scope = Database.CreateTransactionScope())
                     {

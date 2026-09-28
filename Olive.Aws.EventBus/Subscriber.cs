@@ -75,7 +75,7 @@ namespace Olive.Aws
                     try
                     {
                         var receipt = new DeleteMessageRequest { QueueUrl = Queue.QueueUrl };
-                        Log.For(this).Info("Fetched message : " + item.Value.Body);
+                        Log.For(this).Trace("Fetched message : " + item.Value.Body);
                         await Handler(item.Key);
 
                         receipt.ReceiptHandle = item.Value.ReceiptHandle;

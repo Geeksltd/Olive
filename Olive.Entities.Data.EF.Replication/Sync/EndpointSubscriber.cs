@@ -48,13 +48,13 @@ namespace Olive.Entities.EF.Replication
 
 		public async Task RefreshData()
 		{
-			Log.Warning("Data table " + Endpoint.Table + " is empty. Adding a refresh message.");
+			Log.Info("Data table " + Endpoint.Table + " is empty. Adding a refresh message.");
 
 			var request = new RefreshMessage { TypeName = DomainType.Namespace + "." + DomainType.Name, RequestUtc = DateTime.UtcNow };
 			RefreshRequestUtc = request.RequestUtc;
 			await Endpoint.RefreshQueue.Publish(request);
 
-			Log.Warning("Refresh message published to queue.");
+			Log.Info("Refresh message published to queue.");
 		}
 
 		internal async Task Import(ReplicateDataMessage message)
@@ -62,20 +62,20 @@ namespace Olive.Entities.EF.Replication
 			if (message.CreationUtc < RefreshRequestUtc?.Subtract(TimeSyncTolerance))
 			{
 				// Ignore this. We will receive a full table after this anyway.
-				Log.Info("Ignored importing expired ReplicateDataMessage " + message.DeduplicationId + " because it's older the last refresh request.");
+				Log.Debug("Ignored importing expired ReplicateDataMessage " + message.DeduplicationId + " because it's older the last refresh request.");
 				return;
 			}
 
 			if (message.IsClearSignal)
 			{
-				Log.Debug($"Received Clear Signal for {message.TypeFullName}");
+				Log.Info($"Received Clear Signal for {message.TypeFullName}");
 
 				await DbContext.Database.ExecuteSqlRawAsync($"delete from {Endpoint.Schema.WithSuffix(".")}{Endpoint.Table}");
 
 				return;
 			}
 
-			Log.Debug($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
+			Log.Trace($"Beginning to import ReplicateDataMessage for {message.TypeFullName}:\n{message.Entity}\n\n");
 
 			IEntity entity;
 

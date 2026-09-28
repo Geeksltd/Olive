@@ -36,7 +36,7 @@ namespace Olive.Entities.EF.Replication
 
                 try
                 {
-                    Log.For(this).Debug($"Finding the value of {fieldName} field");
+                    Log.For(this).Trace($"Finding the value of {fieldName} field");
 
                     var value = f.GetSerializableValue(entity);
 

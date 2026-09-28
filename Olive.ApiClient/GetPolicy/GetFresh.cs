@@ -10,11 +10,13 @@ namespace Olive
 
         public override async Task<bool> Attempt(string url)
         {
+            RequestInfo requestInfo = null;
+
             try
             {
                 var cache = ApiResponseCache<T>.Create(url);
 
-                var requestInfo = new RequestInfo(ApiClient) { HttpMethod = "GET" };
+                requestInfo = new RequestInfo(ApiClient) { HttpMethod = "GET" };
 
                 Result = await requestInfo.TrySend<T>();
 
@@ -28,7 +30,9 @@ namespace Olive
             catch (Exception exception)
             {
                 Error = exception;
-                Log.For(this).Error(exception);
+
+                // A failed request is logged by TrySend, with its details; the cache failing is not.
+                if (exception != requestInfo?.Error) Log.For(this).Error(exception);
             }
 
             return false;

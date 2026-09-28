@@ -30,9 +30,9 @@ namespace Olive.Entities.Replication
             app.Map("/olive-endpoints/" + typeof(T).FullName.ToLower().Replace(".", "-"),
                 x => x.Use(async (ctx, next) =>
                 {
-                    Log.For(typeof(T)).Info("Pulling all trigger by the endpoint handler");
+                    Log.For(typeof(T)).Debug("Pulling all trigger by the endpoint handler");
                     await endpoint.PullAll();
-                    Log.For(typeof(T)).Info("Pulled all trigger by the endpoint handler");
+                    Log.For(typeof(T)).Debug("Pulled all trigger by the endpoint handler");
                 }));
 
             return app;
@@ -86,24 +86,24 @@ namespace Olive.Entities.Replication
             if (!RegisteredExposedEndpoints && hasDumpURL)
             {
                 RegisteredExposedEndpoints = true;
-                logger.Info("Registering the /all action");
+                logger.Debug("Registering the /all action");
                 app.Map(EXPOSED_ENDPOINTS_ACTION_PREFIX + "all", x => x.Use(async (context, next) =>
                 {
                     await context.Response.WriteHtmlAsync(ExposedEndpoints.Select(e => endpoint.HasDevelopmentQueueUrl()
                         ? $"<a href='{e}'>{e}</a> ( DEVELOPMENT ONLY )"
                         : $"<a href='{e}'>{e}</a>").ToHtmlLines());
                 }));
-                logger.Info("Registered the /all action");
+                logger.Debug("Registered the /all action");
             }
 
-            logger.Info("Registering refresh messages for All ...");
+            logger.Debug("Registering refresh messages for All ...");
             Register("All", async context =>
             {
                 await context.Response.WriteHtmlAsync("Endpoints: " + endpoint.ExposedTypes.ToString(" | "));
                 await endpoint.UploadAll();
                 await context.Response.WriteHtmlAsync("All done!");
             });
-            logger.Info("Registered refresh messages for All ...");
+            logger.Debug("Registered refresh messages for All ...");
 
             return app;
         }

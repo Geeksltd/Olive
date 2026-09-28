@@ -48,14 +48,15 @@ namespace Olive.Cloud
             }
             catch (AggregateException ex)
             {
-                Log.Error(ex, "Failed to obtain the secret with errors: " + SecretId);
-                Log.Error(ex.InnerException, "Failed to obtain the secret with error: " + SecretId);
+                // Critical: without its secrets the application cannot start. The inner errors are
+                // details of that one failure, so they do not raise an alert of their own.
+                Log.Critical(ex, "Failed to obtain the secret with errors: " + SecretId);
                 ex.InnerExceptions.Do(e => Log.Error(e, "Failed to obtain the secret with error: " + SecretId));
                 throw;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to obtain the secret: " + SecretId);
+                Log.Critical(ex, "Failed to obtain the secret: " + SecretId);
                 throw;
             }
         }

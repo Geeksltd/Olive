@@ -19,7 +19,7 @@ namespace Olive.GeoLocation
         {
             if (miles < 0)
             {
-                Log.For<Distance>().Error("Negative values for distance not supported");
+                Log.For<Distance>().Warning("Negative values for distance not supported. Using zero instead.");
                 miles = 0;
             }
 
@@ -30,7 +30,7 @@ namespace Olive.GeoLocation
         {
             if (meters < 0)
             {
-                Log.For<Distance>().Error("Negative values for distance not supported");
+                Log.For<Distance>().Warning("Negative values for distance not supported. Using zero instead.");
                 meters = 0;
             }
 
@@ -41,7 +41,7 @@ namespace Olive.GeoLocation
         {
             if (kilometers < 0)
             {
-                Log.For<Distance>().Error("Negative values for distance not supported");
+                Log.For<Distance>().Warning("Negative values for distance not supported. Using zero instead.");
                 kilometers = 0;
             }
 

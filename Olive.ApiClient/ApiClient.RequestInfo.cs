@@ -76,6 +76,8 @@ namespace Olive
             /// </summary>
             public async Task<TResponse> TrySend<TResponse>()
             {
+                var watch = Stopwatch.StartNew();
+
                 try
                 {
                     ResponseText = (await DoSend()).OrEmpty();
@@ -83,11 +85,12 @@ namespace Olive
                 }
                 catch (Exception ex)
                 {
-                    LogTheError(ex);
+                    Error = ex;
 
-                    if (ResponseCode.ContainsUserMessage()) throw ex;
+                    var rethrow = ResponseCode.ContainsUserMessage() || Client.FallBackEventPolicy == ApiFallBackEventPolicy.Raise;
+                    LogFailure(ex, watch.Elapsed, rethrow);
 
-                    if (Client.FallBackEventPolicy == ApiFallBackEventPolicy.Raise) throw ex;
+                    if (rethrow) throw;
                     return default(TResponse);
                 }
             }
@@ -117,7 +120,7 @@ namespace Olive
                     else
                     {
                         result = JsonConvert.DeserializeObject<TResponse>(response);
-                        Log.For(this).Debug("ExtractResponse: Deserialized Result: " + result);
+                        Log.For(this).Trace("ExtractResponse: Deserialized Result: " + result);
                     }
 
                     return result;
@@ -164,6 +167,7 @@ namespace Olive
                 using (CreateHttpClient())
                 {
                     string responseBody = null;
+                    var watch = Stopwatch.StartNew();
 
                     try
                     {
@@ -173,7 +177,7 @@ namespace Olive
                         ResponseCode = response.StatusCode;
                         ResponseHeaders = response.Headers;
 
-                        Log.For(this).Debug("DoSend ResponseCode:" + ResponseCode + " for " + Client.Url);
+                        Log.For(this).Debug($"{HttpMethod} {UrlForLog} returned {(int)ResponseCode} {ResponseCode} in {watch.ElapsedMilliseconds}ms");
 
                         if (ResponseCode == HttpStatusCode.NotModified && LocalCachedVersion.HasValue())
                             return null;
@@ -186,7 +190,7 @@ namespace Olive
                         }
                         else
                         {
-                            Log.For(this).Debug("DoSend result: " + responseBody);
+                            Log.For(this).Trace("DoSend result: " + responseBody);
                             return responseBody;
                         }
                     }
@@ -252,11 +256,17 @@ namespace Olive
                 return new Exception(errorMessage.Or(ex.Message), ex);
             }
 
-            void LogTheError(Exception ex)
+            void LogFailure(Exception ex, TimeSpan elapsed, bool rethrown)
             {
-                Error = ex;
-                Debug.WriteLine($"Http{HttpMethod} failed -> {Url}");
-                Debug.WriteLine(ex);
+                var status = ResponseCode == 0 ? "" : $" with {(int)ResponseCode} {ResponseCode}";
+                var message = $"{HttpMethod} {UrlForLog} failed{status} after {Attempts} attempt(s) in {elapsed.TotalMilliseconds:0}ms.";
+
+
+                // A warning when someone else still decides the outcome: a rethrown failure reaches the caller,
+                // and a GET may yet be answered from the cache. A write whose failure is swallowed here has no
+                // one else to report it.
+                if (rethrown || HttpMethod == "GET") Log.For(this).Warning(ex, message);
+                else Log.For(this).Error(ex, message + " Returning the default result.");
             }
         }
     }

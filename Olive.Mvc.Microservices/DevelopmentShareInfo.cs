@@ -59,7 +59,7 @@ namespace Olive.Mvc.Microservices
                     }
                     catch (Exception ex)
                     {
-                        Log.For(typeof(DevelopmentShareInfo)).Error("With URL: " + Microservice.Of("Hub").Url("local-setup") + "\nCould not reach local hub.\n" + ex);
+                        Log.For(typeof(DevelopmentShareInfo)).Warning(ex, "Could not reach local hub with URL: " + Microservice.Of("Hub").Url("local-setup"));
                     }
                 }
                 await next(ctx);

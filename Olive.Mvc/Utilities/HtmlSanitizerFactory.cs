@@ -519,7 +519,7 @@ namespace Olive.Mvc
             name.HasValue() && Regex.IsMatch(name, "^[A-Za-z][A-Za-z0-9-]*$");
 
         /// <summary>
-        /// Writes one detailed Error entry describing a strip. Request context (user, url, IP,
+        /// Writes one detailed Warning entry describing a strip. Request context (user, url, IP,
         /// trace id) is appended automatically by Olive's file logger via Log.ContextProvider,
         /// so here we add the parts it does not know: the removed item, reason, element and trace.
         /// Wrapped so logging can never break sanitizing (e.g. no logger/HttpContext in unit tests).
@@ -535,7 +535,7 @@ namespace Olive.Mvc
                     .Append("StackTrace:").AppendLine().Append(Environment.StackTrace)
                     .ToString();
 
-                Log.For(typeof(HtmlSanitizerFactory)).Error(message);
+                Log.For(typeof(HtmlSanitizerFactory)).Warning(message);
             }
             catch
             {

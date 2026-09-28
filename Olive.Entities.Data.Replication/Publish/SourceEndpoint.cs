@@ -54,9 +54,9 @@ namespace Olive.Entities.Replication
         {
             if (Agents.TryGetValue(typeName, out var agent))
             {
-                Log.For(this).Debug("Uploading all data for " + typeName);
+                Log.For(this).Info("Uploading all data for " + typeName);
                 await agent.UploadAll();
-                Log.For(this).Debug("Finished uploading all data for " + typeName);
+                Log.For(this).Info("Finished uploading all data for " + typeName);
             }
             else
             {

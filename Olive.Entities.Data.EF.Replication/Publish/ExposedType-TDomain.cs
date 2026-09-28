@@ -47,11 +47,11 @@ namespace Olive.Entities.EF.Replication
         void OnInstanceSaved(AwaitableEvent<GlobalSaveEventArgs> ev)
         {
             var item = ev.Args.Entity;
-            Logger.Debug("Instance saved. Initiating publish checks.");
+            Logger.Trace("Instance saved. Initiating publish checks.");
 
             if (!DependenciesEnitityTypes.Contains(item.GetType()))
             {
-                Logger.Debug("Publish aborted: " + item.GetType().Name + " is not of type " + DomainType.Name);
+                Logger.Trace("Publish aborted: " + item.GetType().Name + " is not of type " + DomainType.Name);
                 return;
             }
 
@@ -70,14 +70,14 @@ namespace Olive.Entities.EF.Replication
 
         void OnInstanceDeleted(AwaitableEvent<GlobalDeleteEventArgs> ev)
         {
-            Logger.Debug("Instance saved. Initiating publish checks.");
+            Logger.Trace("Instance deleted. Initiating publish checks.");
 
             var type = ev.Args.EntityType;
             var instance = ev.Args.Entity;
 
             if (!DependenciesEnitityTypes.Contains(type))
             {
-                Logger.Debug("Publish aborted: " + type.Name + " is not of type " + DomainType.Name);
+                Logger.Trace("Publish aborted: " + type.Name + " is not of type " + DomainType.Name);
                 return;
             }
 
@@ -184,7 +184,7 @@ namespace Olive.Entities.EF.Replication
 
             var log = Log.For(this);
 
-            log.Warning($"Uploading {totalCount} records of {typeof(TDomain).FullName} to the queue...");
+            log.Info($"Uploading {totalCount} records of {typeof(TDomain).FullName} to the queue...");
 
             var pageSize = 10000;
             var allPages = Enumerable.Range(0, (int)Math.Ceiling(totalCount / (decimal)pageSize));
@@ -209,7 +209,7 @@ namespace Olive.Entities.EF.Replication
             //    scope.Complete();
             // }
 
-            log.Warning($"Finished uploading {totalCount} records of {typeof(TDomain).FullName} to the queue.");
+            log.Info($"Finished uploading {totalCount} records of {typeof(TDomain).FullName} to the queue.");
         }
 
         async Task UploadPage(IEnumerable<IEntity> toUpload)

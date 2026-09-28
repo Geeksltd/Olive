@@ -52,7 +52,7 @@ namespace Olive.Mvc.Microservices
                     }
                     catch (Exception ex)
                     {
-                        Log.For(defineDynamic).Info("faild to invode define dynamic:" + ex);
+                        Log.For(nav).Error(ex, "Failed to invoke DefineDynamic of " + nav.GetType().GetProgrammingName());
                     }
                 }
             }

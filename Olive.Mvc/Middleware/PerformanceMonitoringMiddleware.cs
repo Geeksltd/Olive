@@ -28,13 +28,17 @@ namespace Olive.Mvc
             var url = context.Request.Path.Value.ToLower();
             var user = context.User?.GetId();
 
+            // A slow request still succeeded, so it is a warning rather than an error. A whitelisted url
+            // is known to be slow, so it is only worth seeing when diagnosing.
             if (length > Config.Get("PerformanceThresholdSeconds", PERFROMANCE_THRESHOLD_SECONDS)) // slow
                 if (!Whitelist.Contains(url))
-                    Log.For(this)
-                        .Error(new UnacceptablePerformanceException($"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : ")));
+                {
+                    var slow = new UnacceptablePerformanceException($"Slow action ({length}) seconds url :> " + url + user.WithPrefix(" for user : "));
+                    Log.For(this).Warning(slow);
+                }
                 else
                     Log.For(this)
-                        .Warning($"UnacceptablePerformance ({length}) seconds for whitelisted url : " + url + user.WithPrefix(" for user : "));
+                        .Debug($"UnacceptablePerformance ({length}) seconds for whitelisted url : " + url + user.WithPrefix(" for user : "));
         }
 
         internal static void IgnorePerformance(string url) => Whitelist.Add(url.ToLower());

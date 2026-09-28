@@ -69,7 +69,7 @@ namespace Olive.RabbitMQ
                    {
                        try
                        {
-                           Log.For(this).Info($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
+                           Log.For(this).Debug($"RabbitMQ recieved message: Queue " + Queue.QueueUrl);
                            await Handler(message);
                            await Queue.Client.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
                        }
@@ -96,7 +96,7 @@ namespace Olive.RabbitMQ
                                     consumer: consumer);
             //}
 
-            Log.For<Subscriber>().Info(Queue.QueueUrl);
+            Log.For<Subscriber>().Info("Subscribed to RabbitMQ queue " + Queue.QueueUrl);
 
         }
 

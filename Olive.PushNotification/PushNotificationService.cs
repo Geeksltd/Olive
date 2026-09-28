@@ -11,6 +11,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Xml.Linq;
+    using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
     public class PushNotificationService : IPushNotificationService
     {
@@ -201,12 +202,18 @@
         {
             var description = broker.GetType().Name + " - Push notification failed.";
 
+            // A device that uninstalled the app, or a rate limit, is routine and handled here.
+            var level = LogLevel.Error;
+
             if (ex is ApnsNotificationException apnsException)
             {
                 description += $"ID={apnsException.Notification.Identifier}, Code={apnsException.ErrorStatusCode}";
 
                 if (apnsException.ErrorStatusCode == ApnsNotificationErrorStatusCode.InvalidToken)
+                {
                     Resolver.ResolveExpiredSubscription(apnsException.Notification.DeviceToken, null);
+                    level = LogLevel.Warning;
+                }
             }
 
             if (ex is GcmNotificationException notificationException)
@@ -227,14 +234,16 @@
                 description += expiredException.NewSubscriptionId.WithPrefix("\r\nDevice RegistrationId Changed To:");
 
                 Resolver.ResolveExpiredSubscription(expiredException.OldSubscriptionId, expiredException.NewSubscriptionId);
+                level = LogLevel.Warning;
             }
             else if (ex is RetryAfterException retryException)
             {
                 // If you get rate limited, you should stop sending messages until after the RetryAfterUtc date
                 description += $"GCM Rate Limited, don't send more until after {retryException.RetryAfterUtc}";
+                level = LogLevel.Warning;
             }
 
-            Logger.Error(ex, description);
+            Logger.Log(level, ex, description);
         }
     }
 }

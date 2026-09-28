@@ -41,14 +41,14 @@ namespace Olive.PassiveBackgroundTasks
 
             await Db.Save(instance).ConfigureAwait(false);
 
-            Log.Info("Registered a background task for " + name);
+            Log.Debug("Registered a background task for " + name);
         }
 
         internal static async Task CleanUp(params string[] validNames)
         {
             await Db.DeleteAll<IBackgourndTask>(a => a.Name.IsNoneOf(validNames));
 
-            Log.Info("Clean up background tasks");
+            Log.Debug("Clean up background tasks");
         }
 
         internal static Task GetAction(IBackgourndTask task) => Actions[task.Name]();
@@ -59,7 +59,7 @@ namespace Olive.PassiveBackgroundTasks
 
             if (nextExecution.IsInTheFuture()) return false;
 
-            Log.Info($"{task.Name} is due.");
+            Log.Debug($"{task.Name} is due.");
 
             if (task.Heartbeat is null) return true;
 
@@ -69,13 +69,13 @@ namespace Olive.PassiveBackgroundTasks
                 return false;
             }
 
-            Log.Info($"Last attempt to run the background task '{task.Name}' on [{task.ExecutingInstance}] timed out.");
+            Log.Warning($"Last attempt to run the background task '{task.Name}' on [{task.ExecutingInstance}] timed out.");
             return true;
         }
 
         internal static async Task<List<string>> Run(bool force = false, string taskName = null)
         {
-            Log.Info("Checking background tasks... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
+            Log.Debug("Checking background tasks... @ " + LocalTime.UtcNow.ToString("HH:mm:ss"));
 
             var allTasks = await Db.GetList<IBackgourndTask>();
 

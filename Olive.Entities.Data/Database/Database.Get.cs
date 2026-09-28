@@ -323,9 +323,16 @@ namespace Olive.Entities.Data
             if (id.ToStringOrEmpty().IsEmpty()) return null;
 
             try { return await Get(id, type); }
-            catch
+            catch (ArgumentException)
             {
-                // No logging is needed.
+                // Not found: the expected answer, as Get reports a missing record this way.
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Still null, as callers pass unvalidated IDs (e.g. from a URL), and a malformed one fails in
+                // the database just as an outage would. Logged so that an outage does not pass as "missing".
+                Log.For(this).Warning(ex, $"Failed to load the {type.FullName} with the ID of {id}. Returning null.");
                 return null;
             }
         }

@@ -49,18 +49,35 @@ namespace Olive
             using (await urlLock.Lock())
             {
                 Exception firstError = null;
+                var freshFailed = false;
+
                 // get result according to the cache policy
                 foreach (var implementor in CachePolicy.GetImplementors<TResponse>(this))
                 {
                     if (await implementor.Attempt(Url))
+                    {
+                        if (freshFailed) LogFallBack(implementor, firstError);
                         return implementor.Result;
+                    }
 
+                    freshFailed |= implementor is GetFresh<TResponse>;
                     firstError = firstError ?? implementor.Error;
                 }
 
                 if (firstError != null) throw firstError;
                 else return default(TResponse);
             }
+        }
+
+        /// <summary>
+        /// Says that a result is not fresh because getting one failed. The failure itself is logged as a
+        /// warning, as it may yet be recovered from; here it was not, and the caller cannot tell, so this
+        /// is the error.
+        /// </summary>
+        void LogFallBack<TResponse>(GetImplementation<TResponse> implementor, Exception error)
+        {
+            var given = implementor is GetCache<TResponse> ? "a cached result" : "no result";
+            Log.For(this).Error(error, $"Returned {given} for GET {Url.Split('?')[0]}, as getting a fresh one failed.");
         }
 
         /// <summary>

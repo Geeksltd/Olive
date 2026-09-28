@@ -33,11 +33,11 @@ namespace Olive.Email
         {
             if (IsBusySending)
             {
-                Log.Info("Skipped as it's busy sending already.");
+                Log.Debug("Skipped as it's busy sending already.");
                 return;
             }
 
-            Log.Info("Sending all ...");
+            Log.Debug("Sending all ...");
 
             try
             {
@@ -54,7 +54,7 @@ namespace Olive.Email
         {
             var toSend = await Repository.GetUnsentEmails();
 
-            Log.Info($"Loaded {toSend.Count()} emails to send ...");
+            Log.Debug($"Loaded {toSend.Count()} emails to send ...");
 
             foreach (var mail in toSend)
             {
@@ -71,9 +71,9 @@ namespace Olive.Email
 
                 try
                 {
-                    Log.Info($"Sending {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
+                    Log.Debug($"Sending {mail.GetId()} ...");
                     await Send(mail);
-                    Log.Info($"Sent {mail.GetId()?.ToString().Or(mail.To.Substring(3))} ...");
+                    Log.Debug($"Sent {mail.GetId()} ...");
                 }
                 catch (Exception ex)
                 {
@@ -88,7 +88,7 @@ namespace Olive.Email
 
             if (message.SendableDate > LocalTime.Now)
             {
-                Log.Info($"Skipping Send() command for IEmailMessage ({message.GetId()}). SendableDate is in the future.");
+                Log.Debug($"Skipping Send() command for IEmailMessage ({message.GetId()}). SendableDate is in the future.");
                 await Repository.SaveForFutureSend(message);
 
                 return false;

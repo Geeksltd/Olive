@@ -65,7 +65,7 @@ namespace Olive.Azure
                 {
                     try
                     {
-                        Log.For(this).Info("Fetched message : " + item.Value.Body);
+                        Log.For(this).Trace("Fetched message : " + item.Value.Body);
                         await Handler(item.Key);
 
                         await using (var context = CreateMessagingContext())

@@ -65,9 +65,9 @@ namespace Olive.Mvc
             var commands = AvailableCommands().Where(x => x.Name == command).Distinct(x => x.GetType()).ToArray();
             if (commands.None()) return "Dev command not registered: " + command;
 
-            if (command.HasMany())
+            if (commands.HasMany())
                 Logger.Warning("Multiple dev command implementations found for: " + command + " >> " +
-                    command.Select(x => x.GetType().GetProgrammingName()).ToString(","));
+                    commands.Select(x => x.GetType().GetProgrammingName()).ToString(","));
             else
                 Logger.Info("Running Dev Command: " + command);
 
