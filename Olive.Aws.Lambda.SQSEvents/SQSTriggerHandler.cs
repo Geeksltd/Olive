@@ -74,7 +74,8 @@ namespace Olive.Aws.Lambda.SQSEvents
                 const string PREFIX = "CONFIG__";
                 if (!key.StartsWith(PREFIX)) continue;
                 var value = System.Environment.GetEnvironmentVariable(key);
-                System.Console.WriteLine("Loading " + key + " value : " + value);
+                // The key only: these values include secrets, and the console goes to CloudWatch.
+                System.Console.WriteLine("Loading " + key);
                 var configKey = key.TrimStart(PREFIX).Replace("__", ":");
 
                 if (configKey.StartsWith("DataReplication:"))

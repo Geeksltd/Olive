@@ -31,6 +31,10 @@ namespace Olive
 
             string Url => Client.Url;
 
+            /// <summary>The url without its query string, which can carry tokens, for logging. Debug
+            /// included: some hosts keep it in production.</summary>
+            string UrlForLog => Url.OrEmpty().Split('?')[0];
+
             public RequestInfo(ApiClient client) => Client = client;
 
             internal string LocalCachedVersion { get; set; }
@@ -192,7 +196,7 @@ namespace Olive
                 }
             }
 
-            static string ExtractUserFriendlyErrorMessage(string responseBody)
+            static string ExtractUserFriendlyErrorMessage(string responseBody, bool isUserMessage)
             {
                 if (responseBody.StartsWith("{\"Message\""))
                 {
@@ -211,18 +215,25 @@ namespace Olive
                     return responseBody.RemoveBeforeAndIncluding("<div class=\"titleerror\">").RemoveFrom("</div>").HtmlDecode();
                 }
 
-                return responseBody;
+                // A 4xx body is the message for the caller, who gets it whole (and may parse it).
+                if (isUserMessage) return responseBody;
+
+                // Not a message meant for anyone: an error page, say. Only its start, as this becomes the
+                // exception's message, which is logged wherever it is caught - and a developer error page
+                // carries the request's headers and cookies.
+                return responseBody.Summarize(200, enforceMaxLength: true);
             }
 
             async Task<Exception> ImproveException(Exception ex, string responseBody)
             {
-                var errorMessage = $"Api call failed: {Url}";
+                // Without the query string: this message is logged, and shown to whoever catches it.
+                var errorMessage = $"Api call failed: {UrlForLog}";
 
                 if (ex is WebException webEx)
                     responseBody = await webEx.GetResponseBody();
 
                 if (responseBody.HasValue())
-                    errorMessage = ExtractUserFriendlyErrorMessage(responseBody);
+                    errorMessage = ExtractUserFriendlyErrorMessage(responseBody, ResponseCode.ContainsUserMessage());
 
                 return new Exception(errorMessage.Or(ex.Message), ex);
             }

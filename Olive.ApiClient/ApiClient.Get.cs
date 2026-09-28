@@ -42,7 +42,7 @@ namespace Olive
         {
             Url = GetFullUrl(queryParams);
 
-            Log.For(this).Debug("Get: Url = " + Url);
+            Log.For(this).Debug("Get: Url = " + Url.Split('?')[0]);
 
             var urlLock = GetLocks.GetOrAdd(Url, x => new AsyncLock());
 

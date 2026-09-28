@@ -171,8 +171,8 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running Non-Query SQL command.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
-                    .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
+                    .AddData("Parameters", DescribeParameters(@params))
+                    .AddData("Database", DescribeDatabase(dbCommand.Connection));
             }
             finally
             {
@@ -213,8 +213,8 @@ namespace Olive.Entities.Data
                 CloseConnection(dbCommand.Connection);
 
                 throw new Exception("Error in running SQL Query.", ex).AddData("Command", command)
-                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
-                    .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
+                    .AddData("Parameters", DescribeParameters(@params))
+                    .AddData("Database", DescribeDatabase(dbCommand.Connection));
             }
             finally
             {
@@ -249,8 +249,8 @@ namespace Olive.Entities.Data
             catch (Exception ex)
             {
                 throw new Exception("Error in running Scalar SQL Command: " + command, ex).AddData("Command", command)
-                    .AddData("Parameters", @params?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "))
-                    .AddData("ConnectionString", dbCommand.Connection.ConnectionString);
+                    .AddData("Parameters", DescribeParameters(@params))
+                    .AddData("Database", DescribeDatabase(dbCommand.Connection));
             }
             finally
             {
@@ -301,7 +301,7 @@ namespace Olive.Entities.Data
                     catch (Exception ex)
                     {
                         throw new Exception("Error in executing SQL command.", ex).AddData("Command", c.Key)
-                            .AddData("Parameters", c.Value?.Select(p => p.ParameterName + "=" + p.Value).ToString(" | "));
+                            .AddData("Parameters", DescribeParameters(c.Value));
                     }
                     finally
                     {
@@ -315,11 +315,46 @@ namespace Olive.Entities.Data
             }
             catch (Exception ex)
             {
-                throw new Exception("Error in running Non-Query SQL commands.", ex).AddData("ConnectionString", connection.ConnectionString);
+                throw new Exception("Error in running Non-Query SQL commands.", ex).AddData("Database", DescribeDatabase(connection));
             }
             finally
             {
                 CloseConnection(connection);
+            }
+        }
+
+        /// <summary>
+        /// Names the server and database a failed command ran against. Not the connection string: it is
+        /// attached to the exception, which every logger writes out, and it can carry the password.
+        /// </summary>
+        static string DescribeDatabase(IDbConnection connection)
+        {
+            if (connection == null) return null;
+            return (connection as DbConnection)?.DataSource.WithSuffix("/") + connection.Database;
+        }
+
+        /// <summary>
+        /// Describes a failed command's parameters for its exception, which every logger writes out.
+        /// Only values that identify the record involved are kept: GUIDs, whole numbers (keys), flags and
+        /// enums. The rest are masked, as they can hold personal data: text (names, emails), binary
+        /// (documents), dates (birth dates) and other numbers (amounts).
+        /// </summary>
+        static string DescribeParameters(IEnumerable<IDataParameter> parameters)
+        {
+            return parameters?.Select(p => p.ParameterName + "=" + DescribeValue(p.Value)).ToString(" | ");
+
+            static string DescribeValue(object value)
+            {
+                switch (value)
+                {
+                    case null:
+                    case DBNull _: return "NULL";
+                    case string text: return $"[text, {text.Length} chars]";
+                    case byte[] bytes: return $"[binary, {bytes.Length} bytes]";
+                    case Guid _: case bool _: case Enum _:
+                    case int _: case long _: case short _: case byte _: return value.ToString();
+                    default: return $"[{value.GetType().Name}]";
+                }
             }
         }
 

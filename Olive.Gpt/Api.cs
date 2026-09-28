@@ -103,12 +103,12 @@ namespace Olive.Gpt
             }
             catch (Exception e)
             {
-                Log.For<Api>().Error(e, "Gpt Query FAILED, Request body: " + jsonContent);
+                Log.For<Api>().Error(e, "Gpt Query FAILED, " + DescribeRequest(request.Model, jsonContent));
                 return null;
             }
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request: " + DescribeRequest(request.Model, jsonContent) + ". Response body: " + await response.Content.ReadAsStringAsync());
 
             if (streamHandler == null)
                 return GetContent(await response.Content.ReadAsStringAsync());
@@ -174,12 +174,12 @@ namespace Olive.Gpt
                     Client.DefaultRequestHeaders.Remove("stream");
                 }
 
-                Log.For<Api>().Error(e, "Gpt Query FAILED, Request body: " + jsonContent);
+                Log.For<Api>().Error(e, "Gpt Query FAILED, " + DescribeRequest(request.Model, jsonContent));
                 throw;
             }
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException("Error calling OpenAi API to get completion. HTTP status code: " + response.StatusCode + ". Request: " + DescribeRequest(request.Model, jsonContent) + ". Response body: " + await response.Content.ReadAsStringAsync());
 
             using (var stream = await response.Content.ReadAsStreamAsync())
             {
@@ -200,6 +200,12 @@ namespace Olive.Gpt
                 Client.DefaultRequestHeaders.Remove("stream");
             }
         }
+
+        /// <summary>
+        /// Describes a request for a log or an exception message without its body: the prompt is user
+        /// content, and anything in it would otherwise be copied into the logs.
+        /// </summary>
+        static string DescribeRequest(string model, string json) => $"model: {model}, request: {json.Length} chars";
 
         private string GetContent(string result)
         {
@@ -230,12 +236,12 @@ namespace Olive.Gpt
             }
             catch (Exception e)
             {
-                Log.For<Api>().Error(e, "Dall-E Image Query FAILED, Request body: " + jsonContent);
+                Log.For<Api>().Error(e, "Dall-E Image Query FAILED, " + DescribeRequest(model, jsonContent));
                 return null;
             }
 
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException("Error calling OpenAi API for Dall-E image generation. HTTP status code: " + response.StatusCode + ". Request body: " + jsonContent + ". Response body: " + await response.Content.ReadAsStringAsync());
+                throw new HttpRequestException("Error calling OpenAi API for Dall-E image generation. HTTP status code: " + response.StatusCode + ". Request: " + DescribeRequest(model, jsonContent) + ". Response body: " + await response.Content.ReadAsStringAsync());
 
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObject = JsonConvert.DeserializeObject<DalleResponse>(responseContent);
