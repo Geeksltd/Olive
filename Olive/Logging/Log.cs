@@ -126,6 +126,12 @@ namespace Olive
         public const string ReferenceCodeKey = "Olive.ReferenceCode";
 
         /// <summary>
+        /// The HTTP header that carries a reference code: returned to the caller of every request, and sent
+        /// on calls to other microservices so that the work they do is logged under the same code.
+        /// </summary>
+        public const string ReferenceCodeHeader = "X-Reference-Code";
+
+        /// <summary>
         /// When set, provides contextual information (e.g. UserId, RequestUrl, UserIP) to append to log entries.
         /// The default provider returns it as a JSON object, so that consumers such as the audit log
         /// can read the individual properties rather than having to pick them out of free text.
@@ -178,6 +184,21 @@ namespace Olive
                 result.Append(ReferenceAlphabet[item % ReferenceAlphabet.Length]);
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Whether the text has the shape of a code made by <see cref="NewReferenceCode"/>. For checking a code
+        /// that arrives from outside before logging under it.
+        /// </summary>
+        public static bool IsReferenceCode(string code)
+        {
+            if (code == null || code.Length != 4 + ReferenceLength || !code.StartsWith("REF-", StringComparison.Ordinal))
+                return false;
+
+            for (var i = 4; i < code.Length; i++)
+                if (ReferenceAlphabet.IndexOf(code[i]) < 0) return false;
+
+            return true;
         }
 
         /// <summary>

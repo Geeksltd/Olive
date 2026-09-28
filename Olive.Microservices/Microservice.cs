@@ -69,13 +69,21 @@ namespace Olive
 
         /// <summary>
         /// Creates an Api client for this service.
-        /// It will automatically add an authentication cookie based on the service key.
+        /// It will automatically add an authentication cookie based on the service key, and the reference
+        /// code of the work in flight, so that the called service logs under the same code.
         /// </summary>
         public ApiClient Api(string relativeApiUrl)
         {
             var result = new ApiClient(Url(relativeApiUrl));
 
             result.Header(x => x.Add("Microservice.AccessKey", AccessKey));
+
+            // Read when the request is sent, not now: the client may be kept and used by later work.
+            result.Header(x =>
+            {
+                var code = Log.CurrentReference;
+                if (code.HasValue()) x.Add(Log.ReferenceCodeHeader, code);
+            });
 
             return result;
         }

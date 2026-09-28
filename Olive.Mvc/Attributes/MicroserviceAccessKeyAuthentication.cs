@@ -32,6 +32,12 @@ namespace Olive.Mvc
             return app;
         }
 
+        /// <summary>
+        /// Whether the access key belongs to a configured client, i.e. the request comes from another
+        /// microservice rather than from anyone who can set a header.
+        /// </summary>
+        public static bool IsKnownClient(string clientId) => clientId.HasValue() && GetRoles(clientId).Any();
+
         static IEnumerable<string> GetRoles(string clientId)
         {
             var provider = Context.Current.GetOptionalService<PermissionsProvider>() ??
