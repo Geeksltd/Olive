@@ -134,7 +134,9 @@ namespace Olive.Mvc
 
         public virtual void Configure(IApplicationBuilder app)
         {
-            app.UseLogUnhandledExceptionsMiddleware();
+            // Unhandled exceptions are not logged here: ASP.NET already logs each one once through Log.Factory,
+            // which is the app's ILoggerFactory - the exception handler (or developer page) when it catches one,
+            // and the server when one escapes the pipeline - with the request's reference code either way.
 
             Context.Initialize(app.ApplicationServices, () => app.ApplicationServices.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices);
             Context.Current.GetService<IDatabaseProviderConfig>().Configure();

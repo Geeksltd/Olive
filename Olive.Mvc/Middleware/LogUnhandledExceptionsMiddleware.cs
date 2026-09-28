@@ -32,6 +32,8 @@ namespace Olive.Mvc
 
     public static class HandleExceptionsMiddlewareExtensions
     {
+        [Obsolete("ASP.NET already logs every unhandled exception once: the exception handler or developer page " +
+            "when it catches it, and the server when it escapes. This middleware can only log it again.")]
         public static IApplicationBuilder UseLogUnhandledExceptionsMiddleware(this IApplicationBuilder app)
         {
             app.UseMiddleware<LogUnhandledExceptionsMiddleware>();
