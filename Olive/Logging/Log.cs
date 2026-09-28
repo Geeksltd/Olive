@@ -50,28 +50,43 @@ namespace Olive
             => @this.LogCritical(ex, message.Or(() => ex?.Message));
 
         public static void Warning(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
-        {
-            @this.LogWarning(ToYaml(message, relatedObject, userId, userIp));
-        }
+            => Write(@this, LogLevel.Warning, null, message, relatedObject, userId, userIp);
+
+        /// <summary>
+        /// Logs a warning with its exception, falling back to the exception's own message, as
+        /// <see cref="Error(ILogger, Exception, string)"/> does.
+        /// </summary>
+        public static void Warning(this ILogger @this, Exception ex, string message = null, object relatedObject = null, string userId = null, string userIp = null)
+            => Write(@this, LogLevel.Warning, ex, message.Or(() => ex?.Message), relatedObject, userId, userIp);
 
         public static void Trace(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
-        {
-            @this.LogTrace(ToYaml(message, relatedObject, userId, userIp));
-        }
+            => Write(@this, LogLevel.Trace, null, message, relatedObject, userId, userIp);
+
+        public static void Trace(this ILogger @this, Exception ex, string message = null, object relatedObject = null, string userId = null, string userIp = null)
+            => Write(@this, LogLevel.Trace, ex, message.Or(() => ex?.Message), relatedObject, userId, userIp);
 
         public static void Debug(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
-        {
-            @this.LogDebug(ToYaml(message, relatedObject, userId, userIp));
-        }
+            => Write(@this, LogLevel.Debug, null, message, relatedObject, userId, userIp);
+
+        public static void Debug(this ILogger @this, Exception ex, string message = null, object relatedObject = null, string userId = null, string userIp = null)
+            => Write(@this, LogLevel.Debug, ex, message.Or(() => ex?.Message), relatedObject, userId, userIp);
 
         public static void Info(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
-        {
-            @this.LogInformation(ToYaml(message, relatedObject, userId, userIp));
-        }
+            => Write(@this, LogLevel.Information, null, message, relatedObject, userId, userIp);
+
+        public static void Info(this ILogger @this, Exception ex, string message = null, object relatedObject = null, string userId = null, string userIp = null)
+            => Write(@this, LogLevel.Information, ex, message.Or(() => ex?.Message), relatedObject, userId, userIp);
 
         public static void Audit(this ILogger @this, string message, object relatedObject = null, string userId = null, string userIp = null)
+            => Write(@this, LogLevel.Trace, null, message, relatedObject, userId, userIp);
+
+        /// <summary>
+        /// Checks the level first, so an entry that is filtered out costs no formatting.
+        /// </summary>
+        static void Write(ILogger logger, LogLevel level, Exception ex, string message, object relatedObject, string userId, string userIp)
         {
-            @this.LogTrace(ToYaml(message, relatedObject, userId, userIp));
+            if (!logger.IsEnabled(level)) return;
+            logger.Log(level, ex, ToYaml(message, relatedObject, userId, userIp));
         }
 
         static string ToYaml(string description, object relatedObject, string userId, string userIp)
@@ -88,7 +103,7 @@ namespace Olive
 
                 foreach (var line in description.ToLines().Trim())
                 {
-                    if (!firstLine) r.Append("  Description: ".Length);
+                    if (!firstLine) r.Append(' ', "  Description: ".Length);
                     r.AppendLine(line);
                     firstLine = false;
                 }
