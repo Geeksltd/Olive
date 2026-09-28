@@ -35,6 +35,8 @@ namespace Olive
             /// included: some hosts keep it in production.</summary>
             string UrlForLog => Url.OrEmpty().Split('?')[0];
 
+            int Attempts = 1;
+
             public RequestInfo(ApiClient client) => Client = client;
 
             internal string LocalCachedVersion { get; set; }
@@ -141,8 +143,11 @@ namespace Olive
                 return HttpClient;
             }
 
+            /// <summary>Creates the message for one attempt, replacing the one before it, which HttpClient
+            /// will not send again.</summary>
             HttpRequestMessage CreateRequestMessage()
             {
+                RequestMessage?.Dispose();
                 RequestMessage = new HttpRequestMessage(new HttpMethod(HttpMethod), Url);
 
                 if (RequestMessage.Method != System.Net.Http.HttpMethod.Get)
@@ -157,13 +162,12 @@ namespace Olive
                 if (Client.EnsureTrailingSlash && Url.Lacks("?")) Client.Url = Url;
 
                 using (CreateHttpClient())
-                using (CreateRequestMessage())
                 {
                     string responseBody = null;
 
                     try
                     {
-                        var response = await Client.SendAsync(HttpClient, RequestMessage)
+                        var response = await Client.SendAsync(HttpClient, CreateRequestMessage, OnRetry)
                             .ConfigureAwait(continueOnCapturedContext: false);
 
                         ResponseCode = response.StatusCode;
@@ -193,7 +197,17 @@ namespace Olive
 
                         throw await ImproveException(ex, responseBody);
                     }
+                    finally
+                    {
+                        RequestMessage?.Dispose();
+                    }
                 }
+            }
+
+            void OnRetry(Exception ex, int attempt)
+            {
+                Attempts = attempt + 1;
+                Log.For(this).Warning($"{HttpMethod} {UrlForLog} failed: {ex.Message} Retrying {attempt}/{Client.retries}.");
             }
 
             static string ExtractUserFriendlyErrorMessage(string responseBody, bool isUserMessage)

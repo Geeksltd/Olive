@@ -48,24 +48,30 @@ namespace Olive
             return this;
         }
 
-        Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request)
+        /// <summary>
+        /// Sends a request, retrying as configured. The request is created afresh for each attempt, as
+        /// HttpClient refuses to send the same HttpRequestMessage twice.
+        /// </summary>
+        Task<HttpResponseMessage> SendAsync(HttpClient client, Func<HttpRequestMessage> createRequest, Action<Exception, int> onRetry)
         {
-            return CreateExecutionPolicy(request).ExecuteAsync(() => client.SendAsync(request));
+            return CreateExecutionPolicy(onRetry).ExecuteAsync(() => client.SendAsync(createRequest()));
         }
 
-        AsyncPolicy CreateExecutionPolicy(HttpRequestMessage request)
+        AsyncPolicy CreateExecutionPolicy(Action<Exception, int> onRetry)
         {
             var retryPolicy = Policy.Handle<HttpRequestException>()
-                             .WaitAndRetryAsync(retries, attempt => RetryPauseDuration);
+                             .WaitAndRetryAsync(retries, attempt => RetryPauseDuration,
+                             (exception, pause, attempt, context) => onRetry?.Invoke(exception, attempt));
 
             if (ExceptionsBeforeBreakingCircuit <= 0) return retryPolicy;
 
-            var policyKey = request.RequestUri.Host + "|" + ExceptionsBeforeBreakingCircuit + "|" + CircuitBreakDuration;
+            var host = Url.AsUri().Host;
+            var policyKey = host + "|" + ExceptionsBeforeBreakingCircuit + "|" + CircuitBreakDuration;
 
-            return retryPolicy.WrapAsync(GetOrCreateCircuitBreakerPolicy(policyKey));
+            return retryPolicy.WrapAsync(GetOrCreateCircuitBreakerPolicy(policyKey, host));
         }
 
-        AsyncCircuitBreakerPolicy GetOrCreateCircuitBreakerPolicy(string policyKey)
+        AsyncCircuitBreakerPolicy GetOrCreateCircuitBreakerPolicy(string policyKey, string host)
         {
             if (CircuitBreakerPolicies.TryGetValue(policyKey, out var policy))
                 return policy;
@@ -75,8 +81,14 @@ namespace Olive
                 if (CircuitBreakerPolicies.TryGetValue(policyKey, out policy))
                     return policy;
 
+                var failures = ExceptionsBeforeBreakingCircuit;
+
+                // Shared by every client calling the host, so the log names the host rather than a url.
                 policy = Policy.Handle<HttpRequestException>()
-                    .CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration);
+                    .CircuitBreakerAsync(ExceptionsBeforeBreakingCircuit, CircuitBreakDuration,
+                        onBreak: (exception, duration) => Log.For<ApiClient>().Warning(exception,
+                            $"Stopped calling {host} for {duration.ToNaturalTime()} after {failures} consecutive failures."),
+                        onReset: () => Log.For<ApiClient>().Info($"Resumed calling {host}."));
 
                 CircuitBreakerPolicies.Add(policyKey, policy);
                 return policy;
