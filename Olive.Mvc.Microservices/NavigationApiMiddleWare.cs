@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +11,7 @@ namespace Olive.Mvc.Microservices
 {
     public static class NavigationApiMiddleWare
     {
-        static Dictionary<string, Type> BoardTypeCache = new Dictionary<string, Type>();
+        static ConcurrentDictionary<string, Type> BoardTypeCache = new ConcurrentDictionary<string, Type>();
 
         public static async Task Navigate(HttpContext context)
         {
@@ -28,27 +29,29 @@ namespace Olive.Mvc.Microservices
             var id = context.Request.Param("id").OrEmpty();
             var typeName = context.Request.Param("type").OrEmpty();
             if (id.IsEmpty() || typeName.IsEmpty()) return;
-            Type type;
-            if (!BoardTypeCache.TryGetValue(typeName, out type))
-            {
-                type = DiscoverType(typeName);
-                BoardTypeCache.Add(typeName, type);
-            }
+            var type = BoardTypeCache.GetOrAdd(typeName, DiscoverType);
             if (type == null) return;
             var navigations = GetNavigationsFromAssembly<Navigation>().ToList();
             foreach (var nav in navigations)
             {
-                foreach (var defineDynamic in nav.GetType().GetMethods().Where(x => x.Name == "DefineDynamic"))
+                var methods = nav.GetType().GetMethods()
+                    .Where(x => x.Name == "DefineDynamic")
+                    .Where(x => x.GetParameters().LastOrDefault()?.ParameterType.IsAssignableFrom(type) == true)
+                    .ToArray();
+                if (methods.None()) continue;
+
+                object boardObject;
+                if (id.Is<Guid>())
+                    boardObject = await Context.Current.Database().Get(id.To<Guid>(), type);
+                else
+                    boardObject = await nav.GetBoardObjectFromText(type, id);
+                if (boardObject == null) continue;
+
+                foreach (var defineDynamic in methods)
                 {
-                    object secondParameter = null;
-                    if (id.Is<Guid>())
-                        secondParameter = await Context.Current.Database().Get(id.To<Guid>(), type);
-                    else
-                        secondParameter = await nav.GetBoardObjectFromText(type, id);
-                    if (secondParameter == null) continue;
                     try
                     {
-                        await (Task)defineDynamic.Invoke(nav, new object[] { context.User, Convert.ChangeType(secondParameter, type) });
+                        await (Task)defineDynamic.Invoke(nav, new object[] { context.User, boardObject });
                     }
                     catch (Exception ex)
                     {
