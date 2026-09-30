@@ -87,6 +87,16 @@
             return result;
         }
 
+        /// <summary>
+        /// Gets the records as GetList() does, caching each one, but without caching the query result, which is not
+        /// read again (e.g. for a list of IDs).
+        /// </summary>
+        internal async Task<IEntity[]> GetListWithoutQueryCache()
+        {
+            if (!IsCacheable()) return await LoadFromDatabase().ToArray();
+            return (await LoadFromDatabaseAndCache()).Items.ToArray();
+        }
+
         async Task<List<IEntity>> LoadFromDatabase()
         {
             List<IEntity> result;

@@ -133,10 +133,15 @@ namespace Olive.Tests
         DatabaseConfig config;
         IDatabaseProviderConfig ProviderConfig;
         IDatabase database;
+        Func<IDataProvider, bool> canLoadIdList;
 
         [SetUp]
         public void SetUp()
         {
+            // The mocked providers load a list of IDs in one query, as the SQL providers do.
+            canLoadIdList = DatabaseIncludeExtensions.CanLoadIdList;
+            DatabaseIncludeExtensions.CanLoadIdList = x => true;
+
             providers = new Dictionary<Type, Mock<IDataProvider>>();
             rows = new Dictionary<Type, List<IEntity>>();
             config = new DatabaseConfig { Cache = new DatabaseConfig.CacheConfig { Enabled = true } };
@@ -154,6 +159,9 @@ namespace Olive.Tests
             var provider = services.BuildServiceProvider();
             Context.Initialize(provider, () => provider);
         }
+
+        [TearDown]
+        public void TearDown() => DatabaseIncludeExtensions.CanLoadIdList = canLoadIdList;
 
         Mock<IDataProvider> GetProvider(Type type)
         {
@@ -186,8 +194,33 @@ namespace Olive.Tests
         /// </summary>
         static bool Matches(IEntity record, IDatabaseQuery query) =>
             query.Criteria.OfType<Criterion>().Except(c => c is DirectDatabaseCriterion).All(c =>
-                string.Equals(record.GetType().GetProperty(c.PropertyName)?.GetValue(record)?.ToString(),
-                    c.Value?.ToString(), StringComparison.OrdinalIgnoreCase));
+            {
+                var value = record.GetType().GetProperty(c.PropertyName)?.GetValue(record)?.ToString();
+
+                // A list of IDs, e.g. ('one', 'two').
+                var options = c.FilterFunction == FilterFunction.In ?
+                    c.Value.ToString().Trim('(', ')').Split(new[] { ", " }, StringSplitOptions.None)
+                        .Select(x => x.Trim('\'').Replace("''", "'")) :
+                    new[] { c.Value?.ToString() };
+
+                return options.Any(x => string.Equals(value, x, StringComparison.OrdinalIgnoreCase));
+            });
+
+        /// <summary>
+        /// Records the ID lists that the records of a type are queried by.
+        /// </summary>
+        List<string> CaptureIdLists<T>()
+        {
+            var result = new List<string>();
+            GetProvider(typeof(T)).Setup(x => x.GetList(It.IsAny<IDatabaseQuery>()))
+                .Returns((IDatabaseQuery query) =>
+                {
+                    result.AddRange(query.Criteria.OfType<Criterion>().Where(c => c.FilterFunction == FilterFunction.In)
+                        .Select(c => c.Value.ToString()));
+                    return Task.FromResult(rows[typeof(T)].Where(r => Matches(r, query)).ToArray().AsEnumerable());
+                });
+            return result;
+        }
 
         T Add<T>(T record, bool softDeleted = false) where T : Entity
         {
@@ -851,6 +884,250 @@ namespace Olive.Tests
             Assert.That(read.Result, Is.SameAs(one));
             Assert.That(read.RanSync, Is.False);
             VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_binds_the_association_of_every_record_in_a_list()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            var two = Add(new Plain { ID = "two" });
+            Add(new PlainOwner { PlainId = "one" });
+            Add(new PlainOwner { PlainId = "two" });
+            Add(new PlainOwner());
+
+            var loaded = await database.GetList<PlainOwner>().Including(x => x.Plain);
+
+            Assert.That(loaded, Has.Length.EqualTo(3));
+            foreach (var owner in loaded)
+                Assert.That((await Read(() => owner.Plain)).RanSync, Is.False);
+            Assert.That(loaded.Select(x => x.Plain), Is.EqualTo(new[] { one, two, null }));
+            VerifyLoads<Plain>(lists: 1, singles: 0); // In one query.
+        }
+
+        [Test]
+        public async Task Including_queries_only_the_associations_of_a_list_that_are_not_cached()
+        {
+            var one = Add(new Plain { ID = "one" });
+            Add(new Plain { ID = "two" });
+            Add(new Plain { ID = "three" });
+            var queried = CaptureIdLists<Plain>();
+            await database.Get<Plain>("one");
+            var owners = new[] { "one", "two", "three" }.Select(x => new PlainOwner { PlainId = x }).ToArray();
+
+            await database.IncludeAssociations(owners, x => x.Plain);
+
+            Assert.That(queried, Is.EqualTo(new[] { "('two', 'three')" }));
+            Assert.That(owners[0].Plain, Is.SameAs(one));
+            foreach (var owner in owners)
+                Assert.That((await Read(() => owner.Plain)).RanSync, Is.False);
+
+            // The records are cached, rather than the query, which would not be repeated.
+            await database.IncludeAssociations(owners.Select(x => new PlainOwner { PlainId = x.PlainId }), x => x.Plain);
+            VerifyLoads<Plain>(lists: 1, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_loads_an_association_of_a_list_by_its_id_when_not_found_by_that_exact_id()
+        {
+            config.Cache.Enabled = false;
+            var gb = Add(new Plain { ID = "GB" });
+            var fr = Add(new Plain { ID = "FR" });
+            var owners = new[] { new PlainOwner { PlainId = "gb" }, new PlainOwner { PlainId = "FR" },
+                new PlainOwner { PlainId = "missing" } };
+
+            // Like a case-insensitive database collation.
+            GetProvider(typeof(Plain)).Setup(x => x.Get(It.IsAny<object>())).Returns((object id) =>
+                Task.FromResult<IEntity>(rows[typeof(Plain)].SingleOrDefault(r => r.GetId().ToString()
+                    .Equals(id.ToString(), StringComparison.OrdinalIgnoreCase))));
+
+            await database.IncludeAssociations(owners, x => x.Plain);
+
+            var read = await Read(() => owners[0].Plain);
+            Assert.That(read.Result, Is.SameAs(gb));
+            Assert.That(read.RanSync, Is.False);
+            Assert.That(owners[1].Plain, Is.SameAs(fr));
+            VerifyLoads<Plain>(lists: 1, singles: 2); // "gb" and "missing" by their IDs.
+        }
+
+        [Test]
+        public async Task Including_loads_the_associations_of_a_long_list_in_batches()
+        {
+            config.Cache.Enabled = false;
+            var owners = Enumerable.Range(0, 501).Select(i => Add(new Plain { ID = "p" + i }))
+                .Select(x => new PlainOwner { PlainId = x.ID }).ToArray();
+
+            await database.IncludeAssociations(owners, x => x.Plain);
+
+            foreach (var owner in owners)
+                Assert.That((await Read(() => owner.Plain)).RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 2, singles: 0);
+        }
+
+        [Test]
+        public async Task Including_loads_the_associations_of_a_list_by_their_ids_for_a_provider_without_id_lists()
+        {
+            DatabaseIncludeExtensions.CanLoadIdList = x => false;
+            config.Cache.Enabled = false;
+            Add(new Plain { ID = "one" });
+            Add(new Plain { ID = "two" });
+            var owners = new[] { new PlainOwner { PlainId = "one" }, new PlainOwner { PlainId = "two" } };
+
+            await database.IncludeAssociations(owners, x => x.Plain);
+
+            foreach (var owner in owners)
+                Assert.That((await Read(() => owner.Plain)).RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 2);
+        }
+
+        [Test]
+        public async Task Including_serves_the_associations_of_a_list_from_all_records_of_a_cached_type()
+        {
+            Add(new Status { ID = "active" });
+            Add(new Status { ID = "closed" });
+            var owners = new[] { new Owner { StatusId = "active" }, new Owner { StatusId = "closed" } };
+
+            await database.IncludeAssociations(owners, x => x.Status);
+
+            foreach (var owner in owners)
+                Assert.That((await Read(() => owner.Status)).RanSync, Is.False);
+            VerifyLoads<Status>(lists: 1, singles: 0); // All records, in one query.
+        }
+
+        [Test]
+        public async Task Including_loads_an_association_shared_by_a_list_once()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            Add(new PlainOwner { PlainId = "one" });
+            Add(new PlainOwner { PlainId = "one" });
+
+            var loaded = await database.GetList<PlainOwner>().Including(x => x.Plain);
+
+            foreach (var owner in loaded)
+            {
+                var read = await Read(() => owner.Plain);
+                Assert.That(read.Result, Is.SameAs(one));
+                Assert.That(read.RanSync, Is.False);
+            }
+
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_binds_nested_associations_of_a_list()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            var owner = Add(new PlainOwner { PlainId = "one" });
+            Add(new Holder { OwnerId = owner.ID });
+            Add(new Holder { OwnerId = owner.ID });
+
+            var loaded = await database.GetList<Holder>().Including(x => x.Owner.Plain);
+
+            foreach (var holder in loaded)
+            {
+                var read = await Read(() => holder.Owner.Plain);
+                Assert.That(read.Result, Is.SameAs(one));
+                Assert.That(read.RanSync, Is.False);
+            }
+
+            VerifyLoads<PlainOwner>(lists: 0, singles: 1);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_binds_the_associations_of_an_enumerable()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            var owners = new[] { new PlainOwner { PlainId = "one" }, new PlainOwner { PlainId = "one" } };
+
+            var loaded = await Task.FromResult(owners.AsEnumerable()).Including(x => x.Plain);
+
+            Assert.That(loaded, Is.EqualTo(owners));
+            foreach (var owner in owners)
+                Assert.That((await Read(() => owner.Plain)).RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_binds_the_associations_of_a_list_task()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            var list = new List<PlainOwner> { new PlainOwner { PlainId = "one" } };
+
+            Assert.That(await Task.FromResult(list).Including(x => x.Plain), Is.SameAs(list));
+            Assert.That(await Task.FromResult<IList<PlainOwner>>(list).Including(x => x.Plain), Is.SameAs(list));
+
+            var read = await Read(() => list[0].Plain);
+            Assert.That(read.Result, Is.SameAs(one));
+            Assert.That(read.RanSync, Is.False);
+        }
+
+        [Test]
+        public void Including_an_invalid_association_binds_none_of_the_others()
+        {
+            config.Cache.Enabled = false;
+            Add(new Plain { ID = "one" });
+            var owners = new[] { new PlainOwner { PlainId = "one" } };
+
+            Assert.ThrowsAsync<ArgumentException>(() => database.IncludeAssociations(owners, x => x.Plain, x => x.PlainId));
+            VerifyLoads<Plain>(lists: 0, singles: 0);
+        }
+
+        [Test]
+        public void Including_an_association_missing_from_one_type_of_record_binds_none_of_them()
+        {
+            config.Cache.Enabled = false;
+            Add(new Plain { ID = "one" });
+            var records = new IEntity[] { new PlainOwner { PlainId = "one" }, new Holder() };
+
+            Assert.ThrowsAsync<ArgumentException>(() => database.IncludeAssociations(records, "Plain"));
+            VerifyLoads<Plain>(lists: 0, singles: 0);
+        }
+
+        [Test]
+        public async Task Including_returns_the_records_it_bound_for_a_deferred_sequence()
+        {
+            config.Cache.Enabled = false;
+            Add(new Plain { ID = "one" });
+            var evaluations = 0;
+
+            // Each evaluation creates new records, like a projection.
+            var deferred = new[] { "one", "one" }.Select(id => { evaluations++; return new PlainOwner { PlainId = id }; });
+
+            var loaded = await Task.FromResult(deferred).Including(x => x.Plain);
+
+            foreach (var owner in loaded)
+                Assert.That((await Read(() => owner.Plain)).RanSync, Is.False);
+            Assert.That(evaluations, Is.EqualTo(2));
+        }
+
+        [Test]
+        public async Task IncludeAssociations_binds_records_in_hand_and_skips_nulls()
+        {
+            config.Cache.Enabled = false;
+            var one = Add(new Plain { ID = "one" });
+            var owner = new PlainOwner { PlainId = "one" };
+
+            await database.IncludeAssociations(new[] { owner, null }, x => x.Plain);
+
+            var read = await Read(() => owner.Plain);
+            Assert.That(read.Result, Is.SameAs(one));
+            Assert.That(read.RanSync, Is.False);
+            VerifyLoads<Plain>(lists: 0, singles: 1);
+        }
+
+        [Test]
+        public async Task Including_an_empty_list_loads_nothing()
+        {
+            GetProvider(typeof(PlainOwner));
+            GetProvider(typeof(Plain));
+
+            Assert.That(await database.GetList<PlainOwner>().Including(x => x.Plain), Is.Empty);
+            VerifyLoads<Plain>(lists: 0, singles: 0);
         }
     }
 }
