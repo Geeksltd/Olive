@@ -24,6 +24,7 @@ namespace Olive.Entities
             IDatabaseQuery WhereSubquery(string myField, IDatabaseQuery subquery, string targetField, string @operator)
             {
                 subquery.AliasPrefix = "Subq" + Guid.NewGuid().ToString().Remove("-").Substring(0, 6);
+                if (subquery is DatabaseQuery dbQuery) subquery = dbQuery.WithoutRedundantSort();
 
                 var sql = subquery.Provider
                     .GenerateSelectCommand(subquery, subquery.MapColumn(targetField));
