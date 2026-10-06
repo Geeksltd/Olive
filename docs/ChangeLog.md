@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 6 Oct 2026
+- Fixed `query.Page(ListPagination)` (database paging) returning an empty page when `PageSize` is null: an operator-precedence bug made the start index 100,000 instead of 0. It now starts at row 0 and uses the default page size, matching `TakePage()`. `ListPagination` also now reads only the first value when the `p` field is posted more than once (e.g. `p=1-50|1-50`), instead of losing the page size. No code changes required. `Olive.Mvc.Paging` bumped to `10.2.1`.
+
 ## 4 Sep 2026
 - `Any()`/`None()` on `IDatabaseQuery` (and the `Database.Any<T>()`/`Any<T>(criteria)`/`None<T>(...)` convenience methods) now generate a `SELECT TOP 1 ...` existence probe instead of `SELECT Count(...) > 0`, so SQL Server/MySQL/PostgreSQL/SQLite can stop at the first matching row instead of aggregating over every match. Also fixed row parsing (`GetList()`/`Get()`) to stop calling `IDataReader.GetSchemaTable()` once per row (and once per base/derived table of that row) — the reader's column set is now read once per query execution and reused, which was a real cost on large result sets, especially combined with `Select(columns)` narrowing. Both are internal/behavioural improvements; no code changes required. `Olive.Entities.Data` bumped to `10.4.3`.
 

@@ -27,7 +27,8 @@ namespace Olive.Mvc
         public static T Page<T>(this T query, ListPagination paging)
             where T : IDatabaseQuery
         {
-            query.Page((paging.CurrentPage - 1) * paging.PageSize ?? DEFATLT_PAGE_SIZE, paging.PageSize ?? DEFATLT_PAGE_SIZE);
+            var pageSize = paging.PageSize ?? DEFATLT_PAGE_SIZE;
+            query.Page((paging.CurrentPage.LimitMin(1) - 1) * pageSize, pageSize);
             return query;
         }
 

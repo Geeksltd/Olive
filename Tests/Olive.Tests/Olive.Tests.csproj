@@ -42,6 +42,9 @@
 		<Reference Include="Olive.Mvc">
 			<HintPath>..\..\Olive.Mvc\bin\Debug\net10.0\Olive.Mvc.dll</HintPath>
 		</Reference>
+		<Reference Include="Olive.Mvc.Paging">
+			<HintPath>..\..\Olive.Mvc.Paging\bin\Debug\net10.0\Olive.Mvc.Paging.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 </Project>
