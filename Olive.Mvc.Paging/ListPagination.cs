@@ -59,6 +59,9 @@ namespace Olive.Mvc
         {
             if (queryInfo.IsEmpty()) return;
 
+            // When a form has more than one page-size selector, the values are joined (e.g. "1-50|1-50").
+            queryInfo = queryInfo.Split('|', ',').First().Trim();
+
             var parts = queryInfo.Split('-');
             CurrentPage = parts.First().TryParseAs<int>() ?? 1;
             if (CurrentPage < 1) CurrentPage = 1;
