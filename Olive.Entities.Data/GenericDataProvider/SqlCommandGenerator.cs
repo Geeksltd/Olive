@@ -47,7 +47,7 @@ namespace Olive.Entities.Data
 
             return $@"UPDATE {GetFullTableName(metaData)} SET
                 {properties.Select(x => $"{SafeId(x.Name)} = @{x.ParameterName}").ToString(", ")}
-                WHERE {metaData.IdColumnName} = @OriginalId";
+                WHERE {SafeId(metaData.IdColumnName)} = @OriginalId";
         }
 
         public virtual string GenerateInsertCommand(IDataProviderMetaData metaData)
@@ -71,10 +71,21 @@ namespace Olive.Entities.Data
         }
 
         public virtual string GenerateDeleteCommand(IDataProviderMetaData metaData) =>
-            $"DELETE FROM {GetFullTableName(metaData)} WHERE {metaData.IdColumnName} = @Id";
+            $"DELETE FROM {GetFullTableName(metaData)} WHERE {SafeId(metaData.IdColumnName)} = @Id";
 
-        protected string GetFullTableName(IDataProviderMetaData metaData) =>
+        public virtual string GetFullTableName(IDataProviderMetaData metaData) =>
             metaData.Schema.WithSuffix(".") + metaData.TableName;
+
+        /// <summary>
+        /// Escapes a table alias. Column references use the plain alias (so a sub-query prefix can be
+        /// prepended to it), which providers with case-sensitive quoted identifiers must match here.
+        /// </summary>
+        public virtual string SafeAlias(string alias) => SafeId(alias);
+
+        /// <summary>
+        /// Rewrites a raw alias fragment before it is substituted into an already escaped template.
+        /// </summary>
+        public virtual string NormalizeAliasPart(string alias) => alias;
 
         string Generate(IDatabaseQuery query, ICriterion criterion)
         {
@@ -83,7 +94,8 @@ namespace Olive.Entities.Data
             {
                 Query = query,
                 Type = query.EntityType,
-                ToSafeId = SafeId
+                ToSafeId = SafeId,
+                ToSafeAlias = SafeAlias
             });
         }
     }

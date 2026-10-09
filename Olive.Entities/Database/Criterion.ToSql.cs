@@ -94,9 +94,10 @@ namespace Olive.Entities
 
             var newContext = new SqlConversionContext
             {
-                Alias = context.ToSafeId(proc.TableAlias),
+                Alias = (context.ToSafeAlias ?? context.ToSafeId)(proc.TableAlias),
                 Query = context.Query,
                 ToSafeId = context.ToSafeId,
+                ToSafeAlias = context.ToSafeAlias,
                 Type = proc.Property.DeclaringType
             };
 

@@ -9,17 +9,22 @@ namespace Olive.Entities.Data
         {
             var result = "";
 
+            var generator = sqlCommandGenerator as SqlCommandGenerator;
+
             string safe(string value) => sqlCommandGenerator.SafeId(value);
+            string safeAlias(string value) => generator?.SafeAlias(value) ?? safe(value);
+            string tableName(IDataProviderMetaData medaData) =>
+                generator?.GetFullTableName(medaData) ?? medaData.Schema.WithSuffix(".") + medaData.TableName;
 
             void addTable(IDataProviderMetaData medaData)
             {
                 var baseType = medaData.BaseClassesInOrder.LastOrDefault();
 
-                var alias = safe($"{{0}}{medaData.TableAlias}");
+                var alias = safeAlias($"{{0}}{medaData.TableAlias}");
 
                 result += " LEFT OUTER JOIN ".OnlyWhen(result.HasValue()) +
-                    $"{medaData.Schema.WithSuffix(".")}{medaData.TableName} AS {alias} " +
-                    $"ON {alias}.{safe(medaData.IdColumnName)} = {safe($"{{0}}{baseType?.TableAlias}")}.{safe(baseType?.IdColumnName)}".OnlyWhen(baseType != null);
+                    $"{tableName(medaData)} AS {alias} " +
+                    $"ON {alias}.{safe(medaData.IdColumnName)} = {safeAlias($"{{0}}{baseType?.TableAlias}")}.{safe(baseType?.IdColumnName)}".OnlyWhen(baseType != null);
             }
 
             foreach (var parent in @this.BaseClassesInOrder)

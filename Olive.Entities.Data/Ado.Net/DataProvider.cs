@@ -232,13 +232,36 @@ namespace Olive.Entities.Data
         // }
 
         /// <summary>
+        /// An ID given as text, as CachedReference and Get&lt;T&gt;(string) pass it, converted to the
+        /// entity's key type. SQL Server converts a text parameter implicitly; PostgreSQL refuses to
+        /// compare uuid with text.
+        /// </summary>
+        object ToKeyValue(object id)
+        {
+            if (!(id is string text)) return id;
+
+            for (var type = EntityType; type != null; type = type.BaseType)
+            {
+                if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(Entity<>)) continue;
+
+                var keyType = type.GetGenericArguments()[0];
+                if (keyType == typeof(Guid)) return Guid.TryParse(text, out var guid) ? guid : id;
+                if (keyType == typeof(int)) return int.TryParse(text, out var number) ? number : id;
+                if (keyType == typeof(long)) return long.TryParse(text, out var big) ? big : id;
+                return id;
+            }
+
+            return id;
+        }
+
+        /// <summary>
         /// Gets the specified record by its type and ID.
         /// </summary>
         public async Task<IEntity> Get(object objectID)
         {
             var command = $"SELECT {GetFields()} FROM {GetTables()} WHERE {MapColumn("ID")} = @ID";
 
-            using (var reader = await ExecuteReader(command, CommandType.Text, Access.CreateParameter("ID", objectID)))
+            using (var reader = await ExecuteReader(command, CommandType.Text, Access.CreateParameter("ID", ToKeyValue(objectID))))
             {
                 var result = new List<IEntity>();
 

@@ -8,5 +8,8 @@ namespace Olive.Entities
         public string Alias;
         public IDatabaseQuery Query;
         public Func<string, string> ToSafeId;
+
+        /// <summary>Escapes a table alias. Falls back to ToSafeId when not set.</summary>
+        public Func<string, string> ToSafeAlias;
     }
 }

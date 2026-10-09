@@ -153,7 +153,7 @@ namespace Olive.Entities.Data
         public virtual string MapSubquery(string path, string parent)
         {
             if (SubqueryMapping.TryGetValue(path, out var value))
-                return value.FormatWith(parent, parent.Or(MetaData.TableAlias));
+                return value.FormatWith(NormalizeAliasPart(parent), NormalizeAliasPart(parent.Or(MetaData.TableAlias)));
 
             throw new NotSupportedException($"{GetType().Name} does not provide a sub-query mapping for '{path}'.");
         }
@@ -217,18 +217,44 @@ namespace Olive.Entities.Data
             Entity.Services.SetOriginalId(record);
         }
 
-        static readonly ConditionalWeakTable<IDataReader, HashSet<string>> ReaderColumnsCache = new();
+        static readonly ConditionalWeakTable<IDataReader, ReaderColumns> ReaderColumnsCache = new();
+
+        sealed class ReaderColumns
+        {
+            readonly string[] Names;
+            public readonly HashSet<string> Set;
+
+            public ReaderColumns(IDataReader reader)
+            {
+                Names = new string[reader.FieldCount];
+                for (var i = 0; i < Names.Length; i++) Names[i] = reader.GetName(i);
+                Set = new HashSet<string>(Names, StringComparer.OrdinalIgnoreCase);
+            }
+
+            public bool Describes(IDataReader reader)
+            {
+                if (reader.FieldCount != Names.Length) return false;
+
+                for (var i = 0; i < Names.Length; i++)
+                    if (!string.Equals(reader.GetName(i), Names[i], StringComparison.Ordinal)) return false;
+
+                return true;
+            }
+        }
 
         static HashSet<string> GetReaderColumns(IDataReader reader)
         {
-            if (ReaderColumnsCache.TryGetValue(reader, out var cached)) return cached;
+            // Some providers (Npgsql) reuse one reader instance per connection, so a cached entry can
+            // describe an earlier result set.
+            if (ReaderColumnsCache.TryGetValue(reader, out var cached))
+            {
+                if (cached.Describes(reader)) return cached.Set;
+                ReaderColumnsCache.Remove(reader);
+            }
 
-            var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            for (var i = 0; i < reader.FieldCount; i++)
-                columns.Add(reader.GetName(i));
-
+            var columns = new ReaderColumns(reader);
             ReaderColumnsCache.Add(reader, columns);
-            return columns;
+            return columns.Set;
         }
 
         void FillData(IDataReader reader, IEntity entity)
@@ -261,6 +287,12 @@ namespace Olive.Entities.Data
             $"{medaData.TableName}_{propertyName.Remove(".")}";
 
         void PrepareTableTemplate() => TablesTemplate = MetaData.GetTableTemplate(SqlCommandGenerator);
+
+        string SafeAlias(string alias) =>
+            (SqlCommandGenerator as SqlCommandGenerator)?.SafeAlias(alias) ?? SqlCommandGenerator.SafeId(alias);
+
+        string NormalizeAliasPart(string alias) =>
+            (SqlCommandGenerator as SqlCommandGenerator)?.NormalizeAliasPart(alias) ?? alias;
 
         struct MappedProperty
         {
@@ -316,12 +348,12 @@ namespace Olive.Entities.Data
             {
                 var associateMetaData = DataProviderMetaDataGenerator.Generate(association.AssociateType);
 
-                var alias = SqlCommandGenerator.SafeId($"{{0}}.{association.Name}_{associateMetaData.TableName}");
-                var partialAlias = $"{{0}}.{association.Name}_";
+                var alias = SafeAlias($"{{0}}.{association.Name}_{associateMetaData.TableName}");
+                var partialAlias = NormalizeAliasPart($"{{0}}.{association.Name}_");
 
-                var template = $@"SELECT {alias}.{associateMetaData.IdColumnName}
+                var template = $@"SELECT {alias}.{SqlCommandGenerator.SafeId(associateMetaData.IdColumnName)}
                     FROM {associateMetaData.GetTableTemplate(SqlCommandGenerator).FormatWith(partialAlias)}
-                    WHERE {alias}.{SqlCommandGenerator.SafeId(associateMetaData.IdColumnName)} = {SqlCommandGenerator.SafeId("{1}")}.{SqlCommandGenerator.SafeId(association.Name)}";
+                    WHERE {alias}.{SqlCommandGenerator.SafeId(associateMetaData.IdColumnName)} = {SafeAlias("{1}")}.{SqlCommandGenerator.SafeId(association.Name)}";
 
                 SubqueryMapping.Add(
                     association.Name.WithSuffix(".*"),
