@@ -85,24 +85,29 @@ namespace Olive
         {
             var keys = Environment.GetEnvironmentVariables().Keys.Cast<string>().ToArray();
 
-            foreach (var variable in keys)
+            // AsEnumerable() walks every provider for every node, so it is far too slow to repeat per variable.
+            var configNodes = config.AsEnumerable().Where(v => v.Value.OrEmpty().Contains("%")).ToArray();
+
+            foreach (var item in configNodes)
             {
-                var key = $"%{variable}%";
-                var configNodes = config.AsEnumerable().Where(v => v.Value.OrEmpty().Contains(key)).ToArray();
+                var finalValue = item.Value;
 
-                foreach (var item in configNodes)
+                foreach (var variable in keys)
                 {
-                    var value = GetSafeEnvironmentVariable(variable);
-                    var finalValue = item.Value.Replace(key, value);
+                    var key = $"%{variable}%";
+                    if (finalValue.Contains(key))
+                        finalValue = finalValue.Replace(key, GetSafeEnvironmentVariable(variable));
+                }
 
-                    try
-                    {
-                        config[item.Key] = finalValue;
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Failed to update config key from environment variable.");
-                    }
+                if (finalValue == item.Value) continue;
+
+                try
+                {
+                    config[item.Key] = finalValue;
+                }
+                catch
+                {
+                    Console.WriteLine("Failed to update config key from environment variable.");
                 }
             }
 
