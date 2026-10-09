@@ -122,7 +122,7 @@ namespace Olive.PassiveBackgroundTasks
                 }
             }
 
-            Log.Info($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
+            Log.Debug($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
             messages.Add($"Finished running {toRun.Select(c => c.Name).ToString(",")}.");
 
             return messages;
@@ -131,7 +131,7 @@ namespace Olive.PassiveBackgroundTasks
         static async Task Run(this IBackgourndTask task)
         {
             var start = LocalTime.Now;
-            Log.Info($"Running background task '{task.Name}'");
+            Log.Debug($"Running background task '{task.Name}'");
             await Db.Update(task, x =>
             {
                 x.Heartbeat = LocalTime.UtcNow;
@@ -141,7 +141,7 @@ namespace Olive.PassiveBackgroundTasks
             try
             {
                 await Engine.GetAction(task).ConfigureAwait(false);
-                Log.Info($"Sucessfully ran background task '{task.Name}' in {LocalTime.Now.Subtract(start).ToNaturalTime()}");
+                Log.Debug($"Sucessfully ran background task '{task.Name}' in {LocalTime.Now.Subtract(start).ToNaturalTime()}");
             }
             catch (Exception ex)
             {

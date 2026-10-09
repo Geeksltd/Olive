@@ -40,9 +40,9 @@ namespace Olive.Aws.Ses.AutoFetch
         {
             foreach (var account in accounts)
             {
-                Log.For(typeof(Mailbox)).Info("Fetching emails for " + account.S3Bucket);
+                Log.For(typeof(Mailbox)).Debug("Fetching emails for " + account.S3Bucket);
                 await FetchClient.Fetch(account, saveMessage, saveAttachments);
-                Log.For(typeof(Mailbox)).Info("Fetched emails for " + account.S3Bucket);
+                Log.For(typeof(Mailbox)).Debug("Fetched emails for " + account.S3Bucket);
             }
         }
         public static Task FetchAll() => FetchAll(null, null, Accounts.ToArray());

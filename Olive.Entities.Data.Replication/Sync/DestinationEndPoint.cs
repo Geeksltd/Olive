@@ -55,7 +55,7 @@ namespace Olive.Entities.Replication
         {
             var start = LocalTime.Now;
             await PublishQueue.PullAll<ReplicateDataMessage>(ImportUnderOwnReference);
-            Log.For(this).Info("Pulled from queue in " + LocalTime.Now.Subtract(start).ToNaturalTime());
+            Log.For(this).Debug("Pulled from queue in " + LocalTime.Now.Subtract(start).ToNaturalTime());
         }
 
         public virtual Task Handle(string message)

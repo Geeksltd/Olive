@@ -55,13 +55,13 @@ namespace Olive.Aws.Ses.AutoFetch
                     await Fetch(item);
 
 
-                Log.For(this).Info($"Processed {response.S3Objects.Count} items from " + Account.S3Bucket);
+                Log.For(this).Debug($"Processed {response.S3Objects.Count} items from " + Account.S3Bucket);
 
                 isEmpty = response.NextContinuationToken.IsEmpty();
 
                 if (isEmpty)
                 {
-                    Log.For(this).Info("Downloaded all the objects from " + Account.S3Bucket);
+                    Log.For(this).Debug("Downloaded all the objects from " + Account.S3Bucket);
                     break;
                 }
             }
