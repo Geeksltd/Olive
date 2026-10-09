@@ -45,7 +45,7 @@ namespace Olive.Entities
         public static T Where<T>(this T query, string sqlCriteria)
             where T : DatabaseQuery
         {
-            query.Criteria.Add(new DirectDatabaseCriterion(sqlCriteria));
+            query.AddWhereCriteria(new[] { new DirectDatabaseCriterion(sqlCriteria) });
             return query;
         }
 

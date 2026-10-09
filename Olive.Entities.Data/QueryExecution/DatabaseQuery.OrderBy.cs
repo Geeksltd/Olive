@@ -20,6 +20,7 @@ namespace Olive.Entities.Data
 
         IDatabaseQuery IDatabaseQuery.ThenBy(string property, bool descending)
         {
+            ValidatePropertyIsNotCalculated(property, "OrderBy");
             OrderByParts.Add(new OrderByPart { Property = property, Descending = descending });
             return this;
         }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
 
     partial class Database
@@ -47,14 +48,63 @@
             return AliasPrefix + alias + "." + result.Split('.').Last();
         }
 
+        internal static void ThrowIfCalculated(PropertyInfo property, string operation)
+        {
+            if (CalculatedAttribute.IsCalculated(property))
+                throw new NotSupportedException(
+                    $"Cannot use calculated property '{property.DeclaringType.Name}.{property.Name}' in {operation}(). " +
+                    "Properties marked with [Calculated] do not exist in the database.");
+        }
+
+        internal void ValidatePropertyIsNotCalculated(string propertyPath, string operation)
+        {
+            if (propertyPath.IsEmpty()) return;
+
+            var type = EntityType;
+            foreach (var part in propertyPath.Split('.'))
+            {
+                var property = type.GetProperty(part);
+                if (property == null) break;
+
+                ThrowIfCalculated(property, operation);
+                type = property.PropertyType;
+            }
+        }
+
+        internal void AddWhereCriteria(IEnumerable<ICriterion> criteria)
+        {
+            var items = criteria.ToArray();
+
+            void validate(ICriterion criterion)
+            {
+                if (criterion is BinaryCriterion binary)
+                {
+                    validate(binary.Left);
+                    validate(binary.Right);
+                }
+                else if (!(criterion is DirectDatabaseCriterion))
+                {
+                    ValidatePropertyIsNotCalculated(criterion.PropertyName, "Where");
+
+                    if (criterion is DynamicValueCriterion && criterion.Value is string otherProperty)
+                        ValidatePropertyIsNotCalculated(otherProperty, "Where");
+                }
+            }
+
+            foreach (var criterion in items) validate(criterion);
+            Criteria.AddRange(items);
+        }
+
         IDatabaseQuery IDatabaseQuery.Where(params ICriterion[] criteria)
         {
-            Criteria.AddRange(criteria);
+            AddWhereCriteria(criteria);
             return this;
         }
 
         IDatabaseQuery IDatabaseQuery.Include(string associations)
         {
+            ValidatePropertyIsNotCalculated(associations, "Include");
+
             var immediateAssociation = associations.Split('.').First();
             var nestedAssociations = associations.Split('.').ExceptFirst().ToString(".");
 
