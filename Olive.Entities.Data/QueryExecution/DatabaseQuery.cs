@@ -118,5 +118,16 @@
 
             return result;
         }
+
+        /// <summary>
+        /// Returns a copy of this query without its sort, if the sort doesn't affect which rows are returned.
+        /// Used when this query is embedded as an IN (...) subquery, where ORDER BY is meaningless
+        /// and rejected by SQL Server unless TOP or OFFSET is also specified.
+        /// </summary>
+        internal DatabaseQuery WithoutRedundantSort()
+        {
+            if (OrderByParts.None() || TakeTop.HasValue || PageSize.HasValue) return this;
+            return (DatabaseQuery)CloneFor(EntityType);
+        }
     }
 }

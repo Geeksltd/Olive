@@ -387,11 +387,14 @@ namespace Olive.Entities.Data
         /// </summary>        
         public virtual DirectDatabaseCriterion GetAssociationInclusionCriteria(IDatabaseQuery masterQuery, PropertyInfo association)
         {
-            var whereClause = GenerateAssociationLoadingCriteria((DatabaseQuery)masterQuery, association);
+            // SQL generation adds parameters to the query it runs on, so the criterion must take
+            // its parameters from the same (possibly cloned) query.
+            var query = ((DatabaseQuery)masterQuery).WithoutRedundantSort();
+            var whereClause = GenerateAssociationLoadingCriteria(query, association);
 
             return new DirectDatabaseCriterion(whereClause)
             {
-                Parameters = masterQuery.Parameters
+                Parameters = query.Parameters
             };
         }
 
