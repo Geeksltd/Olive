@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Reflection;
     using System.Threading.Tasks;
 
     public partial class DatabaseQuery<TEntity> : DatabaseQuery, IDatabaseQuery<TEntity>
@@ -14,7 +15,8 @@
         IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Where(Expression<Func<TEntity, bool>> criteria)
         {
             if (criteria == null) return this;
-            Criteria.AddRange(new CriteriaExtractor<TEntity>(criteria, throwOnNonConversion: true).Extract());
+            CalculatedPropertyExpressionValidator.Validate(criteria, "Where");
+            AddWhereCriteria(new CriteriaExtractor<TEntity>(criteria, throwOnNonConversion: true).Extract());
             return this;
         }
 
@@ -58,7 +60,7 @@
 
         IDatabaseQuery<TEntity> IDatabaseQuery<TEntity>.Where(params ICriterion[] criteria)
         {
-            Criteria.AddRange(criteria);
+            AddWhereCriteria(criteria);
             return this;
         }
 
