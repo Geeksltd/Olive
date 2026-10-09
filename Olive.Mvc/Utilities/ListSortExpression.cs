@@ -78,6 +78,12 @@ namespace Olive.Mvc
 
             result = result.RemoveQueryString(queryKey).AddQueryString(queryKey, sortExpression);
 
+            // A new order starts on the first page, keeping the page size.
+            var pagingKey = Prefix.WithSuffix(".") + "p";
+            var paging = result.GetQueryString().FirstOrDefault(x => x.Key.Equals(pagingKey, StringComparison.OrdinalIgnoreCase)).Value;
+            var pageSize = paging.OrEmpty().Split('-').ElementAtOrDefault(1);
+            result = result.AddQueryString(pagingKey, pageSize.WithPrefix("1-")).RemoveEmptyQueryParameters();
+
             return result.PathAndQuery;
         }
     }

@@ -22,12 +22,13 @@
             Prefix = prefix;
         }
 
+        // A page past the end shows no items. It isn't changed to an existing page, so none of the links is active.
+        int CurrentPage => Paging.CurrentPage.LimitMax(Paging.LastPage);
+
         void FindBoundaries()
         {
-            if (Paging.CurrentPage > Paging.LastPage) Paging.CurrentPage = 1;
-
-            Start = Paging.CurrentPage;
-            End = Paging.CurrentPage;
+            Start = CurrentPage;
+            End = CurrentPage;
 
             while ((Start > 1 || End < Paging.LastPage) && End - Start < VisiblePages - 1)
             {
@@ -62,7 +63,8 @@
             if (Paging.PageSize == null || Paging.TotalItemsCount == 0)
                 return null;
 
-            if (ListPagination.DisplayForSinglePage == false && Paging.LastPage == 1)
+            // A page past the end still needs the link back to the only page.
+            if (ListPagination.DisplayForSinglePage == false && Paging.LastPage == 1 && Paging.CurrentPage == 1)
                 return null;
 
             FindBoundaries();
@@ -79,12 +81,12 @@
 
             // add first page control
             if (Paging.ShowFirstLastLinks)
-                AddPaginationControl(r, Paging.FirstText, "First page", Paging.CurrentPage == 1, 1);
+                AddPaginationControl(r, Paging.FirstText, "First page", isFirst, 1);
 
             // add previous page control
             if (Paging.ShowPreviousNextLinks)
             {
-                var previousPage = isFirst ? 1 : Paging.CurrentPage - 1;
+                var previousPage = isFirst ? 1 : (Paging.CurrentPage - 1).LimitMax(Paging.LastPage);
                 AddPaginationControl(r, Paging.PreviousText, "Previous page", isFirst, previousPage);
             }
 
@@ -97,8 +99,8 @@
             // add next page control
             if (Paging.ShowPreviousNextLinks)
             {
-                var nextPage = isLast ? Paging.LastPage : Paging.CurrentPage + 1;
-                AddPaginationControl(r, Paging.NextText, "Next page", isLast, nextPage);
+                var nextPage = (Paging.CurrentPage + 1).LimitMax(Paging.LastPage);
+                AddPaginationControl(r, Paging.NextText, "Next page", Paging.CurrentPage >= Paging.LastPage, nextPage);
             }
 
             // add last page control

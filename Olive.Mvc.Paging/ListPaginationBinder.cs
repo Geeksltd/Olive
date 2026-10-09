@@ -13,19 +13,9 @@ namespace Olive.Mvc
 
             var result = old;
 
+            // The view model's pagination has the list's settings, including its default page size.
             if (value.FirstValue.HasValue())
-            {
-                result = new ListPagination(old?.Container, value.FirstValue)
-                {
-                    Prefix = old.Prefix,
-                };
-
-                if (old != null)
-                {
-                    result.UseAjaxPost = old.UseAjaxPost;
-                    result.UseAjaxGet = old.UseAjaxGet;
-                }
-            }
+                result = new ListPagination(old, value.FirstValue);
 
             bindingContext.Result = ModelBindingResult.Success(result);
 

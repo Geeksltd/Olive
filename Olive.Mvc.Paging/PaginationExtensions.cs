@@ -17,11 +17,8 @@ namespace Olive.Mvc
             var pageSize = paging.PageSize.Value;
             var currentPage = paging.CurrentPage.LimitMin(1);
 
-            var skip = pageSize * (currentPage - 1);
-
-            if (currentPage > 1 && skip > list.Count()) skip = 0;
-
-            return list.Take(skip, pageSize);
+            // A page past the end has no items, just like a database query.
+            return list.Take(pageSize * (currentPage - 1), pageSize);
         }
 
         public static T Page<T>(this T query, ListPagination paging)
