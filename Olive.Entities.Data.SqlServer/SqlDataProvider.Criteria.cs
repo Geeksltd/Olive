@@ -4,7 +4,7 @@
     {
         public SqlCriterionGenerator(DatabaseQuery query) : base(query) { }
 
-        protected override string ToSafeId(string id) => "[" + id + "]";
+        protected override string ToSafeId(string id) => "[" + id?.Replace("]", "]]") + "]";
 
         protected override string UnescapeId(string id) => id.Trim('[', ']');
     }
