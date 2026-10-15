@@ -62,7 +62,14 @@ namespace Olive.Entities.Replication
             {
                 Log.Info($"Received Clear Signal for {message.TypeFullName}");
 
-                await Database.GetAccess(DomainType).ExecuteNonQuery($"delete from {SchemaAttribute.GetSchema(DomainType).WithSuffix(".")}{TableNameAttribute.GetTableName(DomainType)}");
+                // Named the way the provider names it: quoted, and with the schema spelled as it spells it.
+                var access = Database.GetAccess(DomainType);
+                var generator = access.GetSqlCommandGenerator();
+                var schema = SchemaAttribute.GetSchema(DomainType);
+                var table = generator.SafeSchema(schema).OnlyWhen(schema.HasValue()).WithSuffix(".") +
+                    generator.SafeId(TableNameAttribute.GetTableName(DomainType));
+
+                await access.ExecuteNonQuery($"delete from {table}");
 
                 return;
             }

@@ -6,7 +6,7 @@ namespace Olive.Entities.Data
     {
         public static DataAccessOptions PostgreSql(this DataAccessOptions @this)
         {
-            return @this.Add<NpgsqlConnection, PostgreSqlCommandGenerator>();
+            return @this.Add<NpgsqlConnection, PostgreSqlCommandGenerator>(new PostgreSqlParameterFactory());
         }
     }
 }

@@ -32,7 +32,14 @@ namespace Olive.Entities.Data
         }
 
         public override string GetFullTableName(IDataProviderMetaData metaData) =>
-            SafeId(metaData.Schema).OnlyWhen(metaData.Schema.HasValue()).WithSuffix(".") + SafeId(metaData.TableName);
+            SafeSchema(metaData.Schema).OnlyWhen(metaData.Schema.HasValue()).WithSuffix(".") + SafeId(metaData.TableName);
+
+        /// <summary>
+        /// Schemas are lower case, whatever case an entity's [Schema] attribute uses: that is how M# creates
+        /// them on SQL Server, so a database migrated from one keeps its schema names as they are, and it is
+        /// PostgreSQL's own spelling of an unquoted name. Tables and columns keep their exact case.
+        /// </summary>
+        public override string SafeSchema(string schema) => SafeId(schema?.ToLowerInvariant());
 
         // Column references use the alias unquoted, which PostgreSQL folds to lower case, so the alias
         // is declared unquoted too. A quoted alias would keep its case and no longer match them.

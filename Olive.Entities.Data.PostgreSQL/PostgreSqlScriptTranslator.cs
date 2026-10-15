@@ -58,8 +58,20 @@ namespace Olive.Entities.Data
 
         static readonly Regex ReferentialActions = new Regex(@"^(\s*ON\s+(DELETE|UPDATE)\s+(NO\s+ACTION|CASCADE|SET\s+NULL|SET\s+DEFAULT|RESTRICT))*\s*$", Options);
 
+        /// <summary>
+        /// The first line of a hand-written script that is already PostgreSQL, such as a service's
+        /// Customize.Database.sql. Its statements are run as written instead of translated.
+        /// </summary>
+        public const string NativeMarker = "-- dialect: postgresql";
+
         /// <summary>The PostgreSQL statements for a T-SQL script, in order.</summary>
         public static IEnumerable<string> Translate(string tsql)
+        {
+            if (IsNative(tsql)) return SplitNativeStatements(tsql).ToArray();
+            return TranslateStatements(tsql);
+        }
+
+        static IEnumerable<string> TranslateStatements(string tsql)
         {
             foreach (var statement in SplitStatements(tsql))
             {
@@ -220,9 +232,16 @@ namespace Olive.Entities.Data
             return parts.Select(Quote).ToString(".");
         }
 
-        static string[] SplitName(string raw) =>
-            SplitTopLevel(raw.Trim(), '.').Select(x => Unquote(x.Trim())).Where(x => x.HasValue())
+        /// <summary>The name's parts, the schema (when there is one) in lower case as PostgreSqlCommandGenerator
+        /// spells it.</summary>
+        static string[] SplitName(string raw)
+        {
+            var parts = SplitTopLevel(raw.Trim(), '.').Select(x => Unquote(x.Trim())).Where(x => x.HasValue())
                 .SkipWhile((x, i) => i == 0 && x.Equals("dbo", StringComparison.OrdinalIgnoreCase)).ToArray();
+
+            if (parts.Length > 1) parts[0] = parts[0].ToLowerInvariant();
+            return parts;
+        }
 
         static string Unquote(string raw)
         {
@@ -267,6 +286,82 @@ namespace Olive.Entities.Data
             }
 
             if (current.Length > 0) yield return current.ToString();
+        }
+
+        static bool IsNative(string sql) =>
+            sql.OrEmpty().TrimStart('﻿').TrimStart().StartsWith(NativeMarker, StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>Splits PostgreSQL on the semicolons outside quotes, comments and dollar-quoted bodies,
+        /// so a DO block or function body stays one statement.</summary>
+        static IEnumerable<string> SplitNativeStatements(string sql)
+        {
+            sql = sql.OrEmpty().TrimStart('﻿');
+            var current = new StringBuilder();
+
+            for (var i = 0; i < sql.Length; i++)
+            {
+                var c = sql[i];
+
+                if (c == '-' && i + 1 < sql.Length && sql[i + 1] == '-')
+                {
+                    var end = sql.IndexOf('\n', i);
+                    i = (end < 0 ? sql.Length : end) - 1;
+                    continue;
+                }
+
+                if (c == '/' && i + 1 < sql.Length && sql[i + 1] == '*')
+                {
+                    var end = sql.IndexOf("*/", i + 2, StringComparison.Ordinal);
+                    i = (end < 0 ? sql.Length : end + 2) - 1;
+                    continue;
+                }
+
+                if (c == '\'' || c == '"')
+                {
+                    var end = i + 1;
+                    while (end < sql.Length)
+                    {
+                        if (sql[end] == c)
+                        {
+                            if (end + 1 < sql.Length && sql[end + 1] == c) { end += 2; continue; }
+                            break;
+                        }
+
+                        end++;
+                    }
+
+                    end = Math.Min(end, sql.Length - 1);
+                    current.Append(sql, i, end - i + 1);
+                    i = end;
+                    continue;
+                }
+
+                if (c == '$')
+                {
+                    var tag = Regex.Match(sql.Substring(i), @"^\$([A-Za-z_][A-Za-z0-9_]*)?\$");
+                    if (tag.Success)
+                    {
+                        var close = sql.IndexOf(tag.Value, i + tag.Length, StringComparison.Ordinal);
+                        var end = close < 0 ? sql.Length : close + tag.Length;
+                        current.Append(sql, i, end - i);
+                        i = end - 1;
+                        continue;
+                    }
+                }
+
+                if (c == ';')
+                {
+                    var statement = current.ToString().Trim();
+                    if (statement.HasValue()) yield return statement;
+                    current.Clear();
+                    continue;
+                }
+
+                current.Append(c);
+            }
+
+            var last = current.ToString().Trim();
+            if (last.HasValue()) yield return last;
         }
 
         static IEnumerable<string> SplitStatements(string tsql)

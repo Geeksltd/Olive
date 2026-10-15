@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Olive.Entities.Data
 {
-    public abstract class SqlCommandGenerator : ISqlCommandGenerator
+    public abstract class SqlCommandGenerator : ISqlCommandGenerator, ISchemaNamingSqlCommandGenerator
     {
         public abstract string SafeId(string objectName);
 
@@ -72,6 +72,9 @@ namespace Olive.Entities.Data
 
         public virtual string GenerateDeleteCommand(IDataProviderMetaData metaData) =>
             $"DELETE FROM {GetFullTableName(metaData)} WHERE {SafeId(metaData.IdColumnName)} = @Id";
+
+        /// <summary>A schema name as this database spells it. The same as SafeId unless a provider overrides it.</summary>
+        public virtual string SafeSchema(string schema) => SafeId(schema);
 
         public virtual string GetFullTableName(IDataProviderMetaData metaData) =>
             metaData.Schema.WithSuffix(".") + metaData.TableName;
