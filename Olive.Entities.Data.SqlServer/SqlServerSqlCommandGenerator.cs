@@ -96,6 +96,53 @@ namespace Olive.Entities.Data
             }
         }
 
+        // ================================================================ report queries
+
+        /// <summary>A sorted query's rows are limited with OFFSET … FETCH (Top as the first page), an unsorted
+        /// one's with TOP, since OFFSET needs an ORDER BY.</summary>
+        public override string GenerateReportCommand(ReportCommand command)
+        {
+            var sorted = command.OrderBy.HasValue();
+            var start = command.PageSize.HasValue ? command.PageStartIndex : 0;
+            var take = command.PageSize ?? command.Top;
+
+            var r = new StringBuilder("SELECT ");
+            if (command.Distinct) r.Append("DISTINCT ");
+            if (take.HasValue && !sorted && !command.PageSize.HasValue) r.Append($"TOP ({take}) ");
+            r.Append($"{command.Columns} FROM {command.Tables}{command.Clauses}");
+
+            if (take.HasValue && (sorted || command.PageSize.HasValue))
+            {
+                if (!sorted) r.Append(" ORDER BY (SELECT NULL)");
+                r.Append($" OFFSET {start} ROWS FETCH NEXT {take} ROWS ONLY");
+            }
+
+            return r.ToString();
+        }
+
+        public override string TruncateToHour(string expression) => $"DATEADD(hour, DATEDIFF(hour, 0, {expression}), 0)";
+
+        public override string TruncateToDay(string expression) => $"DATEADD(day, DATEDIFF(day, 0, {expression}), 0)";
+
+        public override string TruncateToMinutes(string expression, int minutes) =>
+            $"DATEADD(minute, DATEDIFF(minute, 0, {expression}) / {minutes} * {minutes}, 0)";
+
+        /// <summary>Through @@DATEFIRST, so Sunday is 0 whatever the session's first day of the week.</summary>
+        public override string DayOfWeek(string expression) => $"((DATEPART(weekday, {expression}) + @@DATEFIRST - 1) % 7)";
+
+        public override string HourOfDay(string expression) => $"DATEPART(hour, {expression})";
+
+        public override string IndexOf(string text, string find) => $"CHARINDEX({find}, {text})";
+
+        public override string CaseInsensitive(string expression) => $"{expression} COLLATE Latin1_General_CI_AS";
+
+        public override string ToDouble(string expression) => $"CAST({expression} AS float)";
+
+        public override string GuidAsText(string expression) => $"CAST({expression} AS nvarchar(36))";
+
+        /// <summary>N'', so a literal keeps characters outside the database's code page.</summary>
+        public override string StringLiteral(string value) => "N" + base.StringLiteral(value);
+
         public override string SafeId(string id) => "[" + id?.Replace("]", "]]") + "]";
 
         public override string UnescapeId(string id) => id.Trim('[', ']');

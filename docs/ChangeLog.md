@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 19 Oct 2026 (2)
+- Added report queries: `query.GroupBy(x => key).Select(g => ...)`, `query.Summarize(rows => ...)` and `query.Project(x => ...)`, with `Having`, `OrderBy`, `Top`, `Page`, `Distinct`, `Count` and `Timeout`, and `query.Report().Where(...)` for conditions Olive's criteria cannot take. The database computes the groups and totals and they come back as typed rows; association paths become joins, and `DbFunctions` adds time buckets, `Left`, `NullIfEmpty`, `CaseInsensitive` and `Like`. Plain reads: nothing is cached, saved or raised. SQL Server and PostgreSQL implement them; other providers throw `NotSupportedException`. See [Report queries](Entities/ReportQueries.md). Additions only. `Olive.Entities.Data` bumped to `10.9.0`, `Olive.Entities.Data.SqlServer` and `Olive.Entities.Data.PostgreSQL` to `10.4.0`.
+
 ## 19 Oct 2026
 - Added direct operations: `query.DirectDelete()`, `query.DirectUpdate(set => ...)`, `query.DirectClaim(set => ...)`, `query.SkipLocked()` and `Database.DirectInsert(entities)` (a real bulk copy: SqlBulkCopy, PostgreSQL COPY). Each is one statement for every matching row, and each is **outside Olive's entity pipeline**: no validation, entity events, M# delete rules, data replication or audit trail. Also added `WhereExists`/`WhereNotExists` (correlated subqueries). SQL Server and PostgreSQL implement them; other providers throw `NotSupportedException`. See [Direct operations](Entities/DirectOperations.md). Additions only: `Database.BulkInsert` and every existing method behave as before. `Olive.Entities.Data` bumped to `10.8.0`, `Olive.Entities.Data.SqlServer` and `Olive.Entities.Data.PostgreSQL` to `10.3.0`.
 

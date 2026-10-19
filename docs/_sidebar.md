@@ -15,6 +15,7 @@
        * [Caching](Entities/Cache.md)
     * [IDatabaseQuery](Entities/IDatabaseQuery.md)
     * [Direct operations](Entities/DirectOperations.md)
+    * [Report queries](Entities/ReportQueries.md)
     * [Files and Blobs](Entities/Blob.md)
     * [Custom data type](Entities/CustomDataType.md)
     * [Using C# Enums](Entities/CSharpEnumType.md)

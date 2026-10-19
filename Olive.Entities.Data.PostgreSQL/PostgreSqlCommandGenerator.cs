@@ -37,6 +37,41 @@ namespace Olive.Entities.Data
             return result;
         }
 
+        // ================================================================ report queries
+
+        public override string GenerateReportCommand(ReportCommand command)
+        {
+            var r = new StringBuilder("SELECT ");
+            if (command.Distinct) r.Append("DISTINCT ");
+            r.Append($"{command.Columns} FROM {command.Tables}{command.Clauses}");
+
+            r.Append((command.PageSize ?? command.Top).ToStringOrEmpty().WithPrefix(" LIMIT "));
+            if (command.PageSize.HasValue && command.PageStartIndex > 0) r.Append($" OFFSET {command.PageStartIndex}");
+
+            return r.ToString();
+        }
+
+        public override string TruncateToHour(string expression) => $"date_trunc('hour', {expression})";
+
+        public override string TruncateToDay(string expression) => $"date_trunc('day', {expression})";
+
+        public override string TruncateToMinutes(string expression, int minutes) =>
+            $"date_bin('{minutes} minutes', {expression}, TIMESTAMP '2000-01-01')";
+
+        /// <summary>DOW counts Sunday as 0, as C# does.</summary>
+        public override string DayOfWeek(string expression) => $"EXTRACT(DOW FROM {expression})";
+
+        public override string HourOfDay(string expression) => $"EXTRACT(HOUR FROM {expression})";
+
+        public override string IndexOf(string text, string find) => $"strpos({text}, {find})";
+
+        /// <summary>The collation Olive gives text columns (see PostgreSqlScriptTranslator).</summary>
+        public override string CaseInsensitive(string expression) => $"{expression} COLLATE {PostgreSqlScriptTranslator.Collation}";
+
+        public override string ToDouble(string expression) => $"CAST({expression} AS double precision)";
+
+        public override string GuidAsText(string expression) => $"CAST({expression} AS text)";
+
         public override string GetFullTableName(IDataProviderMetaData metaData) =>
             SafeSchema(metaData.Schema).OnlyWhen(metaData.Schema.HasValue()).WithSuffix(".") + SafeId(metaData.TableName);
 

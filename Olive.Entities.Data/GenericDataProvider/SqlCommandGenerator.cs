@@ -93,6 +93,55 @@ namespace Olive.Entities.Data
         public virtual string GenerateDirectClaimCommand(DatabaseQuery query, DirectCommandTarget target, string set) =>
             throw new NotSupportedException($"{GetType().Name} does not support DirectClaim().");
 
+        // ================================================================ report queries
+
+        /// <summary>The SELECT of a report query (see ReportQueryExtensions), from its parts. Not supported
+        /// unless a provider overrides it, nor are the functions below that have no standard spelling.</summary>
+        public virtual string GenerateReportCommand(ReportCommand command) =>
+            throw new NotSupportedException($"{GetType().Name} does not support report queries.");
+
+        NotSupportedException NoReportFunction(string name) =>
+            new NotSupportedException($"{GetType().Name} does not support {name}() in report queries.");
+
+        /// <summary>The time with its minutes, seconds and fractions removed.</summary>
+        public virtual string TruncateToHour(string expression) => throw NoReportFunction(nameof(TruncateToHour));
+
+        /// <summary>The time with its time of day removed, still a date and time.</summary>
+        public virtual string TruncateToDay(string expression) => throw NoReportFunction(nameof(TruncateToDay));
+
+        /// <summary>The start of the window of that many minutes the time falls in.</summary>
+        public virtual string TruncateToMinutes(string expression, int minutes) => throw NoReportFunction(nameof(TruncateToMinutes));
+
+        /// <summary>The day of the week as C# numbers it: Sunday is 0.</summary>
+        public virtual string DayOfWeek(string expression) => throw NoReportFunction(nameof(DayOfWeek));
+
+        /// <summary>The hour of the day, 0 to 23.</summary>
+        public virtual string HourOfDay(string expression) => throw NoReportFunction(nameof(HourOfDay));
+
+        /// <summary>The 1-based position of <paramref name="find"/> in <paramref name="text"/>, 0 if absent.</summary>
+        public virtual string IndexOf(string text, string find) => throw NoReportFunction(nameof(IndexOf));
+
+        /// <summary>The text under a case-insensitive collation, whatever its column's.</summary>
+        public virtual string CaseInsensitive(string expression) => throw NoReportFunction(nameof(CaseInsensitive));
+
+        /// <summary>The value as a double-precision float.</summary>
+        public virtual string ToDouble(string expression) => throw NoReportFunction(nameof(ToDouble));
+
+        /// <summary>A key (uniqueidentifier, uuid) as text, which MIN and MAX can take where the key cannot.</summary>
+        public virtual string GuidAsText(string expression) => throw NoReportFunction(nameof(GuidAsText));
+
+        /// <summary>The first <paramref name="length"/> characters.</summary>
+        public virtual string Left(string expression, int length) => $"LEFT({expression}, {length})";
+
+        /// <summary>The text without leading or trailing spaces.</summary>
+        public virtual string Trim(string expression) => $"LTRIM(RTRIM({expression}))";
+
+        /// <summary>The parts joined, a null part read as empty text.</summary>
+        public virtual string Concat(IEnumerable<string> parts) => $"CONCAT({parts.ToString(", ")})";
+
+        /// <summary>A text literal, for where SQL needs a value written into the command.</summary>
+        public virtual string StringLiteral(string value) => "'" + value.Replace("'", "''") + "'";
+
         /// <summary>A schema name as this database spells it. The same as SafeId unless a provider overrides it.</summary>
         public virtual string SafeSchema(string schema) => SafeId(schema);
 
