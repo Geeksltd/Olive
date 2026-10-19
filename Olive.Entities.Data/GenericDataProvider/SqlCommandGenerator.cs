@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -72,6 +73,25 @@ namespace Olive.Entities.Data
 
         public virtual string GenerateDeleteCommand(IDataProviderMetaData metaData) =>
             $"DELETE FROM {GetFullTableName(metaData)} WHERE {SafeId(metaData.IdColumnName)} = @Id";
+
+        /// <summary>
+        /// A DELETE of the rows the query matches: at most its Top, taken in its sort order, and passing over
+        /// locked rows when <see cref="DatabaseQuery.SkipLockedRows"/> is set and the database can. Not
+        /// supported unless a provider overrides it.
+        /// </summary>
+        public virtual string GenerateDirectDeleteCommand(DatabaseQuery query, DirectCommandTarget target) =>
+            throw new NotSupportedException($"{GetType().Name} does not support DirectDelete().");
+
+        /// <summary>An UPDATE of the rows the query matches, as <see cref="GenerateDirectDeleteCommand"/> picks
+        /// them. <paramref name="set"/> is the SET list, its columns unqualified.</summary>
+        public virtual string GenerateDirectUpdateCommand(DatabaseQuery query, DirectCommandTarget target, string set) =>
+            throw new NotSupportedException($"{GetType().Name} does not support DirectUpdate().");
+
+        /// <summary>A statement that takes the rows the query matches (its first Top in its sort order, if set), locking them against
+        /// another claim (and passing over those another claim holds, with SkipLockedRows), updates them with
+        /// <paramref name="set"/>, and returns their keys as its only column.</summary>
+        public virtual string GenerateDirectClaimCommand(DatabaseQuery query, DirectCommandTarget target, string set) =>
+            throw new NotSupportedException($"{GetType().Name} does not support DirectClaim().");
 
         /// <summary>A schema name as this database spells it. The same as SafeId unless a provider overrides it.</summary>
         public virtual string SafeSchema(string schema) => SafeId(schema);

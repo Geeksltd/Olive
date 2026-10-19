@@ -36,6 +36,28 @@ namespace Olive.Entities
 
                 return this;
             }
+
+            /// <summary>[NOT] EXISTS (the subquery, where its targetField equals this query's myField): a
+            /// correlated subquery, which unlike NOT IN is not emptied by a NULL in the subquery's column.</summary>
+            internal DatabaseQuery WhereCorrelated(string myField, IDatabaseQuery subquery, string targetField, string @operator)
+            {
+                // A token rather than the placeholder itself: the subquery would map the placeholder against its
+                // own entity. It becomes this query's placeholder once the subquery's SQL is generated.
+                const string OuterColumn = "__OliveOuterColumn__";
+
+                subquery.AliasPrefix = "Subq" + Guid.NewGuid().ToString().Remove("-").Substring(0, 6);
+                subquery.Where(Criterion.FromSql($"{subquery.MapColumn(targetField)} = {OuterColumn}"));
+
+                var sql = subquery.Provider.GenerateSelectCommand(subquery, "1")
+                    .Replace(OuterColumn, $"${{{{{myField}}}}}");
+
+                Criteria.Add(Criterion.FromSql($"{@operator} ({sql})", myField));
+
+                foreach (var subQueryParam in subquery.Parameters)
+                    Parameters[subQueryParam.Key] = subQueryParam.Value;
+
+                return this;
+            }
         }
     }
 
@@ -116,6 +138,44 @@ namespace Olive.Entities
         {
             return query.WhereNotIn(subquery, targetProperty.GetPropertyPath());
         }
+        #endregion
+
+        #region WhereExists
+
+        /// <summary>Keeps the rows for which the subquery has a row whose <paramref name="targetField"/> equals
+        /// this row's <paramref name="myField"/> (a correlated EXISTS).</summary>
+        public static T WhereExists<T>(this T query, string myField, IDatabaseQuery subquery, string targetField)
+            where T : IDatabaseQuery
+        {
+            ToDatabaseQuery(query).WhereCorrelated(myField, subquery, targetField, "EXISTS");
+            return query;
+        }
+
+        /// <summary>Keeps the rows for which the subquery has no row whose <paramref name="targetField"/> equals
+        /// this row's <paramref name="myField"/> (a correlated NOT EXISTS). Unlike WhereNotIn, a NULL in the
+        /// subquery's column does not empty the result.</summary>
+        public static T WhereNotExists<T>(this T query, string myField, IDatabaseQuery subquery, string targetField)
+            where T : IDatabaseQuery
+        {
+            ToDatabaseQuery(query).WhereCorrelated(myField, subquery, targetField, "NOT EXISTS");
+            return query;
+        }
+
+        public static IDatabaseQuery<T> WhereExists<T, K>(this IDatabaseQuery<T> query, Expression<Func<T, object>> property,
+            IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
+            where T : IEntity
+            where K : IEntity
+            => query.WhereExists(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
+
+        public static IDatabaseQuery<T> WhereNotExists<T, K>(this IDatabaseQuery<T> query, Expression<Func<T, object>> property,
+            IDatabaseQuery<K> subquery, Expression<Func<K, object>> targetProperty)
+            where T : IEntity
+            where K : IEntity
+            => query.WhereNotExists(property.GetPropertyPath(), subquery, targetProperty.GetPropertyPath());
+
+        static Data.DatabaseQuery ToDatabaseQuery(IDatabaseQuery query) =>
+            query as Data.DatabaseQuery ?? throw new NotSupportedException($"{query?.GetType().Name} does not support WhereExists.");
+
         #endregion
     }
 }

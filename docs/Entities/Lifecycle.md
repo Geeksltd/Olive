@@ -168,3 +168,5 @@ class Customer : GuidEntity
     }
 }
 ```
+
+> These events run for `Database.Save`, `Update` and `Delete` only. [Direct operations](DirectOperations.md) (`DirectDelete`, `DirectUpdate`, `DirectClaim`, `DirectInsert`) skip them.

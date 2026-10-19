@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 19 Oct 2026
+- Added direct operations: `query.DirectDelete()`, `query.DirectUpdate(set => ...)`, `query.DirectClaim(set => ...)`, `query.SkipLocked()` and `Database.DirectInsert(entities)` (a real bulk copy: SqlBulkCopy, PostgreSQL COPY). Each is one statement for every matching row, and each is **outside Olive's entity pipeline**: no validation, entity events, M# delete rules, data replication or audit trail. Also added `WhereExists`/`WhereNotExists` (correlated subqueries). SQL Server and PostgreSQL implement them; other providers throw `NotSupportedException`. See [Direct operations](Entities/DirectOperations.md). Additions only: `Database.BulkInsert` and every existing method behave as before. `Olive.Entities.Data` bumped to `10.8.0`, `Olive.Entities.Data.SqlServer` and `Olive.Entities.Data.PostgreSQL` to `10.3.0`.
+
 ## 6 Oct 2026
 - Fixed `query.Page(ListPagination)` (database paging) returning an empty page when `PageSize` is null: an operator-precedence bug made the start index 100,000 instead of 0. It now starts at row 0 and uses the default page size, matching `TakePage()`. `ListPagination` also now reads only the first value when the `p` field is posted more than once (e.g. `p=1-50|1-50`), instead of losing the page size. No code changes required. `Olive.Mvc.Paging` bumped to `10.2.1`.
 
