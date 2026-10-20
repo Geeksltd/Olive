@@ -62,14 +62,22 @@ namespace Olive.Entities.Data
         /// still make the statement wait. It also needs READ COMMITTED or REPEATABLE READ.</summary>
         static string SkipLocked(DatabaseQuery query) => "READPAST".OnlyWhen(query.SkipLockedRows);
 
+        /// <summary>READPAST with READCOMMITTEDLOCK, which reads the table at READ COMMITTED whatever the
+        /// session's level: a pooled connection keeps the level of the last transaction it ran, and at
+        /// SERIALIZABLE or SNAPSHOT a bare READPAST fails ("You can only specify the READPAST lock in the READ
+        /// COMMITTED or REPEATABLE READ isolation levels").</summary>
+        static string SkipLockedAtAnyLevel(DatabaseQuery query) => "READPAST, READCOMMITTEDLOCK".OnlyWhen(query.SkipLockedRows);
+
         public override string GenerateDirectDeleteCommand(DatabaseQuery query, DirectCommandTarget target) =>
-            $"{Batch(query, target, SkipLocked(query))} DELETE FROM batch;";
+            $"{Batch(query, target, SkipLockedAtAnyLevel(query))} DELETE FROM batch;";
 
         public override string GenerateDirectUpdateCommand(DatabaseQuery query, DirectCommandTarget target, string set) =>
-            $"{Batch(query, target, SkipLocked(query))} UPDATE batch SET {set};";
+            $"{Batch(query, target, SkipLockedAtAnyLevel(query))} UPDATE batch SET {set};";
 
         /// <summary>UPDLOCK makes the read take a real lock: under READ_COMMITTED_SNAPSHOT a plain read takes
-        /// none, and two claimers would select the same rows.</summary>
+        /// none, and two claimers would select the same rows. Not READCOMMITTEDLOCK: with UPDLOCK, SQL Server
+        /// still refuses READPAST at SERIALIZABLE or SNAPSHOT, so a claim needs the session at READ COMMITTED or
+        /// REPEATABLE READ.</summary>
         public override string GenerateDirectClaimCommand(DatabaseQuery query, DirectCommandTarget target, string set) =>
             $"{Batch(query, target, new[] { SkipLocked(query), "UPDLOCK", "ROWLOCK" }.Trim().ToString(", "))} " +
             $"UPDATE batch SET {set} OUTPUT inserted.{target.IdColumn};";

@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 20 Oct 2026
+- Fixed SQL Server's `SkipLocked()` on `DirectDelete()` and `DirectUpdate()` failing with "You can only specify the READPAST lock in the READ COMMITTED or REPEATABLE READ isolation levels" when the connection was at SERIALIZABLE or SNAPSHOT. A pooled connection keeps the isolation level of the last transaction it ran, so this could happen to a statement that opened no transaction itself. They now add READCOMMITTEDLOCK, which reads the table at READ COMMITTED whatever the session's level. `DirectClaim()` is unchanged: with UPDLOCK, SQL Server refuses READPAST at those levels even so. PostgreSQL is not affected. No code changes required. `Olive.Entities.Data.SqlServer` bumped to `10.4.1`.
+
 ## 19 Oct 2026 (2)
 - Added report queries: `query.GroupBy(x => key).Select(g => ...)`, `query.Summarize(rows => ...)` and `query.Project(x => ...)`, with `Having`, `OrderBy`, `Top`, `Page`, `Distinct`, `Count` and `Timeout`, and `query.Report().Where(...)` for conditions Olive's criteria cannot take. The database computes the groups and totals and they come back as typed rows; association paths become joins, and `DbFunctions` adds time buckets, `Left`, `NullIfEmpty`, `CaseInsensitive` and `Like`. Plain reads: nothing is cached, saved or raised. SQL Server and PostgreSQL implement them; other providers throw `NotSupportedException`. See [Report queries](Entities/ReportQueries.md). Additions only. `Olive.Entities.Data` bumped to `10.9.0`, `Olive.Entities.Data.SqlServer` and `Olive.Entities.Data.PostgreSQL` to `10.4.0`.
 
