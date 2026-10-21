@@ -8,7 +8,7 @@ await Database.Of<Order>().Where(x => x.Due < today).Update(set => set.Set(x => 
 await Database.Insert(orders);
 ```
 
-They replace `Database.DeleteAll<T>()` and `Database.UpdateAll<T>()`, which are now obsolete.
+They replace `Database.DeleteAll<T>()` and `Database.UpdateAll<T>()`, which are now obsolete. `query.Update` sets columns only (the `set` builder below); for any other change to every entity, use `Database.Update(await Database.GetList<T>(), change)`, which is what `UpdateAll` did.
 
 Each takes an optional `bypassEntityPipeline` argument, `false` by default:
 
@@ -38,8 +38,8 @@ await Database.Insert(points, bypassEntityPipeline: true);
 
 | Operation | Through the pipeline (default) | `bypassEntityPipeline: true` |
 |---|---|---|
-| `query.Delete()` | Loads the matching entities and deletes each with `Database.Delete`. A soft-delete entity is marked. Returns how many. | One `DELETE`. Refuses soft-delete entities: mark them with `Update`. Returns how many. |
-| `query.Update(set => ...)` | Loads the matching entities, makes the change to each in memory and saves it with `Database.Update`. Returns how many. | One `UPDATE`, every value computed from the row as it is in the database. Returns how many. |
+| `query.Delete()` | Loads the matching entities and deletes each with `Database.Delete`. A soft-delete entity is marked. Returns how many matched, including any a `Deleting` handler cancels. | One `DELETE`. Refuses soft-delete entities: mark them with `Update`. Returns how many. |
+| `query.Update(set => ...)` | Loads the matching entities, makes the change to each in memory and saves it with `Database.Update`. Returns how many matched, including any a `Saving` handler cancels. | One `UPDATE`, every value computed from the row as it is in the database. Returns how many. |
 | `query.Claim(set => ...)` | — | Always: takes the matching rows and updates them in one atomic step, then returns them as entities. Loading and saving could not be atomic, so there is no pipeline version. |
 | `Database.Insert(entities)` | Saves each new entity with `Database.Save`. | Bulk copy, joining the open `DbTransactionScope`. Where a copy can't be used (an auto-number, a Blob, inheritance, a `System.Transactions` scope), one `INSERT` per row, still outside the pipeline. |
 | `query.SkipLocked()` | Refused (`ArgumentException`). | Passes over rows another transaction holds instead of waiting for them. |

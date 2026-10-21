@@ -51,7 +51,9 @@ namespace Olive.Entities
             return query;
         }
 
-        /// <summary>Deletes every entity the query matches (at most <c>Top</c> of them, if set) and returns how many.</summary>
+        /// <summary>Deletes every entity the query matches (at most <c>Top</c> of them, if set) and returns how many it
+        /// matched. Through the pipeline, an entity whose Deleting handler cancels is left in place but still counted:
+        /// Olive does not report a cancelled delete.</summary>
         /// <param name="bypassEntityPipeline">False (the default): each entity is loaded and deleted by
         /// <c>Database.Delete</c>, in one transaction, with its events, delete rules, cascades, soft delete,
         /// replication and audit. True: one DELETE statement, OUTSIDE OLIVE'S SCOPE (see <see cref="WriteOperations"/>):
@@ -65,7 +67,9 @@ namespace Olive.Entities
             return entities.Length;
         }
 
-        /// <summary>Updates every entity the query matches (at most <c>Top</c> of them, if set) and returns how many.</summary>
+        /// <summary>Updates every entity the query matches (at most <c>Top</c> of them, if set) and returns how many it
+        /// matched. Through the pipeline, an entity whose Saving handler cancels is left unchanged but still counted:
+        /// Olive does not report a cancelled save.</summary>
         /// <param name="bypassEntityPipeline">False (the default): each entity is loaded, changed in memory and saved
         /// by <c>Database.Update</c>, in one transaction, validated, with its events, replication and audit; like
         /// any load-and-save, it can overwrite a change another caller made in between. True: one UPDATE statement

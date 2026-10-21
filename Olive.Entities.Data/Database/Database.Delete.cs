@@ -105,7 +105,7 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Updates all records in the database with the specified change.
         /// </summary>
-        [Obsolete("Use Database.Of<T>().Update(set => ...), which goes through the entity pipeline by default and takes bypassEntityPipeline: true for one UPDATE statement.")]
+        [Obsolete("Use Database.Update(await Database.GetList<T>(), change), which this does. To set columns (Set, SetFrom, Increment, SetIfEmpty, SetIfEarlier), Database.Of<T>().Update(set => ...) goes through the entity pipeline too, and takes bypassEntityPipeline: true for one UPDATE statement.")]
         public async Task UpdateAll<T>(Action<T> change) where T : IEntity
         {
             var records = await GetList<T>();

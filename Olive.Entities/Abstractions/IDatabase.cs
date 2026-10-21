@@ -52,7 +52,7 @@ namespace Olive.Entities
         [Obsolete("Use Database.Of<T>().Where(criteria).Delete(), which goes through the entity pipeline by default and takes bypassEntityPipeline: true for one DELETE statement.")]
         Task DeleteAll<T>(Expression<Func<T, bool>> criteria) where T : IEntity;
 
-        [Obsolete("Use Database.Of<T>().Update(set => ...), which goes through the entity pipeline by default and takes bypassEntityPipeline: true for one UPDATE statement.")]
+        [Obsolete("Use Database.Update(await Database.GetList<T>(), change), which this does. To set columns (Set, SetFrom, Increment, SetIfEmpty, SetIfEarlier), Database.Of<T>().Update(set => ...) goes through the entity pipeline too, and takes bypassEntityPipeline: true for one UPDATE statement.")]
         Task UpdateAll<T>(Action<T> change) where T : IEntity;
 
         #endregion

@@ -57,8 +57,10 @@ namespace Olive.Entities
     {
         internal readonly List<ColumnAssignment> Assignments = new List<ColumnAssignment>();
 
+        /// <param name="compute">The new value, from the entity and a function that reads the property's current
+        /// value. Only the kinds that depend on it call that function: on an association, reading loads the record.</param>
         UpdateSet<TEntity> Add<TValue>(Expression<Func<TEntity, TValue>> property, ColumnAssignmentKind kind, object value,
-            Func<TValue, TEntity, TValue> compute, LambdaExpression source = null)
+            Func<TEntity, Func<TValue>, TValue> compute, LambdaExpression source = null)
         {
             var read = new Lazy<Func<TEntity, TValue>>(property.Compile);
             var write = new Lazy<Action<TEntity, TValue>>(() => Setter(property));
@@ -69,7 +71,11 @@ namespace Olive.Entities
                 Kind = kind,
                 Value = value,
                 SourceProperty = source?.Body.GetPropertyPath(),
-                Apply = entity => write.Value((TEntity)entity, compute(read.Value((TEntity)entity), (TEntity)entity))
+                Apply = item =>
+                {
+                    var entity = (TEntity)item;
+                    write.Value(entity, compute(entity, () => read.Value(entity)));
+                }
             });
 
             return this;
@@ -77,37 +83,56 @@ namespace Olive.Entities
 
         /// <summary>Sets the column to the value. For an association, set its Id property.</summary>
         public UpdateSet<TEntity> Set<TValue>(Expression<Func<TEntity, TValue>> property, TValue value) =>
-            Add(property, ColumnAssignmentKind.Value, value, (current, entity) => value);
+            Add(property, ColumnAssignmentKind.Value, value, (entity, read) => value);
 
         /// <summary>Sets the column to another column of the same row.</summary>
         public UpdateSet<TEntity> SetFrom<TValue>(Expression<Func<TEntity, TValue>> property, Expression<Func<TEntity, TValue>> source)
         {
-            var read = new Lazy<Func<TEntity, TValue>>(source.Compile);
-            return Add(property, ColumnAssignmentKind.Column, null, (current, entity) => read.Value(entity), source);
+            var copy = new Lazy<Func<TEntity, TValue>>(source.Compile);
+            return Add(property, ColumnAssignmentKind.Column, null, (entity, read) => copy.Value(entity), source);
         }
 
         /// <summary>Adds the amount to the column's own value.</summary>
         public UpdateSet<TEntity> Increment<TValue>(Expression<Func<TEntity, TValue>> property, TValue by)
         {
-            var add = new Lazy<Func<TValue, TValue>>(() =>
-            {
-                var current = Expression.Parameter(typeof(TValue));
-                return Expression.Lambda<Func<TValue, TValue>>(
-                    Expression.Add(current, Expression.Constant(by, typeof(TValue))), current).Compile();
-            });
-
-            return Add(property, ColumnAssignmentKind.Increment, by, (current, entity) => add.Value(current));
+            var add = new Lazy<Func<TValue, TValue>>(() => Adder(by));
+            return Add(property, ColumnAssignmentKind.Increment, by, (entity, read) => add.Value(read()));
         }
 
         /// <summary>Sets the column to the value only where it has none: null, or for text also empty.</summary>
         public UpdateSet<TEntity> SetIfEmpty<TValue>(Expression<Func<TEntity, TValue>> property, TValue value) =>
             Add(property, ColumnAssignmentKind.IfEmpty, value,
-                (current, entity) => current == null || (current is string text && text.Length == 0) ? value : current);
+                (entity, read) =>
+                {
+                    var current = read();
+                    return current == null || (current is string text && text.Length == 0) ? value : current;
+                });
 
         /// <summary>Sets the column to the value only where it is null or later than the value.</summary>
         public UpdateSet<TEntity> SetIfEarlier<TValue>(Expression<Func<TEntity, TValue>> property, TValue value) =>
             Add(property, ColumnAssignmentKind.IfEarlier, value,
-                (current, entity) => value != null && (current == null || Comparer<TValue>.Default.Compare(value, current) < 0) ? value : current);
+                (entity, read) =>
+                {
+                    var current = read();
+                    return value != null && (current == null || Comparer<TValue>.Default.Compare(value, current) < 0) ? value : current;
+                });
+
+        /// <summary>Adds the amount to a value, as the database's + does: null plus anything is null. Expression
+        /// trees have no + for byte and sbyte (C# widens them to int), so those are added as int.</summary>
+        static Func<TValue, TValue> Adder<TValue>(TValue by)
+        {
+            var current = Expression.Parameter(typeof(TValue));
+            var type = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+            var widen = type == typeof(byte) || type == typeof(sbyte) ?
+                (Nullable.GetUnderlyingType(typeof(TValue)) == null ? typeof(int) : typeof(int?)) : typeof(TValue);
+
+            Expression Widen(Expression x) => x.Type == widen ? x : Expression.Convert(x, widen);
+
+            var sum = Expression.Add(Widen(current), Widen(Expression.Constant(by, typeof(TValue))));
+            var body = sum.Type == typeof(TValue) ? (Expression)sum : Expression.Convert(sum, typeof(TValue));
+
+            return Expression.Lambda<Func<TValue, TValue>>(body, current).Compile();
+        }
 
         /// <summary>Assigns the property the expression names, which must be a settable property of the entity itself.</summary>
         static Action<TEntity, TValue> Setter<TValue>(Expression<Func<TEntity, TValue>> property)
