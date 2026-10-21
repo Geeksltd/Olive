@@ -169,4 +169,4 @@ class Customer : GuidEntity
 }
 ```
 
-> These events run for `Database.Save`, `Update` and `Delete` only. [Direct operations](DirectOperations.md) (`DirectDelete`, `DirectUpdate`, `DirectClaim`, `DirectInsert`) skip them.
+> These events run for `Database.Save`, `Update` and `Delete` only. [Set-based writes](SetBasedWrites.md) (`query.Delete`, `query.Update`, `Database.Insert`) run them by default, but skip them with `bypassEntityPipeline: true`, and `query.Claim` always skips them.

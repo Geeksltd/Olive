@@ -1,6 +1,12 @@
 
 # Olive compatibility change log
 
+## 21 Oct 2026
+- **Breaking (code changes required):** the direct operations are renamed, and the word `Direct` is replaced by an optional `bypassEntityPipeline` argument. `query.DirectDelete()` becomes `query.Delete(bypassEntityPipeline: true)`, `query.DirectUpdate(set => ...)` becomes `query.Update(set => ..., bypassEntityPipeline: true)`, `query.DirectClaim(set => ...)` becomes `query.Claim(set => ...)` (it always bypasses the pipeline, so it takes no argument) and `Database.DirectInsert(entities)` becomes `Database.Insert(entities, bypassEntityPipeline: true)`. `DirectUpdateSet<T>`, `DirectAssignment` and `DirectAssignmentKind` become `UpdateSet<T>`, `ColumnAssignment` and `ColumnAssignmentKind`, and the static class `DirectOperations` becomes `WriteOperations`. The provider side (`IDirectDataProvider`, `SqlCommandGenerator.GenerateDirect*Command`, `IBulkCopyCommandGenerator`) is unchanged.
+- Without `bypassEntityPipeline` (or with `false`), `Delete`, `Update` and `Insert` now go through Olive's entity pipeline: the matching entities are loaded and deleted, updated or saved one by one in a transaction, with validation, events, M# delete rules and cascades, soft delete, replication and audit. `SkipLocked()` is refused there. See [Set-based writes](Entities/SetBasedWrites.md).
+- `Database.DeleteAll<T>()`, `DeleteAll<T>(criteria)` and `UpdateAll<T>(change)` are obsolete: use `Database.Of<T>().Where(criteria).Delete()` and `.Update(set => ...)`. They behave as before.
+- `Olive.Entities` bumped to `10.4.4`, `Olive.Entities.Data` to `10.10.0`.
+
 ## 20 Oct 2026
 - Fixed SQL Server's `SkipLocked()` on `DirectDelete()` and `DirectUpdate()` failing with "You can only specify the READPAST lock in the READ COMMITTED or REPEATABLE READ isolation levels" when the connection was at SERIALIZABLE or SNAPSHOT. A pooled connection keeps the isolation level of the last transaction it ran, so this could happen to a statement that opened no transaction itself. They now add READCOMMITTEDLOCK, which reads the table at READ COMMITTED whatever the session's level. `DirectClaim()` is unchanged: with UPDLOCK, SQL Server refuses READPAST at those levels even so. PostgreSQL is not affected. No code changes required. `Olive.Entities.Data.SqlServer` bumped to `10.4.1`.
 

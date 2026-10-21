@@ -8,14 +8,14 @@ namespace Olive.Entities.Data
 {
     partial class DataProvider : IDirectDataProvider
     {
-        // ================================================================ direct operations
+        // ================================================================ writes that bypass the entity pipeline
 
         public async Task<int> DirectDelete(IDatabaseQuery iquery)
         {
-            var query = ForDirect(iquery, "DirectDelete");
+            var query = ForDirect(iquery, "Delete");
 
             if (MetaData.IsSoftDeleteEnabled)
-                throw new NotSupportedException($"DirectDelete() would hard-delete {EntityType.Name}, which is soft-deleted. Use DirectUpdate() to mark it.");
+                throw new NotSupportedException($"Delete(bypassEntityPipeline: true) would hard-delete {EntityType.Name}, which is soft-deleted. Delete it through the entity pipeline, or mark it with Update(set => ..., bypassEntityPipeline: true).");
 
             var command = DirectGenerator().GenerateDirectDeleteCommand(query, DirectTarget());
 
@@ -23,9 +23,9 @@ namespace Olive.Entities.Data
             finally { InvalidateCache(); }
         }
 
-        public async Task<int> DirectUpdate(IDatabaseQuery iquery, IEnumerable<DirectAssignment> assignments)
+        public async Task<int> DirectUpdate(IDatabaseQuery iquery, IEnumerable<ColumnAssignment> assignments)
         {
-            var query = ForDirect(iquery, "DirectUpdate");
+            var query = ForDirect(iquery, "Update");
             var values = new Dictionary<string, object>();
             var set = GenerateAssignments(assignments, values);
 
@@ -35,9 +35,9 @@ namespace Olive.Entities.Data
             finally { InvalidateCache(); }
         }
 
-        public async Task<IEntity[]> DirectClaim(IDatabaseQuery iquery, IEnumerable<DirectAssignment> assignments)
+        public async Task<IEntity[]> DirectClaim(IDatabaseQuery iquery, IEnumerable<ColumnAssignment> assignments)
         {
-            var query = ForDirect(iquery, "DirectClaim");
+            var query = ForDirect(iquery, "Claim");
             var values = new Dictionary<string, object>();
             var set = GenerateAssignments(assignments, values);
 
@@ -90,7 +90,7 @@ namespace Olive.Entities.Data
             var query = iquery as DatabaseQuery ?? throw new NotSupportedException($"{operation}() needs an Olive DatabaseQuery.");
 
             if (IsInheritance())
-                throw new NotSupportedException($"{operation}() does not support {EntityType.Name}: its rows span the tables of an inheritance hierarchy.");
+                throw new NotSupportedException($"{operation}() cannot bypass the entity pipeline for {EntityType.Name}: its rows span the tables of an inheritance hierarchy.");
 
             if (query.PageSize.HasValue)
                 throw new ArgumentException($"{operation}() does not take paging. Use Top() to limit the rows.");
@@ -102,7 +102,7 @@ namespace Olive.Entities.Data
 
         SqlCommandGenerator DirectGenerator() =>
             SqlCommandGenerator as SqlCommandGenerator ??
-            throw new NotSupportedException($"{SqlCommandGenerator.GetType().Name} does not support direct operations.");
+            throw new NotSupportedException($"{SqlCommandGenerator.GetType().Name} cannot bypass the entity pipeline.");
 
         DirectCommandTarget DirectTarget()
         {
@@ -119,7 +119,7 @@ namespace Olive.Entities.Data
 
         /// <summary>The SET list, with each value added to <paramref name="parameters"/>. Values are converted
         /// the way a save converts them: set on a blank entity and read back through the column's accessor.</summary>
-        string GenerateAssignments(IEnumerable<DirectAssignment> assignments, Dictionary<string, object> parameters)
+        string GenerateAssignments(IEnumerable<ColumnAssignment> assignments, Dictionary<string, object> parameters)
         {
             var generator = DirectGenerator();
             var result = new List<string>();
@@ -129,7 +129,7 @@ namespace Olive.Entities.Data
                 var property = DirectProperty(assignment.Property);
                 var column = generator.SafeId(property.Name);
 
-                if (assignment.Kind == DirectAssignmentKind.Column)
+                if (assignment.Kind == ColumnAssignmentKind.Column)
                 {
                     result.Add($"{column} = {generator.SafeId(DirectProperty(assignment.SourceProperty).Name)}");
                     continue;
@@ -140,16 +140,16 @@ namespace Olive.Entities.Data
 
                 switch (assignment.Kind)
                 {
-                    case DirectAssignmentKind.Value:
+                    case ColumnAssignmentKind.Value:
                         result.Add($"{column} = {name}"); break;
-                    case DirectAssignmentKind.Increment:
+                    case ColumnAssignmentKind.Increment:
                         result.Add($"{column} = {column} + {name}"); break;
-                    case DirectAssignmentKind.IfEmpty:
+                    case ColumnAssignmentKind.IfEmpty:
                         result.Add(property.PropertyInfo?.PropertyType == typeof(string)
                             ? $"{column} = COALESCE(NULLIF({column}, ''), {name})"
                             : $"{column} = COALESCE({column}, {name})");
                         break;
-                    case DirectAssignmentKind.IfEarlier:
+                    case ColumnAssignmentKind.IfEarlier:
                         result.Add($"{column} = CASE WHEN {column} IS NULL OR {name} < {column} THEN {name} ELSE {column} END"); break;
                     default: throw new NotSupportedException(assignment.Kind.ToString());
                 }
@@ -191,7 +191,7 @@ namespace Olive.Entities.Data
             if (entities.None()) return;
 
             if (entities.Any(e => !e.IsNew || e.GetType() != EntityType))
-                throw new ArgumentException($"DirectInsert() takes new {EntityType.Name} instances only.");
+                throw new ArgumentException($"Insert() takes new {EntityType.Name} instances only.");
 
             try
             {

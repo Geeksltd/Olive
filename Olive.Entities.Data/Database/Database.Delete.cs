@@ -93,16 +93,19 @@ namespace Olive.Entities.Data
         /// <summary>
         /// Deletes all objects of the specified type.
         /// </summary>
+        [Obsolete("Use Database.Of<T>().Delete(), which goes through the entity pipeline by default and takes bypassEntityPipeline: true for one DELETE statement.")]
         public async Task DeleteAll<T>() where T : IEntity => await Delete(await GetList<T>());
 
         /// <summary>
         /// Deletes all objects of the specified type matching the given criteria.
         /// </summary>
+        [Obsolete("Use Database.Of<T>().Where(criteria).Delete(), which goes through the entity pipeline by default and takes bypassEntityPipeline: true for one DELETE statement.")]
         public async Task DeleteAll<T>(Expression<Func<T, bool>> criteria) where T : IEntity => await Delete(await GetList<T>(criteria));
 
         /// <summary>
         /// Updates all records in the database with the specified change.
         /// </summary>
+        [Obsolete("Use Database.Of<T>().Update(set => ...), which goes through the entity pipeline by default and takes bypassEntityPipeline: true for one UPDATE statement.")]
         public async Task UpdateAll<T>(Action<T> change) where T : IEntity
         {
             var records = await GetList<T>();

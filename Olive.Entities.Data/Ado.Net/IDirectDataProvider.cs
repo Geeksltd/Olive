@@ -5,7 +5,7 @@ namespace Olive.Entities.Data
     using System.Data.Common;
     using System.Threading.Tasks;
 
-    /// <summary>A data provider that can run <see cref="DirectOperations"/>: statements that go straight to the
+    /// <summary>A data provider that can run <see cref="WriteOperations"/>: statements that go straight to the
     /// database, outside Olive's entity pipeline.</summary>
     public interface IDirectDataProvider
     {
@@ -13,10 +13,10 @@ namespace Olive.Entities.Data
         Task<int> DirectDelete(IDatabaseQuery query);
 
         /// <summary>Updates the rows the query matches in one statement and returns how many.</summary>
-        Task<int> DirectUpdate(IDatabaseQuery query, IEnumerable<DirectAssignment> assignments);
+        Task<int> DirectUpdate(IDatabaseQuery query, IEnumerable<ColumnAssignment> assignments);
 
         /// <summary>Takes and updates the rows the query matches in one atomic step and returns them.</summary>
-        Task<IEntity[]> DirectClaim(IDatabaseQuery query, IEnumerable<DirectAssignment> assignments);
+        Task<IEntity[]> DirectClaim(IDatabaseQuery query, IEnumerable<ColumnAssignment> assignments);
 
         /// <summary>Writes new rows of this provider's entity type, by the database's bulk copy where it can.</summary>
         Task DirectInsert(IEntity[] entities);
@@ -40,7 +40,7 @@ namespace Olive.Entities.Data
     }
 
     /// <summary>A SQL generator whose database can copy rows in bulk (SqlBulkCopy, COPY), which
-    /// <see cref="DirectOperations.DirectInsert"/> uses instead of one INSERT per row.</summary>
+    /// <see cref="WriteOperations.Insert"/> uses when it bypasses the entity pipeline, instead of one INSERT per row.</summary>
     public interface IBulkCopyCommandGenerator
     {
         /// <summary>Writes the rows to the table, columns matched by name, over the connection given: the open
