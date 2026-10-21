@@ -40,14 +40,14 @@ namespace Olive
         /// Unlike Download, a non-success status does not throw; its status and body are returned instead.
         /// If forceStatus is true, an HttpRequestException is thrown when the status code is not a success (2xx).
         /// </summary>
-        public static async Task<(HttpStatusCode StatusCode, string Content)> DownloadWithStatus(this Uri @this, bool forceStatus = false, string cookieValue = null, double timeOutSeconds = MINUTE)
+        public static async Task<(HttpStatusCode StatusCode, string Content)> DownloadWithStatus(this Uri @this, bool forceStatus = false, string cookieValue = null, double timeOutMinutes = MINUTE)
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, @this);
 
             if (cookieValue.HasValue())
                 request.Headers.Add("Cookie", cookieValue);
 
-            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(timeOutSeconds));
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(timeOutMinutes));
             using var response = await Client.SendAsync(request, cancellation.Token).ConfigureAwait(false);
 
             if (forceStatus) response.EnsureSuccessStatusCode();
