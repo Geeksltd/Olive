@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Olive
@@ -32,6 +33,27 @@ namespace Olive
             using var response = await request.GetResponseAsync().ConfigureAwait(false);
             using var stream = response.GetResponseStream();
             return await stream.ReadAllText().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Downloads the text in this URL along with the response status code.
+        /// Unlike Download, a non-success status does not throw; its status and body are returned instead.
+        /// If forceStatus is true, an HttpRequestException is thrown when the status code is not a success (2xx).
+        /// </summary>
+        public static async Task<(HttpStatusCode StatusCode, string Content)> DownloadWithStatus(this Uri @this, bool forceStatus = false, string cookieValue = null, double timeOutMinutes = MINUTE)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, @this);
+
+            if (cookieValue.HasValue())
+                request.Headers.Add("Cookie", cookieValue);
+
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(timeOutMinutes));
+            using var response = await Client.SendAsync(request, cancellation.Token).ConfigureAwait(false);
+
+            if (forceStatus) response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return (response.StatusCode, content);
         }
 
         /// <summary>
