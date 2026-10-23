@@ -89,3 +89,29 @@ using (var scope = Database.CreateTransactionScope())
 }
 ```
 If any of the operations fails, the whole transaction will be rolled back.
+
+### A write allowed to fail inside a transaction
+Sometimes one write in a transaction may fail without the rest being lost, such as a counter that is nice to have. Catching its exception is not enough everywhere: on PostgreSQL one failed statement aborts the whole transaction, and every command after it fails too. `BestEffort` puts the write behind a savepoint and rolls back to it on failure, which leaves the transaction usable on any database:
+
+```csharp
+using (var scope = Database.CreateTransactionScope())
+{
+    var access = Database.GetAccess();
+
+    if (!await access.BestEffort(() => Database.Update(counter, c => c.Count++)))
+        Log.For(this).Warning("The counter was not updated.");
+
+    // ... operations that must commit either way
+    scope.Complete();
+}
+```
+It returns whether the write succeeded and swallows its exception. Outside a transaction scope there is nothing to protect, so it only catches. Each provider writes its own savepoint SQL (`SqlCommandGenerator.GenerateSavepoint`, `GenerateRollbackToSavepoint`, `GenerateReleaseSavepoint`; SQL Server's `SAVE TRANSACTION`, the standard `SAVEPOINT` elsewhere).
+
+## Recognising a command timeout
+Each driver reports a command that ran out of time its own way (SQL Server: `SqlException` number -2; PostgreSQL: a `TimeoutException` inside an `NpgsqlException`, or the server's `query_canceled`), and Olive may wrap it. `access.IsTimeout(exception)` checks the exception and everything it wraps against the configured provider, so code giving up on a slow query names no database:
+
+```csharp
+try { return await query(); }
+catch (Exception ex) when (Database.GetAccess().IsTimeout(ex)) { return default; }
+```
+A provider decides in `SqlCommandGenerator.IsTimeout`; one that does not override it recognises a plain `TimeoutException`.

@@ -154,5 +154,16 @@ namespace Olive.Entities.Data
         public override string SafeId(string id) => "[" + id?.Replace("]", "]]") + "]";
 
         public override string UnescapeId(string id) => id.Trim('[', ']');
+
+        public override string GenerateSavepoint(string name) => $"SAVE TRANSACTION {name}";
+
+        public override string GenerateRollbackToSavepoint(string name) => $"ROLLBACK TRANSACTION {name}";
+
+        /// <summary>SQL Server has no release: a savepoint simply ends with its transaction.</summary>
+        public override string GenerateReleaseSavepoint(string name) => null;
+
+        /// <summary>SqlClient reports a command timeout as SqlException number -2.</summary>
+        public override bool IsTimeout(Exception exception) =>
+            exception is SqlException sql && sql.Number == -2 || base.IsTimeout(exception);
     }
 }

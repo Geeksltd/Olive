@@ -191,5 +191,12 @@ namespace Olive.Entities.Data
         public override string SafeId(string id) => $"\"{id}\"";
 
         public override string UnescapeId(string id) => id.Trim('\"');
+
+        /// <summary>Npgsql reports a command timeout as a TimeoutException inside its own, or (when it managed to
+        /// cancel the query on the server) as the server's query_canceled, 57014.</summary>
+        public override bool IsTimeout(Exception exception) =>
+            exception is NpgsqlException npgsql && npgsql.InnerException is TimeoutException ||
+            exception is PostgresException postgres && postgres.SqlState == PostgresErrorCodes.QueryCanceled ||
+            base.IsTimeout(exception);
     }
 }

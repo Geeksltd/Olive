@@ -159,6 +159,23 @@ namespace Olive.Entities.Data
         /// </summary>
         public virtual string NormalizeAliasPart(string alias) => alias;
 
+        // ================================================================ transactions and errors
+
+        /// <summary>Marks a point in the current transaction to roll back to (see
+        /// DataAccessBehaviourExtensions.BestEffort). Standard SQL, as PostgreSQL, MySQL and SQLite spell it.</summary>
+        public virtual string GenerateSavepoint(string name) => $"SAVEPOINT {name}";
+
+        /// <summary>Undoes the transaction's work since the savepoint, and leaves the transaction usable.</summary>
+        public virtual string GenerateRollbackToSavepoint(string name) => $"ROLLBACK TO SAVEPOINT {name}";
+
+        /// <summary>Forgets the savepoint once the work after it has succeeded, or null where the database
+        /// has no such statement.</summary>
+        public virtual string GenerateReleaseSavepoint(string name) => $"RELEASE SAVEPOINT {name}";
+
+        /// <summary>Whether this exception itself, not one it wraps, is this database's command timeout
+        /// (see DataAccessBehaviourExtensions.IsTimeout). A plain TimeoutException unless a provider knows better.</summary>
+        public virtual bool IsTimeout(Exception exception) => exception is TimeoutException;
+
         string Generate(IDatabaseQuery query, ICriterion criterion)
         {
             if (criterion == null) return "(1 = 1)";
