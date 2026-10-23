@@ -22,7 +22,7 @@ When using HttpClient directly, you should manually take care of:
   * Circuit breaking (to avoid server overloading)
 
 ## Olive.ApiClient
-Olive provides a helper utility class named [ApiClient](https://github.com/Geeksltd/Olive/tree/master/Integration/Olive.ApiClient) which handles all of the above issues for you.
+Olive provides a helper utility class named [ApiClient](https://github.com/Geeksltd/Olive/tree/master/Olive.ApiClient) which handles all of the above issues for you.
 It's built on top of the standard HttpClient, and is ideal for invoking Web Apis.
 
 The following simple line is enough to take care of all aspects of downloading a customer object from a remote Web Api.
@@ -216,3 +216,78 @@ If http exceptions are raised consecutively for the specified number of times, i
 During the break period, any attempt to execute a new request will **immediately throw a BrokenCircuitException**.
 Once the duration is over, if the first action throws http exception again,
 the circuit will break again for the same duration. Otherwise the circuit will reset.
+
+## HTTP Methods
+### GET Request
+
+- **Purpose**: Retrieves data from the API.
+- **Usage**:
+```csharp
+var data = await new ApiClient($"{baseUrl}/customers").Get<Customer>(new { id = 123 });
+```
+
+### POST Request
+
+- **Purpose**: Sends data to the server.
+- **Usage**:
+```csharp
+var data = await new ApiClient($"{baseUrl}/customers").Post<Customer>(new { name = CustomerName });
+```
+
+### PUT Request
+ 
+- **Purpose**: Updates a resource on the server.
+- **Usage**:
+```csharp
+var data = await new ApiClient($"{baseUrl}/customers").Put<Customer>(new { name = CustomerName });
+```
+
+### DELETE Request
+ 
+- **Purpose**: Deletes a resource.
+- **Usage**:
+```csharp
+var data = await new ApiClient($"{baseUrl}/customers").Delete(new { id = 123 });
+```
+
+### PATCH Request
+ 
+- **Purpose**: Partially updates a resource.
+- **Usage**:
+```csharp
+var data = await new ApiClient($"{baseUrl}/customers").Patch<Customer>(new { id = 123 });
+```
+
+## Caching
+ 
+- **Purpose**: Enables caching for GET requests.
+- **Usage**:
+```csharp
+var data = await new ApiClient($"{baseUrl}/customers")
+    .Cache(CachePolicy.FreshOrCacheOrFail, TimeSpan.FromMinutes(10))
+    .Get<Customer>(new { id = 123 });
+```  
+
+## Custom Headers
+ 
+- **Purpose**: Adds custom headers to API requests.
+- **Usage**:
+```csharp
+var client = new ApiClient($"{baseUrl}/customers").Header(headers => headers.Add("Authorization", "Bearer token"));
+```
+
+## Authentication
+ 
+- **Purpose**: Authenticates the client using cookies.
+- **Usage**:
+```csharp
+var client = new ApiClient($"{baseUrl}/customers").Authenticate(cookie1, cookie2);
+```
+
+## Deletes All Cache
+ 
+- **Purpose**: Deletes all cached Get API results.
+- **Usage**:
+```csharp
+await ApiClient.DisposeCache();
+```
