@@ -230,7 +230,8 @@ namespace Olive.Entities.Data
             Query = Query,
             Type = Query.EntityType,
             ToSafeId = Generator.SafeId,
-            ToSafeAlias = Generator.SafeAlias
+            ToSafeAlias = Generator.SafeAlias,
+            Like = Generator.Like
         };
 
         string Where()
@@ -272,7 +273,8 @@ namespace Olive.Entities.Data
                 Type = join.Provider.EntityType,
                 Alias = join.Alias,
                 ToSafeId = Generator.SafeId,
-                ToSafeAlias = Generator.SafeAlias
+                ToSafeAlias = Generator.SafeAlias,
+                Like = Generator.Like
             });
 
             return $"({join.Alias}.{Generator.SafeId(join.Provider.MetaData.IdColumnName)} IS NOT NULL AND {joined})";
@@ -828,12 +830,12 @@ namespace Olive.Entities.Data
                 switch (method.Name)
                 {
                     case nameof(DbFunctions.Like):
-                        return $"{Value(args[0])} LIKE {Value(args[1])} ESCAPE '\\'";
+                        return $"{Generator.Like(Value(args[0]), Value(args[1]))} ESCAPE '\\'";
                     case nameof(DbFunctions.LikeAny):
                         var patterns = (StripConvert(args[1]) as ConstantExpression)?.Value as IEnumerable ??
                             throw Unsupported($"The patterns in {call} must be a known list.");
                         var text = Value(args[0]);
-                        var any = patterns.Cast<string>().Select(p => $"{text} LIKE {Literal(p)} ESCAPE '\\'").ToList();
+                        var any = patterns.Cast<string>().Select(p => $"{Generator.Like(text, Literal(p))} ESCAPE '\\'").ToList();
                         return any.None() ? "1 = 0" : "(" + any.ToString(" OR ") + ")";
                 }
 
@@ -861,7 +863,7 @@ namespace Olive.Entities.Data
                 throw Unsupported($"The text to look for in {pattern} must be a known value.");
 
             var escaped = value.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_").Replace("[", "\\[");
-            return $"{text} LIKE {Literal("%".OnlyWhen(prefix) + escaped + "%".OnlyWhen(suffix))} ESCAPE '\\'";
+            return $"{Generator.Like(text, Literal("%".OnlyWhen(prefix) + escaped + "%".OnlyWhen(suffix)))} ESCAPE '\\'";
         }
 
         /// <summary>An IN list of known values, written as literals where they are numbers or keys (a list can

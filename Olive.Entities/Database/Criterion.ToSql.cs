@@ -98,6 +98,7 @@ namespace Olive.Entities
                 Query = context.Query,
                 ToSafeId = context.ToSafeId,
                 ToSafeAlias = context.ToSafeAlias,
+                Like = context.Like,
                 Type = proc.Property.DeclaringType
             };
 
@@ -147,15 +148,25 @@ namespace Olive.Entities
             }
 
             if (!NeedsParameter(context))
-                return $"{column} {function.GetDatabaseOperator()} {value}";
+                return Compare(context, column, function, value.ToString());
 
             var parameterName = GetUniqueParameterName(context, column);
 
             context.Query.Parameters.Add(parameterName, value);
 
-            var critera = $"{column} {function.GetDatabaseOperator()} @{parameterName}";
+            var critera = Compare(context, column, function, "@" + parameterName);
             var includeNulls = function == FilterFunction.IsNot;
             return includeNulls ? $"( {critera} OR {column} {FilterFunction.Null.GetDatabaseOperator()} )" : critera;
+        }
+
+        static string Compare(SqlConversionContext context, string column, FilterFunction function, string value)
+        {
+            var like = function == FilterFunction.Contains || function == FilterFunction.NotContains ||
+                function == FilterFunction.BeginsWith || function == FilterFunction.EndsWith;
+
+            if (like && context.Like != null) return context.Like(column, value, function == FilterFunction.NotContains);
+
+            return $"{column} {function.GetDatabaseOperator()} {value}";
         }
     }
 }

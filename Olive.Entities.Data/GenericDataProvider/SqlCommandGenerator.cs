@@ -159,6 +159,13 @@ namespace Olive.Entities.Data
         /// </summary>
         public virtual string NormalizeAliasPart(string alias) => alias;
 
+        // ================================================================ text matching
+
+        /// <summary>"text LIKE pattern", or NOT LIKE. Used for Contains, NotContains, BeginsWith and EndsWith criteria
+        /// and for LIKE in report queries (which append their ESCAPE clause). A provider overrides it where its plain
+        /// LIKE is slow on the collation Olive gives text columns.</summary>
+        public virtual string Like(string text, string pattern, bool not = false) => $"{text} {"NOT ".OnlyWhen(not)}LIKE {pattern}";
+
         // ================================================================ transactions and errors
 
         /// <summary>Marks a point in the current transaction to roll back to (see
@@ -184,7 +191,8 @@ namespace Olive.Entities.Data
                 Query = query,
                 Type = query.EntityType,
                 ToSafeId = SafeId,
-                ToSafeAlias = SafeAlias
+                ToSafeAlias = SafeAlias,
+                Like = Like
             });
         }
     }

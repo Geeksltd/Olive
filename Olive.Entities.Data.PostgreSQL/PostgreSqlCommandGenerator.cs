@@ -68,6 +68,12 @@ namespace Olive.Entities.Data
         /// <summary>The collation Olive gives text columns (see PostgreSqlScriptTranslator).</summary>
         public override string CaseInsensitive(string expression) => $"{expression} COLLATE {PostgreSqlScriptTranslator.Collation}";
 
+        /// <summary>ILIKE under ICU's root collation: on the case-insensitive collation Olive gives text columns
+        /// (nondeterministic), PostgreSQL's LIKE compares character by character, hundreds of times slower on long
+        /// text. ILIKE gives the same answers: it ignores case and not accents.</summary>
+        public override string Like(string text, string pattern, bool not = false) =>
+            $"({text}) COLLATE \"und-x-icu\" {"NOT ".OnlyWhen(not)}ILIKE {pattern}";
+
         public override string ToDouble(string expression) => $"CAST({expression} AS double precision)";
 
         public override string GuidAsText(string expression) => $"CAST({expression} AS text)";
