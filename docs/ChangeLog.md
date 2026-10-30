@@ -1,6 +1,9 @@
 
 # Olive compatibility change log
 
+## 30 Oct 2026
+- Work done after a `DbTransactionScope`'s `Complete()` but before it is disposed (in the same `using` block) now runs outside the committed transaction, on every database. PostgreSQL refused it ("Transaction is already completed"; a read through `GetOrDefault` returned null instead); SQL Server's client already ran such commands on their own. Also fixed there, on every database: `AnyOpenTransaction()` now says false after the commit, so reads are cached and saves refresh the cache again; a handler given to `OnTransactionCompleted` after the commit now runs (it was never called); and a scope opened after the commit starts a transaction of its own, where its writes were lost even when it completed. No code changes required. `Olive.Entities.Data` bumped to `10.12.1`.
+
 ## 26 Oct 2026
 - On PostgreSQL, text searches (`Contains`, `NotContains`, `StartsWith`, `EndsWith` in criteria, and `StartsWith`, `EndsWith`, `DbFunctions.Like` and `LikeAny` in report queries) are now written as `(column) COLLATE "und-x-icu" ILIKE pattern` instead of `column LIKE pattern`. PostgreSQL runs `LIKE` on the case-insensitive collation Olive gives text columns (`mssql.ci_as`, nondeterministic) character by character: measured on a real table, a search of long text went from over two minutes to under 200 ms, and of a short column on 145,000 rows from 1.9 s to 70 ms. The matches are the same: case is ignored and accents are not. SQL Server and other providers are unchanged. A provider chooses its own SQL by overriding the new virtual `SqlCommandGenerator.Like(text, pattern, not)`; criteria reach it through the new `SqlConversionContext.Like`, and plain `LIKE` is used where it is not set. No code changes required. `Olive.Entities` bumped to `10.4.5`, `Olive.Entities.Data` to `10.12.0`, `Olive.Entities.Data.PostgreSQL` to `10.6.0`.
 

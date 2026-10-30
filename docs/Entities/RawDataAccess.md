@@ -90,6 +90,8 @@ using (var scope = Database.CreateTransactionScope())
 ```
 If any of the operations fails, the whole transaction will be rolled back.
 
+`Complete()` commits. Anything run after it in the same block (sending a notification, reading the saved record back) runs on its own, outside the committed transaction: a write there is kept even if a later one fails, and a scope opened there starts a transaction of its own. A handler given to `OnTransactionCompleted` after the commit runs straight away.
+
 ### A write allowed to fail inside a transaction
 Sometimes one write in a transaction may fail without the rest being lost, such as a counter that is nice to have. Catching its exception is not enough everywhere: on PostgreSQL one failed statement aborts the whole transaction, and every command after it fails too. `BestEffort` puts the write behind a savepoint and rolls back to it on failure, which leaves the transaction usable on any database:
 

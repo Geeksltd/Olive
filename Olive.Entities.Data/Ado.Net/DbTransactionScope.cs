@@ -17,6 +17,18 @@ namespace Olive.Entities.Data
         readonly IsolationLevel IsolationLevel;
         readonly DbTransactionScopeOption ScopeOption;
         bool IsCompleted, IsAborted;
+
+        /// <summary>
+        /// Set once this root's transactions have been committed. Until the scope is disposed it is still the
+        /// Root, and still lends its connections, but commands no longer join its transaction: they run on their
+        /// own, as SQL Server's client always ran them (it drops a committed transaction from a command), whereas
+        /// PostgreSQL's refuses a command given one ("Transaction is already completed").
+        /// </summary>
+        internal bool IsCommitted { get; private set; }
+
+        /// <summary>The committed root this scope stands in for, when it was opened after that root's commit.</summary>
+        readonly DbTransactionScope CommittedRoot;
+
         readonly List<WeakReference<IDataReader>> PotentiallyUnclosedReaders = new List<WeakReference<IDataReader>>();
 
         // Per unique connection string, one record is added to this.
@@ -30,6 +42,15 @@ namespace Olive.Entities.Data
         {
             IsolationLevel = isolationLevel;
             ScopeOption = scopeOption;
+
+            // Nothing can join a transaction that has been committed: a scope opened after its root completed
+            // (in the same using block) starts a transaction of its own, and hands the root back when disposed.
+            if (Root?.IsCommitted == true)
+            {
+                CommittedRoot = Root;
+                Root = null;
+            }
+
             Parent = Root;
             Current = this;
 
@@ -54,6 +75,10 @@ namespace Olive.Entities.Data
             set => CallContext<DbTransactionScope>.SetData(nameof(Parent), value);
         }
 
+        /// <summary>The root scope while its transaction is still open: null outside a scope, and after the
+        /// root has been completed (committed) but not yet disposed.</summary>
+        internal static DbTransactionScope Open => Root is DbTransactionScope root && !root.IsCommitted ? root : null;
+
         public Guid ID { get; } = Guid.NewGuid();
 
         #region TransactionCompletedEvent
@@ -62,8 +87,13 @@ namespace Olive.Entities.Data
 
         /// <summary>
         /// Attaches an event handler to be invoked when the current (root) transaction is completed.
+        /// Once it has been completed, the handler runs straight away: the event will not be raised again.
         /// </summary>
-        public void OnTransactionCompleted(Action eventHandler) => Root.TransactionCompleted += (s, e) => eventHandler?.Invoke();
+        public void OnTransactionCompleted(Action eventHandler)
+        {
+            if (Root?.IsCommitted == true) eventHandler?.Invoke();
+            else Root.TransactionCompleted += (s, e) => eventHandler?.Invoke();
+        }
 
         #endregion
 
@@ -72,6 +102,9 @@ namespace Olive.Entities.Data
 
         internal async Task<DbTransaction> GetDbTransaction()
         {
+            // After the commit there is no transaction to join (see IsCommitted).
+            if (IsCommitted) return null;
+
             var connectionString = DataAccess.GetCurrentConnectionString();
             await Setup(connectionString);
             return Connections[connectionString].Transaction;
@@ -91,10 +124,11 @@ namespace Olive.Entities.Data
                 var access = Context.Current.Database().GetAccess(connectionString);
                 var connection = (DbConnection)await access.CreateConnection();
 
-                DbTransaction transaction;
+                DbTransaction transaction = null;
                 try
                 {
-                    transaction = connection.BeginTransaction(IsolationLevel);
+                    // A connection first needed after the commit has nothing left to join (see IsCommitted).
+                    if (!IsCommitted) transaction = connection.BeginTransaction(IsolationLevel);
                 }
                 catch
                 {
@@ -122,14 +156,15 @@ namespace Olive.Entities.Data
 
             if (this == Root) // Root
             {
-                Root = null;
+                Root = CommittedRoot;
+                if (CommittedRoot != null) Current = CommittedRoot;
 
                 if (!IsCompleted)
                 {
                     // Root is not completed.
                     IsAborted = true;
 
-                    Connections.Do(x => Release("roll back the transaction", () => x.Value.Transaction.Rollback()));
+                    Connections.Do(x => Release("roll back the transaction", () => x.Value.Transaction?.Rollback()));
                 }
 
                 // Always dispose transactions and connections.
@@ -139,7 +174,7 @@ namespace Olive.Entities.Data
                 // until the GC gets to them, which is how a slow database turns into pool exhaustion.
                 Connections.Do(x =>
                 {
-                    Release("dispose the transaction", () => x.Value.Transaction.Dispose());
+                    Release("dispose the transaction", () => x.Value.Transaction?.Dispose());
                     Release("close the connection", () => x.Value.Connection.Close());
                     Release("dispose the connection", () => x.Value.Connection.Dispose());
                 });
@@ -185,6 +220,7 @@ namespace Olive.Entities.Data
             IsCompleted = true;
 
             if (Root != this) return; // Ignore, and wait for the parent Completion.
+            if (IsCommitted) return; // Already committed: there is nothing left to commit.
 
             foreach (var reader in PotentiallyUnclosedReaders.Select(x => x.GetTargetOrDefault()).ExceptNull())
                 if (!reader.IsClosed)
@@ -207,6 +243,9 @@ namespace Olive.Entities.Data
 
                 item.Value.Transaction.Commit();
             }
+
+            // Before the handlers run, so that any reads or writes they make run on their own.
+            IsCommitted = true;
 
             TransactionCompleted?.Invoke(this, EventArgs.Empty);
         }

@@ -26,7 +26,7 @@ namespace Olive.Entities.Data
         {
             var generator = @this.GetSqlCommandGenerator() as SqlCommandGenerator;
 
-            if (DbTransactionScope.Root == null || generator == null)
+            if (DbTransactionScope.Open == null || generator == null)
             {
                 try
                 {

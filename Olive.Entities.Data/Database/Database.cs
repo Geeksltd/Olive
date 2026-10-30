@@ -40,7 +40,7 @@ namespace Olive.Entities.Data
             await CacheRefreshed.Raise();
         }
 
-        public bool AnyOpenTransaction() => Transaction.Current != null || DbTransactionScope.Root != null;
+        public bool AnyOpenTransaction() => Transaction.Current != null || DbTransactionScope.Open != null;
 
         /// <summary>
         /// If there is an existing open transaction, it will simply run the specified action in it, Otherwise it will create a new transaction.
