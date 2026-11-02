@@ -70,6 +70,7 @@ $projects = @(
     'Olive.Entities.Data.PostgreSQL\Olive.Entities.Data.PostgreSQL.csproj',
     'Olive.Entities.Data.DynamoDB\Olive.Entities.Data.DynamoDB.csproj',
     'Olive.Entities.Data.Replication\Olive.Entities.Data.Replication.csproj',
+    'Olive.Entities.Data.EF.Replication\Olive.Entities.Data.EF.Replication.csproj',
     'Olive.Entities.Data.Replication.Mvc.Extensions\Olive.Entities.Data.Replication.Mvc.Extensions.csproj',
     'Olive.Entities.Data.Replication.QueueUrlProvider\Olive.Entities.Data.Replication.QueueUrlProvider.csproj',
     'Olive.Entities.Data.SQLite\Olive.Entities.Data.SQLite.csproj',
