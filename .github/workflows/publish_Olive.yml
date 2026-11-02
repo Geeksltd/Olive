@@ -237,6 +237,12 @@ jobs:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication/Olive.Entities.Data.Replication.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
+    - name: Publish Olive Entities Data EF Replication NuGet Package
+      uses: Geeksltd/publish-nuget@v3.8.5
+      with:
+        PROJECT_FILE_PATH: Olive.Entities.Data.EF.Replication/Olive.Entities.Data.EF.Replication.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
     - name: Publish Olive Entities Data Replication Mvc Extensions NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:

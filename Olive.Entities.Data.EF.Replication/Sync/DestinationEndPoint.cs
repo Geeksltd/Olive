@@ -1,14 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Olive.Entities;
 
 namespace Olive.Entities.EF.Replication
 {
@@ -16,8 +13,6 @@ namespace Olive.Entities.EF.Replication
 	{
         public readonly IEventBusQueue PublishQueue, RefreshQueue;
         protected DbContext DbContext;
-        public string Table;
-		public string Schema;
         ConcurrentDictionary<string, DateTime> ResetRequestUtcs = new ConcurrentDictionary<string, DateTime>();
         Dictionary<string, EndpointSubscriber> Subscribers = new Dictionary<string, EndpointSubscriber>();
 		Assembly DomainAssembly;
@@ -37,10 +32,6 @@ namespace Olive.Entities.EF.Replication
 		{
 			var type = DomainAssembly.GetType(domainType)
 				?? throw new Exception(DomainAssembly.FullName + " does not define the type " + domainType);
-
-
-            Schema = type.GetCustomAttribute<TableAttribute>(inherit: false)?.Schema;
-            Table = GetTableName(type);
 
 			var result = new EndpointSubscriber(DbContext, this, type);
 			Subscribers.Add(domainType, result);
@@ -85,12 +76,8 @@ namespace Olive.Entities.EF.Replication
         async Task EnsureRefreshData()
         {
             foreach (var item in Subscribers.Values)
-			{
-                var sqlRemoveData = $"SELECT COUNT(*) FROM {Schema.WithSuffix(".")}{Table}";
-
-				var count = await DbContext.Database.ExecuteSqlRawAsync(sqlRemoveData);
-
-                if (count <= 0)
+            {
+                if (await item.IsTableEmpty())
                     await item.RefreshData();
             }
         }
@@ -112,12 +99,12 @@ namespace Olive.Entities.EF.Replication
             }
         }
 
-		public string GetTableName(Type entityType)
+		internal string GetTableName(Type entityType)
 		{
-			var result = entityType.GetCustomAttribute<TableAttribute>(inherit: false)?.Name;
-			if (result.HasValue()) return result;
+			var efTable = entityType.GetCustomAttribute<TableAttribute>(inherit: false)?.Name;
+			if (efTable.HasValue()) return efTable;
 
-			return entityType.Name.ToPlural().ToPascalCaseId();
+			return TableNameAttribute.GetTableName(entityType);
 		}
 	}
 }

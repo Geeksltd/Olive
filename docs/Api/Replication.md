@@ -112,7 +112,7 @@ C:\> generate-data-endpoint-proxy /assembly:"c:\...\website.dll" /dataEndpoint:M
 
 ```
 
-It will generate the following two nuget packages:
+It will generate the following three nuget packages:
 
 #### Package 1: CustomerService.OrdersEndpoint
 
@@ -160,6 +160,14 @@ namespace PeopleService
 }
 ```
 For all intents and purposes, this is a normal M# entity definition. (**TODO: Find a way to prevent save/delete operations on it**)
+
+#### Package 3: CustomerService.OrdersEndpoint.Subscription
+
+This package is referenced by **non-M-Sharp** consumer services that need replicated entity **contracts** without the M# model project.
+
+It contains interfaces for each exposed type (for example `CustomerService.Definitions.ICustomer`), using the publisher's namespaces and field naming. **CareServe** reads these interfaces and generates consumer-side entities (replacing the `.MSharp` step for non-M-Sharp apps).
+
+Non-M-Sharp consumers still reference package 1 for `DestinationEndpoint` and `Subscribe()`, use **CareServe** with package 3 for entities, and use **`Olive.Entities.Data.EF.Replication`** with `DbContext` instead of `Olive.Entities.Data.Replication` with `IDatabase`. M-Sharp consumers continue to use packages 1 and 2 only; package 3 is generated for every endpoint for backward-compatible publishing.
 
 ---
 

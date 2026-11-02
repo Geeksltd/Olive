@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Olive.Audit;
+using Olive.Entities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using static Olive.Entities.SoftDeleteAttribute;
 
 namespace Olive.Entities.EF.Replication
 {
@@ -18,6 +19,9 @@ namespace Olive.Entities.EF.Replication
 		static PropertyInfo IsNewProperty;
 		public Type DomainType { get; set; }
 		public DestinationEndpoint Endpoint { get; }
+		public string Schema { get; }
+		public string Table { get; }
+		string QualifiedTable => Schema.WithSuffix(".") + Table;
 		DateTime? RefreshRequestUtc;
 		ILogger Log;
 		protected DbContext DbContext;
@@ -43,18 +47,33 @@ namespace Olive.Entities.EF.Replication
 			DbContext = dbContext;
 			Endpoint = endpoint;
 			DomainType = domainType;
+			Schema = domainType.GetCustomAttribute<TableAttribute>(inherit: false)?.Schema
+				?? SchemaAttribute.GetSchema(domainType);
+			Table = endpoint.GetTableName(domainType);
 			Log = Olive.Log.For(this);
+		}
+
+		internal async Task<bool> IsTableEmpty()
+		{
+			var count = await DbContext.Database
+				.SqlQueryRaw<int>($"SELECT COUNT(*) AS [Value] FROM {QualifiedTable}")
+				.SingleAsync();
+
+			return count <= 0;
 		}
 
 		public async Task RefreshData()
 		{
-			Log.Info("Data table " + Endpoint.Table + " is empty. Adding a refresh message.");
+			Log.Info("Data table " + Table + " is empty. Adding a refresh message.");
 
 			var request = new RefreshMessage { TypeName = DomainType.Namespace + "." + DomainType.Name, RequestUtc = DateTime.UtcNow };
 			RefreshRequestUtc = request.RequestUtc;
 			await Endpoint.RefreshQueue.Publish(request);
 
 			Log.Info("Refresh message published to queue.");
+
+			try { await Context.Current.Database().Refresh(); }
+			catch (Exception ex) { Log.Debug(ex, "Database cache refresh skipped after replication refresh request."); }
 		}
 
 		internal async Task Import(ReplicateDataMessage message)
@@ -70,7 +89,7 @@ namespace Olive.Entities.EF.Replication
 			{
 				Log.Info($"Received Clear Signal for {message.TypeFullName}");
 
-				await DbContext.Database.ExecuteSqlRawAsync($"delete from {Endpoint.Schema.WithSuffix(".")}{Endpoint.Table}");
+				await DbContext.Database.ExecuteSqlRawAsync($"delete from {QualifiedTable}");
 
 				return;
 			}
@@ -92,7 +111,8 @@ namespace Olive.Entities.EF.Replication
 				{
 					if (await Endpoint.OnDeleting(message, entity))
 					{
-						DbContext.Remove(entity);
+						var tracked = await DbContext.FindAsync(DomainType, entity.GetId()) as IEntity ?? entity;
+						DbContext.Remove(tracked);
 						await DbContext.SaveChangesAsync();
 						await Endpoint.OnDeleted(message, entity);
 					}
@@ -101,6 +121,8 @@ namespace Olive.Entities.EF.Replication
 				{
 					var mode = entity.IsNew ? SaveMode.Insert : SaveMode.Update;
 
+					if (mode == SaveMode.Update && !await IsActuallyChanged(entity)) return;
+
 					if (!await Endpoint.OnSaving(message, entity, mode)) return;
 
 					var bypass = SaveBehaviour.BypassAll;
@@ -108,8 +130,12 @@ namespace Olive.Entities.EF.Replication
 					if (Config.Get("Database:Audit:EnableForEndpointDataReplication", defaultValue: false))
 						bypass &= ~SaveBehaviour.BypassLogging;
 
+					await LogReplicationSaveIfEnabled(entity, mode, bypass);
+
 					if (entity.IsNew)
 						DbContext.Add(entity);
+					else
+						DbContext.Update(entity);
 
 					await DbContext.SaveChangesAsync();
 
@@ -126,15 +152,47 @@ namespace Olive.Entities.EF.Replication
 			}
 		}
 
+		async Task<bool> IsActuallyChanged(IEntity entityBeingSaved)
+		{
+			try
+			{
+				var database = Context.Current.Database();
+				var original = await database.Get(entityBeingSaved.GetId(), entityBeingSaved.GetType());
+				return database.GetProvider(entityBeingSaved.GetType()).GetUpdatedValues(original, entityBeingSaved).Any();
+			}
+			catch (Exception ex)
+			{
+				Log.Debug(ex, "Skipping unchanged check for replication import.");
+				return true;
+			}
+		}
+
+		async Task LogReplicationSaveIfEnabled(IEntity entity, SaveMode mode, SaveBehaviour bypass)
+		{
+			if ((bypass & SaveBehaviour.BypassLogging) != 0) return;
+
+			var audit = Context.Current.GetOptionalService<IAudit>();
+			if (audit == null) return;
+
+			if (mode == SaveMode.Insert)
+				await audit.LogInsert(entity);
+			else
+				await audit.LogUpdate(entity);
+		}
+
 		async Task<IEntity> Deserialize(string serialized)
 		{
 			var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(serialized);
-			var result = (IEntity)await DbContext.FindAsync(DomainType, data["ID"].To<Guid>());
+			var existing = await DbContext.FindAsync(DomainType, data["ID"].To<Guid>()) as IEntity;
 
-			if (result == null)
+			IEntity result;
+			if (existing == null)
 				result = DomainType.CreateInstance<IEntity>();
 			else
+			{
+				result = existing.Clone();
 				new EntityServices().SetSaved(result);
+			}
 
 			foreach (var field in data)
 			{
