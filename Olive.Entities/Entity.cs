@@ -84,7 +84,10 @@ namespace Olive.Entities
 
         /// <summary>
         /// Determines whether this object is already cloned and updated in the database without this instance being updated.
-        /// </summary>                
+        /// </summary>
+        [XmlIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public bool IsStale => !(UpdatedClone is null);
 
         /// <summary>
