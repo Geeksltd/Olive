@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<Version>10.2.2</Version>
+	<Version>10.2.6</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Olive.Audit\Olive.Audit.csproj" />
     <ProjectReference Include="..\Olive.Entities.Data.Replication.QueueUrlProvider\Olive.Entities.Data.Replication.QueueUrlProvider.csproj" />
     <ProjectReference Include="..\Olive.Entities\Olive.Entities.csproj" />
     <ProjectReference Include="..\Olive.EventBus\Olive.EventBus.csproj" />
