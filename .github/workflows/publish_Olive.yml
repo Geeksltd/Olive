@@ -3,9 +3,12 @@ name: Publish Olive Packages
 on:
   push:
     branches: [ master ]
-    
+
 jobs:
  build:
+    permissions:
+      contents: write
+      id-token: write
     strategy:
       matrix:
         configuration: [Release]
@@ -15,494 +18,962 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-1
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive/Olive.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        
+        NUGET_KEY: ${{ steps.nuget-login-1.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-2
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive EF Core IRepository
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.IRepository/Olive.Entities.Data.IRepository.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}    
+        NUGET_KEY: ${{ steps.nuget-login-2.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-3
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive ApiClient NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.ApiClient/Olive.ApiClient.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-3.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-4
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Audit NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Audit/Olive.Audit.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        
+        NUGET_KEY: ${{ steps.nuget-login-4.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-5
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Azure Document Analyzer NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Azure.DocumentAnalyzer/Olive.Azure.DocumentAnalyzer.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        
+        NUGET_KEY: ${{ steps.nuget-login-5.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-6
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Azure Document Classification NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Azure.DocumentClassification/Olive.Azure.DocumentClassification.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        
+        NUGET_KEY: ${{ steps.nuget-login-6.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-7
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Audit DatabaseLogger NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Audit.DatabaseLogger/Olive.Audit.DatabaseLogger.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-7.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-8
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws/Olive.Aws.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-      
+        NUGET_KEY: ${{ steps.nuget-login-8.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-9
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Aws EventBus NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.EventBus/Olive.Aws.EventBus.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-9.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-10
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws LambdaFunction NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.LambdaFunction/Olive.Aws.LambdaFunction.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-10.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-11
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws S3Backup SqlServer NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.S3Backup.SqlServer/Olive.Aws.S3Backup.SqlServer.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-11.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-12
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws Mvc NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.Mvc/Olive.Aws.Mvc.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-12.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-13
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws Ses NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.Ses/Olive.Aws.Ses.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-13.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-14
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws Ses AutoFetch NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch/Olive.Aws.Ses.AutoFetch.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-14.outputs.NUGET_API_KEY }}
 
    # - name: Publish Olive Aws Ses AutoFetch TestConsole NuGet Package
    #   uses: Geeksltd/publish-nuget@v3.8.5
-   #   with: 
+   #   with:
    #     PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch.TestConsole/Olive.Aws.Ses.AutoFetch.TestConsole.csproj
-   #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+   #     NUGET_KEY: ${{ steps.nuget-login-14.outputs.NUGET_API_KEY }}
 
    # - name: Publish Olive Aws Ses AutoFetch Tests NuGet Package
    #   uses: Geeksltd/publish-nuget@v3.8.5
    #   with:
    #     PROJECT_FILE_PATH: Olive.Aws.Ses.AutoFetch.Tests/Olive.Aws.Ses.AutoFetch.Tests.csproj
-   #     NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+   #     NUGET_KEY: ${{ steps.nuget-login-14.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-15
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Azure NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Azure/Olive.Azure.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-    
+        NUGET_KEY: ${{ steps.nuget-login-15.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-16
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Azure EventBus NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Azure.EventBus/Olive.Azure.EventBus.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-16.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-17
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Blob Aws NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Blob.Aws/Olive.Blob.Aws.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-17.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-18
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Blob Azure NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Blob.Azure/Olive.Blob.Azure.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-18.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-19
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Cloud NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Cloud/Olive.Cloud.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-19.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-20
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Compression NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Compression/Olive.Compression.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-20.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-21
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Console NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Console/Olive.Console.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-21.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-22
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive CSV NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.CSV/Olive.CSV.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-22.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-23
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Drawing NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Drawing/Olive.Drawing.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-23.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-24
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Email NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Email/Olive.Email.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-24.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-25
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Email Imap NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Email.Imap/Olive.Email.Imap.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-25.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-26
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Email Microsoft365 NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Email.Microsoft365/Olive.Email.Microsoft365.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-26.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-27
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Encryption NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Encryption/Olive.Encryption.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        
+        NUGET_KEY: ${{ steps.nuget-login-27.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-28
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Encryption .NET Core NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Encryption.NETCore/Olive.Encryption.NETCore.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-28.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-29
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities/Olive.Entities.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-29.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-30
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Cache Redis NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Cache.Redis/Olive.Entities.Cache.Redis.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-30.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-31
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data/Olive.Entities.Data.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-31.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-32
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data MySql NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.MySql/Olive.Entities.Data.MySql.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-32.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-33
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data PostgreSQL NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.PostgreSQL/Olive.Entities.Data.PostgreSQL.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-33.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-34
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data DynamoDB NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.DynamoDB/Olive.Entities.Data.DynamoDB.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-34.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-35
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data Replication NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication/Olive.Entities.Data.Replication.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-35.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-36
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data EF Replication NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.EF.Replication/Olive.Entities.Data.EF.Replication.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-36.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-37
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data Replication Mvc Extensions NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.Mvc.Extensions/Olive.Entities.Data.Replication.Mvc.Extensions.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-37.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-38
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data Replication QueueUrlProvider NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.QueueUrlProvider/Olive.Entities.Data.Replication.QueueUrlProvider.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-38.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-39
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data SQLite NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.SQLite/Olive.Entities.Data.SQLite.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-39.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-40
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Entities Data SqlServer NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.SqlServer/Olive.Entities.Data.SqlServer.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-40.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-41
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive EventBus NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.EventBus/Olive.EventBus.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-41.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-42
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive EventBus Mvc Extensions NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.EventBus.Mvc.Extensions/Olive.EventBus.Mvc.Extensions.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-42.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-43
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Export NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Export/Olive.Export.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-43.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-44
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive GeoLocation NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.GeoLocation/Olive.GeoLocation.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-44.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-45
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Globalization NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Globalization/Olive.Globalization.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-45.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-46
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Hangfire NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Hangfire/Olive.Hangfire.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-46.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-47
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Hangfire Cron NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Hangfire.Cron/Olive.Hangfire.Cron.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-47.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-48
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Hangfire MySql NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Hangfire.MySql/Olive.Hangfire.MySql.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-48.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-49
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Log EventBus NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Log.EventBus/Olive.Log.EventBus.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-49.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-50
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Microservices NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Microservices/Olive.Microservices.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-50.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-51
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc/Olive.Mvc.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-51.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-52
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc CKEditorFileManager NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc.CKEditorFileManager/Olive.Mvc.CKEditorFileManager.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-52.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-53
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc IpFilter NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc.IpFilter/Olive.Mvc.IpFilter.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-53.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-54
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc Microservices NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Microservices/Olive.Mvc.Microservices.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-54.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-55
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc Paging NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Paging/Olive.Mvc.Paging.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-55.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-56
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc Recaptcha NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Recaptcha/Olive.Mvc.Recaptcha.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-56.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-57
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc Security NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Security/Olive.Mvc.Security.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-57.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-58
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Mvc Testing NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Mvc.Testing/Olive.Mvc.Testing.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-58.outputs.NUGET_API_KEY }}
 
     # - name: Publish Olive Net4x Compatibility NuGet Package
       # uses: Geeksltd/publish-nuget@v3.8.5
       # with:
         # PROJECT_FILE_PATH: Olive.Net4x.Compatibility/Olive.Net4x.Compatibility.csproj
-        # NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        # NUGET_KEY: ${{ steps.nuget-login-58.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-59
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive PassiveBackgroundTasks NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.PassiveBackgroundTasks/Olive.PassiveBackgroundTasks.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-59.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-60
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive PDF NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.PDF/Olive.PDF.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-60.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-61
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive PushNotification NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.PushNotification/Olive.PushNotification.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-61.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-62
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Security Auth0 NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Security.Auth0/Olive.Security.Auth0.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-62.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-63
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Security Aws NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Security.Aws/Olive.Security.Aws.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-63.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-64
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Security Azure NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Security.Azure/Olive.Security.Azure.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-64.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-65
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Security Cloud NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Security.Cloud/Olive.Security.Cloud.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-65.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-66
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Security Impersonation NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Security.Impersonation/Olive.Security.Impersonation.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-66.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-67
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive SMS NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.SMS/Olive.SMS.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-67.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-68
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Sms Aws NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Sms.Aws/Olive.Sms.Aws.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-68.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-69
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive SMS MessageBird NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.SMS.MessageBird/Olive.SMS.MessageBird.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-69.outputs.NUGET_API_KEY }}
 
     # - name: Publish Olive SMS TextMagic NuGet Package
       # uses: Geeksltd/publish-nuget@v3.8.5
       # with:
         # PROJECT_FILE_PATH: Olive.SMS.TextMagic/Olive.SMS.TextMagic.csproj
-        # NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        # NUGET_KEY: ${{ steps.nuget-login-69.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-70
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Web NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Web/Olive.Web.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-70.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-71
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws Rekognition NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.Rekognition/Olive.Aws.Rekognition.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-71.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-72
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive Aws Textract NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.Textract/Olive.Aws.Textract.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        
+        NUGET_KEY: ${{ steps.nuget-login-72.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-73
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Aws Comprehend NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Aws.Comprehend/Olive.Aws.Comprehend.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        
+        NUGET_KEY: ${{ steps.nuget-login-73.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-74
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Gpt NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Gpt/Olive.Gpt.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-    
+        NUGET_KEY: ${{ steps.nuget-login-74.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-75
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive Data replication generator UI NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.Entities.Data.Replication.DataGenerator.UI/Olive.Entities.Data.Replication.DataGenerator.UI.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-    
+        NUGET_KEY: ${{ steps.nuget-login-75.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-76
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive OpenAI NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.OpenAI/Olive.OpenAI/Olive.OpenAI.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-      
+        NUGET_KEY: ${{ steps.nuget-login-76.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-77
+      with:
+        user: GeeksLtd
+
     - name: Publish Olive OpenAI voice NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.OpenAI.Voice/Olive.OpenAI.Voice/Olive.OpenAI.Voice.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-77.outputs.NUGET_API_KEY }}
+
+    - name: Authenticate to NuGet using trusted publishing
+      uses: NuGet/login@v1
+      id: nuget-login-78
+      with:
+        user: GeeksLtd
 
     - name: Publish Olive MFA NuGet Package
       uses: Geeksltd/publish-nuget@v3.8.5
       with:
         PROJECT_FILE_PATH: Olive.MFA/Olive.MFA.csproj
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        NUGET_KEY: ${{ steps.nuget-login-78.outputs.NUGET_API_KEY }}
