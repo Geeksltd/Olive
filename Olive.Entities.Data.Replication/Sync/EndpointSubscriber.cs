@@ -71,6 +71,10 @@ namespace Olive.Entities.Replication
 
                 await access.ExecuteNonQuery($"delete from {table}");
 
+                // The delete bypasses the cache, so drop the type from it too. Otherwise the records that follow
+                // are loaded from the cache as unchanged copies of the deleted rows, and skipped, not re-inserted.
+                Database.Cache.Remove(DomainType, invalidateCachedReferences: true);
+
                 return;
             }
 
